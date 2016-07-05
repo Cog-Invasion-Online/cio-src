@@ -1,0 +1,14 @@
+Cog Invasion Online 0.9.4 Release Notes
+---------------------------------------
+- Implement the Shotgun as a new weapon in Toon Battle.
+- You can choose either a Pistol or a Shotgun as your weapon for the entire match.
+- The release notes for the last 2 (maybe 3) game versions will now be shown.
+- Fixed a crash with the Hang Up Cog attack.
+- Changed the way Toon dialogue noises are loaded and played.
+- Sad Toons now have sad eyes.
+- Changed the look of the Shticker Book to match Toontown.
+- Some changes to code that doesn't affect the gameplay at all.
+- Cleared some useless console output.
+- Added some more console output when the game first starts.
+
+If you encounter any bugs or weird stuff during gameplay, please report them to me. I can be reached at duckyduck1553@coginvasion.com.

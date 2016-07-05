@@ -1,0 +1,16 @@
+Collect jellybean barrels the cogs have stolen and sneak out with them.
+The more barrels you sneak out with, the bigger the prize.
+Takes place in Sellbot Factory.
+Cog Guards guard corners and hallways.
+You weld a Toon Battle gun.
+The guards can hear your footsteps so crouch to be unheard.
+Your suspicion points go up if a guard spots you or if you shoot your gun.
+You can use your gun to defeat cog guards.
+If your suspicion points get too high the guards will start searching the area for you.
+Hiding away in corners or being unheard for a long time lowers suspicion points and the guards stop searching.
+If you are spotted, the guards will start chasing you.
+If the chase lasts for long enough, the guard will call in more guards OR if another guard sees you being chased, they will join in.
+If the guard gets too close to you, you will surrender and lose and get no prize.
+The factory foreman guards the exit to win.
+The factory foreman has 4x speed.
+The factory foreman is far away from the other guards, so if you shoot at him, the other guards can't hear and come to help.

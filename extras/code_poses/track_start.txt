@@ -1,0 +1,31 @@
+left knee r: 80.54
+left ball r: 330.26
+left hip y: -0.10
+left hip x: -0.32
+right hip y: -0.36
+right hip x: 0.32
+right knee r: 90.00
+right ball r: 329.74
+spineb p: 301.43
+spineb y: 0.33
+spineb z: 0.06
+cagea p: 352.87
+cagea y: 0.10
+cagea z: 0.45
+right shoulder h: 255.00
+right shoulder r: 168.00
+right midA r: 8.13
+right midB r: 15.95
+head p: 70.00
+left shoulder h: 285.00
+left shoulder r: 347.28
+left midA r: 8.13
+left midB r: 15.95
+right pant bottom sz: 0.78
+right pant bottom y: -0.14
+right pant top sz: 0.78
+right pant top y: -0.31
+left pant bottom sz: 0.62
+left pant bottom y: 0.11
+left pant top sz: 0.57
+left pant top y: 0.25

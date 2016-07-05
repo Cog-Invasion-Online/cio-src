@@ -1,0 +1,64 @@
+from lib.toontown.toon import Toon
+
+toon1 = Toon.Toon(base.cr)
+toon1.setDNAStrand("00/05/01/08/01/08/01/08/05/05/05/11/11/11/00")
+toon1.setName("Jerry")
+toon1.generateToon()
+toon1.setupNameTag()
+toon1.reparentTo(render)
+toon1.animFSM.request("neutral")
+toon1.deleteShadow()
+toon1.setPos(-87.66, 15.51, 0.00)
+toon1.setH(115.56)
+
+toon2 = Toon.Toon(base.cr)
+toon2.setDNAStrand("01/05/02/01/05/01/01/01/07/07/14/06/06/06/00")
+toon2.setName("Mary")
+toon2.generateToon()
+toon2.setupNameTag()
+toon2.reparentTo(render)
+toon2.animFSM.request("neutral")
+toon2.deleteShadow()
+toon2.setPos(-89.19, 8.8, 0.00)
+toon2.setH(85.83)
+
+toon3 = Toon.Toon(base.cr)
+toon3.setDNAStrand("00/08/02/15/00/15/02/15/16/18/07/00/00/00/00")
+toon3.setName("Fat Quacker")
+toon3.generateToon()
+toon3.setupNameTag()
+toon3.reparentTo(render)
+toon3.animFSM.request("neutral")
+toon3.deleteShadow()
+toon3.setPos(-37.70, 50.87, 0.00)
+toon3.setH(247.67)
+toon3.pose("run", 10)
+
+toon4 = Toon.Toon(base.cr)
+toon4.setDNAStrand("00/01/04/08/02/08/01/08/17/17/03/10/10/10/00")
+toon4.setName("Hound Dawg")
+toon4.generateToon()
+toon4.setupNameTag()
+toon4.reparentTo(render)
+toon4.animFSM.request("neutral")
+toon4.deleteShadow()
+toon4.setPos(-0.36, 15.29, 0.00)
+toon4.setH(7.77)
+toon4.pose("run", 32)
+
+toon5 = Toon.Toon(base.cr)
+toon5.setDNAStrand("01/00/00/26/04/26/00/26/12/12/16/00/00/00/00")
+toon5.setName("Midnight Shadow")
+toon5.generateToon()
+toon5.setupNameTag()
+toon5.reparentTo(render)
+toon5.animFSM.request("neutral")
+toon5.deleteShadow()
+toon5.setPos(-10.5, 90, 0.025)
+toon5.setH(-46.3971786499)
+
+from lib.toontown.globals import ToontownGlobals
+for obj in base.cr.doId2do.values():
+  if obj.__class__.__name__ == "DistributedMinigameStation":
+    if obj.game == ToontownGlobals.UnoGame:
+      obj.timer['text'] = "7"

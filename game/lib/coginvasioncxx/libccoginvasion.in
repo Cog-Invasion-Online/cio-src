@@ -1,0 +1,101 @@
+1439946891
+2 3
+15 libccoginvasion 4 I4nc 15 libccoginvasion 
+7
+7 11 LabelScaler 0 4 14 24 LabelScaler::LabelScaler 0 1 1 0
+59
+LabelScaler::LabelScaler(NodePath &node, NodePath &camera);
+
+8 12 ~LabelScaler 0 4 14 25 LabelScaler::~LabelScaler 0 0 0
+32
+LabelScaler::~LabelScaler(void);
+
+9 6 resize 0 4 14 19 LabelScaler::resize 0 1 2 0
+31
+void LabelScaler::resize(void);
+
+10 18 get_scaling_factor 0 4 14 31 LabelScaler::get_scaling_factor 0 1 3 0
+44
+float LabelScaler::get_scaling_factor(void);
+
+11 6 get_np 0 4 14 19 LabelScaler::get_np 0 1 4 0
+36
+NodePath &LabelScaler::get_np(void);
+
+12 7 get_cam 0 4 14 20 LabelScaler::get_cam 0 1 5 0
+37
+NodePath &LabelScaler::get_cam(void);
+
+13 12 get_task_mgr 0 4 14 25 LabelScaler::get_task_mgr 0 1 6 0
+50
+AsyncTaskManager *LabelScaler::get_task_mgr(void);
+
+6
+1 0 0 7 2 17 8 0 0 2 4 node 1 15  6 camera 1 15  
+2 0 0 4 4 18 0 0 0 1 4 this 3 17  
+3 0 0 6 5 19 0 0 0 1 4 this 3 17  
+4 0 0 6 6 15 0 0 0 1 4 this 3 17  
+5 0 0 6 7 15 0 0 0 1 4 this 3 17  
+6 0 0 7 8 21 0 0 0 1 4 this 3 17  
+8
+14 11 LabelScaler 0 26625 11 LabelScaler 11 LabelScaler 0 0 0 1 7 8 0 5 9 10 11 12 13 0 0 0 0 0 0
+
+15 10 NodePath * 0 8576 10 NodePath * 10 NodePath * 0 0 16 0 0 0 0 0 0 0 0 0 0
+
+16 8 NodePath 0 2048 8 NodePath 8 NodePath 0 0 0 0 0 0 0 2 22 23 0 0 0 0 1139
+////////////////////////////////////////////////////////////////////
+//       Class : NodePath
+// Description : NodePath is the fundamental system for disambiguating
+//               instances, and also provides a higher-level interface
+//               for manipulating the scene graph.
+//
+//               A NodePath is a list of connected nodes from the root
+//               of the graph to any sub-node.  Each NodePath
+//               therefore uniquely describes one instance of a node.
+//
+//               NodePaths themselves are lightweight objects that may
+//               easily be copied and passed by value.  Their data is
+//               stored as a series of NodePathComponents that are
+//               stored on the nodes.  Holding a NodePath will keep a
+//               reference count to all the nodes in the path.
+//               However, if any node in the path is removed or
+//               reparented (perhaps through a different NodePath),
+//               the NodePath will automatically be updated to reflect
+//               the changes.
+////////////////////////////////////////////////////////////////////
+
+17 13 LabelScaler * 0 8576 13 LabelScaler * 13 LabelScaler * 0 0 14 0 0 0 0 0 0 0 0 0 0
+
+18 4 void 0 8194 4 void 4 void 0 6 0 0 0 0 0 0 0 0 0 0 0
+
+19 5 float 0 8194 5 float 5 float 0 2 0 0 0 0 0 0 0 0 0 0 0
+
+20 16 AsyncTaskManager 0 2048 16 AsyncTaskManager 16 AsyncTaskManager 0 0 0 0 0 0 0 1 24 0 0 0 0 1046
+////////////////////////////////////////////////////////////////////
+//       Class : AsyncTaskManager
+// Description : A class to manage a loose queue of isolated tasks,
+//               which can be performed either synchronously (in the
+//               foreground thread) or asynchronously (by a background
+//               thread).
+//
+//               The AsyncTaskManager is actually a collection of
+//               AsyncTaskChains, each of which maintains a list of
+//               tasks.  Each chain can be either foreground or
+//               background (it may run only in the main thread, or it
+//               may be serviced by one or more background threads).
+//               See AsyncTaskChain for more information.
+//
+//               If you do not require background processing, it is
+//               perfectly acceptable to create only one
+//               AsyncTaskChain, which runs in the main thread.  This
+//               is a common configuration.
+////////////////////////////////////////////////////////////////////
+
+21 18 AsyncTaskManager * 0 8576 18 AsyncTaskManager * 18 AsyncTaskManager * 0 0 20 0 0 0 0 0 0 0 0 0 0
+
+0
+0
+3
+22 0 0 11 9 get_nodes 13 get_num_nodes 8 get_node 
+23 0 0 11 13 get_ancestors 13 get_num_nodes 12 get_ancestor 
+24 0 0 19 15 get_task_chains 19 get_num_task_chains 14 get_task_chain 

@@ -1,0 +1,8 @@
+Cog Invasion Online 0.9.3.5 Release Notes
+---------------------------------------
+- You can now view the total game population on the Places page in your Shticker Book.
+- You can also view the Record Population on the Places page. This is the highest population that the game has ever had.
+- Increased accuracy of bullets in Toon Battle.
+- The game will close on you if you try to use speed hacks.
+
+If you encounter any bugs or weird stuff during gameplay, please report them to me. I can be reached at duckyduck1553@coginvasion.com.

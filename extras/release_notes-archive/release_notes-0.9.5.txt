@@ -1,0 +1,11 @@
+Cog Invasion Online 0.9.5 Release Notes
+---------------------------------------
+- Implement a new level loading system in Toon Battle.
+- New Toon Battle levels: Daisy Gardens, Minnie's Melodyland, Cashbot HQ Courtyard
+- Created a small visual when loading levels in Toon Battle.
+- Fixed a bug where your Toon would not fade away when killed in Toon Battle.
+- Added more Cog walk points to Toontown Central.
+- Cogs now have a list of walk points that are accessible from another (they don't walk through stuff).
+- Players can now be banned from the game.
+
+If you encounter any bugs or weird stuff during gameplay, please report them to me. I can be reached at duckyduck1553@coginvasion.com.

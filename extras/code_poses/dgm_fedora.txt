@@ -1,0 +1,8 @@
+right shoulder h: 216.87
+right shoulder p: 28.84
+right shoulder r: 206.57
+right elbow hpr: (296.57, 39.81, 60.26)
+right wrist hpr: (327.26, 83.42, 341.57)
+right midA hpr: (5.71, 11.31, 325.30)
+right midB hpr: (0.00, 347.47, 340.02)
+spineB p: 15.00

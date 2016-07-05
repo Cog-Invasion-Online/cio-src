@@ -1,0 +1,16 @@
+VP from original game.
+Stands in center of the plaza.
+When spawns, he starts really small and grows to his full size.
+Initial hp = 5,000
+Doesn't move.
+Does attacks from original game.
+Backup heals.
+When you don't attack for a while (2 minutes), he starts saying taunts.
+
+Death:
+Says: "I've had enough! I'm getting out of here!"
+Walks to the pond on the left side of the gazebo.
+When he walks in the water, he starts sparking.
+Then, a couple jellybeans fly out of him when he is sparking.
+Then, a big explosion. Tons of jellybeans fly out everywhere.
+Jellybean values vary from 1-10. 

@@ -1,0 +1,18 @@
+Cog Invasion Online 1.0.0 Release Notes
+---------------------------------------
+This is a big update!
+
+- Upgraded to a newer version of Panda3D.
+- Added The Brrrgh as a new playground.
+- If you walk into the pond in The Brrrgh, your Toon will freeze up and turn into an ice cube!
+- Stations that up to 8 Toons can enter to go fight Cogs are present in all Playgrounds.
+- Cogs no longer spawn in Playgrounds, you have to enter a Cog Station.
+- Implemented Coach's Battle Shop, present in all Cog battle areas.
+- Implemented a Pie Turret which automatically fires pies at Cogs for you. These are purchasable at Coach's Battle Shop.
+- Cog difficulty is different in every Playground.
+- Toontown Central - Easy cogs; The Brrrgh - Normal cogs (in white suits); No playground with hard cogs yet
+- Toons can no longer have a Laff amount less than 0.
+- Implemented a new minigame: Eagle Summit
+- In Eagle Summit, hit as many flying Legal Eagles as you can using your cannon.
+
+If you encounter any bugs or weird stuff during gameplay, please report them to me. I can be reached at duckyduck1553@coginvasion.com.

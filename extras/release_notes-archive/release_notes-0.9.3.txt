@@ -1,0 +1,24 @@
+Cog Invasion Online 0.9.3 Release Notes
+---------------------------------------
+- Added more commands for admins.
+- Some more tweaks.
+- In Uno Game, instead of the server choosing a random card for you to draw, it now shuffles a deck of cards and chooses the card on the top of the deck for you to draw. This will change the variety of cards.
+- The background picture of the loading screen stretches to the window size.
+- New Cog attack: Hang Up
+- Cogs no longer slide when they die.
+- A Cog Invasion will no longer spawn if there are any Cogs present at the time.
+- The regular Toontown battle music is played if it's a random Cog spawn.
+- If it's an Invasion or a Tournament, the other battle music is played.
+- Made the portal bigger when teleporting away.
+- The different pies now have different splat sizes.
+- Switched audio library to Miles Sound System.
+- Now using MP3 and MIDI as sound files instead of OGG.
+- Fixed the Toon Battle walk controls.
+- Changed the music of Toon Battle.
+- Now, up to 8 Toons can play Toon Battle together.
+- The camera will move through the Toon Battle level to show you around at the beginning.
+- Improved the dimensions of the collision triggers to enter Minigame Stations.
+- Added bird chirps to Toontown Central.
+- The game now preloads some files at the beginning to minimize freezing when the files are actually loaded into the game.
+
+If you encounter any bugs or weird stuff during gameplay, please report them to me. I can be reached at duckyduck1553@coginvasion.com.

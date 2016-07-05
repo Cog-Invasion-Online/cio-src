@@ -1,0 +1,5 @@
+Cog Invasion Online 0.9.66 Release Notes
+---------------------------------------
+- Possibly fixed a memory leak causing the server to crash.
+
+If you encounter any bugs or weird stuff during gameplay, please report them to me. I can be reached at duckyduck1553@coginvasion.com.

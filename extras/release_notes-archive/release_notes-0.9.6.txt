@@ -1,0 +1,10 @@
+Cog Invasion Online 0.9.6 Release Notes
+---------------------------------------
+- Added a new minigame: Camera Shy
+- In Camera Shy, you must be the first to take 3 pictures of every other player to win.
+- Improved the Race Game description.
+- You can now see the date that a Minigame was created on the station sign.
+- Rose the text a bit on the timer when the number of seconds is 100 or greater.
+- Fixed a bug where the pie would splat in the center of the playground when a Cog is doing the Hang Up attack.
+
+If you encounter any bugs or weird stuff during gameplay, please report them to me. I can be reached at duckyduck1553@coginvasion.com.

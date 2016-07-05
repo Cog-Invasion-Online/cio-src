@@ -1,0 +1,9 @@
+Cog Invasion Online 0.9.65 Release Notes
+---------------------------------------
+- Improved the way the Freeze-Cam works in Toon Battle.
+- Made the jellybean jar that Cogs drop lower to the ground and the jellybean higher.
+- Cut the distance you have to be from a Cog to be damaged by Pick Pocket in half.
+- Fixed a crash with Toon heads when a District is reset.
+- Fixed a crash with changing the skirt of a girl in Make-A-Toon.
+
+If you encounter any bugs or weird stuff during gameplay, please report them to me. I can be reached at duckyduck1553@coginvasion.com.

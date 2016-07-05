@@ -1,0 +1,42 @@
+Cog Invasion Online Todo
+------------------------
+
+FEATURES
+Start Experience [ ]
+Correct Questing Page [ ]
+Implement New Cog Building Floors [ ]
+  - Breakroom [ ]
+  - Puzzle Room [ ]
+Create Restock Barrels [X]
+Add Emotes [ ]
+Add Unites [ ]
+Make Pets [ ]
+Make Achievements [ ]
+Add Weaknesses to Cogs [ ]
+Make v2.0 Cogs [ ]
+Complete Factory Prowl [ ]
+Make Estates [ ]
+Add Toontanic [ ]
+Add High Dive [ ]
+Add Banana Peel [ ]
+Add Rake [ ]
+Add Marbles [ ]
+Create Path Finding Polygons for Playground Battles [ ]
+
+FIXES
+Fix Tunnel Animations for other Toons [X]
+Fix CogTropolis Streets Randomly Disappearing [ ]
+
+BACKEND FEATURES
+Create Autodeploy System [ ]
+Add Name Review Page [ ]
+Complete New Login Server [ ]
+Complete New Cog AI [ ]
+
+TWEAKS
+Add Minimum and Maximum Player Requirements to Minigames [ ]
+Decrease Size of World to be more manageable [ ]
+Revamp Shticker Book [ ]
+Complete New Launcher [ ]
+Do Major Code cleanup and remove unused code [ ]
+Complete New Path Finding in Cog Buildings [X]
