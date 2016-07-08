@@ -12,7 +12,23 @@ __builtin__.__dict__.update(__import__('panda3d.core', fromlist=['*']).__dict__)
 import sys
 sys.dont_write_bytecode = True
 
-from panda3d.core import loadPrcFile, loadPrcFileData
+from panda3d.core import loadPrcFile, loadPrcFileData, VirtualFileSystem
+
+vfs = VirtualFileSystem.getGlobalPtr()
+vfs.mount(Filename("phase_0.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_3.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_3.5.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_4.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_5.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_5.5.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_6.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_7.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_8.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_9.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_10.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_11.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_12.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_13.mf"), ".", VirtualFileSystem.MFReadOnly)
 
 import argparse
 

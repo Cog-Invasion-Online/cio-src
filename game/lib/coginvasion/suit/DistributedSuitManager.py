@@ -68,7 +68,7 @@ class DistributedSuitManager(DistributedObject):
                 base.cr.music = None
             self.musicMgr.stop_music()
             self.hood.loader.bossBattleMusic.stop()
-            base.playMusic(self.hood.loader.music, looping = 1, volume = 0.9)
+            base.playMusic(self.hood.loader.music, looping = 1, volume = 0.8)
         self.hood.stopSuitEffect()
 
     def newSuit(self):

@@ -9,6 +9,8 @@ class TeamMinigameAI:
     def __init__(self):
         # This keeps track of what players are on what team. They are lists of doIds.
         self.playerListByTeam = {TEAM2: [], TEAM1: []}
+        self.scoreByTeam = {TEAM1: 0, TEAM2: 0}
+        self.winnerTeam = None
 
     def choseTeam(self, team, avId = None, sendAcceptedMsg = True):
         # A player chose the team they want to be on!
@@ -31,5 +33,5 @@ class TeamMinigameAI:
 
     def cleanup(self):
         del self.playerListByTeam
-
-
+        del self.scoreByTeam
+        del self.winnerTeam

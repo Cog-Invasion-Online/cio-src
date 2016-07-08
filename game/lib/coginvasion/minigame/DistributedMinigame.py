@@ -76,7 +76,7 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         self.cr = cr
         self.localAv = base.localAvatar
         self.localAvId = self.localAv.doId
-        self.musicPath = "phase_4/audio/bgm/trolley_song.ogg"
+        self.musicPath = "phase_4/audio/bgm/trolley_song.mid"
         self.winSfx = base.loadSfx("phase_4/audio/sfx/MG_win.ogg")
         self.loseSfx = base.loadSfx("phase_4/audio/sfx/MG_lose.ogg")
         self.prizeHigh = base.loadSfx("phase_6/audio/sfx/KART_Applause_1.ogg")
@@ -95,7 +95,13 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         self.alertText = None
         self.alertPulse = None
         self.popupSound = None
+        self.gameOverLbl = OnscreenText(text = "TIME'S\nUP!", scale = 0.25, font = CIGlobals.getMickeyFont(), fg = (1, 0, 0, 1))
+        self.gameOverLbl.setBin('gui-popup', 60)
+        self.gameOverLbl.hide()
         return
+
+    def getTeamDNAColor(self, team):
+        pass
 
     def showAlert(self, text):
         self.stopPulse()
@@ -283,7 +289,7 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         self.stopMinigameMusic()
         self.music = base.loadMusic(self.musicPath)
         self.music.setLoop(True)
-        self.music.setVolume(0.7)
+        self.music.setVolume(0.8)
         self.music.play()
 
     def stopMinigameMusic(self):
@@ -302,6 +308,8 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         NametagGlobals.setWant2dNametags(False)
 
     def disable(self):
+        self.gameOverLbl.destroy()
+        self.gameOverLbl = None
         NametagGlobals.setWant2dNametags(True)
         base.localAvatar.setPosHpr(0, 0, 0, 0, 0, 0)
         self.fsm.requestFinalState()

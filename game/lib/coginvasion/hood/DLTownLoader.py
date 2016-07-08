@@ -11,8 +11,8 @@ class DLTownLoader(TownLoader.TownLoader):
     def __init__(self, hood, parentFSM, doneEvent):
         TownLoader.TownLoader.__init__(self, hood, parentFSM, doneEvent)
         self.streetClass = DLStreet.DLStreet
-        self.musicFile = 'phase_8/audio/bgm/DL_SZ.ogg'
-        self.interiorMusicFile = 'phase_8/audio/bgm/DL_SZ_activity.ogg'
+        self.musicFile = 'phase_8/audio/bgm/DL_SZ.mid'
+        self.interiorMusicFile = 'phase_8/audio/bgm/DL_SZ_activity.mid'
         self.townStorageDNAFile = 'phase_8/dna/storage_DL_town.pdna'
 
     def load(self, zoneId):

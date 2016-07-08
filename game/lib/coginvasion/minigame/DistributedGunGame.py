@@ -30,9 +30,9 @@ class DistributedGunGame(DistributedToonFPSGame, TeamMinigame):
                         "The Toon with the most points when the timer runs out gets a nice prize!",
                         GGG.GameModes.CTF: "Steal the other team's flag and take it to where your flag is to score a point. Follow the arrows at the bottom of the screen to find the flags! Use your gun to defend yourself and your flag!",
                         GGG.GameModes.KOTH : "Capture the central point and defend it from the other Toons. The Toon who holds the point the longest wins."}
-    GameMode2Music = {GGG.GameModes.CASUAL: 'phase_4/audio/bgm/MG_TwoDGame.ogg',
-                      GGG.GameModes.CTF:    'phase_9/audio/bgm/CHQ_FACT_bg.ogg',
-                      GGG.GameModes.KOTH : 'phase_7/audio/bgm/encntr_suit_winning_indoor.ogg'}
+    GameMode2Music = {GGG.GameModes.CASUAL: 'phase_4/audio/bgm/MG_TwoDGame.mid',
+                      GGG.GameModes.CTF:    'phase_9/audio/bgm/CHQ_FACT_bg.mid',
+                      GGG.GameModes.KOTH : 'phase_7/audio/bgm/encntr_suit_winning_indoor.mid'}
 
     def __init__(self, cr):
         try:
@@ -79,7 +79,7 @@ class DistributedGunGame(DistributedToonFPSGame, TeamMinigame):
         self.balloonSound = base.loadSfx('phase_3/audio/sfx/GUI_balloon_popup.ogg')
         self.decidedSound = base.loadSfx('phase_4/audio/sfx/MG_sfx_travel_game_win_vote.ogg')
         return
-    
+
     def setKOTHPoints(self, points):
         self.toonFps.setKOTHPoints(points)
         DistributedToonFPSGame.setMyKOTHPoints(self, points)
@@ -341,18 +341,17 @@ class DistributedGunGame(DistributedToonFPSGame, TeamMinigame):
         whistleSfx = base.loadSfx("phase_4/audio/sfx/AA_sound_whistle.ogg")
         whistleSfx.play()
         del whistleSfx
-        
+
         if self.gameMode == GGG.GameModes.KOTH and DistributedToonFPSGame.getKOTHKing(self):
             text = DistributedToonFPSGame.getKOTHKing(self).getName()
         else:
             text = GGG.TeamNameById[team].split(' ')[0]
-        self.gameOverLbl = DirectLabel(text = "{0}\nWins!".format(text), relief = None, scale = 0.35, text_font = CIGlobals.getMickeyFont(), text_fg = (1, 0, 0, 1))
+        self.gameOverLbl.setText("{0}\nWins!".format(text))
+        self.gameOverLbl.show()
         self.track = Sequence(Wait(3.0), Func(self.fsm.request, 'finalScores'))
         self.track.start()
 
     def exitAnnounceTeamWon(self):
-        self.gameOverLbl.destroy()
-        del self.gameOverLbl
         if self.track:
             self.track.pause()
             self.track = None
@@ -361,13 +360,12 @@ class DistributedGunGame(DistributedToonFPSGame, TeamMinigame):
         whistleSfx = base.loadSfx("phase_4/audio/sfx/AA_sound_whistle.ogg")
         whistleSfx.play()
         del whistleSfx
-        self.gameOverLbl = DirectLabel(text = "TIME'S\nUP!", relief = None, scale = 0.35, text_font = CIGlobals.getMickeyFont(), text_fg = (1, 0, 0, 1))
+        self.gameOverLbl.setText("TIME's\nUP!")
+        self.gameOverLbl.show()
         self.track = Sequence(Wait(3.0), Func(self.fsm.request, 'finalScores'))
         self.track.start()
 
     def exitAnnounceGameOver(self):
-        self.gameOverLbl.destroy()
-        del self.gameOverLbl
         if self.track:
             self.track.pause()
             self.track = None
@@ -375,7 +373,7 @@ class DistributedGunGame(DistributedToonFPSGame, TeamMinigame):
     def enterFinalScores(self):
         DistributedToonFPSGame.enterFinalScores(self)
         self.sendUpdate('myFinalScore', [self.toonFps.points])
-        
+
     def exitFinalScores(self):
         DistributedToonFPSGame.exitFinalScores(self)
 

@@ -121,6 +121,7 @@ cbm.addBin('gui-popup', CullBinManager.BTUnsorted, 60)
 base.setBackgroundColor(CIGlobals.DefaultBackgroundColor)
 base.disableMouse()
 base.enableParticles()
+base.musicManager.setVolume(0.65)
 base.camLens.setNearFar(CIGlobals.DefaultCameraNear, CIGlobals.DefaultCameraFar)
 base.transitions.IrisModelName = "phase_3/models/misc/iris.bam"
 base.transitions.FadeModelName = "phase_3/models/misc/fade.bam"
@@ -223,9 +224,7 @@ print "CIStart: Starting initial game load..."
 from InitialLoad import InitialLoad
 il = InitialLoad(doneInitLoad)
 music = base.loadMusic(CIGlobals.getThemeSong())
-base.playMusic(music, looping = 1, volume = 0.75)
+base.playMusic(music, looping = 1, volume = 0.5)
 il.load()
-
-PStatClient.connect()
 
 base.run()

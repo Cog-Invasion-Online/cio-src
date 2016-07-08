@@ -316,7 +316,7 @@ class DistributedEagleGame(DistributedMinigame):
 		self.cannonMoveSfx = base.loadSfx("phase_4/audio/sfx/MG_cannon_adjust.ogg")
 		self.cannonMoveSfx.setLoop(True)
 		self.fallSfx = base.loadSfx("phase_4/audio/sfx/MG_sfx_vine_game_fall.ogg")
-		self.setMinigameMusic("phase_9/audio/bgm/CHQ_FACT_bg.ogg")
+		self.setMinigameMusic("phase_9/audio/bgm/CHQ_FACT_bg.mid")
 		self.setDescription("Shoot as many flying Legal Eagles as you can using your cannon. "
 			"Use the arrow keys to aim your cannon and press the control key to fire.")
 		self.setWinnerPrize(175)

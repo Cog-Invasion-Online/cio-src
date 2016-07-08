@@ -68,7 +68,7 @@ class DistributedUnoGame(DistributedMinigame.DistributedMinigame):
         self.background = OnscreenImage(image = "phase_4/maps/uno_bg.png")
         self.background.setSx(1.93)
         self.background.setBin("background", 10)
-        self.setMinigameMusic("phase_4/audio/bgm/MG_Pairing.ogg")
+        self.setMinigameMusic("phase_4/audio/bgm/minigame_race.mid")
         self.setDescription("Play the Uno card game against the other players and win to get a big prize!")
         self.setWinnerPrize(135)
         self.setLoserPrize(10)

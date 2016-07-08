@@ -12,12 +12,12 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
     def __init__(self, hood, parentFSM, doneEvent):
         SafeZoneLoader.SafeZoneLoader.__init__(self, hood, parentFSM, doneEvent)
         self.playground = TTPlayground.TTPlayground
-        self.pgMusicFilename = 'phase_4/audio/bgm/TC_nbrhood.ogg'
-        self.interiorMusicFilename = 'phase_3.5/audio/bgm/TC_SZ_activity.ogg'
-        self.battleMusicFile = 'phase_3.5/audio/bgm/encntr_general_bg.ogg'
+        self.pgMusicFilename = 'phase_4/audio/bgm/TC_nbrhood.mid'
+        self.interiorMusicFilename = 'phase_3.5/audio/bgm/TC_SZ_activity.mid'
+        self.battleMusicFile = 'phase_3.5/audio/bgm/encntr_general_bg.mid'
         self.invasionMusicFiles = [
-            "phase_12/audio/bgm/BossBot_CEO_v1.ogg",
-            "phase_9/audio/bgm/encntr_suit_winning.ogg"
+            "phase_12/audio/bgm/BossBot_CEO_v1.mid",
+            "phase_9/audio/bgm/encntr_suit_winning.mid"
         ]
         self.tournamentMusicFiles = [
             "phase_3.5/audio/bgm/encntr_nfsmw_bg_1.ogg",
@@ -25,7 +25,7 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
             "phase_3.5/audio/bgm/encntr_nfsmw_bg_3.ogg",
             "phase_3.5/audio/bgm/encntr_nfsmw_bg_4.ogg",
         ]
-        self.bossBattleMusicFile = 'phase_7/audio/bgm/encntr_suit_winning_indoor.ogg'
+        self.bossBattleMusicFile = 'phase_7/audio/bgm/encntr_suit_winning_indoor.mid'
         self.dnaFile = 'phase_4/dna/new_ttc_sz.pdna'
         self.szStorageDNAFile = 'phase_4/dna/storage_TT_sz.pdna'
         self.szHolidayDNAFile = None
@@ -58,7 +58,7 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
             newShadow.setScale(1.5)
             newShadow.setColor(0, 0, 0, 0.5, 1)
         self.geom.flattenMedium()
-        
+
     def unload(self):
         for tree in self.trees:
             tree.removeNode()

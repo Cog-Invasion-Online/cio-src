@@ -30,8 +30,9 @@ class FirstPerson(DirectObject):
     def reallyStart(self):
         base.localAvatar.walkControls.enableAvatarControls()
 
-    def disableMouse(self):
-        taskMgr.add(self.cameraMovement, "moveCamera")
+    def disableMouse(self, startTask = True):
+        if startTask:
+            taskMgr.add(self.cameraMovement, "moveCamera")
         props = WindowProperties()
         props.setCursorHidden(True)
         base.win.requestProperties(props)

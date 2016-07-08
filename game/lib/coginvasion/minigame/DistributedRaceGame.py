@@ -59,7 +59,7 @@ class DistributedRaceGame(DistributedMinigame.DistributedMinigame):
 		self.sky = loader.loadModel(self.skyPath)
 		self.sky.reparentTo(self.track)
 		self.skyUtil.startSky(self.sky)
-		self.setMinigameMusic("phase_4/audio/bgm/MG_toontag.ogg")
+		self.setMinigameMusic("phase_4/audio/bgm/MG_toontag.mid")
 		self.setDescription("Tap the left and right arrow keys repeatedly, in turns, as fast as " + \
 			"you can to win the race! Every time your power bar hits the top, the boost bar starts" + \
 			" to fill. When the boost bar is full, press CTRL to boost for a few seconds.")

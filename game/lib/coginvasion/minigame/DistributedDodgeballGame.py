@@ -3,14 +3,19 @@
 #
 # OMG FINALLY THE DODGEBALL GAME!!
 
-from panda3d.core import Fog, Point3, Vec3
+from panda3d.core import Fog, Point3, Vec3, VBase4, TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.State import State
-from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval, Parallel
+from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval, Parallel, LerpScaleInterval
+from direct.gui.DirectGui import OnscreenText
 
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.toon import ParticleLoader
+from lib.coginvasion.toon.ToonDNA import ToonDNA
+
+if game.process == 'client':
+    from lib.coginvasion.base import ToontownIntervals
 
 from DistributedMinigame import getAlertText, getAlertPulse
 from DistributedEagleGame import getGameText, getCountdownIval
@@ -18,6 +23,8 @@ from DistributedToonFPSGame import DistributedToonFPSGame
 from DodgeballFirstPerson import DodgeballFirstPerson
 from Snowball import Snowball
 from TeamMinigame import TeamMinigame, TEAM1, TEAM2
+
+import random
 
 BLUE = TEAM1
 RED = TEAM2
@@ -80,13 +87,19 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         self.fsm.addState(State('chooseTeam', self.enterChooseTeam, self.exitChooseTeam, ['waitForOthers']))
         self.fsm.addState(State('scrollBy', self.enterScrollBy, self.exitScrollBy, ['countdown']))
         self.fsm.addState(State('countdown', self.enterCountdown, self.exitCountdown, ['play']))
+        self.fsm.addState(State('announceGameOver', self.enterAnnGameOver, self.exitAnnGameOver, ['displayWinners']))
+        self.fsm.addState(State('displayWinners', self.enterDisplayWinners, self.exitDisplayWinners, ['gameOver']))
         self.fsm.getStateNamed('waitForOthers').addTransition('chooseTeam')
         self.fsm.getStateNamed('waitForOthers').addTransition('scrollBy')
+        self.fsm.getStateNamed('play').addTransition('announceGameOver')
 
         self.firstPerson = DodgeballFirstPerson(self)
 
         self.scrollBySeq = None
         self.infoText = None
+
+        self.redScoreLbl = None
+        self.blueScoreLbl = None
 
         self.infoText = getAlertText()
 
@@ -102,6 +115,10 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
                 [Point3(-5, -15, 0), Vec3(0, 0, 0)],
                 [Point3(-15, -15, 0), Vec3(0, 0, 0)]]}
 
+        self.winnerMusic = base.loadMusic('phase_9/audio/bgm/encntr_hall_of_fame.mid')
+        self.loserMusic = base.loadMusic('phase_9/audio/bgm/encntr_sting_announce.mid')
+        self.danceSound = base.loadSfx('phase_3.5/audio/sfx/ENC_Win.ogg')
+
         # Environment vars
         self.sky = None
         self.arena = None
@@ -111,17 +128,147 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         self.trees = []
         self.snowballs = []
 
+    def getTeamDNAColor(self, team):
+        print "getTeamDNAColor"
+        if team == TEAM1:
+            print "blue"
+            return ToonDNA.colorName2DNAcolor['blue']
+        elif team == TEAM2:
+            print "bright red"
+            return ToonDNA.colorName2DNAcolor['bright red']
+
+    def enterDisplayWinners(self):
+        base.localAvatar.stopLookAround()
+        base.localAvatar.resetHeadHpr()
+        base.localAvatar.getGeomNode().show()
+        camera.reparentTo(render)
+        camera.setPos((-2.5, 12, 3.5))
+        camera.setHpr((-175.074, -5.47218, 0))
+
+        base.transitions.fadeIn()
+
+        base.playSfx(self.danceSound, looping = 1)
+
+        if self.winnerTeam == self.team:
+            base.playMusic(self.winnerMusic, volume = 0.8)
+        else:
+            base.playMusic(self.loserMusic, volume = 0.8)
+
+        winnerPositions = [(-2, 0, 0), (2, 0, 0), (6, 0, 0), (-6, 0, 0)]
+        loserPositions = [(-3.5, -10, 0), (-1.5, -15, 0), (3.0, -8, 0), (5.5, -12, 0)]
+        for team in [RED, BLUE]:
+            for avId in self.playerListByTeam[team]:
+                av = self.cr.doId2do.get(avId)
+                if av:
+                    av.stopSmooth()
+                    av.setHpr(0, 0, 0)
+                    if team == self.winnerTeam:
+                        posList = winnerPositions
+                        av.setAnimState("off")
+                        av.stop()
+                        if not self.getRemoteAvatar(avId).isFrozen:
+                            av.loop("win")
+                    else:
+                        posList = loserPositions
+                        av.setAnimState('off')
+                        av.stop()
+                        if not self.getRemoteAvatar(avId).isFrozen:
+                            av.loop("pout")
+                    pos = random.choice(posList)
+                    posList.remove(pos)
+                    av.setPos(pos)
+
+        if self.winnerTeam == team:
+            text = "YOU WIN!"
+        else:
+            text = "YOU LOSE!"
+        self.gameOverLbl.setText(text)
+
+        self.track = Sequence(
+            Wait(2.0),
+            Func(self.gameOverLbl.setScale, 0.01),
+            Func(self.gameOverLbl.show),
+            getAlertPulse(self.gameOverLbl, 0.27, 0.25)
+        )
+        self.track.start()
+
+    def exitDisplayWinners(self):
+        base.transitions.noTransitions()
+        self.danceSound.stop()
+        if hasattr(self, 'track'):
+            self.track.finish()
+            self.track = None
+        self.gameOverLbl.hide()
+
+    def enterAnnGameOver(self, timeRanOut = 0):
+        self.firstPerson.vModel.hide()
+        text = "GAME\nOVER"
+        if timeRanOut:
+            text = "TIME's\nUP"
+        self.gameOverLbl.setText(text)
+        self.gameOverLbl.show()
+        base.transitions.fadeScreen()
+        taskMgr.doMethodLater(3.0, self.__annGameOverTask, self.uniqueName('annGameOverTask'))
+
+    def __annGameOverTask(self, task):
+        self.gameOverLbl.hide()
+        self.ival = Sequence(
+            base.transitions.getFadeOutIval(),
+            Func(self.fsm.request, "displayWinners")
+        )
+        self.ival.start()
+        return task.done
+
+    def exitAnnGameOver(self):
+        taskMgr.remove(self.uniqueName('annGameOverTask'))
+        if hasattr(self, 'ival'):
+            self.ival.finish()
+            del self.ival
+        self.gameOverLbl.hide()
+
+    def teamWon(self, team):
+        self.winnerTeam = team
+        base.localAvatar.disableAvatarControls()
+        self.firstPerson.end()
+        self.deleteTimer()
+        self.fsm.request('announceGameOver')
+
+    def incrementTeamScore(self, team):
+        TeamMinigame.incrementTeamScore(self, team)
+        if team == BLUE:
+            self.blueScoreLbl.setText("BLUE: " + str(self.scoreByTeam[team]))
+            ToontownIntervals.start(ToontownIntervals.getPulseLargerIval(self.blueScoreLbl, 'blueScorePulse'))
+        elif team == RED:
+            self.redScoreLbl.setText("RED: " + str(self.scoreByTeam[team]))
+            ToontownIntervals.start(ToontownIntervals.getPulseLargerIval(self.redScoreLbl, 'redScorePulse'))
+
+    def getWinterDodgeballScoreText(self, color):
+        text = OnscreenText(fg = color, font = CIGlobals.getMinnieFont(),
+                            scale = 0.15, shadow = (0, 0, 0, 1))
+        return text
+
     def snowballHitWall(self, snowballIndex):
         snowball = self.snowballs[snowballIndex]
         snowball.handleHitWallOrPlayer()
 
-    def snowballHitPlayer(self, damagedPlayer, snowballIndex):
+    def snowballHitPlayer(self, damagedPlayer, throwerTeam, snowballIndex):
         av = self.getRemoteAvatar(damagedPlayer)
         if av:
-            print "setting health"
-            av.setHealth(av.health - DistributedDodgeballGame.SnowBallDmg)
-        if damagedPlayer == base.localAvatar.doId:
-            self.showAlert("You were hit by a snowball!")
+            if throwerTeam == av.team:
+                # Someone on my team hit me. Unfreeze me if I am frozen.
+                if av.unFreeze():
+                    if damagedPlayer == base.localAvatar.doId:
+                        self.showAlert("A team member has unfroze you!")
+                        self.firstPerson.camFSM.request('unfrozen')
+                        self.sendUpdate('teamMateUnfrozeMe', [self.team])
+            else:
+                # An enemy hit me. Become frozen if I am not already.
+                if av.freeze():
+                    if damagedPlayer == base.localAvatar.doId:
+                        self.showAlert("You've been frozen by an enemy!")
+                        self.firstPerson.camFSM.request('frozen')
+                        self.sendUpdate('enemyFrozeMe', [self.team, throwerTeam])
+
         snowball = self.snowballs[snowballIndex]
         snowball.handleHitWallOrPlayer()
 
@@ -136,7 +283,6 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         av = RemoteDodgeballAvatar(self, self.cr, avId)
         if avId == self.cr.localAvId:
             self.myRemoteAvatar = av
-        print "setup remove avatar {0}".format(avId)
         self.remoteAvatars.append(av)
 
     def __getSnowTree(self, path):
@@ -148,7 +294,25 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
     def load(self):
         self.setMinigameMusic(DistributedDodgeballGame.GameSong)
         self.setDescription(DistributedDodgeballGame.GameDesc)
+        self.setWinnerPrize(200)
+        self.setLoserPrize(0)
         self.createWorld()
+
+        self.blueScoreLbl = self.getWinterDodgeballScoreText(VBase4(0, 0, 1, 1))
+        self.blueScoreLbl.reparentTo(base.a2dTopLeft)
+        self.blueScoreLbl['align'] = TextNode.ALeft
+        self.blueScoreLbl.setText('Blue: 0')
+        self.blueScoreLbl.setZ(-0.17)
+        self.blueScoreLbl.setX(0.05)
+        self.blueScoreLbl.hide()
+
+        self.redScoreLbl = self.getWinterDodgeballScoreText(VBase4(1, 0, 0, 1))
+        self.redScoreLbl.reparentTo(base.a2dTopLeft)
+        self.redScoreLbl['align'] = TextNode.ALeft
+        self.redScoreLbl.setText('Red: 0')
+        self.redScoreLbl.setZ(-0.35)
+        self.redScoreLbl.setX(0.05)
+        self.redScoreLbl.hide()
 
         trans = DistributedDodgeballGame.InitCamTrans
         camera.setPos(trans[0])
@@ -210,6 +374,12 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
             snowball.pickup(remoteAv)
 
     def deleteWorld(self):
+        if self.redScoreLbl:
+            self.redScoreLbl.destroy()
+            self.redScoreLbl = None
+        if self.blueScoreLbl:
+            self.blueScoreLbl.destroy()
+            self.blueScoreLbl = None
         for snowball in self.snowballs:
             snowball.removeNode()
         self.snowballs = []
@@ -232,10 +402,16 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         render.clearFog()
 
     def enterPlay(self):
-        self.firstPerson.reallyStart()
+        self.createTimer()
+        self.redScoreLbl.show()
+        self.blueScoreLbl.show()
+        self.firstPerson.camFSM.request('unfrozen')
 
     def exitPlay(self):
-        self.firstPerson.end()
+        self.firstPerson.crosshair.destroy()
+        self.firstPerson.crosshair = None
+        self.firstPerson.camFSM.request('off')
+        DistributedToonFPSGame.exitPlay(self)
 
     def enterCountdown(self):
         self.firstPerson.start()
@@ -338,11 +514,20 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         self.load()
 
     def disable(self):
+        base.camLens.setMinFov(CIGlobals.DefaultCameraFov / (4./3.))
+        self.fsm.requestFinalState()
         self.deleteWorld()
         self.trees = None
         self.snowballs = None
         self.spawnPointsByTeam = None
         if self.firstPerson:
+            self.firstPerson.reallyEnd()
             self.firstPerson.cleanup()
             self.firstPerson = None
+        self.scrollBySeq = None
+        self.winnerMusic = None
+        self.loserMusic = None
+        self.danceSound = None
+        self.infoText = None
+        base.localAvatar.setWalkSpeedNormal()
         DistributedToonFPSGame.disable(self)

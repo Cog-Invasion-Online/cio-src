@@ -58,6 +58,7 @@ class LocalToon(DistributedToon):
         self.friendRequestManager = FriendRequestManager()
         self.friendsList = FriendsList()
         self.panel = ToonPanel()
+        self.firstTimeGenerating = True
         friendsgui = loader.loadModel('phase_3.5/models/gui/friendslist_gui.bam')
         self.friendButton = DirectButton(geom = (friendsgui.find('**/FriendsBox_Closed'),
             friendsgui.find('**/FriendsBox_Rollover'), friendsgui.find('**/FriendsBox_Rollover')),
@@ -285,8 +286,10 @@ class LocalToon(DistributedToon):
 
     def setDNAStrand(self, dnaStrand):
         DistributedToon.setDNAStrand(self, dnaStrand)
-        self.initCollisions()
-        self.setupCamera()
+        if self.firstTimeGenerating:
+            self.initCollisions()
+            self.setupCamera()
+            self.firstTimeGenerating = False
 
     def setMoney(self, money):
         DistributedToon.setMoney(self, money)

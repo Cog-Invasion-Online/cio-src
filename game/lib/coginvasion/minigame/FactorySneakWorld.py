@@ -36,12 +36,12 @@ class FactorySneakWorld(DirectObject):
         self.popupSound = None
         self.music = [
             'phase_4/audio/bgm/MG_Escape.ogg',
-            'phase_7/audio/bgm/encntr_suit_winning_indoor.ogg']
+            'phase_7/audio/bgm/encntr_suit_winning_indoor.mid']
 
     def playMusic(self, index):
         self.mg.music.stop()
         self.mg.music = base.loadMusic(self.music[index])
-        base.playMusic(self.mg.music, volume = 0.7, looping = 1)
+        base.playMusic(self.mg.music, volume = 0.5, looping = 1)
 
     def showAlert(self, text):
         self.stopPulse()

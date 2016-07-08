@@ -29,7 +29,7 @@ class ToonInterior(Place.Place):
     def enter(self, requestStatus):
         Place.Place.enter(self)
         self.fsm.enterInitialState()
-        base.playMusic(self.loader.interiorMusic, volume = 0.8, looping = 1)
+        base.playMusic(self.loader.interiorMusic, volume = 0.7, looping = 1)
         self.fsm.request(requestStatus['how'], [requestStatus])
         return
 

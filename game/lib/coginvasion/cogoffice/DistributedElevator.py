@@ -249,7 +249,7 @@ class DistributedElevator(DistributedObject):
             messenger.send(self.cr.playGame.getPlace().doneEvent)
 
     def doMusic(self):
-        self.elevMusic = base.loadMusic('phase_7/audio/bgm/tt_elevator.ogg')
+        self.elevMusic = base.loadMusic('phase_7/audio/bgm/tt_elevator.mid')
         base.playMusic(self.elevMusic, looping = 1, volume = 0.8)
 
     def fillSlot(self, index, avId):

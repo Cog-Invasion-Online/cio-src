@@ -138,7 +138,7 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.neutralFSM.request('turn2target', [toon])
 
     def enterTurn2Target(self, toon):
-        self.turnIval = NPCLookInterval(self, toon, fluid = 1, name = self.uniqueName('turnIval'))
+        self.turnIval = NPCLookInterval(self, toon, fluid = 1, name = self.uniqueName('turnIval'), durationFactor = 0.005)
         if self.turnIval.distance > 30:
             self.loop('walk')
         elif self.turnIval.distance < 10.0:

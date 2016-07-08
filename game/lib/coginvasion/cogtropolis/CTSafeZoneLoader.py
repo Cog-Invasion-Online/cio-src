@@ -80,7 +80,7 @@ class CTSafeZoneLoader(SafeZoneLoader):
     def __init__(self, hood, parentFSMState, doneEvent):
         SafeZoneLoader.__init__(self, hood, parentFSMState, doneEvent)
         self.playground = CTPlayground.CTPlayground
-        self.pgMusicFilename = 'phase_12/audio/bgm/Bossbot_Entry_v1.ogg'
+        self.pgMusicFilename = 'phase_12/audio/bgm/Bossbot_Entry_v1.mid'
         self.interiorMusicFilename = None
         self.battleMusicFile = None
         self.invasionMusicFiles = None

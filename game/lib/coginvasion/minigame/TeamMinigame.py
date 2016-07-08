@@ -37,8 +37,14 @@ class TeamMinigame:
         # The team we are part of.
         self.team = None
 
+        # The team that won. It gets set at the end of the game.
+        self.winnerTeam = None
+
         # Both teams have 0 players to start.
         self.playersByTeam = {TEAM1: 0, TEAM2: 0}
+        self.playerListByTeam = {TEAM1: [], TEAM2: []}
+
+        self.scoreByTeam = {TEAM1: 0, TEAM2: 0}
 
         ##### TEAM SELECTION STUFF!!! #####
 
@@ -152,13 +158,24 @@ class TeamMinigame:
         if not hasattr(self, 'getRemoteAvatar'):
             self.notify.error('Minigame must have remote avatars!!')
 
+        self.playerListByTeam[team].append(avId)
+
         remoteAvatar = self.getRemoteAvatar(avId)
         if remoteAvatar:
             print "setting team of {0}".format(avId)
             remoteAvatar.setTeam(team)
 
+    def incrementTeamScore(self, team):
+        self.scoreByTeam[team] += 1
+        # Extend this method in a child class for gui updates.
+
+    def teamWon(self, team):
+        self.winnerTeam = team
+        # Extend this method in a child class for announcing the winners.
+
     def cleanup(self):
         self.destroySelectionGUI()
+        del self.scoreByTeam
         del self.team1Name
         del self.teamNameById
         del self.team2Name
@@ -166,3 +183,5 @@ class TeamMinigame:
         del self.team2BtnImg
         del self.team
         del self.playersByTeam
+        del self.winnerTeam
+        del self.playerListByTeam

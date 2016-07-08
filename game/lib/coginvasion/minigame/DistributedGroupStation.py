@@ -26,7 +26,7 @@ class DistributedGroupStation(GroupStation.GroupStation, DistributedObject):
 			self.DistributedGroupStation_initialized = 1
 		DistributedObject.__init__(self, cr)
 		self.abortBtn = None
-		self.name = None
+		self._name = None
 		self.mySlot = None
 		return
 
@@ -74,7 +74,7 @@ class DistributedGroupStation(GroupStation.GroupStation, DistributedObject):
 		camera.reparentTo(render)
 		camera.lookAt(self)
 		base.localAvatar.headsUp(slot)
-		base.localAvatar.b_setAnimState("run")
+		base.localAvatar.setAnimState('run')
 		runTrack = NPCWalkInterval(base.localAvatar,
 								slot.getPos(render),
 								0.1,
@@ -85,7 +85,7 @@ class DistributedGroupStation(GroupStation.GroupStation, DistributedObject):
 
 	def __handleSlotEntrance(self):
 		self.createStationAbortGui()
-		base.localAvatar.b_setAnimState('neutral')
+		base.localAvatar.setAnimState('Happy')
 		base.localAvatar.headsUp(self.sign)
 
 	def exitMinigameStationSlot(self):
@@ -124,8 +124,8 @@ class DistributedGroupStation(GroupStation.GroupStation, DistributedObject):
 	def announceGenerate(self):
 		DistributedObject.announceGenerate(self)
 		self.reparentTo(render)
-		self.name = self.uniqueName("MinigameStation")
-		self.__initCollisions(self.name)
+		self._name = self.uniqueName("MinigameStation")
+		self.__initCollisions(self._name)
 
 	def disable(self):
 		DistributedObject.disable(self)
@@ -137,6 +137,6 @@ class DistributedGroupStation(GroupStation.GroupStation, DistributedObject):
 		GroupStation.GroupStation.delete(self)
 		self.tb = None
 		self.abortBtn = None
-		self.name = None
+		self._name = None
 		self.mySlot = None
 		return

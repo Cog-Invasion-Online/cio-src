@@ -11,8 +11,8 @@ class TTTownLoader(TownLoader.TownLoader):
     def __init__(self, hood, parentFSM, doneEvent):
         TownLoader.TownLoader.__init__(self, hood, parentFSM, doneEvent)
         self.streetClass = TTStreet.TTStreet
-        self.musicFile = 'phase_3.5/audio/bgm/TC_SZ.ogg'
-        self.interiorMusicFile = 'phase_3.5/audio/bgm/TC_SZ_activity.ogg'
+        self.musicFile = 'phase_3.5/audio/bgm/TC_SZ.mid'
+        self.interiorMusicFile = 'phase_3.5/audio/bgm/TC_SZ_activity.mid'
         self.townStorageDNAFile = 'phase_5/dna/storage_TT_town.pdna'
 
     def load(self, zoneId):

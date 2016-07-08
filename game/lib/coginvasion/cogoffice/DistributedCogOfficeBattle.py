@@ -329,10 +329,10 @@ class DistributedCogOfficeBattle(DistributedObject):
         self.elevatorResponses = 0
         self.openSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_open.ogg')
         self.closeSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_close.ogg')
-        self.rideElevatorMusic = base.loadMusic('phase_7/audio/bgm/tt_elevator.ogg')
-        self.bottomFloorsMusic = base.loadMusic('phase_7/audio/bgm/encntr_general_bg_indoor.ogg')
-        self.topFloorMusic = base.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        self.intermissionMusic = base.loadMusic('phase_7/audio/bgm/encntr_toon_winning_indoor.ogg')
+        self.rideElevatorMusic = base.loadMusic('phase_7/audio/bgm/tt_elevator.mid')
+        self.bottomFloorsMusic = base.loadMusic('phase_7/audio/bgm/encntr_general_bg_indoor.mid')
+        self.topFloorMusic = base.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.mid')
+        self.intermissionMusic = base.loadMusic('phase_7/audio/bgm/encntr_toon_winning_indoor.mid')
         self.fsm = ClassicFSM.ClassicFSM('DistributedCogOfficeBattle', [State.State('off', self.enterOff, self.exitOff),
          State.State('floorIntermission', self.enterFloorIntermission, self.exitFloorIntermission),
          State.State('bldgComplete', self.enterBldgComplete, self.exitBldgComplete),
@@ -467,11 +467,13 @@ class DistributedCogOfficeBattle(DistributedObject):
         if self.isTopFloor():
             song = self.topFloorMusic
             taunt = DistributedCogOfficeBattle.TOP_FLOOR_TAUNT
+            volume = 0.9
         else:
             song = self.bottomFloorsMusic
             taunt = CIGlobals.SuitFaceoffTaunts[suit.suitPlan.getName()][tauntIndex]
+            volume = 0.7
 
-        base.playMusic(song, looping = 1, volume = 0.8)
+        base.playMusic(song, looping = 1, volume = 0.7)
 
         base.camLens.setMinFov(30.0 / (4./3.))
 

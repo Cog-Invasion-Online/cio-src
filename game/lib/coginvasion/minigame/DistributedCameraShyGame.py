@@ -229,7 +229,7 @@ class DistributedCameraShyGame(DistributedMinigame):
 
     def load(self):
         self.createWorld()
-        self.setMinigameMusic("phase_6/audio/bgm/GS_Race_SS.ogg")
+        self.setMinigameMusic("phase_6/audio/bgm/GS_Race_SS.mid")
         self.setDescription("Be the first to take 3 pictures of all the other Toons with your camera. " + \
             "Use WASD to move and the mouse to look around. Press the left mouse button to take a picture. " + \
             "Your camera takes some time to recharge after taking a picture. " + \

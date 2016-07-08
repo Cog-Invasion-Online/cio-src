@@ -198,7 +198,7 @@ class DistributedTutorial(DistributedObject):
 
     def enterTrainingPT1(self):
         self.music.stop()
-        base.playMusic(self.battleMusic, volume = 0.8, looping = 1)
+        base.playMusic(self.battleMusic, volume = 0.9, looping = 1)
         self.sendUpdate('makeSuit', [0])
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.d_broadcastPositionNow()
@@ -271,7 +271,7 @@ class DistributedTutorial(DistributedObject):
 
     def enterTrainingPT2(self):
         self.music.stop()
-        base.playMusic(self.battleMusic, volume = 0.8, looping = 1)
+        base.playMusic(self.battleMusic, volume = 0.9, looping = 1)
         self.sendUpdate('makeSuit', [1])
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.d_broadcastPositionNow()
@@ -323,7 +323,7 @@ class DistributedTutorial(DistributedObject):
 
     def enterTrainingPT3(self):
         self.music.stop()
-        base.playMusic(self.battleMusic, volume = 0.8, looping = 1)
+        base.playMusic(self.battleMusic, volume = 0.9, looping = 1)
         self.sendUpdate('makeSuit', [2])
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.d_broadcastPositionNow()
@@ -425,9 +425,9 @@ class DistributedTutorial(DistributedObject):
         self.sky.reparentTo(camera)
         ce = CompassEffect.make(NodePath(), CompassEffect.PRot | CompassEffect.PZ)
         self.sky.node().setEffect(ce)
-        self.music = base.loadMusic('phase_3.5/audio/bgm/TC_SZ.ogg')
+        self.music = base.loadMusic('phase_3.5/audio/bgm/TC_SZ.mid')
         base.playMusic(self.music, volume = 0.8, looping = 1)
-        self.battleMusic = base.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.ogg')
+        self.battleMusic = base.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.mid')
         self.fsm.request('newPlayerEmerge')
         base.localAvatar.inTutorial = True
 

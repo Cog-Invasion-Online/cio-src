@@ -17,18 +17,20 @@ import random
 
 class ToonHead(Actor.Actor):
     notify = directNotify.newCategory('ToonHead')
-    EyesOpen = loader.loadTexture('phase_3/maps/eyes.jpg', 'phase_3/maps/eyes_a.rgb')
-    EyesOpen.setMinfilter(Texture.FTLinear)
-    EyesOpen.setMagfilter(Texture.FTLinear)
-    EyesClosed = loader.loadTexture('phase_3/maps/eyesClosed.jpg', 'phase_3/maps/eyesClosed_a.rgb')
-    EyesClosed.setMinfilter(Texture.FTLinear)
-    EyesClosed.setMagfilter(Texture.FTLinear)
-    EyesOpenSad = loader.loadTexture('phase_3/maps/eyesSad.jpg', 'phase_3/maps/eyesSad_a.rgb')
-    EyesOpenSad.setMinfilter(Texture.FTLinear)
-    EyesOpenSad.setMagfilter(Texture.FTLinear)
-    EyesClosedSad = loader.loadTexture('phase_3/maps/eyesSadClosed.jpg', 'phase_3/maps/eyesSadClosed_a.rgb')
-    EyesClosedSad.setMinfilter(Texture.FTLinear)
-    EyesClosedSad.setMagfilter(Texture.FTLinear)
+
+    if game.process == 'client':
+        EyesOpen = loader.loadTexture('phase_3/maps/eyes.jpg', 'phase_3/maps/eyes_a.rgb')
+        EyesOpen.setMinfilter(Texture.FTLinear)
+        EyesOpen.setMagfilter(Texture.FTLinear)
+        EyesClosed = loader.loadTexture('phase_3/maps/eyesClosed.jpg', 'phase_3/maps/eyesClosed_a.rgb')
+        EyesClosed.setMinfilter(Texture.FTLinear)
+        EyesClosed.setMagfilter(Texture.FTLinear)
+        EyesOpenSad = loader.loadTexture('phase_3/maps/eyesSad.jpg', 'phase_3/maps/eyesSad_a.rgb')
+        EyesOpenSad.setMinfilter(Texture.FTLinear)
+        EyesOpenSad.setMagfilter(Texture.FTLinear)
+        EyesClosedSad = loader.loadTexture('phase_3/maps/eyesSadClosed.jpg', 'phase_3/maps/eyesSadClosed_a.rgb')
+        EyesClosedSad.setMinfilter(Texture.FTLinear)
+        EyesClosedSad.setMagfilter(Texture.FTLinear)
 
     def __init__(self, cr):
         try:
@@ -86,28 +88,28 @@ class ToonHead(Actor.Actor):
         else:
             self.loadModel("phase_3/models/char/tt_a_chr_%s_head_%s.bam" % (headType, _modelDetail), 'head')
             partAnimations = {}
-            
+
             # Load the body part animations.
             for animName in ToonGlobals.ANIMATIONS:
                 animationData = list(ToonGlobals.ANIMATIONS[animName])
                 animPath = None
-                
+
                 if len(animationData) == 2:
                     animPhase = animationData[0]
                     animFile = animationData[1]
-                    
+
                     # Let's create the path for the animation.
-                    animPath = ToonGlobals.BASE_MODEL % (animPhase, headType, '', 
+                    animPath = ToonGlobals.BASE_MODEL % (animPhase, headType, '',
                         'head', animFile)
-                    
+
                     if '_-' in animPath:
                         animPath = animPath.replace('_-', '-')
-                        
+
                     if '__' in animPath:
                         animPath = animPath.replace('__', '_')
-                    
+
                 partAnimations[animName] = animPath
-                
+
             self.loadAnims(partAnimations, 'head')
 
             _pupilL = self.findAllMatches('**/def_left_pupil')

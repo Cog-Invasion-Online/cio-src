@@ -10,12 +10,12 @@ class DGSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
     def __init__(self, hood, parentFSM, doneEvent):
         SafeZoneLoader.SafeZoneLoader.__init__(self, hood, parentFSM, doneEvent)
         self.playground = DGPlayground.DGPlayground
-        self.pgMusicFilename = 'phase_8/audio/bgm/DG_nbrhood.ogg'
-        self.interiorMusicFilename = 'phase_8/audio/bgm/DG_SZ.ogg'
-        self.battleMusicFile = 'phase_3.5/audio/bgm/encntr_general_bg.ogg'
+        self.pgMusicFilename = 'phase_8/audio/bgm/DG_nbrhood.mid'
+        self.interiorMusicFilename = 'phase_8/audio/bgm/DG_SZ.mid'
+        self.battleMusicFile = 'phase_3.5/audio/bgm/encntr_general_bg.mid'
         self.invasionMusicFiles = [
-            "phase_12/audio/bgm/BossBot_CEO_v1.ogg",
-            "phase_9/audio/bgm/encntr_suit_winning.ogg"
+            "phase_12/audio/bgm/BossBot_CEO_v1.mid",
+            "phase_9/audio/bgm/encntr_suit_winning.mid"
         ]
         self.tournamentMusicFiles = [
             "phase_3.5/audio/bgm/encntr_nfsmw_bg_1.ogg",
@@ -23,7 +23,7 @@ class DGSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
             "phase_3.5/audio/bgm/encntr_nfsmw_bg_3.ogg",
             "phase_3.5/audio/bgm/encntr_nfsmw_bg_4.ogg",
         ]
-        self.bossBattleMusicFile = 'phase_7/audio/bgm/encntr_suit_winning_indoor.ogg'
+        self.bossBattleMusicFile = 'phase_7/audio/bgm/encntr_suit_winning_indoor.mid'
         self.dnaFile = 'phase_8/dna/daisys_garden_sz.pdna'
         self.szStorageDNAFile = 'phase_8/dna/storage_DG_sz.pdna'
         self.szHolidayDNAFile = None

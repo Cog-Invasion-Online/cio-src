@@ -1,10 +1,12 @@
 # Filename: DodgeballFirstPerson.py
 # Created by:  blach (18Apr16)
 
+from panda3d.core import Point3
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State
 from direct.actor.Actor import Actor
-from direct.interval.IntervalGlobal import Sequence, Func, ActorInterval, Parallel, Wait
+from direct.interval.IntervalGlobal import Sequence, Func, ActorInterval, Parallel, Wait, LerpPosInterval, LerpQuatInterval
 
 from FirstPerson import FirstPerson
 from MinigameUtils import *
@@ -33,6 +35,13 @@ class DodgeballFirstPerson(FirstPerson):
         self.fakeSnowball = loader.loadModel("phase_5/models/props/snowball.bam")
         self.hasSnowball = False
         self.mySnowball = None
+        self.camPivotNode = base.localAvatar.attachNewNode('cameraPivotNode')
+        self.camFSM = ClassicFSM.ClassicFSM("DFPCamera",
+                                            [State.State('off', self.enterCamOff, self.exitCamOff),
+                                             State.State('frozen', self.enterFrozen, self.exitFrozen),
+                                             State.State('unfrozen', self.enterUnFrozen, self.exitUnFrozen)],
+                                            'off', 'off')
+        self.camFSM.enterInitialState()
         self.fsm = ClassicFSM.ClassicFSM("DodgeballFirstPerson",
                                          [State.State("off", self.enterOff, self.exitOff),
                                           State.State("hold", self.enterHold, self.exitHold),
@@ -42,6 +51,80 @@ class DodgeballFirstPerson(FirstPerson):
         self.fsm.enterInitialState()
 
         FirstPerson.__init__(self)
+
+    def enterCamOff(self):
+        pass
+
+    def exitCamOff(self):
+        pass
+
+    def enterFrozen(self):
+        self.vModel.hide()
+        base.localAvatar.getGeomNode().show()
+        camera.wrtReparentTo(self.camPivotNode)
+        camHeight = max(base.localAvatar.getHeight(), 3.0)
+        nrCamHeight = base.localAvatar.getHeight()
+        heightScaleFactor = camHeight * 0.3333333333
+        defLookAt = Point3(0.0, 1.5, camHeight)
+        idealData = (Point3(0.0, -12.0 * heightScaleFactor, camHeight),
+                     defLookAt)
+        self.camTrack = Parallel(
+            LerpPosInterval(
+                camera,
+                duration = 1.0,
+                pos = idealData[0],
+                startPos = camera.getPos(),
+                blendType = 'easeOut'
+            ),
+            LerpQuatInterval(
+                camera,
+                duration = 1.0,
+                hpr = idealData[1],
+                startHpr = camera.getHpr(),
+                blendType = 'easeOut'
+            )
+        )
+        self.camTrack.start()
+        self.max_camerap = 0.0
+        self.disableMouse()
+
+    def cameraMovement(self, task):
+        if self.camFSM.getCurrentState().getName() == 'frozen':
+            if hasattr(self, 'min_camerap') and hasattr(self, 'max_camerap'):
+                md = base.win.getPointer(0)
+                x = md.getX()
+                y = md.getY()
+                if base.win.movePointer(0, base.win.getXSize()/2, base.win.getYSize()/2):
+                    self.camPivotNode.setP(self.camPivotNode.getP() - (y - base.win.getYSize()/2)*0.1)
+                    self.camPivotNode.setH(self.camPivotNode.getH() - (x - base.win.getXSize()/2)*0.1)
+                    if self.camPivotNode.getP() < self.min_camerap:
+                        self.camPivotNode.setP(self.min_camerap)
+                    elif self.camPivotNode.getP() > self.max_camerap:
+                        self.camPivotNode.setP(self.max_camerap)
+                return task.cont
+            else:
+                return task.done
+
+        return FirstPerson.cameraMovement(self, task)
+
+    def exitFrozen(self):
+        self.camTrack.finish()
+        del self.camTrack
+        self.max_camerap = 90.0
+        self.vModel.show()
+        self.enableMouse()
+        base.localAvatar.stopSmartCamera()
+
+    def enterUnFrozen(self):
+        base.localAvatar.getGeomNode().hide()
+        self.reallyStart()
+        camera.setPosHpr(0, 0, 0, 0, 0, 0)
+        camera.reparentTo(self.player_node)
+        camera.setZ(base.localAvatar.getHeight())
+
+    def exitUnFrozen(self):
+        self.end()
+        self.enableMouse()
 
     def enterOff(self):
         if self.vModel:
@@ -141,6 +224,12 @@ class DodgeballFirstPerson(FirstPerson):
         self.accept('mouse3', self.__handleCatchOrGrabButton)
         self.accept('mouse1', self.__handleThrowButton)
 
+    def end(self):
+        base.localAvatar.stopTrackAnimToSpeed()
+        self.ignore('mouse3')
+        self.ignore('mouse1')
+        FirstPerson.end(self)
+
     def __handleThrowButton(self):
         if self.hasSnowball and self.mySnowball and self.fsm.getCurrentState().getName() == 'hold':
             self.fakeSnowball.reparentTo(hidden)
@@ -152,4 +241,20 @@ class DodgeballFirstPerson(FirstPerson):
 
     def reallyEnd(self):
         base.localAvatar.setWalkSpeedNormal()
+        if self.camFSM:
+            self.camFSM.requestFinalState()
+            self.camFSM = None
+        if self.fsm:
+            self.fsm.requestFinalState()
+            self.fsm = None
+        if self.crosshair:
+            self.crosshair.destroy()
+            self.crosshair = None
+        if self.vModel:
+            self.vModel.removeNode()
+            self.vModel = None
+        if self.vModelRoot:
+            self.vModelRoot.removeNode()
+            self.vModelRoot = None
+        self.soundCatch = None
         FirstPerson.reallyEnd(self)

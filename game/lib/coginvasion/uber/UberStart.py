@@ -11,6 +11,22 @@ sys.dont_write_bytecode = True
 from panda3d.core import *
 from direct.showbase import PythonUtil
 
+vfs = VirtualFileSystem.getGlobalPtr()
+vfs.mount(Filename("phase_0.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_3.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_3.5.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_4.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_5.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_5.5.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_6.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_7.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_8.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_9.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_10.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_11.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_12.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_13.mf"), ".", VirtualFileSystem.MFReadOnly)
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--base-channel', help='The base channel that the server may use.')
 parser.add_argument('--max-channels', help='The number of channels the server may use.')

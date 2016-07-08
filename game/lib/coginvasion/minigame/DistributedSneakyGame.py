@@ -37,7 +37,7 @@ class DistributedSneakyGame(DistributedMinigame.DistributedMinigame):
 					Point3(-1.01, -104.40, 0.00),
 					Point3(0.65, -23.86, 0.00),
 					Point3(-55.66, -29.01, 0.00)]
-	AreaModelHpr = [Vec3(0.00, 0.00, 0.00),
+	AreaModelHpr = [Vec3(0.00, 0.00, 0.00),.mid
 				Vec3(0.00, 0.00, 0.00),
 				Vec3(90.00, 0.00, 0.00),
 				Vec3(180.00, 0.00, 0.00),
@@ -99,7 +99,7 @@ class DistributedSneakyGame(DistributedMinigame.DistributedMinigame):
 		base.localAvatar.setHpr(hpr)
 		self.toonFps.load()
 		self.myRemoteAvatar = RemoteToonBattleAvatar(self, self.cr, base.localAvatar.doId)
-		self.setMinigameMusic("phase_4/audio/bgm/MG_CogThief.ogg")
+		self.setMinigameMusic("phase_4/audio/bgm/MG_CogThief.mid")
 		self.setDescription("Battle and defeat the other Toons with your water gun to gain points. " + \
 							"Remember to reload your gun when you're out of ammo! " + \
 							"The toon with the most points when the timer runs out gets a nice prize!")

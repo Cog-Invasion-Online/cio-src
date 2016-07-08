@@ -50,7 +50,7 @@ class Snowball(NodePath, DirectObject):
         node.setFromCollideMask(CIGlobals.WallBitmask | CIGlobals.FloorBitmask)
         self.collNP = self.attachNewNode(node)
         self.collNP.setCollideMask(BitMask32(0))
-        self.collNP.show()
+        #self.collNP.show()
         self.collNP.setZ(0.35)
 
         event = CollisionHandlerEvent()
@@ -146,10 +146,12 @@ class Snowball(NodePath, DirectObject):
                 if av.avatar.getKey() == avNP.getKey():
                     # We hit this toon!
                     self.handleHitWallOrPlayer()
-                    if av.team != self.mg.getMyRemoteAvatar().team:
-                        # They aren't on my team, let's damage them.
-                        av.setHealth(av.health - self.mg.SnowBallDmg)
-                        self.mg.sendUpdate('snowballHitPlayer', [av.avId, self.index])
+                    friendly = int(av.team == self.mg.team)
+                    if friendly:
+                        av.unFreeze()
+                    else:
+                        av.freeze()
+                    self.mg.sendUpdate('snowballHitPlayer', [av.avId, self.mg.team, self.index])
 
     def b_pickup(self):
         self.d_pickup(self.mg.cr.localAvId)

@@ -309,7 +309,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             )
             self.gun.setColorScale(color)
             self.gunAttached = True
-						
+
 
     def detachGun(self):
         if self.gun and self.gunAttached:
@@ -496,6 +496,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         if self.cr.isShowingPlayerIds:
             self.showAvId()
         self.updateChatSoundDict()
+        self.setBlend(frameBlend = True)
+        self.loop('neutral')
 
     def attachTNT(self):
         self.pies.attachTNT()
@@ -552,7 +554,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.find('**/boots_long').stash()
         self.find('**/boots_short').stash()
         self.find('**/shoes').stash()
-        
+
     def generateTorso(self):
         ToonGlobals.generateBodyPart(self, 'torso', self.getTorso(), 3, '')
 

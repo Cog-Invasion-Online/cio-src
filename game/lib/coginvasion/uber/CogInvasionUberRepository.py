@@ -20,7 +20,7 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
 
     def __init__(self, baseChannel, serverId):
         CogInvasionInternalRepository.__init__(self, baseChannel, serverId,
-                    ['phase_3/etc/direct.dc', 'phase_3/etc/toon.dc'], dcSuffix='UD')
+                    ['resources/phase_3/etc/direct.dc', 'resources/phase_3/etc/toon.dc'], dcSuffix='UD')
         self.notify.setInfo(True)
         self.activeTokens = []
         self.parentMgr = ParentMgr()

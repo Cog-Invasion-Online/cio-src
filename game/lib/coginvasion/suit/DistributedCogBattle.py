@@ -52,7 +52,7 @@ class DistributedCogBattle(DistributedObject):
         self.timer.setZeroCommand(self.getBeansTimeUp)
         # Give toons 30 seconds to get the beans at the end.
         self.timer.setInitialTime(60)
-        self.endMusic = base.loadMusic('phase_7/audio/bgm/encntr_toon_winning_indoor.ogg')
+        self.endMusic = base.loadMusic('phase_7/audio/bgm/encntr_toon_winning_indoor.mid')
         self.balloonSound = base.loadSfx('phase_3/audio/sfx/GUI_balloon_popup.ogg')
 
     def d_left(self):

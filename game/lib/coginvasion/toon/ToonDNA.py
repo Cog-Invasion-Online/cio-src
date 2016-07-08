@@ -349,6 +349,7 @@ class ToonDNA:
             shorts, shirtColor, sleeveColor, shortColor, gloveColor
             )
         self.setDNAStrand(strand)
+        print "generated"
 
     def parseDNAStrand(self, dnaStrand):
         dnaParts = dnaStrand.split('/')

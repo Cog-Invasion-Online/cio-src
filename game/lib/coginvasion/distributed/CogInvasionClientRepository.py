@@ -485,7 +485,7 @@ class CogInvasionClientRepository(AstronClientRepository):
         self.avChooser.enter()
         if not self.music:
             self.music = base.loadMusic(CIGlobals.getThemeSong())
-            base.playMusic(self.music, volume = 0.75, looping = 1)
+            base.playMusic(self.music, volume = 0.5, looping = 1)
         self.accept("enterMakeAToon", self.__handleMakeAToonReq)
         self.accept("avChooseDone", self.__handleAvChooseDone)
 

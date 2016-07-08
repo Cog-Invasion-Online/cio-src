@@ -98,7 +98,7 @@ def getThemeSong():
     global ThemeSong
     if not ThemeSong:
         themeList = []
-        themeList.append('phase_3/audio/bgm/tt_theme.ogg')
+        themeList.append('phase_3/audio/bgm/tt_theme.mid')
         vfs = VirtualFileSystem.getGlobalPtr()
         for fileName in vfs.scanDirectory('phase_3/audio/bgm/'):
             fullpath = fileName.get_filename().get_fullpath()
