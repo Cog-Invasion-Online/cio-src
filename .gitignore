@@ -77,3 +77,13 @@ game/tools/nirai
 !game/start_ai_server.bat
 !game/Write_Hashes.bat
 !game/settings.json
+
+!game/astron/astrond.exe
+!game/astron/DistrictNames.txt
+!game/astron/nameRequests.json
+!game/astron/ssleay32MD.dll
+!game/astron/ssleay32MDd.ddl
+!game/astron/libeay32MD.dll
+!game/astron/gameserver.crt
+!game/astron/rsakey.key
+!game/astron/config/astrond.yml

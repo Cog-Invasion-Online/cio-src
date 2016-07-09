@@ -2,7 +2,7 @@
 window-title Cog Invasion Online (Alpha)
 win-origin -1 -1
 win-size 640 480
-load-display pandagl
+load-display pandadx9
 aux-display pandadx9
 
 # Logging...
