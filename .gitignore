@@ -71,3 +71,9 @@ game/puzzleroomidea.pdn
 game/puzzle.py
 game/resources
 game/tools/nirai
+!game/start_ci.bat
+!game/start_astron_server.bat
+!game/start_uber_server.bat
+!game/start_ai_server.bat
+!game/Write_Hashes.bat
+!game/settings.json
