@@ -21,6 +21,8 @@ from lib.coginvasion.toon.ToonHead import ToonHead
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.avatar import Avatar
 
+import AccessoryGlobals
+
 from panda3d.core import VBase3, VBase4, Point3, Vec3
 from panda3d.core import BitMask32, CollisionHandlerPusher
 import ToonDNA, random
@@ -64,6 +66,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.closedEyes = loader.loadTexture("phase_3/maps/eyesClosed.jpg", "phase_3/maps/eyesClosed_a.rgb")
         self.soundChatBubble = loader.loadSfx("phase_3/audio/sfx/GUI_balloon_popup.ogg")
         self.shadowCaster = None
+        self.accessories = []
         self.chatSoundDict = {}
         self.backpack = None
         self.animFSM = ClassicFSM('Toon', [State('off', self.enterOff, self.exitOff),
@@ -399,6 +402,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.lastState = None
             self.playingAnim = None
             self.playingRate = None
+            self.accessories = None
             Avatar.Avatar.delete(self)
         return
 
@@ -420,6 +424,9 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.stopBlink()
         except:
             pass
+        for accessory in self.accessories:
+            accessory.removeNode()
+        self.accessories = []
         self.pupils = []
         if 'head' in self._Actor__commonBundleHandles:
             del self._Actor__commonBundleHandles['head']
@@ -480,6 +487,30 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         ToonDNA.ToonDNA.setDNAStrand(self, dnaStrand)
         self.deleteCurrentToon()
         self.generateToon(makeTag)
+        
+    def generateMask(self):
+        # No accessories yet.
+        
+        if self.shirt == self.shirtDNA2shirt['27']:
+            # This toon is wearing the tsa suit, give them some sweet shades.
+            name = 'tsaGlasses'
+            glasses = loader.loadModel(AccessoryGlobals.AccessoryName2Model[name])
+            glassesNode = self.getPart('head').attachNewNode('glassesNode')
+            glasses.reparentTo(glassesNode)
+            data = AccessoryGlobals.MaskTransExtended[name].get(self.animal)
+            if not data:
+                data = AccessoryGlobals.MaskTrans.get(self.animal)
+                posHprScale = AccessoryGlobals.MaskTrans[self.animal][self.headLength]
+            else:
+                posHprScale = AccessoryGlobals.MaskTransExtended[name][self.animal].get(self.headLength)
+                if not posHprScale:
+                    posHprScale = AccessoryGlobals.MaskTrans[self.animal][self.headLength]
+            
+            glasses.setPos(posHprScale[0])
+            glasses.setHpr(posHprScale[1])
+            glasses.setScale(posHprScale[2])
+            
+            self.accessories.append(glassesNode)
 
     def generateToon(self, makeTag = 1):
         self.generateLegs()
@@ -490,6 +521,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.setGloves()
         self.parentToonParts()
         self.rescaleToon()
+        self.generateMask()
+            
         if makeTag:
             self.setupNameTag()
         Avatar.Avatar.initShadow(self)

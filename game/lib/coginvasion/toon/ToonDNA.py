@@ -152,7 +152,8 @@ class ToonDNA:
                     '23': 'phase_4/maps/tt_t_chr_avt_shirt_sellbotCrusher.jpg',
                     '24': 'phase_4/maps/tt_t_chr_shirt_scientistA.jpg',
                     '25': 'phase_4/maps/tt_t_chr_shirt_scientistB.jpg',
-                    '26': 'phase_4/maps/tt_t_chr_shirt_scientistC.jpg'}
+                    '26': 'phase_4/maps/tt_t_chr_shirt_scientistC.jpg',
+                    '27': 'phase_4/maps/tsashirt.jpg'}
     sleeveDNA2sleeve = {'00': 'phase_3/maps/desat_sleeve_1.jpg',
                         '01': 'phase_3/maps/desat_sleeve_2.jpg',
                         '02': 'phase_3/maps/desat_sleeve_3.jpg',
@@ -177,7 +178,8 @@ class ToonDNA:
                         '21': 'phase_3/maps/desat_sleeve_22.jpg',
                         '22': 'phase_3/maps/desat_sleeve_23.jpg',
                         '23': 'phase_4/maps/tt_t_chr_avt_shirtSleeve_sellbotCrusher.jpg',
-                        '24': 'phase_4/maps/tt_t_chr_shirtSleeve_scientist.jpg'}
+                        '24': 'phase_4/maps/tt_t_chr_shirtSleeve_scientist.jpg',
+                        '25': 'phase_4/maps/tsasleeve.jpg',}
     shortDNA2short = {'00': 'phase_3/maps/desat_shorts_1.jpg',
                     '01': 'phase_3/maps/desat_shorts_2.jpg',
                     '02': 'phase_3/maps/desat_shorts_3.jpg',
@@ -204,7 +206,13 @@ class ToonDNA:
                     '23': 'phase_3/maps/desat_shorts_11.jpg',
                     '24': 'phase_3/maps/desat_shorts_12.jpg',
                     '25': 'phase_3/maps/desat_shorts_13.jpg',
-                    '26': 'phase_3/maps/desat_shorts_14.jpg'}
+                    '26': 'phase_3/maps/desat_shorts_14.jpg',
+                    '27': 'phase_4/maps/tsashorts.jpg',
+                    '28': 'phase_4/maps/tsaskirt.jpg'}
+                    
+    ShortHeads = ['1', '4', 'dgm_skirt', 'dgs_shorts']
+    LongHeads = ['2', '3', 'dgm_shorts', 'dgl_shorts']
+    
     gender2genderDNA = {v: k for k, v in genderDNA2gender.items()}
     animal2animalDNA = {v: k for k, v in animalDNA2animal.items()}
     head2headDNA = {v: k for k, v in headDNA2head.items()}
@@ -221,6 +229,7 @@ class ToonDNA:
         self.animal = ""
         self.head = ""
         self.headcolor = None
+        self.headLength = ""
         self.torso = ""
         self.torsocolor = None
         self.legs = ""
@@ -263,6 +272,9 @@ class ToonDNA:
 
     def getHeadStyle(self):
         return [self.head, self.headcolor]
+        
+    def getHeadLength(self):
+        return self.headLength
 
     def getTorso(self):
         return self.torso
@@ -359,6 +371,12 @@ class ToonDNA:
             self.gender = self.genderDNA2gender[dnaParts[0]]
             self.animal = self.animalDNA2animal[dnaParts[1]]
             self.head = self.headDNA2head[dnaParts[2]]
+            
+            if self.head in self.LongHeads:
+                self.headLength = 'l'
+            elif self.head in self.ShortHeads:
+                self.headLength = 's'
+                
             self.headcolor = self.colorDNA2color[dnaParts[3]]
             self.torso = self.torsoDNA2torso[dnaParts[4]]
             self.torsocolor = self.colorDNA2color[dnaParts[5]]
