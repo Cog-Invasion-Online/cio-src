@@ -59,8 +59,8 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
 
     GameSong = "phase_4/audio/bgm/MG_Dodgeball.ogg"
     GameDesc = ("Welcome to the north! You have been invited to play dodgeball with the penguins!\n\n"
-                "How To Play\nWASD to Move and use the mouse to aim.\nLeft click to Throw!\nRight click"
-                " to Catch!\n\nObjective\nThe first team to get everyone out wins!")
+                "How To Play\nWASD to Move and use the mouse to aim.\nLeft click to Throw!\nThrow a "
+                "snowball at a teammate to unfreeze them!\n\nObjective\nThe first team to freeze everyone!")
 
     InitCamTrans = [Point3(25, 45, 19.5317), Vec3(154.001, -15, 0)]
 
