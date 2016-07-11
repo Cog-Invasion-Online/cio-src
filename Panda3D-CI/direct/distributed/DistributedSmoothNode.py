@@ -13,7 +13,7 @@ from direct.task.Task import cont
 MaxFuture = base.config.GetFloat("smooth-max-future", 0.2)
 
 # How frequently can we suggest a resynchronize with another client?
-MinSuggestResync = base.config.GetFloat("smooth-min-suggest-resync", 15)
+MinSuggestResync = base.config.GetFloat("smooth-min-suggest-resync", 10)
 
 # These flags indicate whether global smoothing and/or prediction is
 # allowed or disallowed.
@@ -360,7 +360,7 @@ class DistributedSmoothNode(DistributedNode.DistributedNode,
                 # Too far off; advise the other client of our clock information.
                 if globalClockDelta.getUncertainty() != None and \
                    realTime - self.lastSuggestResync >= MinSuggestResync and \
-                   hasattr(self.cr, 'localAvatarDoId'):
+                   hasattr(self.cr, 'localAvId'):
                     self.lastSuggestResync = realTime
                     timestampB = globalClockDelta.localToNetworkTime(realTime)
                     serverTime = realTime - globalClockDelta.getDelta()
@@ -369,7 +369,7 @@ class DistributedSmoothNode(DistributedNode.DistributedNode,
                         self.doId, howFarFuture - chug,
                         realTime, serverTime))
                     self.d_suggestResync(
-                        self.cr.localAvatarDoId, timestamp,
+                        self.cr.localAvId, timestamp,
                         timestampB, serverTime,
                         globalClockDelta.getUncertainty())
 
@@ -461,14 +461,14 @@ class DistributedSmoothNode(DistributedNode.DistributedNode,
                 assert self.notify.info(
                     "Warning: couldn't find the avatar %d" % (avId))
             elif hasattr(other, "d_returnResync") and \
-                 hasattr(self.cr, 'localAvatarDoId'):
+                 hasattr(self.cr, 'localAvId'):
                 realTime = globalClock.getRealTime()
                 serverTime = realTime - globalClockDelta.getDelta()
                 assert self.notify.info(
                     "Returning resync for %s; local time is %s and server time is %s." % (
                     self.doId, realTime, serverTime))
                 other.d_returnResync(
-                    self.cr.localAvatarDoId, timestampB,
+                    self.cr.localAvId, timestampB,
                     serverTime,
                     globalClockDelta.getUncertainty())
 
@@ -518,7 +518,7 @@ class DistributedSmoothNode(DistributedNode.DistributedNode,
         current position, by extrapolating from old position reports.
 
         This assumes you have a client repository that knows its
-        localAvatarDoId -- stored in self.cr.localAvatarDoId
+        localAvId -- stored in self.cr.localAvId
         """
         if smoothing and EnableSmoothing:
             if prediction and EnablePrediction:
