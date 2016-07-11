@@ -68,12 +68,10 @@ class Nametag3d(Nametag, Clickable3d):
         if self.chatBalloon is not None:
             reg = []
             self.cTag.get_chatballoon_region(self.chatBalloon.center, NametagGlobals.chatBalloon3dHeight, reg)
-
             self.setClickRegionFrame(*reg)
         elif self.panel is not None:
             reg = []
             self.cTag.get_panel_region(self.textNode, reg)
-
             self.setClickRegionFrame(*reg)
 
     def isClickable(self):
@@ -141,6 +139,8 @@ class Nametag3d(Nametag, Clickable3d):
             reversed=self.chatReversed,
             button=self.chatButton[self.clickState])
         self.chatBalloon.reparentTo(self.contents)
+        
+        self.cTag.set_chatballoon_size(self.chatBalloon.width, self.chatBalloon.height)
 
     def drawNametag(self):
         if self.font is None:
@@ -179,3 +179,5 @@ class Nametag3d(Nametag, Clickable3d):
         self.panelWidth = self.textNode.getWidth() + self.PANEL_X_PADDING
         self.panelHeight = self.textNode.getHeight() + self.PANEL_Z_PADDING
         self.panel.setScale(self.panelWidth, 1, self.panelHeight)
+        
+        self.cTag.set_panel_size(self.panelWidth, self.panelHeight)
