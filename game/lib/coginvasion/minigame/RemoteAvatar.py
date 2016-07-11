@@ -92,7 +92,7 @@ class RemoteAvatar:
         self.avatar.shortColor = self.ogShortColor
         self.avatar.shirt = self.ogShirt
         self.avatar.sleeve = self.ogSleeve
-        self.avatar.shotrs = self.ogShort
+        self.avatar.shorts = self.ogShort
         # Generate the new dna strand and regenerate the toon.
         self.avatar.generateDNAStrandWithCurrentStyle()
 

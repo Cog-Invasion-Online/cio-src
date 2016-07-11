@@ -5,6 +5,8 @@
 
 """
 
+from panda3d.core import VBase4
+
 from direct.distributed import DistributedObject
 from direct.gui.DirectGui import DirectLabel, OnscreenText
 from direct.interval.IntervalGlobal import Sequence, LerpFunc, Wait, Func
@@ -308,6 +310,7 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         NametagGlobals.setWant2dNametags(False)
 
     def disable(self):
+        base.localAvatar.getGeomNode().setColorScale(VBase4(1, 1, 1, 1))
         self.gameOverLbl.destroy()
         self.gameOverLbl = None
         NametagGlobals.setWant2dNametags(True)
