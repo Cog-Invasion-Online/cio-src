@@ -66,9 +66,9 @@ print 'CIStart: True threading: ' + str(Thread.isTrueThreads())
 
 try:
     import aes
-    import niraidata
+    import config
     # Config
-    prc = niraidata.CONFIG
+    prc = config.CONFIG
     iv, key, prc = prc[:16], prc[16:32], prc[32:]
     prc = aes.decrypt(prc, key, iv)
     for line in prc.split('\n'):
@@ -208,6 +208,9 @@ def maybeDoSomethingWithMusic(condition):
         base.enableMusic(condition)
 
 def handleMusicEnabled():
+    if not hasattr(base, 'cr'):
+        return
+        
     if base.cr.music is not None:
         base.cr.music.play()
 
