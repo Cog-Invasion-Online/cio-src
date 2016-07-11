@@ -7,6 +7,8 @@ from panda3d.core import Multifile, Filename, VirtualFileSystem, PandaSystem
 from panda3d.core import Thread, loadPrcFile, loadPrcFileData, CollisionTraverser, CullBinManager
 from panda3d.core import ConfigVariableDouble, PStatClient
 
+globals()['__debug__'] = True
+
 import __builtin__
 import os, sys
 
@@ -45,6 +47,8 @@ for phase in phases:
 
 import Logger
 Logger.Starter()
+
+print "__debug__ == " + str(__debug__)
 
 from lib.coginvasion.manager.SettingsManager import SettingsManager
 jsonfile = "settings.json"

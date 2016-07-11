@@ -250,6 +250,12 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
     def snowballHitWall(self, snowballIndex):
         snowball = self.snowballs[snowballIndex]
         snowball.handleHitWallOrPlayer()
+        base.playSfx(snowball.impactSound, node = snowball, volume = 1.5)
+        
+    def snowballHitGround(self, snowballIndex):
+        snowball = self.snowballs[snowballIndex]
+        snowball.handleHitGround()
+        base.playSfx(snowball.impactSound, node = snowball, volume = 1.5)
 
     def snowballHitPlayer(self, damagedPlayer, throwerTeam, snowballIndex):
         av = self.getRemoteAvatar(damagedPlayer)
@@ -271,6 +277,7 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
 
         snowball = self.snowballs[snowballIndex]
         snowball.handleHitWallOrPlayer()
+        base.playSfx(snowball.impactSound, node = snowball, volume = 1.5)
 
     def playerCaughtSnowball(self, snowballIndex, catcherId):
         av = self.getRemoteAvatar(catcherId)
