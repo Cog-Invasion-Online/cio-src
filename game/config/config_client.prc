@@ -70,7 +70,7 @@ chat-key t
 want-WASD #f
 show-minigame-dates #f
 
-ctmusic-numsongs 4
+ctmusic-numsongs 1
 
 want-pstats 0
 

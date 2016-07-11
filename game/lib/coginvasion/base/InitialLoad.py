@@ -4,6 +4,7 @@
 ########################################
 
 from lib.coginvasion.globals import CIGlobals
+from lib.coginvasion.gui.Dialog import GlobalDialog, NoButtons
 from direct.gui.DirectGui import *
 from panda3d.core import TextNode
 from direct.directnotify.DirectNotify import *
@@ -47,10 +48,14 @@ class InitialLoad(LoadUtility):
         ccoginvasion.CTMusicData.initialize_chunk_data()
         ccoginvasion.CTMusicManager.spawn_load_tournament_music_task()
         taskMgr.add(self.__pollTournyMusic, "pollTournyMusic")
+        self.dialog = GlobalDialog("Please wait...")
+        self.dialog.show()
 
     def __pollTournyMusic(self, task):
         # Wait for the asynchronous load of tournament music to finish.
         if ccoginvasion.CTMusicManager.is_loaded():
+            self.dialog.cleanup()
+            del self.dialog
             LoadUtility.done(self)
             loader.endBulkLoad('init')
             return task.done

@@ -21,3 +21,4 @@ toonmono.cur
 mssmp3.asi
 mssogg.asi
 mss32.dll
+tournament_music.mf
