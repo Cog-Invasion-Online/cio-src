@@ -46,6 +46,7 @@ class FirstPerson(DirectObject):
         self.acceptOnce("escape", self.disableMouse)
 
     def end(self):
+        self.enableMouse()
         self.ignore("escape")
         base.localAvatar.walkControls.disableAvatarControls()
 
@@ -60,6 +61,8 @@ class FirstPerson(DirectObject):
         base.localAvatar.prepareToSwitchControlType()
         base.localAvatar.controlManager.wantWASD = 0
         base.localAvatar.controlManager.enable()
+        self.enableMouse()
+        self.ignore("escape")
 
     def cleanup(self):
         if hasattr(self, 'min_camerap'):

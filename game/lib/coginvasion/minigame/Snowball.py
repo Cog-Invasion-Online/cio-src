@@ -83,6 +83,7 @@ class Snowball(NodePath, DirectObject):
     def throw(self, p):
         self.isAirborne = True
         self.owner.avatar.play('pie', partName = 'torso', fromFrame = 60)
+        base.playSfx(self.owner.throwSound, node = self.owner.avatar)
 
         start = NodePath('StartPath')
         start.reparentTo(self.owner.avatar)
@@ -104,7 +105,7 @@ class Snowball(NodePath, DirectObject):
             endPos = end.getPos(render), gravityMult = 0.9, duration = 3)
         self.throwIval.start()
         if self.owner.avId == base.localAvatar.doId:
-            self.acceptOnce('snowball-coll-' + str(id(self)) + '-into', self.__handleSnowballCollision)
+            self.accept('snowball-coll-' + str(id(self)) + '-into', self.__handleSnowballCollision)
 
         start.removeNode()
         del start
@@ -112,6 +113,10 @@ class Snowball(NodePath, DirectObject):
         del end
 
     def pauseThrowIval(self):
+        if self.owner:
+            if self.owner.throwSound:
+                self.owner.throwSound.stop()
+            
         if self.throwIval:
             self.throwIval.pause()
             self.throwIval = None
@@ -133,10 +138,17 @@ class Snowball(NodePath, DirectObject):
         self.owner = None
 
     def __handleSnowballCollision(self, entry):
-        self.pauseThrowIval()
         intoNP = entry.getIntoNodePath()
         avNP = intoNP.getParent()
         name = intoNP.getName()
+        
+        if 'barrier' in name:
+            # Don't react to hitting a team barrier.
+            return
+        else:
+            self.ignore('snowball-coll-' + str(id(self)) + '-into')
+            
+        self.pauseThrowIval()
         if self.owner.avId == base.localAvatar.doId:
             self.mg.firstPerson.mySnowball = None
             self.mg.firstPerson.hasSnowball = False
@@ -145,11 +157,11 @@ class Snowball(NodePath, DirectObject):
         base.playSfx(self.impactSound, node = self, volume = 1.5)
         if 'wall' in name or 'fence' in name:
             # We hit a wall. Go back to our center position.
-            self.sendUpdate('snowballHitWall', [self.index])
+            self.mg.sendUpdate('snowballHitWall', [self.index])
             self.handleHitWallOrPlayer()
-        elif 'floor' in name or 'ground' in name:
+        elif 'floor' in name or 'ground' in name or name == 'team_divider':
             # We hit the floor. Stay on the ground.
-            self.sendUpdate('snowballHitGround', [self.index])
+            self.mg.sendUpdate('snowballHitGround', [self.index])
             self.handleHitGround()
         else:
             for av in self.mg.remoteAvatars:

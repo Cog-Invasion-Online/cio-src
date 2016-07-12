@@ -67,6 +67,8 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
     SnowBallDmg = 25
 
     GetSnowBalls = "Pick up a snowball from the center!"
+    
+    Team2OtherBarrier = {BLUE: "red_barrier_coll", RED: "blue_barrier_coll"}
 
     def __init__(self, cr):
         try:
@@ -413,6 +415,9 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         self.redScoreLbl.show()
         self.blueScoreLbl.show()
         self.firstPerson.camFSM.request('unfrozen')
+        
+        # Stash the other team's barrier.
+        self.arena.find('**/' + self.Team2OtherBarrier[self.team]).stash()
 
     def exitPlay(self):
         self.firstPerson.crosshair.destroy()

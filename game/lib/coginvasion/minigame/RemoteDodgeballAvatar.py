@@ -17,6 +17,9 @@ class RemoteDodgeballAvatar(RemoteAvatar):
     def __init__(self, mg, cr, avId):
         RemoteAvatar.__init__(self, mg, cr, avId)
         self.retrieveAvatar()
+        
+        self.throwSound = base.loadSfx('phase_3.5/audio/sfx/AA_pie_throw_only.ogg')
+        base.audio3d.attachSoundToObject(self.throwSound, self.avatar)
 
         self.iceCube = loader.loadModel('phase_8/models/props/icecube.bam')
         for node in self.iceCube.findAllMatches('**/billboard*'):
@@ -42,10 +45,10 @@ class RemoteDodgeballAvatar(RemoteAvatar):
 
     def clearFreezeTracks(self):
         if self.freezeUpTrack:
-            self.freezeUpTrack.finish()
+            self.freezeUpTrack.pause()
             self.freezeUpTrack = None
         if self.freezeDnTrack:
-            self.freezeDnTrack.finish()
+            self.freezeDnTrack.pause()
             self.freezeDnTrack = None
 
     def unFreeze(self):
@@ -128,6 +131,7 @@ class RemoteDodgeballAvatar(RemoteAvatar):
             self.iceCube.removeNode()
             self.iceCube = None
         self.iceCubeForm = None
+        self.throwSound = None
         self.iceCubeBreak = None
         self.isFrozen = None
         RemoteAvatar.cleanup(self)

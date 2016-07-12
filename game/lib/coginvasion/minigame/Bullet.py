@@ -9,7 +9,7 @@ from panda3d.core import CollisionSphere, CollisionNode, NodePath
 from panda3d.core import CollisionHandlerEvent, BitMask32
 
 from direct.showbase.DirectObject import DirectObject
-from direct.interval.IntervalGlobal import Sequence, Wait, Func
+from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval
 
 from lib.coginvasion.globals import CIGlobals
 import random

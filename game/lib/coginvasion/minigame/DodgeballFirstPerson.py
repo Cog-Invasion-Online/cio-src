@@ -89,6 +89,9 @@ class DodgeballFirstPerson(FirstPerson):
         self.disableMouse()
 
     def cameraMovement(self, task):
+        if not self.camFSM:
+            return task.done
+            
         if self.camFSM.getCurrentState().getName() == 'frozen':
             if hasattr(self, 'min_camerap') and hasattr(self, 'max_camerap'):
                 md = base.win.getPointer(0)

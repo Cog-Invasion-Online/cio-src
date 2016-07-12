@@ -14,12 +14,28 @@ loadPrcFileData('', 'load-display pandagl')
 #loadPrcFileData('', 'fullscreen #t')
 #loadPrcFileData('', 'win-size 1920 1080')
 
+vfs = VirtualFileSystem.getGlobalPtr()
+vfs.mount(Filename("phase_0.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_3.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_3.5.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_4.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_5.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_5.5.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_6.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_7.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_8.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_9.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_10.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_11.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_12.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_13.mf"), ".", VirtualFileSystem.MFReadOnly)
+
 cbm = CullBinManager.getGlobalPtr()
 cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
 cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
 cbm.addBin('gui-popup', CullBinManager.BTUnsorted, 60)
 
-from direct.showbase.ShowBaseWide import ShowBase
+from direct.showbase.ShowBase import ShowBase
 base = ShowBase()
 from direct.showbase.Audio3DManager import Audio3DManager
 base.audio3d = Audio3DManager(base.sfxManagerList[0], camera)
@@ -99,6 +115,7 @@ base.pusher = CollisionHandlerPusher()
 base.queue = CollisionHandlerQueue()
 base.cr = ClientRepository(['phase_3/etc/direct.dc', 'phase_3/etc/toon.dc'])
 base.cr.isShowingPlayerIds = False
+base.minigame = None
 base.cr.localAvChoice = AvChoice("00/08/00/10/01/12/01/10/18/18/07/00/00/00/00", "Ducky", 0, 0)
 
 dclass = base.cr.dclassesByName['DistributedToon']
