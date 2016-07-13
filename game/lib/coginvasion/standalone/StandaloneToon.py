@@ -117,6 +117,7 @@ base.cr = ClientRepository(['phase_3/etc/direct.dc', 'phase_3/etc/toon.dc'])
 base.cr.isShowingPlayerIds = False
 base.minigame = None
 base.cr.localAvChoice = AvChoice("00/08/00/10/01/12/01/10/18/18/07/00/00/00/00", "Ducky", 0, 0)
+base.musicManager.setVolume(0.65)
 
 dclass = base.cr.dclassesByName['DistributedToon']
 base.localAvatar = LocalToon.LocalToon(base.cr)
