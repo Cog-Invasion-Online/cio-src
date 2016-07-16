@@ -1,4 +1,5 @@
 from panda3d.core import *
+
 loadPrcFile('config/config_client.prc')
 loadPrcFileData('', 'framebuffer-multisample 1')
 loadPrcFileData('', 'multisamples 2048')
@@ -8,6 +9,24 @@ loadPrcFileData('', 'audio-library-name p3fmod_audio')
 loadPrcFileData('', 'egg-load-old-curves 0')
 loadPrcFileData('', 'textures-power-2 none')
 loadPrcFileData('', 'win-size 256 256')
+
+
+vfs = VirtualFileSystem.getGlobalPtr()
+vfs.mount(Filename("phase_0.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_3.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_3.5.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_4.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_5.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_5.5.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_6.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_7.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_8.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_9.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_10.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_11.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_12.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("phase_13.mf"), ".", VirtualFileSystem.MFReadOnly)
+
 from direct.showbase.ShowBaseWide import ShowBase
 base = ShowBase()
 from direct.gui.DirectGui import *
@@ -30,22 +49,6 @@ base.enableParticles()
 base.cr = ClientRepository([])
 base.cr.isShowingPlayerIds = False
 base.audio3d = Audio3DManager(base.sfxManagerList[0], camera)
-
-vfs = VirtualFileSystem.getGlobalPtr()
-vfs.mount(Filename("phase_0.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_3.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_3.5.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_4.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_5.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_5.5.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_6.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_7.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_8.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_9.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_10.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_11.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_12.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("phase_13.mf"), ".", VirtualFileSystem.MFReadOnly)
 
 base.cTrav = CollisionTraverser()
 base.shadowTrav = CollisionTraverser()

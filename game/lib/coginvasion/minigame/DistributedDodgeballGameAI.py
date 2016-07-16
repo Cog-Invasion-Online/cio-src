@@ -36,6 +36,7 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
         self.announcedWinner = False
         self.winnerPrize = 200
         self.loserPrize = 0
+        self.round = 1
 
     def __gameOver(self):
         teams = [BLUE, RED]

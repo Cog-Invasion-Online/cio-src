@@ -125,6 +125,7 @@ class NURBSMopath():
         self.node = None
         self.loop = False
         self.cnpRef = None
+        self.rotate = True
         self.rope = None
         self.evaluator = None
         self.nurbs = None
@@ -197,17 +198,20 @@ class NURBSMopath():
             v = Vec3()
             self.nurbs.evalPoint(t, p)
             self.node.setPos(self.rope, p)
+            print self.node.getPos(render)
             self.nurbs.evalTangent(t, v)
-            v = render.getRelativeVector(self.rope, v)
-            self.node.lookAt(self.node.getPos() + v)
+            if self.rotate:
+                v = render.getRelativeVector(self.rope, v)
+                self.node.lookAt(self.node.getPos() + v)
         
-    def play(self, node, duration = 1.0, resume = False, loop = False):
+    def play(self, node, duration = 1.0, resume = False, loop = False, rotate = True):
         if self.nurbs:
             if not resume:
                 self.lastTime = 0
             self.node = node
             self.duration = duration
             self.loop = loop
+            self.rotate = rotate
             self.stop()
             t = taskMgr.add(self.__playTask, self.name + '-play')
         else:

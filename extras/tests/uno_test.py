@@ -324,11 +324,11 @@ area.reparentTo(render)
 sky = loader.loadModel('phase_3.5/models/props/TT_sky.bam')
 sky.reparentTo(render)
 sky.setZ(-20)
-
+"""
 
 img = OnscreenImage(image = 'bg.tif', parent = render2d)
 base.cam.node().getDisplayRegion(0).setSort(20)
-"""
+
 from lib.coginvasion.npc import NPCGlobals
 from lib.coginvasion.toon.ToonHead import ToonHead
 
@@ -338,10 +338,10 @@ toon.setName('')
 toon.generateToon()
 toon.reparentTo(render)
 toon.pose('neutral', 45)
-toon.find('**/torso-top').setTexture(loader.loadTexture('/c/Users/Brian/Desktop/suit.jpg'), 1)
+#toon.find('**/torso-top').setTexture(loader.loadTexture('/c/Users/Brian/Desktop/suit.jpg'), 1)
 toon.deleteShadow()
 toon.setPosHpr(3.55, 9.25, -3.58, 113.96, 12.53, 12.99)
-"""
+
 EyesAngry = loader.loadTexture('phase_3/maps/eyesAngry.jpg', 'phase_3/maps/eyesAngry_a.rgb')
 EyesAngry.setMinfilter(Texture.FTLinear)
 EyesAngry.setMagfilter(Texture.FTLinear)
@@ -372,7 +372,7 @@ toon.controlJoint(None, 'head', 'def_left_pupil')
 toon.controlJoint(None, 'head', 'def_right_pupil')
 toon.find('**/def_left_pupil').setPos(-0.10, 0.43, 0.41)
 toon.find('**/def_right_pupil').setPos(0.17, 0.4, 0.4)
-
+"""
 from lib.coginvasion.cog import SuitBank
 suit = DistributedSuit(base.cr)
 suit.doId = 0

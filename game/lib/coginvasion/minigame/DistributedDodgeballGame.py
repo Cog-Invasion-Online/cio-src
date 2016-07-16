@@ -67,7 +67,7 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
     SnowBallDmg = 25
 
     GetSnowBalls = "Pick up a snowball from the center!"
-    
+
     Team2OtherBarrier = {BLUE: "red_barrier_coll", RED: "blue_barrier_coll"}
 
     def __init__(self, cr):
@@ -102,6 +102,8 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
 
         self.redScoreLbl = None
         self.blueScoreLbl = None
+
+        self.mySpawnPoint = 0
 
         self.infoText = getAlertText()
 
@@ -253,7 +255,7 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         snowball = self.snowballs[snowballIndex]
         snowball.handleHitWallOrPlayer()
         base.playSfx(snowball.impactSound, node = snowball, volume = 1.5)
-        
+
     def snowballHitGround(self, snowballIndex):
         snowball = self.snowballs[snowballIndex]
         snowball.handleHitGround()
@@ -415,7 +417,7 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         self.redScoreLbl.show()
         self.blueScoreLbl.show()
         self.firstPerson.camFSM.request('unfrozen')
-        
+
         # Stash the other team's barrier.
         self.arena.find('**/' + self.Team2OtherBarrier[self.team]).stash()
 
@@ -512,6 +514,8 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
 
         self.sendUpdate('readyToStart')
         self.fsm.request('waitForOthers')
+
+        self.mySpawnPoint = spawnPoint
 
         pos, hpr = self.spawnPointsByTeam[self.team][spawnPoint]
         base.localAvatar.setPos(pos)

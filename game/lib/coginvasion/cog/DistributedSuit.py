@@ -465,6 +465,9 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         self.handleWeaponTouch()
 
     def __monitorLocalAvDistance(self, task):
+        if not hasattr(base, 'localAvatar'):
+            return task.done
+            
         if self.getDistance(base.localAvatar) <= PCTMM.getCogInRangeDistance() and not self.isInRange:
             self.isInRange = True
             messenger.send(PCTMM.getCogInRangeEvent())
