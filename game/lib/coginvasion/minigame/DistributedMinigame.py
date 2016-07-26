@@ -88,6 +88,7 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         self.descDialog = None
         self.winnerPrize = 0
         self.loserPrize = 0
+        self.round = 0
         self.winnerMsg = "Winner!\nYou have earned: %s Jellybeans"
         self.loserMsg = "Loser!\nYou have earned: %s Jellybeans"
         self.allWinnerMsgs = ["Nice try!\nYou have earned: %s", "Good job!\nYou have earned: %s",
@@ -101,6 +102,15 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         self.gameOverLbl.setBin('gui-popup', 60)
         self.gameOverLbl.hide()
         return
+
+    def roundOver(self):
+        pass
+
+    def setRound(self, round):
+        self.round = round
+
+    def getRound(self):
+        return self.round
 
     def getTeamDNAColor(self, team):
         pass

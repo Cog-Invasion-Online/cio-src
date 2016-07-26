@@ -23,9 +23,20 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
         self.numPlayers = 0
         self.avatars = []
         self.zone = 0
+        self.round = 0
         self.finalScores = []
         self.finalScoreAvIds = []
         return
+
+    def setRound(self, round):
+        self.round = round
+
+    def b_setRound(self, round):
+        self.sendUpdate('setRound', [round])
+        self.setRound(round)
+
+    def getRound(self):
+        return self.round
 
     def myFinalScore(self, score):
         avId = self.air.getAvatarIdFromSender()
@@ -132,4 +143,5 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
         self.numPlayers = None
         self.avatars = None
         self.zone = None
+        self.round = None
         return

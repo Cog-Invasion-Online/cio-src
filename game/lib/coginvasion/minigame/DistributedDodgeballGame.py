@@ -18,18 +18,16 @@ if game.process == 'client':
     from lib.coginvasion.base import ToontownIntervals
 
 from DistributedMinigame import getAlertText, getAlertPulse
-from DistributedEagleGame import getGameText, getCountdownIval
+from DistributedEagleGame import getGameText, getCountdownIval, getRoundIval
 from DistributedToonFPSGame import DistributedToonFPSGame
 from DodgeballFirstPerson import DodgeballFirstPerson
+from DistributedDodgeballGameAI import DistributedDodgeballGameAI
 from Snowball import Snowball
-from TeamMinigame import TeamMinigame, TEAM1, TEAM2
+from TeamMinigame import TeamMinigame
+
+from DodgeballGlobals import *
 
 import random
-
-BLUE = TEAM1
-RED = TEAM2
-
-TEAM_COLOR_BY_ID = {RED: (1, 0, 0, 1), BLUE: (0.2, 0.2, 1, 1)}
 
 from RemoteDodgeballAvatar import RemoteDodgeballAvatar
 
@@ -89,7 +87,7 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         self.fsm.addState(State('chooseTeam', self.enterChooseTeam, self.exitChooseTeam, ['waitForOthers']))
         self.fsm.addState(State('scrollBy', self.enterScrollBy, self.exitScrollBy, ['countdown']))
         self.fsm.addState(State('countdown', self.enterCountdown, self.exitCountdown, ['play']))
-        self.fsm.addState(State('announceGameOver', self.enterAnnGameOver, self.exitAnnGameOver, ['displayWinners']))
+        self.fsm.addState(State('announceGameOver', self.enterAnnGameOver, self.exitAnnGameOver, ['displayWinners', 'countdown']))
         self.fsm.addState(State('displayWinners', self.enterDisplayWinners, self.exitDisplayWinners, ['gameOver']))
         self.fsm.getStateNamed('waitForOthers').addTransition('chooseTeam')
         self.fsm.getStateNamed('waitForOthers').addTransition('scrollBy')
@@ -131,6 +129,15 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         self.snowRender = None
         self.trees = []
         self.snowballs = []
+
+    def roundOver(self, time = 0):
+        teams = [BLUE, RED]
+        teams.sort(key = lambda team: self.scoreByTeam[team], reverse = True)
+        self.winnerTeam = teams[0]
+        base.localAvatar.disableAvatarControls()
+        self.firstPerson.end()
+        self.deleteTimer()
+        self.fsm.request('announceGameOver', [time])
 
     def getTeamDNAColor(self, team):
         print "getTeamDNAColor"
@@ -204,38 +211,76 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
             self.track = None
         self.gameOverLbl.hide()
 
+    def __prepareForNextRound(self):
+        for av in self.remoteAvatars:
+            av.unfreeze()
+        base.localAvatar.setPos(self.spawnPointsByTeam[self.team][self.mySpawnPoint])
+        self.playMinigameMusic()
+        self.fsm.request('countdown')
+
     def enterAnnGameOver(self, timeRanOut = 0):
         self.firstPerson.vModel.hide()
-        text = "GAME\nOVER"
-        if timeRanOut:
-            text = "TIME's\nUP"
-        self.gameOverLbl.setText(text)
-        self.gameOverLbl.show()
-        base.transitions.fadeScreen()
-        taskMgr.doMethodLater(3.0, self.__annGameOverTask, self.uniqueName('annGameOverTask'))
 
-    def __annGameOverTask(self, task):
-        self.gameOverLbl.hide()
+        text = getGameText()
+        text.setBin('gui-popup', 60)
+
+        ival = Sequence()
+
+        if timeRanOut:
+            ival.append(Func(text.setText, "Time's Up!"))
+            ival.append(getRoundIval(text))
+
+        ival.append(Func(text.setText, "Round {0} Over!".format(self.getRound())))
+        ival.append(getRoundIval(text))
+
+        team = "Red"
+        if self.winnerTeam == BLUE:
+            team = "Blue"
+
+        if self.getRound() < 3:
+            if self.scoreByTeam[RED] == self.scoreByTeam[BLUE]:
+                ival.append(Func(text.setText, "The scores are tied!"))
+            else:
+                ival.append(Func(text.setText, "{0} is in the lead!".format(team)))
+        else:
+            ival.append(Func(text.setText, "{0} wins!".format(team)))
+
+        ival.append(getRoundIval(text))
+        ival.setDoneEvent(self.uniqueName('annGameOverDone'))
+        self.acceptOnce(ival.getDoneEvent(), self.__annGameOverTask)
+        self.ival = ival
+        self.ival.start()
+        self.text = text
+
+        base.transitions.fadeScreen()
+
+    def __annGameOverTask(self):
+        if self.round == 3:
+            nextState = Func(self.fsm.request, "displayWinners")
+        else:
+            nextState = Func(self.__prepareForNextRound)
+
         self.ival = Sequence(
             base.transitions.getFadeOutIval(),
-            Func(self.fsm.request, "displayWinners")
+            nextState
         )
         self.ival.start()
-        return task.done
 
     def exitAnnGameOver(self):
-        taskMgr.remove(self.uniqueName('annGameOverTask'))
         if hasattr(self, 'ival'):
+            self.ignore(self.ival.getDoneEvent())
             self.ival.finish()
             del self.ival
-        self.gameOverLbl.hide()
+        if hasattr(self, 'text'):
+            self.text.destroy()
+            del self.text
 
-    def teamWon(self, team):
-        self.winnerTeam = team
+    def teamWon(self, team, time = 0):
+        TeamMinigame.teamWon(self, team, time)
         base.localAvatar.disableAvatarControls()
         self.firstPerson.end()
         self.deleteTimer()
-        self.fsm.request('announceGameOver')
+        self.fsm.request('announceGameOver', [time])
 
     def incrementTeamScore(self, team):
         TeamMinigame.incrementTeamScore(self, team)

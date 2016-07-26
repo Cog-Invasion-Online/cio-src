@@ -5,8 +5,9 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State
 
 from DistributedToonFPSGameAI import DistributedToonFPSGameAI
-from DistributedDodgeballGame import BLUE, RED
 from TeamMinigameAI import TeamMinigameAI
+
+from DodgeballGlobals import *
 
 import random
 
@@ -18,15 +19,18 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
     GameOverTime = 15.0
     GameTime = 120
 
+    MaxRounds = 3
+
     def __init__(self, air):
         DistributedToonFPSGameAI.__init__(self, air)
         TeamMinigameAI.__init__(self)
-        self.setZeroCommand(self.__gameOver)
+        self.setZeroCommand(self.__gameOver_time)
         self.setInitialTime(self.GameTime)
         self.fsm = ClassicFSM.ClassicFSM('DDodgeballGameAI', [
             State.State('off', self.enterOff, self.exitOff),
             State.State('waitForChooseTeam', self.enterWaitForChooseTeam, self.exitWaitForChooseTeam),
-            State.State('play', self.enterPlay, self.exitPlay)], 'off', 'off')
+            State.State('play', self.enterPlay, self.exitPlay),
+            State.State('roundIntermission', self.enterRoundIntermission, self.exitRoundIntermission)], 'off', 'off')
         self.fsm.enterInitialState()
         self.playersReadyToStart = 0
         self.numFrozenByTeam = {RED: 0, BLUE: 0}
@@ -36,14 +40,27 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
         self.announcedWinner = False
         self.winnerPrize = 200
         self.loserPrize = 0
-        self.round = 1
 
-    def __gameOver(self):
+    def enterRoundIntermission(self):
+        pass
+
+    def exitRoundIntermission(self):
+        pass
+
+    def __gameOver_time(self):
+        self.__gameOver(1)
+
+    def __gameOver(self, timeRanOut = 0):
+        self.timeRanOutLastRound = timeRanOut
         teams = [BLUE, RED]
         teams.sort(key = lambda team: self.scoreByTeam[team], reverse = True)
-        self.winnerTeam = teams[0]
-        self.sendUpdate('teamWon', [self.winnerTeam])
-        self.stopTiming()
+        self.fsm.request('off')
+        if self.round == DistributedDodgeballGameAI.MaxRounds:
+            self.winnerTeam = teams[0]
+            self.sendUpdate('teamWon', [self.winnerTeam, timeRanOut])
+        else:
+            self.sendUpdate('roundOver', [timeRanOut])
+            self.fsm.request('play')
 
     def enemyFrozeMe(self, myTeam, enemyTeam):
         self.scoreByTeam[enemyTeam] += 1
@@ -53,8 +70,14 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
             # All of the players on this team are frozen! The enemy team wins!
             self.announcedWinner = True
             self.winnerTeam = enemyTeam
-            self.sendUpdate('teamWon', [enemyTeam])
-            self.stopTiming()
+            self.timeRanOutLastRound = 0
+            self.fsm.request('off')
+            if self.round == DistributedDodgeballGameAI.MaxRounds:
+                self.winnerTeam = enemyTeam
+                self.sendUpdate('teamWon', [self.winnerTeam, 0])
+            else:
+                self.sendUpdate('roundOver', [0])
+                self.fsm.request('play')
             taskMgr.doMethodLater(self.GameOverTime, self.__gameOverTask, self.uniqueName("gameOverTask"))
 
     def __gameOverTask(self, task):
@@ -80,14 +103,25 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
         pass
 
     def enterPlay(self):
-        self.d_startGame()
-        base.taskMgr.doMethodLater(15.0, self.__actuallyStarted, self.uniqueName('actuallyStarted'))
+        self.b_setRound(self.getRound() + 1)
+        if self.getRound() == 1:
+            self.d_startGame()
+            time = 15.0
+        else:
+            mult = 2
+            if self.timeRanOutLastRound:
+                mult = 3
+            time = (2.05 * mult) + 5.0
+
+        base.taskMgr.doMethodLater(time, self.__actuallyStarted, self.uniqueName('actuallyStarted'))
 
     def __actuallyStarted(self, task):
+        self.setInitialTime(self.GameTime)
         self.startTiming()
         return task.done
 
     def exitPlay(self):
+        self.stopTiming()
         base.taskMgr.remove(self.uniqueName('actuallyStarted'))
 
     def allAvatarsReady(self):

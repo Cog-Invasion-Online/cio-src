@@ -169,7 +169,7 @@ class TeamMinigame:
         self.scoreByTeam[team] += 1
         # Extend this method in a child class for gui updates.
 
-    def teamWon(self, team):
+    def teamWon(self, team, timeRanOut = 0):
         self.winnerTeam = team
         # Extend this method in a child class for announcing the winners.
 
