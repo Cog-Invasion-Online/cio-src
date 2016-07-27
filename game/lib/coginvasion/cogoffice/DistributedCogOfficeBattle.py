@@ -4,11 +4,11 @@
 from panda3d.core import Point3, Vec3, NodePath, TextureStage
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.distributed.DistributedObject import DistributedObject
 from direct.distributed.ClockDelta import globalClockDelta
 from direct.interval.IntervalGlobal import LerpPosInterval, LerpHprInterval, Sequence, Wait, Func, LerpQuatInterval, Parallel
 from direct.fsm import ClassicFSM, State
 
+from lib.coginvasion.battle.DistributedBattleZone import DistributedBattleZone
 from lib.coginvasion.minigame import DistributedMinigame
 from lib.coginvasion.nametag import NametagGlobals
 from lib.coginvasion.globals import CIGlobals
@@ -107,7 +107,7 @@ class CogTV(NodePath):
         #del self.videoTex
         NodePath.removeNode(self)
 
-class DistributedCogOfficeBattle(DistributedObject):
+class DistributedCogOfficeBattle(DistributedBattleZone):
     notify = directNotify.newCategory('DistributedCogOfficeBattle')
     CEILING_COLOR = (187.0 / 255, 174.0 / 255, 155.0 / 255)
     FLOOR_NAMES = {RECEPTION_FLOOR: 'Reception Floor',
@@ -312,7 +312,7 @@ class DistributedCogOfficeBattle(DistributedObject):
     }
 
     def __init__(self, cr):
-        DistributedObject.__init__(self, cr)
+        DistributedBattleZone.__init__(self, cr)
         self.currentFloor = None
         self.numFloors = None
         self.dept = None
@@ -320,7 +320,6 @@ class DistributedCogOfficeBattle(DistributedObject):
         self.floorModel = None
         self.exteriorZoneId = None
         self.bldgDoId = None
-        self.avatars = None
         self.gagDoor = None
         # Use the same text from eagle summit
         self.floorNameText = DistributedMinigame.getAlertText((0.75, 0.75, 0.75, 1.0), 0.15)
@@ -432,9 +431,6 @@ class DistributedCogOfficeBattle(DistributedObject):
 
     def setState(self, state, timestamp):
         self.fsm.request(state, [globalClockDelta.localElapsedTime(timestamp)])
-
-    def setAvatars(self, avatars):
-        self.avatars = avatars
 
     def setDept(self, dept):
         self.dept = dept
@@ -606,7 +602,7 @@ class DistributedCogOfficeBattle(DistributedObject):
         self.intermissionMusic.stop()
 
     def announceGenerate(self):
-        DistributedObject.announceGenerate(self)
+        DistributedBattleZone.announceGenerate(self)
         base.setBackgroundColor(self.CEILING_COLOR)
         self.cr.playGame.hood.sky.hide()
         self.cr.playGame.hood.setNoFog()
@@ -627,7 +623,6 @@ class DistributedCogOfficeBattle(DistributedObject):
         self.props = None
         self.currentFloor = None
         self.floorModel = None
-        self.avatars = None
         self.elevators = None
         self.dept = None
         self.deptClass = None
@@ -642,7 +637,7 @@ class DistributedCogOfficeBattle(DistributedObject):
             self.topFloorMusic.stop()
             self.topFloorMusic = None
         base.setBackgroundColor(CIGlobals.DefaultBackgroundColor)
-        DistributedObject.disable(self)
+        DistributedBattleZone.disable(self)
 
     def loadFloor(self, floorNum, room):
         base.transitions.fadeScreen(1.0)

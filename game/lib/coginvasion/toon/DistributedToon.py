@@ -10,7 +10,7 @@ from lib.coginvasion.avatar.DistributedAvatar import DistributedAvatar
 from lib.coginvasion.gags.backpack.Backpack import Backpack
 from lib.coginvasion.gags import GagGlobals
 from lib.coginvasion.gui.LaffOMeter import LaffOMeter
-from lib.coginvasion.quests import QuestManager
+from lib.coginvasion.quest.QuestManager import QuestManager
 from lib.coginvasion.globals import ChatGlobals
 from lib.coginvasion.hood import LinkTunnel
 
@@ -43,7 +43,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         Toon.Toon.__init__(self, cr)
         DistributedAvatar.__init__(self, cr)
         DistributedSmoothNode.__init__(self, cr)
-        self.questManager = QuestManager.QuestManager()
+        self.questManager = QuestManager(cr)
         self.token = -1
         self.ghost = 0
         self.puInventory = []
@@ -249,6 +249,15 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
 
     def getTier(self):
         return self.tier
+    
+    def incrementQuestObjective(self, questId):
+        self.questManager.incrementObjective(questId)
+        
+    def setQuestObjective(self, questId, objId):
+        self.questManager.setCurrentObjective(questId, objId)
+        
+    def getQuestObjective(self, questId):
+        return self.questManager.getQuestByID(questId).getCurrentObjective()
 
     def setQuestHistory(self, array):
         self.questHistory = array
@@ -257,8 +266,11 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         return self.questHistory
 
     def setQuests(self, questIds, currentObjectives, currentObjectivesProgress):
+        pass
+        """
         self.quests = [questIds, currentObjectives, currentObjectivesProgress]
         self.questManager.makeQuestsFromData()
+        """
 
     def getQuests(self):
         return self.quests

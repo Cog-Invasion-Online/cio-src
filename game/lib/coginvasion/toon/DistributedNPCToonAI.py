@@ -4,8 +4,8 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from DistributedToonAI import DistributedToonAI
-from lib.coginvasion.quests import Quests
 from lib.coginvasion.globals import CIGlobals
+from lib.coginvasion.quest.VisitNPCObjective import VisitNPCObjective
 
 import random
 
@@ -62,13 +62,46 @@ class DistributedNPCToonAI(DistributedToonAI):
             self.sendUpdateToAvatarId(avId, 'rejectEnter', [])
         else:
             self.currentAvatar = avId
-            av = self.air.doId2do.get(avId)
-            self.currentAvatarQuestOfMe = av.questManager.getQuestAndIdWhereCurrentObjectiveIsToVisit(self.npcId)
+            #av = self.air.doId2do.get(avId)
+            #self.currentAvatarQuestOfMe = av.questManager.getQuestAndIdWhereCurrentObjectiveIsToVisit(self.npcId)
             self.startWatchingCurrentAvatar()
             self.sendUpdateToAvatarId(avId, 'enterAccepted', [])
             self.sendUpdate('lookAtAvatar', [avId])
             self.doQuestStuffWithThisAvatar()
-
+            
+    def doQuestStuffWithThisAvatar(self):
+        av = self.air.doId2do.get(self.currentAvatar)
+        if av:
+            myQuest = av.questManager.getQuestToVisit(self.npcId)
+            
+            if myQuest:
+                if myQuest.getNextObjective() is not None:
+                    av.questManager.incrementObjective(myQuest)
+                else:
+                    pass
+                
+    def hasValidReasonToEnter(self, avId):
+        av = self.air.doId2do.get(avId)
+        if av:
+            chatArray = CIGlobals.NPCEnter_Pointless_Dialogue
+            welcomeToShopDialogIndex = 28
+            
+            if av.questManager.wasLastObjectiveToVisit(self.npcId):
+                chatArray = CIGlobals.NPCEnter_MFCO_Dialogue
+            
+            if not chatArray:
+                chat = random.choice(chatArray)
+                if '%s' in chat:
+                    if chatArray == CIGlobals.NPCEnter_Pointless_Dialogue and chatArray.index(chat) == welcomeToShopDialogIndex:
+                        chat = chat % CIGlobals.zone2TitleDict[self.zoneId][0]
+                    else:
+                        chat = chat % av.getName()
+                self.d_setChat(chat)
+                return False
+            return True
+    
+    """
+    OLD QUEST STUFF
     def doQuestStuffWithThisAvatar(self):
         av = self.air.doId2do.get(self.currentAvatar)
         if av:
@@ -110,6 +143,7 @@ class DistributedNPCToonAI(DistributedToonAI):
                 self.d_setChat(chat)
                 return False
             return True
+    """
 
     def requestExit(self):
         avId = self.air.getAvatarIdFromSender()

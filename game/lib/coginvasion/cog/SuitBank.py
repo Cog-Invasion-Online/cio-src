@@ -10,13 +10,14 @@ from lib.coginvasion.cog.Head import Head
 from lib.coginvasion.cog.SuitPanicBehavior import SuitPanicBehavior
 from lib.coginvasion.cog import Voice
 from lib.coginvasion.cog import SuitAttacks
-from panda3d.core import VBase4
+from panda3d.core import VBase4, Vec3
 
 class SuitPlan:
 
     def __init__(self, name, suitType, dept, head, scale, nametagZ, height, headColor = None,
                  headTex = None, headAnims = None, handColor = None, forcedVariant = None, forcedVoice = None,
-                 levelRange = None, forcedLevel = None, attacks = SuitAttacks.SuitAttackLengths.keys()):
+                 levelRange = None, forcedLevel = None, attacks = SuitAttacks.SuitAttackLengths.keys(),
+                 headShadowName = "", headShadowScale = 0, headShadowPos = None):
         self.name = name
         self.height = height
         self.suitType = suitType
@@ -29,6 +30,9 @@ class SuitPlan:
         self.attacks = attacks
         self.levelRange = levelRange
         self.forcedLevel = forcedLevel
+        self.headShadowName = headShadowName
+        self.headShadowScale = headShadowScale
+        self.headShadowPos = headShadowPos
         self.behaviors = []
 
         if 'phase' in head:
@@ -80,6 +84,15 @@ class SuitPlan:
 
     def getForcedLevel(self):
         return self.forcedLevel
+    
+    def getHeadShadowName(self):
+        return self.headShadowName
+    
+    def getHeadShadowScale(self):
+        return self.headShadowScale
+    
+    def getHeadShadowPos(self):
+        return self.headShadowPos
 
     def getBehaviors(self):
         return self.behaviors
@@ -93,7 +106,10 @@ TheBigCheese = SuitPlan(
     scale = 7.0,
     nametagZ = 9.8,
     handColor = VBase4(0.75, 0.95, 0.75, 1.0),
-    levelRange = (8, 13)
+    levelRange = (8, 13),
+    headShadowName = 'shadow8',
+    headShadowScale = 0.9,
+    headShadowPos = Vec3(-0.0225, 10, -0.025)
 )
 CorporateRaider = SuitPlan(
     SuitGlobals.CorporateRaider,
@@ -105,7 +121,10 @@ CorporateRaider = SuitPlan(
     nametagZ = 9.0,
     handColor = VBase4(0.85, 0.55, 0.55, 1.0),
     headTex = 'phase_3.5/maps/corporate-raider.jpg',
-    levelRange = (7, 11)
+    levelRange = (7, 11),
+    headShadowName = 'shadow7',
+    headShadowScale = 1.0,
+    headShadowPos = Vec3(0, 10, -0.05)
 )
 HeadHunter = SuitPlan(
     SuitGlobals.HeadHunter,
@@ -115,7 +134,10 @@ HeadHunter = SuitPlan(
     height = 7.45,
     scale = 6.5,
     nametagZ = 7.9,
-    levelRange = (6, 10)
+    levelRange = (6, 10),
+    headShadowName = 'shadow6',
+    headShadowScale = 1.05,
+    headShadowPos = Vec3(0, 10, -0.0425)
 )
 Downsizer = SuitPlan(
     SuitGlobals.Downsizer,
@@ -125,7 +147,10 @@ Downsizer = SuitPlan(
     height = 6.08,
     scale = 4.5,
     nametagZ = 6.3,
-    levelRange = (5, 9)
+    levelRange = (5, 9),
+    headShadowName = 'shadow5',
+    headShadowScale = 1.0,
+    headShadowPos = Vec3(-0.02, 10, -0.01)
 )
 Micromanager = SuitPlan(
     SuitGlobals.Micromanager,
@@ -135,7 +160,10 @@ Micromanager = SuitPlan(
     height = 3.25,
     scale = 2.5,
     nametagZ = 3.5,
-    levelRange = (4, 8)
+    levelRange = (4, 8),
+    headShadowName = 'shadow4',
+    headShadowScale = 1.0,
+    headShadowPos = Vec3(0, 10, -0.02)
 )
 Yesman = SuitPlan(
     SuitGlobals.Yesman,
@@ -145,7 +173,10 @@ Yesman = SuitPlan(
     height = 5.28,
     scale = 4.125,
     nametagZ = 5.6,
-    levelRange = (3, 7)
+    levelRange = (3, 7),
+    headShadowName = 'shadow3',
+    headShadowScale = 1.125,
+    headShadowPos = Vec3(0, 10, -0.015)
 )
 PencilPusher = SuitPlan(
     SuitGlobals.PencilPusher,
@@ -155,7 +186,10 @@ PencilPusher = SuitPlan(
     height = 5.0,
     scale = 3.35,
     nametagZ = 5.2,
-    levelRange = (2, 6)
+    levelRange = (2, 6),
+    headShadowName = 'shadow2',
+    headShadowScale = 0.9,
+    headShadowPos = Vec3(0, 10, 0)
 )
 Flunky = SuitPlan(
     SuitGlobals.Flunky,
@@ -165,7 +199,10 @@ Flunky = SuitPlan(
     height = 4.88,
     scale = 4.0,
     nametagZ = 5.2,
-    levelRange = (1, 5)
+    levelRange = (1, 5),
+    headShadowName = 'shadow1',
+    headShadowScale = 1.225,
+    headShadowPos = Vec3(0, 10, -0.03)
 )
 BigWig = SuitPlan(
     SuitGlobals.BigWig,
@@ -175,7 +212,10 @@ BigWig = SuitPlan(
     height = 8.69,
     scale = 7.0,
     nametagZ = 9.2,
-    levelRange = (8, 13)
+    levelRange = (8, 13),
+    headShadowName = 'shadow16',
+    headShadowScale = 0.85,
+    headShadowPos = Vec3(-0.005, 10, -0.035)
 )
 LegalEagle = SuitPlan(
     SuitGlobals.LegalEagle,
@@ -186,7 +226,10 @@ LegalEagle = SuitPlan(
     scale = 7.125,
     nametagZ = 8.75,
     handColor = VBase4(0.25, 0.25, 0.5, 1.0),
-    levelRange = (7, 11)
+    levelRange = (7, 11),
+    headShadowName = 'shadow15',
+    headShadowScale = 1.125,
+    headShadowPos = Vec3(0.005, 10, -0.035)
 )
 SpinDoctor = SuitPlan(
     SuitGlobals.SpinDoctor,
@@ -198,7 +241,10 @@ SpinDoctor = SuitPlan(
     nametagZ = 8.3,
     headTex = 'phase_4/maps/spin-doctor.jpg',
     handColor = VBase4(0.5, 0.8, 0.75, 1.0),
-    levelRange = (6, 10)
+    levelRange = (6, 10),
+    headShadowName = 'shadow14',
+    headShadowScale = 0.95,
+    headShadowPos = Vec3(0, 10, -0.01)
 )
 BackStabber = SuitPlan(
     SuitGlobals.BackStabber,
@@ -208,7 +254,10 @@ BackStabber = SuitPlan(
     height = 6.71,
     scale = 4.5,
     nametagZ = 7.0,
-    levelRange = (5, 9)
+    levelRange = (5, 9),
+    headShadowName = 'shadow13',
+    headShadowScale = 0.9,
+    headShadowPos = Vec3(0.005, 10, -0.01)
 )
 AmbulanceChaser = SuitPlan(
     SuitGlobals.AmbulanceChaser,
@@ -218,7 +267,10 @@ AmbulanceChaser = SuitPlan(
     height = 6.39,
     scale = 4.35,
     nametagZ = 7.0,
-    levelRange = (4, 8)
+    levelRange = (4, 8),
+    headShadowName = 'shadow12',
+    headShadowScale = 1.0,
+    headShadowPos = Vec3(0, 10, -0.01)
 )
 DoubleTalker = SuitPlan(
     SuitGlobals.DoubleTalker,
@@ -229,7 +281,10 @@ DoubleTalker = SuitPlan(
     headTex = 'phase_4/maps/double-talker.jpg',
     scale = 4.25,
     nametagZ = 6.0,
-    levelRange = (3, 7)
+    levelRange = (3, 7),
+    headShadowName = 'shadow11',
+    headShadowScale = 1.0,
+    headShadowPos = Vec3(0.005, 10, -0.01)
 )
 Bloodsucker = SuitPlan(
     SuitGlobals.Bloodsucker,
@@ -241,7 +296,10 @@ Bloodsucker = SuitPlan(
     scale = 4.375,
     nametagZ = 6.5,
     handColor = VBase4(0.95, 0.95, 1.0, 1.0),
-    levelRange = (2, 6)
+    levelRange = (2, 6),
+    headShadowName = 'shadow10',
+    headShadowScale = 1.0,
+    headShadowPos = Vec3(0, 10, -0.01)
 )
 BottomFeeder = SuitPlan(
     SuitGlobals.BottomFeeder,
@@ -252,7 +310,10 @@ BottomFeeder = SuitPlan(
     headTex = 'phase_3.5/maps/bottom-feeder.jpg',
     scale = 4.0,
     nametagZ = 5.1,
-    levelRange = (1, 5)
+    levelRange = (1, 5),
+    headShadowName = 'shadow9',
+    headShadowScale = 1.25,
+    headShadowPos = Vec3(0, 10, -0.03)
 )
 RobberBaron = SuitPlan(
     SuitGlobals.RobberBaron,
@@ -263,7 +324,10 @@ RobberBaron = SuitPlan(
     headTex = 'phase_3.5/maps/robberbaron.jpg',
     scale = 7.0,
     nametagZ = 9.4,
-    levelRange = (8, 13)
+    levelRange = (8, 13),
+    headShadowName = 'shadow24',
+    headShadowScale = 0.9,
+    headShadowPos = Vec3(0, 10, -0.03)
 )
 LoanShark = SuitPlan(
     SuitGlobals.LoanShark,
@@ -274,7 +338,10 @@ LoanShark = SuitPlan(
     scale = 6.5,
     nametagZ = 8.9,
     handColor = VBase4(0.5, 0.85, 0.75, 1.0),
-    levelRange = (7, 11)
+    levelRange = (7, 11),
+    headShadowName = 'shadow23',
+    headShadowScale = 0.95,
+    headShadowPos = Vec3(0.02, 10, -0.0175)
 )
 MoneyBags = SuitPlan(
     SuitGlobals.MoneyBags,
@@ -284,7 +351,10 @@ MoneyBags = SuitPlan(
     height = 6.97,
     scale = 5.3,
     nametagZ = 7.4,
-    levelRange = (6, 10)
+    levelRange = (6, 10),
+    headShadowName = 'shadow22',
+    headShadowScale = 1.0,
+    headShadowPos = Vec3(0, 10, -0.06)
 )
 NumberCruncher = SuitPlan(
     SuitGlobals.NumberCruncher,
@@ -294,7 +364,10 @@ NumberCruncher = SuitPlan(
     height = 7.22,
     scale = 5.25,
     nametagZ = 7.8,
-    levelRange = (5, 9)
+    levelRange = (5, 9),
+    headShadowName = 'shadow21',
+    headShadowScale = 0.95,
+    headShadowPos = Vec3(0.0175, 10, -0.015)
 )
 BeanCounter = SuitPlan(
     SuitGlobals.BeanCounter,
@@ -304,7 +377,10 @@ BeanCounter = SuitPlan(
     height = 5.95,
     scale = 4.4,
     nametagZ = 6.3,
-    levelRange = (4, 8)
+    levelRange = (4, 8),
+    headShadowName = 'shadow20',
+    headShadowScale = 1.0,
+    headShadowPos = Vec3(0, 10, 0)
 )
 Tightwad = SuitPlan(
     SuitGlobals.Tightwad,
@@ -314,7 +390,10 @@ Tightwad = SuitPlan(
     height = 5.41,
     scale = 4.5,
     nametagZ = 5.8,
-    levelRange = (3, 7)
+    levelRange = (3, 7),
+    headShadowName = 'shadow19',
+    headShadowScale = 1.1,
+    headShadowPos = Vec3(0, 10, -0.04)
 )
 PennyPincher = SuitPlan(
     SuitGlobals.PennyPincher,
@@ -325,7 +404,10 @@ PennyPincher = SuitPlan(
     scale = 3.55,
     nametagZ = 5.6,
     handColor = VBase4(1.0, 0.5, 0.6, 1.0),
-    levelRange = (2, 6)
+    levelRange = (2, 6),
+    headShadowName = 'shadow18',
+    headShadowScale = 1.05,
+    headShadowPos = Vec3(0, 10, 0)
 )
 ShortChange = SuitPlan(
     SuitGlobals.ShortChange,
@@ -335,7 +417,10 @@ ShortChange = SuitPlan(
     height = 4.77,
     scale = 3.6,
     nametagZ = 4.9,
-    levelRange = (1, 5)
+    levelRange = (1, 5),
+    headShadowName = 'shadow17',
+    headShadowScale = 1.2,
+    headShadowPos = Vec3(0, 10, -0.01)
 )
 MrHollywood = SuitPlan(
     SuitGlobals.MrHollywood,
@@ -345,7 +430,10 @@ MrHollywood = SuitPlan(
     height = 8.95,
     scale = 7.0,
     nametagZ = 9.4,
-    levelRange = (8, 13)
+    levelRange = (8, 13),
+    headShadowName = 'shadow32',
+    headShadowScale = 0.9,
+    headShadowPos = Vec3(0.0025, 10, -0.03)
 )
 TheMingler = SuitPlan(
     SuitGlobals.TheMingler,
@@ -356,7 +444,10 @@ TheMingler = SuitPlan(
     scale = 5.75,
     nametagZ = 8.0,
     headTex = 'phase_3.5/maps/mingler.jpg',
-    levelRange = (7, 11)
+    levelRange = (7, 11),
+    headShadowName = 'shadow31',
+    headShadowScale = 1.0,
+    headShadowPos = Vec3(0, 10, -0.02)
 )
 TwoFace = SuitPlan(
     SuitGlobals.TwoFace,
@@ -366,7 +457,10 @@ TwoFace = SuitPlan(
     height = 6.95,
     scale = 5.25,
     nametagZ = 7.3,
-    levelRange = (6, 10)
+    levelRange = (6, 10),
+    headShadowName = 'shadow30',
+    headShadowScale = 0.95,
+    headShadowPos = Vec3(0.005, 10, -0.01)
 )
 MoverShaker = SuitPlan(
     SuitGlobals.MoverShaker,
@@ -376,7 +470,10 @@ MoverShaker = SuitPlan(
     height = 6.7,
     scale = 4.75,
     nametagZ = 7.1,
-    levelRange = (5, 9)
+    levelRange = (5, 9),
+    headShadowName = 'shadow29',
+    headShadowScale = 0.93,
+    headShadowPos = Vec3(0.005, 10, -0.01)
 )
 GladHander = SuitPlan(
     SuitGlobals.GladHander,
@@ -386,7 +483,10 @@ GladHander = SuitPlan(
     height = 6.4,
     scale = 4.75,
     nametagZ = 6.7,
-    levelRange = (4, 8)
+    levelRange = (4, 8),
+    headShadowName = 'shadow28',
+    headShadowScale = 1.1,
+    headShadowPos = Vec3(0, 10, -0.04)
 )
 NameDropper = SuitPlan(
     SuitGlobals.NameDropper,
@@ -397,7 +497,10 @@ NameDropper = SuitPlan(
     scale = 4.35,
     nametagZ = 6.3,
     headTex = 'phase_3.5/maps/namedropper.jpg',
-    levelRange = (3, 7)
+    levelRange = (3, 7),
+    headShadowName = 'shadow27',
+    headShadowScale = 1.0,
+    headShadowPos = Vec3(0, 10, 0)
 )
 Telemarketer = SuitPlan(
     SuitGlobals.Telemarketer,
@@ -407,7 +510,10 @@ Telemarketer = SuitPlan(
     height = 5.24,
     scale = 3.75,
     nametagZ = 5.6,
-    levelRange = (2, 6)
+    levelRange = (2, 6),
+    headShadowName = 'shadow26',
+    headShadowScale = 1.0,
+    headShadowPos = Vec3(0, 10, 0)
 )
 ColdCaller = SuitPlan(
     SuitGlobals.ColdCaller,
@@ -419,7 +525,10 @@ ColdCaller = SuitPlan(
     nametagZ = 4.9,
     headColor = VBase4(0.25, 0.35, 1.0, 1.0),
     handColor = VBase4(0.55, 0.65, 1.0, 1.0),
-    levelRange = (1, 5)
+    levelRange = (1, 5),
+    headShadowName = 'shadow25',
+    headShadowScale = 1.15,
+    headShadowPos = Vec3(0, 10, -0.01)
 )
 # Bosses:
 VicePresident = SuitPlan(

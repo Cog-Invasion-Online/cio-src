@@ -2,9 +2,10 @@
 # Created by:  blach (15Dec15)
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.distributed.DistributedObjectAI import DistributedObjectAI
 from direct.distributed.ClockDelta import globalClockDelta
 from direct.fsm import ClassicFSM, State
+
+from lib.coginvasion.battle.DistributedBattleZoneAI import DistributedBattleZoneAI
 
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.cog import SuitBank, Variant
@@ -25,12 +26,12 @@ RIDE_ELEVATOR_TIME = 6.5
 FACE_OFF_TIME = 7.5
 VICTORY_TIME = 5.0
 
-class DistributedCogOfficeBattleAI(DistributedObjectAI):
+class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
     notify = directNotify.newCategory('DistributedCogOfficeBattleAI')
     UNIQUE_FLOORS = []
 
     def __init__(self, air, numFloors, dept, hood, bldg, exteriorZoneId):
-        DistributedObjectAI.__init__(self, air)
+        DistributedBattleZoneAI.__init__(self, air)
         self.fsm = ClassicFSM.ClassicFSM('DistributedCogOfficeBattleAI', [State.State('off', self.enterOff, self.exitOff),
          State.State('floorIntermission', self.enterFloorIntermission, self.exitFloorIntermission),
          State.State('bldgComplete', self.enterBldgComplete, self.exitBldgComplete),
@@ -40,7 +41,6 @@ class DistributedCogOfficeBattleAI(DistributedObjectAI):
          State.State('victory', self.enterVictory, self.exitVictory)], 'off', 'off')
         self.fsm.enterInitialState()
         self.hood = hood
-        self.avIds = []
         self.bldg = bldg
         self.bldgDoId = self.bldg.doId
         self.exteriorZoneId = exteriorZoneId
@@ -90,9 +90,7 @@ class DistributedCogOfficeBattleAI(DistributedObjectAI):
         if self.avIds is None:
             return
 
-        if avId in self.avIds:
-            self.avIds.remove(avId)
-        self.b_setAvatars(self.avIds)
+        DistributedBattleZoneAI._removeAvatar(self, avId)
 
         if avId in self.toonId2suitsTargeting.keys():
             del self.toonId2suitsTargeting[avId]
@@ -238,26 +236,14 @@ class DistributedCogOfficeBattleAI(DistributedObjectAI):
         self.setState(state)
 
     def setAvatars(self, avatars):
-        self.avIds = avatars
+        DistributedBattleZoneAI.setAvatars(self, avatars)
         self.toonId2suitsTargeting = {avId: [] for avId in self.avIds}
-        for avId in self.avIds:
-            toon = self.air.doId2do.get(avId)
-            if toon:
-                self.ignore(toon.getDeleteEvent())
-                self.acceptOnce(toon.getDeleteEvent(), self.handleToonLeft, [avId])
-
-    def b_setAvatars(self, avatars):
-        self.sendUpdate('setAvatars', [avatars])
-        self.setAvatars(avatars)
-
-    def getAvatars(self):
-        return self.avIds
 
     def getCurrentFloor(self):
         return self.currentFloor
 
     def announceGenerate(self):
-        DistributedObjectAI.announceGenerate(self)
+        DistributedBattleZoneAI.announceGenerate(self)
         elevator0 = DistributedCogOfficeElevatorAI(self.air, self, 0)
         elevator0.generateWithRequired(self.zoneId)
         elevator0.b_setState('closed')
@@ -306,6 +292,7 @@ class DistributedCogOfficeBattleAI(DistributedObjectAI):
         self.elevators = []
 
     def resetEverything(self):
+        DistributedBattleZoneAI._resetStats(self)
         self.currentFloor = 0
         self.toonId2suitsTargeting = {}
         self.spotTaken2suitId = {}
@@ -313,7 +300,6 @@ class DistributedCogOfficeBattleAI(DistributedObjectAI):
         self.cleanupChairSuits()
         self.cleanupGuardSuits()
         self.cleanupBarrels()
-        self.avIds = []
         self.readyAvatars = []
         for elevator in self.elevators:
             elevator.b_setState('closed')
@@ -322,10 +308,6 @@ class DistributedCogOfficeBattleAI(DistributedObjectAI):
     def delete(self):
         self.fsm.requestFinalState()
         self.fsm = None
-        for avId in self.avIds:
-            toon = self.air.doId2do.get(avId)
-            if toon:
-                self.ignore(toon.getDeleteEvent())
         self.currentFloor = None
         self.toonId2suitsTargeting = None
         self.spotTaken2suitId = None
@@ -336,7 +318,6 @@ class DistributedCogOfficeBattleAI(DistributedObjectAI):
         self.chairSuits = None
         self.cleanupGuardSuits()
         self.guardSuits = None
-        self.avIds = None
         self.readyAvatars = None
         self.cleanupElevators()
         self.elevators = None
@@ -350,7 +331,7 @@ class DistributedCogOfficeBattleAI(DistributedObjectAI):
         self.bldgDoId = None
         self.exteriorZoneId = None
         self.availableBattlePoints = None
-        DistributedObjectAI.delete(self)
+        DistributedBattleZoneAI.delete(self)
 
     def suitHPAtZero(self, doId):
         foundIt = False

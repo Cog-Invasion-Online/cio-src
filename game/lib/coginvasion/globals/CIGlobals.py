@@ -1956,9 +1956,6 @@ NPC_SPECIALQUESTGIVER = 9
 NPC_FLIPPYTOONHALL = 10
 NPC_SCIENTIST = 11
 NPC_SMART = 13
-NPC_BANKER = 14
-NPC_YIN = 15
-NPC_YANG = 16
 
 NPCToonNames = {20000: 'Tutorial Tom',
  998: 'Talkative Tyler',
@@ -1987,8 +1984,6 @@ NPCToonNames = {20000: 'Tutorial Tom',
  2018: 'Doctor Surlee',
  2019: 'Doctor Dimm',
  2020: 'Professor Prepostera',
- 2021: 'Yin',
- 2022: 'Yang',
  2101: 'Dentist Daniel',
  2102: 'Sheriff Sherry',
  2103: 'Sneezy Kitty',

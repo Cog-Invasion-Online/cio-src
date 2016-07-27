@@ -313,6 +313,9 @@ class DistributedElevator(DistributedObject):
 
     def getTheBldg(self):
         self.thebldg = self.cr.doId2do.get(self.bldgDoId)
+        
+        print self.thebldg.__class__
+        print 'Has Elevators: %s' % hasattr(self.thebldg, 'elevators')
 
     def getElevatorModel(self):
         return self.thebldg.getElevatorModel()

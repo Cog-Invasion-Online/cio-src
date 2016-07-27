@@ -88,6 +88,13 @@ class DistributedNPCToon(DistributedToon):
 
     def enterAccepted(self):
         self.doCameraNPCInteraction()
+        if len(base.localAvatar.questManager.getQuests()) > 0:
+            objective = base.localAvatar.questManager.getQuests()[0].getCurrentObjective()
+            self.currentChatIndex = 0
+            self.doNPCChat(objective.getAssignDialog())
+            
+        """
+        OLD QUEST STUFF
         questData = base.localAvatar.questManager.getQuestAndIdWhereCurrentObjectiveIsToVisit(self.npcId)
         if questData:
             quest = questData[1]
@@ -98,8 +105,9 @@ class DistributedNPCToon(DistributedToon):
                 if not quest.isComplete():
                     self.doNPCChat(array = Quests.QuestHQOfficerDialogue)
             if CIGlobals.NPCToonDict[self.npcId][3] == CIGlobals.NPC_REGULAR:
-                self.doNPCChat(array = Quests.QuestNPCDialogue)
-
+                self.doNPCChat(array = Quests.QuestNPCDialogue)"""
+    
+    """
     def doNPCChat(self, array = Quests.QuestNPCDialogue, chat = None):
         if array and not chat:
             self.chatArray = array
@@ -109,12 +117,31 @@ class DistributedNPCToon(DistributedToon):
         elif chat and not array:
             self.b_setChat(chat)
             Sequence(Wait(0.1), Func(self.acceptOnce, 'mouse1-up', self.d_requestExit)).start()
+    """
+    
+    def doNPCChat(self, array, chat = None):
+        if array and not chat:
+            self.chatArray = array
+            self.b_setChat(array[self.currentChatIndex])
+            self.currentChatIndex += 1
+            Sequence(Wait(0.1), Func(self.acceptOnce, 'mouse1-up', self.doNextNPCChat)).start()
+        elif chat and not array:
+            self.b_setChat(chat)
+            Sequence(Wait(0.1), Func(self.acceptOnce, 'mouse1-up', self.d_requestExit)).start()
 
     def d_requestExit(self):
         self.sendUpdate('requestExit', [])
-
+    
+    """
     def doNextNPCChat(self):
         if self.currentChatIndex >= len(self.chatArray[self.currentQuestId][self.currentQuestObjective]):
+            self.chatArray = None
+            self.d_requestExit()
+        else:
+            self.doNPCChat(self.chatArray)"""
+            
+    def doNextNPCChat(self):
+        if self.currentChatIndex >= len(self.chatArray):
             self.chatArray = None
             self.d_requestExit()
         else:

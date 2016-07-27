@@ -136,8 +136,8 @@ class ToonHead(Actor.Actor):
             if head == "rabbit":
                 self.findAllMatches('**/head-long').show()
                 self.findAllMatches('**/head-front-long').show()
-                self.findAllMatches('**/head-front-short').hide()
-                self.findAllMatches('**/head-short').hide()
+                #self.findAllMatches('**/head-front-short').hide()
+                #self.findAllMatches('**/head-short').hide()
         elif headType == "3":
             stashParts("short")
             stashMuzzles("long", stashNeutral=0)

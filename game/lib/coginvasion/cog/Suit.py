@@ -565,9 +565,18 @@ class Suit(Avatar):
             prefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_%s.jpg'
             if self.variant == Variant.WAITER:
                 prefix = 'phase_3.5/maps/waiter_m_%s.jpg'
-            self.find('**/legs').setTexture(loader.loadTexture(prefix % 'leg'), 1)
-            self.find('**/arms').setTexture(loader.loadTexture(prefix % 'sleeve'), 1)
-            self.find('**/torso').setTexture(loader.loadTexture(prefix % 'blazer'), 1)
+            
+            legTex = loader.loadTexture(prefix % 'leg')
+            armTex = loader.loadTexture(prefix % 'sleeve')
+            blazTex = loader.loadTexture(prefix % 'blazer')
+            
+            for texture in [legTex, armTex, blazTex]:
+                texture.setMinfilter(Texture.FTLinearMipmapLinear)
+                texture.setMagfilter(Texture.FTLinear)
+            
+            self.find('**/legs').setTexture(legTex, 1)
+            self.find('**/arms').setTexture(armTex, 1)
+            self.find('**/torso').setTexture(blazTex, 1)
             self.find('**/hands').setColor(self.handColor)
 
     def setName(self, nameString, charName):

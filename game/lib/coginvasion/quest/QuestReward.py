@@ -26,3 +26,10 @@ class QuestReward:
         elif self.rewardType == RewardType.LAFF_POINTS:
             base.localAvatar.b_setMaxHealth(base.localAvatar.getMaxHealth() + self.rewardModifier)
             base.localAvatar.b_setHealth(base.localAvatar.getMaxHealth())
+            base.localAvatar.d_announceHealth(1, self.rewardModifier)
+            
+    def getType(self):
+        return self.rewardType
+    
+    def getModifier(self):
+        return self.rewardModifier

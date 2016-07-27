@@ -6,6 +6,8 @@
 from lib.coginvasion.cog.SuitType import SuitType
 from direct.actor.Actor import Actor
 
+from panda3d.core import Texture
+
 class Head:
 
     # The 'suit' variable should only be set if we are working with a
@@ -27,6 +29,7 @@ class Head:
                 phase = 3.5
             heads = loader.loadModel('phase_%s/models/char/suit%s-heads.bam' % (str(phase), self.suit))
             self.headMdl = heads.find('**/%s' % (self.head))
+            
             if self.head == 'flunky':
                 glasses = heads.find('**/glasses')
                 glasses.reparentTo(self.headMdl)
@@ -39,7 +42,10 @@ class Head:
                 self.headMdl = Actor(self.head)
                 self.headMdl.loadAnims(self.headAnims)
         if self.headTex:
-            self.headMdl.setTexture(loader.loadTexture(self.headTex), 1)
+            headTex = loader.loadTexture(self.headTex)
+            headTex.setMinfilter(Texture.FTLinearMipmapLinear)
+            headTex.setMagfilter(Texture.FTLinear)
+            self.headMdl.setTexture(headTex, 1)
         if self.headColor:
             self.headMdl.setColor(self.headColor)
         return self.headMdl

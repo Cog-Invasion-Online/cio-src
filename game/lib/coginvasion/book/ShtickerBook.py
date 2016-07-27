@@ -15,6 +15,7 @@ from lib.coginvasion.gui.BackpackGUI import BackpackGUI
 from OptionPage import OptionPage
 from AdminPage import AdminPage
 from lib.coginvasion.book.NamePage import NamePage
+from lib.coginvasion.quest.QuestPoster import QuestPoster
 
 qt_btn = loader.loadModel("phase_3/models/gui/quit_button.bam")
 
@@ -209,10 +210,18 @@ class ShtickerBook(StateData):
     def enterQuestPage(self):
         self.createPageButtons('districtPage', 'inventoryPage')
         self.setTitle("Quests")
-
+        
+        """
         self.notes = base.localAvatar.questManager.makeQuestNotes()
         for note in self.notes:
             note.show()
+        """
+        
+        self.posters = []
+        for quest in base.localAvatar.questManager.getQuests(): 
+            poster = QuestPoster(quest)
+            poster.update()
+            self.posters.append(poster)
 
         self.infoText = OnscreenText(text = "Return completed Quests to an HQ Officer at any Toon HQ building.",
             pos = (0, -0.6), scale = 0.045)
@@ -220,8 +229,12 @@ class ShtickerBook(StateData):
     def exitQuestPage(self):
         self.infoText.destroy()
         del self.infoText
+        for poster in self.posters:
+            poster.destroy()
+        """
         for note in self.notes:
             note.destroy()
+        """
         self.deletePageButtons(True, True)
         self.clearTitle()
 

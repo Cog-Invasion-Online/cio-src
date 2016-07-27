@@ -3,10 +3,9 @@
 # Created by: blach (28Nov14)
 ########################################
 
-from panda3d.core import *
 from direct.showbase import Loader
 from lib.coginvasion.gui.CIProgressScreen import CIProgressScreen
-from lib.coginvasion.dna.DNALoader import *
+from lib.coginvasion.dna.DNALoader import loadDNAFile
 
 class CogInvasionLoader(Loader.Loader):
 	TickPeriod = 0.0
@@ -83,8 +82,7 @@ class CogInvasionLoader(Loader.Loader):
 
 	def destroy(self):
 		Loader.Loader.destroy(self)
-        try:
-            self.progressScreen.destroy()
-            del self.progressScreen
-        except:
-            pass
+		try:
+			self.progressScreen.destroy()
+			del self.progressScreen
+		except: pass
