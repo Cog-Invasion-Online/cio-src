@@ -500,8 +500,8 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.faceOffTrack.append(Func(camera.lookAt, base.localAvatar.smartCamera.getLookAtPoint()))
         self.faceOffTrack.append(Func(setCamRunY))
         runTrack = Parallel()
-        for i in xrange(len(self.avatars)):
-            avId = self.avatars[i]
+        for i in xrange(len(self.avIds)):
+            avId = self.avIds[i]
             toon = self.cr.doId2do.get(avId)
             if toon:
                 toon.stopSmooth()

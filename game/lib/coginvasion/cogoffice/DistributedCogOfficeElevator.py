@@ -50,8 +50,8 @@ class DistributedCogOfficeElevator(DistributedElevator):
         closeDoors(self.getLeftDoor(), self.getRightDoor())
 
     def putToonsInElevator(self):
-        for i in xrange(len(self.thebldg.avatars)):
-            avId = self.thebldg.avatars[i]
+        for i in xrange(len(self.thebldg.avIds)):
+            avId = self.thebldg.avIds[i]
             toon = self.cr.doId2do.get(avId)
             if toon:
                 toon.stopSmooth()
