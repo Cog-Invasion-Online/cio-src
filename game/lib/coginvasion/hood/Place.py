@@ -15,7 +15,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Parallel, LerpHprInterval, Sequence, Wait, Func, LerpPosInterval, LerpQuatInterval
 from lib.coginvasion.globals import CIGlobals
 from PublicWalk import PublicWalk
-from lib.coginvasion.book.ShtickerBook import ShtickerBook
+from lib.coginvasion.book_new.ShtickerBook import ShtickerBook
 from lib.coginvasion.gui.Dialog import GlobalDialog
 from lib.coginvasion.minigame.FirstPerson import FirstPerson
 from lib.coginvasion.nametag import NametagGlobals
@@ -31,7 +31,7 @@ class Place(StateData):
         self.zoneId = None
         self.track = None
         self.firstPerson = FirstPerson()
-        self.lastBookPage = 'mapPage'
+        self.lastBookPage = 2
         self.useFirstPerson = config.GetBool('want-firstperson-battle')
         return
 
@@ -40,14 +40,14 @@ class Place(StateData):
             if self.fsm.getCurrentState():
                 if self.fsm.getCurrentState().getName() == 'shtickerBook':
                     if hasattr(self, 'shtickerBookStateData'):
-                        if self.shtickerBookStateData.fsm.getCurrentState().getName() == 'adminPage':
+                        if self.shtickerBookStateData.getCurrentPage() and self.shtickerBookStateData.getCurrentPage().title == 'Admin Page':
                             if base.cr.playGame.suitManager:
                                 text2Change2 = 'Turn Suit Spawner '
                                 if base.cr.playGame.suitManager.getSpawner():
                                     text2Change2 += 'Off'
                                 else:
                                     text2Change2 += 'On'
-                                self.shtickerBookStateData.adminPageStateData.suitSpawnerBtn['text'] = text2Change2
+                                self.shtickerBookStateData.getCurrentPage().suitSpawnerBtn['text'] = text2Change2
 
     def enterStart(self):
         pass
@@ -157,7 +157,7 @@ class Place(StateData):
 
     def enterShtickerBookGui(self):
         doneEvent = 'shtickerBookDone'
-        self.shtickerBookStateData = ShtickerBook(self.fsm, doneEvent)
+        self.shtickerBookStateData = ShtickerBook(doneEvent)
         self.acceptOnce(doneEvent, self.__shtickerBookDone)
         self.shtickerBookStateData.load()
         self.shtickerBookStateData.enter(self.lastBookPage)

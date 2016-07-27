@@ -19,6 +19,7 @@ class BookPage(StateData):
         self.icon = None
         self.iconScale = 1
         self.iconColor = (1, 1, 1, 1)
+        self.tabButton = None
 
         # The actual header that displays the title.
         self.header = None
@@ -32,18 +33,24 @@ class BookPage(StateData):
 
     def unload(self):
         StateData.unload(self)
-        self.header.destroy()
+        if self.header:
+            self.header.destroy()
+            self.header = None
         self.book = None
-        self.icon.removeNode()
-        del self.notify
-        del self.icon
-        del self.iconScale
-        del self.iconColor
-        del self.book
-        del self.title
-        del self.header
-        del self.wantHeader
-        del self.restriction
+        self.tabButton = None
+        if self.icon:
+            self.icon.removeNode()
+            self.icon = None
+        if hasattr(self, 'notify'):
+            del self.notify
+            del self.icon
+            del self.iconScale
+            del self.iconColor
+            del self.book
+            del self.title
+            del self.header
+            del self.wantHeader
+            del self.restriction
 
     def enter(self):
         if not self.isEntered:

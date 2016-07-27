@@ -3,11 +3,12 @@
 
 from direct.actor.Actor import Actor
 
+from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.holiday.HolidayManager import HolidayType
 import SafeZoneLoader
 import TTPlayground
 
-from lib.coginvasion.globals import CIGlobals
+import random
 
 class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
 
@@ -48,31 +49,47 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         self.geom.find('**/ground').setBin('ground', 18)
         self.geom.find('**/ground_center_coll').setCollideMask(CIGlobals.FloorBitmask)
         self.geom.find('**/ground_sidewalk_coll').setCollideMask(CIGlobals.FloorBitmask)
-        #for face in self.geom.findAllMatches('**/ground_sidewalk_front_*'):
-            #face.setColorScale(0.9, 0.9, 0.9, 1.0)
-        for tunnel in self.geom.findAllMatches('**/linktunnel_tt*'):
-            tunnel.find('**/tunnel_floor_1').setTexture(loader.loadTexture('phase_4/models/neighborhoods/tex/sidewalkbrown.jpg'), 1)
         for tree in self.geom.findAllMatches('**/prop_green_tree_*_DNARoot'):
             tree.wrtReparentTo(hidden)
             self.trees.append(tree)
             newShadow = loader.loadModel("phase_3/models/props/drop_shadow.bam")
             newShadow.reparentTo(tree)
             newShadow.setScale(1.5)
+            newShadow.setBillboardAxis(2)
             newShadow.setColor(0, 0, 0, 0.5, 1)
 
         # Fix bank door trigger
         bank = self.geom.find('**/*toon_landmark_TT_bank_DNARoot')
         doorTrigger = bank.find('**/door_trigger*')
         doorTrigger.setY(doorTrigger.getY() - 1.0)
-        
+
         self.telescope = Actor(self.geom.find('**/*animated_prop_HQTelescopeAnimatedProp*'),
                             {'chan': 'phase_3.5/models/props/HQ_telescope-chan.bam'}, copy=0)
         self.telescope.reparentTo(self.geom.find('**/tb20:toon_landmark_hqTT_DNARoot'))
         self.telescope.setPos(1, 0.46, 0)
-        self.telescope.loop('chan')
+
         self.geom.flattenMedium()
 
+    def enter(self, requestStatus):
+        SafeZoneLoader.SafeZoneLoader.enter(self, requestStatus)
+        taskMgr.add(self.telescopeTask, "TTSafeZoneLoader-telescopeTask")
+
+    def telescopeTask(self, task):
+        if self.telescope:
+            self.telescope.play("chan")
+            task.delayTime = random.uniform(12.0, 16.0)
+            return task.again
+        else:
+            return task.done
+
+    def exit(self):
+        taskMgr.remove("TTSafeZoneLoader-telescopeTask")
+        SafeZoneLoader.SafeZoneLoader.exit(self)
+
     def unload(self):
+        if self.telescope:
+            self.telescope.cleanup()
+            self.telescope = None
         for tree in self.trees:
             tree.removeNode()
         self.trees = None

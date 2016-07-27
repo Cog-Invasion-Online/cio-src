@@ -594,8 +594,9 @@ class LocalToon(DistributedToon):
         DistributedToon.setLoadout(self, gagIds)
         if base.cr.playGame.getPlace() and base.cr.playGame.getPlace().fsm.getCurrentState().getName() == 'shtickerBook':
             if hasattr(base.cr.playGame.getPlace(), 'shtickerBookStateData'):
-                if base.cr.playGame.getPlace().shtickerBookStateData.fsm.getCurrentState().getName() == 'inventoryPage':
-                    base.cr.playGame.getPlace().shtickerBookStateData.gui.fsm.request('idle')
+                if base.cr.playGame.getPlace().shtickerBookStateData.getCurrentPage() is not None:
+                    if base.cr.playGame.getPlace().shtickerBookStateData.getCurrentPage().title == 'Gags':
+                        base.cr.playGame.getPlace().shtickerBookStateData.getCurrentPage().gui.fsm.request('idle')
 
     def enableGags(self, andKeys = 0):
         if self.avatarMovementEnabled and andKeys:

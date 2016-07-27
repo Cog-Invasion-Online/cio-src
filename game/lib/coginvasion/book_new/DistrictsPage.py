@@ -28,6 +28,8 @@ class DistrictsPage(BookPage, DirectFrame):
         self.shardButtons = []
         self.districtList = None
 
+        self.hide()
+
     def __updateDistrictPopTask(self, task):
         population = base.cr.myDistrict.getPopulation()
         self.populationLbl.setText('Population: %d' % population)

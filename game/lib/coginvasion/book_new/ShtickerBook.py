@@ -17,6 +17,8 @@ from lib.coginvasion.book_new.MapPage import MapPage
 from lib.coginvasion.book_new.OptionsPage import OptionsPage
 from lib.coginvasion.book_new.DistrictsPage import DistrictsPage
 from lib.coginvasion.book_new.AdminPage import AdminPage
+from lib.coginvasion.book_new.GagsPage import GagsPage
+from lib.coginvasion.book_new.QuestPage import QuestPage
 from lib.coginvasion.hood import ZoneUtil
 
 class ShtickerBook(DirectFrame, StateData):
@@ -61,11 +63,23 @@ class ShtickerBook(DirectFrame, StateData):
             self.pages.append(page)
 
     def setCurrentPage(self, page):
-        if self.currentPage and self.currentPage != page:
+        if self.currentPage == page:
+            return
+
+        if self.currentPage:
+            self.currentPage.tabButton['relief'] = DGG.RAISED
+            self.currentPage.tabButton['state'] = DGG.NORMAL
             self.currentPage.exit()
+            self.currentPage = None
             self.pageTurnSfx.play()
+
+        base.cr.playGame.getPlace().lastBookPage = self.pages.index(page)
+
         self.currentPage = page
         self.currentPage.enter()
+        self.currentPage.tabButton['state'] = DGG.DISABLED
+        self.currentPage.tabButton['relief'] = DGG.SUNKEN
+
         self.adjustPageButtons()
 
     def changePage(self, direction):
@@ -99,17 +113,17 @@ class ShtickerBook(DirectFrame, StateData):
         pIndex = self.pages.index(self.currentPage)
         if pIndex - 1 < 0:
             self.prevPageBtn.hide()
-            self.ignore('arrow_left-up')
+            self.ignore('arrow_left')
         else:
             self.prevPageBtn.show()
-            self.acceptOnce('arrow_left-up', self.changePage, [1])
+            self.acceptOnce('arrow_left', self.changePage, [1])
 
         if pIndex + 1 == len(self.pages):
             self.nextPageBtn.hide()
-            self.ignore('arrow_right-up')
+            self.ignore('arrow_right')
         else:
             self.nextPageBtn.show()
-            self.acceptOnce('arrow_right-up', self.changePage, [0])
+            self.acceptOnce('arrow_right', self.changePage, [0])
 
     def loadPageTabButtons(self):
         for i in xrange(len(self.pages)):
@@ -118,7 +132,7 @@ class ShtickerBook(DirectFrame, StateData):
             pageBtn = DirectButton(parent = self.tabButtonFrame, relief = DGG.RAISED,
                 frameSize = (-0.575, 0.575, -0.575, 0.575),
                 borderWidth = (0.05, 0.05),
-                text=('', '', page.getName(), ''),
+                text=('', page.getName(), page.getName(), ''),
                 text_align = TextNode.ALeft,
                 text_pos = (1, -0.2),
                 text_scale = 0.75,
@@ -131,6 +145,7 @@ class ShtickerBook(DirectFrame, StateData):
                 geom_color = page.getIconColor(),
                 pos=(0, 0, -btnOffset),
             scale=0.06, command = self.setCurrentPage, extraArgs = [page])
+            page.tabButton = pageBtn
             self.pageBtns.append(pageBtn)
 
 
@@ -140,8 +155,7 @@ class ShtickerBook(DirectFrame, StateData):
             if lastBookPage is None:
                 lastBookPage = self.pages[2]
             else:
-                self.currentPage = self.pages[lastBookPage]
-                lastBookPage = self.currentPage
+                lastBookPage = self.pages[lastBookPage]
 
             # Hide the environment and change the background
             # color to blue.
@@ -163,6 +177,7 @@ class ShtickerBook(DirectFrame, StateData):
         if self.isEntered:
             if self.currentPage:
                 self.currentPage.exit()
+                self.currentPage = None
 
             # Show the environment and return the background color.
             base.setBackgroundColor(CIGlobals.DefaultBackgroundColor)
@@ -175,8 +190,8 @@ class ShtickerBook(DirectFrame, StateData):
             self.bookCloseSfx.play()
 
             # Let's ignore the page buttons.
-            self.ignore('arrow_right-up')
-            self.ignore('arrow_left-up')
+            self.ignore('arrow_right')
+            self.ignore('arrow_left')
         StateData.exit(self)
 
     def load(self):
@@ -200,7 +215,11 @@ class ShtickerBook(DirectFrame, StateData):
         self.registerPage(OptionsPage(self))
         self.registerPage(DistrictsPage(self))
         self.registerPage(MapPage(self))
-        self.registerPage(AdminPage(self))
+        self.registerPage(GagsPage(self))
+        self.registerPage(QuestPage(self))
+
+        if base.localAvatar.getAdminToken() != CIGlobals.NoToken:
+            self.registerPage(AdminPage(self))
 
     def unload(self):
         StateData.unload(self)
