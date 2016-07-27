@@ -59,6 +59,12 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
             newShadow.reparentTo(tree)
             newShadow.setScale(1.5)
             newShadow.setColor(0, 0, 0, 0.5, 1)
+
+        # Fix bank door trigger
+        bank = self.geom.find('**/*toon_landmark_TT_bank_DNARoot')
+        doorTrigger = bank.find('**/door_trigger*')
+        doorTrigger.setY(doorTrigger.getY() - 1.0)
+
         #self.telescope = Actor(self.geom.find('**/*animated_prop_HQTelescopeAnimatedProp*'),
         #                    {"chan": "phase_3.5/models/props/HQ_telescope-chan.bam"}, copy=0)
         #self.telescope.reparentTo(self.geom.find('**/*toon_landmark_hqTT*'))
