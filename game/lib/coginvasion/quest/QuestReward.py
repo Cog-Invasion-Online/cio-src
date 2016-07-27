@@ -6,15 +6,16 @@
 """
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
+
 import RewardType
 
 class QuestReward:
     notify = directNotify.newCategory('QuestReward')
-    
+
     def __init__(self, rewardType, rewardModifier):
         self.rewardType = rewardType
         self.rewardModifier = rewardModifier
-        
+
     def award(self):
         # This handles rewarding players.
         if self.rewardType == RewardType.JELLYBEANS:
@@ -27,9 +28,9 @@ class QuestReward:
             base.localAvatar.b_setMaxHealth(base.localAvatar.getMaxHealth() + self.rewardModifier)
             base.localAvatar.b_setHealth(base.localAvatar.getMaxHealth())
             base.localAvatar.d_announceHealth(1, self.rewardModifier)
-            
+
     def getType(self):
         return self.rewardType
-    
+
     def getModifier(self):
         return self.rewardModifier

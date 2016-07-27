@@ -4,4 +4,6 @@
 ########################################
 
 class SuitState:
-    ALIVE, LURED, DEAD = range(3)
+    ALIVE = 0
+    LURED = 1
+    DEAD = 2

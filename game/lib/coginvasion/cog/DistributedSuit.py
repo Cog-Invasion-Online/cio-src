@@ -3,6 +3,8 @@
 # Created by: DecodedLogic (01Sep15)
 ########################################
 
+from panda3d.core import Point3, VBase4
+
 from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
 from direct.distributed.DelayDeletable import DelayDeletable
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -29,7 +31,6 @@ import Voice
 import Variant
 import SuitAttacks
 
-from panda3d.core import Point3, VBase4
 import types, random
 
 class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDeletable):
@@ -467,7 +468,7 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
     def __monitorLocalAvDistance(self, task):
         if not hasattr(base, 'localAvatar'):
             return task.done
-            
+
         if self.getDistance(base.localAvatar) <= PCTMM.getCogInRangeDistance() and not self.isInRange:
             self.isInRange = True
             messenger.send(PCTMM.getCogInRangeEvent())

@@ -3,6 +3,8 @@
 # Created by: DecodedLogic (01Sep15)
 ########################################
 
+from panda3d.core import VBase4, Vec3
+
 from lib.coginvasion.cog import SuitGlobals
 from lib.coginvasion.cog.SuitType import SuitType
 from lib.coginvasion.cog import Dept
@@ -10,7 +12,6 @@ from lib.coginvasion.cog.Head import Head
 from lib.coginvasion.cog.SuitPanicBehavior import SuitPanicBehavior
 from lib.coginvasion.cog import Voice
 from lib.coginvasion.cog import SuitAttacks
-from panda3d.core import VBase4, Vec3
 
 class SuitPlan:
 
@@ -84,13 +85,13 @@ class SuitPlan:
 
     def getForcedLevel(self):
         return self.forcedLevel
-    
+
     def getHeadShadowName(self):
         return self.headShadowName
-    
+
     def getHeadShadowScale(self):
         return self.headShadowScale
-    
+
     def getHeadShadowPos(self):
         return self.headShadowPos
 

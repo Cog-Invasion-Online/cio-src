@@ -3,7 +3,11 @@
 # Created by: DecodedLogic (31Jul15)
 ########################################
 
-NORMAL, SKELETON, WAITER, MINIGAME, ZOMBIE = range(5)
+NORMAL = 0
+SKELETON = 1
+WAITER = 2
+MINIGAME = 3
+ZOMBIE = 4
 
 def getVariantById(index):
     variants = [NORMAL, SKELETON, WAITER, MINIGAME, ZOMBIE]

@@ -11,7 +11,10 @@ from direct.task.Task import Task
 from lib.coginvasion.minigame import GunGameGlobals as GGG
 
 class CaptureState:
-    IDLE, IN_PROGRESS, CAPTURED, RESETTING = range(4)
+    IDLE = 0
+    IN_PROGRESS = 1
+    CAPTURED = 2
+    RESETTING = 3
 
 class DistributedGunGameCapturePointAI(DistributedNodeAI):
     notify = directNotify.newCategory('DistributedGunGameCapturePointAI')
@@ -33,7 +36,7 @@ class DistributedGunGameCapturePointAI(DistributedNodeAI):
     # At the end, this will return the point to default.
     # Originally 10.75, now 0.0.
     RESET_TIME = 0.0
-    
+
     # How many points the king gets per second.
     POINTS_AS_KING = 2
 
@@ -126,7 +129,7 @@ class DistributedGunGameCapturePointAI(DistributedNodeAI):
                 self.sendUpdate('updateStatus', [1, self.primaryContester.doId])
             return Task.done
         return Task.again
-    
+
     def __handleAward(self, task):
         if hasattr(self, 'mg'):
             points = self.mg.getKOTHPoints(self.kingId)
@@ -153,7 +156,7 @@ class DistributedGunGameCapturePointAI(DistributedNodeAI):
 
     def __handleCaptorExit(self, task):
         self.resetHill()
-        
+
         if len(self.contesters) == 1:
             # The primary contester is gone and nobody else is contesting,
             # let's have the last remaining contester start capturing!
@@ -209,7 +212,7 @@ class DistributedGunGameCapturePointAI(DistributedNodeAI):
                 self.d_startCircleAnim(3)
                 self.kingOnPoint = True
                 self.state = CaptureState.CAPTURED
-                
+
                 if len(taskMgr.getTasksNamed(self.awardKingTaskName)) == 0:
                     taskMgr.doMethodLater(1, self.__handleAward, self.awardKingTaskName)
             elif self.primaryContester and self.primaryContester.doId == avatar.doId:
@@ -253,7 +256,7 @@ class DistributedGunGameCapturePointAI(DistributedNodeAI):
     def requestExit(self):
         avId = self.air.getAvatarIdFromSender()
         avatar = self.air.doId2do.get(avId)
-        
+
         if not hasattr(self, 'mg'): return
 
         if avId in self.contesters and avatar != self.king:

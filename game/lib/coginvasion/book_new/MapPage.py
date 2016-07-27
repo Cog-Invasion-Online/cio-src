@@ -5,28 +5,28 @@
 #         2 YEAR ANNIVERSARY
 ########################################
 
-from lib.coginvasion.book_new.BookPage import BookPage
-from lib.coginvasion.globals import CIGlobals
-from lib.coginvasion.hood import ZoneUtil
+from panda3d.core import Vec4, TextNode
 
 from direct.gui.DirectGui import DirectFrame, DirectButton
 from direct.gui.DirectLabel import DirectLabel
 
-from panda3d.core import Vec4, TextNode
+from lib.coginvasion.globals import CIGlobals
+from lib.coginvasion.book_new.BookPage import BookPage
+from lib.coginvasion.hood import ZoneUtil
 
 class MapPage(BookPage, DirectFrame):
-    
+
     def __init__(self, book):
         BookPage.__init__(self, book, 'Map', wantHeader = False)
         DirectFrame.__init__(self, parent = book, relief = None,
-            pos = (0, 0, 0.0775), image_scale = (1.8, 1, 1.35), 
+            pos = (0, 0, 0.0775), image_scale = (1.8, 1, 1.35),
         scale = 0.97)
-        
+
         self['image'] = loader.loadModel('phase_3.5/models/gui/toontown_map.bam')
-        
+
         self.initialiseoptions(MapPage)
         self.hide()
-        
+
         self.cloudPos = [[(-0.61, 0, 0.18), (0.55, 0.25, 0.37), (180, 0, 0)],
                     [(-0.54, 0, 0.34), (0.76, 0.4, 0.55), (180, 0, 0)],
                     [(-0.55, 0, -0.09), (0.72, 0.4, 0.55), (0, 0, 0)],
@@ -36,37 +36,37 @@ class MapPage(BookPage, DirectFrame):
                     [(0.35, 0, -0.46),  (0.63, 0.35, 0.45), (0, 0, 0)],
                     [(0.18, 0, -0.45),  (0.52, 0.27, 0.32), (0, 0, 0)],
                     [(0.67, 0, -0.44),  (0.63, 0.35, 0.48), (180, 0, 0)]]
-        
+
         self.hoodClouds = [#[(0.02, 0, -0.17),  (0.63, 0.35, 0.48), (180, 0, 0), CIGlobals.ToontownCentral],
                       [(0.63, 0, -0.13),  (0.63, 0.35, 0.40), (0, 0, 0), CIGlobals.DonaldsDock],
                       [(0.51, 0, 0.25),  (0.57, 0.35, 0.40), (0, 0, 0), CIGlobals.TheBrrrgh],
                       [(0.03, 0, 0.19),  (0.63, 0.35, 0.40), (180, 0, 0), CIGlobals.MinniesMelodyland],
                       [(-0.08, 0, 0.46),  (0.54, 0.35, 0.40), (0, 0, 0), CIGlobals.DonaldsDreamland],
                       [(-0.28, 0, -0.49),  (0.60, 0.35, 0.45), (0, 0, 0), CIGlobals.DaisyGardens]]
-        
+
         self.labelData = [[(0, 0, -0.2), CIGlobals.ToontownCentral],
                      [(0.65, 0, -0.125), CIGlobals.DonaldsDock],
                      [(0.07, 0, 0.18), CIGlobals.MinniesMelodyland],
                      [(-0.1, 0, 0.45), CIGlobals.DonaldsDreamland],
                      [(0.5, 0, 0.25), CIGlobals.TheBrrrgh],
                      [(-0.37, 0, -0.525), CIGlobals.DaisyGardens]]
-        
+
         # The buttons
         self.infoLabel = None
         self.BTPButton = None
         self.MGAButton = None
-        
+
         self.clouds = []
         self.labels = []
-        
+
     def enter(self):
         BookPage.enter(self)
         self.show()
-        
+
     def exit(self):
         BookPage.exit(self)
         self.hide()
-        
+
     def load(self):
         BookPage.load(self)
         # Let's load up the clouds.
@@ -77,7 +77,7 @@ class MapPage(BookPage, DirectFrame):
             cloud.setScale(scale)
             cloud.setHpr(hpr)
             self.clouds.append(cloud)
-        
+
         for pos, scale, hpr, hood in self.hoodClouds:
             if not base.localAvatar.hasDiscoveredHood(ZoneUtil.getZoneId(hood)):
                 cloud = loader.loadModel('phase_3.5/models/gui/cloud.bam')
@@ -86,7 +86,7 @@ class MapPage(BookPage, DirectFrame):
                 cloud.setScale(scale)
                 cloud.setHpr(hpr)
                 self.clouds.append(cloud)
-                
+
         for pos, name in self.labelData:
             if base.localAvatar.hasDiscoveredHood(ZoneUtil.getZoneId(name)):
                 text = name
@@ -111,7 +111,7 @@ class MapPage(BookPage, DirectFrame):
                     label['extraArgs'] = [ZoneUtil.getZoneId(name)]
                 label.resetFrameSize()
                 self.labels.append(label)
-                
+
         currHoodName = base.cr.playGame.hood.id
         currLocation = ''
         if base.localAvatar.zoneId == CIGlobals.MinigameAreaId or base.localAvatar.getMyBattle() is not None:
@@ -136,26 +136,26 @@ class MapPage(BookPage, DirectFrame):
                 text_pos = (0, -0.018), geom_scale = (1, 1.11, 1.11), text_scale = 0.06, parent = self,
                 text_font = CIGlobals.getToonFont(), pos = (0.625, 0, -0.75), command = self.book.finished,
             extraArgs = [CIGlobals.MinigameAreaId], scale = 0.7)
-        
+
         icons = loader.loadModel('phase_3.5/models/gui/sos_textures.bam')
         self.icon = icons.find('**/teleportIcon')
         icons.detachNode()
-        
+
     def unload(self):
         BookPage.unload(self)
-        
+
         # Destroy the GUI elements.
         self.infoLabel.destroy()
         self.BTPButton.destroy()
-        
+
         if self.MGAButton:
             self.MGAButton.destroy()
         self.destroy()
-        
+
         # Destroy the labels.
         for label in self.labels:
             label.destroy()
-        
+
         # Destroy the clouds.
         for cloud in self.clouds:
             cloud.removeNode()
