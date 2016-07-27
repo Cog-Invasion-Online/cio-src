@@ -291,7 +291,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
         elif self.getDoorType() == self.EXT_HQ:
             return 'door_trigger_' + str(self.doorIndex)
         elif self.getDoorType() == self.INT_HQ:
-            return 'door_trigger_' + str(self.block) + '_' + str(self.doorIndex)
+            return 'door_trigger_' + str(self.block) + '0' + str(self.doorIndex)
 
     def getEnterTriggerEvent(self):
         return 'enter' + self.getTriggerName()
