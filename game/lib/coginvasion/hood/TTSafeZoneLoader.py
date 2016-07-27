@@ -64,10 +64,12 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         bank = self.geom.find('**/*toon_landmark_TT_bank_DNARoot')
         doorTrigger = bank.find('**/door_trigger*')
         doorTrigger.setY(doorTrigger.getY() - 1.0)
-
-        #self.telescope = Actor(self.geom.find('**/*animated_prop_HQTelescopeAnimatedProp*'),
-        #                    {"chan": "phase_3.5/models/props/HQ_telescope-chan.bam"}, copy=0)
-        #self.telescope.reparentTo(self.geom.find('**/*toon_landmark_hqTT*'))
+        
+        self.telescope = Actor(self.geom.find('**/*animated_prop_HQTelescopeAnimatedProp*'),
+                            {'chan': 'phase_3.5/models/props/HQ_telescope-chan.bam'}, copy=0)
+        self.telescope.reparentTo(self.geom.find('**/tb20:toon_landmark_hqTT_DNARoot'))
+        self.telescope.setPos(1, 0.46, 0)
+        self.telescope.loop('chan')
         self.geom.flattenMedium()
 
     def unload(self):

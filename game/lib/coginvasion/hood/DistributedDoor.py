@@ -452,6 +452,10 @@ class DistributedDoor(DistributedObject.DistributedObject):
         side = side.title()
         if self.building:
             hole = self.building.find('**/doorFrameHole%s' % side)
+            
+            if self.getDoorType() == self.EXT_HQ:
+                hole = self.building.find('**/doorFrameHole%s_%d' % (side, self.doorIndex))
+            
             if hole and not hole.isEmpty():
                 if not show:
                     hole.hide()

@@ -9,11 +9,16 @@ from datetime import datetime
 from panda3d.core import Filename
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 import threading
+import os
 
 FILEPATH = 'screenshots/'
 flashSeq = Sequence()
 
 flashSfx = None
+
+# Let's make sure the screenshots directory exists.
+if not os.path.exists(FILEPATH[:-1]):
+    os.makedirs(FILEPATH[:-1])
 
 def __doEffects():
     global flashSfx

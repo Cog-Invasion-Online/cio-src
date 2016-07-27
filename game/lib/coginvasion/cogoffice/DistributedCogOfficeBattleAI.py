@@ -79,7 +79,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         for guard in self.getGuardsBySection(sectionIndex):
             # Make sure this guard isn't already activated
             if not guard.isActivated():
-               # Activate this guard!
+                # Activate this guard!
                 guard.activate()
 
     def iAmDead(self):
