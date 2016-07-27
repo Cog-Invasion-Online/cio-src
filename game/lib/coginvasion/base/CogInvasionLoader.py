@@ -85,4 +85,5 @@ class CogInvasionLoader(Loader.Loader):
 		try:
 			self.progressScreen.destroy()
 			del self.progressScreen
-		except: pass
+		except:
+			pass
