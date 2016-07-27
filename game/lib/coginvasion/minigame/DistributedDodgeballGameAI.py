@@ -19,8 +19,6 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
     GameOverTime = 15.0
     GameTime = 120
 
-    MaxRounds = 3
-
     def __init__(self, air):
         DistributedToonFPSGameAI.__init__(self, air)
         TeamMinigameAI.__init__(self)
@@ -55,7 +53,7 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
         teams = [BLUE, RED]
         teams.sort(key = lambda team: self.scoreByTeam[team], reverse = True)
         self.fsm.request('off')
-        if self.round == DistributedDodgeballGameAI.MaxRounds:
+        if self.round == MaxRounds:
             self.winnerTeam = teams[0]
             self.sendUpdate('teamWon', [self.winnerTeam, timeRanOut])
         else:
@@ -72,13 +70,13 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
             self.winnerTeam = enemyTeam
             self.timeRanOutLastRound = 0
             self.fsm.request('off')
-            if self.round == DistributedDodgeballGameAI.MaxRounds:
+            if self.round == MaxRounds:
                 self.winnerTeam = enemyTeam
                 self.sendUpdate('teamWon', [self.winnerTeam, 0])
+                taskMgr.doMethodLater(self.GameOverTime, self.__gameOverTask, self.uniqueName("gameOverTask"))
             else:
                 self.sendUpdate('roundOver', [0])
                 self.fsm.request('play')
-            taskMgr.doMethodLater(self.GameOverTime, self.__gameOverTask, self.uniqueName("gameOverTask"))
 
     def __gameOverTask(self, task):
         winners = list(self.playerListByTeam[self.winnerTeam])
@@ -103,15 +101,16 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
         pass
 
     def enterPlay(self):
-        self.b_setRound(self.getRound() + 1)
+        self.announcedWinner = False
+        self.setRound(self.getRound() + 1)
         if self.getRound() == 1:
             self.d_startGame()
-            time = 15.0
+            time = 18.0
         else:
             mult = 2
             if self.timeRanOutLastRound:
                 mult = 3
-            time = (2.05 * mult) + 5.0
+            time = (2.05 * mult) + 8.0
 
         base.taskMgr.doMethodLater(time, self.__actuallyStarted, self.uniqueName('actuallyStarted'))
 

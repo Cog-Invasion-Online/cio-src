@@ -320,6 +320,7 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         NametagGlobals.setWant2dNametags(False)
 
     def disable(self):
+        self.deleteTimer()
         base.localAvatar.getGeomNode().setColorScale(VBase4(1, 1, 1, 1))
         self.gameOverLbl.destroy()
         self.gameOverLbl = None

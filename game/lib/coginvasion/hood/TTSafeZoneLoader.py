@@ -1,6 +1,8 @@
 # Filename: TTSafeZoneLoader.py
 # Created by:  blach (25Oct15)
 
+from direct.actor.Actor import Actor
+
 from lib.coginvasion.holiday.HolidayManager import HolidayType
 import SafeZoneLoader
 import TTPlayground
@@ -57,6 +59,9 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
             newShadow.reparentTo(tree)
             newShadow.setScale(1.5)
             newShadow.setColor(0, 0, 0, 0.5, 1)
+        #self.telescope = Actor(self.geom.find('**/*animated_prop_HQTelescopeAnimatedProp*'),
+        #                    {"chan": "phase_3.5/models/props/HQ_telescope-chan.bam"}, copy=0)
+        #self.telescope.reparentTo(self.geom.find('**/*toon_landmark_hqTT*'))
         self.geom.flattenMedium()
 
     def unload(self):

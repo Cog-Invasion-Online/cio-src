@@ -58,7 +58,7 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
     GameSong = "phase_4/audio/bgm/MG_Dodgeball.ogg"
     GameDesc = ("Welcome to the north! You have been invited to play dodgeball with the penguins!\n\n"
                 "How To Play\nWASD to Move and use the mouse to aim.\nLeft click to Throw!\nThrow a "
-                "snowball at a teammate to unfreeze them!\n\nObjective\nThe first team to freeze everyone!")
+                "snowball at a teammate to unfreeze them!\n\nThe team with the most points after {0} rounds wins!".format(MaxRounds))
 
     InitCamTrans = [Point3(25, 45, 19.5317), Vec3(154.001, -15, 0)]
 
@@ -100,6 +100,8 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
 
         self.redScoreLbl = None
         self.blueScoreLbl = None
+
+        self.barrierIsStashed = False
 
         self.mySpawnPoint = 0
 
@@ -189,7 +191,7 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
                     posList.remove(pos)
                     av.setPos(pos)
 
-        if self.winnerTeam == team:
+        if self.winnerTeam == self.team:
             text = "YOU WIN!"
         else:
             text = "YOU LOSE!"
@@ -213,8 +215,10 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
 
     def __prepareForNextRound(self):
         for av in self.remoteAvatars:
-            av.unfreeze()
-        base.localAvatar.setPos(self.spawnPointsByTeam[self.team][self.mySpawnPoint])
+            av.unFreeze()
+        pos, hpr = self.spawnPointsByTeam[self.team][self.mySpawnPoint]
+        base.localAvatar.setPos(pos)
+        base.localAvatar.setHpr(hpr)
         self.playMinigameMusic()
         self.fsm.request('countdown')
 
@@ -237,7 +241,7 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         if self.winnerTeam == BLUE:
             team = "Blue"
 
-        if self.getRound() < 3:
+        if self.round != MaxRounds:
             if self.scoreByTeam[RED] == self.scoreByTeam[BLUE]:
                 ival.append(Func(text.setText, "The scores are tied!"))
             else:
@@ -255,7 +259,7 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         base.transitions.fadeScreen()
 
     def __annGameOverTask(self):
-        if self.round == 3:
+        if self.round == MaxRounds:
             nextState = Func(self.fsm.request, "displayWinners")
         else:
             nextState = Func(self.__prepareForNextRound)
@@ -464,7 +468,9 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         self.firstPerson.camFSM.request('unfrozen')
 
         # Stash the other team's barrier.
-        self.arena.find('**/' + self.Team2OtherBarrier[self.team]).stash()
+        if not self.barrierIsStashed:
+            self.arena.find('**/' + self.Team2OtherBarrier[self.team]).stash()
+            self.barrierIsStashed = True
 
     def exitPlay(self):
         self.firstPerson.crosshair.destroy()
@@ -473,14 +479,19 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         DistributedToonFPSGame.exitPlay(self)
 
     def enterCountdown(self):
+        base.transitions.noTransitions()
         self.firstPerson.start()
         self.firstPerson.disableMouse()
+
+        self.setRound(self.getRound() + 1)
 
         self.infoText.setText(DistributedDodgeballGame.GetSnowBalls)
 
         self.countdownText = getGameText()
         self.countdownIval = Parallel(
             Sequence(
+                Func(self.countdownText.setText, "Round {0}".format(self.getRound())),
+                getRoundIval(self.countdownText),
                 Func(self.countdownText.setText, "5"),
                 getCountdownIval(self.countdownText),
                 Func(self.countdownText.setText, "4"),

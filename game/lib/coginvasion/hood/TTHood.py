@@ -34,12 +34,14 @@ class TTHood(ToonHood.ToonHood):
     def startSky(self):
         ToonHood.ToonHood.startSky(self)
         self.sky.setTransparency(TransparencyAttrib.MDual, 1)
-        #self.skyUtil.startSky(self.sky)
-        if not self.sky.find('**/cloud2').isEmpty():
-            self.sky.find('**/cloud2').removeNode()
+        cloud1 = self.sky.find('**/cloud1')
+        cloud2 = self.sky.find('**/cloud2')
+        if not cloud2.isEmpty():
+            cloud2.removeNode()
+        if not cloud1.isEmpty():
+            cloud1.setSz(0.75)
+            cloud1.setZ(cloud1.getZ() + 10.0)
         self.sky.setScale(5)
-        if not self.sky.find('**/cloud1').isEmpty():
-            self.sky.find('**/cloud1').setSz(0.7)
 
     def stopSky(self):
         ToonHood.ToonHood.stopSky(self)
