@@ -280,10 +280,12 @@ class AdminPage(BookPage):
             render.show()
         else:
             render.hide()
-        if self.book.book_img.isHidden():
-            self.book.book_img.show()
+        if self.book.isBackgroundHidden():
+            self.book.show()
+            self.book.setBackgroundHidden(False)
         else:
-            self.book.book_img.hide()
+            self.book.hide()
+            self.book.setBackgroundHidden(True)
 
     def changeGhost(self):
         if base.localAvatar.getGhost():

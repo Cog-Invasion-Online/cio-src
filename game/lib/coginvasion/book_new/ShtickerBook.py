@@ -53,6 +53,9 @@ class ShtickerBook(DirectFrame, StateData):
         # This is the frame that all the tab buttons are
         # reparented to.
         self.tabButtonFrame = None
+        
+        # This is a boolean that lets us know the visibility of the background.
+        self.bgHidden = False
 
         self.hide()
 
@@ -286,3 +289,9 @@ class ShtickerBook(DirectFrame, StateData):
 
     def getCurrentPage(self):
         return self.currentPage
+    
+    def setBackgroundHidden(self, flag):
+        self.bgHidden = flag
+        
+    def isBackgroundHidden(self):
+        return self.bgHidden
