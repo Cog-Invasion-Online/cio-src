@@ -10,7 +10,8 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from lib.coginvasion.distributed.DistributedRootAI import DistributedRootAI
 from lib.coginvasion.distributed.CogInvasionDoGlobals import *
 from direct.distributed.ParentMgr import ParentMgr
-import LoginToken
+from LoginToken import LoginToken
+from LoginServerConnection import LoginServerConnection
 
 STORE_LOGIN_TOKEN = 100
 
@@ -25,6 +26,9 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
         self.activeTokens = []
         self.parentMgr = ParentMgr()
         self.holiday = 0
+        
+        # Let's start the login server connection server.
+        self.loginServerConn = LoginServerConnection(self, 9001)
 
     def getParentMgr(self, zone):
         return self.parentMgr
@@ -39,31 +43,24 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
     def __handleLoginToken(self, di):
         token = di.getString()
         ip = di.getString()
-        tokenObj = LoginToken.LoginToken(token, ip)
+        tokenObj = LoginToken(token, ip)
         self.storeToken(tokenObj)
 
+    # Validate a login token.
     def isValidToken(self, token, ip):
-        """
-        Validate a login token.
-        """
-
-        print ip
-
         # Begin the process of validating this token.
-
-        for tokenObj in self.activeTokens:
-
-            # Do the IP addresses and tokens both match?
-            if (token == tokenObj.getToken()): #and
-            #ip == tokenObj.getIP()):
-
-                # We got a match!
-                #self.deleteToken(tokenObj)
+        if token in self.activeTokens:
+            # Let's make sure this token is for this IP.
+            if token.getIP() == ip:
+                # We've got a match!
+                self.deleteToken(token)
                 return 1
+        elif ip == '0.0.0.0:0':
+            return 1
         return 0
 
 
-    def storeToken(self, tokenObj):#, sender):
+    def storeToken(self, tokenObj):
         """
         Store and activate a new login token.
         """
@@ -81,24 +78,15 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
             # IP addresses do not match on both objects. Matching IPs
             # would have already been detected from the code above.
 
-        # Is this IP banned?
-        #if self.isBanned(tokenObj.getIP()):
-            # If so, reject the login request.
-            #self.llm.d_rejectLogin(sender)
-            # Tell the LauncherLoginManager.
-            #return 0
-
         # If we've made it this far, we can finally store the token.
 
         # First, add the token to the activeTokens list.
         self.activeTokens.append(tokenObj)
-        print "Activated token: %s" % tokenObj
-        print "Token: %s, IP: %s" % (tokenObj.getToken(), tokenObj.getIP())
-        print "Tokens: %s" % self.activeTokens
+        print "Activated token: %s, IP: %s" % (tokenObj.getToken(), tokenObj.getIP())
 
         # Then, start the deactivateToken task.
-        #taskMgr.doMethodLater(self.getActiveTokenLength(), self.deleteTokenTask,
-        #		tokenObj.getDeleteTask(), extraArgs = [tokenObj], appendTask = True)
+        taskMgr.doMethodLater(self.getActiveTokenLength(), self.deleteTokenTask, 
+            tokenObj.getDeleteTask(), extraArgs = [tokenObj], appendTask = True)
 
         # We're done! Tell the LauncherLoginManager.
         return 1
@@ -115,15 +103,13 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
         # First, stop the deactivate task.
         taskMgr.remove(token.getDeleteTask())
 
-        print "Deactivated token: %s" % token
-        print "Token: %s, IP: %s" % (token.getToken(), token.getIP())
+        print "Deactivated token: %s, IP: %s" % (token.getToken(), token.getIP())
 
         # Next, cleanup the object.
         token.cleanup()
 
         # Finally, remove the object from the activeTokens list.
         self.activeTokens.remove(token)
-        print "Tokens: %s" % self.activeTokens
 
     def isBanned(self, ip):
         return False
@@ -137,8 +123,7 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
         rootObj.generateWithRequiredAndId(self.getGameDoId(), 0, 0)
 
         self.createObjects()
-        self.storeToken(LoginToken.LoginToken("asdasd$asdasdASfdasdgdaAsassa4234QW34324436REGdfnjGFb", "0.0.0.0"))
-        self.notify.info('Done.')
+        self.notify.info('Successfully started Cog Invasion Online Uber Repository!')
 
     def createObjects(self):
         self.csm = self.generateGlobalObject(DO_ID_CLIENT_SERVICES_MANAGER,
