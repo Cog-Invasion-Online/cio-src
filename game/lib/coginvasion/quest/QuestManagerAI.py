@@ -16,7 +16,6 @@ class QuestManagerAI(QuestManagerBase):
     def __init__(self, air, avatar):
         QuestManagerBase.__init__(self)
         self.avatar = avatar
-        self.quests.append(QuestBank.getQuest(QuestBank.getQuests()[0]))
 
     ####################################################
     ## Functions for when an Objective event happens. ##

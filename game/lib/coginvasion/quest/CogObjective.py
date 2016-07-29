@@ -19,9 +19,9 @@ from lib.coginvasion.cog import SuitBank
 class CogObjective(Objective):
     notify = directNotify.newCategory('CogObjective')
 
-    def __init__(self, quest, location, assignDialog, amount,
+    def __init__(self, location, assignDialog, amount,
             level = None, levelRange = None, name = None, variant = None, dept = None):
-        Objective.__init__(self, quest, location, assignDialog)
+        Objective.__init__(self, location, assignDialog)
         self.neededAmount = amount
         self.amount = 0
         self.level = level

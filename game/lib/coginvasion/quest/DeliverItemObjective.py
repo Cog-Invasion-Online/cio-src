@@ -11,9 +11,9 @@ from lib.coginvasion.quest import QuestGlobals
 class DeliverItemObjective(VisitNPCObjective):
     notify = directNotify.newCategory('DeliverItemObjective')
 
-    def __init__(self, npcId, itemName, quest, assignDialog, location = None,
+    def __init__(self, npcId, itemName, assignDialog, location = None,
         itemIcon = QuestGlobals.getPackageIcon()):
-        VisitNPCObjective.__init__(self, npcId, quest, assignDialog, location)
+        VisitNPCObjective.__init__(self, npcId, assignDialog, location)
         self.itemName = itemName
         self.itemIcon = itemIcon
 

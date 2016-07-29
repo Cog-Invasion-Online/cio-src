@@ -17,6 +17,7 @@ from lib.coginvasion.hood.DLHoodAI import DLHoodAI
 from lib.coginvasion.hood.MLHoodAI import MLHoodAI
 from lib.coginvasion.hood.DGHoodAI import DGHoodAI
 from lib.coginvasion.hood.DDHoodAI import DDHoodAI
+from lib.coginvasion.cogtropolis.CTHoodAI import CTHoodAI
 
 from panda3d.core import UniqueIdAllocator
 from lib.coginvasion.globals import CIGlobals
@@ -79,7 +80,7 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         self.timeManager = TimeManagerAI(self)
         self.timeManager.generateWithRequired(2)
 
-        self.areas = [TTHoodAI, MGHoodAI, BRHoodAI, DLHoodAI, MLHoodAI, DGHoodAI, DDHoodAI]
+        self.areas = [TTHoodAI, MGHoodAI, BRHoodAI, DLHoodAI, MLHoodAI, DGHoodAI, DDHoodAI, CTHoodAI]
         self.areaIndex = 0
 
         taskMgr.add(self.makeAreasTask, 'makeAreasTask')

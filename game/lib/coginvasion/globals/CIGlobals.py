@@ -161,10 +161,10 @@ RecoverArea = "Recover Area"
 
 Hood2ZoneId = {ToontownCentral: 2000, DonaldsDock: 1000, TheBrrrgh: 3000,
                MinniesMelodyland: 4000, DaisyGardens: 5000, DonaldsDreamland: 9000,
-               MinigameArea: 10000}
+               MinigameArea: 10000, CogTropolis: 12000}
 ZoneId2Hood = {2000: ToontownCentral, 1000: DonaldsDock, 3000: TheBrrrgh,
                4000: MinniesMelodyland, 5000: DaisyGardens, 9000: DonaldsDreamland,
-               10000: MinigameArea}
+               10000: MinigameArea, 12000: CogTropolis}
 
 SellbotFactory = "Sellbot Factory"
 ToonBattleOriginalLevel = "Original Level"

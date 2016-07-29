@@ -19,8 +19,8 @@ from lib.coginvasion.hood import ZoneUtil
 class Objective:
     notify = directNotify.newCategory('Objective')
 
-    def __init__(self, quest, location, assignDialog):
-        self.quest = quest
+    def __init__(self, location, assignDialog):
+        self.quest = None
         self.location = location
 
         # This is the dialog the NPC says before the objective is given to you.

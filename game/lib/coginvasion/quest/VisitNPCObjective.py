@@ -14,9 +14,9 @@ from lib.coginvasion.toon.ToonHead import ToonHead
 class VisitNPCObjective(Objective):
     notify = directNotify.newCategory('VisitNPCObjective')
 
-    def __init__(self, npcId, quest, assignDialog, location = None):
+    def __init__(self, npcId, assignDialog, location = None):
         location = CIGlobals.NPCToonDict.get(npcId)[0] if not location else location
-        Objective.__init__(self, quest, location, assignDialog)
+        Objective.__init__(self, location, assignDialog)
         self.npcId = npcId
         self.didEditLeft = True
 

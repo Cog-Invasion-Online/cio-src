@@ -12,6 +12,9 @@ from direct.interval.IntervalGlobal import Parallel, LerpHprInterval
 
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.cog.Suit import Suit
+from lib.coginvasion.cog.SuitType import SuitType
+from lib.coginvasion.cog import SuitBank
+from lib.coginvasion.cog import Variant
 import NURBSMopath
 import CityCartGlobals
 
@@ -97,7 +100,7 @@ class DistributedCityCart(DistributedNode):
 
     def exitPathFollow(self):
         self.ignore('enter' + self.collNodePath.node().getName())
-        #base.taskMgr.remove(self.uniqueName('DCityCart.drive'))
+        base.taskMgr.remove(self.uniqueName('DCityCart.drive'))
         if self.wheelSpinTrack:
             self.wheelSpinTrack.finish()
             self.wheelSpinTrack = None
@@ -116,21 +119,21 @@ class DistributedCityCart(DistributedNode):
         self.cart = loader.loadModel(self.cartModelPath)
         self.cart.reparentTo(self)
         self.cart.setH(180)
-        heads = []
-        for head in CIGlobals.SuitBodyData.keys():
-            if CIGlobals.SuitBodyData[head][0] != 'B':
-                heads.append(head)
-        head = random.choice(heads)
-        suitType = CIGlobals.SuitBodyData[head][0]
-        suitDept = CIGlobals.SuitBodyData[head][1]
+        plans = []
+        for plan in SuitBank.getSuits():
+            if plan.getSuitType() != SuitType.B:
+                plans.append(plan)
+        plan = random.choice(plans)
         self.suitInCar = Suit()
-        self.suitInCar.generateSuit(suitType, head, suitDept, 137, 0, False)
+        self.suitInCar.level = 0
+        self.suitInCar.generate(plan, Variant.NORMAL)
         self.suitInCar.loop('sit')
         self.suitInCar.disableRay()
         self.suitInCar.setScale(0.7)
         self.suitInCar.setH(180)
         self.suitInCar.setPos(0, -1, -1.5)
         self.suitInCar.reparentTo(self.cart.find('**/seat1'))
+        self.suitInCar.show()
         self.soundEngineLoop = base.audio3d.loadSfx('phase_6/audio/sfx/KART_Engine_loop_0.ogg')
         base.audio3d.attachSoundToObject(self.soundEngineLoop, self)
         base.playSfx(self.soundEngineLoop, looping = 1)

@@ -2,7 +2,7 @@
 # Created by:  blach (13Aug15)
 
 from panda3d.core import *
-"""
+
 class NURBSMopath:
 
     def __init__(self, curve, name = None):
@@ -15,6 +15,7 @@ class NURBSMopath:
         self.cnpRef = None
         self.rope = None
         self.evaluator = None
+        self.rotate = False
         self.nurbs = None
         self.tDisplace = 0
         self.tCurrent = 0
@@ -32,8 +33,8 @@ class NURBSMopath:
         if self.cnpRef:
             self.cnpRef.detachNode()
         self.cnpRef = loader.loadModel(fname, noCache=True)
-        self.cnpRef.ls()
-        self.cnpRef.reparentTo(parent)
+        #self.cnpRef.ls()
+        #self.cnpRef.reparentTo(parent)
         if self.cnpRef:
             if not self.__extractCurves(self.cnpRef):
                 print 'NURBSMopath: can\'t find any curves in file: %s' % fname
@@ -89,16 +90,18 @@ class NURBSMopath:
             self.nurbs.evalPoint(t, p)
             self.node.setPos(self.rope, p)
             self.nurbs.evalTangent(t, v)
-            v = render.getRelativeVector(self.rope, v)
-            self.node.lookAt(self.node.getPos() + v)
+            if self.rotate:
+                v = render.getRelativeVector(self.rope, v)
+                self.node.lookAt(self.node.getPos() + v)
 
-    def play(self, node, duration = 1.0, resume = False, loop = False, startT = 0.0):
+    def play(self, node, duration = 1.0, resume = False, loop = False, startT = 0.0, rotate = True):
         if self.nurbs:
             if not resume:
                 self.lastTime = 0
             self.node = node
             self.duration = duration
             self.loop = loop
+            self.rotate = rotate
             self.stop()
             self.tDisplace = startT
             t = taskMgr.add(self.__playTask, self.name + '-play')
@@ -225,4 +228,4 @@ class NURBSMopath():
         start,stop = self.getRange()
         self.tDisplace = 0
         taskMgr.remove(self.name + '-play')
-
+"""

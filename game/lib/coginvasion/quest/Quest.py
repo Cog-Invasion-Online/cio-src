@@ -20,16 +20,20 @@ from lib.coginvasion.quest import QuestGlobals
 class Quest:
     notify = directNotify.newCategory('Quest')
 
-    def __init__(self, name, requirement, tier, rewards = []):
+    def __init__(self, name, requirement, tier, questId = -1, rewards = [], objectives = []):
         self.name = name
         self.requirement = requirement
         self.tier = tier
         self.rewards = rewards
-        self.objectives = []
+
+        self.objectives = objectives
+        for objective in objectives:
+            objective.quest = self
+
         self.completedObjectives = []
         self.currentObjective = None
         self.deletable = False
-        self.id = -1
+        self.id = questId
         self.resetGUIVariables()
 
         # Strangers are NPCs, such as HQ officers who give out the quest.

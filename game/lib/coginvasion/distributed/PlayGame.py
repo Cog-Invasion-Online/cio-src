@@ -17,6 +17,7 @@ from lib.coginvasion.hood import MLHood
 from lib.coginvasion.hood import DGHood
 from lib.coginvasion.hood import DDHood
 from lib.coginvasion.hood import CTCHood
+from lib.coginvasion.cogtropolis import CTHood
 
 from lib.coginvasion.hood.QuietZoneState import QuietZoneState
 
@@ -34,7 +35,8 @@ class PlayGame(StateData):
                 CIGlobals.MinniesMelodyland: MLHood.MLHood,
                 CIGlobals.DaisyGardens: DGHood.DGHood,
                 CIGlobals.DonaldsDock: DDHood.DDHood,
-                CIGlobals.BattleTTC: CTCHood.CTCHood}
+                CIGlobals.BattleTTC: CTCHood.CTCHood,
+                CIGlobals.CogTropolis: CTHood.CTHood}
     Hood2HoodState = {CIGlobals.ToontownCentral: 'TTHood',
                 CIGlobals.MinigameArea: 'MGHood',
                 CIGlobals.TheBrrrgh: 'BRHood',
@@ -42,14 +44,15 @@ class PlayGame(StateData):
                 CIGlobals.MinniesMelodyland: 'MLHood',
                 CIGlobals.DaisyGardens: 'DGHood',
                 CIGlobals.DonaldsDock: 'DDHood',
-                CIGlobals.BattleTTC: 'CTCHood'}
+                CIGlobals.BattleTTC: 'CTCHood',
+                CIGlobals.CogTropolis: 'CTHood'}
 
     def __init__(self, parentFSM, doneEvent):
         StateData.__init__(self, "playGameDone")
         self.doneEvent = doneEvent
         self.fsm = ClassicFSM('World', [State('off', self.enterOff, self.exitOff, ['quietZone']),
                 State('quietZone', self.enterQuietZone, self.exitQuietZone, ['TTHood',
-                    'BRHood', 'DLHood', 'MLHood', 'DGHood', 'DDHood', 'MGHood', 'CTCHood']),
+                    'BRHood', 'DLHood', 'MLHood', 'DGHood', 'DDHood', 'MGHood', 'CTCHood', 'CTHood']),
                 State('TTHood', self.enterTTHood, self.exitTTHood, ['quietZone']),
                 State('BRHood', self.enterBRHood, self.exitBRHood, ['quietZone']),
                 State('DLHood', self.enterDLHood, self.exitDLHood, ['quietZone']),
@@ -57,7 +60,8 @@ class PlayGame(StateData):
                 State('DGHood', self.enterDGHood, self.exitDGHood, ['quietZone']),
                 State('DDHood', self.enterDDHood, self.exitDDHood, ['quietZone']),
                 State('MGHood', self.enterMGHood, self.exitMGHood, ['quietZone']),
-                State('CTCHood', self.enterCTCHood, self.exitCTCHood, ['quietZone'])],
+                State('CTCHood', self.enterCTCHood, self.exitCTCHood, ['quietZone']),
+                State('CTHood', self.enterCTHood, self.exitCTHood, ['quietZone'])],
                 'off', 'off')
         self.fsm.enterInitialState()
 
@@ -95,6 +99,17 @@ class PlayGame(StateData):
 
     def exitOff(self):
         pass
+        
+    def enterCTHood(self, requestStatus):
+        self.accept(self.hoodDoneEvent, self.handleHoodDone)
+        self.hood.enter(requestStatus)
+
+    def exitCTHood(self):
+        self.ignore(self.hoodDoneEvent)
+        self.hood.exit()
+        self.hood.unload()
+        self.hood = None
+        self.lastHood = CIGlobals.CogTropolis
 
     def enterCTCHood(self, requestStatus):
         self.accept(self.hoodDoneEvent, self.handleHoodDone)

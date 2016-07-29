@@ -11,10 +11,10 @@ from lib.coginvasion.quest import QuestGlobals
 class RecoverItemObjective(CogObjective):
     notify = directNotify.newCategory('RecoverItemObjective')
 
-    def __init__(self, amount, itemName, quest, assignDialog, location = None,
+    def __init__(self, amount, itemName, assignDialog, location = None,
         itemIcon = QuestGlobals.getPackageIcon(), level = None, levelRange = None, name = None,
         variant = None, dept = None):
-        CogObjective.__init__(self, quest, location, assignDialog, amount, level = level, levelRange = levelRange,
+        CogObjective.__init__(self, location, assignDialog, amount, level = level, levelRange = levelRange,
             name = name, variant = variant, dept = dept)
         self.itemName = itemName
         self.itemIcon = itemIcon

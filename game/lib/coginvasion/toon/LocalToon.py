@@ -843,8 +843,7 @@ class LocalToon(DistributedToon):
                 'loader': ZoneUtil.getLoaderName(toZone),
                 'shardId': None,
                 'wantLaffMeter': 1,
-                'how': 'teleportIn',
-                'world': CIGlobals.OToontown}
+                'how': 'teleportIn'}
         self.cr.playGame.getPlace().fsm.request('teleportOut', [requestStatus])
 
     def createChatInput(self):
