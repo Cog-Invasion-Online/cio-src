@@ -79,7 +79,7 @@ AsyncTask::DoneStatus CTMusicManager::load_tournament_music(GenericAsyncTask* ta
 
 				string fullfile = folder + filename + extension;
 				PT(AudioSound) song = CTMusicData::audio_mgr->get_sound(fullfile);
-				song->set_volume(0.5f);
+				song->set_volume(0.75f);
 				song->set_loop(false);
 				tournament_music_chunks[song_name][chunk_name].push_back(song);
 

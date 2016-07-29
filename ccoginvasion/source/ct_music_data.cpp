@@ -35,7 +35,7 @@ void CTMusicData::initialize_chunk_data() {
 	// This should only be called once on startup, so make the task chain.
 	PT(AsyncTaskChain) taskchain = AsyncTaskManager::get_global_ptr()->make_task_chain("TournamentMusicThread");
 	taskchain->set_frame_sync(false);
-	taskchain->set_thread_priority(ThreadPriority::TP_urgent);
+	taskchain->set_thread_priority(ThreadPriority::TP_normal);
 	taskchain->set_num_threads(1);
 
 	// Make our own special Audio Manager that we will update on our thread.
