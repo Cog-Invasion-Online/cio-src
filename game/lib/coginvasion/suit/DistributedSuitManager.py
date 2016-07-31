@@ -1,7 +1,10 @@
 """
 
-  Filename: DistributedSuitManager.py
-  Created by: blach (22Dec14)
+Copyright (c) Cog Invasion Online. All rights reserved.
+
+@file DistributedSuitManager.py
+@author Brian Lach
+@date 2014-12-22
 
 """
 

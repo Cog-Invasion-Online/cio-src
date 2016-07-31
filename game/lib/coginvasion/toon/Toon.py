@@ -461,24 +461,25 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.tokenIconIval = None
             self.tokenIcon = None
 
-    def setChat(self, chatString):
-        if not self.isThought(chatString):
-            if not self.getGhost() or self.doId == base.localAvatar.doId:
-                if "ooo" in chatString.lower():
-                    sfx = self.chatSoundDict['howl']
-                elif "!" in chatString.lower():
-                    sfx = self.chatSoundDict['exclaim']
-                elif "?" in chatString.lower():
-                    sfx = self.chatSoundDict['question']
-                elif len(chatString) <= 9:
-                    sfx = self.chatSoundDict['short']
-                elif 10 <= len(chatString) <= 19:
-                    sfx = self.chatSoundDict['medium']
-                elif len(chatString) >= 20:
-                    sfx = self.chatSoundDict['long']
-                base.playSfx(sfx, node = self)
+    def playChatSfx(self, chatString):
+        if not self.getGhost() or self.doId == base.localAvatar.doId:
+            if "ooo" in chatString.lower():
+                sfx = self.chatSoundDict['howl']
+            elif "!" in chatString.lower():
+                sfx = self.chatSoundDict['exclaim']
+            elif "?" in chatString.lower():
+                sfx = self.chatSoundDict['question']
+            elif len(chatString) <= 9:
+                sfx = self.chatSoundDict['short']
+            elif 10 <= len(chatString) <= 19:
+                sfx = self.chatSoundDict['medium']
+            elif len(chatString) >= 20:
+                sfx = self.chatSoundDict['long']
+            base.playSfx(sfx, node = self)
 
-        Avatar.Avatar.setChat(self, chatString)
+    def chatStompComplete(self, chatString):
+        if not self.isThought(chatString):
+            self.playChatSfx(chatString)
 
     def setName(self, nameString):
         Avatar.Avatar.setName(self, nameString, avatarType = self.avatarType)
@@ -487,10 +488,10 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         ToonDNA.ToonDNA.setDNAStrand(self, dnaStrand)
         self.deleteCurrentToon()
         self.generateToon(makeTag)
-        
+
     def generateMask(self):
         # No accessories yet.
-        
+
         if self.shirt == self.shirtDNA2shirt['27']:
             # This toon is wearing the tsa suit, give them some sweet shades.
             name = 'tsaGlasses'
@@ -505,11 +506,11 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                 posHprScale = AccessoryGlobals.MaskTransExtended[name][self.animal].get(self.headLength)
                 if not posHprScale:
                     posHprScale = AccessoryGlobals.MaskTrans[self.animal][self.headLength]
-            
+
             glasses.setPos(posHprScale[0])
             glasses.setHpr(posHprScale[1])
             glasses.setScale(posHprScale[2])
-            
+
             self.accessories.append(glassesNode)
 
     def generateToon(self, makeTag = 1):
@@ -522,7 +523,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.parentToonParts()
         self.rescaleToon()
         self.generateMask()
-            
+
         if makeTag:
             self.setupNameTag()
         Avatar.Avatar.initShadow(self)

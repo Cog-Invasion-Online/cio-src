@@ -4,44 +4,43 @@
 from lib.coginvasion.suit import CogBattleGlobals
 from lib.coginvasion.globals.CIGlobals import *
 
-QuestTypes = {-1: "Do", 0: "Defeat", 1: "Recover", 2: "Deliver"}
-QuestSubjects = {-1: "Nothing", 0: "Cogs", 1: "Cog Invasions", 2: "Lawbots",
-    3: "Bossbots", 4: "Sellbots", 5: "Cashbots", 6: "Cog Tournaments"}
-AbbrToDept = {'l': QuestSubjects[2], 'c': QuestSubjects[3], 's': QuestSubjects[4], 'm': QuestSubjects[5]}
-CogSubjects = [0, 2, 3, 4, 5, 6]
-DeptSubjects = [2, 3, 4, 5]
-QuestSubject2SubjectId = {v: k for k, v in QuestSubjects.items()}
-Areas = [ToontownCentral, TheBrrrgh, DonaldsDreamland, MinniesMelodyland, DaisyGardens, DonaldsDock]
-QuestAreas = {
-    -1: "Nowhere",
-    0: "Anywhere",
-    1: "in " + ToontownCentral,
-    2: "in " + TheBrrrgh,
-    3: "in " + DonaldsDreamland,
-    4: "in " + MinniesMelodyland,
-    5: "in " + DaisyGardens,
-    6: "in " + DonaldsDock
-}
-QuestRewards = {-1: 'No reward', 0: 'For a %d point Laff boost', 1: 'For access to %s', 2: 'For %d jellybeans'}
+Any = 0
+Anywhere = 0
 
-TypeIndex = 0
-SubjectIndex = 1
-AreaIndex = 2
-RewardIndex = 3
-ProgressIndex = 4
-GoalIndex = 5
-RewardValueIndex = 6
+class Tiers:
+    TT = 13
+    DD = 14
+    DG = 15
+    ML = 16
+    BR = 17
+    DL = 18
 
+class NPCDialogue:
+    Goodbyes = ["Have a great day!", "Have fun in Toontown!", "Goodbye!", "See you soon!"]
+    QuestAssignGoodbyes = Goodbyes + ["Good luck!", "I believe in you!", "You can do it!"]
+
+    QuestCompletedIntros = ["Say there, %s!", "Hello, %s!", "Hi there, %s.", "Thank you, %s!", "Hey, %s!"]
+    QuestCompletedCongrats = ["Great job, %s!", "Great job completing that Quest!", "Nice job, %s.",
+                                "Nice job completing that Quest.", "Amazing job, %s!", "Good job, %s!"]
+
+    FindNPC = ["You can find %s at %s...", "%s is located at %s..."]
+    WhichIs = "...which is %s"
+
+    Reward = ["Enjoy having %s!", "You have earned %s.", "You now have %s."]
+
+# Makes a word past tense.
 def makePastTense(text):
     if text.endswith('e'):
         return text + 'd'
     else:
         return text + 'ed'
 
+# Makes a word singular.
 def makeSingular(text):
     if text.endswith('s'):
         return text[:-1]
 
+# Makes a word plural.
 def makePlural(text):
     if text.endswith('y'):
         text = text[:-1]
@@ -50,3 +49,7 @@ def makePlural(text):
         return text
     else:
         return text + 's'
+
+# Returns number as a string with an ordinal.
+def getOrdinal(number):
+    return "%d%s" % (number,"tsnrhtdd"[(number / 10 % 10 != 1) * (number % 10 < 4) * number % 10::4])

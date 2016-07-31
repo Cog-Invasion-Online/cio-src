@@ -30,7 +30,7 @@ class Avatar(ToonTalker.ToonTalker, Actor):
 
         ToonTalker.ToonTalker.__init__(self)
         Actor.__init__(self, None, None, None, flattenable=0, setFinal=1)#self.setColorOff()
-        
+
         self.mat = mat
         self._name = ''
         self.chat = ''
@@ -52,6 +52,9 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         self.tag = None
         self.height = 0
         return
+
+    def chatStompComplete(self, text):
+        pass
 
     def deleteNameTag(self):
         self.deleteNametag3d()

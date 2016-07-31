@@ -4,115 +4,132 @@
 from direct.showbase.DirectObject import DirectObject
 
 from lib.coginvasion.globals import CIGlobals
-from QuestManagerBase import QuestManagerBase
-import QuestNote, Quests, QuestGlobals
 from lib.coginvasion.hood import ZoneUtil
+
+from QuestManagerBase import QuestManagerBase
+import QuestNote
+import Quests
+from QuestGlobals import *
+import Objectives
 
 class QuestManager(QuestManagerBase):
 
     def makeQuestsFromData(self):
         QuestManagerBase.makeQuestsFromData(self, base.localAvatar)
 
+    # Returns a string that could be used as speech or for a quest note.
+    # It gives information about the quest and what you have to do.
+    def getTaskInfo(self, objective, speech = False):
+        taskInfo = ""
+
+        if speech:
+            # If it's speech, add the objective's header (e.g Defeat, Recover, Deliver) to the beginning of the sentence.
+            taskInfo += objective.Header + " "
+
+        if objective.goal > 1:
+            # If the goal is more than one, put the number.
+            taskInfo += "%d " % objective.goal
+        else:
+            # If the goal is only one, but `a`.
+            taskInfo += "a "
+
+        # Add objective specific task info
+        taskInfo += objective.getTaskInfo()
+
+        if objective.AreaSpecific:
+            # This objective is sometimes area specific.
+            if objective.area == Anywhere:
+                # The objective's area is anywhere. If it's not speech, make a new line and put Anywhere.
+                # If it's speech, put a space and then Anywhere.
+                taskInfo += "\nAnywhere" if not speech else " Anywhere"
+            else:
+                # Say what area the objective must be completed in.
+                taskInfo += "\nin " + ZoneUtil.getHoodId(objective.area) if not speech else " in " + ZoneUtil.getHoodId(objective.area)
+
+        if speech:
+            # Always put a period at the end of the sentence if it's speech!
+            taskInfo += "."
+
+        return taskInfo
+
+    # Generates and returns a list of QuestNote objects that display information about the quests.
+    # You can specify a custom quest list. If you don't it will use the QuestManager's quest dictionary.
     def makeQuestNotes(self, quests = None):
+        # This is what will be returned at the end. It's going to hold our QuestNotes we generate.
         notes = []
+
         if not quests:
+            # A custom quest list was not specified, use our dictionary.
             quests = self.quests.values()
+
         for quest in quests:
 
             objective = quest.currentObjective
 
+            # Create the QuestNote instance
             note = QuestNote.QuestNote(quest.index)
 
-            isDefeatObjective = objective.type in (Quests.DefeatCog, Quests.DefeatCogDept,
-                Quests.DefeatCogInvasion, Quests.DefeatCogTournament, Quests.DefeatCogLevel)
-
-            heading = None
-            if isDefeatObjective:
-                heading = Quests.DefeatText
-            elif objective.type in [Quests.VisitNPC, Quests.VisitHQOfficer]:
-                heading = Quests.VisitText
+            # Set the notes heading as the objective's Header (e.g Defeat, Recover, Deliver, Visit)
+            heading = objective.Header
             note.setHeading(heading)
 
             taskInfo = None
-            if isDefeatObjective:
-                if objective.goal > 1:
-                    taskInfo = "%d " % objective.goal
-                else:
-                    taskInfo = "a "
-                if objective.type == Quests.DefeatCog:
-                    if objective.subject == Quests.Any:
-                        taskInfo += CIGlobals.Suits
-                    else:
-                        if objective.goal > 1:
-                            taskInfo += QuestGlobals.makePlural(CIGlobals.SuitNames[objective.subject])
-                        else:
-                            taskInfo += CIGlobals.SuitNames[objective.subject]
-                elif objective.type in (Quests.DefeatCogInvasion, Quests.DefeatCogTournament, Quests.DefeatCogDept):
-                    if objective.goal > 1:
-                        if objective.type == Quests.DefeatCogDept:
-                            taskInfo += QuestGlobals.AbbrToDept[objective.subject]
-                        elif objective.type == Quests.DefeatCogInvasion:
-                            taskInfo += QuestGlobals.QuestSubjects[1]
-                        elif objective.type == Quests.DefeatCogTournament:
-                            taskInfo += QuestGlobals.QuestSubjects[6]
-                    else:
-                        if objective.type == Quests.DefeatCogDept:
-                            taskInfo += QuestGlobals.makeSingular(QuestGlobals.AbbrToDept[objective.subject])
-                        elif objective.type == Quests.DefeatCogInvasion:
-                            taskInfo += QuestGlobals.makeSingular(QuestGlobals.QuestSubjects[1])
-                        elif objective.type == Quests.DefeatCogTournament:
-                            taskInfo += QuestGlobals.makeSingular(QuestGlobals.QuestSubjects[6])
-                elif objective.type == Quests.DefeatCogLevel:
-                    if objective.goal > 1:
-                        taskInfo += "Level %d+ %s" % (objective.minCogLevel, CIGlobals.Suits)
-                    else:
-                        taskInfo += "Level %d+ %s" % (objective.minCogLevel, CIGlobals.Suit)
-                if objective.area == Quests.Any:
-                    taskInfo += "\nAnywhere"
-                else:
-                    taskInfo += "\nin " + ZoneUtil.getHoodId(objective.area)
-            elif objective.type == Quests.VisitNPC:
+            if objective.type not in [Objectives.VisitNPC, Objectives.VisitHQOfficer]:
+                # Get task info.
+                taskInfo = self.getTaskInfo(objective)
+
+            elif objective.type == Objectives.VisitNPC:
+                # Say the NPC name and the building of the NPC.
                 nameOfNPC = CIGlobals.NPCToonNames[objective.npcId]
                 placeOfNPC = CIGlobals.zone2TitleDict[objective.npcZone][0]
                 taskInfo = nameOfNPC + "\nat " + placeOfNPC
-            elif objective.type == Quests.VisitHQOfficer:
+
+            elif objective.type == Objectives.VisitHQOfficer:
+                # Say it's an hq officer at Toon HQ
                 taskInfo = "an HQ Officer\nat a Toon HQ"
+
+            # Apply the task info
             note.setTaskInfo(taskInfo)
 
             progress = ""
-            if isDefeatObjective:
+            if objective.HasProgress:
+                # This objective has progress (e.g 2 of 5 Defeated, 0 of 1 Recovered)
                 if not objective.isComplete():
-                    if isDefeatObjective:
-                        progress = "%d of %d " % (objective.progress, objective.goal) + QuestGlobals.makePastTense(Quests.DefeatText)
-                        note.setProgress(progress)
+                    # The objective isn't complete so we will show the progress text.
+                    progress = objective.getProgressText()
+                    note.setProgress(progress)
                 else:
+                    # The objective is complete so we will make the quest note green and say completed.
                     note.setCompleted(1)
-            elif objective.type == Quests.VisitNPC:
+
+            elif objective.type == Objectives.VisitNPC:
+                # Show the street name and hood name of where this NPC is located.
+
                 streetZone = ZoneUtil.getBranchZone(objective.npcZone)
                 if streetZone % 1000 >= 100:
                     streetName = CIGlobals.BranchZone2StreetName[streetZone]
                 else:
                     streetName = "the Playground"
+
                 hoodName = ZoneUtil.getHoodId(streetZone, 1)
+
                 progress = "on %s\nin %s" % (streetName, hoodName)
+
+                # Apply the progress text
                 note.setProgress(progress)
-            elif objective.type == Quests.VisitHQOfficer:
+
+            elif objective.type == Objectives.VisitHQOfficer:
+                # HQ officers are at any street and any playground.
                 progress = "Any Street\nAny Playground"
+
+                # Apply the progress text
                 note.setProgress(progress)
 
-            reward = ""
-            if quest.rewardType == Quests.RewardJellybeans:
-                reward = "For %d jellybeans"
-            elif quest.rewardType == Quests.RewardHealth:
-                reward = "For a %d point Laff boost"
-            elif quest.rewardType == Quests.RewardAccess:
-                reward = "For access to %s"
-            elif quest.rewardType == Quests.RewardNone:
-                reward = "For no reward"
-            if '%s' in reward or '%d' in reward:
-                note.setReward(reward % quest.rewardValue)
-            else:
-                note.setReward(reward)
+            # Get the reward dialogue from the reward class of the quest.
+            note.setReward("For " + quest.reward.fillInDialogue())
 
+            # Add this QuestNote to the list.
             notes.append(note)
+
+        # Return our beautiful list of QuestNotes.
         return notes

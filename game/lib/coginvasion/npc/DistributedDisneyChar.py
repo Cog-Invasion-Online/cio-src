@@ -173,15 +173,17 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.neutralFSM.request('off')
         self.stop()
 
-    def setChat(self, chat):
-        if self.charId == SLEEP_DONALD:
-            chat = "." + chat
-        DistributedAvatar.setChat(self, chat)
+    def chatStompComplete(self, chatString):
         if self.chatsSinceLastNoise >= self.chatsWithoutNoise or self.chatsSinceLastNoise == 0:
             base.playSfx(self.speechSound, node = self)
             self.chatsSinceLastNoise = 0
             self.chatsWithoutNoise = random.randint(1, 5)
         self.chatsSinceLastNoise += 1
+
+    def setChat(self, chat):
+        if self.charId == SLEEP_DONALD:
+            chat = "." + chat
+        DistributedAvatar.setChat(self, chat)
 
     def loadChar(self):
         data = CHAR_DATA[self.charId]

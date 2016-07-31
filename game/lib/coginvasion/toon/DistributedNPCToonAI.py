@@ -62,33 +62,36 @@ class DistributedNPCToonAI(DistributedToonAI):
             self.sendUpdateToAvatarId(avId, 'rejectEnter', [])
         else:
             self.currentAvatar = avId
-            #av = self.air.doId2do.get(avId)
-            #self.currentAvatarQuestOfMe = av.questManager.getQuestAndIdWhereCurrentObjectiveIsToVisit(self.npcId)
+            av = self.air.doId2do.get(avId)
+            self.currentAvatarQuestOfMe = av.questManager.getQuestAndIdWhereCurrentObjectiveIsToVisit(self.npcId)
             self.startWatchingCurrentAvatar()
             self.sendUpdateToAvatarId(avId, 'enterAccepted', [])
             self.sendUpdate('lookAtAvatar', [avId])
             self.doQuestStuffWithThisAvatar()
-            
+
+    """
+    NEW QUEST STUFF
+
     def doQuestStuffWithThisAvatar(self):
         av = self.air.doId2do.get(self.currentAvatar)
         if av:
             myQuest = av.questManager.getQuestToVisit(self.npcId)
-            
+
             if myQuest:
                 if myQuest.getNextObjective() is not None:
                     av.questManager.incrementObjective(myQuest)
                 else:
                     pass
-                
+
     def hasValidReasonToEnter(self, avId):
         av = self.air.doId2do.get(avId)
         if av:
             chatArray = CIGlobals.NPCEnter_Pointless_Dialogue
             welcomeToShopDialogIndex = 28
-            
+
             if av.questManager.wasLastObjectiveToVisit(self.npcId):
                 chatArray = CIGlobals.NPCEnter_MFCO_Dialogue
-            
+
             if not chatArray:
                 chat = random.choice(chatArray)
                 if '%s' in chat:
@@ -99,9 +102,9 @@ class DistributedNPCToonAI(DistributedToonAI):
                 self.d_setChat(chat)
                 return False
             return True
-    
+
     """
-    OLD QUEST STUFF
+
     def doQuestStuffWithThisAvatar(self):
         av = self.air.doId2do.get(self.currentAvatar)
         if av:
@@ -110,9 +113,6 @@ class DistributedNPCToonAI(DistributedToonAI):
                 questId = self.currentAvatarQuestOfMe[0]
                 if av.questManager.isOnLastObjectiveOfQuest(questId):
                     if quest.isComplete():
-                        if self.isHQOfficer():
-                            self.d_setChat(Quests.HQOfficerQuestCongrats)
-                            self.sendUpdateToAvatarId(self.currentAvatar, 'oneChatThenExit', [])
                         av.questManager.completedQuest(questId)
                 else:
                     av.questManager.incrementQuestObjective(questId)
@@ -143,7 +143,6 @@ class DistributedNPCToonAI(DistributedToonAI):
                 self.d_setChat(chat)
                 return False
             return True
-    """
 
     def requestExit(self):
         avId = self.air.getAvatarIdFromSender()

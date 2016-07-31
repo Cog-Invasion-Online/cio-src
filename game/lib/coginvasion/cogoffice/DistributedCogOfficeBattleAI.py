@@ -130,6 +130,12 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
     def enterVictory(self):
         base.taskMgr.doMethodLater(VICTORY_TIME, self.victoryTask, self.uniqueName('victoryTask'))
+        
+        for avId in self.avIds:
+            avatar = self.air.doId2do.get(avId)
+            if avatar:
+                # Let this avatar's quest manager know that they have defeated a cog building.
+                avatar.questManager.cogBuildingDefeated(self.hood, self.deptClass, self.numFloors)
 
     def victoryTask(self, task):
         while len(self.avIds) < 4:

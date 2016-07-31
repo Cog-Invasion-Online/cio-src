@@ -18,6 +18,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
             self.DistributedMinigameAI_initialized = 1
         DistributedObjectAI.DistributedObjectAI.__init__(self, air)
         TimerAI.TimerAI.__init__(self)
+        self.gameName = None
         self.air = air
         self.readyAvatars = 0
         self.numPlayers = 0
@@ -27,6 +28,9 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
         self.finalScores = []
         self.finalScoreAvIds = []
         return
+
+    def setGameName(self, game):
+        self.gameName = game
 
     def setRound(self, round):
         self.round = round
@@ -116,6 +120,12 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
 
     def d_gameOver(self, winner=0, winnerDoId=[]):
         self.givePrizes(winnerDoId)
+
+        for avatar in self.avatars:
+            # Let this avatar's quest manager know that they have played a minigame.
+            print "Letting questManager know"
+            avatar.questManager.minigamePlayed(self.gameName)
+
         self.sendUpdate('gameOver', [winner, winnerDoId, 0])
 
     def d_abort(self):
@@ -123,6 +133,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
 
     def givePrizes(self, winnerAvId):
         for avatar in self.avatars:
+
             if avatar.doId in winnerAvId:
                 avatar.b_setMoney(avatar.getMoney() + self.winnerPrize)
             else:
@@ -144,4 +155,5 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
         self.avatars = None
         self.zone = None
         self.round = None
+        self.gameName = None
         return

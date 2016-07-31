@@ -11,7 +11,7 @@ from direct.directnotify.DirectNotify import DirectNotify
 from panda3d.core import *
 from lib.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from lib.coginvasion.gags.backpack.BackpackAI import BackpackAI
-from lib.coginvasion.quest.QuestManagerAI import QuestManagerAI
+from lib.coginvasion.quests.QuestManagerAI import QuestManagerAI
 from lib.coginvasion.tutorial.DistributedTutorialAI import DistributedTutorialAI
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 import ToonDNA
@@ -31,7 +31,7 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         DistributedAvatarAI.__init__(self, air)
         DistributedSmoothNodeAI.__init__(self, air)
         ToonDNA.ToonDNA.__init__(self)
-        self.questManager = QuestManagerAI(air, self)
+        self.questManager = QuestManagerAI(self)
         self.avatarType = CIGlobals.Toon
         self.money = 0
         self.anim = "neutral"
@@ -84,7 +84,18 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         self.teleportAccess = []
         self.lastHood = 0
         self.defaultShard = 0
+        self.numGagSlots = 0
         return
+
+    def setNumGagSlots(self, num):
+        self.numGagSlots = num
+
+    def b_setNumGagSlots(self, num):
+        self.sendUpdate('setNumGagSlots', [num])
+        self.setNumGagSlots(num)
+
+    def getNumGagSlots(self):
+        return self.numGagSlots
 
     def setDefaultShard(self, shardId):
         self.defaultShard = shardId
@@ -167,22 +178,22 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
 
     def getFriendsList(self):
         return self.friends
-    
+
     ################################################
     ##       Functions to send Quest updates      ##
     ################################################
-    
+
     def d_incrementQuestObjective(self, questId):
         self.sendUpdate('incrementQuestObjective', [questId])
-        
+
     def d_setQuestObjective(self, questId, objId):
         self.sendUpdate('setQuestObjective', [questId, objId])
-        
+
     def getQuestObjective(self, questId):
         return self.questManager.getQuestByID(questId).getCurrentObjective()
-        
+
     def setTier(self, tier):
-        self.questManager.setTier(tier)
+        self.tier = tier
 
     def d_setTier(self, tier):
         self.sendUpdate('setTier', [tier])
@@ -211,9 +222,8 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         self.sendUpdate('setChat', [chat])
 
     def setQuests(self, questIds, currentObjectives, currentObjectivesProgress):
-        pass
-        #self.quests = [questIds, currentObjectives, currentObjectivesProgress]
-        #self.questManager.makeQuestsFromData()
+        self.quests = [questIds, currentObjectives, currentObjectivesProgress]
+        self.questManager.makeQuestsFromData()
 
     def d_setQuests(self, questIds, currentObjectives, currentObjectivesProgress):
         self.sendUpdate('setQuests', [questIds, currentObjectives, currentObjectivesProgress])
@@ -224,9 +234,9 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
 
     def getQuests(self):
         return self.quests
-    
+
     ################################################
-    
+
 
     def usedPU(self, index):
         self.puInventory[index] = 0
@@ -508,4 +518,5 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
             self.book = None
             self.place = None
             self.attackers = None
+            self.numGagSlots = None
         return

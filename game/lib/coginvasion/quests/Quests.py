@@ -1,109 +1,75 @@
 # Filename: Quests.py
 # Created by:  blach (30Jul15)
 
-from lib.coginvasion.globals.CIGlobals import *
+from lib.coginvasion.globals import CIGlobals
+from lib.coginvasion.cog import SuitGlobals, Dept
 
-Any = 0
+from QuestGlobals import Tiers, Any, Anywhere
+from Objectives import *
+from Rewards import *
 
-DefeatCog = 1
-DefeatCogDept = 2
-DefeatCogInvasion = 3
-DefeatCogTournament = 4
-DefeatCogLevel = 11
-VisitNPC = 5
-VisitHQOfficer = 12
-
-DefeatCogObjectives = [DefeatCog, DefeatCogDept, DefeatCogLevel]
-DefeatObjectives = [DefeatCog, DefeatCogDept, DefeatCogInvasion, DefeatCogTournament, DefeatCogLevel]
-
-RewardNone = 6
-RewardGagTrackProgress = 7
-RewardJellybeans = 8
-RewardHealth = 9
-RewardAccess = 10
-
-TierTT = 13
-TierDD = 14
-TierDG = 15
-TierML = 16
-TierBR = 17
-TierDL = 18
-
-VisHQObj = [VisitHQOfficer, 1, 1, Any]
+VisHQObj = [VisitHQOfficer, 1, 1]
 
 Quests = {
-    #0: {"objectives": [[DefeatCogLevel, 1, 3, Any]], "reward": (RewardHealth, 1), "tier": TierTT},
-    #1: {"objectives": [[VisitNPC, 'visitanNPC', 2308, 2801], []]}
-    0: {"objectives": [[VisitNPC, 'visitanNPC', 2003, 2516],
-                    [DefeatCog, Any, 1, Any],
-                    [VisitNPC, 'visitanNPC', 2003, 2516]],
-        "reward": (RewardHealth, 1), "tier": TierTT},
-    1: {'objectives': [[DefeatCogInvasion, '', 2, ToontownCentralId], VisHQObj], "reward": (RewardHealth, 2), "tier": TierTT, "rq": [0]},
-    2: {'objectives': [[DefeatCogLevel, 3, 25, ToontownCentralId], VisHQObj], "reward": (RewardJellybeans, 1000), "tier": TierTT, "rq": [0]},
-    3: {'objectives': [[DefeatCogTournament, '', 1, ToontownCentralId], VisHQObj], "reward": (RewardHealth, 2), "tier": TierTT, "rq": [0]},
-    4: {'objectives': [[DefeatCogInvasion, '', 10, DonaldsDreamlandId], VisHQObj], "reward": (RewardHealth, 5), "tier": TierTT, "rq": [0, 1, 2, 3]}
+
+    0: {"objectives": [[VisitNPC, 2003, 2516],
+                    [DefeatCog, 1, CIGlobals.ToontownCentralId, SuitGlobals.Flunky],
+                    [VisitNPC, 2003, 2516]],
+        "reward": (Health, 1), "tier": Tiers.TT,
+        "assignSpeech": ("Nice work completing the tutorial!\x07You're probably already exhausted, but " + CIGlobals.NPCToonNames[2003] + " needs"
+                         " you right away.\x07"),
+        "finishSpeech": ("Great job, young lad.\x07I see loads of potential in you.\x07One day you will be one of the best Cog busters around!\x07")},
+
+    1: {"objectives": [[DefeatCogBuilding, 1, CIGlobals.DaisyGardensId, Dept.BOSS, Any], VisHQObj], "reward": (GagSlot, 3), "tier": Tiers.TT},
+    2: {"objectives": [[DefeatCogBuilding, 3, Anywhere, Any, 3], VisHQObj], "reward": (Health, 2), "tier": Tiers.TT},
+    3: {"objectives": [[PlayMinigame, 1, CIGlobals.UnoGame], VisHQObj], "reward": (Health, 1), "tier": Tiers.TT}
+
 }
 
 QuestNPCDialogue = {
-    0: [["Hello! My name is Professor Pete.", "I'm an expert in the field of pretty much everything around here.",
-        "You're new, so you definitely need to learn some things.", "Let's talk about the Cogs.",
-        "Pretty much, you take the Trolley in each playground in order to be taken to CogTropolis, which is where the Cogs are.",
-        "In CogTropolis, you are in the present day Toontown. Right now, you're in the past.",
-        "Show me that you know how to get to CogTropolis by defeating 1 Cog.",
-        "Once you've done that, come back here."], [], ["Great job defeating that Cog! You really have some potential.",
-        "Here, take your reward."]]
+    0: {1: ("Hello! I'm glad you stopped by.\x07My name is " + CIGlobals.NPCToonNames[2003] + ", PhD in Sillytology.\x07I'm conducting a study"
+            " on new Toons to see how much potential they have.\x07Let's see how much potential you have...\x07Go out, defeat a Flunky"
+            " and report back immediately!")}
 }
-
-QuestHQOfficerDialogue = {
-    0: [["Professor Pete has some tips to help you get started in Cog Invasion Online.",
-            "Go see him, he's at the Schoolhouse in Toontown Central.", "Bye!"], [], []],
-    1: [['Defeat 2 Cog Invasions in Toontown Central.', 'Have fun!']],
-    2: [['Defeat 25 Level 3+ Cogs in Toontown Central', 'Have fun in Cog Invasion!']],
-    3: [['Defeat a Cog Tournament anywhere.', 'Bye!']],
-    4: [["Defeat 10 Cog Invasions in Donald's Dreamland.", "Good luck!"]]
-}
-
-HQOfficerQuestCongrats = "Nice job completing that Quest! You have earned your reward."
-HQOfficerNoQuests = "Sorry, but I don't have any quests for you."
-
-DefeatText = "Defeat"
-VisitText = "Visit"
-
-class Objective:
-
-    def __init__(self, objectiveArgs, progress):
-        self.objectiveArgs = objectiveArgs
-        self.type = objectiveArgs[0]
-        if self.type == DefeatCogLevel:
-            self.minCogLevel = objectiveArgs[1]
-        else:
-            self.subject = objectiveArgs[1]
-        if self.type == VisitNPC:
-            self.npcId = objectiveArgs[2]
-            self.npcZone = objectiveArgs[3]
-        else:
-            self.goal = objectiveArgs[2]
-            self.area = objectiveArgs[3]
-        self.progress = progress
-
-    def isComplete(self):
-        return self.progress >= self.goal
 
 class Quest:
 
-    def __init__(self, questId, currentObjectiveIndex, currentObjectiveProgress, index):
+    def __init__(self, questId, currentObjectiveIndex, currentObjectiveProgress, index, questMgr):
         self.questId = questId
+
+        self.questMgr = questMgr
+
         self.numObjectives = len(Quests[questId]["objectives"])
+
         self.currentObjectiveIndex = currentObjectiveIndex
         self.currentObjectiveProgress = currentObjectiveProgress
-        objArgs = Quests[questId]["objectives"][currentObjectiveIndex]
-        self.currentObjective = Objective(objArgs, currentObjectiveProgress)
-        rewardData = Quests[questId]["reward"]
-        self.rewardType = rewardData[0]
-        self.rewardValue = rewardData[1]
+
+        self.questData = Quests[questId]
+
+        objArgs = self.questData["objectives"][currentObjectiveIndex]
+        # Get the objective class from the objective type
+        objClass = ObjectiveType2ObjectiveClass[objArgs[0]]
+        # Create an instance of the objective class
+        self.currentObjective = objClass(objArgs, currentObjectiveProgress, self)
+
+        rewardData = self.questData["reward"]
+        rewardType = rewardData[0]
+        rewardValue = rewardData[1]
+        self.reward = RewardType2RewardClass[rewardType](rewardType, rewardValue)
+
         self.index = index
-        self.tier = Quests[questId]["tier"]
-        self.lastQuestInTier = Quests[questId].get("lastQuestInTier", False)
+
+        self.tier = self.questData["tier"]
+
+        self.assignSpeech = self.questData.get("assignSpeech")
+        self.finishSpeech = self.questData.get("finishSpeech")
+
+        self.objectiveDialogue = QuestNPCDialogue.get(questId)
+
+        self.lastQuestInTier = self.questData.get("lastQuestInTier", False)
+
+    def getIndex(self):
+        return self.index
 
     def isLastQuestInTier(self):
         return self.lastQuestInTier
@@ -118,6 +84,29 @@ class Quest:
         else:
             return self.currentObjectiveIndex >= self.numObjectives - 1
 
+    def cleanup(self):
+        self.questId = None
+        self.numObjectives = None
+        self.currentObjectiveIndex = None
+        self.currentObjectiveProgress = None
+        self.currentObjective = None
+        self.rewardType = None
+        self.rewardValue = None
+        self.index = None
+        self.tier = None
+
+    ##############################################
+    # Objectives
+
+    def getNextObjectiveType(self):
+        return self.questData["objectives"][self.currentObjectiveIndex + 1][0]
+
+    def getNextObjectiveDialogue(self):
+        return self.objectiveDialogue.get(self.currentObjectiveIndex + 1)
+
+    def getObjectiveDialogue(self):
+        return self.objectiveDialogue.get(self.currentObjectiveIndex)
+
     def getCurrentObjectiveProgress(self):
         return self.currentObjectiveProgress
 
@@ -130,25 +119,21 @@ class Quest:
     def getCurrentObjectiveIndex(self):
         return self.currentObjectiveIndex
 
+    ############################################
+
+    ############################################
+    # Rewards
+
+    def giveReward(self, avatar):
+        self.reward.giveReward(avatar)
+
     def getRewardType(self):
-        return self.rewardType
+        return self.reward.rewardType
 
     def getRewardValue(self):
-        return self.rewardValue
+        return self.reward.rewardValue
 
     def getReward(self):
-        return [self.rewardType, self.rewardValue]
+        return self.reward
 
-    def getIndex(self):
-        return self.index
-
-    def cleanup(self):
-        self.questId = None
-        self.numObjectives = None
-        self.currentObjectiveIndex = None
-        self.currentObjectiveProgress = None
-        self.currentObjective = None
-        self.rewardType = None
-        self.rewardValue = None
-        self.index = None
-        self.tier = None
+    ###########################################

@@ -36,6 +36,7 @@ class BackpackGUI(DirectFrame):
         self.trackByName = {}
         self.gagButtonByName = {}
         self.editButton = None
+        self.slotsText = None
         self.fsm = ClassicFSM.ClassicFSM('BackpackGUI', [State.State('off', self.enterOff, self.exitOff),
          State.State('idle', self.enterIdle, self.exitIdle),
          State.State('edit', self.enterEditGags, self.exitEditGags)], 'off', 'off')
@@ -45,6 +46,7 @@ class BackpackGUI(DirectFrame):
          State.State('remove', self.enterRemoveGags, self.exitRemoveGags)], 'off', 'off')
         self.editFSM.enterInitialState()
         self.gm = GagManager.GagManager()
+        self.numSlots = base.localAvatar.getNumGagSlots()
 
     def enterOff(self):
         pass
@@ -67,7 +69,7 @@ class BackpackGUI(DirectFrame):
             if self.isInLoadoutNew(gagName):
                 button['state'] = DGG.DISABLED
                 button['image_color'] = self.InLoadoutColor
-            elif len(self.newLoadout) == 4:
+            elif len(self.newLoadout) == self.numSlots:
                 button['state'] = DGG.DISABLED
                 button['image_color'] = self.DisabledColor
             else:
@@ -124,7 +126,7 @@ class BackpackGUI(DirectFrame):
     def exitEditGags(self):
         self.switchButton.destroy()
         del self.switchButton
-        if len(self.newLoadout) > 0:
+        if len(self.newLoadout) > 0 and len(self.newLoadout) <= self.numSlots:
             base.localAvatar.sendUpdate('requestSetLoadout', [self.newLoadout])
         del self.newLoadout
         del self.initialLoadout
@@ -195,11 +197,15 @@ class BackpackGUI(DirectFrame):
          text_scale = 0.045,
          text_pos = (0, -0.01),
          pos = (-0.5, 0, -0.4))
+        self.slotsText = OnscreenText(text = "Slots Unlocked: %d" % self.numSlots, pos = (0, -0.6))
         self.fsm.request('idle')
 
     def deleteGUI(self):
         self.editFSM.requestFinalState()
         self.fsm.requestFinalState()
+        if self.slotsText:
+            self.slotsText.destroy()
+            self.slotsText = None
         for button in self.gagButtonByName.values():
             button.destroy()
         self.gagButtonByName = None

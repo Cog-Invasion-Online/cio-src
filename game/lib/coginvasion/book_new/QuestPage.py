@@ -10,7 +10,7 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 from direct.gui.DirectGui import OnscreenText
 
-from lib.coginvasion.quest.QuestPoster import QuestPoster
+#from lib.coginvasion.quest.QuestPoster import QuestPoster
 from BookPage import BookPage
 
 class QuestPage(BookPage):
@@ -18,7 +18,8 @@ class QuestPage(BookPage):
     def __init__(self, book):
         BookPage.__init__(self, book, 'Quests')
 
-        self.posters = []
+        #self.posters = []
+        self.notes = []
         self.infoText = None
 
     def load(self):
@@ -31,20 +32,24 @@ class QuestPage(BookPage):
 
     def enter(self):
         BookPage.enter(self)
+        
+        self.notes = base.localAvatar.questManager.makeQuestNotes()
+        for note in self.notes:
+            note.show()
 
-        self.posters = []
-        for quest in base.localAvatar.questManager.getQuests():
-            poster = QuestPoster(quest)
-            poster.update()
-            self.posters.append(poster)
+        #self.posters = []
+        #for quest in base.localAvatar.questManager.getQuests():
+        #    poster = QuestPoster(quest)
+        #    poster.update()
+        #    self.posters.append(poster)
 
         self.infoText = OnscreenText(text = "Return completed Quests to an HQ Officer at any Toon HQ building.",
             pos = (0, -0.6), scale = 0.045)
 
     def exit(self):
-        for poster in self.posters:
+        for poster in self.notes:
             poster.destroy()
-        self.posters = []
+        self.notes = []
         if self.infoText:
             self.infoText.destroy()
             self.infoText = None

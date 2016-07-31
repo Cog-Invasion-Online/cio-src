@@ -18,6 +18,9 @@ def getBranchZone(zoneId):
     if zoneId % 1000 >= 500:
         branchZone -= 500
     return branchZone
+    
+def getStreetName(zoneId):
+    return BranchZone2StreetName[getBranchZone(zoneId)]
 
 def getLoaderName(zoneId):
     if str(getBranchZone(zoneId))[-3:] == '000':
@@ -79,3 +82,15 @@ def getZoneId(hoodId):
     if hoodId == BattleTTC:
         hoodId = ToontownCentral
     return Hood2ZoneId[hoodId]
+    
+def isOnSameStreet(zoneId):
+    return getBranchZone(zoneId) == getBranchZone(base.localAvatar.zoneId)
+    
+def isOnCurrentPlayground(zoneId):
+    return getHoodId(getBranchZone(zoneId)) == getHoodId(base.localAvatar.zoneId, 1)
+    
+def isLocatedInCurrentPlayground(zoneId):
+    return getHoodId(zoneId, 1) == getHoodId(base.localAvatar.zoneId, 1)
+    
+def isAtSamePlaygroundButDifferentBranch(zoneId):
+    return isLocatedInCurrentPlayground(zoneId) and not isOnSameStreet(zoneId)

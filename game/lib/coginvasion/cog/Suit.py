@@ -565,15 +565,15 @@ class Suit(Avatar):
             prefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_%s.jpg'
             if self.variant == Variant.WAITER:
                 prefix = 'phase_3.5/maps/waiter_m_%s.jpg'
-            
+
             legTex = loader.loadTexture(prefix % 'leg')
             armTex = loader.loadTexture(prefix % 'sleeve')
             blazTex = loader.loadTexture(prefix % 'blazer')
-            
+
             for texture in [legTex, armTex, blazTex]:
                 texture.setMinfilter(Texture.FTLinearMipmapLinear)
                 texture.setMagfilter(Texture.FTLinear)
-            
+
             self.find('**/legs').setTexture(legTex, 1)
             self.find('**/arms').setTexture(armTex, 1)
             self.find('**/torso').setTexture(blazTex, 1)
@@ -590,10 +590,8 @@ class Suit(Avatar):
             else:
                 self.nametag.setText(self.nametag.getText() + '\n%s' % (self.dept.getName()))
 
-    def setChat(self, chat):
-        self.clearChatbox()
-        Avatar.setChat(self, chat)
-        self.chat = chat
+    def chatStompComplete(self, chatString):
+        self.chat = chatString
         chatDial = None
         questionDial = self.voice.getSoundFile('question')
         question02Dial = None
@@ -618,6 +616,11 @@ class Suit(Avatar):
         else:
             self.audio3d.attachSoundToObject(self.chatDial, self.headModel)
         base.playSfx(self.chatDial, node = self)
+
+    def setChat(self, chat):
+        self.clearChatbox()
+        Avatar.setChat(self, chat)
+        self.chat = chat
 
     def clearChatbox(self):
         self.clearChat()

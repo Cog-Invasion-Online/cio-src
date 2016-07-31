@@ -33,7 +33,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
     def _ignoreAvatarDeleteEvents(self):
         for avId in self.avIds:
             toon = self.air.doId2do.get(avId)
-            self.ignoreAll(toon.getDeleteEvent())
+            self.ignore(toon.getDeleteEvent())
             break
 
     def _addAvatar(self, avId):

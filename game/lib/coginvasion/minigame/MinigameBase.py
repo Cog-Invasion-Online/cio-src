@@ -45,6 +45,7 @@ class MinigameBase(DirectObject):
             gameClass = DistributedDodgeballGameAI
 
         self.minigame = gameClass(self.cr)
+        self.minigame.setGameName(game)
         self.minigame.generateWithRequired(self.zoneId)
         self.minigame.setNumPlayers(numPlayers)
         for avatar in avatars:
