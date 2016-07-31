@@ -28,19 +28,16 @@ class NPCDialogue:
 
     Reward = ["Enjoy having %s!", "You have earned %s.", "You now have %s."]
 
-# Makes a word past tense.
 def makePastTense(text):
     if text.endswith('e'):
         return text + 'd'
     else:
         return text + 'ed'
 
-# Makes a word singular.
 def makeSingular(text):
     if text.endswith('s'):
         return text[:-1]
 
-# Makes a word plural.
 def makePlural(text):
     if text.endswith('y'):
         text = text[:-1]
@@ -50,6 +47,8 @@ def makePlural(text):
     else:
         return text + 's'
 
-# Returns number as a string with an ordinal.
+
 def getOrdinal(number):
+    """Returns number as a string with an ordinal. Ex: 1st, 2nd, 3rd"""
+
     return "%d%s" % (number,"tsnrhtdd"[(number / 10 % 10 != 1) * (number % 10 < 4) * number % 10::4])

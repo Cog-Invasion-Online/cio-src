@@ -14,13 +14,14 @@ class QuestManagerBase:
     def cleanup(self):
         del self.quests
 
-    # Returns whether or not the current objective of the quest specified is the last objective of the quest.
     def isOnLastObjectiveOfQuest(self, questId):
+        """Returns whether or not the current objective of the quest specified is the last objective of the quest."""
+
         quest = self.quests.get(questId)
         return quest.currentObjectiveIndex >= quest.numObjectives - 1
 
-    # Returns the quest instance and the quest ID where the current objective of the quest is to visit the NPC specified.
     def getQuestAndIdWhereCurrentObjectiveIsToVisit(self, npcId):
+        """Returns the quest instance and the quest ID where the current objective of the quest is to visit the NPC specified."""
         for questId, quest in self.quests.items():
             currObjective = quest.getCurrentObjective()
 
@@ -39,8 +40,9 @@ class QuestManagerBase:
         # We have no quest where the current objective is to visit the NPC specified.
         return None
 
-    # This method creates new quest instances based on the questData array from the avatar.
     def makeQuestsFromData(self, avatar):
+        """Creates new quest instances based on the questData array from the avatar."""
+
         # Make sure to cleanup old quests before we override them.
         for quest in self.quests.values():
             quest.cleanup()

@@ -22,9 +22,12 @@ class QuestManagerAI(QuestManagerBase):
         QuestManagerBase.cleanup(self)
         del self.avatar
 
-    # This method generates a list of quests that can be chosen by the avatar.
-    # You have to pass in the DistributedHQNPCToonAI instance of the HQ officer that the avatar walked up to.
     def getPickableQuestList(self, npc):
+        """
+        This method generates a list of quest IDs that can be chosen by the avatar.
+        You have to pass in the DistributedHQNPCToonAI instance of the HQ officer that the avatar walked up to.
+        """
+
         # Each NPC is random!
         generator = random.Random()
         generator.seed(npc.doId)
@@ -72,8 +75,9 @@ class QuestManagerAI(QuestManagerBase):
         # And there's our quest list!
         return quests
 
-    # Gives out the reward for the quest provided and removes the quest from our list.
     def completedQuest(self, questId):
+        """Gives out the reward for the quest provided and removes the quest from our list."""
+
         quest = self.quests.get(questId)
         # Give the reward.
         quest.giveReward(self.avatar)
@@ -82,11 +86,13 @@ class QuestManagerAI(QuestManagerBase):
         self.removeEntireQuest(questId)
 
     def wasLastObjectiveToVisit(self, npcId, checkCurrentCompleted = False):
-        # If checkCurrentCompleted is True, the method will check if the last objective
-        # was to visit this npc, and the current objective is done.
-        #
-        # If checkCurrentCompleted is False, the method will only check if the last objective
-        # was to visit this npc.
+        """
+        If checkCurrentCompleted is True, the method will check if the last objective
+        was to visit this npc, and the current objective is done.
+        
+        If checkCurrentCompleted is False, the method will only check if the last objective
+        was to visit this npc.
+        """
 
         for quest in self.quests.values():
             questId = quest.questId
@@ -129,8 +135,9 @@ class QuestManagerAI(QuestManagerBase):
         # We had no matches.
         return False
 
-    # Returns whether or not we have an objective to visit the NPC provided.
     def hasAnObjectiveToVisit(self, npcId, zoneId):
+        """Returns whether or not we have an objective to visit the NPC provided."""
+
         for quest in self.quests.values():
             currObjective = quest.getCurrentObjective()
 
@@ -150,9 +157,13 @@ class QuestManagerAI(QuestManagerBase):
         # I guess we have no objective to visit this npc.
         return False
 
-    # Checks if the current objective on the questId is complete.
-    # If it is compelete, it will increment the quest objective.
+
     def checkIfObjectiveIsComplete(self, questId):
+        """
+        Checks if the current objective on the questId is complete.
+        If it is compelete, it will increment the quest objective.
+        """
+
         quest = self.quests.get(questId)
 
         if quest.currentObjective.isComplete():
@@ -162,10 +173,13 @@ class QuestManagerAI(QuestManagerBase):
     ################################################################
     # Objective progress methods
 
-    # Call this method when progress may have to be incremented on an objective.
     def __doProgress(self, types, args):
-        # Types = list of objective types that progress would be incremented on
-        # Args  = list of arguments to pass onto the `handleProgress` method
+        """
+        Call this method when progress may have to be incremented on an objective.
+
+        types: list of objective types that progress would be incremented on
+        args:  list of arguments to pass onto the `handleProgress` method
+        """
 
         for questId, quest in self.quests.items():
 
@@ -201,8 +215,9 @@ class QuestManagerAI(QuestManagerBase):
     def makeQuestsFromData(self):
         QuestManagerBase.makeQuestsFromData(self, self.avatar)
 
-    # Add the specified quest to the avatar's quest history and current quests.
     def addNewQuest(self, questId):
+        """Add the specified quest to the avatar's quest history and current quests."""
+
         questHistory = list(self.avatar.getQuestHistory())
 
         questData = list(self.avatar.getQuests())
@@ -219,9 +234,12 @@ class QuestManagerAI(QuestManagerBase):
         self.avatar.b_setQuests(questData)
         self.avatar.b_setQuestHistory(questHistory)
 
-    # Remove the specified quest from the avatars current quest list.
-    # This is mainly called when a quest is completed.
     def removeEntireQuest(self, questId):
+        """
+        Remove the specified quest from the avatars current quest list.
+        This is mainly called when a quest is completed.
+        """
+
         quest = self.quests[questId]
         questData = list(self.avatar.getQuests())
 
@@ -232,9 +250,12 @@ class QuestManagerAI(QuestManagerBase):
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)
 
-    # Move the objective on the quest specified up by the increment specified.
-    # Mainly called when an objective is complete or when switching to the next objective.
     def incrementQuestObjective(self, questId, increment = 1):
+        """
+        Move the objective on the quest specified up by the increment specified.
+        Mainly called when an objective is complete or when switching to the next objective.
+        """
+
         quest = self.quests[questId]
         questData = list(self.avatar.getQuests())
         # Bump the objective index.
@@ -245,8 +266,9 @@ class QuestManagerAI(QuestManagerBase):
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)
 
-    # Change the objective on the quest specified to the value specified.
     def updateQuestObjective(self, questId, value):
+        """Change the objective on the quest specified to the value specified."""
+
         quest = self.quests[questId]
         questData = list(self.avatar.getQuests())
         # The current objective index becomes value.
@@ -255,8 +277,9 @@ class QuestManagerAI(QuestManagerBase):
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)
 
-    # Increment the progress on the current objective of the quest specified by the increment.
     def incrementQuestObjectiveProgress(self, questId, increment = 1):
+        """Increment the progress on the current objective of the quest specified by the increment."""
+
         quest = self.quests[questId]
         questData = list(self.avatar.getQuests())
         # Increment objective progress.
@@ -268,8 +291,9 @@ class QuestManagerAI(QuestManagerBase):
         # Let's see the if the objective is complete, now that we've updated the progress.
         self.checkIfObjectiveIsComplete(questId)
 
-    # Change the current objective progress on the quest specified to the value.
     def updateQuestObjectiveProgress(self, questId, value):
+        """Change the current objective progress on the quest specified to the value."""
+
         quest = self.quests[questId]
         questData = list(self.avatar.getQuests())
         # Change the current objective to `value`

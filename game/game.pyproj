@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{306e2ac4-d120-45a2-be56-442c5a5b7047}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>test_bldgs.py</StartupFile>
+    <StartupFile>lib\server\game\ServerGui.py</StartupFile>
     <SearchPath>..\Panda3D-CI\</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -21,13 +21,21 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="astron\config\astrond.yml" />
     <Content Include="astron\databases\record_population.txt" />
     <Content Include="astron\DistrictNames.txt" />
-    <Content Include="lib\server\game\gui_background.png" />
-    <Content Include="lib\server\game\locked.png" />
+    <Content Include="astron\nameRequests.json" />
+    <Content Include="config\Confauto.prc" />
+    <Content Include="config\config_client.prc" />
+    <Content Include="config\config_server.prc" />
     <Content Include="lib\server\game\numAccounts.txt" />
-    <Content Include="lib\server\game\unlocked.png" />
+    <Content Include="tools\files.txt" />
     <Content Include="tools\info_file.txt" />
+    <Content Include="tools\nirai\aespyd.bat" />
+    <Content Include="tools\nirai\build_bin.bat" />
+    <Content Include="tools\nirai\build_exe.bat" />
+    <Content Include="tools\nirai\config.prc" />
+    <Content Include="tools\nirai\README.md" />
     <Content Include="tools\todo.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -43,28 +51,30 @@
     <Compile Include="lib\coginvasion\avatar\DistributedAvatar.py" />
     <Compile Include="lib\coginvasion\avatar\DistributedAvatarAI.py" />
     <Compile Include="lib\coginvasion\avatar\__init__.py" />
+    <Compile Include="lib\coginvasion\base\ChatCommands.py" />
     <Compile Include="lib\coginvasion\base\CIStart.py" />
     <Compile Include="lib\coginvasion\base\CIStartGlobal.py" />
     <Compile Include="lib\coginvasion\base\CogInvasionLoader.py" />
     <Compile Include="lib\coginvasion\base\EnterLoad.py" />
     <Compile Include="lib\coginvasion\base\FileUtility.py" />
-    <Compile Include="lib\coginvasion\base\GameDeveloperConsole.py" />
     <Compile Include="lib\coginvasion\base\InitialLoad.py" />
     <Compile Include="lib\coginvasion\base\LoadUtility.py" />
     <Compile Include="lib\coginvasion\base\Logger.py" />
-    <Compile Include="lib\coginvasion\base\MotionBlur.py" />
     <Compile Include="lib\coginvasion\base\PositionExaminer.py" />
+    <Compile Include="lib\coginvasion\base\ScreenshotHandler.py" />
     <Compile Include="lib\coginvasion\base\SectionedSound.py" />
-    <Compile Include="lib\coginvasion\base\ShadowCaster.py" />
     <Compile Include="lib\coginvasion\base\ShadowCreator.py" />
     <Compile Include="lib\coginvasion\base\ShadowPlacer.py" />
     <Compile Include="lib\coginvasion\base\SpeedHackChecker.py" />
-    <Compile Include="lib\coginvasion\base\ToontownClientRepository.py" />
+    <Compile Include="lib\coginvasion\base\ToontownIntervals.py" />
     <Compile Include="lib\coginvasion\base\__init__.py" />
     <Compile Include="lib\coginvasion\battle\DistributedBattleTrolley.py" />
     <Compile Include="lib\coginvasion\battle\DistributedBattleTrolleyAI.py" />
+    <Compile Include="lib\coginvasion\battle\DistributedBattleZone.py" />
+    <Compile Include="lib\coginvasion\battle\DistributedBattleZoneAI.py" />
     <Compile Include="lib\coginvasion\battle\DistributedGagBarrel.py" />
     <Compile Include="lib\coginvasion\battle\DistributedGagBarrelAI.py" />
+    <Compile Include="lib\coginvasion\battle\DistributedHPBarrelAI.py" />
     <Compile Include="lib\coginvasion\battle\DistributedPieTurret.py" />
     <Compile Include="lib\coginvasion\battle\DistributedPieTurretAI.py" />
     <Compile Include="lib\coginvasion\battle\DistributedPieTurretManager.py" />
@@ -75,9 +85,42 @@
     <Compile Include="lib\coginvasion\battle\__init__.py" />
     <Compile Include="lib\coginvasion\book\AdminPage.py" />
     <Compile Include="lib\coginvasion\book\DisplayOptions.py" />
+    <Compile Include="lib\coginvasion\book\NamePage.py" />
     <Compile Include="lib\coginvasion\book\OptionPage.py" />
     <Compile Include="lib\coginvasion\book\ShtickerBook.py" />
     <Compile Include="lib\coginvasion\book\__init__.py" />
+    <Compile Include="lib\coginvasion\book_new\AdminPage.py" />
+    <Compile Include="lib\coginvasion\book_new\BookPage.py" />
+    <Compile Include="lib\coginvasion\book_new\DistrictsPage.py" />
+    <Compile Include="lib\coginvasion\book_new\GagsPage.py" />
+    <Compile Include="lib\coginvasion\book_new\MapPage.py" />
+    <Compile Include="lib\coginvasion\book_new\OptionsPage.py" />
+    <Compile Include="lib\coginvasion\book_new\QuestPage.py" />
+    <Compile Include="lib\coginvasion\book_new\ShtickerBook.py" />
+    <Compile Include="lib\coginvasion\book_new\__init__.py" />
+    <Compile Include="lib\coginvasion\cogoffice\BuildingSuitPlannerAI.py" />
+    <Compile Include="lib\coginvasion\cogoffice\CogOfficeConstants.py" />
+    <Compile Include="lib\coginvasion\cogoffice\CogOfficeInterior.py" />
+    <Compile Include="lib\coginvasion\cogoffice\CogOfficePathDataAI.py" />
+    <Compile Include="lib\coginvasion\cogoffice\CogOfficePursueToonBehavior.py" />
+    <Compile Include="lib\coginvasion\cogoffice\CogOfficeSuitAttackBehavior.py" />
+    <Compile Include="lib\coginvasion\cogoffice\CogOfficeSuitBrainAI.py" />
+    <Compile Include="lib\coginvasion\cogoffice\CogOfficeSuitWalkBehavior.py" />
+    <Compile Include="lib\coginvasion\cogoffice\DistributedCogOfficeBattle.py" />
+    <Compile Include="lib\coginvasion\cogoffice\DistributedCogOfficeBattleAI.py" />
+    <Compile Include="lib\coginvasion\cogoffice\DistributedCogOfficeElevator.py" />
+    <Compile Include="lib\coginvasion\cogoffice\DistributedCogOfficeElevatorAI.py" />
+    <Compile Include="lib\coginvasion\cogoffice\DistributedCogOfficeSuit.py" />
+    <Compile Include="lib\coginvasion\cogoffice\DistributedCogOfficeSuitAI.py" />
+    <Compile Include="lib\coginvasion\cogoffice\DistributedElevator.py" />
+    <Compile Include="lib\coginvasion\cogoffice\DistributedElevatorAI.py" />
+    <Compile Include="lib\coginvasion\cogoffice\DistributedTakeOverSuit.py" />
+    <Compile Include="lib\coginvasion\cogoffice\DistributedTakeOverSuitAI.py" />
+    <Compile Include="lib\coginvasion\cogoffice\ElevatorConstants.py" />
+    <Compile Include="lib\coginvasion\cogoffice\ElevatorUtils.py" />
+    <Compile Include="lib\coginvasion\cogoffice\SuitBuildingGlobals.py" />
+    <Compile Include="lib\coginvasion\cogoffice\SuitCogOfficeBehavior.py" />
+    <Compile Include="lib\coginvasion\cogoffice\__init__.py" />
     <Compile Include="lib\coginvasion\cogtropolis\CityCartGlobals.py" />
     <Compile Include="lib\coginvasion\cogtropolis\CTHood.py" />
     <Compile Include="lib\coginvasion\cogtropolis\CTHoodAI.py" />
@@ -119,52 +162,6 @@
     <Compile Include="lib\coginvasion\cog\Variant.py" />
     <Compile Include="lib\coginvasion\cog\Voice.py" />
     <Compile Include="lib\coginvasion\cog\__init__.py" />
-    <Compile Include="lib\coginvasion\cthood\CogOfficeConstants.py" />
-    <Compile Include="lib\coginvasion\cthood\CogOfficeInterior.py" />
-    <Compile Include="lib\coginvasion\cthood\CogOfficePathDataAI.py" />
-    <Compile Include="lib\coginvasion\cthood\CogOfficePursueToonBehavior.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="lib\coginvasion\cthood\CogOfficeSuitAttackBehavior.py" />
-    <Compile Include="lib\coginvasion\cthood\CogOfficeSuitBrainAI.py" />
-    <Compile Include="lib\coginvasion\cthood\CogOfficeSuitWalkBehavior.py" />
-    <Compile Include="lib\coginvasion\cthood\CTBRHood.py" />
-    <Compile Include="lib\coginvasion\cthood\CTBRHoodAI.py" />
-    <Compile Include="lib\coginvasion\cthood\CTBRSafeZoneLoader.py" />
-    <Compile Include="lib\coginvasion\cthood\CTBRStreet.py" />
-    <Compile Include="lib\coginvasion\cthood\CTBRTownLoader.py" />
-    <Compile Include="lib\coginvasion\cthood\CTCHood.py" />
-    <Compile Include="lib\coginvasion\cthood\CTCHoodAI.py" />
-    <Compile Include="lib\coginvasion\cthood\CTCPlayground.py" />
-    <Compile Include="lib\coginvasion\cthood\CTCSafeZoneLoader.py" />
-    <Compile Include="lib\coginvasion\cthood\CTDDHood.py" />
-    <Compile Include="lib\coginvasion\cthood\CTDDHoodAI.py" />
-    <Compile Include="lib\coginvasion\cthood\CTDDSafeZoneLoader.py" />
-    <Compile Include="lib\coginvasion\cthood\CTDGHood.py" />
-    <Compile Include="lib\coginvasion\cthood\CTDGHoodAI.py" />
-    <Compile Include="lib\coginvasion\cthood\CTDGSafeZoneLoader.py" />
-    <Compile Include="lib\coginvasion\cthood\CTDLHood.py" />
-    <Compile Include="lib\coginvasion\cthood\CTDLHoodAI.py" />
-    <Compile Include="lib\coginvasion\cthood\CTDLSafeZoneLoader.py" />
-    <Compile Include="lib\coginvasion\cthood\CTHoodAI.py" />
-    <Compile Include="lib\coginvasion\cthood\CTMLHood.py" />
-    <Compile Include="lib\coginvasion\cthood\CTMLHoodAI.py" />
-    <Compile Include="lib\coginvasion\cthood\CTMLSafeZoneLoader.py" />
-    <Compile Include="lib\coginvasion\cthood\DistributedBuilding.py" />
-    <Compile Include="lib\coginvasion\cthood\DistributedBuildingAI.py" />
-    <Compile Include="lib\coginvasion\cthood\DistributedCogOfficeBattle.py" />
-    <Compile Include="lib\coginvasion\cthood\DistributedCogOfficeBattleAI.py" />
-    <Compile Include="lib\coginvasion\cthood\DistributedCogOfficeElevator.py" />
-    <Compile Include="lib\coginvasion\cthood\DistributedCogOfficeElevatorAI.py" />
-    <Compile Include="lib\coginvasion\cthood\DistributedCogOfficeSuit.py" />
-    <Compile Include="lib\coginvasion\cthood\DistributedCogOfficeSuitAI.py" />
-    <Compile Include="lib\coginvasion\cthood\DistributedElevator.py" />
-    <Compile Include="lib\coginvasion\cthood\DistributedElevatorAI.py" />
-    <Compile Include="lib\coginvasion\cthood\ElevatorConstants.py" />
-    <Compile Include="lib\coginvasion\cthood\ElevatorUtils.py" />
-    <Compile Include="lib\coginvasion\cthood\SuitBuildingGlobals.py" />
-    <Compile Include="lib\coginvasion\cthood\SuitCogOfficeBehavior.py" />
-    <Compile Include="lib\coginvasion\cthood\__init__.py" />
     <Compile Include="lib\coginvasion\distributed\Account.py" />
     <Compile Include="lib\coginvasion\distributed\AccountAI.py" />
     <Compile Include="lib\coginvasion\distributed\AccountUD.py" />
@@ -173,18 +170,13 @@
     <Compile Include="lib\coginvasion\distributed\CogInvasionErrorCodes.py" />
     <Compile Include="lib\coginvasion\distributed\CogInvasionInternalRepository.py" />
     <Compile Include="lib\coginvasion\distributed\CogInvasionMsgTypes.py" />
-    <Compile Include="lib\coginvasion\distributed\CogTropolis.py" />
     <Compile Include="lib\coginvasion\distributed\DistributedDistrict.py" />
     <Compile Include="lib\coginvasion\distributed\DistributedDistrictAI.py" />
     <Compile Include="lib\coginvasion\distributed\DistributedDistrictUD.py" />
-    <Compile Include="lib\coginvasion\distributed\DistributedMickey.py" />
     <Compile Include="lib\coginvasion\distributed\DistributedRoot.py" />
     <Compile Include="lib\coginvasion\distributed\DistributedRootAI.py" />
-    <Compile Include="lib\coginvasion\distributed\DistributedTrolley.py" />
     <Compile Include="lib\coginvasion\distributed\HoodMgr.py" />
-    <Compile Include="lib\coginvasion\distributed\OToontown.py" />
     <Compile Include="lib\coginvasion\distributed\PlayGame.py" />
-    <Compile Include="lib\coginvasion\distributed\World.py" />
     <Compile Include="lib\coginvasion\distributed\__init__.py" />
     <Compile Include="lib\coginvasion\dna\DNALoader.py" />
     <Compile Include="lib\coginvasion\dna\__init__.py" />
@@ -272,9 +264,10 @@
     <Compile Include="lib\coginvasion\gui\Clickable3d.py" />
     <Compile Include="lib\coginvasion\gui\Dialog.py" />
     <Compile Include="lib\coginvasion\gui\InventoryGui.py" />
+    <Compile Include="lib\coginvasion\gui\KOTHGui.py" />
+    <Compile Include="lib\coginvasion\gui\KOTHKingGui.py" />
     <Compile Include="lib\coginvasion\gui\LaffOMeter.py" />
     <Compile Include="lib\coginvasion\gui\MoneyGui.py" />
-    <Compile Include="lib\coginvasion\gui\PickAToon.py" />
     <Compile Include="lib\coginvasion\gui\ToonPanel.py" />
     <Compile Include="lib\coginvasion\gui\Tutorial.py" />
     <Compile Include="lib\coginvasion\gui\Whisper.py" />
@@ -310,6 +303,8 @@
     <Compile Include="lib\coginvasion\hood\DGTownLoader.py" />
     <Compile Include="lib\coginvasion\hood\DistributedBoat.py" />
     <Compile Include="lib\coginvasion\hood\DistributedBoatAI.py" />
+    <Compile Include="lib\coginvasion\hood\DistributedBuilding.py" />
+    <Compile Include="lib\coginvasion\hood\DistributedBuildingAI.py" />
     <Compile Include="lib\coginvasion\hood\DistributedCinemaInterior.py" />
     <Compile Include="lib\coginvasion\hood\DistributedCinemaInteriorAI.py" />
     <Compile Include="lib\coginvasion\hood\DistributedDDTreasure.py" />
@@ -320,14 +315,10 @@
     <Compile Include="lib\coginvasion\hood\DistributedDLTreasureAI.py" />
     <Compile Include="lib\coginvasion\hood\DistributedDoor.py" />
     <Compile Include="lib\coginvasion\hood\DistributedDoorAI.py" />
-    <Compile Include="lib\coginvasion\hood\DistributedGagShop.py" />
-    <Compile Include="lib\coginvasion\hood\DistributedGagShopAI.py" />
     <Compile Include="lib\coginvasion\hood\DistributedGagShopInterior.py" />
     <Compile Include="lib\coginvasion\hood\DistributedGagShopInteriorAI.py" />
     <Compile Include="lib\coginvasion\hood\DistributedMLTreasure.py" />
     <Compile Include="lib\coginvasion\hood\DistributedMLTreasureAI.py" />
-    <Compile Include="lib\coginvasion\hood\DistributedShop.py" />
-    <Compile Include="lib\coginvasion\hood\DistributedShopAI.py" />
     <Compile Include="lib\coginvasion\hood\DistributedSZTreasure.py" />
     <Compile Include="lib\coginvasion\hood\DistributedTailorInterior.py" />
     <Compile Include="lib\coginvasion\hood\DistributedTailorInteriorAI.py" />
@@ -347,7 +338,6 @@
     <Compile Include="lib\coginvasion\hood\DLSafeZoneLoader.py" />
     <Compile Include="lib\coginvasion\hood\DLStreet.py" />
     <Compile Include="lib\coginvasion\hood\DLTownLoader.py" />
-    <Compile Include="lib\coginvasion\hood\HomeHood.py" />
     <Compile Include="lib\coginvasion\hood\Hood.py" />
     <Compile Include="lib\coginvasion\hood\HoodAI.py" />
     <Compile Include="lib\coginvasion\hood\HoodGui.py" />
@@ -368,10 +358,6 @@
     <Compile Include="lib\coginvasion\hood\Playground.py" />
     <Compile Include="lib\coginvasion\hood\PublicWalk.py" />
     <Compile Include="lib\coginvasion\hood\QuietZoneState.py" />
-    <Compile Include="lib\coginvasion\hood\RecoverHood.py" />
-    <Compile Include="lib\coginvasion\hood\RecoverHoodAI.py" />
-    <Compile Include="lib\coginvasion\hood\RecoverPlayground.py" />
-    <Compile Include="lib\coginvasion\hood\RecoverSafeZoneLoader.py" />
     <Compile Include="lib\coginvasion\hood\RegenTreasurePlannerAI.py" />
     <Compile Include="lib\coginvasion\hood\SafeZoneLoader.py" />
     <Compile Include="lib\coginvasion\hood\SkyUtil.py" />
@@ -384,8 +370,6 @@
     <Compile Include="lib\coginvasion\hood\TownLoader.py" />
     <Compile Include="lib\coginvasion\hood\TreasureGlobals.py" />
     <Compile Include="lib\coginvasion\hood\TreasurePlannerAI.py" />
-    <Compile Include="lib\coginvasion\hood\TrolleyBase.py" />
-    <Compile Include="lib\coginvasion\hood\TTCHood.py" />
     <Compile Include="lib\coginvasion\hood\TTHood.py" />
     <Compile Include="lib\coginvasion\hood\TTHoodAI.py" />
     <Compile Include="lib\coginvasion\hood\TTPlayground.py" />
@@ -399,7 +383,6 @@
     <Compile Include="lib\coginvasion\login\AvChooser.py" />
     <Compile Include="lib\coginvasion\login\CharSelection.py" />
     <Compile Include="lib\coginvasion\login\__init__.py" />
-    <Compile Include="lib\coginvasion\makeatoon\ClothesGUI.py" />
     <Compile Include="lib\coginvasion\makeatoon\MakeAToon.py" />
     <Compile Include="lib\coginvasion\makeatoon\ToonGenerator.py" />
     <Compile Include="lib\coginvasion\makeatoon\ToonGenerator_ITW.py" />
@@ -444,6 +427,8 @@
     <Compile Include="lib\coginvasion\minigame\DistributedGroupStationAI.py" />
     <Compile Include="lib\coginvasion\minigame\DistributedGunGame.py" />
     <Compile Include="lib\coginvasion\minigame\DistributedGunGameAI.py" />
+    <Compile Include="lib\coginvasion\minigame\DistributedGunGameCapturePoint.py" />
+    <Compile Include="lib\coginvasion\minigame\DistributedGunGameCapturePointAI.py" />
     <Compile Include="lib\coginvasion\minigame\DistributedGunGameFlag.py" />
     <Compile Include="lib\coginvasion\minigame\DistributedGunGameFlagAI.py" />
     <Compile Include="lib\coginvasion\minigame\DistributedMinigame.py" />
@@ -463,6 +448,7 @@
     <Compile Include="lib\coginvasion\minigame\DodgeballFirstPerson.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="lib\coginvasion\minigame\DodgeballGlobals.py" />
     <Compile Include="lib\coginvasion\minigame\EagleGameGlobals.py" />
     <Compile Include="lib\coginvasion\minigame\FactorySneakGameBullet.py" />
     <Compile Include="lib\coginvasion\minigame\FactorySneakGameToonFPS.py" />
@@ -494,6 +480,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="lib\coginvasion\minigame\RemoteToonBattleAvatar.py" />
+    <Compile Include="lib\coginvasion\minigame\Snowball.py" />
     <Compile Include="lib\coginvasion\minigame\TeamMinigame.py">
       <SubType>Code</SubType>
     </Compile>
@@ -523,30 +510,36 @@
     <Compile Include="lib\coginvasion\npc\DisneyCharGlobals.py" />
     <Compile Include="lib\coginvasion\npc\DistributedChar.py" />
     <Compile Include="lib\coginvasion\npc\DistributedDisneyChar.py" />
-    <Compile Include="lib\coginvasion\npc\GoofyNPCBase.py" />
-    <Compile Include="lib\coginvasion\npc\MickeyNPCBase.py" />
+    <Compile Include="lib\coginvasion\npc\DistributedDisneyCharAI.py" />
     <Compile Include="lib\coginvasion\npc\NPCGlobals.py" />
     <Compile Include="lib\coginvasion\npc\NPCWalker.py" />
     <Compile Include="lib\coginvasion\npc\__init__.py" />
     <Compile Include="lib\coginvasion\pet\DistributedPet.py" />
     <Compile Include="lib\coginvasion\pet\DistributedPetAI.py" />
     <Compile Include="lib\coginvasion\pet\__init__.py" />
-    <Compile Include="lib\coginvasion\quests\Quest.py" />
+    <Compile Include="lib\coginvasion\quests\Objectives.py" />
     <Compile Include="lib\coginvasion\quests\QuestGlobals.py" />
     <Compile Include="lib\coginvasion\quests\QuestManager.py" />
     <Compile Include="lib\coginvasion\quests\QuestManagerAI.py" />
     <Compile Include="lib\coginvasion\quests\QuestManagerBase.py" />
     <Compile Include="lib\coginvasion\quests\QuestNote.py" />
     <Compile Include="lib\coginvasion\quests\Quests.py" />
+    <Compile Include="lib\coginvasion\quests\Rewards.py" />
     <Compile Include="lib\coginvasion\quests\__init__.py" />
     <Compile Include="lib\coginvasion\quest\CogObjective.py" />
+    <Compile Include="lib\coginvasion\quest\DeliverItemObjective.py" />
     <Compile Include="lib\coginvasion\quest\Objective.py" />
     <Compile Include="lib\coginvasion\quest\Quest.py" />
+    <Compile Include="lib\coginvasion\quest\QuestBank.py" />
     <Compile Include="lib\coginvasion\quest\QuestGlobals.py" />
     <Compile Include="lib\coginvasion\quest\QuestManager.py" />
+    <Compile Include="lib\coginvasion\quest\QuestManagerAI.py" />
+    <Compile Include="lib\coginvasion\quest\QuestManagerBase.py" />
     <Compile Include="lib\coginvasion\quest\QuestPoster.py" />
     <Compile Include="lib\coginvasion\quest\QuestReward.py" />
+    <Compile Include="lib\coginvasion\quest\RecoverItemObjective.py" />
     <Compile Include="lib\coginvasion\quest\RewardType.py" />
+    <Compile Include="lib\coginvasion\quest\VisitNPCObjective.py" />
     <Compile Include="lib\coginvasion\quest\__init__.py" />
     <Compile Include="lib\coginvasion\shop\BattleShop.py" />
     <Compile Include="lib\coginvasion\shop\DistributedBattleShop.py" />
@@ -564,17 +557,12 @@
     <Compile Include="lib\coginvasion\standalone\__init__.py" />
     <Compile Include="lib\coginvasion\suit\CogBattleGlobals.py" />
     <Compile Include="lib\coginvasion\suit\CogStation.py" />
-    <Compile Include="lib\coginvasion\suit\CogTournamentMusicManager.py" />
     <Compile Include="lib\coginvasion\suit\DistributedCogBattle.py" />
     <Compile Include="lib\coginvasion\suit\DistributedCogBattleAI.py" />
     <Compile Include="lib\coginvasion\suit\DistributedCogStation.py" />
     <Compile Include="lib\coginvasion\suit\DistributedCogStationAI.py" />
     <Compile Include="lib\coginvasion\suit\DistributedDroppableCollectableBackpack.py" />
     <Compile Include="lib\coginvasion\suit\DistributedDroppableCollectableBackpackAI.py" />
-    <Compile Include="lib\coginvasion\suit\DistributedDroppableCollectableHealth.py" />
-    <Compile Include="lib\coginvasion\suit\DistributedDroppableCollectableHealthAI.py" />
-    <Compile Include="lib\coginvasion\suit\DistributedDroppableCollectableIceCream.py" />
-    <Compile Include="lib\coginvasion\suit\DistributedDroppableCollectableIceCreamAI.py" />
     <Compile Include="lib\coginvasion\suit\DistributedDroppableCollectableJellybean.py" />
     <Compile Include="lib\coginvasion\suit\DistributedDroppableCollectableJellybeanAI.py" />
     <Compile Include="lib\coginvasion\suit\DistributedDroppableCollectableJellybeanJar.py" />
@@ -589,12 +577,13 @@
     <Compile Include="lib\coginvasion\suit\DroppableCollectableJellybeanJar.py" />
     <Compile Include="lib\coginvasion\suit\DroppableCollectableJellybeans.py" />
     <Compile Include="lib\coginvasion\suit\DroppableCollectableObject.py" />
-    <Compile Include="lib\coginvasion\suit\Suit.py" />
+    <Compile Include="lib\coginvasion\suit\PythonCTMusicMgr.py" />
     <Compile Include="lib\coginvasion\suit\SuitAttacks.py" />
     <Compile Include="lib\coginvasion\suit\SuitItemDropper.py" />
     <Compile Include="lib\coginvasion\suit\SuitPathFinder.py" />
     <Compile Include="lib\coginvasion\suit\SuitTournament.py" />
     <Compile Include="lib\coginvasion\suit\__init__.py" />
+    <Compile Include="lib\coginvasion\toon\AccessoryGlobals.py" />
     <Compile Include="lib\coginvasion\toon\ChatBalloon.py" />
     <Compile Include="lib\coginvasion\toon\ChatBalloonOld.py" />
     <Compile Include="lib\coginvasion\toon\DistributedClerkNPCToon.py" />
@@ -614,6 +603,7 @@
     <Compile Include="lib\coginvasion\toon\NameTag.py" />
     <Compile Include="lib\coginvasion\toon\ParticleLoader.py" />
     <Compile Include="lib\coginvasion\toon\SmartCamera.py" />
+    <Compile Include="lib\coginvasion\toon\SmoothWalker.py" />
     <Compile Include="lib\coginvasion\toon\Toon.py" />
     <Compile Include="lib\coginvasion\toon\ToonDNA.py" />
     <Compile Include="lib\coginvasion\toon\ToonDNA_ITW.py" />
@@ -636,6 +626,7 @@
     <Compile Include="lib\coginvasion\uber\DistrictNameManagerUD.py" />
     <Compile Include="lib\coginvasion\uber\LauncherLoginManager.py" />
     <Compile Include="lib\coginvasion\uber\LauncherLoginManagerUD.py" />
+    <Compile Include="lib\coginvasion\uber\LoginServerConnection.py" />
     <Compile Include="lib\coginvasion\uber\LoginToken.py" />
     <Compile Include="lib\coginvasion\uber\LoginTokenGenerator.py" />
     <Compile Include="lib\coginvasion\uber\NameServicesManager.py" />
@@ -655,19 +646,18 @@
     <Compile Include="lib\server\game\AIRepository.py" />
     <Compile Include="lib\server\game\ServerBase.py" />
     <Compile Include="lib\server\game\ServerGlobals.py" />
-    <Compile Include="lib\server\game\ServerGlobals_maverick.liberty29%40gmail.com.py" />
     <Compile Include="lib\server\game\ServerGui.py" />
-    <Compile Include="lib\server\game\ServerGui_maverick.liberty29%40gmail.com.py" />
     <Compile Include="lib\server\game\__init__.py" />
-    <Compile Include="lib\server\game\__init___maverick.liberty29%40gmail.com.py" />
     <Compile Include="lib\server\__init__.py" />
     <Compile Include="lib\__init__.py" />
-    <Compile Include="test_bldgs.py" />
     <Compile Include="tools\build_ccoginvasion.py" />
     <Compile Include="tools\build_tools\make.py" />
     <Compile Include="tools\build_tools\niraimarshal.py" />
     <Compile Include="tools\build_tools\niraitools.py" />
     <Compile Include="tools\exe_initializer.py" />
+    <Compile Include="tools\nirai\make.py" />
+    <Compile Include="tools\nirai\niraimarshal.py" />
+    <Compile Include="tools\nirai\niraitools.py" />
     <Compile Include="tools\tool_deploy.py" />
     <Compile Include="tools\tool_EncryptPYD.py" />
     <Compile Include="tools\tool_FreezeLibrary.py" />
@@ -676,12 +666,12 @@
     <Compile Include="tools\VirusKiller.py" />
     <Compile Include="tools\whitelist.py" />
     <Compile Include="tools\__main__.py" />
-    <Compile Include="tool_Multifile.py" />
-    <Compile Include="uno_test.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="astron" />
+    <Folder Include="astron\config\" />
     <Folder Include="astron\databases" />
+    <Folder Include="config\" />
     <Folder Include="lib" />
     <Folder Include="lib\coginvasion" />
     <Folder Include="lib\coginvasion\achievement" />
@@ -690,9 +680,10 @@
     <Folder Include="lib\coginvasion\base" />
     <Folder Include="lib\coginvasion\battle" />
     <Folder Include="lib\coginvasion\book" />
+    <Folder Include="lib\coginvasion\book_new\" />
     <Folder Include="lib\coginvasion\cog" />
+    <Folder Include="lib\coginvasion\cogoffice\" />
     <Folder Include="lib\coginvasion\cogtropolis" />
-    <Folder Include="lib\coginvasion\cthood" />
     <Folder Include="lib\coginvasion\distributed" />
     <Folder Include="lib\coginvasion\dna" />
     <Folder Include="lib\coginvasion\dungeon" />
@@ -711,8 +702,8 @@
     <Folder Include="lib\coginvasion\nametag" />
     <Folder Include="lib\coginvasion\npc" />
     <Folder Include="lib\coginvasion\pet" />
-    <Folder Include="lib\coginvasion\quest" />
     <Folder Include="lib\coginvasion\quests" />
+    <Folder Include="lib\coginvasion\quest\" />
     <Folder Include="lib\coginvasion\shop" />
     <Folder Include="lib\coginvasion\standalone" />
     <Folder Include="lib\coginvasion\suit" />
@@ -724,8 +715,9 @@
     <Folder Include="lib\server\base" />
     <Folder Include="lib\server\download" />
     <Folder Include="lib\server\game" />
-    <Folder Include="tools" />
-    <Folder Include="tools\build_tools" />
+    <Folder Include="tools\" />
+    <Folder Include="tools\build_tools\" />
+    <Folder Include="tools\nirai\" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />

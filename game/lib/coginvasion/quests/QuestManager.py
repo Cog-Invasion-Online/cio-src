@@ -17,9 +17,12 @@ class QuestManager(QuestManagerBase):
     def makeQuestsFromData(self):
         QuestManagerBase.makeQuestsFromData(self, base.localAvatar)
 
-    # Returns a string that could be used as speech or for a quest note.
-    # It gives information about the quest and what you have to do.
     def getTaskInfo(self, objective, speech = False):
+        """
+        Returns a string that could be used as speech or for a quest note.
+        It gives information about the quest and what you have to do.
+        """
+
         taskInfo = ""
 
         if speech:
@@ -27,10 +30,8 @@ class QuestManager(QuestManagerBase):
             taskInfo += objective.Header + " "
 
         if objective.goal > 1:
-            # If the goal is more than one, put the number.
             taskInfo += "%d " % objective.goal
         else:
-            # If the goal is only one, but `a`.
             taskInfo += "a "
 
         # Add objective specific task info
@@ -39,8 +40,6 @@ class QuestManager(QuestManagerBase):
         if objective.AreaSpecific:
             # This objective is sometimes area specific.
             if objective.area == Anywhere:
-                # The objective's area is anywhere. If it's not speech, make a new line and put Anywhere.
-                # If it's speech, put a space and then Anywhere.
                 taskInfo += "\nAnywhere" if not speech else " Anywhere"
             else:
                 # Say what area the objective must be completed in.
@@ -52,9 +51,12 @@ class QuestManager(QuestManagerBase):
 
         return taskInfo
 
-    # Generates and returns a list of QuestNote objects that display information about the quests.
-    # You can specify a custom quest list. If you don't it will use the QuestManager's quest dictionary.
     def makeQuestNotes(self, quests = None):
+        """
+        Generates and returns a list of QuestNote objects that display information about the quests.
+        You can specify a custom quest list. If you don't it will use the QuestManager's quest dictionary.
+        """
+
         # This is what will be returned at the end. It's going to hold our QuestNotes we generate.
         notes = []
 
@@ -66,7 +68,6 @@ class QuestManager(QuestManagerBase):
 
             objective = quest.currentObjective
 
-            # Create the QuestNote instance
             note = QuestNote.QuestNote(quest.index)
 
             # Set the notes heading as the objective's Header (e.g Defeat, Recover, Deliver, Visit)
@@ -95,11 +96,9 @@ class QuestManager(QuestManagerBase):
             if objective.HasProgress:
                 # This objective has progress (e.g 2 of 5 Defeated, 0 of 1 Recovered)
                 if not objective.isComplete():
-                    # The objective isn't complete so we will show the progress text.
                     progress = objective.getProgressText()
                     note.setProgress(progress)
                 else:
-                    # The objective is complete so we will make the quest note green and say completed.
                     note.setCompleted(1)
 
             elif objective.type == Objectives.VisitNPC:
@@ -115,21 +114,16 @@ class QuestManager(QuestManagerBase):
 
                 progress = "on %s\nin %s" % (streetName, hoodName)
 
-                # Apply the progress text
                 note.setProgress(progress)
 
             elif objective.type == Objectives.VisitHQOfficer:
                 # HQ officers are at any street and any playground.
                 progress = "Any Street\nAny Playground"
 
-                # Apply the progress text
                 note.setProgress(progress)
 
-            # Get the reward dialogue from the reward class of the quest.
             note.setReward("For " + quest.reward.fillInDialogue())
 
-            # Add this QuestNote to the list.
             notes.append(note)
 
-        # Return our beautiful list of QuestNotes.
         return notes
