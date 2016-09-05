@@ -1,7 +1,12 @@
-########################################
-# Filename: CIStart.py
-# Created by: blach (17Jun14)
-########################################
+# COG INVASION ONLINE
+# Copyright (c) Brian Lach       <brianlach72@gmail.com>
+#               Maverick Liberty <maverick.liberty29@gmail.com>
+#
+# file:    CIStart.py
+# author:  Brian Lach
+# date:    2014-06-17
+#
+# purpose: This is the starting point for the game. It initializes a ton of stuff.
 
 from panda3d.core import Multifile, Filename, VirtualFileSystem, PandaSystem
 from panda3d.core import Thread, loadPrcFile, loadPrcFileData, CollisionTraverser, CullBinManager
@@ -108,6 +113,9 @@ elif audio == 'fmod':
 elif audio == 'openal':
     audio = 'OpenAL'
 print 'CIStart: Using %s audio library.' % audio
+
+# Define all of the admin commands.
+from lib.coginvasion.distributed.AdminCommands import *
 
 from direct.gui import DirectGuiGlobals
 

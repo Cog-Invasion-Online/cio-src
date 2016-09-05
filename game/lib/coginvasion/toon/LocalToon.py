@@ -96,6 +96,8 @@ class LocalToon(DistributedToon):
         self.pickerRayNode = None
         self.pickerHandler = None
         self.rolledOverTag = None
+        
+        self.clickToonCallback = None
 
         self.inTutorial = False
         self.hasDoneJump = False
@@ -203,7 +205,11 @@ class LocalToon(DistributedToon):
         self.ignore('toonClicked')
 
     def toonClicked(self, avId):
-        self.panel.makePanel(avId)
+        if not self.clickToonCallback:
+            self.panel.makePanel(avId)
+        else:
+            self.clickToonCallback(avId)
+            self.clickToonCallback = None
 
     def prepareToSwitchControlType(self):
         # Hack fix for getting stuck moving in one direction without pressing the movement keys.
@@ -776,7 +782,7 @@ class LocalToon(DistributedToon):
         if openIt:
             base.cr.playGame.getPlace().fsm.request('shtickerBook')
         else:
-            base.cr.playGame.getPlace().shtickerBookStateData.finished("resume")
+            base.cr.playGame.getPlace().shtickerBookStateData.finishedResume()
 
     def startMonitoringHP(self):
         taskMgr.add(self.monitorHealth, "localToon-monitorHealth")

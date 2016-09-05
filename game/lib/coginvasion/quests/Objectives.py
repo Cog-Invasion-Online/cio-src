@@ -10,10 +10,12 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.hood import ZoneUtil
+from lib.coginvasion.cog import SuitBank
 import QuestGlobals
 
 ####################################
 # Objective types
+
 DefeatCog = 1
 DefeatCogDept = 2
 DefeatCogInvasion = 3
@@ -34,6 +36,8 @@ DefeatCogObjectives = [DefeatCog, DefeatCogDept, DefeatCogLevel]
 DefeatObjectives = [DefeatCog, DefeatCogDept, DefeatCogInvasion, DefeatCogTournament, DefeatCogLevel, DefeatCogBuilding]
 
 class Objective:
+    """ [goal, area] """
+
     # Examples of headers: Defeat, Recover, Deliver
     Header = ""
 
@@ -43,25 +47,67 @@ class Objective:
     # Does this objective sometimes have to be completed in a certain area only?
     AreaSpecific = True
 
-    def __init__(self, objectiveArgs, progress, quest):
+    def __init__(self, goal, area):
+        """`progress` and `quest` are automatically passed. Do not add them to your objective template."""
+
         # A handle to the quest this objective belongs to.
-        self.quest = quest
+        self.quest = None
 
-        # A list of arguments for this objective.
-        self.objectiveArgs = objectiveArgs
-
-        # The objective type (they are defined above)
-        self.type = objectiveArgs[0]
+        # Set the int objective type based on the class.
+        self.type = ObjectiveClass2ObjectiveType[self.__class__]
 
         # The goal (number)
-        self.goal = objectiveArgs[1]
+        self.goal = goal
 
         if self.AreaSpecific:
             # The area this quest has to be completed in (a playground zoneId or Anywhere)
-            self.area = objectiveArgs[2]
+            self.area = area
 
         # The current progress on this objective (number)
-        self.progress = progress
+        self.progress = None
+
+        self.showAsComplete = 0
+
+        self.didEditLeft = False
+
+    def getDidEditLeft(self):
+        return self.didEditLeft
+
+    def setupQuestPoster(self):
+        if self.HasProgress:
+            self.quest.setProgressText(self.getProgressText())
+
+    def getInfoText(self):
+        if self.goal > 1:
+            return str(self.goal) + ' '
+        else:
+            return 'A '
+
+    def setCogsGeneralIcon(self):
+        # Let's load up the general Cogs picture.
+        icon = QuestGlobals.getCogIcon()
+
+        if self.didEditLeft:
+            self.quest.setLeftIconGeom(icon)
+            self.quest.setLeftIconScale(icon.getScale())
+        else:
+            self.quest.setRightIconGeom(icon)
+            self.quest.setRightIconScale(icon.getScale())
+
+    def setCogSpecificIcon(self, cog, poster):
+        # Let's load up the head.
+        head = SuitBank.getSuitByName(cog).getHead().generate()
+        head.setName('%sHead' % CIGlobals.Suit)
+        head.setScale(2)
+        head.setH(180)
+        head.setDepthWrite(1)
+        head.setDepthTest(1)
+        poster.fitGeometry(head, fFlip = 1)
+
+        if leftFrame:
+           self.quest.setLeftIconGeom(head)
+        else:
+           self.quest.setRightIconGeom(head)
 
     def getProgressText(self):
         return "%d of %d " % (self.progress, self.goal) + QuestGlobals.makePastTense(self.Header)
@@ -77,18 +123,29 @@ class Objective:
         return self.progress >= self.goal
 
 class VisitNPCObjective(Objective):
+    """
+    [npcId, showAsComplete = 0]
+    0 npcId = HQ Officer
+    """
+
     Header = "Visit"
 
-    def __init__(self, objectiveArgs, progress, quest):
-        Objective.__init__(self, objectiveArgs, progress, quest)
-        # DoID of the NPC.
-        self.npcId = objectiveArgs[1]
-        # ZoneId the NPC resides at.
-        self.npcZone = objectiveArgs[2]
+    def __init__(self, npcId, showAsComplete = 0):
+        Objective.__init__(self, None, None)
 
-        # We don't need these variables.
-        del self.goal
-        del self.area
+        self.npcId = npcId
+
+        self.showAsComplete = showAsComplete
+
+        if npcId == 0:
+            # Providing 0 as the npcId makes it an HQ officer.
+            self.type = VisitHQOfficer
+            self.npcZone = 0
+        else:
+            self.npcZone = CIGlobals.NPCToonDict[npcId][0]
+
+    def isComplete(self):
+        return False
 
 class DefeatObjective(Objective):
     Header = "Defeat"
@@ -101,10 +158,41 @@ class DefeatObjective(Objective):
             hood == CIGlobals.BattleTTC)
 
 class CogObjective(DefeatObjective):
+    """ [cogName, goal, area] """
 
-    def __init__(self, objectiveArgs, progress, quest):
-        DefeatObjective.__init__(self, objectiveArgs, progress, quest)
-        self.cog = objectiveArgs[3]
+    def __init__(self, cog, goal, area):
+        DefeatObjective.__init__(self, goal, area)
+        self.cog = cog
+
+    def setupQuestPoster(self, poster):
+        leftFrame = True
+        self.didEditLeft = leftFrame
+        frameColor = QuestGlobals.BLUE
+        auxText = self.Header
+
+        infoText = self.getInfoText()
+
+        if self.cog == QuestGlobals.Any:
+            self.setCogsGeneralIcon()
+            text = CIGlobals.Suit if self.goal == 1 else CIGlobals.Suits
+            infoText += text
+        else:
+            nameText = self.cog
+            if self.goal > 1:
+                nameText = QuestGlobals.makePlural(self.cog)
+            infoText += nameText
+
+            self.setCogSpecificIcon(self.cog, poster)
+
+        if leftFrame:
+           self.quest.setInfoText(infoText)
+           self.quest.setAuxTex(self.Header)
+        else:
+           self.quest.setInfo02Text(infoText)
+           self.quest.setInfo02Pos(QuestGlobals.RECOVER_INFO2_POS)
+           self.quest.setRightPicturePos(QuestGlobals.DEFAULT_RIGHT_PICTURE_POS)
+
+        self.quest.setPictureFrameColor(frameColor)
 
     def handleProgress(self, cog):
         if not self.isComplete():
@@ -127,10 +215,34 @@ class CogObjective(DefeatObjective):
         return taskInfo
 
 class CogLevelObjective(DefeatObjective):
+    """ [minCogLevel, goal, area] """
 
-    def __init__(self, objectiveArgs, progress, quest):
-        DefeatObjective.__init__(self, objectiveArgs, progress, quest)
-        self.minCogLevel = objectiveArgs[3]
+    def __init__(self, minCogLevel, goal, area):
+        DefeatObjective.__init__(self, goal, area)
+        self.minCogLevel = minCogLevel
+
+    def setupQuestPoster(self):
+        leftFrame = True
+        self.didEditLeft = leftFrame
+        frameColor = QuestGlobals.BLUE
+        auxText = self.Header
+
+        self.setCogsGeneralIcon()
+
+        infoText = self.getInfoText()
+
+        infoText += "Level %s+ %s" % (self.minCogLevel, CIGlobals.Suit if self.goal == 1 else CIGlobals.Suits)
+
+        if leftFrame:
+            self.quest.setInfoText(infoText)
+            self.quest.setAuxText(auxText)
+        else:
+            self.quest.setInfo02Text(infoText)
+            self.quest.setInfo02Pos(QuestGlobals.RECOVER_INFO2_POS)
+            self.quest.setRightPicturePos(QuestGlobals.DEFAULT_RIGHT_PICTURE_POS)
+
+        self.quest.setProgressText('%s of %s %s' % (self.progress, self.goal, QuestGlobals.makePastTense(auxText).lower()))
+        self.quest.setPictureFrameColor(frameColor)
 
     def handleProgress(self, cog):
         if not self.isComplete():
@@ -148,10 +260,34 @@ class CogLevelObjective(DefeatObjective):
         return taskInfo
 
 class CogDeptObjective(DefeatObjective):
+    """ [dept, goal, area] """
 
-    def __init__(self, objectiveArgs, progress, quest):
-        DefeatObjective.__init__(self, objectiveArgs, progress, quest)
-        self.dept = objectiveArgs[3]
+    def __init__(self, dept, goal, area):
+        DefeatObjective.__init__(self, goal, area)
+        self.dept = dept
+
+    def setupQuestPoster(self):
+        leftFrame = True
+        self.didEditLeft = leftFrame
+        frameColor = QuestGlobals.BLUE
+        auxText = self.Header
+
+        self.setCogsGeneralIcon()
+
+        infoText = self.getInfoText()
+
+        infoText += self.dept.getName() if self.goal == 1 else QuestGlobals.makePlural(self.dept.getName())
+
+        if leftFrame:
+            self.quest.setInfoText(infoText)
+            self.quest.setAuxText(auxText)
+        else:
+            self.quest.setInfo02Text(infoText)
+            self.quest.setInfo02Pos(QuestGlobals.RECOVER_INFO2_POS)
+            self.quest.setRightPicturePos(QuestGlobals.DEFAULT_RIGHT_PICTURE_POS)
+
+        self.quest.setProgressText('%s of %s %s' % (self.progress, self.goal, QuestGlobals.makePastTense(auxText).lower()))
+        self.quest.setPictureFrameColor(frameColor)
 
     def handleProgress(self, cog):
         if not self.isComplete():
@@ -171,6 +307,8 @@ class CogDeptObjective(DefeatObjective):
         return taskInfo
 
 class CogInvasionObjective(DefeatObjective):
+    """ [goal, area] """
+
     Name = "Cog Invasion"
 
     def handleProgress(self, hood):
@@ -189,6 +327,8 @@ class CogInvasionObjective(DefeatObjective):
         return taskInfo
 
 class CogTournamentObjective(DefeatObjective):
+    """ [goal, area] """
+
     Name = "Cog Tournament"
 
     def handleProgress(self, hood):
@@ -207,12 +347,14 @@ class CogTournamentObjective(DefeatObjective):
         return taskInfo
 
 class CogBuildingObjective(DefeatObjective):
+    """ [dept, minFloors, goal, area] """
+
     Name = "%s Building"
 
-    def __init__(self, objectiveArgs, progress, quest):
-        DefeatObjective.__init__(self, objectiveArgs, progress, quest)
-        self.dept = objectiveArgs[3]
-        self.minFloors = objectiveArgs[4]
+    def __init__(self, dept, minFloors, goal, area):
+        DefeatObjective.__init__(self, goal, area)
+        self.dept = dept
+        self.minFloors = minFloors
 
     def handleProgress(self, hood, dept, numFloors):
         if not self.isComplete():
@@ -226,7 +368,7 @@ class CogBuildingObjective(DefeatObjective):
     def getTaskInfo(self):
         taskInfo = ""
         if self.minFloors != QuestGlobals.Any:
-            taskInfo += "%s+ Story " % self.minFloors
+            taskInfo += "%s+ Story " % QuestGlobals.getNumName(self.minFloors)
 
         if self.dept == QuestGlobals.Any:
             subject = self.Name % CIGlobals.Suit
@@ -247,13 +389,15 @@ class RecoverObjective(Objective):
     # Not implemented.
 
 class MinigameObjective(Objective):
+    """ [minigameName, goal] """
+
     Header = "Play"
     HasProgress = True
     AreaSpecific = False
 
-    def __init__(self, objectiveArgs, progress, quest):
-        Objective.__init__(self, objectiveArgs, progress, quest)
-        self.minigame = objectiveArgs[2]
+    def __init__(self, minigame, goal):
+        Objective.__init__(self, goal, None)
+        self.minigame = minigame
 
     def handleProgress(self, minigame):
 
@@ -266,7 +410,7 @@ class MinigameObjective(Objective):
         if self.goal > 1:
             taskInfo = "games of %s"
         else:
-            taskInfo =  "game of %s"
+            taskInfo = "game of %s"
         taskInfo = taskInfo % self.minigame
         return taskInfo
 
@@ -281,5 +425,6 @@ ObjectiveType2ObjectiveClass = {
     PlayMinigame:        MinigameObjective,
 
     VisitNPC:            VisitNPCObjective,
-    VisitHQOfficer:      VisitNPCObjective,
 }
+
+ObjectiveClass2ObjectiveType = {v: k for k, v in ObjectiveType2ObjectiveClass.items()}

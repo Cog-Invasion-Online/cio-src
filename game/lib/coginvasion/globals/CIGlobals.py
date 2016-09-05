@@ -86,6 +86,10 @@ DevToken = 0
 UndercoverToken = 1
 ModToken = 2
 
+TextByAdminToken = {NoToken:         "Nothing",
+                    UndercoverToken: "Undercover",
+                    DevToken:        "Developer",
+                    ModToken:        "Moderator"}
 TextColorByAdminToken = {NoToken : (0, 0, 0, 1),
                          UndercoverToken : (0, 0, 0, 1),
                          DevToken : (255.0 / 255, 154.0 / 255, 0.0 / 255, 1),
@@ -3855,7 +3859,7 @@ ToonTips = [
     "Make sure to put your Pie Turret in the best spot you can -- it can't be moved after it's been placed!",
     "Level 12 Cogs can do up to 36 damage!",
     "Each area has different level Cogs.",
-    "When taking over Cog Office Buildings, make sure to have all your Laff points!",
+    "When taking over Cog Office Buildings, make sure to have a full Laff Meter!",
     "You can go to the Minigame Area by using your Shticker Book.",
     "You can change your screen resolution on the Options page in your Shticker Book.",
     "You can change whether you play the game in fullscreen or in a window using the Options page in your Shticker Book.",

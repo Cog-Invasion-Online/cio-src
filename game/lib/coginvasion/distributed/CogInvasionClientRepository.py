@@ -633,8 +633,8 @@ class CogInvasionClientRepository(AstronClientRepository):
         self.doId2do[avId] = localAvatar
 
         # TEMPORARY:
-        localAvatar.hoodsDiscovered = [1000, 2000, 3000, 4000, 5000, 9000]
-        localAvatar.teleportAccess = [1000, 2000, 3000, 4000, 5000, 9000]
+        #localAvatar.hoodsDiscovered = [1000, 2000, 3000, 4000, 5000, 9000]
+        #localAvatar.teleportAccess = [1000, 2000, 3000, 4000, 5000, 9000]
 
         enterLoad.load()
         del enterLoad

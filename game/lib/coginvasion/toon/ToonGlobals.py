@@ -2,6 +2,7 @@
 # Filename: ToonGlobals.py
 # Created by: DecodedLogic (14Feb16)
 ########################################
+
 from lib.coginvasion.globals import CIGlobals
 
 # First argument is phase, next is type, body part, pant type, and finally model detail.
@@ -66,7 +67,7 @@ ANIMATIONS = {
 
 # These are the admin tokens
 # Key is token id, value is the actual model id.
-STAFF_TOKENS = {0 : 500, 2 : 300}
+STAFF_TOKENS = {CIGlobals.DevToken : 500, CIGlobals.ModToken : 300}
 
 def generateBodyPart(toon, bodyPart, partType, partPhase, pantType):
     partAnimations = {}

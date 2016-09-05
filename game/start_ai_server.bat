@@ -1,5 +1,7 @@
 @echo off
 
+title CIO AI Server
+
 set /p BASE_CHANNEL=Base channel(start at 403, go one number higher with each new district): 
 set MAX_CHANNELS=999999
 set STATE_SERVER=4002

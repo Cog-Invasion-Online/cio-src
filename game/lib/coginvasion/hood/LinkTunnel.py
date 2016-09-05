@@ -17,7 +17,12 @@ def __handleTunnelCollision(entry):
     if linkTunnel:
         zoneId = linkTunnel.data['zoneId']
         if base.cr.playGame.getPlace():
-            base.cr.playGame.getPlace().fsm.request('tunnelIn', [linkTunnel])
+            if linkTunnel.canEnter():
+                # We have access to this neighborhood.
+                base.cr.playGame.getPlace().fsm.request('tunnelIn', [linkTunnel])
+            else:
+                # We don't have access, show a message.
+                base.cr.playGame.getPlace().fsm.request('noAccessFA')
 
 def globalAcceptCollisions():
     base.acceptOnce('enter' + CollisionName, __handleTunnelCollision)
@@ -50,6 +55,9 @@ class LinkTunnel(DirectObject):
         self.dnaRootStr = dnaRootStr
         self.data = {}
         self.toZone = 0
+
+    def canEnter(self):
+        return CIGlobals.Hood2ZoneId[ZoneUtil.getHoodId(self.toZone, 1)] in base.localAvatar.getHoodsDiscovered()
 
     def cleanup(self):
         del TunnelNode2LinkTunnel[self.tunnel]

@@ -86,6 +86,37 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         self.defaultShard = 0
         self.numGagSlots = 0
         return
+        
+    def d_setDNAStrand(self, strand):
+        self.sendUpdate('setDNAStrand', [strand])
+        
+    def reqSetTSAUni(self, flag):
+        requester = self.air.doId2do.get(self.air.getAvatarIdFromSender())
+        if requester:
+            if requester.getAdminToken() > CIGlobals.NoToken:
+                if flag:
+                    # Apply the TSA uniform to this toon.
+                    self.shirt  = ToonDNA.ToonDNA.shirtDNA2shirt['27']
+                    self.sleeve = ToonDNA.ToonDNA.sleeveDNA2sleeve['25']
+                    self.shorts = (ToonDNA.ToonDNA.shortDNA2short['27'] if self.gender == 'boy'
+                                   else ToonDNA.ToonDNA.shortDNA2short['28'])
+                else:
+                    # Apply the default white clothes.
+                    self.shirt  = ToonDNA.ToonDNA.shirtDNA2shirt['00']
+                    self.sleeve = ToonDNA.ToonDNA.sleeveDNA2sleeve['00']
+                    self.shorts = (ToonDNA.ToonDNA.shortDNA2short['00'] if self.gender == 'boy'
+                                   else ToonDNA.ToonDNA.shortDNA2short['10'])
+                                   
+                self.shirtColor = self.sleeveColor = self.shortColor = ToonDNA.ToonDNA.colorName2DNAcolor['white']
+                    
+                self.generateDNAStrandWithCurrentStyle()
+                self.d_setDNAStrand(self.getDNAStrand())
+        
+    def reqSetAdminToken(self, token):
+        requester = self.air.doId2do.get(self.air.getAvatarIdFromSender())
+        if requester:
+            if requester.getAdminToken() > CIGlobals.NoToken and self.getAdminToken() != CIGlobals.DevToken:
+                self.b_setAdminToken(token)
 
     def setNumGagSlots(self, num):
         self.numGagSlots = num
@@ -118,6 +149,10 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
 
     def setHoodsDiscovered(self, array):
         self.hoodsDiscovered = array
+
+    def b_setHoodsDiscovered(self, array):
+        self.sendUpdate('setHoodsDiscovered', [array])
+        self.setHoodsDiscovered(array)
 
     def getHoodsDiscovered(self):
         return self.hoodsDiscovered
@@ -366,6 +401,10 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
 
     def setAdminToken(self, token):
         self.token = token
+        
+    def b_setAdminToken(self, token):
+        self.sendUpdate('setAdminToken', [token])
+        self.setAdminToken(token)
 
     def getAdminToken(self):
         return self.token

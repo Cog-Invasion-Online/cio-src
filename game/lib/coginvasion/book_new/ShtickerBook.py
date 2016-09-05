@@ -283,6 +283,11 @@ class ShtickerBook(DirectFrame, StateData):
                 doneStatus["shardId"] = shardId
         self.doneStatus = doneStatus
         messenger.send(self.doneEvent)
+        
+    def finishedResume(self, callback = None, extraArgs = []):
+        doneStatus = {"callback": callback, "extraArgs": extraArgs, "mode": "resume"}
+        self.doneStatus = doneStatus
+        messenger.send(self.doneEvent)
 
     def getBookElements(self):
         return self.bookElements

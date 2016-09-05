@@ -63,7 +63,7 @@ class DistributedNPCToonAI(DistributedToonAI):
         else:
             self.currentAvatar = avId
             av = self.air.doId2do.get(avId)
-            self.currentAvatarQuestOfMe = av.questManager.getQuestAndIdWhereCurrentObjectiveIsToVisit(self.npcId)
+            self.currentAvatarQuestOfMe = av.questManager.getVisitQuest(self.npcId)
             self.startWatchingCurrentAvatar()
             self.sendUpdateToAvatarId(avId, 'enterAccepted', [])
             self.sendUpdate('lookAtAvatar', [avId])

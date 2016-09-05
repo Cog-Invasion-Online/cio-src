@@ -9,6 +9,8 @@ from direct.gui.DirectGui import OnscreenText, DirectButton, DirectEntry
 
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.book_new.BookPage import BookPage
+from lib.coginvasion.gui.KickBanDialog import KickBanDialog
+from lib.coginvasion.gui.AdminTokenDialog import AdminTokenDialog
 
 class AdminPage(BookPage):
 
@@ -17,6 +19,7 @@ class AdminPage(BookPage):
         self.fsm = ClassicFSM('AdminPage', [State('off', self.enterOff, self.exitOff),
             State('basePage', self.enterBasePage, self.exitBasePage),
             State('kickSection', self.enterKickSection, self.exitKickSection),
+            #State('clickOnToon', self.enterClickOnToon, self.exitClickOnToon),
             State('sysMsgSection', self.enterSysMsgSection, self.exitSysMsgSection)],
             'off', 'off')
         self.fsm.enterInitialState()
@@ -84,7 +87,7 @@ class AdminPage(BookPage):
 
     def sendSystemMessageCommand(self, foo = None):
         msg = self.msgEntry.get()
-        base.cr.myDistrict.sendUpdate('systemMessageCommand', [base.localAvatar.getAdminToken(), msg])
+        DISTRICT_WIDE_MSG(msg)
         self.fsm.request('basePage')
 
     def exitSysMsgSection(self):
@@ -99,19 +102,17 @@ class AdminPage(BookPage):
 
     def enterKickSection(self):
         geom = CIGlobals.getDefaultBtnGeom()
-        self.infoLbl = OnscreenText(text = "Type the ID of the player you want to boot out.", pos = (0, 0.45))
-        self.idEntry = DirectEntry(width=10, scale=0.12, pos=(-0.59, 0, 0.15), command=self.sendKickMessage,
-            focusInCommand = base.localAvatar.chatInput.disableKeyboardShortcuts,
-            focusOutCommand = base.localAvatar.chatInput.enableKeyboardShortcuts)
+        self.infoLbl = OnscreenText(text = "Kick or Ban?", pos = (0, 0.45))
         self.kickBtn = DirectButton(
             geom = geom,
             text_scale = 0.04,
             relief = None,
             scale = 1.0,
             text = "Kick",
-            pos = (0, 0, -0.15),
+            pos = (0, 0, 0.1),
             text_pos = (0, -0.01),
-            command = self.sendKickMessage,
+            command = self.book.finishedResume,
+            extraArgs = [KickBanDialog, [0]]
         )
         self.banBtn = DirectButton(
             geom = geom,
@@ -119,10 +120,10 @@ class AdminPage(BookPage):
             relief = None,
             scale = 1.0,
             text = "Ban",
-            pos = (0, 0, -0.25),
+            pos = (0, 0, 0.0),
             text_pos = (0, -0.01),
-            command = self.sendKickMessage,
-            extraArgs = [None, 1]
+            command = self.book.finishedResume,
+            extraArgs = [KickBanDialog, [1]]
         )
         self.cancelBtn = DirectButton(
             geom = geom,
@@ -136,13 +137,6 @@ class AdminPage(BookPage):
             extraArgs = ['basePage']
         )
 
-    def sendKickMessage(self, foo = None, andBan = 0):
-        if self.idEntry.get().isspace() or len(self.idEntry.get()) == 0:
-            return
-        print "Sending out kick request for avatar id: " + str(self.idEntry.get())
-        base.localAvatar.sendUpdate("requestEject", [int(self.idEntry.get()), andBan])
-        self.fsm.request('basePage')
-
     def exitKickSection(self):
         self.banBtn.destroy()
         del self.banBtn
@@ -150,8 +144,6 @@ class AdminPage(BookPage):
         del self.infoLbl
         self.cancelBtn.destroy()
         del self.cancelBtn
-        self.idEntry.destroy()
-        del self.idEntry
         self.kickBtn.destroy()
         del self.kickBtn
 
@@ -165,7 +157,7 @@ class AdminPage(BookPage):
             text = "",
             pos=(-0.45, 0.15, 0.5),
             text_pos = (0, -0.01),
-            command = self.sendSuitCommand,
+            command = SEND_SUIT_CMD,
             extraArgs = ['suitSpawner']
         )
         self.killCogsBtn = DirectButton(
@@ -176,7 +168,7 @@ class AdminPage(BookPage):
             text = "Kill All Cogs",
             pos=(-0.45, 0.15, 0.40),
             text_pos = (0, -0.01),
-            command = self.sendSuitCommand,
+            command = SEND_SUIT_CMD,
             extraArgs = ['killCogs']
         )
         self.makeTournamentBtn = DirectButton(
@@ -187,7 +179,7 @@ class AdminPage(BookPage):
             text = "Make Cog Tournament",
             pos=(-0.45, 0.15, 0.3),
             text_pos = (0, -0.01),
-            command = self.sendSuitCommand,
+            command = SEND_SUIT_CMD,
             extraArgs = ['tournament']
         )
         self.makeInvasionBtn = DirectButton(
@@ -198,7 +190,7 @@ class AdminPage(BookPage):
             text = "Make Cog Invasion",
             pos=(-0.45, 0.15, 0.2),
             text_pos = (0, -0.01),
-            command = self.sendSuitCommand,
+            command = SEND_SUIT_CMD,
             extraArgs = ['invasion']
         )
         self.makeCogBtn = DirectButton(
@@ -209,7 +201,7 @@ class AdminPage(BookPage):
             text = "Make Cog",
             pos=(-0.45, 0.15, 0.1),
             text_pos = (0, -0.01),
-            command = self.sendSuitCommand,
+            command = SEND_SUIT_CMD,
             extraArgs = ['suit']
         )
         self.ghostBtn = DirectButton(
@@ -217,10 +209,10 @@ class AdminPage(BookPage):
             text_scale = 0.04,
             relief = None,
             scale = 1.0,
-            text = "",
+            text = "Toggle Ghost",
             pos = (0.45, 0.15, 0.5),
             text_pos = (0, -0.01),
-            command = self.changeGhost
+            command = TOGGLE_GHOST
         )
         self.bgBtn = DirectButton(
             geom = geom,
@@ -240,7 +232,7 @@ class AdminPage(BookPage):
             text = "Toggle Player Ids",
             pos = (0.45, 0.15, 0.3),
             text_pos = (0, -0.01),
-            command = self.togglePlayerIds
+            command = TOGGLE_PLAYER_IDS
         )
         self.kickBtn = DirectButton(
             geom = geom,
@@ -262,18 +254,29 @@ class AdminPage(BookPage):
             text_pos = (0, -0.01),
             command = self.openSysMsgPage
         )
-        if base.localAvatar.getGhost():
-            self.ghostBtn['text'] = 'Turn Ghost Off'
-        else:
-            self.ghostBtn['text'] = 'Turn Ghost On'
+        self.oobeBtn = DirectButton(
+            geom = geom,
+			text_scale = 0.04,
+			relief = None,
+			scale = 1.0,
+			text = "Toggle OOBE",
+			pos = (0.45, 0.15, 0),
+			text_pos = (0, -0.01),
+			command = base.oobe
+        )
+        self.tokenBtn = DirectButton(
+            geom = geom,
+			text_scale = 0.04,
+			relief = None,
+			scale = 1.0,
+			text = "Modify Admin Token",
+			pos = (0.45, 0.15, -0.1),
+			text_pos = (0, -0.01),
+			command = self.book.finishedResume,
+            extraArgs = [AdminTokenDialog, []]
+        )
         base.cr.playGame.getPlace().maybeUpdateAdminPage()
         del geom
-
-    def togglePlayerIds(self):
-        if base.cr.isShowingPlayerIds:
-            base.cr.hidePlayerIds()
-        else:
-            base.cr.showPlayerIds()
 
     def toggleBackground(self):
         if render.isHidden():
@@ -286,18 +289,6 @@ class AdminPage(BookPage):
         else:
             self.book.hide()
             self.book.setBackgroundHidden(True)
-
-    def changeGhost(self):
-        if base.localAvatar.getGhost():
-            base.localAvatar.b_setGhost(0)
-            self.ghostBtn['text'] = 'Turn Ghost On'
-        else:
-            base.localAvatar.b_setGhost(1)
-            self.ghostBtn['text'] = 'Turn Ghost Off'
-
-    def sendSuitCommand(self, commandName):
-        if base.cr.playGame.suitManager:
-            base.cr.playGame.suitManager.sendUpdate('suitAdminCommand', [base.localAvatar.getAdminToken(), commandName])
 
     def openKickPage(self):
         self.fsm.request('kickSection')
@@ -326,3 +317,7 @@ class AdminPage(BookPage):
         del self.makeInvasionBtn
         self.makeCogBtn.destroy()
         del self.makeCogBtn
+        self.oobeBtn.destroy()
+        del self.oobeBtn
+        self.tokenBtn.destroy()
+        del self.tokenBtn

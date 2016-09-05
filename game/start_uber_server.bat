@@ -1,5 +1,7 @@
 @echo off
 
+title CIO UberDog Server
+
 set BASE_CHANNEL=1000000
 set MAX_CHANNELS=999999
 set STATE_SERVER=4002

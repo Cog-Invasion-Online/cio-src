@@ -22,6 +22,7 @@ game/tools/libcoginvasion.lib
 game/tools/libcoginvasion.exp
 game/file_info.txt
 game/libcoginvasion.pyd
+game/logs
 game/new-cog-area
 game/screenshots
 game/settings.json
@@ -87,3 +88,5 @@ game/tools/nirai
 !game/astron/gameserver.crt
 !game/astron/rsakey.key
 !game/astron/config/astrond.yml
+!game/astron/libeay32.dll
+!game/astron/ssleay32.dll

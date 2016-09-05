@@ -103,7 +103,7 @@ class DistributedNPCToon(DistributedToon):
         elif ZoneUtil.isOnSameStreet(objective.npcZone):
             # The NPC is on the same street that the quest is being assigned on.
             locationSpeech = locationSpeech % "on this street."
-        elif ZoneUtil.isAtSamePlaygroundButDifferentBranch(objective.zoneId):
+        elif ZoneUtil.isAtSamePlaygroundButDifferentBranch(objective.npcZone):
             # The NPC is in the same playground but in a different branch zone.
             locationSpeech = (locationSpeech % "on %s in this playground." %
                 ZoneUtil.getStreetName(objective.npcZone))
@@ -181,7 +181,7 @@ class DistributedNPCToon(DistributedToon):
         #    self.currentChatIndex = 0
         #    self.doNPCChat(objective.getAssignDialog())
 
-        questData = base.localAvatar.questManager.getQuestAndIdWhereCurrentObjectiveIsToVisit(self.npcId)
+        questData = base.localAvatar.questManager.getVisitQuest(self.npcId)
         if questData:
             quest = questData[1]
             self.currentQuest = quest

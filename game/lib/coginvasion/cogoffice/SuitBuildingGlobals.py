@@ -47,7 +47,7 @@ buildingInfo = {
 
 # The minimum and maximum number of cog buildings that can be present on each street.
 buildingMinMax = {
-    CIGlobals.SillyStreet: (0, 3),
+    CIGlobals.SillyStreet: (1, 3),
     CIGlobals.PunchlinePlace: (0, 3),
     CIGlobals.LoopyLane: (0, 3),
     CIGlobals.BarnacleBoulevard: (1, 5),

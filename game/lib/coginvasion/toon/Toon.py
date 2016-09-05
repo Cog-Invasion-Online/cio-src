@@ -453,6 +453,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.tokenIconIval = Sequence(LerpHprInterval(self.tokenIcon, duration = 3.0, hpr = Vec3(360, 0, 0), startHpr = Vec3(0, 0, 0)))
             self.tokenIconIval.loop()
             icons.removeNode()
+        else:
+            self.removeAdminToken()
 
     def removeAdminToken(self):
         if self.tokenIcon != None and self.tokenIconIval != None:

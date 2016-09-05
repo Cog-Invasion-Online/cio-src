@@ -26,8 +26,11 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
 
         chat = self.currentQuest.assignSpeech
         if chat is None:
-            chat = base.localAvatar.questManager.getTaskInfo(objective, True)
-            chat += "\x07"
+            if objective.type == Objectives.VisitNPC:
+                chat += self.getNPCLocationSpeech()
+            else:
+                chat = base.localAvatar.questManager.getTaskInfo(objective, True)
+                chat += "\x07"
             chat += random.choice(NPCDialogue.QuestAssignGoodbyes)
         if chat.endswith("\x07"):
             if objective.type == Objectives.VisitNPC:

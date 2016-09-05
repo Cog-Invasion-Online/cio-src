@@ -71,13 +71,28 @@ class QuestManager(QuestManagerBase):
             note = QuestNote.QuestNote(quest.index)
 
             # Set the notes heading as the objective's Header (e.g Defeat, Recover, Deliver, Visit)
-            heading = objective.Header
-            note.setHeading(heading)
+            if not objective.isComplete():
+                heading = objective.Header
+                note.setHeading(heading)
+            else:
+                note.setHeading(QuestNote.HDR_RETURN)
 
             taskInfo = None
-            if objective.type not in [Objectives.VisitNPC, Objectives.VisitHQOfficer]:
+            if not objective.type in [Objectives.VisitNPC, Objectives.VisitHQOfficer]:
                 # Get task info.
-                taskInfo = self.getTaskInfo(objective)
+                if not objective.isComplete():
+                    taskInfo = self.getTaskInfo(objective)
+                else:
+                    if objective.goal > 1:
+                        taskInfo = "%d " % objective.goal
+                    else:
+                        taskInfo = "a "
+                    taskInfo += objective.getTaskInfo() + "\n"
+                    if objective.assigner != 0:
+                        taskInfo += "to %s\nat %s" % (CIGlobals.NPCToonNames[objective.assigner],
+                                                      CIGlobals.zone2TitleDict[CIGlobals.NPCToonDict[objective.assigner][0]][0])
+                    else:
+                        taskInfo += "to an HQ Officer\nat a Toon HQ"
 
             elif objective.type == Objectives.VisitNPC:
                 # Say the NPC name and the building of the NPC.
@@ -94,14 +109,16 @@ class QuestManager(QuestManagerBase):
 
             progress = ""
             if objective.HasProgress:
+                note.useProgressBar = True
+
                 # This objective has progress (e.g 2 of 5 Defeated, 0 of 1 Recovered)
                 if not objective.isComplete():
                     progress = objective.getProgressText()
-                    note.setProgress(progress)
+                    note.setProgress(progress, objective.goal, objective.progress)
                 else:
                     note.setCompleted(1)
 
-            elif objective.type == Objectives.VisitNPC:
+            elif objective.type == Objectives.VisitNPC or (objective.isComplete() and objective.assigner != 0):
                 # Show the street name and hood name of where this NPC is located.
 
                 streetZone = ZoneUtil.getBranchZone(objective.npcZone)
@@ -116,11 +133,14 @@ class QuestManager(QuestManagerBase):
 
                 note.setProgress(progress)
 
-            elif objective.type == Objectives.VisitHQOfficer:
+            elif objective.type == Objectives.VisitHQOfficer or (objective.isComplete() and objective.assigner == 0):
                 # HQ officers are at any street and any playground.
                 progress = "Any Street\nAny Playground"
 
                 note.setProgress(progress)
+
+            if objective.showAsComplete:
+                note.setCompleted(1)
 
             note.setReward("For " + quest.reward.fillInDialogue())
 

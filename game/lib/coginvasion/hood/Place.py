@@ -16,7 +16,7 @@ from direct.interval.IntervalGlobal import Parallel, LerpHprInterval, Sequence, 
 from lib.coginvasion.globals import CIGlobals
 from PublicWalk import PublicWalk
 from lib.coginvasion.book_new.ShtickerBook import ShtickerBook
-from lib.coginvasion.gui.Dialog import GlobalDialog
+from lib.coginvasion.gui.Dialog import GlobalDialog, Ok
 from lib.coginvasion.minigame.FirstPerson import FirstPerson
 from lib.coginvasion.nametag import NametagGlobals
 import LinkTunnel
@@ -175,7 +175,7 @@ class Place(StateData):
         elif doneStatus['mode'] == 'teleport':
             base.localAvatar.b_setAnimState('closeBook', self.__handleBookCloseTeleport, [doneStatus])
         elif doneStatus['mode'] == 'resume':
-            base.localAvatar.b_setAnimState('closeBook', self.__handleBookCloseResume)
+            base.localAvatar.b_setAnimState('closeBook', self.__handleBookCloseResume, [doneStatus])
         elif doneStatus['mode'] == 'switchShard':
             base.localAvatar.b_setAnimState('closeBook', self.__handleBookCloseSwitchShard, [doneStatus])
 
@@ -190,7 +190,10 @@ class Place(StateData):
         params.append(base.localAvatar.doId)
         base.cr.gameFSM.request('switchShards', params)
 
-    def __handleBookCloseResume(self):
+    def __handleBookCloseResume(self, doneStatus):
+        if doneStatus.get('callback'):
+            doneStatus['callback'](*doneStatus.get("extraArgs", []))
+            
         self.fsm.request('walk')
 
     def __handleBookCloseTeleport(self, requestStatus):
@@ -443,3 +446,27 @@ class Place(StateData):
         base.localAvatar.walkControls.setCollisionsActive(1)
         base.localAvatar.detachCamera()
         del self.nextState
+
+    def enterNoAccessFA(self):
+        base.localAvatar.attachCamera()
+        base.localAvatar.startSmartCamera()
+        base.localAvatar.createLaffMeter()
+        base.localAvatar.createMoney()
+
+        noAccess = "Watch out!\n\nThis neighborhood is too dangerous for your Toon. Complete Quests to unlock this neighborhood."
+        self.dialog = GlobalDialog(noAccess, 'noAccessAck', Ok)
+        self.acceptOnce('noAccessAck', self.__handleNoAccessAck)
+        self.dialog.show()
+
+    def __handleNoAccessAck(self):
+        self.fsm.request('walk')
+
+    def exitNoAccessFA(self):
+        base.localAvatar.stopSmartCamera()
+        base.localAvatar.detachCamera()
+        base.localAvatar.disableLaffMeter()
+        base.localAvatar.disableMoney()
+
+        if hasattr(self, 'dialog'):
+            self.dialog.cleanup()
+            del self.dialog

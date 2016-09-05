@@ -41,12 +41,12 @@ class QuestManagerAI(QuestManagerBase):
 
         for questId in possibleQuestIds:
 
-            if Quests.Quests[questId]["tier"] != self.avatar.getTier():
+            if Quests.Quests[questId][Quests.tier] != self.avatar.getTier():
                 # This quest isn't in our tier. Remove it from the possible choices.
                 possibleQuestIds.remove(questId)
                 break
 
-            for reqQuest in Quests.Quests[questId].get('rq', []):
+            for reqQuest in Quests.Quests[questId].get(Quests.requiredQuests, []):
                 # Some quests need to have other quests completed before they are able to be chosen.
                 if not reqQuest in self.avatar.getQuestHistory() and questId in possibleQuestIds:
                     # A required quest is not in our avatar's quest history. We can't choose it.
@@ -61,7 +61,7 @@ class QuestManagerAI(QuestManagerBase):
             # We have more than one quest to choose from.
             for questId in possibleQuestIds:
 
-                if Quests.Quests[questId].get("lastQuestInTier", False) == True:
+                if Quests.Quests[questId].get(Quests.finalInTier, False) == True:
                     # We cannot choose the final quest for our tier if we still have other quests to complete.
                     possibleQuestIds.remove(questId)
 
@@ -105,12 +105,12 @@ class QuestManagerAI(QuestManagerBase):
                 # Don't worry about this quest if it's only on the first objective.
                 continue
 
-            lastObjectiveData = Quests.Quests[questId]["objectives"][lastObjectiveIndex]
-            lastObjectiveType = lastObjectiveData[0]
+            lastObjectiveData = Quests.Quests[questId][Quests.objectives][lastObjectiveIndex]
+            lastObjectiveType = lastObjectiveData[Quests.objType]
 
             if lastObjectiveType == VisitNPC:
                 # Check if the npcId for the last objective matches the npcId provided.
-                if lastObjectiveData[2] == npcId:
+                if lastObjectiveData[Quests.args][0] == npcId:
                     if not checkCurrentCompleted:
                         # We don't have to check if the current objective is complete. Just return True.
                         return True
@@ -141,6 +141,8 @@ class QuestManagerAI(QuestManagerBase):
         for quest in self.quests.values():
             currObjective = quest.getCurrentObjective()
 
+            isHQ = CIGlobals.NPCToonDict[npcId][3] == CIGlobals.NPC_HQ
+
             if currObjective.type == VisitNPC:
                 # Make sure the npcIds match.
                 if currObjective.npcId == npcId:
@@ -151,8 +153,14 @@ class QuestManagerAI(QuestManagerBase):
             elif currObjective.type == VisitHQOfficer:
                 # When the objective is to visit an HQ officer, we can visit any HQ officer.
                 # Just make sure that the NPC is an HQ Officer.
-                if CIGlobals.NPCToonDict[npcId][3] == CIGlobals.NPC_HQ:
+                if isHQ:
                     return True
+
+            else:
+                if isHQ:
+                    return (currObjective.isComplete() and currObjective.assigner == 0)
+                else:
+                    return (currObjective.isComplete() and currObjective.assigner == npcId)
 
         # I guess we have no objective to visit this npc.
         return False

@@ -17,7 +17,7 @@ class Street(Place):
         self.parentFSM = parentFSM
         Place.__init__(self, loader, doneEvent)
         self.fsm = ClassicFSM('Street', [State('start', self.enterStart, self.exitStart, ['walk', 'doorOut', 'teleportIn', 'tunnelOut', 'elevatorIn']),
-            State('walk', self.enterWalk, self.exitWalk, ['stop', 'tunnelIn', 'shtickerBook', 'teleportOut']),
+            State('walk', self.enterWalk, self.exitWalk, ['stop', 'tunnelIn', 'shtickerBook', 'teleportOut', 'noAccessFA']),
             State('shtickerBook', self.enterShtickerBook, self.exitShtickerBook, ['teleportOut', 'walk']),
             State('teleportOut', self.enterTeleportOut, self.exitTeleportOut, ['teleportIn', 'stop']),
             State('tunnelOut', self.enterTunnelOut, self.exitTunnelOut, ['walk']),
@@ -27,6 +27,7 @@ class Street(Place):
             State('doorOut', self.enterDoorOut, self.exitDoorOut, ['walk']),
             State('teleportIn', self.enterTeleportIn, self.exitTeleportIn, ['walk', 'stop']),
             State('elevatorIn', self.enterElevatorIn, self.exitElevatorIn, ['walk', 'stop']),
+            State('noAccessFA', self.enterNoAccessFA, self.exitNoAccessFA, ['walk', 'stop']),
             State('final', self.enterFinal, self.exitFinal, ['final'])],
             'start', 'final')
 

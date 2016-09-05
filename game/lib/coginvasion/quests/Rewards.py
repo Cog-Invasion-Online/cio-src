@@ -8,6 +8,7 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 """
 
+from lib.coginvasion.globals import CIGlobals
 import QuestGlobals
 
 ###################################
@@ -66,8 +67,18 @@ class GagSlotReward(Reward):
     def fillInDialogue(self):
         return self.Dialogue % QuestGlobals.getOrdinal(self.rewardValue)
 
+class AccessReward(Reward):
+    Dialogue = "access to %s"
+
+    def giveReward(self, avatar):
+        avatar.b_setHoodsDiscovered(avatar.getHoodsDiscovered() + [self.rewardValue])
+
+    def fillInDialogue(self):
+        return self.Dialogue % CIGlobals.ZoneId2Hood[self.rewardValue]
+
 RewardType2RewardClass = {
     Health:     HealthReward,
     Jellybeans: JellybeanReward,
-    GagSlot:    GagSlotReward
+    GagSlot:    GagSlotReward,
+    Access:     AccessReward
 }

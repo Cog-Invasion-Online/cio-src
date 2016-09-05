@@ -20,10 +20,12 @@ class QuestManagerBase:
         quest = self.quests.get(questId)
         return quest.currentObjectiveIndex >= quest.numObjectives - 1
 
-    def getQuestAndIdWhereCurrentObjectiveIsToVisit(self, npcId):
+    def getVisitQuest(self, npcId):
         """Returns the quest instance and the quest ID where the current objective of the quest is to visit the NPC specified."""
         for questId, quest in self.quests.items():
             currObjective = quest.getCurrentObjective()
+
+            isHQ = CIGlobals.NPCToonDict[npcId][3] == CIGlobals.NPC_HQ
 
             if currObjective.type == Objectives.VisitNPC:
                 # Check if the npcIds match.
@@ -33,9 +35,18 @@ class QuestManagerBase:
 
             elif currObjective.type == Objectives.VisitHQOfficer:
                 # Check if the npc specified is an HQ Officer.
-                if CIGlobals.NPCToonDict[npcId][3] == CIGlobals.NPC_HQ:
+                if isHQ:
                     # Yep, return the questId and quest instance.
                     return [questId, quest]
+
+            else:
+                # If it's not a visit objective, we have to visit the NPC who assigned us the objective.
+                if isHQ:
+                    if (currObjective.assigner == 0) and currObjective.isComplete():
+                        return [questId, quest]
+                else:
+                    if (currObjective.assigner == npcId) and currObjective.isComplete():
+                        return [questId, quest]
 
         # We have no quest where the current objective is to visit the NPC specified.
         return None
