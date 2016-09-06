@@ -139,10 +139,13 @@ class AdminTokenDialog(Dialog.GlobalDialog):
         self.choiceDialog.show()
         self.acceptOnce("tsaChoice", self.__handleTSAChoice, [avId, token])
         
-    def __handleTSAChoice(self, avId):
+    def __handleTSAChoice(self, avId, token):
+        toon = base.cr.doId2do.get(avId)
         val = self.choiceDialog.getValue()
-        if val:
-            REQ_SET_TSA_UNI(avId, 1 if token > CIGlobals.NoToken else 0)
-        else:
-            REQ_SET_TSA_UNI(avId, 0 if token > CIGlobals.NoToken else 1)
+        if token > CIGlobals.NoToken:
+            if val:
+                REQ_SET_TSA_UNI(avId, 1)
+        elif token == CIGlobals.NoToken:
+            if val and toon.hasTSASuit():
+                REQ_SET_TSA_UNI(avId, 0)
         self.__handleCancel()

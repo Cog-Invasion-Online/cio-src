@@ -243,6 +243,9 @@ class ToonDNA:
         self.gloveColor = None
         self.parseDNAStrand(self.dnaStrand)
         return
+        
+    def hasTSASuit(self):
+        return self.shirt == self.shirtDNA2shirt['27']
 
     def getColorByName(self, name):
         name = name.lower()
