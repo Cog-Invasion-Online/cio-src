@@ -137,12 +137,12 @@ class AdminTokenDialog(Dialog.GlobalDialog):
         self.choiceDialog.cleanup()
         self.choiceDialog = Dialog.GlobalDialog(pref + " TSA uniform?", "tsaChoice", Dialog.YesNo)
         self.choiceDialog.show()
-        self.acceptOnce("tsaChoice", self.__handleTSAChoice, [avId])
+        self.acceptOnce("tsaChoice", self.__handleTSAChoice, [avId, token])
         
     def __handleTSAChoice(self, avId):
         val = self.choiceDialog.getValue()
         if val:
-            REQ_SET_TSA_UNI(avId, 1)
+            REQ_SET_TSA_UNI(avId, 1 if token > CIGlobals.NoToken else 0)
         else:
-            REQ_SET_TSA_UNI(avId, 0)
+            REQ_SET_TSA_UNI(avId, 0 if token > CIGlobals.NoToken else 1)
         self.__handleCancel()
