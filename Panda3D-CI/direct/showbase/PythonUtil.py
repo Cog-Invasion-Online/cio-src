@@ -26,16 +26,11 @@ __all__ = ['indent',
 'Averager', 'getRepository', 'formatTimeExact', 'startSuperLog', 'endSuperLog',
 'typeName', 'safeTypeName', 'histogramDict', 'unescapeHtmlString']
 
-print __debug__
 if __debug__:
-    print "WE'RE IN DEBUG"
     __all__ += ['StackTrace', 'traceFunctionCall', 'traceParentCall', 'printThisCall',
                 'stackEntryInfo', 'lineInfo', 'callerInfo', 'lineTag',
                 'profileFunc', 'profiled', 'startProfile', 'printProfile',
                 'getProfileResultString', 'printStack', 'printReverseStack']
-else:
-    print "are we in debug?"
-    print __debug__ is True
 
 import types
 import math
@@ -2154,7 +2149,6 @@ def getRepository():
 
 exceptionLoggedNotify = None
 if __debug__:
-    print "PYTHONUTIL::exceptionLogged"
     def exceptionLogged(append=True):
         """decorator that outputs the function name and all arguments
         if an exception passes back through the stack frame

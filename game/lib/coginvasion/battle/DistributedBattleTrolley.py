@@ -129,9 +129,9 @@ class DistributedBattleTrolley(DistributedObject):
             self.trolleyEnterTrack.finish()
 
     def enterLeaving(self, ts = 0):
-        camera.posHprInterval(3, (0, 18.55, 3.75), (-180, 0, 0), blendType='easeInOut').start()
         base.playSfx(self.trolleyBellSfx, node = self.trolleyCar)
         if self.localAvOnTrolley == True:
+            camera.posHprInterval(3, (0, 18.55, 3.75), (-180, 0, 0), blendType='easeInOut').start()
             self.trolleyExitTrack.append(Sequence(Wait(4.0), Func(base.transitions.fadeOut)))
         self.trolleyExitTrack.start(ts)
         self.ignore('entertrolley_sphere')

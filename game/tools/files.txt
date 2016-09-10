@@ -1,5 +1,6 @@
-coginvasion.exe
-coginvasion.bin
+built/coginvasion_opengl.exe
+built/coginvasion_dx9.exe
+built/coginvasion.bin
 phase_3.5.mf
 phase_3.mf
 phase_4.mf
@@ -18,7 +19,7 @@ phase_14.mf
 winter.mf
 icon.ico
 toonmono.cur
-mssmp3.asi
-mssogg.asi
-mss32.dll
+../Panda3D-CI/bin/mssmp3.asi
+../Panda3D-CI/bin/mssogg.asi
+../Panda3D-CI/bin/mss32.dll
 tournament_music.mf

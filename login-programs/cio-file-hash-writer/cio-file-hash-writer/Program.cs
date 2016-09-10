@@ -51,9 +51,11 @@ namespace cio_file_hash_writer
             foreach (string fileName in fileNames)
             {
                 //Console.WriteLine(fileName);
-                string fixed_fileName = Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
+                string fixed_fileName = Path.GetInvalidPathChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
+                string[] split_path = fixed_fileName.Split('/');
+                string file_only = split_path[split_path.Length - 1];
                 string md5 = BitConverter.ToString(new SHA1CryptoServiceProvider().ComputeHash(File.Open(fixed_fileName, FileMode.Open)));
-                string output = fixed_fileName + " " + md5;
+                string output = file_only + " " + md5;
                 Console.WriteLine(output);
                 outputSw.WriteLine(output);
                 outputSw.Flush();
