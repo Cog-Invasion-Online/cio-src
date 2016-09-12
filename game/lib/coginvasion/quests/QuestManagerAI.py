@@ -297,7 +297,7 @@ class QuestManagerAI(QuestManagerBase):
         self.avatar.b_setQuests(questData)
 
         # Let's see the if the objective is complete, now that we've updated the progress.
-        self.checkIfObjectiveIsComplete(questId)
+        #self.checkIfObjectiveIsComplete(questId)
 
     def updateQuestObjectiveProgress(self, questId, value):
         """Change the current objective progress on the quest specified to the value."""
