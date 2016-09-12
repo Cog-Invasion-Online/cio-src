@@ -158,6 +158,7 @@ class QuestManagerAI(QuestManagerBase):
 
             else:
                 if isHQ:
+                    print "current objective is complete, needs to visit HQ Officer"
                     return (currObjective.isComplete() and currObjective.assigner == 0)
                 else:
                     return (currObjective.isComplete() and currObjective.assigner == npcId)

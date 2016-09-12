@@ -22,6 +22,8 @@ class QuestManagerBase:
 
     def getVisitQuest(self, npcId):
         """Returns the quest instance and the quest ID where the current objective of the quest is to visit the NPC specified."""
+        
+        print "getVisitQuest"
         for questId, quest in self.quests.items():
             currObjective = quest.getCurrentObjective()
 
@@ -43,6 +45,7 @@ class QuestManagerBase:
                 # If it's not a visit objective, we have to visit the NPC who assigned us the objective.
                 if isHQ:
                     if (currObjective.assigner == 0) and currObjective.isComplete():
+                        print "quest {0} is complete and we are visiting an HQ Officer".format(questId)
                         return [questId, quest]
                 else:
                     if (currObjective.assigner == npcId) and currObjective.isComplete():
