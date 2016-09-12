@@ -9,8 +9,10 @@ from direct.gui.DirectGui import OnscreenText, DirectButton, DirectEntry
 
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.book_new.BookPage import BookPage
+
 from lib.coginvasion.gui.KickBanDialog import KickBanDialog
 from lib.coginvasion.gui.AdminTokenDialog import AdminTokenDialog
+from lib.coginvasion.gui.WorldAccessDialog import WorldAccessDialog
 
 class AdminPage(BookPage):
 
@@ -275,6 +277,17 @@ class AdminPage(BookPage):
 			command = self.book.finishedResume,
             extraArgs = [AdminTokenDialog, []]
         )
+        self.worldBtn = DirectButton(
+            geom = geom,
+            text_scale = 0.04,
+            relief = None,
+            scale = 1.0,
+            text = "Give World Access",
+            pos = (0.45, 0.15, -0.2),
+            text_pos = (0, -0.01),
+            command = self.book.finishedResume,
+            extraArgs = [WorldAccessDialog, []]
+        )
         base.cr.playGame.getPlace().maybeUpdateAdminPage()
         del geom
 
@@ -321,3 +334,5 @@ class AdminPage(BookPage):
         del self.oobeBtn
         self.tokenBtn.destroy()
         del self.tokenBtn
+        self.worldBtn.destroy()
+        del self.worldBtn

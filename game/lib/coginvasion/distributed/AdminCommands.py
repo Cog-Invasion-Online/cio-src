@@ -93,3 +93,13 @@ def DISTRICT_WIDE_MSG(msg):
     base.cr.myDistrict.sendUpdate('systemMessageCommand', [base.localAvatar.getAdminToken(), msg])
 
 __builtin__.DISTRICT_WIDE_MSG = DISTRICT_WIDE_MSG
+
+def REQ_SET_WORLD_ACCESS(avId, andTP):
+    if not precommandChecks():
+        return
+    
+    toon = base.cr.doId2do.get(avId)
+    if toon:
+        toon.sendUpdate('reqSetWorldAccess', [andTP])
+        
+__builtin__.REQ_SET_WORLD_ACCESS = REQ_SET_WORLD_ACCESS

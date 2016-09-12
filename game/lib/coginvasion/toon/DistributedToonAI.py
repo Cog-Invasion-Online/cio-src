@@ -87,6 +87,14 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         self.numGagSlots = 0
         return
         
+    def reqSetWorldAccess(self, andTP):
+        requester = self.air.doId2do.get(self.air.getAvatarIdFromSender())
+        if requester:
+            if requester.getAdminToken() > CIGlobals.NoToken:
+                self.b_setHoodsDiscovered(CIGlobals.Hood2ZoneId.values())
+                if andTP:
+                    self.b_setTeleportAccess(CIGlobals.Hood2ZoneId.values())
+        
     def d_setDNAStrand(self, strand):
         self.sendUpdate('setDNAStrand', [strand])
         
