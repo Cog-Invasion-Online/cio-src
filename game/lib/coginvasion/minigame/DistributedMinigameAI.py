@@ -103,6 +103,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
         self.readyAvatars += 1
         if self.areAllAvatarsReady():
             self.allAvatarsReady()
+            self.readyAvatars = 0
 
     def areAllAvatarsReady(self):
         return (self.getNumPlayers() == self.readyAvatars)

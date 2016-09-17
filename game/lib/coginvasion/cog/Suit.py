@@ -170,8 +170,7 @@ class Suit(Avatar):
         if not self.propeller:
             self.generatePropeller()
         sfx = self.propellerSounds['neutral']
-        sfx.setLoop(True)
-        base.playSfx(sfx, node = self)
+        base.playSfx(sfx, node = self, looping = 1)
         self.propeller.loop('chan', fromFrame = 0, toFrame = 3)
         self.setPlayRate(0.8, 'land')
         self.pingpong('land', fromFrame = 0, toFrame = 10)

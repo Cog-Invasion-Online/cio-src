@@ -45,11 +45,11 @@ class MinigameBase(DirectObject):
             gameClass = DistributedDodgeballGameAI
 
         self.minigame = gameClass(self.cr)
+        for avatar in avatars:
+            self.minigame.appendAvatar(avatar)
         self.minigame.setGameName(game)
         self.minigame.generateWithRequired(self.zoneId)
         self.minigame.setNumPlayers(numPlayers)
-        for avatar in avatars:
-            self.minigame.appendAvatar(avatar)
         taskMgr.add(self.monitorAvatars, self.cr.uniqueName("monitorAvatars"))
 
     def monitorAvatars(self, task):

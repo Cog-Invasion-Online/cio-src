@@ -166,7 +166,7 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
     def enterStart(self):
         self.descDialog = GlobalDialog(style = 3, message = self.getDescription(), doneEvent = 'gameDescAck')
         self.acceptOnce('gameDescAck', self.handleDescAck)
-        #self.descDialog.show()
+        self.descDialog.show()
 
     def handleDescAck(self):
         self.d_ready()

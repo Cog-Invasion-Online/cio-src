@@ -2,6 +2,7 @@
 # Created by:  blach (04Jul15)
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
+from direct.distributed.ClockDelta import globalClockDelta
 from direct.task import Task
 
 from lib.coginvasion.globals import CIGlobals
@@ -26,8 +27,8 @@ class DistributedEagleGameAI(DistributedMinigameAI):
         self.setZeroCommand(self.b_roundOver)
         self.setInitialTime(self.RoundTime)
         self.cannonPositions = {
-            0: (-5, 0, 0),
-            1: (-15, 0, 0),
+            0: (-15, 0, 0),
+            1: (-5, 0, 0),
             2: (5, 0, 0),
             3: (15, 0, 0)
         }
@@ -37,6 +38,7 @@ class DistributedEagleGameAI(DistributedMinigameAI):
         self.round = 1
         self.winnerPrize = 175
         self.loserPrize = 20
+        self.timesReady = 0
 
     def d_gameOver(self):
         winners = []
@@ -154,21 +156,29 @@ class DistributedEagleGameAI(DistributedMinigameAI):
         self.sendUpdateToAvatarId(avId, 'enterCannon', [cannonId])
 
     def getCannonOfAvatar(self, avId):
-        for avatar in self.avatars:
-            if avatar.doId == avId:
-                return self.cannonId2cannon.keys()[self.avatars.index(avatar)]
+        for cannon in self.cannonId2cannon.values():
+            if cannon.getOwner() == avId:
+                return cannon.doId
 
     def allAvatarsReady(self):
-        for avatar in self.avatars:
-            self.sendUpdateToAvatarId(avatar.doId, "enterCannon", [self.getCannonOfAvatar(avatar.doId)])
-        DistributedMinigameAI.allAvatarsReady(self)
-        self.sendHeadPanels()
-        self.b_startRound(1)
+        self.timesReady += 1
+        if self.timesReady == 2:
+            for avatar in self.avatars:
+                self.sendUpdateToAvatarId(avatar.doId, "enterCannon", [self.getCannonOfAvatar(avatar.doId)])
+            DistributedMinigameAI.allAvatarsReady(self)
+            self.sendHeadPanels()
+            self.b_startRound(1)
+        elif self.timesReady == 1:
+            self.sendUpdate('doPreGameMovie', [globalClockDelta.getRealNetworkTime()])
 
     def announceGenerate(self):
         DistributedMinigameAI.announceGenerate(self)
         for i in range(4):
             cannon = DistributedToonCannonAI(self.air)
+            if i < len(self.avatars):
+                avatar = self.avatars[i]
+                cannon.putAvatarInTurret(avatar.doId)
+                print cannon.getOwner()
             cannon.generateWithRequired(self.zoneId)
             cannon.d_setPos(*self.cannonPositions[i])
             cannon.b_setParent(CIGlobals.SPRender)

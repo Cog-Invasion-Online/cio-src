@@ -71,8 +71,17 @@ class SfxPlayer:
         if sfx:
             if not cutoff:
                 cutoff = self.cutoffDistance
-
-            self.setFinalVolume(sfx, node, volume, listenerNode, cutoff)
+            
+            def __volumeTask(task):
+                if sfx.status() == AudioSound.PLAYING:
+                    if node is not None and node.isEmpty():
+                        return task.done
+                    elif listenerNode is not None and listenerNode.isEmpty():
+                        return task.done
+                    self.setFinalVolume(sfx, node, volume, listenerNode, cutoff)
+                    return task.cont
+                else:
+                    return task.done
 
             # don't start over if it's already playing, unless
             # "interrupt" was specified
@@ -80,6 +89,8 @@ class SfxPlayer:
                 sfx.setTime(time)
                 sfx.setLoop(looping)
                 sfx.play()
+                
+                taskMgr.add(__volumeTask, "volumeTask")
 
     def setFinalVolume(self, sfx, node, volume, listenerNode, cutoff = None):
         """Calculate the final volume based on all contributed factors."""

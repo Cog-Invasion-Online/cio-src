@@ -169,6 +169,7 @@ class DistributedEagleSuit(DistributedSuit):
         self.__initializeEventSphere()
         self.show()
         self.setAnimState('flyNeutral')
+        self.hideName()
 
     def __doEagleCry(self, task):
         base.playSfx(self.eagleCry, node = self)

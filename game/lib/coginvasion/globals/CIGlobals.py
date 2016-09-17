@@ -95,6 +95,14 @@ TextColorByAdminToken = {NoToken : (0, 0, 0, 1),
                          DevToken : (255.0 / 255, 154.0 / 255, 0.0 / 255, 1),
                          ModToken : (0.0 / 255, 85.0 / 255, 255.0 / 255, 1)}
 
+def isToon(toon):
+    from lib.coginvasion.toon.DistributedToon import DistributedToon
+    return isinstance(toon, DistributedToon)
+
+def isSuit(suit):
+    from lib.coginvasion.suit.DistributedSuit import DistributedSuit
+    return isinstance(suit, DistributedSuit)
+                         
 ThemeSong = None
 holidayTheme = None
 
@@ -103,11 +111,11 @@ def getThemeSong():
     if not ThemeSong:
         themeList = []
         themeList.append('phase_3/audio/bgm/tt_theme.mid')
-        vfs = VirtualFileSystem.getGlobalPtr()
-        for fileName in vfs.scanDirectory('phase_3/audio/bgm/'):
-            fullpath = fileName.get_filename().get_fullpath()
-            if 'ci_theme' in fullpath:
-                themeList.append(fullpath)
+        #vfs = VirtualFileSystem.getGlobalPtr()
+        #for fileName in vfs.scanDirectory('phase_3/audio/bgm/'):
+        #    fullpath = fileName.get_filename().get_fullpath()
+        #    if 'ci_theme' in fullpath:
+        #        themeList.append(fullpath)
         import random
         ThemeSong = random.choice(themeList)
 
