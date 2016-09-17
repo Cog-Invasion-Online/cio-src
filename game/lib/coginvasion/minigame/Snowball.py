@@ -102,7 +102,7 @@ class Snowball(NodePath, DirectObject):
 
         self.throwIval = ProjectileInterval(
             self, startPos = self.owner.avatar.find('**/def_joint_right_hold').getPos(render),
-            endPos = end.getPos(render), gravityMult = 0.9, duration = 3)
+            endPos = end.getPos(render), gravityMult = 0.9, duration = 2.5)
         self.throwIval.start()
         if self.owner.avId == base.localAvatar.doId:
             self.accept('snowball-coll-' + str(id(self)) + '-into', self.__handleSnowballCollision)
