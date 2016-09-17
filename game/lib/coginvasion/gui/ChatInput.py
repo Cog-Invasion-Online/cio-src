@@ -40,6 +40,7 @@ class ChatInput(DirectObject, StateData.StateData):
                     State.State('input', self.enterInput, self.exitInput)],
                     'off', 'off')
         self.fsm.enterInitialState()
+        self.entered = False
         return
 
     def enterOff(self):
@@ -49,6 +50,8 @@ class ChatInput(DirectObject, StateData.StateData):
         pass
 
     def enter(self):
+        if self.entered:
+            return
         StateData.StateData.enter(self)
         # Create the gui for chat input.
         self.chat_btn_model = loader.loadModel("phase_3.5/models/gui/chat_input_gui.bam")
@@ -65,6 +68,7 @@ class ChatInput(DirectObject, StateData.StateData):
                                     parent=base.a2dTopLeft, extraArgs=[""])
         self.chat_btn.setBin('gui-popup', 60)
         self.fsm.request('idle')
+        self.entered = True
 
     def exit(self):
         StateData.StateData.exit(self)
@@ -78,6 +82,7 @@ class ChatInput(DirectObject, StateData.StateData):
             self.chat_btn.destroy()
             self.chat_btn = None
         self.disableKeyboardShortcuts()
+        self.entered = False
 
     def enableKeyboardShortcuts(self):
         # Enable the shortcuts to open the chat box.

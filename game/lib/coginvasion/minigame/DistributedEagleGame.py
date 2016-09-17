@@ -186,8 +186,8 @@ class DistributedEagleGame(DistributedMinigame):
         self.cannonFSM.request('fly')
 
     def __handleEagleHit(self, eagleId):
-        self.b_poof()
-        self.toonOof.play()
+        self.__handleHit()
+        
         self.hitEagleSfx.play()
         self.sendUpdate('hitEagle', [eagleId])
 
@@ -277,6 +277,8 @@ class DistributedEagleGame(DistributedMinigame):
         base.localAvatar.b_setAnimState('neutral')
         base.localAvatar.b_lookAtObject(0, 90, 0, blink = 0)
         base.localAvatar.animFSM.request('off')
+        base.localAvatar.getGeomNode().show()
+        base.localAvatar.showNametag3d()
         self.broadcastLTPos()
         if self.fsm.getCurrentState().getName() == 'play':
             self.cannonFSM.request('control')
@@ -550,10 +552,20 @@ class DistributedEagleGame(DistributedMinigame):
             self.ignore(self.track.getDoneEvent())
             self.track.finish()
             del self.track
+            
+    def __handleHit(self):
+        self.cannonFSM.request('off')
+            
+        base.localAvatar.getGeomNode().hide()
+        base.localAvatar.hideName()
+        
+        self.b_poof()
+        
+        self.toonOof.play()
 
     def __handleHitWall(self, entry):
-        self.b_poof()
-        self.toonOof.play()
+        self.__handleHit()
+        
         self.hitObstacleSfx.play()
         self.sendUpdate('missedEagle')
 
@@ -570,6 +582,8 @@ class DistributedEagleGame(DistributedMinigame):
         for triggerName in self.triggers:
             self.ignore('enter' + triggerName)
         self.ignore('ToonCannon::ready')
+        base.localAvatar.getGeomNode().show()
+        base.localAvatar.showNametag3d()
         base.localAvatar.createChatInput()
         camera.reparentTo(render)
         camera.setPosHpr(0, 0, 0, 0, 0, 0)
