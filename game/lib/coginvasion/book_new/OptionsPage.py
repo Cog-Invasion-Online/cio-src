@@ -5,7 +5,7 @@
 #         2 YEAR ANNIVERSARY
 ########################################
 
-from panda3d.core import TextNode, AntialiasAttrib
+from panda3d.core import TextNode, AntialiasAttrib, loadPrcFileData
 
 from direct.gui.DirectGui import DirectButton, DirectLabel, OnscreenText, DGG, DirectRadioButton, DirectSlider
 from direct.fsm.ClassicFSM import ClassicFSM

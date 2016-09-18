@@ -77,7 +77,7 @@ class ToonTalker:
         LabelScaler().resize(self.chatBubble)
 
     def isThought(self, message):
-        if message.isspace():
+        if message.isspace() or len(message) == 0:
             return False
         if message[0] == self.THOUGHT_PREFIX:
             return True
