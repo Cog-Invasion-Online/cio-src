@@ -137,7 +137,7 @@ class DistributedGunGameCapturePointAI(DistributedNodeAI):
                 self.mg.b_setKOTHPoints(self.kingId, points + self.POINTS_AS_KING)
                 return Task.again
             elif points >= 100:
-                self.mg.sendUpdate('teamWon', [0])
+                self.mg.sendUpdate('teamWon', [0, 0])
         return Task.done
 
     def resetHill(self):
