@@ -82,7 +82,7 @@ class Snowball(NodePath, DirectObject):
 
     def throw(self, p):
         self.isAirborne = True
-        self.owner.avatar.play('pie', partName = 'torso', fromFrame = 60)
+        self.owner.avatar.play('pie', partName = 'torso', fromFrame = 62)
         base.playSfx(self.owner.throwSound, node = self.owner.avatar)
 
         start = NodePath('StartPath')
@@ -94,7 +94,7 @@ class Snowball(NodePath, DirectObject):
         end = NodePath('ThrowPath')
         end.reparentTo(start)
         end.setScale(render, 1)
-        end.setPos(0, 160, -90)
+        end.setPos(0, 160, -35)
         end.setHpr(90, -90, 90)
 
         self.wrtReparentTo(render)
@@ -102,7 +102,7 @@ class Snowball(NodePath, DirectObject):
 
         self.throwIval = ProjectileInterval(
             self, startPos = self.owner.avatar.find('**/def_joint_right_hold').getPos(render),
-            endPos = end.getPos(render), gravityMult = 0.9, duration = 2.5)
+            endPos = end.getPos(render), gravityMult = 0.9, duration = 2)
         self.throwIval.start()
         if self.owner.avId == base.localAvatar.doId:
             self.accept('snowball-coll-' + str(id(self)) + '-into', self.__handleSnowballCollision)
