@@ -16,7 +16,7 @@ sky.setFogOff()
 
 arena = loader.loadModel('phase_4/models/minigames/dodgeball_arena.egg')
 arena.reparentTo(render)
-arena.setScale(0.5)
+arena.setScale(0.75)
 arena.find('**/team_divider').setBin('ground', 18)
 arena.find('**/floor').setBin('ground', 18)
 arena.find('**/team_divider_coll').setCollideMask(CIGlobals.FloorBitmask)
@@ -81,7 +81,15 @@ render.setFog(fog)
 
 base.enableMouse()
 base.localAvatar.hide()
-base.localAvatar.startTrackAnimToSpeed()
+#base.localAvatar.startTrackAnimToSpeed()
+
+smiley = loader.loadModel('models/smiley.egg.pz')
+smiley.reparentTo(render)
+smiley.setScale(0.25)
+smiley.setColor(0, 0, 0, 1)
+
+base.localAvatar.pose('pie', 62)
+
 
 BLUE = 0
 RED = 1
@@ -98,6 +106,36 @@ spawnPointsByTeam = {
                 [Point3(-5, -15, 0), Vec3(0, 0, 0)],
                 [Point3(-15, -15, 0), Vec3(0, 0, 0)]]}
 
+start = NodePath('StartPath')
+start.reparentTo(base.localAvatar)
+start.setScale(render, 1)
+start.setPos(0, 0, 0)
+start.setP(0)
+
+end = NodePath('ThrowPath')
+end.reparentTo(start)
+end.setScale(render, 1)
+end.setPos(0, 160, -90)
+end.setHpr(90, -90, 90)
+
+duration = 2
+grav = 0.9
+
+def throw():
+	smiley.setPos(base.localAvatar.find('**/def_joint_right_hold').getPos(render))
+	
+	ival = ProjectileInterval(
+		 smiley, startPos = smiley.getPos(),
+         endPos = end.getPos(render), gravityMult = grav, duration = duration
+	)
+	ival.setDoneEvent('ivalDone')
+	base.acceptOnce('ivalDone', throw)
+	ival.start()
+	
+throw()
+end.place()
+
+"""
 toon1 = Toon.Toon(base.cr)
 toon1.setDNAStrand("00/01/04/00/02/00/01/00/00/00/00/02/02/02/00")
 toon1.reparentTo(render)
@@ -152,8 +190,11 @@ blueseq = Sequence(
     LerpPosInterval(
         camera, duration = 5.0, pos = RED_END_POS, startPos = RED_START_POS, blendType = 'easeOut'))
 blueseq.start()
-
+"""
+base.localAvatar.show()
+base.localAvatar.stopSmooth()
+base.localAvatar.setY(-25)
 base.camLens.setMinFov(70.0 / (4./3.))
-
+base.oobe()
 base.run()
 
