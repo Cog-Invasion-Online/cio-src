@@ -159,9 +159,16 @@ class SafeZoneLoader(StateData):
 
     def createSafeZone(self, dnaFile):
         if self.szStorageDNAFile:
-            loader.loadDNAFile(self.hood.dnaStore, self.szStorageDNAFile)
+            if isinstance(self.szStorageDNAFile, list):
+                # We are loading multiple sz storages.
+                for i in xrange(len(self.szStorageDNAFile)):
+                    loader.loadDNAFile(self.hood.dnaStore, self.szStorageDNAFile[i])
+            else:
+                loader.loadDNAFile(self.hood.dnaStore, self.szStorageDNAFile)
+                    
         if self.szHolidayDNAFile:
             loader.loadDNAFile(self.hood.dnaStore, self.szHolidayDNAFile)
+            
         node = loader.loadDNAFile(self.hood.dnaStore, dnaFile)
         if node.getNumParents() == 1:
             self.geom = NodePath(node.getParent(0))

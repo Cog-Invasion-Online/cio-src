@@ -177,6 +177,7 @@ Hood2ZoneId = {ToontownCentral: 2000, DonaldsDock: 1000, TheBrrrgh: 3000,
 ZoneId2Hood = {2000: ToontownCentral, 1000: DonaldsDock, 3000: TheBrrrgh,
                4000: MinniesMelodyland, 5000: DaisyGardens, 9000: DonaldsDreamland,
                10000: MinigameArea, 12000: CogTropolis}
+ZoneId2HoodAbbr = {2000: "TT", 1000: "DD", 3000: "BR", 4000: "MM", 5000: "DG", 9000: "DL"}
 
 SellbotFactory = "Sellbot Factory"
 ToonBattleOriginalLevel = "Original Level"

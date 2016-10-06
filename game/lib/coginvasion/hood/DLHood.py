@@ -17,6 +17,7 @@ class DLHood(ToonHood):
         self.id = CIGlobals.DonaldsDreamland
         self.safeZoneLoader = DLSafeZoneLoader
         self.townLoader = DLTownLoader
+        self.abbr = "DL"
         self.storageDNAFile = "phase_8/dna/storage_DL.pdna"
         self.holidayDNAFile = None
         if base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:

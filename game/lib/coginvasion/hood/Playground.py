@@ -22,7 +22,7 @@ class Playground(Place.Place):
         Place.Place.__init__(self, loader, doneEvent)
         self.fsm = ClassicFSM('Playground', [
                 State('start', self.enterStart, self.exitStart,
-                    ['walk', 'teleportIn', 'tunnelOut', 'doorOut']),
+                    ['walk', 'teleportIn', 'tunnelOut', 'doorOut', 'trolleyOut']),
                 State('teleportIn', self.enterTeleportIn, self.exitTeleportIn,
                     ['walk', 'acknowledgeDeath']),
                 State('walk', self.enterWalk, self.exitWalk,
@@ -41,7 +41,8 @@ class Playground(Place.Place):
                 State('doorIn', self.enterDoorIn, self.exitDoorIn, ['stop']),
                 State('doorOut', self.enterDoorOut, self.exitDoorOut, ['walk']),
                 State('tunnelIn', self.enterTunnelIn, self.exitTunnelIn, ['stop']),
-                State('acknowledgeDeath', self.enterAcknowledgeDeath, self.exitAcknowledgeDeath, ['walk'])],
+                State('acknowledgeDeath', self.enterAcknowledgeDeath, self.exitAcknowledgeDeath, ['walk']),
+                State('trolleyOut', self.enterTrolleyOut, self.exitTrolleyOut, ['walk' ,'stop'])],
                 'start', 'final')
         self.parentFSM = parentFSM
         return

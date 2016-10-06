@@ -9,6 +9,9 @@ import HoodAI
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.minigame.DistributedMinigameStationAI import DistributedMinigameStationAI
+from lib.coginvasion.battle.DistributedBattleTrolleyAI import DistributedBattleTrolleyAI
+from lib.coginvasion.suit import CogBattleGlobals
+from lib.coginvasion.hood import ZoneUtil
 
 class MGHoodAI(HoodAI.HoodAI):
     notify = directNotify.newCategory("MGHoodAI")
@@ -26,11 +29,29 @@ class MGHoodAI(HoodAI.HoodAI):
         HoodAI.HoodAI.__init__(self, air, CIGlobals.MinigameAreaId,
                             CIGlobals.MinigameArea)
         self.stations = []
+        self.trolleys = []
         self.startup()
 
     def startup(self):
         self.dnaFiles = []
         HoodAI.HoodAI.startup(self)
+        
+        for hood in CogBattleGlobals.HoodId2WantBattles.keys():
+            zoneId = ZoneUtil.getZoneId(hood)
+            
+            trolley = DistributedBattleTrolleyAI(self.air, zoneId, 1)
+            
+            hood = self.air.hoods.get(zoneId)
+            if hood:
+                if hood.cogStation:
+                    print "found other trolley (zoneId {0})".format(hood.cogStation.zoneId)
+                    hood.cogStation.otherTrolley = trolley
+                    trolley.otherTrolley = hood.cogStation
+                    
+            trolley.generateWithRequired(self.zoneId)
+            trolley.b_setState('leaving')
+            
+            self.trolleys.append(trolley)
 
         self.notify.info("Creating minigames...")
 

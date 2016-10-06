@@ -24,7 +24,6 @@ class PublicWalk(Walk.Walk):
         Walk.Walk.enter(self)
         base.localAvatar.showBookButton()
         base.localAvatar.createLaffMeter()
-        base.localAvatar.showGagButton()
         base.localAvatar.enableGags(1)
         base.localAvatar.createMoney()
         self.acceptOnce('escape-up', base.localAvatar.bookButtonClicked)
@@ -35,5 +34,4 @@ class PublicWalk(Walk.Walk):
         base.localAvatar.hideBookButton()
         base.localAvatar.disableLaffMeter()
         base.localAvatar.disableGags()
-        base.localAvatar.hideGagButton()
         base.localAvatar.disableMoney()

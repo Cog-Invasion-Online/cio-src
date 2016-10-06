@@ -39,7 +39,7 @@ class CILoadingScreen:
 		"""
 		base.graphicsEngine.renderFrame()
 		base.graphicsEngine.renderFrame()
-		self.version_lbl = OnscreenText(text="ver-" + game.version, scale=0.06, pos=(-1.32, -0.97, -0.97), align=TextNode.ALeft, fg=(0.9, 0.9, 0.9, 7))
+		self.version_lbl = OnscreenText(text="Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype), scale=0.06, pos=(-1.32, -0.97, -0.97), align=TextNode.ALeft, fg=(0.9, 0.9, 0.9, 7))
 		
 	def beginLoadGame(self):
 		# We'll pre-load some models so we don't get any lag

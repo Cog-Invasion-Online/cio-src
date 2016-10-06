@@ -27,4 +27,22 @@ class MGSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         self.tournamentMusicFiles = None
         self.bossBattleMusicFile = None
         self.dnaFile = 'phase_13/dna/party_sz.pdna'
-        self.szStorageDNAFile = 'phase_13/dna/storage_party_sz.pdna'
+        self.szStorageDNAFile = ['phase_4/dna/storage_TT.pdna',
+								 'phase_4/dna/storage_TT_sz.pdna',
+								 
+								 'phase_6/dna/storage_MM.pdna',
+								 'phase_6/dna/storage_MM_sz.pdna',
+								 
+								 'phase_6/dna/storage_DD.pdna',
+								 'phase_6/dna/storage_DD_sz.pdna',
+								 
+								 'phase_8/dna/storage_DG.pdna',
+								 'phase_8/dna/storage_DG_sz.pdna',
+								 
+								 'phase_8/dna/storage_DL.pdna',
+								 'phase_8/dna/storage_DL_sz.pdna',
+								 
+								 'phase_8/dna/storage_BR.pdna',
+								 'phase_8/dna/storage_BR_sz.pdna',
+								 
+								 'phase_13/dna/storage_party_sz.pdna']

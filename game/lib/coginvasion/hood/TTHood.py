@@ -14,6 +14,7 @@ class TTHood(ToonHood.ToonHood):
         self.safeZoneLoader = TTSafeZoneLoader.TTSafeZoneLoader
         self.townLoader = TTTownLoader.TTTownLoader
         self.skyUtil = SkyUtil.SkyUtil()
+        self.abbr = "TT"
         self.storageDNAFile = "phase_4/dna/storage_TT.pdna"
         self.holidayDNAFile = None
         if base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:

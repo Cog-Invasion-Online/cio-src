@@ -69,6 +69,22 @@ class Place(StateData):
         base.localAvatar.disableChatInput()
         del self.lastBookPage
         StateData.exit(self)
+        
+    def enterTrolleyOut(self, requestStatus):
+        print "enterTrolleyOut"
+        base.localAvatar.walkControls.setCollisionsActive(0)
+        base.transitions.fadeScreen(1.0)
+        
+        prevZone = requestStatus['prevZoneId']
+        slot = requestStatus['slot']
+        for trolley in base.cr.doFindAll("DistributedBattleTrolley"):
+            if trolley.toZone == prevZone:
+                print "Found the trolley"
+                trolley.localAvOnTrolley = True
+                trolley.sendUpdate('arrivedInTrolley', [slot])
+                    
+    def exitTrolleyOut(self):
+        pass
 
     def enterDoorIn(self, distDoor):
         base.localAvatar.attachCamera()
@@ -347,8 +363,9 @@ class Place(StateData):
         self.ignore(self.walkDoneEvent)
         if base.cr.playGame.hood.titleText != None:
             base.cr.playGame.hood.hideTitleText()
-        self.watchTunnelSeq.pause()
-        del self.watchTunnelSeq
+        if hasattr(self, 'watchTunnelSeq'):
+            self.watchTunnelSeq.pause()
+            del self.watchTunnelSeq
         NametagGlobals.setWantActiveNametags(False)
         NametagGlobals.makeTagsInactive()
         base.localAvatar.setBusy(1)

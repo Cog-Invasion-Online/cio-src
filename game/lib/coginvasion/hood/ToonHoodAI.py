@@ -42,11 +42,10 @@ class ToonHoodAI(HoodAI):
             self.dChar.generateWithRequired(self.zoneId)
 
         hood = self.hood
-        if hood == CIGlobals.ToontownCentral:
-            hood = CIGlobals.BattleTTC
         if CogBattleGlobals.HoodId2WantBattles[hood] is True:
-            self.cogStation = DistributedBattleTrolleyAI(self.air, CogBattleGlobals.HoodId2HoodIndex[hood])
+            self.cogStation = DistributedBattleTrolleyAI(self.air, CIGlobals.MinigameAreaId, 0)
             self.cogStation.generateWithRequired(self.zoneId)
+            self.cogStation.b_setState('waitCountdown')
 
     def shutdown(self):
         if self.gagShop:

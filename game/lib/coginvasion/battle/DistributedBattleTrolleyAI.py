@@ -14,7 +14,7 @@ class DistributedBattleTrolleyAI(DistributedObjectAI):
 
     NUM_SLOTS = base.config.GetInt('trolley-slots', 8)
 
-    def __init__(self, air, hoodIndex):
+    def __init__(self, air, toZone, index):
         DistributedObjectAI.__init__(self, air)
         self.fsm = ClassicFSM.ClassicFSM('DBTrolleyAI', [State.State('off', self.enterOff, self.exitOff),
          State.State('wait', self.enterWait, self.exitWait),
@@ -22,7 +22,11 @@ class DistributedBattleTrolleyAI(DistributedObjectAI):
          State.State('leaving', self.enterLeaving, self.exitLeaving),
          State.State('arriving', self.enterArriving, self.exitArriving)], 'wait', 'off')
         self.fsm.enterInitialState()
-        self.hoodIndex = hoodIndex
+        self.toZone = toZone
+        self.index = index
+        
+        self.numToonsArriving = 0
+        self.numToonsArrived = 0
 
         if DistributedBattleTrolleyAI.NUM_SLOTS == 8:
             self.slots = [0, 1, 2, 3, 4, 5, 6, 7]
@@ -32,9 +36,13 @@ class DistributedBattleTrolleyAI(DistributedObjectAI):
         self.slotTakenByAvatarId = {}
         self.state = 'off'
         self.stateTimestamp = 0
+        self.otherTrolley = None
 
-    def getHoodIndex(self):
-        return self.hoodIndex
+    def getToZone(self):
+        return self.toZone
+        
+    def getIndex(self):
+        return self.index
 
     def enterOff(self):
         pass
@@ -49,47 +57,55 @@ class DistributedBattleTrolleyAI(DistributedObjectAI):
         pass
 
     def enterWaitCountdown(self):
-        base.taskMgr.doMethodLater(10.0, self.__sendOffToons, self.uniqueName('sendOffToons'))
+        base.taskMgr.doMethodLater(20.0, self.__sendOffToons, self.uniqueName('sendOffToons'))
 
     def __sendOffToons(self, task):
         self.b_setState('leaving')
         return task.done
+        
+    def trolleyArriving(self):
+        self.b_setState('arriving')
 
     def exitWaitCountdown(self):
         base.taskMgr.remove(self.uniqueName('sendOffToons'))
 
     def enterLeaving(self):
+        print "Trolley leaving (to zone {0})".format(self.toZone)
         base.taskMgr.doMethodLater(5.0, self.__trolleyLeft, self.uniqueName('trolleyLeft'))
 
     def __trolleyLeft(self, task):
-        self.createBattle()
+        self.otherTrolley.setNumToonsArriving(len(self.slotTakenByAvatarId.keys()))
+        if self.otherTrolley.numToonsArriving == 0:
+            self.otherTrolley.b_setState("arriving")
         self.slotTakenByAvatarId = {}
-        self.b_setState('arriving')
         return task.done
-
-    def createBattle(self):
-		zone = base.air.allocateZone()
-		avIdArray = []
-		for avId in self.slotTakenByAvatarId.keys():
-			avIdArray.append(avId)
-		battle = DistributedCogBattleAI(self.air)
-		battle.generateWithRequired(zone)
-		battle.setNumPlayers(len(self.slotTakenByAvatarId))
-		battle.b_setHoodIndex(self.getHoodIndex())
-		battle.b_setTotalCogs(CogBattleGlobals.HoodIndex2TotalCogs[self.getHoodIndex()])
-		battle.b_setCogsRemaining(CogBattleGlobals.HoodIndex2TotalCogs[self.getHoodIndex()])
-		battle.setAvIdArray(avIdArray)
-		for avId in self.slotTakenByAvatarId.keys():
-			self.sendUpdateToAvatarId(avId, 'headOff', [zone])
+        
+    def setNumToonsArriving(self, num):
+        self.numToonsArriving = num
+        self.numToonsArrived = 0
+        
+    def arrivedInTrolley(self, slot):
+        avId = self.air.getAvatarIdFromSender()
+        self.slotTakenByAvatarId[avId] = slot
+        self.numToonsArrived += 1
+        if self.numToonsArrived >= self.numToonsArrived:
+            for avId, slot in self.slotTakenByAvatarId.items():
+                self.sendUpdate('putAvatarInTrolley', [avId, slot])
+            # Everyone is in the exiting trolley, let's arrive.
+            self.b_setState('arriving')
 
     def exitLeaving(self):
         base.taskMgr.remove(self.uniqueName('trolleyLeft'))
 
     def enterArriving(self):
+        print "trolley arriving (from zone {0})".format(self.otherTrolley.zoneId)
         base.taskMgr.doMethodLater(5.0, self.__trolleyArrived, self.uniqueName('trolleyArrived'))
 
     def __trolleyArrived(self, task):
-        self.b_setState('wait')
+        for avId, slot in self.slotTakenByAvatarId.items():
+            self.sendUpdate('emptySlot', [slot, avId])
+        self.slotTakenByAvatarId = {}
+        self.b_setState('waitCountdown')
         return task.done
 
     def exitArriving(self):
@@ -113,9 +129,6 @@ class DistributedBattleTrolleyAI(DistributedObjectAI):
     def requestBoard(self):
         avId = self.air.getAvatarIdFromSender()
         if len(self.slotTakenByAvatarId) < self.NUM_SLOTS and not avId in self.slotTakenByAvatarId.keys() and self.fsm.getCurrentState().getName() in ['wait', 'waitCountdown']:
-            if len(self.slotTakenByAvatarId) == 0:
-                # First avatar aboard! Start counting down!
-                self.b_setState('waitCountdown')
             slotToFill = -1
             for slotNum in self.slots:
                 if not slotNum in self.slotTakenByAvatarId.values():
@@ -132,6 +145,3 @@ class DistributedBattleTrolleyAI(DistributedObjectAI):
             slot = self.slotTakenByAvatarId[avId]
             del self.slotTakenByAvatarId[avId]
             self.sendUpdate('emptySlot', [slot, avId])
-            if len(self.slotTakenByAvatarId) == 0:
-                # Everyone left! Stop the timer!
-                self.b_setState('wait')

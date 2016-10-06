@@ -80,7 +80,7 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         self.timeManager = TimeManagerAI(self)
         self.timeManager.generateWithRequired(2)
 
-        self.areas = [TTHoodAI, MGHoodAI, BRHoodAI, DLHoodAI, MLHoodAI, DGHoodAI, DDHoodAI, CTHoodAI]
+        self.areas = [TTHoodAI, BRHoodAI, DLHoodAI, MLHoodAI, DGHoodAI, DDHoodAI, CTHoodAI, MGHoodAI]
         self.areaIndex = 0
 
         taskMgr.add(self.makeAreasTask, 'makeAreasTask')

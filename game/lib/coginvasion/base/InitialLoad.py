@@ -26,7 +26,7 @@ class InitialLoad(LoadUtility):
         self.clouds = None
 
     def createGui(self):
-        self.version_lbl = OnscreenText(text="ver-" + game.version, scale=0.06, pos=(-1.32, -0.97, -0.97), align=TextNode.ALeft, fg=(0.343, 0.343, 0.343, 1))
+        self.version_lbl = OnscreenText(text="Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype), scale=0.06, pos=(-1.32, -0.97, -0.97), align=TextNode.ALeft, fg=(0.343, 0.343, 0.343, 1))
         gui = loader.loadModel('phase_3/models/gui/loading-background.bam')
         gui.find('**/fg').removeNode()
         self.clouds = OnscreenImage(image = gui, parent = render2d)

@@ -35,11 +35,16 @@ class Walk(StateData):
         base.localAvatar.attachCamera()
         base.localAvatar.startSmartCamera()
         base.localAvatar.collisionsOn()
+        if not base.localAvatar.walkControls.getCollisionsActive():
+            base.localAvatar.walkControls.setCollisionsActive(1)
         base.localAvatar.enableAvatarControls()
+        
 
     def exit(self):
         base.localAvatar.lastState = None
         self.fsm.request('off')
+        if base.localAvatar.walkControls.getCollisionsActive():
+            base.localAvatar.walkControls.setCollisionsActive(0)
         base.localAvatar.disableAvatarControls()
         base.localAvatar.detachCamera()
         base.localAvatar.stopSmartCamera()
@@ -47,6 +52,7 @@ class Walk(StateData):
         base.localAvatar.stopBlink()
         base.localAvatar.collisionsOff()
         base.localAvatar.controlManager.placeOnFloor()
+        
 
     def enterOff(self):
         pass

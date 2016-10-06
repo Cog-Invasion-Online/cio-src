@@ -28,6 +28,7 @@ class Hood(StateData):
         self.doneEvent = doneEvent
         self.dnaStore = dnaStore
         self.hoodId = hoodId
+        self.abbr = ""
         self.id = None
         self.titleText = None
         self.suitFog = None

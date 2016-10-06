@@ -17,6 +17,7 @@ class MLHood(ToonHood):
         self.id = CIGlobals.MinniesMelodyland
         self.safeZoneLoader = MLSafeZoneLoader
         self.townLoader = MLTownLoader
+        self.abbr = "MM"
         self.storageDNAFile = "phase_6/dna/storage_MM.pdna"
         self.holidayDNAFile = None
         if base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:

@@ -63,11 +63,12 @@ sm = SettingsManager()
 class game:
     name = 'coginvasion'
     process = 'client'
-    version = os.environ.get("GAME_VERSION")
     serverAddress = os.environ.get("GAME_SERVER")
+    build = 0
+    buildtype = "Dev"
+    version = "0.0.0"
 
-
-__builtin__.game = game()
+__builtin__.game = game
 
 print "CIStart: Starting the game."
 print "CIStart: Using Panda3D version {0}".format(PandaSystem.getVersionString())
@@ -84,11 +85,17 @@ try:
         line = line.strip()
         if line:
             loadPrcFileData('coginvasion config', line)
-    print "CIStart: Running production"
+    
+    import builddata
+    game.build = int(builddata.BUILDNUM)
+    game.buildtype = builddata.BUILDTYPE
+    game.version = builddata.BUILDVER
+    
+    print "Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype)
 except:
     loadPrcFile('config/Confauto.prc')
     loadPrcFile('config/config_client.prc')
-    print "CIStart: Running dev"
+    print "Running dev"
 sm.maybeFixAA()
 
 from direct.showbase.ShowBase import ShowBase

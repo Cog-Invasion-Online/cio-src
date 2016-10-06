@@ -21,6 +21,7 @@ class MGHood(ToonHood.ToonHood):
         self.fsm.addState(State('minigame', self.enterMinigame, self.exitMinigame))
         self.fsm.getStateNamed('quietZone').addTransition('minigame')
         self.id = CIGlobals.MinigameArea
+        self.abbr = "MG"
         self.safeZoneLoader = MGSafeZoneLoader.MGSafeZoneLoader
         self.skyUtil = SkyUtil.SkyUtil()
         self.storageDNAFile = None

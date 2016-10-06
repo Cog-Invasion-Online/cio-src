@@ -20,6 +20,7 @@ class DGHood(ToonHood):
         self.safeZoneLoader = DGSafeZoneLoader
         self.townLoader = DGTownLoader.DGTownLoader
         self.skyUtil = SkyUtil.SkyUtil()
+        self.abbr = "DG"
         self.storageDNAFile = "phase_8/dna/storage_DG.pdna"
         self.holidayDNAFile = None
         if base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
