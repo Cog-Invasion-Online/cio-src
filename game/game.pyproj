@@ -11,8 +11,8 @@
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <InterpreterId />
-    <InterpreterVersion />
+    <InterpreterId>{55553ed6-6ef1-4228-a3f4-ff1b39d356f9}</InterpreterId>
+    <InterpreterVersion>2.7</InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
@@ -165,6 +165,7 @@
     <Compile Include="lib\coginvasion\distributed\Account.py" />
     <Compile Include="lib\coginvasion\distributed\AccountAI.py" />
     <Compile Include="lib\coginvasion\distributed\AccountUD.py" />
+    <Compile Include="lib\coginvasion\distributed\AdminCommands.py" />
     <Compile Include="lib\coginvasion\distributed\CogInvasionClientRepository.py" />
     <Compile Include="lib\coginvasion\distributed\CogInvasionDoGlobals.py" />
     <Compile Include="lib\coginvasion\distributed\CogInvasionErrorCodes.py" />
@@ -180,8 +181,6 @@
     <Compile Include="lib\coginvasion\distributed\__init__.py" />
     <Compile Include="lib\coginvasion\dna\DNALoader.py" />
     <Compile Include="lib\coginvasion\dna\__init__.py" />
-    <Compile Include="lib\coginvasion\dungeon\DistributedDungeon.py" />
-    <Compile Include="lib\coginvasion\dungeon\__init__.py" />
     <Compile Include="lib\coginvasion\friends\FriendRequest.py" />
     <Compile Include="lib\coginvasion\friends\FriendRequestManager.py" />
     <Compile Include="lib\coginvasion\friends\FriendsList.py" />
@@ -194,6 +193,7 @@
     <Compile Include="lib\coginvasion\gags\Aoogah.py" />
     <Compile Include="lib\coginvasion\gags\backpack\AdminPouch.py" />
     <Compile Include="lib\coginvasion\gags\backpack\Backpack.py" />
+    <Compile Include="lib\coginvasion\gags\backpack\BackpackAI.py" />
     <Compile Include="lib\coginvasion\gags\backpack\BackpackManager.py" />
     <Compile Include="lib\coginvasion\gags\backpack\SmallPouch.py" />
     <Compile Include="lib\coginvasion\gags\backpack\__init__.py" />
@@ -255,6 +255,7 @@
     <Compile Include="lib\coginvasion\globals\ChatGlobals.py" />
     <Compile Include="lib\coginvasion\globals\CIGlobals.py" />
     <Compile Include="lib\coginvasion\globals\__init__.py" />
+    <Compile Include="lib\coginvasion\gui\AdminTokenDialog.py" />
     <Compile Include="lib\coginvasion\gui\BackpackGUI.py" />
     <Compile Include="lib\coginvasion\gui\ChatInput.py" />
     <Compile Include="lib\coginvasion\gui\CILoadingScreen.py" />
@@ -264,6 +265,7 @@
     <Compile Include="lib\coginvasion\gui\Clickable3d.py" />
     <Compile Include="lib\coginvasion\gui\Dialog.py" />
     <Compile Include="lib\coginvasion\gui\InventoryGui.py" />
+    <Compile Include="lib\coginvasion\gui\KickBanDialog.py" />
     <Compile Include="lib\coginvasion\gui\KOTHGui.py" />
     <Compile Include="lib\coginvasion\gui\KOTHKingGui.py" />
     <Compile Include="lib\coginvasion\gui\LaffOMeter.py" />
@@ -272,6 +274,7 @@
     <Compile Include="lib\coginvasion\gui\Tutorial.py" />
     <Compile Include="lib\coginvasion\gui\Whisper.py" />
     <Compile Include="lib\coginvasion\gui\WhisperPopup.py" />
+    <Compile Include="lib\coginvasion\gui\WorldAccessDialog.py" />
     <Compile Include="lib\coginvasion\gui\__init__.py" />
     <Compile Include="lib\coginvasion\holiday\DistributedWinterCoachActivity.py" />
     <Compile Include="lib\coginvasion\holiday\DistributedWinterCoachActivityAI.py" />
@@ -523,6 +526,7 @@
     <Compile Include="lib\coginvasion\quests\QuestManagerAI.py" />
     <Compile Include="lib\coginvasion\quests\QuestManagerBase.py" />
     <Compile Include="lib\coginvasion\quests\QuestNote.py" />
+    <Compile Include="lib\coginvasion\quests\QuestPoster.py" />
     <Compile Include="lib\coginvasion\quests\Quests.py" />
     <Compile Include="lib\coginvasion\quests\Rewards.py" />
     <Compile Include="lib\coginvasion\quests\__init__.py" />
@@ -686,7 +690,6 @@
     <Folder Include="lib\coginvasion\cogtropolis" />
     <Folder Include="lib\coginvasion\distributed" />
     <Folder Include="lib\coginvasion\dna" />
-    <Folder Include="lib\coginvasion\dungeon" />
     <Folder Include="lib\coginvasion\friends" />
     <Folder Include="lib\coginvasion\gags" />
     <Folder Include="lib\coginvasion\gags\backpack" />
@@ -718,6 +721,9 @@
     <Folder Include="tools\" />
     <Folder Include="tools\build_tools\" />
     <Folder Include="tools\nirai\" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{55553ed6-6ef1-4228-a3f4-ff1b39d356f9}\2.7" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
