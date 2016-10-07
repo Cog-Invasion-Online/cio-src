@@ -3,7 +3,7 @@
 # Created by: DecodedLogic (01Sep15)
 ########################################
 
-from panda3d.core import VBase4, Vec3
+from pandac.PandaModules import VBase4, Vec3
 
 from lib.coginvasion.cog import SuitGlobals
 from lib.coginvasion.cog.SuitType import SuitType

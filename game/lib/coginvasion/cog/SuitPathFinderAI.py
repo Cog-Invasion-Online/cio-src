@@ -1,4 +1,4 @@
-from panda3d.core import Point2, Point3, Mat3, Vec2
+from pandac.PandaModules import Point2, Point3, Mat3, Vec2
 import bisect
 import math
 

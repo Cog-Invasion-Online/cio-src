@@ -5,9 +5,9 @@
 
 """
 
-from panda3d.core import *
-from direct.gui.DirectGui import *
+from direct.gui.DirectGui import OnscreenImage, DirectLabel
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
+
 from lib.coginvasion.globals import CIGlobals
 
 class Timer:

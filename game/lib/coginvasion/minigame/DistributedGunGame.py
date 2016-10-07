@@ -5,11 +5,12 @@
 
 """
 
-from panda3d.core import *
+from pandac.PandaModules import TextNode
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.State import State
-from direct.gui.DirectGui import *
-from direct.interval.IntervalGlobal import *
+from direct.gui.DirectGui import DirectButton, DirectFrame, OnscreenText, DirectLabel
+from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from lib.coginvasion.globals import CIGlobals, ChatGlobals
 from lib.coginvasion.gui.WhisperPopup import WhisperPopup

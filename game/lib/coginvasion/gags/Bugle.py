@@ -7,7 +7,7 @@ from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.gags import GagGlobals
 from lib.coginvasion.gags.SoundGag import SoundGag
 from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, SoundInterval, ActorInterval
-from panda3d.core import Vec3
+from pandac.PandaModules import Vec3
 
 class Bugle(SoundGag):
 

@@ -5,7 +5,7 @@
 #         2 YEAR ANNIVERSARY
 ########################################
 
-from panda3d.core import TextNode
+from pandac.PandaModules import TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.StateData import StateData

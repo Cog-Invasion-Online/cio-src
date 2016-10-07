@@ -8,7 +8,7 @@ from lib.coginvasion.gags import GagGlobals
 from lib.coginvasion.gags.ToonUpGag import ToonUpGag
 from direct.particles.ParticleEffect import ParticleEffect
 from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, ParticleInterval, ActorInterval
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 
 class PixieDust(ToonUpGag):
 

@@ -5,9 +5,11 @@
 
 """
 
-from panda3d.core import *
+from pandac.PandaModules import BitMask32, LPoint3f, Point3
+
 from lib.coginvasion.manager.SettingsManager import SettingsManager
 from lib.coginvasion.cog import SuitGlobals
+
 WalkCutOff = 0.5
 RunCutOff = 8.0
 STAND_INDEX = 0

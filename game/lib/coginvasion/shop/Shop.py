@@ -16,7 +16,7 @@ from lib.coginvasion.shop.ItemType import ItemType
 from lib.coginvasion.suit import CogBattleGlobals
 from lib.coginvasion.gags import GagGlobals
 
-from panda3d.core import Vec4, TransparencyAttrib
+from pandac.PandaModules import Vec4, TransparencyAttrib
 
 from collections import OrderedDict
 import math

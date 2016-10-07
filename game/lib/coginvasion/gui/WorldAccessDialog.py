@@ -8,7 +8,7 @@
 #
 # purpose: Admin dialog for giving world and tp access to players.
 
-from panda3d.core import TextNode
+from pandac.PandaModules import TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

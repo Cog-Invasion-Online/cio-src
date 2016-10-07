@@ -5,11 +5,12 @@
   
 """
 
-from panda3d.core import *
+from pandac.PandaModules import MovieTexture, CardMaker, NodePath, TextureStage, AudioSound
+
+from direct.interval.IntervalGlobal import Sequence, Wait, Func
+from direct.showbase.Transitions import Transitions
+
 from lib.coginvasion.globals import CIGlobals
-from direct.gui.DirectGui import *
-from direct.interval.IntervalGlobal import *
-from direct.showbase.Transitions import *
 
 class Tutorial:
 	

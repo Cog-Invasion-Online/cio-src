@@ -8,9 +8,9 @@
 #
 # purpose: This is the starting point for the game. It initializes a ton of stuff.
 
-from panda3d.core import Multifile, Filename, VirtualFileSystem, PandaSystem
-from panda3d.core import Thread, loadPrcFile, loadPrcFileData, CollisionTraverser, CullBinManager
-from panda3d.core import ConfigVariableDouble, PStatClient
+from pandac.PandaModules import Multifile, Filename, VirtualFileSystem, PandaSystem
+from pandac.PandaModules import Thread, loadPrcFile, loadPrcFileData, CollisionTraverser, CullBinManager
+from pandac.PandaModules import ConfigVariableDouble, PStatClient
 
 globals()['__debug__'] = True
 

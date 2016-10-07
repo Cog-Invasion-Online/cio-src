@@ -7,7 +7,7 @@
 
 from lib.coginvasion.npc import NPCGlobals
 from lib.coginvasion.minigame.UnoGameAIPlayer import UnoGameAIPlayer
-from panda3d.core import UniqueIdAllocator
+from pandac.PandaModules import UniqueIdAllocator
 import random
 
 class UnoGameAIPlayerMgr:

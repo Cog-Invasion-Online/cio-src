@@ -12,7 +12,7 @@ from lib.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpScaleInterval
 from direct.interval.IntervalGlobal import ActorInterval, LerpPosInterval, Parallel
 from direct.interval.IntervalGlobal import SoundInterval
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 
 class Geyser(SquirtGag, ChargeUpGag):
 

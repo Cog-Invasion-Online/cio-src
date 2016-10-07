@@ -3,7 +3,7 @@
 # Created by: DecodedLogic (28Feb16)
 ########################################
 
-from panda3d.core import CollisionSphere, CollisionNode, NodePath
+from pandac.PandaModules import CollisionSphere, CollisionNode, NodePath
 
 from direct.distributed.DistributedNode import DistributedNode
 from direct.directnotify.DirectNotifyGlobal import directNotify

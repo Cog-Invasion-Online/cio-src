@@ -1,7 +1,7 @@
 # Filename: SuitUtils.py
 # Created by:  blach (29Dec15)
 
-from panda3d.core import Point3, Point2
+from pandac.PandaModules import Point3, Point2
 
 from direct.distributed.ClockDelta import globalClockDelta
 from direct.interval.IntervalGlobal import Sequence, Func

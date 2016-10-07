@@ -1,7 +1,7 @@
 # Filename: DistributedCinemaInterior.py
 # Created by:  blach (29Jul15)
 
-from panda3d.core import TextureStage, MovieTexture, NodePath, CardMaker
+from pandac.PandaModules import TextureStage, MovieTexture, NodePath, CardMaker
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.ClockDelta import globalClockDelta
 from direct.fsm import ClassicFSM, State

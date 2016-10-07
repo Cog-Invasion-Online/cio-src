@@ -1,7 +1,7 @@
 # Filename: DistributedCityCart.py
 # Created by:  blach (13Aug15)
 
-from panda3d.core import CollisionSphere, CollisionNode
+from pandac.PandaModules import CollisionSphere, CollisionNode
 
 from direct.distributed.DistributedNode import DistributedNode
 from direct.distributed import ClockDelta

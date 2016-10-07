@@ -1,7 +1,7 @@
 # Filename: DistributedCogOfficeSuit.py
 # Created by:  blach (17Dec15)
 
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.ClockDelta import globalClockDelta

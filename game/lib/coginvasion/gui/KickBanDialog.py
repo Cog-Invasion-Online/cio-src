@@ -9,7 +9,7 @@
 # purpose: This is the dialog window that appears when we are
 #          prompted to click on a Toon to kick or ban.
 
-from panda3d.core import TextNode
+from pandac.PandaModules import TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

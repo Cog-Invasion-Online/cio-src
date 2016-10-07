@@ -14,7 +14,7 @@ from direct.actor.Actor import Actor
 from direct.interval.IntervalGlobal import Sequence, Func, Wait
 from direct.interval.IntervalGlobal import Parallel, LerpScaleInterval, ParticleInterval
 from direct.interval.IntervalGlobal import ActorInterval
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 
 class StormCloud(SquirtGag, LocationGag):
 

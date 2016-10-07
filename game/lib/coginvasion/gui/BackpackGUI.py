@@ -1,7 +1,7 @@
 # Filename: BackpackGUI.py
 # Created by:  blach (20Sep15)
 
-from panda3d.core import Vec4, TextNode
+from pandac.PandaModules import Vec4, TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DGG, DirectButton, DirectFrame, OnscreenText

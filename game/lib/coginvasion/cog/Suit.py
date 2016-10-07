@@ -18,7 +18,7 @@ from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.showbase.Audio3DManager import Audio3DManager
 from direct.task.Task import Task
-from panda3d.core import Vec4, VBase4, Texture
+from pandac.PandaModules import Vec4, VBase4, Texture
 import random
 
 class Suit(Avatar):

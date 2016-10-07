@@ -1,7 +1,7 @@
 # Filename: StandaloneToon.py
 # Created by:  blach (02May15)
 
-from panda3d.core import *
+from pandac.PandaModules import *
 loadPrcFile('config/Confauto.prc')
 loadPrcFile('config/config_client.prc')
 loadPrcFileData('', 'model-path ../../../')

@@ -6,7 +6,7 @@
 # screenshots in the same thread as everything else is running in.
 
 from datetime import datetime
-from panda3d.core import Filename
+from pandac.PandaModules import Filename
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 import threading
 import os

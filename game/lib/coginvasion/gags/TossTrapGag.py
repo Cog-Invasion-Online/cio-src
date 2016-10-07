@@ -9,7 +9,7 @@ from lib.coginvasion.gags.TrapGag import TrapGag
 from lib.coginvasion.globals import CIGlobals
 from direct.particles.ParticleEffect import ParticleEffect
 from direct.interval.IntervalGlobal import ProjectileInterval
-from panda3d.core import NodePath, BitMask32, CollisionSphere, CollisionNode, CollisionHandlerEvent
+from pandac.PandaModules import NodePath, BitMask32, CollisionSphere, CollisionNode, CollisionHandlerEvent
 
 class TossTrapGag(TrapGag):
 

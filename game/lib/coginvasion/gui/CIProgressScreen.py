@@ -7,7 +7,7 @@
 
 from lib.coginvasion.globals import CIGlobals
 from direct.directnotify.DirectNotify import DirectNotify
-from panda3d.core import TextNode
+from pandac.PandaModules import TextNode
 from direct.gui.DirectGui import OnscreenImage, DirectWaitBar, DirectLabel, DirectFrame, OnscreenText
 
 import random

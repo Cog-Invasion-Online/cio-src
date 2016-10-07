@@ -3,7 +3,7 @@
 # Created by: DecodedLogic (01Sep15)
 ########################################
 
-from panda3d.core import Point3, VBase4
+from pandac.PandaModules import Point3, VBase4
 
 from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
 from direct.distributed.DelayDeletable import DelayDeletable

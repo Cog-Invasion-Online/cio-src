@@ -5,7 +5,8 @@
 
 """
 
-from panda3d.core import *
+from pandac.PandaModules import Point3, Vec3
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from lib.coginvasion.minigame import DistributedMinigame
 from lib.coginvasion.minigame.ToonFPS import ToonFPS
@@ -37,7 +38,7 @@ class DistributedSneakyGame(DistributedMinigame.DistributedMinigame):
 					Point3(-1.01, -104.40, 0.00),
 					Point3(0.65, -23.86, 0.00),
 					Point3(-55.66, -29.01, 0.00)]
-	AreaModelHpr = [Vec3(0.00, 0.00, 0.00),.mid
+	AreaModelHpr = [Vec3(0.00, 0.00, 0.00),
 				Vec3(0.00, 0.00, 0.00),
 				Vec3(90.00, 0.00, 0.00),
 				Vec3(180.00, 0.00, 0.00),

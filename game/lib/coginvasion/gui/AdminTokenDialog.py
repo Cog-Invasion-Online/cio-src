@@ -8,7 +8,7 @@
 #
 # purpose: For the UI that shows when we are changing someone's admin token.
 
-from panda3d.core import TextNode, Vec4
+from pandac.PandaModules import TextNode, Vec4
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectButton, DGG, DirectScrolledList

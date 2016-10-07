@@ -3,7 +3,7 @@
 # Created by: DecodedLogic (10Aug15)
 ########################################
 
-from panda3d.core import CollisionSphere, CollisionNode, BitMask32, CollisionHandlerEvent, NodePath
+from pandac.PandaModules import CollisionSphere, CollisionNode, BitMask32, CollisionHandlerEvent, NodePath
 
 from direct.showbase.DirectObject import DirectObject
 from direct.interval.ProjectileInterval import ProjectileInterval

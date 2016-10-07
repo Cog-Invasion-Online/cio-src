@@ -5,7 +5,8 @@
 
 """
 
-from panda3d.core import *
+from pandac.PandaModules import NodePath
+
 from lib.coginvasion.globals import CIGlobals
 from direct.gui.DirectGui import *
 

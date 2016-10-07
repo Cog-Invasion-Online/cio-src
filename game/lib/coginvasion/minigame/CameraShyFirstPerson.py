@@ -1,7 +1,7 @@
 # Filename: CameraShyFirstPerson.py
 # Created by:  blach (28Apr15)
 
-from panda3d.core import BitMask32, CollisionNode, CollisionRay, CollisionHandlerEvent, VBase4, CollisionTraverser, CollisionHandlerQueue
+from pandac.PandaModules import BitMask32, CollisionNode, CollisionRay, CollisionHandlerEvent, VBase4, CollisionTraverser, CollisionHandlerQueue
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.gui.DirectGui import OnscreenText, DirectFrame, DirectWaitBar, OnscreenImage

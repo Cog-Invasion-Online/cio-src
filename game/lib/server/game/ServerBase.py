@@ -1,5 +1,5 @@
 from lib.server.game.ServerGlobals import *
-from panda3d.core import *
+from pandac.PandaModules import VirtualFileSystem, Filename
 from direct.distributed.ServerRepository import ServerRepository
 from lib.server.game.AIRepository import AIRepository
 from direct.showbase.DirectObject import DirectObject

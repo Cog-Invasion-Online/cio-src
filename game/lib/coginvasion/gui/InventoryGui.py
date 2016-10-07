@@ -16,7 +16,8 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval
 from lib.coginvasion.gags.GagState import GagState
 from lib.coginvasion.gags import GagGlobals
 
-from panda3d.core import TransparencyAttrib, TextNode
+from pandac.PandaModules import TransparencyAttrib, TextNode
+
 import types
 
 class Slot(DirectFrame):

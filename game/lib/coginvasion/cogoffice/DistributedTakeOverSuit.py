@@ -1,7 +1,7 @@
 # Filename: DistributedTakeOverSuit.py
 # Created by:  blach (14Jun16)
 
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM

@@ -3,19 +3,20 @@
 # Created by:  blach (20Jun14)
 ########################################
 
-from lib.coginvasion.globals import CIGlobals
-from panda3d.core import *
+from pandac.PandaModules import Vec4, TextNode
+
 from direct.gui.DirectGui import *
 from direct.fsm.StateData import StateData
 from direct.fsm.State import State
 from direct.fsm.ClassicFSM import ClassicFSM
+
+from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.hood import ZoneUtil
 from lib.coginvasion.gui.BackpackGUI import BackpackGUI
-
-from OptionPage import OptionPage
-from AdminPage import AdminPage
 from lib.coginvasion.book.NamePage import NamePage
 from lib.coginvasion.quest.QuestPoster import QuestPoster
+from OptionPage import OptionPage
+from AdminPage import AdminPage
 
 qt_btn = loader.loadModel("phase_3/models/gui/quit_button.bam")
 

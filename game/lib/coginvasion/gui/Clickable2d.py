@@ -1,4 +1,4 @@
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 
 from Clickable import Clickable
 

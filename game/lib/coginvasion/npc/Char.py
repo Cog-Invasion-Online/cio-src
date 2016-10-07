@@ -9,7 +9,7 @@ from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.avatar import Avatar
 from lib.coginvasion.nametag import NametagGlobals
 
-from panda3d.core import CharacterJointEffect, ModelNode
+from pandac.PandaModules import CharacterJointEffect, ModelNode
 
 from direct.directnotify.DirectNotify import DirectNotify
 from direct.fsm.ClassicFSM import ClassicFSM

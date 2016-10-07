@@ -1,7 +1,7 @@
 # Filename: TrafficLight.py
 # Created by:  blach (13Aug15)
 
-from panda3d.core import NodePath
+from pandac.PandaModules import NodePath
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.task import Task

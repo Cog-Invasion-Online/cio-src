@@ -1,4 +1,4 @@
-from panda3d.core import TextNode, PGButton, Point3
+from pandac.PandaModules import TextNode, PGButton, Point3
 
 from lib.coginvasion.globals import ChatGlobals
 from lib.coginvasion.toon.ChatBalloon import ChatBalloon

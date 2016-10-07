@@ -1,7 +1,7 @@
 # Filename: DistributedCogOfficeBattle.py
 # Created by:  blach (15Dec15)
 
-from panda3d.core import Point3, Vec3, NodePath, TextureStage
+from pandac.PandaModules import Point3, Vec3, NodePath, TextureStage
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.ClockDelta import globalClockDelta

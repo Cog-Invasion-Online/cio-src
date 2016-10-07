@@ -7,7 +7,7 @@ from lib.coginvasion.gags.ToonUpGag import ToonUpGag
 from lib.coginvasion.gags import GagGlobals
 from lib.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, LerpPosInterval, LerpScaleInterval, ActorInterval
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 
 class Lipstick(ToonUpGag):
 

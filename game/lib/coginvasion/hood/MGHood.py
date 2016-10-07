@@ -8,7 +8,7 @@
 from lib.coginvasion.globals import CIGlobals
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.State import State
-from panda3d.core import TransparencyAttrib
+from pandac.PandaModules import TransparencyAttrib
 import ToonHood
 import MGSafeZoneLoader
 import SkyUtil

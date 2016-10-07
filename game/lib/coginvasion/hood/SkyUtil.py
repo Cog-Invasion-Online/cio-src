@@ -6,7 +6,7 @@
 """
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from panda3d.core import Vec3
+from pandac.PandaModules import Vec3
 
 class SkyUtil:
 	

@@ -1,4 +1,4 @@
-from panda3d.core import *
+from pandac.PandaModules import VirtualFileSystem
 
 from lib.coginvasion.globals import CIGlobals
 

@@ -5,7 +5,7 @@
 
 import sys
 import time
-from panda3d.core import TrueClock
+from pandac.PandaModules import TrueClock
 
 lastSpeedHackCheck = time.time()
 lastTrueClockTime = TrueClock.getGlobalPtr().getLongTime()

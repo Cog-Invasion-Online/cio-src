@@ -11,7 +11,7 @@ from lib.coginvasion.globals import CIGlobals
 from direct.gui.DirectGui import DirectScrolledList, DGG, DirectButton, OnscreenText
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from panda3d.core import TextNode
+from pandac.PandaModules import TextNode
 
 listXorigin = -0.02
 listFrameSizeX = 0.625

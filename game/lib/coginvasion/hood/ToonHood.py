@@ -5,7 +5,7 @@
 
 """
 
-from panda3d.core import Vec4
+from pandac.PandaModules import Vec4
 import Hood
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State

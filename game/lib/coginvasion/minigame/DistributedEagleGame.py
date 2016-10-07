@@ -1,7 +1,7 @@
 # Filename: DistributedEagleGame.py
 # Created by:  blach (04Jul15)
 
-from panda3d.core import Fog, NodePath, Point3, Vec3, CollisionNode
+from pandac.PandaModules import Fog, NodePath, Point3, Vec3, CollisionNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM

@@ -1,7 +1,7 @@
 # Filename: ToonPanel.py
 # Created by:  blach (03Aug15)
 
-from panda3d.core import TextNode
+from pandac.PandaModules import TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectFrame, DirectButton, OnscreenText, DGG

@@ -5,7 +5,7 @@
 
 """
 
-from panda3d.core import TextNode, Vec4, Point3
+from pandac.PandaModules import TextNode, Vec4, Point3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectFrame, DirectLabel, DirectWaitBar, DGG

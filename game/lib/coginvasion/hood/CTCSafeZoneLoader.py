@@ -5,7 +5,7 @@
 
 """
 
-from panda3d.core import TransparencyAttrib
+from pandac.PandaModules import TransparencyAttrib
 from lib.coginvasion.holiday.HolidayManager import HolidayType
 import SafeZoneLoader, CTCPlayground
 

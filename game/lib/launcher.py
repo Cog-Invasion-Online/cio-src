@@ -11,7 +11,7 @@ import subprocess
 import hashlib
 from uuid import getnode as getMacAddress
 
-from panda3d.core import *
+from pandac.PandaModules import *
 loadPrcFileData('startup', 'window-type none')
 loadPrcFileData('startup', 'default-directnotify-level info')
 from direct.showbase.ShowBase import ShowBase

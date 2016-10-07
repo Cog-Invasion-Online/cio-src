@@ -2,7 +2,7 @@
 # Created by:  blach (09Jul15)
 # Original file (UnoGameHeadPanel.py) created by: blach (20Oct14)
 
-from panda3d.core import VBase4, Point3
+from pandac.PandaModules import VBase4, Point3
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectLabel, DirectFrame
 

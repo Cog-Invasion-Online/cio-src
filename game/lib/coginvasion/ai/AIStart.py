@@ -7,12 +7,12 @@ import __builtin__
 
 __builtin__.process = 'ai'
 
-__builtin__.__dict__.update(__import__('panda3d.core', fromlist=['*']).__dict__)
+__builtin__.__dict__.update(__import__('pandac.PandaModules', fromlist=['*']).__dict__)
 
 import sys
 sys.dont_write_bytecode = True
 
-from panda3d.core import loadPrcFile, loadPrcFileData, VirtualFileSystem
+from pandac.PandaModules import loadPrcFile, loadPrcFileData, VirtualFileSystem
 
 vfs = VirtualFileSystem.getGlobalPtr()
 vfs.mount(Filename("phase_0.mf"), ".", VirtualFileSystem.MFReadOnly)

@@ -9,7 +9,7 @@ from lib.coginvasion.gags.ActivateTrapGag import ActivateTrapGag
 from lib.coginvasion.gags import GagGlobals
 from lib.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Parallel, Wait, Func, LerpScaleInterval, LerpPosInterval, SoundInterval, ActorInterval
-from panda3d.core import Vec4, Point3
+from pandac.PandaModules import Vec4, Point3
 
 class TrapDoor(ActivateTrapGag):
     

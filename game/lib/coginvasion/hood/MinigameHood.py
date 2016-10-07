@@ -8,7 +8,7 @@
 from lib.coginvasion.hood.SkyUtil import SkyUtil
 from lib.coginvasion.dna.DNAParser import *
 
-from panda3d.core import NodePath
+from pandac.PandaModules import NodePath
 
 class MinigameHood:
 	

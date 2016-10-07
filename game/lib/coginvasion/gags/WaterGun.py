@@ -1,7 +1,7 @@
 # Filename: WaterGun.py
 # Created by:  blach (15Nov15)
 
-from panda3d.core import Point3, VBase3
+from pandac.PandaModules import Point3, VBase3
 
 from direct.interval.IntervalGlobal import Sequence, Parallel, Wait, Func, ActorInterval
 

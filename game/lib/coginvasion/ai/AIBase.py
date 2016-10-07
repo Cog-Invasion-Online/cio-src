@@ -14,8 +14,8 @@ from direct.showbase.MessengerGlobal import *
 from direct.task import Task
 from direct.task.TaskManagerGlobal import *
 
-from panda3d.core import VirtualFileSystem, NodePath, GraphicsEngine
-from panda3d.core import ClockObject, TrueClock, Notify, PandaNode
+from pandac.PandaModules import VirtualFileSystem, NodePath, GraphicsEngine
+from pandac.PandaModules import ClockObject, TrueClock, Notify, PandaNode
 from pandac.PandaModules import getConfigShowbase
 
 class AIBase:

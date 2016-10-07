@@ -1,7 +1,7 @@
 # Filename: DistributedGunGameFlag.py
 # Created by:  blach (21Nov15)
 
-from panda3d.core import CollisionSphere, CollisionNode, NodePath, Vec3
+from pandac.PandaModules import CollisionSphere, CollisionNode, NodePath, Vec3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedNode import DistributedNode

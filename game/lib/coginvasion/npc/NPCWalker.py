@@ -5,8 +5,9 @@
 
 """
 
-from panda3d.core import *
-from direct.interval.LerpInterval import *
+from pandac.PandaModules import Point3
+
+from direct.interval.LerpInterval import LerpPosInterval, LerpQuatInterval
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 class NPCWalkInterval(LerpPosInterval):

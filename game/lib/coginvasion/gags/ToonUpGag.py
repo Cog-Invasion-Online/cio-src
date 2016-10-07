@@ -9,7 +9,7 @@ from direct.interval.IntervalGlobal import ActorInterval
 
 from lib.coginvasion.gags.Gag import Gag
 from lib.coginvasion.gags.GagType import GagType
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 import random
 
 class ToonUpGag(Gag):

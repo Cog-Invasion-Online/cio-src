@@ -1,7 +1,7 @@
 # Filename: ElevatorConstants.py
 # Created by:  blach (13Dec15)
 
-from panda3d.core import Vec4, Point3
+from pandac.PandaModules import Vec4, Point3
 
 ELEVATOR_NORMAL = 0
 ELEVATOR_INT = 1

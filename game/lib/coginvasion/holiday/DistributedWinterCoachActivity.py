@@ -7,7 +7,7 @@
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedNode import DistributedNode
-from panda3d.core import NodePath, CollisionSphere, CollisionNode
+from pandac.PandaModules import NodePath, CollisionSphere, CollisionNode
 
 from lib.coginvasion.toon.Toon import Toon
 from lib.coginvasion.globals import CIGlobals

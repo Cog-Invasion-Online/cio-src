@@ -5,7 +5,6 @@
 
 """
 
-from panda3d.core import *
 from pandac.PandaModules import *
 ConfigVariableString("window-type", "none").setValue("none")
 from direct.distributed.PyDatagram import PyDatagram

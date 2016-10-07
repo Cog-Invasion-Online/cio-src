@@ -23,8 +23,6 @@ from lib.coginvasion.hood.QuietZoneState import QuietZoneState
 
 from lib.coginvasion.dna.DNALoader import *
 
-from panda3d.core import *
-
 class PlayGame(StateData):
     notify = directNotify.newCategory('PlayGame')
 

@@ -1,7 +1,7 @@
 # Filename: FlightProjectileInterval.py
 # Created by:  blach (08Jul15)
 
-from panda3d.core import Vec3
+from pandac.PandaModules import Vec3
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import ProjectileInterval
 from direct.task import Task

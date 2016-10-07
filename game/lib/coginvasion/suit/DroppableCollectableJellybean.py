@@ -5,10 +5,10 @@
 
 """
 
-from panda3d.core import *
+from pandac.PandaModules import VBase4, Vec3
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from DroppableCollectableJellybeans import DroppableCollectableJellybeans
-from direct.interval.IntervalGlobal import *
+from direct.interval.IntervalGlobal import LerpHprInterval
 import random
 
 class DroppableCollectableJellybean(DroppableCollectableJellybeans):

@@ -23,8 +23,8 @@ from lib.coginvasion.avatar import Avatar
 
 import AccessoryGlobals
 
-from panda3d.core import VBase3, VBase4, Point3, Vec3
-from panda3d.core import BitMask32, CollisionHandlerPusher
+from pandac.PandaModules import VBase3, VBase4, Point3, Vec3
+from pandac.PandaModules import BitMask32, CollisionHandlerPusher
 import ToonDNA, random
 
 notify = DirectNotify().newCategory("Toon")

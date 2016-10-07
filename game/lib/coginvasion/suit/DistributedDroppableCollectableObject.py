@@ -11,8 +11,8 @@ from direct.controls.ControlManager import CollisionHandlerRayStart
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from lib.coginvasion.globals import CIGlobals
 
-from panda3d.core import NodePath, CollisionSphere, CollisionNode, CollisionRay
-from panda3d.core import BitMask32, CollisionHandlerFloor, ModelPool, TexturePool
+from pandac.PandaModules import NodePath, CollisionSphere, CollisionNode, CollisionRay
+from pandac.PandaModules import BitMask32, CollisionHandlerFloor, ModelPool, TexturePool
 
 class DistributedDroppableCollectableObject(DistributedNode):
     notify = directNotify.newCategory("DistributedDroppableCollectableObject")

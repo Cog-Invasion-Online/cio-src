@@ -1,7 +1,7 @@
 # Filename: DistributedGroupStation.py
 # Created by:  blach (06Jun15)
 
-from panda3d.core import CollisionSphere, CollisionNode
+from pandac.PandaModules import CollisionSphere, CollisionNode
 from direct.distributed.DistributedObject import DistributedObject
 from direct.gui.DirectGui import DirectButton
 from direct.directnotify.DirectNotifyGlobal import directNotify

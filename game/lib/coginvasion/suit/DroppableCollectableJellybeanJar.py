@@ -5,7 +5,6 @@
 
 """
 
-from panda3d.core import *
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from DroppableCollectableJellybeans import DroppableCollectableJellybeans
 

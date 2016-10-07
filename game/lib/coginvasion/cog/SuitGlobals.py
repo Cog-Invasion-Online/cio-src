@@ -5,7 +5,7 @@
 
 from lib.coginvasion.cog import Dept
 from lib.coginvasion.cog.SuitType import SuitType
-from panda3d.core import Vec4
+from pandac.PandaModules import Vec4
 
 # The following are all the suit names
 

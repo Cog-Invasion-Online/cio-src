@@ -3,7 +3,7 @@
 # Created by: DecodedLogic (03Sep15)
 ########################################
 
-from panda3d.core import Point3, Point2
+from pandac.PandaModules import Point3, Point2
 
 from lib.coginvasion.cog.SuitBehaviorBase import SuitBehaviorBase
 from lib.coginvasion.globals import CIGlobals

@@ -12,7 +12,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Func, SoundInterval, Wait, LerpScaleInterval, Parallel
 from direct.interval.LerpInterval import LerpPosHprInterval,\
     LerpColorScaleInterval
-from panda3d.core import CollisionHandlerFloor, Point3, TransparencyAttrib, Vec4
+from pandac.PandaModules import CollisionHandlerFloor, Point3, TransparencyAttrib, Vec4
 import abc
 
 class DropGag(Gag, LocationGag):

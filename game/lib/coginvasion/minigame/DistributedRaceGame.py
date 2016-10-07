@@ -5,7 +5,7 @@
 
 """
 
-from panda3d.core import Vec3
+from pandac.PandaModules import Vec3
 
 from direct.gui.DirectGui import DirectLabel
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval

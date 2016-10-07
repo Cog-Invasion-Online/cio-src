@@ -5,11 +5,12 @@
 
 """
 
-from panda3d.core import *
 from direct.gui.DirectGui import *
 from direct.showbase.DirectObject import *
 from direct.fsm import ClassicFSM, State, StateData
+
 from lib.coginvasion.globals import ChatGlobals
+
 import random
 
 class ChatInput(DirectObject, StateData.StateData):

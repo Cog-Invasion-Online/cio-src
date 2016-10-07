@@ -9,7 +9,7 @@ from direct.interval.IntervalGlobal import Parallel, Sequence, LerpScaleInterval
 from lib.coginvasion.gags.GagState import GagState
 from lib.coginvasion.gags.GagType import GagType
 from lib.coginvasion.gags import GagGlobals
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 from abc import ABCMeta
 import abc
 

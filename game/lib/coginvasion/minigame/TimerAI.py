@@ -5,8 +5,7 @@
   
 """
 
-from panda3d.core import *
-from direct.interval.IntervalGlobal import *
+from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 class TimerAI:
 	

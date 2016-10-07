@@ -1,7 +1,7 @@
 # Filename: DDHood.py
 # Created by:  blach (26Jul15)
 
-from panda3d.core import Fog
+from pandac.PandaModules import Fog
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.holiday.HolidayManager import HolidayType
 import DDTownLoader

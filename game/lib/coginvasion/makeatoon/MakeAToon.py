@@ -3,7 +3,7 @@
 # Created by:  blach (??July14)
 ########################################
 
-from panda3d.core import Vec4, TextNode
+from pandac.PandaModules import Vec4, TextNode
 
 from direct.gui.DirectGui import DirectButton, DirectFrame, DirectEntry
 from direct.gui.DirectGui import OnscreenImage, DirectLabel, DGG

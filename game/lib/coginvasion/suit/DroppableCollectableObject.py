@@ -8,7 +8,7 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.showbase.DirectObject import DirectObject
 from direct.controls.ControlManager import CollisionHandlerRayStart
-from panda3d.core import *
+from pandac.PandaModules import CollisionSphere, CollisionNode, CollisionHandlerFloor, BitMask32, ModelPool, TexturePool
 from lib.coginvasion.globals import CIGlobals
 
 class DroppableCollectableObject(DirectObject, NodePath):

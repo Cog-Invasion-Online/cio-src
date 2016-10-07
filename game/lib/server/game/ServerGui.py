@@ -1,6 +1,6 @@
 """ This file includes the ServerGui class, the user interface for the Cog Invasion Online Server. """
 
-from panda3d.core import *
+from pandac.PandaModules import *
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.gui.DirectGui import *

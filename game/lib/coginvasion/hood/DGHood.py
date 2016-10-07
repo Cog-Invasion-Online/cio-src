@@ -1,7 +1,7 @@
 # Filename: DGHood.py
 # Created by:  blach (24Jul15)
 
-from panda3d.core import TransparencyAttrib
+from pandac.PandaModules import TransparencyAttrib
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from ToonHood import ToonHood

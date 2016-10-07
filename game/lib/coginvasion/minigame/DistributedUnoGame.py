@@ -5,7 +5,6 @@
 
 """
 
-from panda3d.core import *
 import DistributedMinigame
 import UnoGameGlobals as UGG
 import UnoGameCardDeck

@@ -1,7 +1,7 @@
 # Filename: SuitPursueToonBehavior.py
 # Created by:  blach (29Dec15)
 
-from panda3d.core import Vec2, Point2
+from pandac.PandaModules import Vec2, Point2
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State

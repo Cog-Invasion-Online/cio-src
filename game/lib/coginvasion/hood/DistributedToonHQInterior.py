@@ -1,7 +1,7 @@
 # Filename: DistributedToonHQInterior.py
 # Created by:  blach (29Jul15)
 
-from panda3d.core import ModelNode, NodePath
+from pandac.PandaModules import ModelNode, NodePath
 
 import DistributedToonInterior
 import ToonInteriorColors

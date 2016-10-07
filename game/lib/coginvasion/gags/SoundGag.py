@@ -11,7 +11,7 @@ from lib.coginvasion.gags.GagType import GagType
 from lib.coginvasion.gags.GagState import GagState
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, SoundInterval
 from direct.particles.ParticleEffect import ParticleEffect
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 import random
 
 class SoundGag(Gag):

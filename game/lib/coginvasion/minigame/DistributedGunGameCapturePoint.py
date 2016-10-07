@@ -8,8 +8,8 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from direct.interval.LerpInterval import LerpScaleInterval
 
-from panda3d.core import NodePath, CollisionSphere, CollisionNode
-from panda3d.core import TransparencyAttrib
+from pandac.PandaModules import NodePath, CollisionSphere, CollisionNode
+from pandac.PandaModules import TransparencyAttrib
 
 from lib.coginvasion.minigame import GunGameGlobals as GGG
 

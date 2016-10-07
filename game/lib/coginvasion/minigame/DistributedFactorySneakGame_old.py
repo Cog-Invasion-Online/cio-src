@@ -6,7 +6,7 @@
 """
 
 import DistributedToonFPSGame
-from panda3d.core import Point3, Vec3
+from pandac.PandaModules import Point3, Vec3
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.State import State
 from lib.coginvasion.minigame.FactorySneakGameToonFPS import FactorySneakGameToonFPS

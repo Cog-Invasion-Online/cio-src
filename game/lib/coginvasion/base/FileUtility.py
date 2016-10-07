@@ -3,7 +3,7 @@
 # Created by: blach (18Apr15)
 ########################################
 
-from panda3d.core import VirtualFileSystem, Filename
+from pandac.PandaModules import VirtualFileSystem, Filename
 vfs = VirtualFileSystem.getGlobalPtr()
 
 def handleFileList(models, fileList):

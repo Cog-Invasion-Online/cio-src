@@ -5,8 +5,10 @@
   
 """
 
-from panda3d.core import *
-from direct.gui.DirectGui import *
+from pandac.PandaModules import VBase4, Point3
+
+from direct.gui.DirectGui import DirectFrame, DirectLabel
+
 from lib.coginvasion.toon.ToonHead import ToonHead
 
 class UnoGameHeadPanel:

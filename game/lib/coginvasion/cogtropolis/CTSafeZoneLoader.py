@@ -1,7 +1,7 @@
 # Filename: CTSafeZoneLoader.py
 # Created by:  blach (13Aug15)
 
-from panda3d.core import Point3, Vec3, Fog
+from pandac.PandaModules import Point3, Vec3, Fog
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

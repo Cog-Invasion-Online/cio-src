@@ -4,7 +4,6 @@ from lib.toontown.npc.MickeyNPCBase import MickeyNPCBase
 from lib.toontown.npc.GoofyNPCBase import GoofyNPCBase
 from lib.toontown.suit.SuitBase import *
 from pandac.PandaModules import *
-from panda3d.core import *
 from direct.actor.Actor import *
 from direct.gui.DirectGui import *
 from direct.task import Task

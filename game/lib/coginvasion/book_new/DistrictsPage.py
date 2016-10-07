@@ -3,7 +3,7 @@
 # Created by: DecodedLogic (18Jun16)
 ########################################
 
-from panda3d.core import Vec4, TextNode
+from pandac.PandaModules import Vec4, TextNode
 
 from direct.gui.DirectGui import DirectScrolledList, DirectFrame
 from direct.gui.DirectGui import DirectButton, OnscreenText

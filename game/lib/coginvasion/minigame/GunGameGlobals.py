@@ -2,7 +2,7 @@
 # Created by:  blach (05Aug15)
 
 from TeamMinigame import TEAM1, TEAM2
-from panda3d.core import BitMask32
+from pandac.PandaModules import BitMask32
 
 
 class GameModes:

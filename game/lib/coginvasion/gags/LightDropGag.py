@@ -10,7 +10,7 @@ from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.minigame.FlightProjectileInterval import FlightProjectileInterval
 from direct.interval.IntervalGlobal import Sequence, LerpPosInterval, LerpScaleInterval, Func, Wait, Parallel
 from direct.showutil import Effects
-from panda3d.core import OmniBoundingVolume, Point3, CollisionSphere, CollisionNode, CollisionHandlerEvent, BitMask32
+from pandac.PandaModules import OmniBoundingVolume, Point3, CollisionSphere, CollisionNode, CollisionHandlerEvent, BitMask32
 
 class LightDropGag(DropGag):
 

@@ -14,8 +14,8 @@ from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.dna.DNALoader import *
 from lib.coginvasion.holiday.HolidayManager import HolidayType
 
-from panda3d.core import Vec4, AmbientLight, ModelPool, TexturePool
-from panda3d.core import Fog, CompassEffect, NodePath
+from pandac.PandaModules import Vec4, AmbientLight, ModelPool, TexturePool
+from pandac.PandaModules import Fog, CompassEffect, NodePath
 
 import ZoneUtil
 from QuietZoneState import QuietZoneState

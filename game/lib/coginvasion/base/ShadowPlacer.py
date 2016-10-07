@@ -3,8 +3,8 @@
 # Created by: blach (11Aug14)
 ########################################
 
-from panda3d.core import CollisionRay, CollisionNode, BitMask32
-from panda3d.core import CollisionHandlerFloor
+from pandac.PandaModules import CollisionRay, CollisionNode, BitMask32
+from pandac.PandaModules import CollisionHandlerFloor
 from lib.coginvasion.globals import CIGlobals
 
 from direct.directnotify.DirectNotifyGlobal import directNotify

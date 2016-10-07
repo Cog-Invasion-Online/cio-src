@@ -1,7 +1,7 @@
 # Filename: RemoteDodgeballAvatar.py
 # Created by:  blach (30Apr16)
 
-from panda3d.core import VBase4
+from pandac.PandaModules import VBase4
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Parallel, SoundInterval, LerpColorScaleInterval, Sequence, Func

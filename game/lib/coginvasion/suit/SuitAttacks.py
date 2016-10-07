@@ -11,7 +11,7 @@ from direct.interval.IntervalGlobal import ActorInterval, Parallel, LerpScaleInt
 from direct.interval.ProjectileInterval import ProjectileInterval
 from direct.showbase.DirectObject import DirectObject
 from direct.distributed import DelayDelete
-from panda3d.core import CollisionSphere, CollisionNode, CollisionHandlerEvent, NodePath, Vec3, VBase4, Point3, BitMask32, Vec4
+from pandac.PandaModules import CollisionSphere, CollisionNode, CollisionHandlerEvent, NodePath, Vec3, VBase4, Point3, BitMask32, Vec4
 from lib.coginvasion.toon import ParticleLoader
 from direct.actor.Actor import Actor
 from lib.coginvasion.globals import CIGlobals

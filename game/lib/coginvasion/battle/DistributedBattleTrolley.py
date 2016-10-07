@@ -3,7 +3,7 @@
 #
 # This is a new way to go into the future to battle -- the trolley.
 
-from panda3d.core import Point3, Vec3, TextNode, Fog
+from pandac.PandaModules import Point3, Vec3, TextNode, Fog
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObject import DistributedObject

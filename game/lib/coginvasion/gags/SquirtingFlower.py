@@ -3,7 +3,7 @@
 # Created by: DecodedLogic (22Feb16)
 ########################################
 
-from panda3d.core import Vec3, Point3
+from pandac.PandaModules import Vec3, Point3
 
 from lib.coginvasion.gags.SquirtGag import SquirtGag
 from lib.coginvasion.gags import GagGlobals

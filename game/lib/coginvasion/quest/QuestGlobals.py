@@ -5,7 +5,7 @@
 
 """
 
-from panda3d.core import Vec4, Point3
+from pandac.PandaModules import Vec4, Point3
 
 JUST_FOR_FUN = 'Just for fun!'
 SIDE_QUEST = 'Side Quest'

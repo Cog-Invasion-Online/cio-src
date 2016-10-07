@@ -3,7 +3,7 @@
 # Created by: DecodedLogic (31Jul15)
 ########################################
 
-from panda3d.core import VBase4
+from pandac.PandaModules import VBase4
 
 class Dept:
 

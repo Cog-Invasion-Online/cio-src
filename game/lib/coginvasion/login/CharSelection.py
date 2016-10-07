@@ -1,7 +1,7 @@
 # Filename: CharSelection.py
 # Created by:  blach (05Sep15)
 
-from panda3d.core import Vec4, TextNode, Fog
+from pandac.PandaModules import Vec4, TextNode, Fog
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State

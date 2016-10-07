@@ -1,12 +1,13 @@
 # Filename: TownLoader.py
 # Created by:  blach (25Jul15)
 
-from panda3d.core import *
+from pandac.PandaModules import ModelPool, TexturePool, NodePath, Vec4
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.StateData import StateData
 from direct.fsm.State import State
 from direct.fsm.ClassicFSM import ClassicFSM
-from direct.interval.IntervalGlobal import *
+from direct.interval.IntervalGlobal import Sequence, Func, LerpColorScaleInterval
 
 from QuietZoneState import QuietZoneState
 import LinkTunnel

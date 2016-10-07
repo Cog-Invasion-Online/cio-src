@@ -5,7 +5,7 @@
 
 """
 
-from panda3d.core import WindowProperties
+from pandac.PandaModules import WindowProperties
 from direct.showbase.DirectObject import DirectObject
 
 class FirstPerson(DirectObject):

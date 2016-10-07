@@ -1,7 +1,7 @@
 # Filename: NURBSMopath.py
 # Created by:  blach (13Aug15)
 
-from panda3d.core import *
+from pandac.PandaModules import *
 
 class NURBSMopath:
 

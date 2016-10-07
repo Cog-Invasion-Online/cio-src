@@ -1,7 +1,7 @@
 # Filename: HolidayManager.py
 # Created by:  DecodedLogic (13Nov15)
 
-from panda3d.core import VirtualFileSystem, Filename
+from pandac.PandaModules import VirtualFileSystem, Filename
 
 from direct.distributed.DistributedObjectGlobal import DistributedObjectGlobal
 from direct.directnotify.DirectNotifyGlobal import directNotify

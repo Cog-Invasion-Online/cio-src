@@ -1,5 +1,5 @@
 from direct.task.Task import Task
-from panda3d.core import VBase4, PandaNode
+from pandac.PandaModules import VBase4, PandaNode
 
 from lib.coginvasion.margins.MarginVisible import MarginVisible
 import NametagGlobals

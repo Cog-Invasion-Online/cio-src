@@ -1,7 +1,8 @@
 # Filename: Street.py
 # Created by:  blach (25Jul15)
 
-from panda3d.core import *
+from pandac.PandaModules import CollisionEntry
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.State import State
 from direct.fsm.ClassicFSM import ClassicFSM

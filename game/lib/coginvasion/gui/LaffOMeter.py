@@ -8,7 +8,7 @@ from lib.coginvasion.base import ToontownIntervals
 
 from direct.gui.DirectGui import DirectFrame, DirectLabel
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from panda3d.core import Vec4
+from pandac.PandaModules import Vec4
 
 notify = directNotify.newCategory("LaffOMeter")
 

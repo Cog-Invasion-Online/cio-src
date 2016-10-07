@@ -6,7 +6,7 @@
 from lib.coginvasion.cog.SuitType import SuitType
 from direct.actor.Actor import Actor
 
-from panda3d.core import Texture
+from pandac.PandaModules import Texture
 
 class Head:
 

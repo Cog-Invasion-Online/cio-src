@@ -10,7 +10,7 @@ from lib.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, SoundInterval, Wait, Func, LerpScaleInterval, ActorInterval, ProjectileInterval
 from direct.task.Task import Task
 from direct.actor.Actor import Actor
-from panda3d.core import Point3, CollisionSphere, BitMask32, CollisionNode, CollisionHandlerEvent, NodePath
+from pandac.PandaModules import Point3, CollisionSphere, BitMask32, CollisionNode, CollisionHandlerEvent, NodePath
 
 class ActivateTrapGag(TrapGag, LocationGag):
 

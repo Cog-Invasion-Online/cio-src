@@ -7,8 +7,8 @@
 """
 
 from direct.distributed.ClientRepository import ClientRepository
-from panda3d.core import CollisionTraverser, AntialiasAttrib, loadPrcFile, loadPrcFileData
-from panda3d.core import CullBinManager
+from pandac.PandaModules import CollisionTraverser, AntialiasAttrib, loadPrcFile, loadPrcFileData
+from pandac.PandaModules import CullBinManager
 import __builtin__
 
 loadPrcFile('config/config_client.prc')

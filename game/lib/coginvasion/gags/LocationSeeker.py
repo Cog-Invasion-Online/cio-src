@@ -5,7 +5,7 @@
 
 """
 
-from panda3d.core import CollisionNode, CollisionRay, CollisionHandlerQueue
+from pandac.PandaModules import CollisionNode, CollisionRay, CollisionHandlerQueue
 from lib.coginvasion.globals import CIGlobals
 from direct.task.Task import Task
 

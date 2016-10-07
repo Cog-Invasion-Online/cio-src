@@ -6,7 +6,7 @@
 """
 
 from lib.coginvasion.globals import CIGlobals
-from panda3d.core import BillboardEffect, Vec3, Point3
+from pandac.PandaModules import BillboardEffect, Vec3, Point3
 from lib.coginvasion.toon.LabelScaler import LabelScaler
 from direct.directnotify.DirectNotify import DirectNotify
 from lib.coginvasion.toon.ChatBalloon import ChatBalloon

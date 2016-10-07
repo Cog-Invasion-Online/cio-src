@@ -1,7 +1,7 @@
 # Filename: FriendsList.py
 # Created by:  blach (04Aug15)
 
-from panda3d.core import TextNode, Vec4
+from pandac.PandaModules import TextNode, Vec4
 from direct.directnotify import DirectNotifyGlobal
 from direct.gui.DirectGui import DirectButton, OnscreenText, DirectFrame, DirectScrolledList, DGG
 from direct.fsm import ClassicFSM, State

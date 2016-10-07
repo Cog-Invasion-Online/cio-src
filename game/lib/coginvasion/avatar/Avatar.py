@@ -3,18 +3,22 @@
 # Created by: blach (??Jul14)
 ########################################
 
+from pandac.PandaModules import CollisionNode, CollisionTube, BitMask32, CollisionSphere, \
+                                CollisionHandlerPusher, CollisionHandlerEvent
+
 from direct.actor.Actor import Actor
-from panda3d.core import *
 from direct.directnotify.DirectNotify import DirectNotify
-from lib.coginvasion.nametag import NametagGlobals
-from lib.coginvasion.nametag.NametagGroup import NametagGroup
-from lib.coginvasion.base.ShadowPlacer import ShadowPlacer
+from direct.controls.ControlManager import CollisionHandlerRayStart
+
 from lib.coginvasion.globals import CIGlobals
+from lib.coginvasion.nametag import NametagGlobals
+from lib.coginvasion.npc import DisneyCharGlobals as DCG
 from lib.coginvasion.cog import SuitBank
 from lib.coginvasion.toon import ToonTalker
 from lib.coginvasion.nametag import NametagGlobals
-from lib.coginvasion.npc import DisneyCharGlobals as DCG
-from direct.controls.ControlManager import CollisionHandlerRayStart
+from lib.coginvasion.nametag.NametagGroup import NametagGroup
+from lib.coginvasion.base.ShadowPlacer import ShadowPlacer
+
 import random
 
 notify = DirectNotify().newCategory("Avatar")

@@ -5,7 +5,6 @@
   
 """
 
-from panda3d.core import *
 from direct.showbase.DirectObject import *
 from direct.distributed.PyDatagram import PyDatagram
 import MinigameBase

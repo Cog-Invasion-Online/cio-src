@@ -1,7 +1,7 @@
 # Filename: FactorySneakGuardSuit.py
 # Created by:  blach (21Aug15)
 
-from panda3d.core import PerspectiveLens, Spotlight, CollisionHandlerQueue, CollisionRay, CollisionNode, CollisionTraverser, BitMask32
+from pandac.PandaModules import PerspectiveLens, Spotlight, CollisionHandlerQueue, CollisionRay, CollisionNode, CollisionTraverser, BitMask32
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.FSM import FSM

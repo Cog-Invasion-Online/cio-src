@@ -1,7 +1,7 @@
 # Filename: EagleGameGlobals.py
 # Created by:  blach (08Jul15)
 
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 
 EAGLE_HIT_EVENT = 'DEagleSuit-hitByLocalToon'
 

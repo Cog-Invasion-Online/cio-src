@@ -1,7 +1,7 @@
 # Filename: DistributedToonCannon.py
 # Created by:  blach (06Jul15)
 
-from panda3d.core import Vec4
+from pandac.PandaModules import Vec4
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedNode import DistributedNode
 from direct.interval.IntervalGlobal import Sequence, Parallel, LerpScaleInterval, LerpColorScaleInterval, Func

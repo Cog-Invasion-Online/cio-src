@@ -3,13 +3,15 @@
 # Created by: blach (02Nov14)
 ########################################
 
-from panda3d.core import *
-from lib.coginvasion.avatar.Avatar import Avatar
+from pandac.PandaModules import TextNode
+
 from direct.actor.DistributedActor import DistributedActor
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.gui.DirectGui import *
+from direct.gui.DirectGui import DirectLabel
+from direct.interval.IntervalGlobal import LerpPosInterval, Sequence, Wait, Func
+
+from lib.coginvasion.avatar.Avatar import Avatar
 from lib.coginvasion.globals import CIGlobals
-from direct.interval.IntervalGlobal import *
 
 class DistributedAvatar(DistributedActor, Avatar):
     notify = directNotify.newCategory("DistributedAvatar")

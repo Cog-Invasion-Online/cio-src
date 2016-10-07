@@ -8,7 +8,7 @@
 from lib.coginvasion.gags.SquirtGag import SquirtGag
 from lib.coginvasion.gags import GagGlobals
 from lib.coginvasion.globals import CIGlobals
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 
 class SeltzerBottle(SquirtGag):
 

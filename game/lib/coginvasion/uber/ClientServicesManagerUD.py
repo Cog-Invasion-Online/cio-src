@@ -10,7 +10,7 @@ from direct.distributed.MsgTypes import *
 from lib.coginvasion.distributed.CogInvasionErrorCodes import *
 from direct.distributed.PyDatagram import PyDatagram
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from panda3d.core import NetDatagram
+from pandac.PandaModules import NetDatagram
 import anydbm
 import os
 

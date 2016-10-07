@@ -1,7 +1,7 @@
 # Filename: CogOfficeConstants.py
 # Created by:  blach (17Dec15)
 
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 
 from lib.coginvasion.cog import Dept
 

@@ -5,10 +5,10 @@
   
 """
 
-from direct.gui.DirectGui import *
-from direct.interval.IntervalGlobal import *
+from direct.gui.DirectGui import OnscreenText
+from direct.interval.IntervalGlobal import LerpFunc, Sequence, Wait, Func
+
 from lib.coginvasion.globals import CIGlobals
-from panda3d.core import *
 
 def fadeText(a, lbl):
 	lbl['fg'] = (1, 0.3, 0.5, a)

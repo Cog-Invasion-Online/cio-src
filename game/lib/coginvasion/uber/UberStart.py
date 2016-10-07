@@ -8,7 +8,7 @@
 import argparse, os, sys
 sys.dont_write_bytecode = True
 
-from panda3d.core import *
+from pandac.PandaModules import VirtualFileSystem, Filename, loadPrcFile, loadPrcFileData
 from direct.showbase import PythonUtil
 
 vfs = VirtualFileSystem.getGlobalPtr()
@@ -55,8 +55,6 @@ class game:
 	name = 'uberDog'
 	process = 'server'
 __builtins__.game = game
-
-from panda3d.core import *
 
 loadPrcFileData('', 'window-type none')
 loadPrcFileData('', 'audio-libarary-name none')

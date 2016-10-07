@@ -1,7 +1,7 @@
 # Filename: DistributedToonInterior.py
 # Created by:  blach (27Jul15)
 
-from panda3d.core import Mat4, Point3
+from pandac.PandaModules import Mat4, Point3
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed import DistributedObject
 

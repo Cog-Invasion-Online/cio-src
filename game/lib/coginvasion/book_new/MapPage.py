@@ -5,7 +5,7 @@
 #         2 YEAR ANNIVERSARY
 ########################################
 
-from panda3d.core import Vec4, TextNode
+from pandac.PandaModules import Vec4, TextNode
 
 from direct.gui.DirectGui import DirectFrame, DirectButton
 from direct.gui.DirectLabel import DirectLabel

@@ -11,7 +11,7 @@ import types
 from pprint import _id
 
 from lib.coginvasion.npc.NPCGlobals import NPC_DNA
-from panda3d.core import VBase4, LVecBase4f
+from pandac.PandaModules import VBase4, LVecBase4f
 import random
 
 class ToonDNA:

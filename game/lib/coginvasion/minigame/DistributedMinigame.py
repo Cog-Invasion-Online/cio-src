@@ -5,7 +5,7 @@
 
 """
 
-from panda3d.core import VBase4
+from pandac.PandaModules import VBase4
 
 from direct.distributed import DistributedObject
 from direct.gui.DirectGui import DirectLabel, OnscreenText

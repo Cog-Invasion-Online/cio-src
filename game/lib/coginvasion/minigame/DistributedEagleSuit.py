@@ -1,7 +1,7 @@
 # Filename: DistributedEagleSuit.py
 # Created by:  blach (08Jul15)
 
-from panda3d.core import CollisionSphere, CollisionNode
+from pandac.PandaModules import CollisionSphere, CollisionNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.task import Task
 from direct.actor.Actor import Actor

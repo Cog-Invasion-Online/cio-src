@@ -1,7 +1,7 @@
 # Filename: FireHose.py
 # Created by:  blach (15Nov15)
 
-from panda3d.core import Point3, Vec3
+from pandac.PandaModules import Point3, Vec3
 
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval, LerpScaleInterval, Parallel
 

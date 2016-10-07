@@ -3,9 +3,9 @@
 
 from direct.showbase.DirectObject import DirectObject
 
-from panda3d.core import NodePath, CollisionRay, CollisionNode, BitMask32
-from panda3d.core import CollisionSphere, CollisionSegment, CollisionTraverser
-from panda3d.core import CollisionHandlerQueue
+from pandac.PandaModules import NodePath, CollisionRay, CollisionNode, BitMask32
+from pandac.PandaModules import CollisionSphere, CollisionSegment, CollisionTraverser
+from pandac.PandaModules import CollisionHandlerQueue
 
 from lib.coginvasion.globals import CIGlobals
 

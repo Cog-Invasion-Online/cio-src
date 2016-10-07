@@ -8,7 +8,6 @@
 from lib.coginvasion.globals import CIGlobals
 from direct.distributed.DistributedSmoothNodeAI import DistributedSmoothNodeAI
 from direct.directnotify.DirectNotify import DirectNotify
-from panda3d.core import *
 from lib.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from lib.coginvasion.gags.backpack.BackpackAI import BackpackAI
 from lib.coginvasion.quests.QuestManagerAI import QuestManagerAI

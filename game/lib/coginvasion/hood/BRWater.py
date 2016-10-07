@@ -1,7 +1,8 @@
 # Filename: BRWater.py
 # Created by:  blach (02Jul15)
 
-from panda3d.core import VBase4, WindowProperties
+from pandac.PandaModules import VBase4, WindowProperties
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State

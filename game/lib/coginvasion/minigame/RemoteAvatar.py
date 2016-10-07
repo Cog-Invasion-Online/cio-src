@@ -5,7 +5,7 @@
 
 """
 
-from panda3d.core import TextNode, VBase4
+from pandac.PandaModules import TextNode, VBase4
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

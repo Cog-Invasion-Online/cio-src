@@ -1,6 +1,6 @@
 from direct.fsm.FSM import FSM
 from direct.showbase.DirectObject import DirectObject
-from panda3d.core import PandaNode, PGButton, NodePath, MouseWatcherRegion
+from pandac.PandaModules import PandaNode, PGButton, NodePath, MouseWatcherRegion
 
 
 class Clickable(FSM, PandaNode, DirectObject):

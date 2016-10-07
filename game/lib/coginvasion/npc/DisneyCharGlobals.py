@@ -1,7 +1,7 @@
 # Filename: DisneyCharGlobals.py
 # Created by:  blach (21Jun16)
 
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 
 from lib.coginvasion.globals import CIGlobals
 

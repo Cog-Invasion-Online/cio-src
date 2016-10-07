@@ -10,7 +10,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Parallel, Sequence, LerpHprInterval
 from direct.actor import Actor
 
-from panda3d.core import Texture
+from pandac.PandaModules import Texture
 from lib.coginvasion.toon import ToonGlobals
 from lib.coginvasion.globals import CIGlobals
 import random

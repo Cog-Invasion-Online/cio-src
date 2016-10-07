@@ -10,7 +10,7 @@ from direct.fsm.StateData import StateData
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.actor.Actor import Actor
-from panda3d.core import ModelPool, TexturePool, NodePath
+from pandac.PandaModules import ModelPool, TexturePool, NodePath
 
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.manager.SettingsManager import SettingsManager

@@ -5,10 +5,13 @@
 
 """
 
+from pandac.PandaModules import Point3
+
+from direct.interval.SoundInterval import SoundInterval
+
 from lib.coginvasion.toon.ChatBalloonOld import ChatBalloon
 from lib.coginvasion.globals import CIGlobals
-from direct.interval.SoundInterval import SoundInterval
-from panda3d.core import *
+
 import random
 import math
 

@@ -7,7 +7,7 @@ from lib.coginvasion.gags.ActivateTrapGag import ActivateTrapGag
 from lib.coginvasion.gags import GagGlobals
 from lib.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Parallel, Sequence, Wait, LerpPosInterval, LerpScaleInterval, ActorInterval, SoundInterval
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 
 class BananaPeel(ActivateTrapGag):
 

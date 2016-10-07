@@ -3,7 +3,7 @@
 # Created by: DecodedLogic (07Jul15)
 ########################################
 
-from panda3d.core import VBase4, Point4, Point3
+from pandac.PandaModules import VBase4, Point4, Point3
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.gags.GagType import GagType
 import types

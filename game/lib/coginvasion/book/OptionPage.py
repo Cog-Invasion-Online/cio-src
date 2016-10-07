@@ -13,7 +13,7 @@ from direct.fsm.ClassicFSM import ClassicFSM
 from direct.gui.DirectGui import DirectLabel, DirectButton, DirectRadioButton
 from direct.gui.DirectGui import DirectSlider, DGG
 
-from panda3d.core import loadPrcFileData, AntialiasAttrib, TextNode
+from pandac.PandaModules import loadPrcFileData, AntialiasAttrib, TextNode
 
 qt_btn = loader.loadModel("phase_3/models/gui/quit_button.bam")
 

@@ -1,7 +1,7 @@
 from direct.task.Task import Task
 import math
-from panda3d.core import BillboardEffect, Vec3, Point3, PGButton, VBase4
-from panda3d.core import DepthWriteAttrib, Point2, CardMaker
+from pandac.PandaModules import BillboardEffect, Vec3, Point3, PGButton, VBase4
+from pandac.PandaModules import DepthWriteAttrib, Point2, CardMaker
 
 from lib.coginvasion.toon.ChatBalloon import ChatBalloon
 import NametagGlobals

@@ -1,7 +1,7 @@
 # Filename: DistributedFactorySneakGame.py
 # Created by:  blach (21Aug15)
 
-from panda3d.core import CollisionNode, CollisionSphere, BitMask32
+from pandac.PandaModules import CollisionNode, CollisionSphere, BitMask32
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

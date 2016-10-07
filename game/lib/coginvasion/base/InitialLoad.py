@@ -6,7 +6,7 @@
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.gui.Dialog import GlobalDialog, NoButtons
 from direct.gui.DirectGui import *
-from panda3d.core import TextNode
+from pandac.PandaModules import TextNode
 from direct.directnotify.DirectNotify import *
 import FileUtility
 from LoadUtility import LoadUtility

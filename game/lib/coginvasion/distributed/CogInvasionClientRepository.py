@@ -17,8 +17,8 @@ from direct.fsm.State import State
 from direct.showbase.Audio3DManager import Audio3DManager
 from direct.task import Task
 
-from panda3d.core import URLSpec, CollisionHandlerFloor, CollisionHandlerPusher
-from panda3d.core import CollisionHandlerQueue, ModelPool, TexturePool
+from pandac.PandaModules import URLSpec, CollisionHandlerFloor, CollisionHandlerPusher
+from pandac.PandaModules import CollisionHandlerQueue, ModelPool, TexturePool
 
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.gui.Dialog import GlobalDialog

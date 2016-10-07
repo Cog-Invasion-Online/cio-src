@@ -5,10 +5,9 @@
 
 """
 
-from panda3d.core import *
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from lib.coginvasion.minigame import DistributedMinigameAI
-from direct.interval.IntervalGlobal import *
+from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 class DistributedSneakyGameAI(DistributedMinigameAI.DistributedMinigameAI):
 	notify = directNotify.newCategory("DistributedSneakyGameAI")

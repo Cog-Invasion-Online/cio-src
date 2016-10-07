@@ -19,7 +19,7 @@ from lib.coginvasion.hood.DGHoodAI import DGHoodAI
 from lib.coginvasion.hood.DDHoodAI import DDHoodAI
 from lib.coginvasion.cogtropolis.CTHoodAI import CTHoodAI
 
-from panda3d.core import UniqueIdAllocator
+from pandac.PandaModules import UniqueIdAllocator
 from lib.coginvasion.globals import CIGlobals
 from AIZoneData import AIZoneDataStore
 from direct.directnotify.DirectNotifyGlobal import directNotify

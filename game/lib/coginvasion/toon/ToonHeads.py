@@ -9,7 +9,7 @@ from lib.coginvasion.globals import CIGlobals
 import json
 import random
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from panda3d.core import Point3
+from pandac.PandaModules import Point3
 from direct.actor import Actor
 
 lookSpots = [(50, 0, 0),

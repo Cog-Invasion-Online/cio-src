@@ -8,7 +8,7 @@ from direct.showbase.InputStateGlobal import inputState
 from direct.interval.IntervalGlobal import Sequence, Parallel, LerpScaleInterval, SoundInterval
 from direct.interval.IntervalGlobal import Func, LerpColorScaleInterval
 from direct.task.Task import Task
-from panda3d.core import VBase4
+from pandac.PandaModules import VBase4
 from lib.coginvasion.globals import CIGlobals
 
 class ChargeUpSpot(LocationSeeker):

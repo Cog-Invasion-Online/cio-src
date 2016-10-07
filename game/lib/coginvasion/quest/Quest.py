@@ -11,7 +11,7 @@
 
 """
 
-from panda3d.core import Vec4
+from pandac.PandaModules import Vec4
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

@@ -5,7 +5,7 @@
 
 """
 
-from panda3d.core import CollisionSphere, BitMask32, CollisionNode, NodePath, CollisionHandlerEvent
+from pandac.PandaModules import CollisionSphere, BitMask32, CollisionNode, NodePath, CollisionHandlerEvent
 from direct.interval.ProjectileInterval import ProjectileInterval
 from direct.gui.DirectGui import DirectWaitBar, DGG
 

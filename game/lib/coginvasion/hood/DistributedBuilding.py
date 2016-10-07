@@ -1,7 +1,7 @@
 # Filename: DistributedBuilding.py
 # Created by:  blach (13Dec15)
 
-from panda3d.core import TextNode, Vec3, VBase4, Point3, DecalEffect
+from pandac.PandaModules import TextNode, Vec3, VBase4, Point3, DecalEffect
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObject import DistributedObject

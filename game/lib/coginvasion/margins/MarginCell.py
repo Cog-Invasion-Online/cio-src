@@ -1,4 +1,4 @@
-from panda3d.core import NodePath
+from pandac.PandaModules import NodePath
 
 
 class MarginCell(NodePath):

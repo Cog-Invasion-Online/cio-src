@@ -1,4 +1,4 @@
-from panda3d.core import Quat, Point3, Point2
+from pandac.PandaModules import Quat, Point3, Point2
 
 from Clickable import Clickable
 

@@ -1,7 +1,7 @@
 # Filename: DistributedElevator.py
 # Created by:  blach (14Dec15)
 
-from panda3d.core import Point3, TextNode, VBase4, CollisionSphere, CollisionNode
+from pandac.PandaModules import Point3, TextNode, VBase4, CollisionSphere, CollisionNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObject import DistributedObject

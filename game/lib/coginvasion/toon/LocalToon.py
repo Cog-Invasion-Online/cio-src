@@ -5,7 +5,7 @@
 
 """
 
-from panda3d.core import CollisionTraverser, Point3, CollisionRay, CollisionNode, BitMask32, CollisionHandlerQueue
+from pandac.PandaModules import CollisionTraverser, Point3, CollisionRay, CollisionNode, BitMask32, CollisionHandlerQueue
 from lib.coginvasion.globals import CIGlobals
 from direct.controls import ControlManager
 from direct.controls.GravityWalker import GravityWalker
