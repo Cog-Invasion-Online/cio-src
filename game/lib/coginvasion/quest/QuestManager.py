@@ -1,5 +1,5 @@
 ########################################
-# Filename: QuestManagerBase.py
+# Filename: QuestManager.py
 # Created by: DecodedLogic (18Jul16)
 ########################################
 

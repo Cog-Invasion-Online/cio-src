@@ -66,7 +66,7 @@ class game:
     serverAddress = os.environ.get("GAME_SERVER")
     build = 0
     buildtype = "Dev"
-    version = "0.0.0"
+    version = "1.1.0"
 
 __builtin__.game = game
 

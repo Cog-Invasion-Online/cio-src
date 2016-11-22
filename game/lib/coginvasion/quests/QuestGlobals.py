@@ -3,6 +3,7 @@
 
 from lib.coginvasion.suit import CogBattleGlobals
 from lib.coginvasion.globals.CIGlobals import *
+from pandac.PandaModules import Vec4, Point3
 
 #####################################################################
 # Quest posters

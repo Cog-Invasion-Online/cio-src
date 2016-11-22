@@ -96,13 +96,11 @@ def getFilmIcon():
 def getPackageIcon():
     geom = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
     geom = geom.find('**/package')
-    geom.setScale(0.12)
     return geom
 
 def getCogIcon():
     geom = loader.loadModel('phase_3/models/gui/cog_icons.bam')
     geom = geom.find('**/cog')
-    #geom.setScale(IMAGE_SCALE_SMALL)
     return geom
 
 def getJBIcon():

@@ -48,6 +48,12 @@ class Objective:
             self.quest.setLocationY(0.025)
         elif not self.location:
             self.quest.setLocationText(QuestGlobals.ANYWHERE)
+            
+    def setQuest(self, quest):
+        self.quest = quest
+        
+    def getQuest(self):
+        return self.quest
 
     def increment(self):
         pass

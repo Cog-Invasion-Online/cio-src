@@ -28,6 +28,14 @@ class QuestManagerAI(QuestManagerBase):
                 if objective.getNPCId() == npcId:
                     return quest
         return None
+    
+    def getPickableQuestList(self):
+        pickableQuests = []
+        for quest in QuestBank.getQuests():
+            if quest.getTier() == self.avatar.getTier():
+                if not quest in self.quests:
+                    pickableQuests.append(quest.getID())
+        return pickableQuests
 
     def wasLastObjectiveToVisit(self, npcId):
         for quest in self.quests:
@@ -60,7 +68,6 @@ class QuestManagerAI(QuestManagerBase):
     def setCurrentObjective(self, quest, obj):
         quest.setCurrentObjective(obj)
         objIndex = quest.getObjectives().index(obj)
-        print 'Objective Index: %d, Quest Index: %d' % (objIndex, quest.getID())
         self.avatar.d_setQuestObjective(quest.getID(), objIndex)
 
     def getCurrentObjective(self, quest):

@@ -4,7 +4,7 @@
 ########################################
 
 from pandac.PandaModules import CollisionNode, CollisionTube, BitMask32, CollisionSphere, \
-                                CollisionHandlerPusher, CollisionHandlerEvent
+                                CollisionHandlerPusher, CollisionHandlerEvent, CollisionRay
 
 from direct.actor.Actor import Actor
 from direct.directnotify.DirectNotify import DirectNotify

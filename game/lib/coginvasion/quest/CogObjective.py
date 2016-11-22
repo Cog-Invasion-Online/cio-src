@@ -14,7 +14,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from lib.coginvasion.globals import CIGlobals
 from lib.coginvasion.quest.Objective import Objective
 from lib.coginvasion.quest import QuestGlobals
-from lib.coginvasion.cog import SuitBank
+from lib.coginvasion.cog import SuitBank, SuitGlobals, Dept
 
 class CogObjective(Objective):
     notify = directNotify.newCategory('CogObjective')
@@ -54,7 +54,26 @@ class CogObjective(Objective):
             infoText = str('%s %s' % (infoText, self.variant if self.neededAmount == 1 else QuestGlobals.makePlural(variantText)))
 
         if self.dept:
-            infoText = str('%s %s' % (infoText, self.dept))
+            deptName = self.dept.getName() if self.neededAmount == 1 else QuestGlobals.makePlural(self.dept.getName())
+            infoText = str('%s %s' % (infoText, deptName))
+            
+            icons = loader.loadModel('phase_3/models/gui/cog_icons.bam')
+            
+            if self.dept == Dept.BOSS:
+                icon = icons.find('**/CorpIcon')
+            else:
+                icon = icons.find('**/%sIcon' % self.dept.getTie().title())
+            
+            icon.setColor(SuitGlobals.medallionColors[self.dept])
+            
+            if leftFrame:
+                self.quest.setLeftIconGeom(icon)
+                self.quest.setLeftIconScale(0.13)
+            else:
+                self.quest.setRightIconGeom(icon)
+                self.quest.setRightIconScale(0.13)
+            icons.removeNode()
+            
         elif not self.name:
             # Let's load up the general Cogs picture.
             icon = QuestGlobals.getCogIcon()
@@ -101,23 +120,18 @@ class CogObjective(Objective):
     def isNeededCog(self, cog):
         if not self.location or self.isOnLocation(cog.zoneId):
             if self.level and not cog.getLevel() == self.level:
-                print 'Level fail'
                 return False
 
             if self.levelRange and not self.isInLevelRange(cog.getLevel()):
-                print 'Range fail'
                 return False
 
             if self.name and not cog.getName() == self.name:
-                print 'Name Fail'
                 return False
 
             if self.dept and not cog.getDept() == self.dept:
-                print 'Department fail'
                 return False
 
             if self.variant and not cog.getVariant() == self.variant:
-                print 'Variant fail'
                 return False
 
             return True

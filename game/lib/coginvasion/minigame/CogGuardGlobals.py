@@ -5,7 +5,7 @@
 
 """
 
-from pandac.PandaModules import Point3, Vec3
+from pandac.PandaModules import Point3, Vec3, BitMask32
 
 GuardDialog = {
     'arrest': [

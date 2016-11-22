@@ -22,7 +22,7 @@ class RecoverItemObjective(CogObjective):
     def updateInfo(self):
         CogObjective.updateInfo(self, False, QuestGlobals.RECOVER, QuestGlobals.GREEN)
         self.quest.setLeftIconGeom(self.itemIcon)
-        self.quest.setLeftIconScale(self.itemIcon.getScale())
+        self.quest.setLeftIconScale(0.12)
         self.quest.setLeftPicturePos(QuestGlobals.RECOVER_LEFT_PICTURE_POS)
         self.quest.setInfoText(self.itemName)
         self.quest.setInfoPos(QuestGlobals.RECOVER_INFO_POS)

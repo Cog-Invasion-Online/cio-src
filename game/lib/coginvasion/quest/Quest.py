@@ -11,7 +11,7 @@
 
 """
 
-from pandac.PandaModules import Vec4
+from panda3d.core import Vec4
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
@@ -25,11 +25,7 @@ class Quest:
         self.requirement = requirement
         self.tier = tier
         self.rewards = rewards
-
-        self.objectives = objectives
-        for objective in objectives:
-            objective.quest = self
-
+        self.objectives = []
         self.completedObjectives = []
         self.currentObjective = None
         self.deletable = False
@@ -43,6 +39,9 @@ class Quest:
         # would talk about what they need.
         self.assignByStrangerDialog = []
         self.assignByOwnerDialog = []
+        
+        for objective in objectives:
+            self.addObjective(objective)
 
     #############################################
     ## Getters and Setters relating to posters ##
@@ -180,6 +179,7 @@ class Quest:
         # however, Talk To objectives were considered and that no longer is
         # the case.
         if objective:
+            objective.setQuest(self)
             self.objectives.append(objective)
             if not self.currentObjective:
                 self.currentObjective = objective
@@ -251,3 +251,15 @@ class Quest:
 
     def getRewards(self):
         return self.rewards
+    
+    def setAssignByStrangerDialog(self, dialog):
+        self.assignByStrangerDialog = dialog
+    
+    def getAssignByStrangerDialog(self):
+        return self.assignByStrangerDialog
+    
+    def setAssignByOwnerDialog(self, dialog):
+        self.assignByOwnerDialog = dialog
+    
+    def getAssignByOwnerDialog(self):
+        return self.assignByOwnerDialog

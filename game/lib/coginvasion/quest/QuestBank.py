@@ -22,11 +22,17 @@ def removeQuest(quest):
 def getQuest(quest):
     return copy.deepcopy(quest)
 
+def getQuestById(questId):
+    for quest in quests:
+        if quest.getID() == questId:
+            return quest
+    return None
+
 def getQuests():
     return quests
 
 quests = [
-    Quest('Schooled', None, 0, 0, [QuestReward(RewardType.LAFF_POINTS, 2)],
+    Quest('Schooled', None, -1, 0, [QuestReward(RewardType.LAFF_POINTS, 2)],
 
         [VisitNPCObjective(2003, ["Nice work completing the tutorial!",
                                 "I know you're probably exhausted, but you must see " + CIGlobals.NPCToonNames[2003] + " immediately!"]),

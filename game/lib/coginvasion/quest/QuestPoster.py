@@ -5,7 +5,7 @@
 
 """
 
-from pandac.PandaModules import TextNode, Vec4, Point3
+from panda3d.core import TextNode, Vec4, Point3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectFrame, DirectLabel, DirectWaitBar, DGG
@@ -18,6 +18,7 @@ from lib.coginvasion.gui.LaffOMeter import LaffOMeter
 from lib.coginvasion.quest.CogObjective import CogObjective
 from lib.coginvasion.cog.Head import Head
 from lib.coginvasion.toon.ToonHead import ToonHead
+from lib.coginvasion.quest.VisitNPCObjective import VisitNPCObjective
 
 POSTER_WIDTH = 0.7
 TEXT_SCALE = QuestGlobals.QPtextScale
@@ -40,7 +41,6 @@ class QuestPoster(DirectFrame):
         DirectFrame.__init__(self, relief = None)
         self.initialiseoptions(QuestPoster)
 
-        self._deleteCallback = None
         self.questFrame = DirectFrame(parent = self, relief = None)
 
         # Quest title text
@@ -205,9 +205,11 @@ class QuestPoster(DirectFrame):
         self.lRewardFrame = DirectFrame(parent = self.rewardFrame, relief = None,
             geom = jellybeanJar,
             geom_scale = QuestGlobals.TP_ACCESS_SCALE,
+            sortOrder = 1,
         pos = (QuestGlobals.LEFT_TP_ACCESS_POS))
+        self.lRewardFrame.setBin('gui-popup', 30)
 
-        self.lRewardInfo = DirectFrame(parent = self.questFrame, relief = None,
+        self.lRewardAmt = DirectFrame(parent = self.questFrame, relief = None,
             geom = rewardFrameGeom.find('**/Char_Pnl'),
             geom_scale = (0.15, 0, 0.1275),
             text = '#1',
@@ -216,15 +218,16 @@ class QuestPoster(DirectFrame):
             text_fg = (0, 0, 0, 1),
             text_align = TextNode.ACenter,
             text_pos = (0, -0.01),
+            sortOrder = 2,
         pos = (-0.285, 0, -0.255))
-        self.lRewardInfo.setBin('gui-popup', 40)
+        self.lRewardAmt.setBin('gui-popup', 40)
 
         self.rRewardFrame = DirectFrame(parent = self.rewardFrame, relief = None,
             geom = QuestGlobals.getJBIcon(),
             geom_scale = QuestGlobals.JB_JAR_SCALE,
         pos = QuestGlobals.RIGHT_JB_JAR_POS)
 
-        self.rRewardInfo = DirectFrame(parent = self.questFrame, relief = None,
+        self.rRewardAmt = DirectFrame(parent = self.questFrame, relief = None,
             geom = rewardFrameGeom.find('**/Char_Pnl'),
             geom_scale = (0.15, 0, 0.1275),
             text = '25',
@@ -234,7 +237,7 @@ class QuestPoster(DirectFrame):
             text_align = TextNode.ACenter,
             text_pos = (0, -0.01),
         pos = (0.2725, 0, -0.255))
-        self.rRewardInfo.setBin('gui-popup', 40)
+        self.rRewardAmt.setBin('gui-popup', 40)
 
         rewardFrameGeom.removeNode()
 
@@ -250,65 +253,60 @@ class QuestPoster(DirectFrame):
 
         bookModel.removeNode()
         self.laffMeter = None
+        
+        self.hide()
         return
+    
+    def handleIcon(self, objective, geom, scale, icon):
+        isHead = True if type(geom) == ToonHead else geom.getName() == ('%sHead' % CIGlobals.Suit)
+
+        if isHead:
+            geom.setDepthWrite(1)
+            geom.setDepthTest(1)
+            self.fitGeometry(geom, fFlip = 1)
+            
+            if isinstance(objective, VisitNPCObjective) and icon == self.rQuestIcon:
+                icon.setPos(icon.getX(), icon.getY(), icon.getZ() + 0.05)
+                icon.setH(180)
+            elif isinstance(objective, CogObjective):
+                icon.setScale(QuestGlobals.IMAGE_SCALE_SMALL)
+                icon.setPos(icon.getX(), icon.getY(), icon.getZ() - 0.04)
+                if icon == self.lQuestIcon:
+                    icon.setH(180)
+            
+            icon['geom'] = geom
+            icon['geom_scale'] = QuestGlobals.IMAGE_SCALE_SMALL
+        else:
+            icon['geom'] = geom
+            icon['geom_scale'] = scale
 
     def update(self):
         objective = self.quest.getCurrentObjective()
         objective.updateInfo()
 
-        # Let's setup the picture frames and info.
+        # Let's setup the quest info.
         self.questInfo.setPos(self.quest.getInfoPos())
         self.questInfo['text'] = self.quest.getInfoText()
         self.questInfo02.setPos(self.quest.getInfo02Pos())
         self.questInfo02['text'] = self.quest.getInfo02Text()
+        
+        # Let's move the picture frames to the positions we want them in.
         self.lPictureFrame.setPos(self.quest.getLeftPicturePos())
         self.rPictureFrame.setPos(self.quest.getRightPicturePos())
-        self.lQuestIcon['geom'] = self.quest.getLeftIconGeom()
-        if isinstance(objective, VisitNPCObjective.VisitNPCObjective) or isinstance(objective, CogObjective):
-            if objective.getDidEditLeft():
-                head = self.quest.getLeftIconGeom()
-                icon = self.lQuestIcon
-                scale = self.quest.getLeftIconScale()
-            else:
-                head = self.quest.getRightIconGeom()
-                icon = self.rQuestIcon
-                scale = self.quest.getRightIconScale()
-
-            isHead = True if type(head) == ToonHead else head.getName() == ('%sHead' % CIGlobals.Suit)
-
-            if isHead:
-                head.setDepthWrite(1)
-                head.setDepthTest(1)
-                self.fitGeometry(head, fFlip = 1)
-            else:
-                icon.setScale(scale)
-
-            if isinstance(objective, VisitNPCObjective.VisitNPCObjective) and icon == self.rQuestIcon:
-                icon.setHpr(180, 0, 0)
-                icon.setPos(icon.getX(), icon.getY(), icon.getZ() + 0.05)
-            elif isinstance(objective, CogObjective):
-                if icon == self.lQuestIcon:
-                    if objective.getName():
-                        icon.setScale(QuestGlobals.IMAGE_SCALE_SMALL)
-                        icon.setPos(icon.getX(), icon.getY(), icon.getZ() - 0.04)
-                    else:
-                        head.setScale(self.quest.getLeftIconScale())
-                else:
-                    if objective.getName():
-                        head.setScale(1.2)
-                    else:
-                        icon.setScale(self.quest.getRightIconScale())
-
-            icon['geom'] = head
-            icon['geom_scale'] = QuestGlobals.IMAGE_SCALE_SMALL
-
-            #self.lQuestIcon['geom_hpr'] = (180, 0, 0)
-            #self.lQuestIcon['geom_pos'] = (0, 10, -0.04)
+        
+        editLeftAtr = isinstance(objective, VisitNPCObjective) or isinstance(objective, CogObjective)
+        if editLeftAtr and objective.getDidEditLeft() or not editLeftAtr:
+            geom = self.quest.getLeftIconGeom()
+            scale = self.quest.getLeftIconScale()
+            icon = self.lQuestIcon
+            self.handleIcon(objective, geom, scale, icon)
+            self.handleIcon(objective, self.quest.getRightIconGeom(), self.quest.getRightIconScale(), self.rQuestIcon)
         else:
-            self.lQuestIcon['geom'] = self.quest.getLeftIconGeom()
-            self.lQuestIcon['geom_scale'] = self.quest.getLeftIconScale()
-        #self.rQuestIcon['geom'] = self.quest.getRightIconGeom()
-        #self.rQuestIcon['geom_scale'] = self.quest.getRightIconScale()
+            geom = self.quest.getRightIconGeom()
+            scale = self.quest.getRightIconScale()
+            icon = self.rQuestIcon
+            self.handleIcon(objective, geom, scale, icon)
+            self.handleIcon(objective, self.quest.getLeftIconGeom(), self.quest.getLeftIconScale(), self.lQuestIcon)
 
         if self.questInfo02['text'] == '':
             self.rPictureFrame.hide()
@@ -344,12 +342,12 @@ class QuestPoster(DirectFrame):
         self.auxText.show()
 
         maxHP = base.localAvatar.getMaxHealth()
-
+        
         # Let's setup the rewards.
         for i in xrange(0, len(self.quest.getRewards())):
             reward = self.quest.getRewards()[i]
             frame = self.lRewardFrame if (i == 0) else self.rRewardFrame
-            info = self.lRewardInfo if (i == 0) else self.rRewardInfo
+            info = self.lRewardAmt if (i == 0) else self.rRewardAmt
             rType = reward.getType()
             if(rType == RewardType.JELLYBEANS):
                 frame['pos'] = QuestGlobals.LEFT_JB_JAR_POS if (i == 0) else QuestGlobals.RIGHT_JB_JAR_POS
@@ -382,16 +380,16 @@ class QuestPoster(DirectFrame):
         # Hide or show the other reward depending on if there's 2 rewards.
         if(len(self.quest.getRewards()) == 1):
             self.rRewardFrame.hide()
-            self.rRewardInfo.hide()
+            self.rRewardAmt.hide()
         else:
             self.rRewardFrame.show()
-            self.rRewardInfo.show()
+            self.rRewardAmt.show()
 
         if objective.finished():
             self.setColor(Vec4(*QuestGlobals.LIGHT_GREEN))
             self.sideInfo['text'] = 'Completed!'
             self.sideInfo.show()
-
+            
         self.questInfo.initialiseoptions(DirectLabel)
         self.questInfo02.initialiseoptions(DirectLabel)
         self.locationInfo.initialiseoptions(DirectLabel)
@@ -401,8 +399,6 @@ class QuestPoster(DirectFrame):
         self.rQuestIcon.initialiseoptions(DirectFrame)
         self.auxText.initialiseoptions(DirectLabel)
         self.middleText.initialiseoptions(DirectLabel)
-        #self.lRewardFrame.initialiseoptions(DirectFrame)
-        #self.rRewardFrame.initialiseoptions(DirectFrame)
         self.sideInfo.initialiseoptions(DirectLabel)
         self.lPictureFrame['image_color'] = self.quest.getPictureFrameColor()
         self.rPictureFrame['image_color'] = self.quest.getPictureFrameColor()
@@ -435,3 +431,7 @@ class QuestPoster(DirectFrame):
             geom = icon['geom']
             if geom and hasattr(geom, 'delete'):
                 geom.delete()
+                
+    def getQuest(self):
+        return self.quest
+
