@@ -10,10 +10,15 @@
 
 !*.lib
 game/resourcepack
+game/settings.json
 game/safe_test.py
 game/.pydevproject
 game/.project
 game/winter
+game/phase_*
+game/tournament_music/**
+game/models/**
+game/icons/**
 # Ignore everything in the astron folder.
 game/astron/**
 game/tools/libcoginvasion.pyd

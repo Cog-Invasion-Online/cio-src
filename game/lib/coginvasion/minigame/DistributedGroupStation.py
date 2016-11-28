@@ -76,16 +76,14 @@ class DistributedGroupStation(GroupStation.GroupStation, DistributedObject):
 		base.localAvatar.headsUp(slot)
 		base.localAvatar.setAnimState('run')
 		runTrack = NPCWalkInterval(base.localAvatar,
-								slot.getPos(render),
-								0.1,
-								startPos=base.localAvatar.getPos(render))
+			slot.getPos(render), 0.1, startPos=base.localAvatar.getPos(render))
 		runTrack.setDoneEvent("SlotEnterDone")
 		runTrack.start()
 		base.acceptOnce("SlotEnterDone", self.__handleSlotEntrance)
 
 	def __handleSlotEntrance(self):
 		self.createStationAbortGui()
-		base.localAvatar.setAnimState('Happy')
+		base.localAvatar.setAnimState('neutral')
 		base.localAvatar.headsUp(self.sign)
 
 	def exitMinigameStationSlot(self):

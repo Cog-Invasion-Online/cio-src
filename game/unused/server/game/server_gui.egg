@@ -1,0 +1,55 @@
+<Comment> {
+  "egg-texture-cards gui_background.png locked.png unlocked.png server_gui.egg"
+}
+<Texture> unlocked {
+  unlocked.png
+}
+<Texture> locked {
+  locked.png
+}
+<Texture> gui_background {
+  gui_background.png
+}
+<Group> {
+  <Switch> { 1 }
+  <Scalar> fps { 2 }
+  <VertexPool> vpool {
+    <Vertex> 0 {
+      -0.5 0.5 0
+      <UV> { 0 1 }
+    }
+    <Vertex> 1 {
+      -0.5 -0.5 0
+      <UV> { 0 0 }
+    }
+    <Vertex> 2 {
+      0.5 -0.5 0
+      <UV> { 1 0 }
+    }
+    <Vertex> 3 {
+      0.5 0.5 0
+      <UV> { 1 1 }
+    }
+  }
+  <Group> gui_background {
+    <Polygon> {
+      <RGBA> { 1 1 1 1 }
+      <TRef> { gui_background }
+      <VertexRef> { 0 1 2 3 <Ref> { vpool } }
+    }
+  }
+  <Group> locked {
+    <Polygon> {
+      <RGBA> { 1 1 1 1 }
+      <TRef> { locked }
+      <VertexRef> { 0 1 2 3 <Ref> { vpool } }
+    }
+  }
+  <Group> unlocked {
+    <Polygon> {
+      <RGBA> { 1 1 1 1 }
+      <TRef> { unlocked }
+      <VertexRef> { 0 1 2 3 <Ref> { vpool } }
+    }
+  }
+}
