@@ -12,7 +12,7 @@ from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 
 from lib.coginvasion.globals import CIGlobals
-from lib.coginvasion.book_new.BookPage import BookPage
+from lib.coginvasion.book.BookPage import BookPage
 from lib.coginvasion.manager.SettingsManager import SettingsManager
 
 qt_btn = loader.loadModel("phase_3/models/gui/quit_button.bam")

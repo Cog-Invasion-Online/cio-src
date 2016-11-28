@@ -11,7 +11,7 @@ from direct.gui.DirectGui import DirectFrame, DirectButton
 from direct.gui.DirectLabel import DirectLabel
 
 from lib.coginvasion.globals import CIGlobals
-from lib.coginvasion.book_new.BookPage import BookPage
+from lib.coginvasion.book.BookPage import BookPage
 from lib.coginvasion.hood import ZoneUtil
 
 class MapPage(BookPage, DirectFrame):

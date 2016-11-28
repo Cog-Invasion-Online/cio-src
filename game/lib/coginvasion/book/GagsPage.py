@@ -3,7 +3,7 @@
 # Created by: DecodedLogic (18Jun16)
 ########################################
 
-from lib.coginvasion.book_new.BookPage import BookPage
+from lib.coginvasion.book.BookPage import BookPage
 from lib.coginvasion.gui.BackpackGUI import BackpackGUI
 
 class GagsPage(BookPage):

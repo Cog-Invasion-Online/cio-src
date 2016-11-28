@@ -15,7 +15,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Parallel, LerpHprInterval, Sequence, Wait, Func, LerpPosInterval, LerpQuatInterval
 from lib.coginvasion.globals import CIGlobals
 from PublicWalk import PublicWalk
-from lib.coginvasion.book_new.ShtickerBook import ShtickerBook
+from lib.coginvasion.book.ShtickerBook import ShtickerBook
 from lib.coginvasion.gui.Dialog import GlobalDialog, Ok
 from lib.coginvasion.minigame.FirstPerson import FirstPerson
 from lib.coginvasion.nametag import NametagGlobals

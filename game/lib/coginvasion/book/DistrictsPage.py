@@ -9,7 +9,7 @@ from direct.gui.DirectGui import DirectScrolledList, DirectFrame
 from direct.gui.DirectGui import DirectButton, OnscreenText
 from direct.gui.DirectGui import DGG
 
-from lib.coginvasion.book_new.BookPage import BookPage
+from lib.coginvasion.book.BookPage import BookPage
 
 textRolloverColor = Vec4(1, 1, 0, 1)
 textDownColor = Vec4(0.5, 0.9, 1, 1)
