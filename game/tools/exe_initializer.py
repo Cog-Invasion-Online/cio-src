@@ -11,4 +11,4 @@ from libcoginvasion import *
 
 from encodings import hex_codec
 from encodings import ascii
-import lib.coginvasion.base.CIStartGlobal
+import src.coginvasion.base.CIStartGlobal

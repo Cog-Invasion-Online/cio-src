@@ -20,7 +20,7 @@ echo ASTRON_IP: %ASTRON_IP%
 echo EVENT_LOGGER: %EVENT_LOGGER_IP%
 echo -----------------------------------
 
-..\Panda3D-CI\python\ppython.exe -B -m lib.coginvasion.uber.UberStart --base-channel %BASE_CHANNEL% ^
+..\Panda3D-CI\python\ppython.exe -B -m src.coginvasion.uber.UberStart --base-channel %BASE_CHANNEL% ^
                      --max-channels %MAX_CHANNELS% --stateserver %STATE_SERVER% ^
                      --astron-ip %ASTRON_IP% --eventlogger-ip %EVENT_LOGGER_IP% --acc-limit %ACCOUNT_LIMIT% --acc-limit-per-comp %ACC_LIMIT_PER_COMP% --holiday %HOLIDAY%
 pause

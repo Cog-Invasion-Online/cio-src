@@ -305,7 +305,7 @@ class DistributedObjectAI(DistributedObjectBase):
         # setLocation destroys self._zoneData if we move away to
         # a different zone
         if self._zoneData is None:
-            from lib.coginvasion.ai.AIZoneData import AIZoneData
+            from src.coginvasion.ai.AIZoneData import AIZoneData
             self._zoneData = AIZoneData(self.air, self.parentId, self.zoneId)
         return self._zoneData
 
