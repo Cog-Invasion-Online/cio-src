@@ -12,6 +12,7 @@ from direct.task.Task import Task
 from pandac.PandaModules import NodePath, CollisionSphere, CollisionNode, Point3, VBase4
 from panda3d.direct import HideInterval, ShowInterval
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.holiday.HolidayManager import HolidayType
 
 class DistributedTreasure(DistributedObject):
     notify = directNotify.newCategory('DistributedTreasure')
@@ -51,6 +52,8 @@ class DistributedTreasure(DistributedObject):
             self.makeNodePath()
         else: self.treasure.getChildren().detach()
         model = loader.loadModel(mdlPath)
+        if self.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
+            model.setTransparency(1)
         if childString:
             model = model.find('**/' + childString)
         model.instanceTo(self.treasure)

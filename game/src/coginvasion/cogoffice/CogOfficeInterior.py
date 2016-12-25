@@ -10,6 +10,7 @@ class CogOfficeInterior(Place):
     def __init__(self, loader, parentFSM, doneEvent):
         self.parentFSM = parentFSM
         Place.__init__(self, loader, doneEvent)
+        self.interior = True
         self.fsm = ClassicFSM.ClassicFSM('CogOfficeInterior', [State.State('start', self.enterStart, self.exitStart, ['stop', 'walk']),
          State.State('walk', self.enterWalk, self.exitWalk, ['stop', 'teleportOut', 'died']),
          State.State('teleportOut', self.enterTeleportOut, self.exitTeleportOut, ['stop', 'final']),

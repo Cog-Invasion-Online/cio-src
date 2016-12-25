@@ -196,7 +196,8 @@ class WhisperPopup(Clickable2d, MarginVisible):
             NametagGlobals.chatBalloon2dModel,
             NametagGlobals.chatBalloon2dWidth,
             NametagGlobals.chatBalloon2dHeight, self.textNode,
-            foreground=foreground, background=background
+            foreground=foreground, background=background,
+            is2d=True
         )
         self.chatBalloon.reparentTo(self.contents)
 

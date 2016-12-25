@@ -22,7 +22,7 @@ class ChatBalloon(NodePath):
 
     def __init__(self, model, modelWidth, modelHeight, textNode,
                  foreground=VBase4(0, 0, 0, 1), background=VBase4(1, 1, 1, 1),
-                 reversed=False, button=None):
+                 reversed=False, button=None, is2d = False):
         NodePath.__init__(self, 'chatBalloon')
 
         self.model = model
@@ -32,6 +32,7 @@ class ChatBalloon(NodePath):
         self.foreground = foreground
         self.background = background
         self.button = button
+        self.is2d = is2d
 
         # Set the TextNode color:
         self.textNode.setTextColor(self.foreground)
@@ -40,6 +41,9 @@ class ChatBalloon(NodePath):
         self.balloon = self.model.copyTo(self)
         self.balloon.setColor(self.background)
         self.balloon.setTransparency(self.background[3] < 1)
+        if is2d:
+            # Don't use the black outline on 2d chat balloons (old toontown).
+            self.balloon.setTextureOff(1)
 
         # Attach the TextNode:
         self.textNodePath = self.attachNewNode(self.textNode)

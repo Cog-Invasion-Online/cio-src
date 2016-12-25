@@ -13,6 +13,7 @@ class ToonInterior(Place.Place):
     def __init__(self, hood, parentFSM, doneEvent):
         self.parentFSM = parentFSM
         Place.Place.__init__(self, hood, doneEvent)
+        self.interior = True
         self.fsm = ClassicFSM('ToonInterior', [State('start', self.enterStart, self.exitStart, ['doorOut', 'teleportIn']),
             State('walk', self.enterWalk, self.exitWalk, ['stop', 'doorIn', 'shtickerBook', 'teleportOut']),
             State('shtickerBook', self.enterShtickerBook, self.exitShtickerBook, ['teleportOut', 'walk']),

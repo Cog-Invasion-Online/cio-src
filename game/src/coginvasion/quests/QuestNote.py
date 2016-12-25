@@ -39,7 +39,7 @@ class QuestNote(DirectFrame):
             frameSize=(-0.95, 0.95, -0.1, 0.12),
             borderWidth = (0.025, 0.025),
             scale = 0.4,
-            frameColor = (0.945, 0.875, 0.706, 1.0),
+            frameColor = (251.0 / 255, 252.0 / 255, 176.0 / 255, 1.0),
             barColor=(0.5, 0.7, 0.5, 1),
             text='0/0',
             text_font = CIGlobals.getToonFont(),

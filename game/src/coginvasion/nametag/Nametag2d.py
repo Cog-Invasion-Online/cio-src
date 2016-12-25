@@ -185,7 +185,7 @@ class Nametag2d(Nametag, Clickable2d, MarginVisible):
             model, modelWidth, modelHeight, self.chatTextNode,
             foreground=foreground, background=background,
             reversed=self.chatReversed,
-            button=self.chatButton[self.clickState])
+            button=self.chatButton[self.clickState], is2d = True)
         self.chatBalloon.reparentTo(self.contents)
         
         self.cTag.set_chatballoon_size(self.chatBalloon.width, self.chatBalloon.height)

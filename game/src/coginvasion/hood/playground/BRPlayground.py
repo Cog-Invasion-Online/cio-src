@@ -50,23 +50,3 @@ class BRPlayground(Playground.Playground):
 		
 	def stopWaterWatch(self):
 		taskMgr.remove('BRPlayground-waterWatch')
-		
-	def startWind(self):
-		taskMgr.add(self.windTask, "BRPlayground-windTask")
-		
-	def stopWind(self):
-		taskMgr.remove("BRPlayground-windTask")
-		if self.windSfx:
-			self.windSfx.finish()
-			self.windSfx = None
-			
-	def windTask(self, task):
-		noiseFile = random.choice(self.loader.windNoises)
-		noise = base.loadSfx(noiseFile)
-		if self.windSfx:
-			self.windSfx.finish()
-			self.windSfx = None
-		self.windSfx = SoundInterval(noise)
-		self.windSfx.start()
-		task.delayTime = random.random() * 20 + 1
-		return task.again

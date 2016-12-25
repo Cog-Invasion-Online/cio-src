@@ -19,6 +19,8 @@ from src.coginvasion.book.ShtickerBook import ShtickerBook
 from src.coginvasion.gui.Dialog import GlobalDialog, Ok
 from src.coginvasion.minigame.FirstPerson import FirstPerson
 from src.coginvasion.nametag import NametagGlobals
+from src.coginvasion.holiday.HolidayManager import HolidayType
+from SnowEffect import SnowEffect
 import LinkTunnel
 import ZoneUtil
 
@@ -30,7 +32,9 @@ class Place(StateData):
         self.loader = loader
         self.zoneId = None
         self.track = None
+        self.interior = False
         self.firstPerson = FirstPerson()
+        self.snowEffect = SnowEffect(self)
         self.lastBookPage = 2
         self.useFirstPerson = config.GetBool('want-firstperson-battle')
         return
@@ -64,8 +68,14 @@ class Place(StateData):
     def enter(self):
         StateData.enter(self)
         base.localAvatar.createChatInput()
+        if not self.interior and (base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS
+                                  or base.cr.playGame.getCurrentWorldName() == 'BRHood'):
+            self.snowEffect.start()
 
     def exit(self):
+        if not self.interior and (base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS
+                                  or base.cr.playGame.getCurrentWorldName() == 'BRHood'):
+            self.snowEffect.stop()
         base.localAvatar.disableChatInput()
         del self.lastBookPage
         StateData.exit(self)
@@ -263,13 +273,20 @@ class Place(StateData):
         self.walkDoneEvent = "walkDone"
         self.walkStateData = PublicWalk(self.fsm, self.walkDoneEvent)
         self.walkStateData.load()
+        if not self.interior and (base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS
+                                  or base.cr.playGame.getCurrentWorldName() == 'BRHood'):
+            self.snowEffect.load()
 
     def unload(self):
         StateData.unload(self)
+        if not self.interior and (base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS
+                                  or base.cr.playGame.getCurrentWorldName() == 'BRHood'):
+            self.snowEffect.unload()
         del self.walkDoneEvent
         self.walkStateData.unload()
         del self.walkStateData
         del self.loader
+        del self.snowEffect
 
     def enterTeleportIn(self, requestStatus):
         base.transitions.irisIn()

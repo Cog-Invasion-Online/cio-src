@@ -53,6 +53,7 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
             note = self.questNotes[i]
             note.setPos(0, 0, 0)
             if quests[i].currentObjective.HasProgress:
+                note.progressBar.hide()
                 note.progressText.hide()
             btn = DirectButton(geom = note, parent = self.questFrame,
                 pos = positions[i], command = self.d_pickedQuest, extraArgs = [quests[i]], relief = None)

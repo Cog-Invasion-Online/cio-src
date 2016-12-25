@@ -55,7 +55,7 @@ class DistributedBattleTrolley(DistributedObject):
         self.trolleyAwaySfx = base.loadSfx('phase_4/audio/sfx/SZ_trolley_away.ogg')
 
         if self.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
-            self.trolleyAwaySfx = base.loadSfx('winter/audio/sfx/SZ_trolley_away.ogg')
+            self.trolleyAwaySfx = base.loadSfx('winter/audio/sfx/SZ_trolley_away.mp3')
 
         self.trolleyBellSfx = base.loadSfx('phase_4/audio/sfx/SZ_trolley_bell.ogg')
         self.toZone = 0

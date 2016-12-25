@@ -11,8 +11,6 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from pandac.PandaModules import Fog
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.holiday.HolidayManager import HolidayType
-from src.coginvasion.toon import ParticleLoader
 from src.coginvasion.hood import Place
 
 class Playground(Place.Place):
@@ -86,29 +84,12 @@ class Playground(Place.Place):
         Place.Place.load(self)
         self.parentFSM.getStateNamed('playground').addChild(self.fsm)
 
-        if base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
-            self.particles = ParticleLoader.loadParticleEffect('phase_8/etc/snowdisk.ptf')
-            self.particles.setPos(0, 0, 5)
-            self.particlesRender = self.loader.geom.attachNewNode('snowRender')
-            self.particlesRender.setDepthWrite(0)
-            self.particlesRender.setBin('fixed', 1)
-            self.particles.start(parent = camera, renderParent = self.particlesRender)
-            self.fog = Fog('snowFog')
-            self.fog.setColor(0.486, 0.784, 1)
-            self.fog.setExpDensity(0.003)
-            base.render.setFog(self.fog)
+        
 
     def unload(self):
         self.parentFSM.getStateNamed('playground').removeChild(self.fsm)
         del self.parentFSM
         del self.fsm
-        if hasattr(self, 'particles'):
-            self.particles.cleanup()
-            self.particlesRender.removeNode()
-            del self.particlesRender
-            base.render.clearFog()
-            self.fog = None
-            del self.particles
         self.ignoreAll()
         Place.Place.unload(self)
         return
