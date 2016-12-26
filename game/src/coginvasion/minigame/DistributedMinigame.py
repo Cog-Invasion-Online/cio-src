@@ -318,6 +318,8 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         self.alertText = getAlertText()
         self.popupSound = base.loadSfx('phase_3/audio/sfx/GUI_balloon_popup.ogg')
         NametagGlobals.setWant2dNametags(False)
+        if not base.localAvatar.walkControls.getCollisionsActive():
+            base.localAvatar.walkControls.setCollisionsActive(1)
 
     def disable(self):
         self.deleteTimer()
