@@ -7,6 +7,8 @@
 
 from pandac.PandaModules import BitMask32, LPoint3f, Point3
 
+from direct.gui.DirectGui import DirectButton
+
 from src.coginvasion.manager.SettingsManager import SettingsManager
 from src.coginvasion.cog import SuitGlobals
 
@@ -409,6 +411,19 @@ def getDefaultBtnGeom():
                     btn.find('**/QuitBtn_DN'),
                     btn.find('**/QuitBtn_RLVR'))
     return DefaultBtnGeom
+
+def getExitButton(cmd = None, extraArgs = [], pos = (0, 0, 0)):
+    gui = loader.loadModel('phase_3.5/models/gui/inventory_gui.bam')
+    up = gui.find('**/InventoryButtonUp')
+    down = gui.find('**/InventoryButtonDown')
+    rlvr = gui.find('**/InventoryButtonRollover')
+    exitButton = DirectButton(image = (up, down, rlvr), relief = None,
+                              text = 'Exit', text_fg = (1, 1, 0.65, 1),
+                              text_pos=(0, -0.23), text_scale = 0.8,
+                              image_scale = (11, 1, 11), pos = pos,
+                              scale = 0.15, command = cmd, extraArgs = extraArgs,
+                              image_color = (1, 0, 0, 1))
+    return exitButton
 
 ShadowScales = {Suit: 0.4,
                 Toon: 0.4,

@@ -364,16 +364,7 @@ class DistributedBattleTrolley(DistributedObject):
 
     def enableExitButton(self):
         if self.fsm.getCurrentState().getName() != 'leaving':
-            gui = loader.loadModel('phase_3.5/models/gui/inventory_gui.bam')
-            up = gui.find('**/InventoryButtonUp')
-            down = gui.find('**/InventoryButtonDown')
-            rlvr = gui.find('**/InventoryButtonRollover')
-            self.exitButton = DirectButton(image = (up, down, rlvr), relief = None,
-                                           text = 'Exit', text_fg = (1, 1, 0.65, 1),
-                                           text_pos=(0, -0.23), text_scale = 0.8,
-                                           image_scale = (11, 1, 11), pos = (0, 0, -0.8),
-                                           scale = 0.15, command = self.__handleExitButton,
-                                           image_color = (1, 0, 0, 1))
+            self.exitButton = CIGlobals.getExitButton(cmd = self.__handleExitButton, pos = (0, 0, -0.8))
 
     def __handleExitButton(self):
         if self.fsm.getCurrentState().getName() == 'waitCountdown' and self.localAvOnTrolley == True:

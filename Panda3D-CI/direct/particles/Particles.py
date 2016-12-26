@@ -10,7 +10,7 @@ from panda3d.physics import PointParticleRenderer
 from panda3d.physics import LineParticleRenderer
 from panda3d.physics import GeomParticleRenderer
 from panda3d.physics import SparkleParticleRenderer
-#from panda3d.physics import SpriteParticleRenderer
+from panda3d.physics import SpriteParticleRenderer
 from panda3d.physics import BaseParticleEmitter
 from panda3d.physics import ArcEmitter
 from panda3d.physics import BoxEmitter
@@ -22,6 +22,7 @@ from panda3d.physics import RingEmitter
 from panda3d.physics import SphereSurfaceEmitter
 from panda3d.physics import SphereVolumeEmitter
 from panda3d.physics import TangentRingEmitter
+from panda3d.physics import SpriteAnim
 
 from . import SpriteParticleRendererExt
 

@@ -110,7 +110,7 @@ class ShadowCaster:
 def avatarShadow():
     # Turn off the existing drop shadow.
     # stash it so that when the game hides and shows it, it will still be gone
-    base.localAvatar.dropShadow.stash()
+    #base.localAvatar.dropShadow.stash()
 
     # Set up a new node to hold the "light": this is an abitrary point
     # somewhere above the avatar, looking down, as if from the sun.
@@ -166,7 +166,7 @@ def arbitraryShadow(node):
 
     # We can change this position at will to change the angle of the
     # sun.
-    lightPath.setPos(50, 0, 50)
+    lightPath.setPos(50, 0, 5)
 
     # We need a task to keep the shadowCamera rotated in the same
     # direction relative to render (otherwise, the shadow seems to
