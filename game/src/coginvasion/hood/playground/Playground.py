@@ -95,11 +95,10 @@ class Playground(Place.Place):
         return
 
     def enterStation(self):
-        base.localAvatar.startPosHprBroadcast()
-        base.localAvatar.d_broadcastPositionNow()
+        pass
 
     def exitStation(self):
-        base.localAvatar.stopPosHprBroadcast()
+        pass
 
     def enterWalk(self, teleportIn = 0):
         Place.Place.enterWalk(self, teleportIn)

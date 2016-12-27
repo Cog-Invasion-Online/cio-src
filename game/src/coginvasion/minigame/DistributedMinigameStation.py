@@ -28,6 +28,9 @@ class DistributedMinigameStation(DistributedGroupStation, MinigameStation.Miniga
         self.generateStation(game)
 
     def headOff(self, zone, laffMeter):
+        if self.camIval:
+            self.camIval.finish()
+            self.camIval = None
         self.deleteStationAbortGui()
         requestStatus = {'zoneId': zone,
                     'hoodId': self.cr.playGame.hood.hoodId,

@@ -105,12 +105,12 @@ class DistributedGroupStationAI(DistributedObjectAI):
 		self.stopTimer()
 		self.startTimer()
 	
-	def requestEnter(self):
+	def requestEnter(self, x, y):
 		doId = self.air.getAvatarIdFromSender()
 		if self.getAvailableSlots() > 0 and not self.isAvatarPresent(doId):
 			availableSlot = self.getAnAvailableSlot()
 			self.appendAvatar(doId)
-			self.d_slotOpen(availableSlot, doId)
+			self.d_avatarEnter(availableSlot, doId, x, y)
 			self.slotsAvailable.remove(availableSlot)
 			self.availableSlots -= 1
 			if len(self.avatars) == 1:
@@ -124,7 +124,7 @@ class DistributedGroupStationAI(DistributedObjectAI):
 		if self.isAvatarPresent(doId):
 			self.clearAvatar(doId)
 			self.slotsAvailable.append(slot)
-			self.d_abort(doId)
+			self.d_avatarExit(doId)
 			
 	def leaving(self):
 		doId = self.air.getAvatarIdFromSender()
@@ -132,11 +132,11 @@ class DistributedGroupStationAI(DistributedObjectAI):
 			self.clearAvatar(doId)
 			self.resetAvailableSlots()
 			
-	def d_abort(self, doId):
-		self.sendUpdateToAvatarId(doId, "abort", [])
+	def d_avatarExit(self, doId):
+		self.sendUpdate("avatarExit", [doId])
 			
-	def d_slotOpen(self, slot, doId):
-		self.sendUpdateToAvatarId(doId, "slotOpen", [slot])
+	def d_avatarEnter(self, slot, doId, x, y):
+		self.sendUpdate("avatarEnter", [slot, doId, x, y])
 		
 	def d_fullStation(self, doId):
 		self.sendUpdateToAvatarId(doId, "fullStation", [])

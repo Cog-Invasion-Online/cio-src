@@ -5,7 +5,7 @@
 
 """
 
-from pandac.PandaModules import BitMask32, LPoint3f, Point3
+from pandac.PandaModules import BitMask32, LPoint3f, Point3, VirtualFileSystem
 
 from direct.gui.DirectGui import DirectButton
 
@@ -115,11 +115,11 @@ def getThemeSong():
     if not ThemeSong:
         themeList = []
         themeList.append('phase_3/audio/bgm/tt_theme.mid')
-        #vfs = VirtualFileSystem.getGlobalPtr()
-        #for fileName in vfs.scanDirectory('phase_3/audio/bgm/'):
-        #    fullpath = fileName.get_filename().get_fullpath()
-        #    if 'ci_theme' in fullpath:
-        #        themeList.append(fullpath)
+        vfs = VirtualFileSystem.getGlobalPtr()
+        for fileName in vfs.scanDirectory('phase_3/audio/bgm/'):
+            fullpath = fileName.get_filename().get_fullpath()
+            if 'ci_theme' in fullpath:
+                themeList.append(fullpath)
         import random
         ThemeSong = random.choice(themeList)
 
@@ -151,7 +151,7 @@ NegativeTextColor = (1, 0, 0, 1)
 OrangeTextColor = (1, 0.5, 0, 1)
 YellowTextColor = (1, 1, 0, 1)
 
-# Cog classes than can be damaged by gags.
+# Cog classes that can be damaged by gags.
 SuitClasses = ["DistributedSuit", "DistributedTutorialSuit", "DistributedCogOfficeSuit", "DistributedTakeOverSuit"]
 
 OToontown = "OToontown"

@@ -5,9 +5,10 @@ from pandac.PandaModules import CollisionSphere, CollisionNode
 from direct.distributed.DistributedObject import DistributedObject
 from direct.gui.DirectGui import DirectButton
 from direct.directnotify.DirectNotifyGlobal import directNotify
+from direct.interval.IntervalGlobal import Parallel, LerpPosInterval, LerpQuatInterval, Sequence, Func
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.npc.NPCWalker import NPCWalkInterval
+from src.coginvasion.npc.NPCWalker import NPCWalkInterval, NPCLookInterval
 import GroupStation
 
 class DistributedGroupStation(GroupStation.GroupStation, DistributedObject):
@@ -28,6 +29,7 @@ class DistributedGroupStation(GroupStation.GroupStation, DistributedObject):
         self.abortBtn = None
         self._name = None
         self.mySlot = None
+        self.camIval = None
         return
 
     def __initCollisions(self, name):
@@ -60,31 +62,64 @@ class DistributedGroupStation(GroupStation.GroupStation, DistributedObject):
     def setLocationPoint(self, lp):
         GroupStation.GroupStation.setLocationPoint(self, lp)
 
-    def slotOpen(self, slot):
-        self.mySlot = slot
-        circle2Run2 = self.circles[slot - 1]
-        self.enterStationSlot(circle2Run2)
+    def avatarEnter(self, slot, avId, x, y):
+        toon = self.cr.doId2do.get(avId)
+        if toon:
 
-    def enterStationSlot(self, slot):
-        self.cr.playGame.getPlace().fsm.request('station')
-        camera.reparentTo(self)
-        numSlots = len(self.circles)
-        camera.setPos(self.numPlayers2CamPos[numSlots])
-        camera.setPos(camera.getPos(render))
-        camera.reparentTo(render)
-        camera.lookAt(self)
-        base.localAvatar.headsUp(slot)
-        base.localAvatar.setAnimState('run')
-        runTrack = NPCWalkInterval(base.localAvatar,
-            slot.getPos(render), 0.1, startPos=base.localAvatar.getPos(render))
-        runTrack.setDoneEvent("SlotEnterDone")
-        runTrack.start()
-        base.acceptOnce("SlotEnterDone", self.__handleSlotEntrance)
+            toon.stopSmooth()
 
-    def __handleSlotEntrance(self):
-        self.createStationAbortGui()
-        base.localAvatar.setAnimState('neutral')
-        base.localAvatar.headsUp(self.sign)
+            def doTurn():
+                turn = Sequence(NPCLookInterval(toon, self.sign, fluid = 1, durationFactor = 0.0035), Func(toon.loop, 'neutral'))
+                turn.start()
+            
+            circle2Run2 = self.circles[slot - 1]
+
+            if avId == base.localAvatar.doId:
+                self.mySlot = slot
+
+                localAvatar.stopSmartCamera()
+                
+                oPos = camera.getPos(render)
+                oHpr = camera.getHpr(render)
+
+                localAvatar.detachCamera()
+
+                camPos = self.numPlayers2CamPos[len(self.circles)]
+                camera.setPos(self, camPos)
+                camPos = camera.getPos(render)
+                
+                camera.lookAt(self)
+                camHpr = camera.getHpr()
+
+                self.camIval = Sequence(Parallel(
+                    LerpPosInterval(
+                        camera,
+                        duration = 1.5,
+                        pos = camPos,
+                        startPos = oPos,
+                        blendType = 'easeOut'
+                    ),
+                    LerpQuatInterval(
+                        camera,
+                        duration = 1.5,
+                        hpr = camHpr,
+                        startHpr = oHpr,
+                        blendType = 'easeOut'
+                    )
+                ), Func(self.createStationAbortGui)); self.camIval.start()
+
+            runTrack = Sequence(Func(toon.loop, 'run'), NPCWalkInterval(toon,
+                circle2Run2.getPos(render), 0.1, startPos=(x, y, toon.getZ())), Func(doTurn))
+            runTrack.start()
+
+            #self.cr.playGame.getPlace().fsm.request('station')
+
+    def avatarExit(self, avId):
+        toon = self.cr.doId2do.get(avId)
+        if toon:
+            toon.startSmooth()
+            if avId == localAvatar.doId:
+                self.exitMinigameStationSlot()
 
     def exitMinigameStationSlot(self):
         self.acceptOnce("enter" + self.snp.node().getName(), self.__handleEnterCollisionSphere)
@@ -101,7 +136,7 @@ class DistributedGroupStation(GroupStation.GroupStation, DistributedObject):
 
     def d_requestEnter(self):
         self.cr.playGame.getPlace().fsm.request('stop')
-        self.sendUpdate("requestEnter", [])
+        self.sendUpdate("requestEnter", [base.localAvatar.getX(render), base.localAvatar.getY(render)])
 
     def d_requestAbort(self):
         self.deleteStationAbortGui()
