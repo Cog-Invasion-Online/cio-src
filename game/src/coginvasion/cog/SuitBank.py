@@ -9,7 +9,6 @@ from src.coginvasion.cog import SuitGlobals
 from src.coginvasion.cog.SuitType import SuitType
 from src.coginvasion.cog import Dept
 from src.coginvasion.cog.Head import Head
-from src.coginvasion.cog.SuitPanicBehavior import SuitPanicBehavior
 from src.coginvasion.cog import Voice
 from src.coginvasion.cog import SuitAttacks
 
@@ -43,7 +42,8 @@ class SuitPlan:
 
         if not self.handColor:
             self.handColor = self.dept.getHandColor()
-        if not len(self.behaviors):
+        if not len(self.behaviors) and game.process == 'server':
+            from src.coginvasion.cog.SuitPanicBehavior import SuitPanicBehavior
             defaultBehaviors = [[SuitPanicBehavior, 4]]
             self.behaviors = defaultBehaviors
 
