@@ -23,7 +23,7 @@ import SuitBuildingGlobals
 import random
 
 RIDE_ELEVATOR_TIME = 6.5
-FACE_OFF_TIME = 7.5
+FACE_OFF_TIME = 8.5
 VICTORY_TIME = 5.0
 
 class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
@@ -50,6 +50,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.roomsVisited = []
         self.numFloors = numFloors
         self.currentFloor = 0
+        self.tauntSuitId = 0
         self.currentRoom = ""
         self.readyAvatars = []
         self.elevators = []
@@ -66,6 +67,16 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
             self.deptClass = Dept.SALES
         elif dept == 'm':
             self.deptClass = Dept.CASH
+
+    def setTauntSuitId(self, id):
+        self.tauntSuitId = id
+
+    def getTauntSuitId(self):
+        return self.tauntSuitId
+
+    def b_setTauntSuitId(self, id):
+        self.sendUpdate('setTauntSuitId', [id])
+        self.setTauntSuitId(id)
 
     def getExteriorZoneId(self):
         return self.exteriorZoneId
@@ -165,15 +176,11 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         base.taskMgr.doMethodLater(RIDE_ELEVATOR_TIME, self.rideElevatorTask, self.uniqueName('rideElevatorTask'))
 
     def rideElevatorTask(self, task):
-        guards = list(self.getGuardsBySection(0))
-        guards.sort(key = lambda guard: guard.getLevel(), reverse = True)
-        guard = guards[0]
-
-        suitId = guard.doId
-        taunts = CIGlobals.SuitFaceoffTaunts[guard.suitPlan.getName()]
+        suit = self.air.doId2do.get(self.tauntSuitId)
+        taunts = CIGlobals.SuitFaceoffTaunts[suit.suitPlan.getName()]
         tauntIndex = taunts.index(random.choice(taunts))
 
-        self.sendUpdate('doFaceoff', [suitId, tauntIndex, globalClockDelta.getRealNetworkTime()])
+        self.sendUpdate('doFaceoff', [tauntIndex, globalClockDelta.getRealNetworkTime()])
 
         self.setState('faceOff')
 
@@ -244,6 +251,12 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
     def setAvatars(self, avatars):
         DistributedBattleZoneAI.setAvatars(self, avatars)
         self.toonId2suitsTargeting = {avId: [] for avId in self.avIds}
+
+        for avId in self.avIds:
+            toon = self.air.doId2do.get(avId)
+            if toon:
+                self.ignore(toon.getDeleteEvent())
+                self.acceptOnce(toon.getDeleteEvent(), self.handleToonLeft, [avId])
 
     def getCurrentFloor(self):
         return self.currentFloor
@@ -375,7 +388,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
     def getHoodIndex(self):
         return CogBattleGlobals.hi2hi[self.hood]
 
-    def makeSuit(self, initPointData, isChair, boss = False):
+    def makeSuit(self, initPointData, hangoutIndex, isChair, boss = False):
         bldgInfo = SuitBuildingGlobals.buildingInfo[self.hood]
         if self.currentFloor < self.numFloors - 1:
             levelRange = bldgInfo[SuitBuildingGlobals.LEVEL_RANGE]
@@ -389,7 +402,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                     availableSuits.remove(suit)
 
         plan = random.choice(availableSuits)
-        suit = DistributedCogOfficeSuitAI(self.air, self, initPointData, isChair, self.hood)
+        suit = DistributedCogOfficeSuitAI(self.air, self, initPointData, hangoutIndex, isChair, self.hood)
         suit.setManager(self)
         suit.generateWithRequired(self.zoneId)
         suit.d_setHood(suit.hood)
@@ -438,6 +451,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
         guardSection2NumInSection = {}
         guardPoints = self.getPoints('guard')
+        hangoutPoints = list(self.getPoints('hangout'))
         maxInThisSection = 0
         for point in guardPoints:
             isBoss = False
@@ -453,7 +467,12 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                 else:
                     maxInThisSection = random.randint(sectionRange[0], sectionRange[1])
             if guardSection2NumInSection[section] < maxInThisSection:
-                suit = self.makeSuit([guardPoints.index(point), point], 0, isBoss)
+                hangoutIndex = -1
+                if section == 0:
+                    hangout = random.choice(hangoutPoints)
+                    hangoutIndex = self.getPoints('hangout').index(hangout)
+                    hangoutPoints.remove(hangout)
+                suit = self.makeSuit([guardPoints.index(point), point], hangoutIndex, 0, isBoss)
                 self.guardSuits.append(suit)
                 guardSection2NumInSection[section] += 1
 
@@ -470,7 +489,8 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                 else:
                     maxInThisSection = random.randint(sectionRange[0], sectionRange[1])
             if chairSection2NumInSection[section] < maxInThisSection:
-                suit = self.makeSuit([chairPoints.index(point), point], 1)
+                
+                suit = self.makeSuit([chairPoints.index(point), point], -1, 1)
                 self.chairSuits.append(suit)
                 chairSection2NumInSection[section] += 1
 
@@ -510,6 +530,13 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                 barrel.generateWithRequired(self.zoneId)
                 barrel.b_setPosHpr(position[0], position[1], position[2], hpr[0], hpr[1], hpr[2])
                 self.barrels.append(barrel)
+
+        # Pick the suit that gives the taunt
+        guards = list(self.getGuardsBySection(0))
+        guards.sort(key = lambda guard: guard.getLevel(), reverse = True)
+        guard = guards[0]
+
+        self.b_setTauntSuitId(guard.doId)
 
         # We need to wait for a response from all players telling us that they finished loading the floor.
         # Once they all finish loading the floor, we ride the elevator.

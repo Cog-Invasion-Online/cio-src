@@ -12,6 +12,7 @@ from src.coginvasion.battle.DistributedBattleZone import DistributedBattleZone
 from src.coginvasion.minigame import DistributedMinigame
 from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.npc.NPCWalker import NPCWalkInterval
 from src.coginvasion.cog import Dept, SuitBank
 from ElevatorUtils import *
 from ElevatorConstants import *
@@ -326,6 +327,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.props = []
         self.elevators = []
         self.elevatorResponses = 0
+        self.tauntSuitId = 0
         self.openSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_open.ogg')
         self.closeSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_close.ogg')
         self.rideElevatorMusic = base.loadMusic('phase_7/audio/bgm/tt_elevator.mid')
@@ -341,6 +343,12 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
          State.State('victory', self.enterVictory, self.exitVictory)], 'off', 'off')
         self.fsm.enterInitialState()
 
+    def setTauntSuitId(self, id):
+        self.tauntSuitId = id
+
+    def getTauntSuitId(self):
+        return self.tauntSuitId
+
     def isTopFloor(self):
         return self.currentFloor >= self.numFloors - 1
 
@@ -350,8 +358,8 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
     def exitBldgComplete(self):
         pass
 
-    def doFaceoff(self, suitId, tauntIndex, timestamp):
-        self.fsm.request('faceOff', [suitId, tauntIndex, globalClockDelta.localElapsedTime(timestamp)])
+    def doFaceoff(self, tauntIndex, timestamp):
+        self.fsm.request('faceOff', [tauntIndex, globalClockDelta.localElapsedTime(timestamp)])
 
     def openRestockDoors(self):
         lDoorOpen = -3.9
@@ -456,9 +464,9 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             points = POINTS[self.currentRoom][name]
         return points
 
-    def enterFaceOff(self, suitId, tauntIndex, ts):
+    def enterFaceOff(self, tauntIndex, ts):
 
-        suit = self.cr.doId2do.get(suitId)
+        tauntSuit = self.suits.get(self.tauntSuitId)
 
         if self.isTopFloor():
             song = self.topFloorMusic
@@ -466,15 +474,18 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             volume = 0.9
         else:
             song = self.bottomFloorsMusic
-            taunt = CIGlobals.SuitFaceoffTaunts[suit.suitPlan.getName()][tauntIndex]
+            taunt = CIGlobals.SuitFaceoffTaunts[tauntSuit.suitPlan.getName()][tauntIndex]
             volume = 0.7
 
         base.playMusic(song, looping = 1, volume = 0.7)
 
         base.camLens.setMinFov(30.0 / (4./3.))
 
-        camera.reparentTo(suit)
-        height = suit.getHeight()
+        def setCamRunY():
+            camera.setY(camera.getY() + 5)
+
+        camera.reparentTo(tauntSuit)
+        height = tauntSuit.getHeight()
         offsetPnt = Point3(0, 0, height)
         MidTauntCamHeight = height * 0.66
         MidTauntCamHeightLim = height - 1.8
@@ -484,17 +495,14 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         TauntCamX = 0
         TauntCamHeight = random.choice((MidTauntCamHeight, 1, 11))
         camera.setPos(TauntCamX, TauntCamY, TauntCamHeight)
-        camera.lookAt(suit, offsetPnt)
-
-        def setCamRunY():
-            camera.setY(camera.getY() + 5)
+        camera.lookAt(tauntSuit, offsetPnt)
 
         self.faceOffTrack = Sequence()
-        self.faceOffTrack.append(Func(suit.setAutoClearChat, False))
-        self.faceOffTrack.append(Func(suit.setChat, taunt))
+        self.faceOffTrack.append(Func(tauntSuit.setAutoClearChat, False))
+        self.faceOffTrack.append(Func(tauntSuit.setChat, taunt))
         self.faceOffTrack.append(Wait(3.5))
-        self.faceOffTrack.append(Func(suit.nametag.clearChatText))
-        self.faceOffTrack.append(Func(suit.setAutoClearChat, True))
+        self.faceOffTrack.append(Func(tauntSuit.nametag.clearChatText))
+        self.faceOffTrack.append(Func(tauntSuit.setAutoClearChat, True))
         self.faceOffTrack.append(Func(base.camLens.setMinFov, CIGlobals.DefaultCameraFov / (4./3.)))
         self.faceOffTrack.append(Func(base.localAvatar.attachCamera))
         self.faceOffTrack.append(Func(camera.lookAt, base.localAvatar.smartCamera.getLookAtPoint()))
@@ -513,12 +521,22 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                 toon.headsUp(pos)
                 track = Sequence(
                     Func(toon.setAnimState, 'run'),
-                    LerpPosInterval(toon, duration = 1.0, pos = pos,
-                        startPos = toon.getPos(render)),
+                    LerpPosInterval(toon, duration = 1.5, pos = pos,
+                        startPos = toon.getPos(render), blendType = 'easeOut'),
                     Func(toon.setAnimState, 'walk'),
                     LerpQuatInterval(toon, duration = 1.0, hpr = hpr,
-                        startHpr = lambda toon = toon: toon.getHpr(render)),
+                        startHpr = lambda toon = toon: toon.getHpr(render), blendType = 'easeInOut'),
                     Func(toon.setAnimState, 'neutral'))
+                runTrack.append(track)
+
+        for suit in self.suits.values():
+            if suit.getHangoutIndex() > -1:
+                track = Sequence(
+                    Func(suit.setAnimState, 'walk'),
+                    NPCWalkInterval(
+                        suit, Point3(suit.guardPoint[0], suit.guardPoint[1], suit.guardPoint[2]), durationFactor = 0.19),
+                    Func(suit.setHpr, Vec3(suit.guardPoint[3], suit.guardPoint[4], suit.guardPoint[5])),
+                    Func(suit.setAnimState, 'neutral'))
                 runTrack.append(track)
 
         self.faceOffTrack.append(runTrack)
@@ -532,6 +550,10 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         elevator = self.elevators[0]
 
         NametagGlobals.setWant2dNametags(False)
+
+        tauntSuit = self.suits.get(self.tauntSuitId)
+        if tauntSuit:
+            tauntSuit.headsUp(self.elevators[0].getElevatorModel())
 
         base.camLens.setFov(CIGlobals.DefaultCameraFov)
         camera.reparentTo(elevator.getElevatorModel())

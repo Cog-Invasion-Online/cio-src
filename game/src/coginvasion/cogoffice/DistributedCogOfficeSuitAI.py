@@ -18,7 +18,7 @@ CHAIR_2_BATTLE_TIME = 9.0
 class DistributedCogOfficeSuitAI(DistributedSuitAI):
     notify = directNotify.newCategory('DistributedSuitAI')
 
-    def __init__(self, air, battle, initPointData, isChair, hood):
+    def __init__(self, air, battle, initPointData, hangoutIndex, isChair, hood):
         DistributedSuitAI.__init__(self, air)
         self.hood = hood
         self.battle = battle
@@ -26,6 +26,7 @@ class DistributedCogOfficeSuitAI(DistributedSuitAI):
         self.flyToPoint = None
         self.initPointIndex = initPointData[0]
         initPoint = initPointData[1]
+        self.hangoutIndex = hangoutIndex
         self.floorSection = initPoint[0]
         self.initPoint = initPoint[1]
         if isChair:
@@ -38,6 +39,9 @@ class DistributedCogOfficeSuitAI(DistributedSuitAI):
          State.State('chair2battle', self.enterChair2Battle, self.exitChair2Battle, ['think'])], 'off', 'off')
         self.fsm.enterInitialState()
         self.stateExtraArgs = []
+
+    def getHangoutIndex(self):
+        return self.hangoutIndex
 
     def monitorHealth(self, task):
         if not hasattr(self, 'battle') or hasattr(self, 'battle') and self.battle is None:

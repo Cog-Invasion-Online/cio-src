@@ -481,6 +481,10 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
     def announceGenerate(self):
         DistributedAvatar.announceGenerate(self)
         self.setAnimState('neutral')
+
+        # Picked up by DistributedBattleZone:
+        messenger.send('suitCreate', [self])
+
         base.taskMgr.add(self.__monitorLocalAvDistance, self.uniqueName('monitorLocalAvDistance'))
 
     def generate(self):
@@ -488,6 +492,9 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         DistributedSmoothNode.generate(self)
 
     def disable(self):
+        # Picked up by DistributedBattleZone:
+        messenger.send('suitDelete', [self])
+
         base.taskMgr.remove(self.uniqueName('monitorLocalAvDistance'))
         self.anim = None
         self._state = None

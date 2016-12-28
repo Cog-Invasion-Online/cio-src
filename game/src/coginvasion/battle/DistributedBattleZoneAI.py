@@ -62,12 +62,6 @@ class DistributedBattleZoneAI(DistributedObjectAI):
     def setAvatars(self, avIds):
         self.avIds = avIds
 
-        for avId in self.avIds:
-            toon = self.air.doId2do.get(avId)
-            if toon:
-                self.ignore(toon.getDeleteEvent())
-                self.acceptOnce(toon.getDeleteEvent(), self._removeAvatar, [avId])
-
     # Get the avatar ids.
     def getAvatars(self):
         return self.avIds

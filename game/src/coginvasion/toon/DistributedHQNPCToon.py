@@ -86,6 +86,9 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
         self.currentChatIndex = 0
         self.b_setChat(self.__getHQOfficerQuestAssignChat())
 
+        self.cameraTrack = camera.posQuatInterval(1, (5, 9, self.getHeight() - 0.5), (155, -2, 0), other=self, blendType='easeOut')
+        self.cameraTrack.start()
+
     def disable(self):
         self.removePickableQuests()
         DistributedNPCToon.DistributedNPCToon.disable(self)

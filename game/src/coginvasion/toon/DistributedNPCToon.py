@@ -12,6 +12,7 @@ from src.coginvasion.quests.QuestGlobals import NPCDialogue
 from src.coginvasion.quests import Rewards
 from src.coginvasion.nametag import NametagGlobals
 from DistributedToon import DistributedToon
+from src.coginvasion.quests.Objectives import VisitNPCObjective
 
 import random
 
@@ -68,20 +69,9 @@ class DistributedNPCToon(DistributedToon):
         self.sendUpdate('requestEnter', [])
 
     def doCameraNPCInteraction(self):
-        currCamPos = camera.getPos()
-        currCamHpr = camera.getHpr()
-        camera.setX(camera.getX() + 5)
-        camera.setY(camera.getY() + 5)
-        camera.headsUp(self)
-        newCamPos = camera.getPos()
-        newCamHpr = camera.getHpr()
-        camera.setPos(currCamPos)
-        camera.setHpr(currCamHpr)
+        camera.wrtReparentTo(render)
 
-        self.cameraTrack = Parallel(
-            LerpPosInterval(camera, duration = 1.0, pos = newCamPos, startPos = currCamPos, blendType = 'easeOut'),
-            LerpQuatInterval(camera, duration = 1.0, quat = newCamHpr, startHpr = currCamHpr, blendType = 'easeOut')
-        )
+        self.cameraTrack = camera.posQuatInterval(1, (-5, 9, self.getHeight() - 0.5), (-150, -2, 0), other=self, blendType='easeOut')
         self.cameraTrack.start()
 
     def stopCameraTrack(self):
@@ -89,28 +79,34 @@ class DistributedNPCToon(DistributedToon):
             self.cameraTrack.finish()
             self.cameraTrack = None
 
-    def getNPCLocationSpeech(self):
-        objective = self.currentQuest.currentObjective
+    def getNPCLocationSpeech(self, nextObjective = False):
+        if nextObjective:
+            objective = self.currentQuest.getNextObjectiveData()
+        else:
+            objective = self.currentQuest.getCurrObjectiveData()
 
-        name = CIGlobals.NPCToonNames[objective.npcId]
-        shopName = CIGlobals.zone2TitleDict[objective.npcZone][0]
+        npcId = objective[Quests.args][0]
+        npcZone = CIGlobals.NPCToonDict[npcId][0]
+
+        name = CIGlobals.NPCToonNames[npcId]
+        shopName = CIGlobals.zone2TitleDict[npcZone][0]
         chat = random.choice(NPCDialogue.FindNPC) % (name, shopName)
         chat += "\x07"
         locationSpeech = NPCDialogue.WhichIs
-        if ZoneUtil.isOnCurrentPlayground(objective.npcZone):
+        if ZoneUtil.isOnCurrentPlayground(npcZone):
             # The NPC is in the same playground that the quest is being assigned on.
             locationSpeech = locationSpeech % "in this playground."
-        elif ZoneUtil.isOnSameStreet(objective.npcZone):
+        elif ZoneUtil.isOnSameStreet(npcZone):
             # The NPC is on the same street that the quest is being assigned on.
             locationSpeech = locationSpeech % "on this street."
-        elif ZoneUtil.isAtSamePlaygroundButDifferentBranch(objective.npcZone):
+        elif ZoneUtil.isAtSamePlaygroundButDifferentBranch(npcZone):
             # The NPC is in the same playground but in a different branch zone.
             locationSpeech = (locationSpeech % "on %s in this playground." %
-                ZoneUtil.getStreetName(objective.npcZone))
+                ZoneUtil.getStreetName(npcZone))
         else:
             # NPC is in a completely different playground from where we are.
             locationSpeech = (locationSpeech % "on %s in %s." %
-                (ZoneUtil.getStreetName(objective.npcZone), ZoneUtil.getHoodId(objective.npcZone, 1)))
+                (ZoneUtil.getStreetName(npcZone), ZoneUtil.getHoodId(npcZone, 1)))
         chat += locationSpeech
         chat += "\x07"
 
@@ -158,9 +154,11 @@ class DistributedNPCToon(DistributedToon):
         chat = self.currentQuest.getNextObjectiveDialogue()
         objType = self.currentQuest.getNextObjectiveType()
         if chat.endswith("\x07"):
-            if objType == ObjectiveTypes.VisitNPC:
-                chat += self.getNPCLocationSpeech()
-            chat += random.choice(NPCDialogue.QuestAssignGoodbyes)
+            if objType == VisitNPCObjective:
+                chat += self.getNPCLocationSpeech(True)
+                chat += random.choice(NPCDialogue.Goodbyes)
+            else:
+                chat += random.choice(NPCDialogue.QuestAssignGoodbyes)
         return chat
 
     def enterAccepted(self):

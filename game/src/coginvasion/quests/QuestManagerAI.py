@@ -89,7 +89,7 @@ class QuestManagerAI(QuestManagerBase):
         """
         If checkCurrentCompleted is True, the method will check if the last objective
         was to visit this npc, and the current objective is done.
-        
+
         If checkCurrentCompleted is False, the method will only check if the last objective
         was to visit this npc.
         """
@@ -159,9 +159,11 @@ class QuestManagerAI(QuestManagerBase):
             else:
                 if isHQ:
                     print "current objective is complete, needs to visit HQ Officer"
-                    return (currObjective.isComplete() and currObjective.assigner == 0)
+                    if (currObjective.isComplete() and currObjective.assigner == 0):
+                        return True
                 else:
-                    return (currObjective.isComplete() and currObjective.assigner == npcId)
+                    if (currObjective.isComplete() and currObjective.assigner == npcId):
+                        return True
 
         # I guess we have no objective to visit this npc.
         return False

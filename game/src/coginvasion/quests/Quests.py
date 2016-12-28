@@ -56,12 +56,11 @@ Quests = {
         reward: (Health, 1),
         tier: Tiers.TT,
         requiredQuests: [0]},
-    
+
     4: {objectives: [
             {objType: VisitNPCObjective, args: [2322]},
-            {objType: CogLevelObjective, args: [3, 25, CIGlobals.ToontownCentralId], assigner: 2322},
-            {objType: CogBuildingObjective, args: [Any, 0, 1, CIGlobals.ToontownCentralId], assigner: 2322},
-            {objType: CogObjective, args: [SuitGlobals.Micromanager, 1, CIGlobals.ToontownCentralId], assigner: 2322}
+            {objType: VisitNPCObjective, args: [2108]},
+            {objType: VisitNPCObjective, args: [2322]}
         ],
         reward: (Access, CIGlobals.DonaldsDockId),
         tier: Tiers.TT,
@@ -70,8 +69,8 @@ Quests = {
                "Something strange is going on at " + CIGlobals.zone2TitleDict[CIGlobals.NPCToonDict[2322][0]][0] + ".\x07"
                "Nobody else has been available to help, and " + CIGlobals.NPCToonNames[2322] + " is in desperate need of someone.\x07"
                "Go see him and find out what the problem is.\x07"),
-        finishSpeech: ("Wow, I'm so thankful you came and helped me.\x07My restaurant should be back in motion in not time!\x07"
-                           "How can I reward you...\x07...Oh, here's how!\x07")}
+        finishSpeech: ("What a great friend " + CIGlobals.NPCToonNames[2108] + " is, right?\x07Wow, thank you so much!\x07You know, some of his books are really great. "
+                       "There's this one about a clock that--\x07You know what, I should let you be on your way.\x07Here, take this as a reward for your awesome help...\x07")}
 }
 
 QuestNPCDialogue = {
@@ -80,13 +79,14 @@ QuestNPCDialogue = {
             " and report back immediately!")},
 
     4: {1: ("Oh, thank goodness you are here!\x07The recipe for my signature whipped cream has gone missing!\x07"
-            "I have absolutely no idea where it went, or who took it.\x07I need you to start putting the pieces together"
-            " and figure out where my recipe went and who took it.\x07I have a strong feeling it was one of those pesky"
-            "Level 3 Cogs!\x07Maybe if you were to go and defeat some, we could get an idea."),
-        2: ("I'm getting a strong feeling it was totally one of those Level 3 Cogs.\x07I actually remember hearing a Cog building"
-            " fly down just a little while ago!\x07Go check it out for me and then report back."),
-        3: ("I can't believe I didn't see this earlier...\x07Wait a minute, I literally couldn't see it!\x07Those Micromanagers"
-            " are so small I didn't even see them snatch my recipe.\x07Go, and get my recipe back!")}
+            "I have absolutely no idea where it went.\x07It was right here, on my desk!\x07"
+            "I went back to the kitchen to check on an order, and when I got back... it was gone!\x07My restaurant is far too busy today... "
+            "there's no way I can leave this spot.\x07I wonder if my friend " + CIGlobals.NPCToonNames[2108] + " knows where it went."
+            "\x07Could you please go ask him if he knows where it went?\x07"),
+        2: ("Whipped cream recipe, eh?\x07I haven't seen " + CIGlobals.NPCToonNames[2322] + " all day, and I never saw a whipped cream recipe anywhere.\x07Oh, wait! "
+            "I remember " + CIGlobals.NPCToonNames[2322] + " emailed me that recipe!\x07It's truly the best whipped cream I've ever had. "
+            "I love putting it on waffles.\x07Here, let me print out a copy of the recipe, and you can give it to " + CIGlobals.NPCToonNames[2322] + ".\x07"
+            "Okay... here you go!\x07Tell " + CIGlobals.NPCToonNames[2322] + " I said hi!")}
 }
 
 class Quest:
@@ -289,6 +289,12 @@ class Quest:
 
     ##############################################
     # Objectives
+
+    def getNextObjectiveData(self):
+        return self.questData[objectives][self.currentObjectiveIndex + 1]
+
+    def getCurrObjectiveData(self):
+        return self.questData[objectives][self.currentObjectiveIndex]
 
     def getNextObjectiveType(self):
         return self.questData[objectives][self.currentObjectiveIndex + 1][objType]

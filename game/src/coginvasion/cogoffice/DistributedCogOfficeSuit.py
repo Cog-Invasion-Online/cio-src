@@ -24,6 +24,21 @@ class DistributedCogOfficeSuit(DistributedSuit):
         self.fsm.enterInitialState()
         self.battleDoId = None
         self.battle = None
+        self.hangoutIndex = -1
+        self.guardPoint = None
+        #self.taunter = 0
+
+    #def setTaunter(self, taunter):
+    #    self.taunter = taunter
+
+    #def isTaunter(self):
+    #    return self.taunter
+
+    def setHangoutIndex(self, index):
+        self.hangoutIndex = index
+
+    def getHangoutIndex(self):
+        return self.hangoutIndex
 
     def setBattleDoId(self, doId):
         self.battleDoId = doId
@@ -57,7 +72,17 @@ class DistributedCogOfficeSuit(DistributedSuit):
         self.show()
         self.cleanupPropeller()
         points = self.getPoints('guard')
-        self.setPosHpr(*points[extraArgs[0]][1])
+
+        self.guardPoint = points[extraArgs[0]][1]
+        
+        if self.hangoutIndex > -1:
+            # This cog is going to be at a hangout point.
+            pointsH = self.getPoints('hangout')
+            self.setPosHpr(*pointsH[self.hangoutIndex])
+        else:
+            # This cog will be in regular guard position.
+            self.setPosHpr(*self.guardPoint)
+
         self.setAnimState('neutral')
 
     def exitGuard(self):
