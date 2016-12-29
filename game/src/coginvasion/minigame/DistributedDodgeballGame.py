@@ -21,7 +21,6 @@ from DistributedMinigame import getAlertText, getAlertPulse
 from DistributedEagleGame import getGameText, getCountdownIval, getRoundIval
 from DistributedToonFPSGame import DistributedToonFPSGame
 from DodgeballFirstPerson import DodgeballFirstPerson
-from DistributedDodgeballGameAI import DistributedDodgeballGameAI
 from Snowball import Snowball
 from TeamMinigame import TeamMinigame
 
