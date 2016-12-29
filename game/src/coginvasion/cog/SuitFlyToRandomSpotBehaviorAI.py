@@ -1,9 +1,9 @@
 ########################################
-# Filename: SuitFlyToRandomSpotBehavior.py
+# Filename: SuitFlyToRandomSpotBehaviorAI.py
 # Created by: DecodedLogic (06Sep15)
 ########################################
 
-from src.coginvasion.cog.SuitHabitualBehavior import SuitHabitualBehavior
+from src.coginvasion.cog.SuitHabitualBehaviorAI import SuitHabitualBehaviorAI
 from src.coginvasion.globals import CIGlobals
 
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel
@@ -11,11 +11,11 @@ from direct.interval.ProjectileInterval import ProjectileInterval
 from direct.interval.LerpInterval import LerpPosInterval
 import random
 
-class SuitFlyToRandomSpotBehavior(SuitHabitualBehavior):
+class SuitFlyToRandomSpotBehaviorAI(SuitHabitualBehaviorAI):
 
     def __init__(self, suit):
         doneEvent = 'suit%s-flyToRandSpot' % (str(suit.doId))
-        SuitHabitualBehavior.__init__(self, suit, doneEvent)
+        SuitHabitualBehaviorAI.__init__(self, suit, doneEvent)
         self.canFly = True
         self.isAirborne = False
         self.flyIval = None
@@ -37,7 +37,7 @@ class SuitFlyToRandomSpotBehavior(SuitHabitualBehavior):
                 self.suit.moveIval.start()
 
     def enter(self):
-        SuitHabitualBehavior.enter(self)
+        SuitHabitualBehaviorAI.enter(self)
         if not hasattr(self, 'suit') or not self.suit or self.suit.isEmpty():
             self.exit()
             return
@@ -57,7 +57,7 @@ class SuitFlyToRandomSpotBehavior(SuitHabitualBehavior):
         ).start()
 
     def exit(self):
-        SuitHabitualBehavior.exit(self)
+        SuitHabitualBehaviorAI.exit(self)
         if self.flyIval:
             self.flyIval.pause()
             self.flyIval = None
@@ -66,7 +66,7 @@ class SuitFlyToRandomSpotBehavior(SuitHabitualBehavior):
             self.standSuit()
 
     def unload(self):
-        SuitHabitualBehavior.unload(self)
+        SuitHabitualBehaviorAI.unload(self)
         if self.flyIval:
             self.flyIval.pause()
             self.flyIval = None

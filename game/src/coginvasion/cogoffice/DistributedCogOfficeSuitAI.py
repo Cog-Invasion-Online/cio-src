@@ -7,7 +7,7 @@ from direct.distributed.ClockDelta import globalClockDelta
 
 from src.coginvasion.cog.DistributedSuitAI import DistributedSuitAI
 from src.coginvasion.cog.SuitBrainAI import SuitBrain
-from src.coginvasion.cog.SuitPursueToonBehavior import SuitPursueToonBehavior
+from src.coginvasion.cog.SuitPursueToonBehaviorAI import SuitPursueToonBehaviorAI
 from src.coginvasion.globals import CIGlobals
 from CogOfficeConstants import POINTS
 from CogOfficePathDataAI import *
@@ -134,7 +134,7 @@ class DistributedCogOfficeSuitAI(DistributedSuitAI):
 
     def spawn(self):
         self.brain = SuitBrain(self)
-        pursue = SuitPursueToonBehavior(self, getPathFinder(self.battle.currentRoom))
+        pursue = SuitPursueToonBehaviorAI(self, getPathFinder(self.battle.currentRoom))
         pursue.setSuitList(self.getManager().guardSuits)
         pursue.battle = self.battle
         self.brain.addBehavior(pursue, priority = 1)

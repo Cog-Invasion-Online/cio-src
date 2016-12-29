@@ -1,9 +1,9 @@
 ########################################
-# Filename: SuitHealBossBehavior.py
+# Filename: SuitHealBossBehaviorAI.py
 # Created by: DecodedLogic (20Sep15)
 ########################################
 
-from src.coginvasion.cog.SuitHabitualBehavior import SuitHabitualBehavior
+from src.coginvasion.cog.SuitHabitualBehaviorAI import SuitHabitualBehaviorAI
 from src.coginvasion.cog import SuitAttacks
 from src.coginvasion.globals import CIGlobals
 
@@ -11,7 +11,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from direct.distributed.ClockDelta import globalClockDelta
 import random
 
-class SuitHealBossBehavior(SuitHabitualBehavior):
+class SuitHealBossBehaviorAI(SuitHabitualBehaviorAI):
 
     HEAL_SPEED = 50.0
     HEAL_DISTANCE = 20.0
@@ -19,7 +19,7 @@ class SuitHealBossBehavior(SuitHabitualBehavior):
 
     def __init__(self, suit, boss):
         doneEvent = 'suit%s-healBoss' % (suit.doId)
-        SuitHabitualBehavior.__init__(self, suit, doneEvent)
+        SuitHabitualBehaviorAI.__init__(self, suit, doneEvent)
         self.boss = boss
         self.maxHeal = int(self.suit.getLevel() * 7)
         self.minHeal = int(self.suit.getLevel() * 2.5)
@@ -55,7 +55,7 @@ class SuitHealBossBehavior(SuitHabitualBehavior):
             self.canHeal = True
 
     def enter(self):
-        SuitHabitualBehavior.enter(self)
+        SuitHabitualBehaviorAI.enter(self)
         self.__toggleCanHeal()
         # Let's choose one of the heal attacks and send it.
         attack = random.randint(0, 6)
@@ -95,7 +95,7 @@ class SuitHealBossBehavior(SuitHabitualBehavior):
         self.suitHealTrack.start()
 
     def exit(self):
-        SuitHabitualBehavior.exit(self)
+        SuitHabitualBehaviorAI.exit(self)
         if self.suitHealTrack:
             self.suitHealTrack.pause()
             self.suitHealTrack = None
@@ -105,7 +105,7 @@ class SuitHealBossBehavior(SuitHabitualBehavior):
         self.cooldownTrack.start()
 
     def shouldStart(self):
-        SuitHabitualBehavior.shouldStart(self)
+        SuitHabitualBehaviorAI.shouldStart(self)
         if hasattr(self, 'suit') and not self.suit.isEmpty() and hasattr(self, 'boss') and not self.boss.isEmpty():
             if self.suit.getDistance(self.boss) <= self.HEAL_DISTANCE:
                 if not hasattr(self.suit, 'DELETED') and not hasattr(self.boss, 'DELETED'):
@@ -113,7 +113,7 @@ class SuitHealBossBehavior(SuitHabitualBehavior):
         return False
 
     def unload(self):
-        SuitHabitualBehavior.unload(self)
+        SuitHabitualBehaviorAI.unload(self)
         if self.suitHealTrack:
             self.suitHealTrack.pause()
             self.suitHealTrack = None

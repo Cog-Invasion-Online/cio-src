@@ -1,18 +1,18 @@
 ########################################
-# Filename: SuitRandomStrollBehavior.py
+# Filename: SuitRandomStrollBehaviorAI.py
 # Created by: DecodedLogic (03Sep15)
 ########################################
 
-from src.coginvasion.cog.SuitPathBehavior import SuitPathBehavior
+from src.coginvasion.cog.SuitPathBehaviorAI import SuitPathBehaviorAI
 
-class SuitRandomStrollBehavior(SuitPathBehavior):
+class SuitRandomStrollBehaviorAI(SuitPathBehaviorAI):
     
     def __init__(self, suit):
-        SuitPathBehavior.__init__(self, suit)
+        SuitPathBehaviorAI.__init__(self, suit)
         self.isEntered = 0
         
     def enter(self):
-        SuitPathBehavior.enter(self)
+        SuitPathBehaviorAI.enter(self)
         self.createPath(fromCurPos = True)
     
     def shouldStart(self):

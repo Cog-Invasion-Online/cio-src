@@ -1,11 +1,11 @@
 ########################################
-# Filename: SuitPathBehavior.py
+# Filename: SuitPathBehaviorAI.py
 # Created by: DecodedLogic (03Sep15)
 ########################################
 
 from pandac.PandaModules import Point3, Point2
 
-from src.coginvasion.cog.SuitBehaviorBase import SuitBehaviorBase
+from src.coginvasion.cog.SuitBehaviorBaseAI import SuitBehaviorBaseAI
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.npc.NPCWalker import NPCWalkInterval
 from direct.interval.IntervalGlobal import Sequence, Func
@@ -15,10 +15,10 @@ from SuitUtils import getMoveIvalFromPath
 
 import random
 
-class SuitPathBehavior(SuitBehaviorBase):
+class SuitPathBehaviorAI(SuitBehaviorBaseAI):
 
     def __init__(self, suit, exitOnWalkFinish = True):
-        SuitBehaviorBase.__init__(self, suit)
+        SuitBehaviorBaseAI.__init__(self, suit)
         self.walkTrack = None
         self.exitOnWalkFinish = exitOnWalkFinish
         self.isEntered = 0
@@ -26,12 +26,12 @@ class SuitPathBehavior(SuitBehaviorBase):
 
     def exit(self):
         self.clearWalkTrack()
-        SuitBehaviorBase.exit(self)
+        SuitBehaviorBaseAI.exit(self)
 
     def unload(self):
         del self.exitOnWalkFinish
         del self.walkTrack
-        SuitBehaviorBase.unload(self)
+        SuitBehaviorBaseAI.unload(self)
 
     def createPath(self, node = None, durationFactor = 0.2, fromCurPos = False, pos = None):
         if node is not None and pos is None:

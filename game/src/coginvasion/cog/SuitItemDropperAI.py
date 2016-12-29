@@ -1,4 +1,4 @@
-# Filename: SuitItemDropper.py
+# Filename: SuitItemDropperAI.py
 # Created by:  DecodedLogic (24Jul15)
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -10,8 +10,8 @@ from src.coginvasion.suit.DistributedDroppableCollectableJellybeanJarAI import D
 import random
 import SuitAttacks
 
-class SuitItemDropper:
-    notify = directNotify.newCategory('SuitItemDropper')
+class SuitItemDropperAI:
+    notify = directNotify.newCategory('SuitItemDropperAI')
     possibleDrops = {DJellybeanAI : {}, DJellybeanJarAI : {}}
     #DBackpackAI : {'chance' : 4, 'maxGags' : 4},
     jarMinSize = 10

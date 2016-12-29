@@ -1,18 +1,18 @@
-# Filename: CogOfficePursueToonBehavior.py
+# Filename: CogOfficePursueToonBehaviorAI.py
 # Created by:  blach (07Mar16)
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.cog.SuitPathBehavior import SuitPathBehavior
-from src.coginvasion.cog.SuitPursueToonBehavior import SuitPursueToonBehavior
+from src.coginvasion.cog.SuitPathBehaviorAI import SuitPathBehaviorAI
+from src.coginvasion.cog.SuitPursueToonBehaviorAI import SuitPursueToonBehaviorAI
 
 import random
 
-class CogOfficePursueToonBehavior(SuitPursueToonBehavior):
-    notify = directNotify.newCategory('CogOfficePursueToonBehavior')
+class CogOfficePursueToonBehaviorAI(SuitPursueToonBehaviorAI):
+    notify = directNotify.newCategory('CogOfficePursueToonBehaviorAI')
 
     def enter(self):
-        SuitPathBehavior.enter(self)
+        SuitPathBehaviorAI.enter(self)
         self.pickTarget()
         # Choose a distance that is good enough to attack this target.
         self.attackSafeDistance = random.uniform(5.0, 19.0)
@@ -35,4 +35,4 @@ class CogOfficePursueToonBehavior(SuitPursueToonBehavior):
         if (self.targetId is not None and self.targetId in self.suit.battle.toonId2suitsTargeting.keys() and
             self.suit.doId in self.suit.battle.toonId2suitsTargeting[self.targetId]):
             self.suit.battle.toonId2suitsTargeting[self.targetId].remove(self.suit.doId)
-        SuitPursueToonBehavior.exit(self)
+        SuitPursueToonBehaviorAI.exit(self)

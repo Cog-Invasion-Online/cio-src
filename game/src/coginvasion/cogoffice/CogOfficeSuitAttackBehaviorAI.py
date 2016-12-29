@@ -1,24 +1,24 @@
-# Filename: CogOfficeSuitAttackBehavior.py
+# Filename: CogOfficeSuitAttackBehaviorAIAI.py
 # Created by:  blach (17Dec15)
 
 from direct.distributed.ClockDelta import globalClockDelta
 
-from src.coginvasion.cog.SuitAttackBehavior import SuitAttackBehavior
+from src.coginvasion.cog.SuitAttackBehaviorAI import SuitAttackBehaviorAI
 from src.coginvasion.cog import SuitAttacks
 
 import random
 
-class CogOfficeSuitAttackBehavior(SuitAttackBehavior):
+class CogOfficeSuitAttackBehaviorAIAI(SuitAttackBehaviorAI):
     
     def __init__(self, suit, target):
-        SuitAttackBehavior.__init__(self, suit)
+        SuitAttackBehaviorAI.__init__(self, suit)
         self.target = target
         self.targetToon = self.suit.air.doId2do.get(target)
         self.maxAttacksPerSession = random.choice([1, 2])
         
     def unload(self):
         del self.targetToon
-        SuitAttackBehavior.unload(self)
+        SuitAttackBehaviorAI.unload(self)
         
     def startAttacking(self, task = None):
         target = self.targetToon

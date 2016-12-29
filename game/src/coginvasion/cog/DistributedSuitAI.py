@@ -9,7 +9,7 @@ from direct.task.Task import Task
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from src.coginvasion.suit import CogBattleGlobals
-from src.coginvasion.cog.SuitItemDropper import SuitItemDropper
+from src.coginvasion.cog.SuitItemDropperAI import SuitItemDropperAI
 
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.GagType import GagType
@@ -17,11 +17,11 @@ from src.coginvasion.gags.GagType import GagType
 from SpawnMode import SpawnMode
 from SuitBrainAI import SuitBrain
 from SuitBank import SuitPlan
-from SuitFlyToRandomSpotBehavior import SuitFlyToRandomSpotBehavior
-from SuitCallInBackupBehavior import SuitCallInBackupBehavior
-from SuitPursueToonBehavior import SuitPursueToonBehavior
-from SuitAttackTurretBehavior import SuitAttackTurretBehavior
-from SuitAttackBehavior import SuitAttackBehavior
+from SuitFlyToRandomSpotBehaviorAI import SuitFlyToRandomSpotBehaviorAI
+from SuitCallInBackupBehaviorAI import SuitCallInBackupBehaviorAI
+from SuitPursueToonBehaviorAI import SuitPursueToonBehaviorAI
+from SuitAttackTurretBehaviorAI import SuitAttackTurretBehaviorAI
+from SuitAttackBehaviorAI import SuitAttackBehaviorAI
 from SuitPathDataAI import *
 import SuitAttacks
 import SuitBank
@@ -45,7 +45,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.suitMgr = None
         self.suitPlan = 0
         self.variant = Variant.NORMAL
-        self.itemDropper = SuitItemDropper(self)
+        self.itemDropper = SuitItemDropperAI(self)
         self.suitState = 0
         self.startPoint = -1
         self.endPoint = -1
@@ -87,7 +87,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
 
             behav = self.brain.currentBehavior
 
-            if behav.__class__.__name__ == "SuitPursueToonBehavior":
+            if behav.__class__.__name__ == "SuitPursueToonBehaviorAI":
 
                 if behav.fsm.getCurrentState().getName() == "pursue":
 
@@ -430,15 +430,15 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             self.brain.addBehavior(behavior, priority)
         self.requestedBehaviors = []
         if self.suitPlan.getName() in [SuitGlobals.VicePresident]:
-            self.brain.addBehavior(SuitCallInBackupBehavior(self), priority = 1)
-            self.brain.addBehavior(SuitFlyToRandomSpotBehavior(self), priority = 2)
-            self.brain.addBehavior(SuitAttackBehavior(self), priority = 3)
+            self.brain.addBehavior(SuitCallInBackupBehaviorAI(self), priority = 1)
+            self.brain.addBehavior(SuitFlyToRandomSpotBehaviorAI(self), priority = 2)
+            self.brain.addBehavior(SuitAttackBehaviorAI(self), priority = 3)
         else:
-            pursue = SuitPursueToonBehavior(self, getPathFinder(self.hood))
+            pursue = SuitPursueToonBehaviorAI(self, getPathFinder(self.hood))
             pursue.setSuitDict(self.getManager().suits)
             pursue.battle = self.getManager().getBattle()
             self.brain.addBehavior(pursue, priority = 1)
-            self.brain.addBehavior(SuitAttackTurretBehavior(self), priority = 2)
+            self.brain.addBehavior(SuitAttackTurretBehaviorAI(self), priority = 2)
         place = CIGlobals.SuitSpawnPoints[self.hood]
         landspot = random.choice(place.keys())
         path = place[landspot]

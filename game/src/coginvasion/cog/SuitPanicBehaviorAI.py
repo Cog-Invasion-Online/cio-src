@@ -1,17 +1,17 @@
 ########################################
-# Filename: SuitPanicBehavior.py
+# Filename: SuitPanicBehaviorAI.py
 # Created by: DecodedLogic (02Sep15)
 ########################################
 
-from src.coginvasion.cog.SuitPathBehavior import SuitPathBehavior
+from src.coginvasion.cog.SuitPathBehaviorAI import SuitPathBehaviorAI
 import random
 
-class SuitPanicBehavior(SuitPathBehavior):
+class SuitPanicBehaviorAI(SuitPathBehaviorAI):
     RUNAWAY_SPEED = 0.1
     RUNAWAY_SAFE_DISTANCE = 50
     
     def __init__(self, suit):
-        SuitPathBehavior.__init__(self, suit, exitOnWalkFinish = False)
+        SuitPathBehaviorAI.__init__(self, suit, exitOnWalkFinish = False)
         self.toonsInRange = []
         self.isPanicked = False
         self.closestToon = None
@@ -23,7 +23,7 @@ class SuitPanicBehavior(SuitPathBehavior):
         self.resetMaxPanicTime()
         
     def enter(self):
-        SuitPathBehavior.enter(self)
+        SuitPathBehaviorAI.enter(self)
         # Let's get out of here!
         self.closestToon = self.getClosestToon()
         if self.suit.getDistance(self.closestToon) <= self.RUNAWAY_SAFE_DISTANCE:
@@ -31,21 +31,21 @@ class SuitPanicBehavior(SuitPathBehavior):
             self.isPanicked = True
         
     def __walkDone(self):
-        SuitPathBehavior.__walkDone(self)
+        SuitPathBehaviorAI.__walkDone(self)
         if self.suit.getDistance(self.closestToon) >= self.RUNAWAY_SAFE_DISTANCE:
             self.exit()
         else:
             self.createPath(durationFactor = self.RUNAWAY_SPEED, fromCurPos = True)
         
     def exit(self):
-        SuitPathBehavior.exit(self)
+        SuitPathBehaviorAI.exit(self)
         self.toonsInRange = []
         self.isPanicked = False
         self.closestToon = None
         self.resetMaxPanicTime()
         
     def unload(self):
-        SuitPathBehavior.unload(self)
+        SuitPathBehaviorAI.unload(self)
         self.toonsInRange = []
         del self.toonsInRange
         del self.isPanicked

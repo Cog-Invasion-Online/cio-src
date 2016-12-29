@@ -1,23 +1,23 @@
-# Filename: CogOfficeSuitWalkBehavior.py
+# Filename: CogOfficeSuitWalkBehaviorAI.py
 # Created by:  blach (17Dec15)
 
 from pandac.PandaModules import Point3
 
-from src.coginvasion.cog.SuitPathBehavior import SuitPathBehavior
+from src.coginvasion.cog.SuitPathBehaviorAI import SuitPathBehaviorAI
 from CogOfficeConstants import *
 
-class CogOfficeSuitWalkBehavior(SuitPathBehavior):
+class CogOfficeSuitWalkBehaviorAI(SuitPathBehaviorAI):
 
     def __init__(self, suit, spot):
-        SuitPathBehavior.__init__(self, suit)
+        SuitPathBehaviorAI.__init__(self, suit)
         self.spot = spot
 
     def unload(self):
         del self.spot
-        SuitPathBehavior.unload(self)
+        SuitPathBehaviorAI.unload(self)
 
     def enter(self):
-        SuitPathBehavior.enter(self)
+        SuitPathBehaviorAI.enter(self)
         self.createPath()
 
     def createPath(self):

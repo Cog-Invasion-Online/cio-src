@@ -1,4 +1,4 @@
-# Filename: SuitPursueToonBehavior.py
+# Filename: SuitPursueToonBehaviorAI.py
 # Created by:  blach (29Dec15)
 
 from pandac.PandaModules import Vec2, Point2
@@ -6,22 +6,22 @@ from pandac.PandaModules import Vec2, Point2
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State
 
-from SuitPathBehavior import SuitPathBehavior
+from SuitPathBehaviorAI import SuitPathBehaviorAI
 import SuitUtils
 import SuitAttacks
 
 import random
 
-class SuitPursueToonBehavior(SuitPathBehavior):
-    notify = directNotify.newCategory('SuitPursueToonBehavior')
+class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
+    notify = directNotify.newCategory('SuitPursueToonBehaviorAI')
 
     RemakePathDistance = 20.0
     DivertDistance = 5.0
     MaxNonSafeDistance = 40.0
 
     def __init__(self, suit, pathFinder):
-        SuitPathBehavior.__init__(self, suit, False)
-        self.fsm = ClassicFSM.ClassicFSM('SuitPursueToonBehavior', [State.State('off', self.enterOff, self.exitOff),
+        SuitPathBehaviorAI.__init__(self, suit, False)
+        self.fsm = ClassicFSM.ClassicFSM('SuitPursueToonBehaviorAI', [State.State('off', self.enterOff, self.exitOff),
          State.State('pursue', self.enterPursue, self.exitPursue),
          State.State('divert', self.enterDivert, self.exitDivert),
          State.State('attack', self.enterAttack, self.exitAttack)], 'off', 'off')
@@ -40,7 +40,7 @@ class SuitPursueToonBehavior(SuitPathBehavior):
         self.suitDict = sDict
 
     def enter(self):
-        SuitPathBehavior.enter(self)
+        SuitPathBehaviorAI.enter(self)
         self.pickTarget()
         # Choose a distance that is good enough to attack this target.
         self.attackSafeDistance = random.uniform(5.0, 19.0)
@@ -80,7 +80,7 @@ class SuitPursueToonBehavior(SuitPathBehavior):
         self.suitList = None
         self.suitDict = None
         self.suit.sendUpdate('setChaseTarget', [0])
-        SuitPathBehavior.exit(self)
+        SuitPathBehaviorAI.exit(self)
 
     def unload(self):
         self.mgr = None
@@ -88,7 +88,7 @@ class SuitPursueToonBehavior(SuitPathBehavior):
         self.target = None
         self.targetId = None
         self.air = None
-        SuitPathBehavior.unload(self)
+        SuitPathBehaviorAI.unload(self)
 
     def enterOff(self):
         pass
@@ -107,7 +107,7 @@ class SuitPursueToonBehavior(SuitPathBehavior):
         if useSafeDistance:
             safeDistance = self.attackSafeDistance
         else:
-            safeDistance = SuitPursueToonBehavior.MaxNonSafeDistance
+            safeDistance = SuitPursueToonBehaviorAI.MaxNonSafeDistance
 
         if self.suit.getDistance(self.target) > safeDistance:
             # Nope, we're too far away! We need to chase them down!
@@ -204,7 +204,7 @@ class SuitPursueToonBehavior(SuitPathBehavior):
                 # We're a good distance to attack this toon. Let's do it.
                 self.fsm.request('attack')
                 return task.done
-            elif (currPos.getXy() - self.lastCheckedPos.getXy()).length() >= SuitPursueToonBehavior.RemakePathDistance:
+            elif (currPos.getXy() - self.lastCheckedPos.getXy()).length() >= SuitPursueToonBehaviorAI.RemakePathDistance:
                 # They're too far from where we're trying to go! Make a new path to where they are!
                 self.lastCheckedPos = self.target.getPos(render)
                 self.createPath(self.target)

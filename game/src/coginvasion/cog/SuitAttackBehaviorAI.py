@@ -1,9 +1,9 @@
 ########################################
-# Filename: SuitAttackBehavior.py
+# Filename: SuitAttackBehaviorAI.py
 # Created by: DecodedLogic (13Sep15)
 ########################################
 
-from SuitHabitualBehavior import SuitHabitualBehavior
+from SuitHabitualBehaviorAI import SuitHabitualBehaviorAI
 from SuitType import SuitType
 import SuitAttacks
 import SuitGlobals
@@ -13,7 +13,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from direct.task.Task import Task
 import random, operator
 
-class SuitAttackBehavior(SuitHabitualBehavior):
+class SuitAttackBehaviorAI(SuitHabitualBehaviorAI):
 
     ATTACK_DISTANCE = 40.0
     ATTACK_COOLDOWN = 10
@@ -21,7 +21,7 @@ class SuitAttackBehavior(SuitHabitualBehavior):
     ABANDON_ATTACK_PERCT = 0.18
 
     def __init__(self, suit):
-        SuitHabitualBehavior.__init__(self, suit, doneEvent = 'suit%s-attackDone' % suit.doId)
+        SuitHabitualBehaviorAI.__init__(self, suit, doneEvent = 'suit%s-attackDone' % suit.doId)
         self.avatarsInRange = []
         self.maxAttacksPerSession = 3
         self.attacksThisSession = 0
@@ -42,13 +42,13 @@ class SuitAttackBehavior(SuitHabitualBehavior):
             self.maxAttacksPerSession = 5
 
     def enter(self):
-        SuitHabitualBehavior.enter(self)
+        SuitHabitualBehaviorAI.enter(self)
         self.origHealth = self.suit.getHealth()
         self.attacksThisSession = 0
         self.startAttacking()
 
     def exit(self):
-        SuitHabitualBehavior.exit(self)
+        SuitHabitualBehaviorAI.exit(self)
         
         taskMgr.remove(self.suit.uniqueName('attackTask'))
         taskMgr.remove(self.suit.uniqueName('finalAttack'))
@@ -62,7 +62,7 @@ class SuitAttackBehavior(SuitHabitualBehavior):
                     self.suitAttackTurretTrack = None
 
     def unload(self):
-        SuitHabitualBehavior.exit(self)
+        SuitHabitualBehaviorAI.exit(self)
         self.avatarsInRange = None
         self.origHealth = None
         del self.isAttacking
@@ -90,9 +90,9 @@ class SuitAttackBehavior(SuitHabitualBehavior):
             return
 
         # Let's check our panic behavior.
-        from src.coginvasion.cog.SuitPanicBehavior import SuitPanicBehavior
+        from src.coginvasion.cog.SuitPanicBehaviorAI import SuitPanicBehaviorAI
         brain = self.suit.getBrain()
-        panicBehavior = brain.getBehavior(SuitPanicBehavior)
+        panicBehavior = brain.getBehavior(SuitPanicBehaviorAI)
         healthPerct = float(self.suit.getHealth()) / float(self.suit.getMaxHealth())
         origHealthPerct = float(self.origHealth) / float(self.suit.getMaxHealth())
 
@@ -101,12 +101,12 @@ class SuitAttackBehavior(SuitHabitualBehavior):
             return
         
         # Let's check if we have a backup behavior if toons get out of control.
-        from src.coginvasion.cog.SuitCallInBackupBehavior import SuitCallInBackupBehavior
-        backupBehavior = brain.getBehavior(SuitCallInBackupBehavior)
+        from src.coginvasion.cog.SuitCallInBackupBehaviorAI import SuitCallInBackupBehaviorAI
+        backupBehavior = brain.getBehavior(SuitCallInBackupBehaviorAI)
         
         if not backupBehavior is None:
             if backupBehavior.shouldStart():
-                brain.queueBehavior(SuitCallInBackupBehavior)
+                brain.queueBehavior(SuitCallInBackupBehaviorAI)
                 self.stopAttacking()
                 return
         

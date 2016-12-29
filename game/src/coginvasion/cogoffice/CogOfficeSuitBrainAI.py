@@ -5,8 +5,8 @@ from direct.showbase.DirectObject import DirectObject
 from direct.fsm import ClassicFSM, State
 
 from CogOfficeConstants import *
-from CogOfficeSuitAttackBehavior import CogOfficeSuitAttackBehavior
-from CogOfficeSuitWalkBehavior import CogOfficeSuitWalkBehavior
+from CogOfficeSuitAttackBehaviorAIAI import CogOfficeSuitAttackBehaviorAIAI
+from CogOfficeSuitWalkBehaviorAI import CogOfficeSuitWalkBehaviorAI
 
 import random
 
@@ -50,7 +50,7 @@ class CogOfficeSuitBrainAI(DirectObject):
         pass
         
     def enterAttack(self):
-        self.behavior = CogOfficeSuitAttackBehavior(self.suit, self.targetToon)
+        self.behavior = CogOfficeSuitAttackBehaviorAIAI(self.suit, self.targetToon)
         self.acceptOnce(self.behavior.doneEvent, self.handleAttackBehaviorDone)
         self.behavior.load()
         self.behavior.enter()
@@ -90,7 +90,7 @@ class CogOfficeSuitBrainAI(DirectObject):
         del self.behavior
         
     def enterWalk(self, spot):
-        self.behavior = CogOfficeSuitWalkBehavior(self.suit, spot)
+        self.behavior = CogOfficeSuitWalkBehaviorAI(self.suit, spot)
         self.acceptOnce(self.behavior.doneEvent, self.handleWalkBehaviorDone)
         self.behavior.load()
         self.behavior.enter()

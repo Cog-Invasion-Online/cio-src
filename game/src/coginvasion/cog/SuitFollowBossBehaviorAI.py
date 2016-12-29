@@ -1,13 +1,13 @@
-# Filename: SuitFollowBossBehavior.py
+# Filename: SuitFollowBossBehaviorAI.py
 # Created by:  DecodedLogic (02Sep15)
 # Updated by:  blach (09Dec15) - Fixed backup cogs having no functionality at all.
 
-from src.coginvasion.cog.SuitPathBehavior import SuitPathBehavior
-from src.coginvasion.cog.SuitHabitualBehavior import SuitHabitualBehavior
+from src.coginvasion.cog.SuitPathBehaviorAI import SuitPathBehaviorAI
+from src.coginvasion.cog.SuitHabitualBehaviorAI import SuitHabitualBehaviorAI
 from src.coginvasion.cog import SuitAttacks
 from src.coginvasion.globals import CIGlobals
-from SuitFlyToRandomSpotBehavior import SuitFlyToRandomSpotBehavior
-from SuitAttackBehavior import SuitAttackBehavior
+from SuitFlyToRandomSpotBehaviorAI import SuitFlyToRandomSpotBehaviorAI
+from SuitAttackBehaviorAI import SuitAttackBehaviorAI
 import SuitPathDataAI
 import SuitUtils
 
@@ -18,15 +18,15 @@ from direct.distributed.ClockDelta import globalClockDelta
 
 import random
 
-class SuitFollowBossBehavior(SuitPathBehavior, SuitHabitualBehavior):
+class SuitFollowBossBehaviorAI(SuitPathBehaviorAI, SuitHabitualBehaviorAI):
 
     LEEWAY_DISTANCE = 4
     MAX_BOSS_HELPERS = 5
     HEAL_SPEED = 50.0
 
     def __init__(self, suit, boss):
-        SuitPathBehavior.__init__(self, suit, exitOnWalkFinish = False)
-        self.fsm = ClassicFSM.ClassicFSM('SuitFollowBossBehavior', [State.State('off', self.enterOff, self.exitOff),
+        SuitPathBehaviorAI.__init__(self, suit, exitOnWalkFinish = False)
+        self.fsm = ClassicFSM.ClassicFSM('SuitFollowBossBehaviorAI', [State.State('off', self.enterOff, self.exitOff),
          State.State('follow', self.enterFollow, self.exitFollow),
          State.State('protect', self.enterProtect, self.exitProtect)], 'off', 'off')
         self.fsm.enterInitialState()
@@ -47,18 +47,18 @@ class SuitFollowBossBehavior(SuitPathBehavior, SuitHabitualBehavior):
         pass
 
     def enter(self):
-        SuitPathBehavior.enter(self)
+        SuitPathBehaviorAI.enter(self)
 
         # Let's start following the boss.
         self.fsm.request('follow')
 
     def exit(self):
-        SuitPathBehavior.exit(self)
+        SuitPathBehaviorAI.exit(self)
         self.fsm.requestFinalState()
         taskMgr.remove(self.followBossTaskName)
 
     def unload(self):
-        SuitPathBehavior.unload(self)
+        SuitPathBehaviorAI.unload(self)
         del self.boss
         del self.followBossTaskName
         del self.bossSpotKey
@@ -86,7 +86,7 @@ class SuitFollowBossBehavior(SuitPathBehavior, SuitHabitualBehavior):
         if self.isHealing():
             # We're already busy healing, don't do anything until we're done.
             return task.cont
-        if self.boss.brain.currentBehavior.__class__ == SuitAttackBehavior:
+        if self.boss.brain.currentBehavior.__class__ == SuitAttackBehaviorAI:
             # Our boss is attacking toons! Should we heal him, or continue protecting?
             choice = random.randint(0, 1)
             if choice == 0:
@@ -211,7 +211,7 @@ class SuitFollowBossBehavior(SuitPathBehavior, SuitHabitualBehavior):
             self.__updatePath()
 
         # We need to stop in front of the boss to protect him. Make sure that he's not flying when we're close enough.
-        if self.suit.getDistance(self.boss) <= self.LEEWAY_DISTANCE and self.boss.brain.currentBehavior.__class__ != SuitFlyToRandomSpotBehavior:
+        if self.suit.getDistance(self.boss) <= self.LEEWAY_DISTANCE and self.boss.brain.currentBehavior.__class__ != SuitFlyToRandomSpotBehaviorAI:
             self.clearWalkTrack(andTurnAround = 1)
             self.suit.b_setAnimState('neutral')
             self.suit.setH(self.suit.getH() - 180)
@@ -240,8 +240,8 @@ class SuitFollowBossBehavior(SuitPathBehavior, SuitHabitualBehavior):
         return suits
 
     def getBackupCalledIn(self):
-        from src.coginvasion.cog.SuitCallInBackupBehavior import SuitCallInBackupBehavior
-        behaviorClass = SuitCallInBackupBehavior
+        from src.coginvasion.cog.SuitCallInBackupBehaviorAI import SuitCallInBackupBehaviorAI
+        behaviorClass = SuitCallInBackupBehaviorAI
         if hasattr(self.boss, 'DELETED') or not self.boss.getBrain():
             return 0
         behavior = self.boss.getBrain().getBehavior(behaviorClass)
@@ -257,7 +257,7 @@ class SuitFollowBossBehavior(SuitPathBehavior, SuitHabitualBehavior):
             for suit in self.suit.getManager().suits.values():
                 if suit.doId != self.suit.doId:
                     if suit.brain:
-                        if suit.brain.currentBehavior.__class__ == SuitFollowBossBehavior:
+                        if suit.brain.currentBehavior.__class__ == SuitFollowBossBehaviorAI:
                             # Alright, there's someone helping...
                             _helper_suits += 1
             if _helper_suits < self.MAX_BOSS_HELPERS:

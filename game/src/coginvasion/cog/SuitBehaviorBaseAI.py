@@ -1,11 +1,11 @@
 ########################################
-# Filename: SuitBehaviorBase.py
+# Filename: SuitBehaviorBaseAI.py
 # Created by: DecodedLogic (02Sep15)
 ########################################
 
 from direct.showbase.DirectObject import DirectObject
 
-class SuitBehaviorBase(DirectObject):
+class SuitBehaviorBaseAI(DirectObject):
     
     def __init__(self, suit, doneEvent = None):
         if doneEvent == None:

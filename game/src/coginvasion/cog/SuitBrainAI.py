@@ -4,8 +4,8 @@
 ########################################
 
 from direct.showbase.DirectObject import DirectObject
-from src.coginvasion.cog.SuitHabitualBehavior import SuitHabitualBehavior
-from src.coginvasion.cog.SuitPathBehavior import SuitPathBehavior
+from src.coginvasion.cog.SuitHabitualBehaviorAI import SuitHabitualBehaviorAI
+from src.coginvasion.cog.SuitPathBehaviorAI import SuitPathBehaviorAI
 from direct.task.Task import Task
 import operator
 
@@ -63,9 +63,9 @@ class SuitBrain(DirectObject):
     def exitCurrentBehavior(self):
         if self.currentBehavior:
             self.currentBehavior.exit()
-            if isinstance(self.currentBehavior, SuitPathBehavior):
+            if isinstance(self.currentBehavior, SuitPathBehaviorAI):
                 self.currentBehavior.clearWalkTrack()
-            if isinstance(self.currentBehavior, SuitHabitualBehavior) and self.currentBehavior.isActive():
+            if isinstance(self.currentBehavior, SuitHabitualBehaviorAI) and self.currentBehavior.isActive():
                 self.ignore(self.currentBehavior.getDoneEvent())
                 if self.isThinking and not taskMgr.hasTaskNamed(self.thinkTaskName):
                     taskMgr.add(self.__think, self.thinkTaskName)
@@ -153,7 +153,7 @@ class SuitBrain(DirectObject):
 
         # Should I continue thinking?
         if task:
-            if isinstance(self.currentBehavior, SuitHabitualBehavior) and self.currentBehavior.isActive():
+            if isinstance(self.currentBehavior, SuitHabitualBehaviorAI) and self.currentBehavior.isActive():
                 # This is a behavior that we can't override, we must wait until it completes.
                 self.acceptOnce(self.currentBehavior.getDoneEvent(), self.startThinking)
                 self.isThinking = False

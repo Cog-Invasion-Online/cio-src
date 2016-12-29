@@ -43,8 +43,8 @@ class SuitPlan:
         if not self.handColor:
             self.handColor = self.dept.getHandColor()
         if not len(self.behaviors) and game.process == 'server':
-            from src.coginvasion.cog.SuitPanicBehavior import SuitPanicBehavior
-            defaultBehaviors = [[SuitPanicBehavior, 4]]
+            from src.coginvasion.cog.SuitPanicBehaviorAI import SuitPanicBehaviorAI
+            defaultBehaviors = [[SuitPanicBehaviorAI, 4]]
             self.behaviors = defaultBehaviors
 
     def getName(self):

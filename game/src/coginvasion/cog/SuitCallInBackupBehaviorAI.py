@@ -1,10 +1,10 @@
 ########################################
-# Filename: SuitCallInBackupBehavior.py
+# Filename: SuitCallInBackupBehaviorAI.py
 # Created by: DecodedLogic (14Sep15)
 ########################################
 
-from src.coginvasion.cog.SuitBehaviorBase import SuitBehaviorBase
-from src.coginvasion.cog.SuitFollowBossBehavior import SuitFollowBossBehavior
+from src.coginvasion.cog.SuitBehaviorBaseAI import SuitBehaviorBaseAI
+from src.coginvasion.cog.SuitFollowBossBehaviorAI import SuitFollowBossBehaviorAI
 from src.coginvasion.cog import Variant
 
 from direct.task.Task import Task
@@ -19,11 +19,11 @@ SPEECH_BY_BACKUP_LVL = {0: ['Gah! I need backup!', 'Get me some backup!', 'Get t
                         2: ["No, no, it's not working... give me everything you got!", "I need everything I can get!",
                             "Get me the highest level of backup you have!", "Just try and get through these reinforcements!"]}
 
-class SuitCallInBackupBehavior(SuitBehaviorBase):
+class SuitCallInBackupBehaviorAI(SuitBehaviorBaseAI):
 
     def __init__(self, suit):
         doneEvent = 'suit%s-callInBackup'
-        SuitBehaviorBase.__init__(self, suit, doneEvent)
+        SuitBehaviorBaseAI.__init__(self, suit, doneEvent)
         self.backup_levels = {1: range(1, 4 + 1),
                         2: range(5, 8 + 1),
                         3: range(9, 12 + 1)}
@@ -36,7 +36,7 @@ class SuitCallInBackupBehavior(SuitBehaviorBase):
         self.isEntered = 0
 
     def enter(self):
-        SuitBehaviorBase.enter(self)
+        SuitBehaviorBaseAI.enter(self)
         if self.backupAvailable and self.backupCooldown is None:
             self.__toggleBackupAvailable()
 
@@ -66,7 +66,7 @@ class SuitCallInBackupBehavior(SuitBehaviorBase):
             self.backupCooldown = None
 
     def unload(self):
-        SuitBehaviorBase.unload(self)
+        SuitBehaviorBaseAI.unload(self)
         self.resetCooldown()
         del self.backupLevel
         del self.backup_levels
@@ -90,7 +90,7 @@ class SuitCallInBackupBehavior(SuitBehaviorBase):
             if mgr.isCogCountFull() or mgr.isFullInvasion():
                 break
             newSuit = mgr.createSuit(levelRange = self.backup_levels[self.backupLevel + 1], anySuit = 1, variant = Variant.SKELETON)
-            newSuit.addBehavior(SuitFollowBossBehavior(newSuit, self.suit), priority = 4)
+            newSuit.addBehavior(SuitFollowBossBehaviorAI(newSuit, self.suit), priority = 4)
         self.calledInBackup += requestSize
         task.delayTime = 4
         return Task.again

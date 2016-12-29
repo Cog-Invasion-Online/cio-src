@@ -1,14 +1,14 @@
 ########################################
-# Filename: SuitHabitualBehavior.py
+# Filename: SuitHabitualBehaviorAI.py
 # Created by: DecodedLogic (03Sep15)
 ########################################
 
-from src.coginvasion.cog.SuitBehaviorBase import SuitBehaviorBase
+from src.coginvasion.cog.SuitBehaviorBaseAI import SuitBehaviorBaseAI
 
-class SuitHabitualBehavior(SuitBehaviorBase):
+class SuitHabitualBehaviorAI(SuitBehaviorBaseAI):
     
     def __init__(self, suit, doneEvent = None):
         if doneEvent == None:
             doneEvent = 'suit%s-behaviorDone' % (suit.doId)
-        SuitBehaviorBase.__init__(self, suit, doneEvent)
+        SuitBehaviorBaseAI.__init__(self, suit, doneEvent)
         self.isEntered = 0

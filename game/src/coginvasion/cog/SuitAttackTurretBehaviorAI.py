@@ -1,22 +1,22 @@
-# Filename: SuitAttackTurretBehavior.py
+# Filename: SuitAttackTurretBehaviorAI.py
 # Created by:  blach (30Dec15)
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
-from SuitHabitualBehavior import SuitHabitualBehavior
+from SuitHabitualBehaviorAI import SuitHabitualBehaviorAI
 from SuitType import SuitType
 import SuitAttacks
 import SuitUtils
 import SuitGlobals
 
-class SuitAttackTurretBehavior(SuitHabitualBehavior):
-    notify = directNotify.newCategory('SuitAttackTurretBehavior')
+class SuitAttackTurretBehaviorAI(SuitHabitualBehaviorAI):
+    notify = directNotify.newCategory('SuitAttackTurretBehaviorAI')
     
     MAX_DISTANCE = 40.0
     
     def __init__(self, suit):
-        SuitHabitualBehavior.__init__(self, suit)
+        SuitHabitualBehaviorAI.__init__(self, suit)
         self.isEntered = 0
         self.targetId = None
         self.target = None
@@ -33,7 +33,7 @@ class SuitAttackTurretBehavior(SuitHabitualBehavior):
         return turrets
         
     def enter(self):
-        SuitHabitualBehavior.enter(self)
+        SuitHabitualBehaviorAI.enter(self)
         self.target = self.getSortedTurretList()[0]
         self.targetId = self.target.doId
         taskMgr.add(self._doAttack, self.suit.uniqueName('doAttackTurret'))
@@ -90,7 +90,7 @@ class SuitAttackTurretBehavior(SuitHabitualBehavior):
             self.suitAttackTurretTrack = None
         self.target = None
         self.targetId = None
-        SuitHabitualBehavior.exit(self)
+        SuitHabitualBehaviorAI.exit(self)
         
     def unload(self):
         self.suitAttackTurretTrack = None
@@ -100,11 +100,11 @@ class SuitAttackTurretBehavior(SuitHabitualBehavior):
         self.mgr = None
         self.battle = None
         self.turretMgr = None
-        SuitHabitualBehavior.unload(self)
+        SuitHabitualBehaviorAI.unload(self)
         
     def shouldStart(self):
         turretList = self.getSortedTurretList()
-        if len(turretList) == 0 or self.suit.getDistance(turretList[0]) > SuitAttackTurretBehavior.MAX_DISTANCE:
+        if len(turretList) == 0 or self.suit.getDistance(turretList[0]) > SuitAttackTurretBehaviorAI.MAX_DISTANCE:
             return False
         else:
             return True
