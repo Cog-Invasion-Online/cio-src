@@ -9,6 +9,7 @@ import DistributedNPCToon
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.quests import Quests, QuestNote, Objectives
 from src.coginvasion.quests.QuestGlobals import NPCDialogue
+from src.coginvasion.minigame.Timer import Timer
 
 import random
 
@@ -20,6 +21,8 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
         self.questFrame = None
         self.questBtns = None
         self.questNotes = None
+        self.cancelBtn = None
+        self.timer = None
 
     def __getHQOfficerQuestAssignChat(self):
         objective = self.currentQuest.currentObjective
@@ -39,32 +42,65 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
 
         return chat
 
+    def __cancelQuestPicker(self, ranOutOfTime = True):
+        self.removePickableQuests()
+        if not ranOutOfTime:
+            self.b_setChat(NPCDialogue.CancelQuestPicker)
+        else:
+            self._stopInteraction()
+            self.sendUpdate('ranOutOfTime')
+
     def makePickableQuests(self, list):
+        self.doCameraNPCInteraction(True)
+
         quests = []
+
         for questId in list:
             quests.append(Quests.Quest(questId, 0, 0, list.index(questId), base.localAvatar.questManager))
-        positions = [(0, 0, 0.6), (0, 0, 0), (0, 0, -0.6)]
+
+        positions = [(0, 0, 0.6), (0, 0, 0.1), (0, 0, -0.4)]
+
         self.questNotes = base.localAvatar.questManager.makeQuestNotes(quests = quests)
-        self.questFrame = DirectFrame(parent = base.a2dLeftCenter, relief = None, pos = (0.5, 0, 0),
+
+        self.questFrame = DirectFrame(relief = None, pos = (-0.8, 0, 0),
             geom = DGG.getDefaultDialogGeom(), geom_color=Vec4(0.8, 0.6, 0.4, 1),
             geom_scale=(1.85, 1, 0.9), geom_hpr=(0, 0, -90))
+
+        self.cancelBtn = DirectButton(text = "Cancel", geom = CIGlobals.getDefaultBtnGeom(), geom_scale = (0.6, 0.75, 0.75), relief = None, parent = self.questFrame,
+                                      pos = (0.2, 0, -0.8), text_scale=0.045, text_pos = (0, -0.015), scale = 1.1, command = self.__cancelQuestPicker, extraArgs = [False])
+
+        self.timer = Timer()
+        self.timer.load()
+        self.timer.setScale(0.3)
+        self.timer.reparentTo(self.questFrame)
+        self.timer.setPos(-0.2, 0, -0.8)
+        self.timer.setInitialTime(20)
+        self.timer.setZeroCommand(self.__cancelQuestPicker)
+        self.timer.startTiming()
+
         self.questBtns = []
+
         for i in xrange(len(self.questNotes)):
+            
             note = self.questNotes[i]
-            note.setPos(0, 0, 0)
+            note.reparentTo(self.questFrame)
+            note.setPos(positions[i])
             if quests[i].currentObjective.HasProgress:
                 note.progressBar.hide()
                 note.progressText.hide()
-            btn = DirectButton(geom = note, parent = self.questFrame,
-                pos = positions[i], command = self.d_pickedQuest, extraArgs = [quests[i]], relief = None)
-            btn.setScale(1.15)
-            note.reparentTo(btn.stateNodePath[0], 20)
-            note.instanceTo(btn.stateNodePath[1], 20)
-            note.instanceTo(btn.stateNodePath[2], 20)
             note.show()
+
+            btn = DirectButton(text = "Choose", geom = CIGlobals.getDefaultBtnGeom(), geom_scale = (0.6, 0.75, 0.75), relief = None,
+                               parent = note, pos = (0.03, 0.42, 0.42), hpr = (0, 0, -3.5), text_scale=0.045, text_pos = (0, -0.015), scale = 1.2,
+                               command = self.d_pickedQuest, extraArgs = [quests[i]])
+
             self.questBtns.append(btn)
 
     def removePickableQuests(self):
+        if self.timer:
+            self.timer.unload()
+            self.timer.cleanup()
+            self.timer = None
         if self.questNotes:
             for note in self.questNotes:
                 note.destroy()
@@ -76,6 +112,9 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
         if self.questFrame:
             self.questFrame.destroy()
             self.questFrame = None
+        if self.cancelBtn:
+            self.cancelBtn.destroy()
+            self.cancelBtn = None
 
     def d_pickedQuest(self, quest):
         self.removePickableQuests()
@@ -86,8 +125,7 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
         self.currentChatIndex = 0
         self.b_setChat(self.__getHQOfficerQuestAssignChat())
 
-        self.cameraTrack = camera.posQuatInterval(1, (5, 9, self.getHeight() - 0.5), (155, -2, 0), other=self, blendType='easeOut')
-        self.cameraTrack.start()
+        self.doCameraNPCInteraction()
 
     def disable(self):
         self.removePickableQuests()

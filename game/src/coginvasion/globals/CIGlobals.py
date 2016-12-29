@@ -104,8 +104,31 @@ def isToon(toon):
     return isinstance(toon, DistributedToon)
 
 def isSuit(suit):
-    from src.coginvasion.suit.DistributedSuit import DistributedSuit
+    from src.coginvasion.cog.DistributedSuit import DistributedSuit
     return isinstance(suit, DistributedSuit)
+
+def isDisneyChar(char):
+    from src.coginvasion.npc.DistributedDisneyChar import DistributedDisneyChar
+    return isinstance(char, DistributedDisneyChar)
+
+
+# A global waiting for others label
+WaitForOthersLbl = None
+
+def showWaitForOthers():
+    global WaitForOthersLbl
+
+    if WaitForOthersLbl:
+        WaitForOthersLbl.show()
+    else:
+        from direct.gui.DirectGui import DirectLabel
+        WaitForOthersLbl = DirectLabel(text="Waiting for others...", relief=None,
+                                text_fg=(1,1,1,1), text_scale=0.08, text_shadow=(0,0,0,1))
+        WaitForOthersLbl.setBin('unsorted', 1)
+
+def hideWaitForOthers():
+    if WaitForOthersLbl:
+        WaitForOthersLbl.hide()
                          
 ThemeSong = None
 holidayTheme = None

@@ -68,15 +68,23 @@ class DistributedNPCToon(DistributedToon):
         base.localAvatar.stopSmartCamera()
         self.sendUpdate('requestEnter', [])
 
-    def doCameraNPCInteraction(self):
+    def doCameraNPCInteraction(self, pickingQuest = False):
+        self.stopCameraTrack()
+
         camera.wrtReparentTo(render)
 
-        self.cameraTrack = camera.posQuatInterval(1, (-5, 9, self.getHeight() - 0.5), (-150, -2, 0), other=self, blendType='easeOut')
-        self.cameraTrack.start()
+        if not pickingQuest:
+            # Left side
+            self.cameraTrack = camera.posQuatInterval(1, (-5, 9, self.getHeight() - 0.5), (-150, -2, 0), other=self, blendType='easeOut')
+            self.cameraTrack.start()
+        else:
+            # Right side
+            self.cameraTrack = camera.posQuatInterval(1, (5, 9, self.getHeight() - 0.5), (155, -2, 0), other=self, blendType='easeOut')
+            self.cameraTrack.start()
 
     def stopCameraTrack(self):
         if self.cameraTrack:
-            self.cameraTrack.finish()
+            self.cameraTrack.pause()
             self.cameraTrack = None
 
     def getNPCLocationSpeech(self, nextObjective = False):
@@ -173,7 +181,6 @@ class DistributedNPCToon(DistributedToon):
         head.setHpr(oldHpr)
         self.lookAtObject(newHpr[0], newHpr[1], newHpr[2])
 
-        self.doCameraNPCInteraction()
         #if len(base.localAvatar.questManager.getQuests()) > 0:
         #    objective = base.localAvatar.questManager.getQuests()[0].getCurrentObjective()
         #    self.currentChatIndex = 0
@@ -186,6 +193,9 @@ class DistributedNPCToon(DistributedToon):
             self.currentQuestObjective = quest.currentObjectiveIndex
             self.currentQuestId = questData[0]
             self.currentChatIndex = 0
+
+            self.doCameraNPCInteraction()
+
             if CIGlobals.NPCToonDict[self.npcId][3] == CIGlobals.NPC_HQ:
                 if not quest.isComplete():
                     self.b_setChat(self.__getNPCObjectiveChat())
@@ -199,19 +209,7 @@ class DistributedNPCToon(DistributedToon):
 
     def __handlePageChatClicked(self):
         if self.nametag.getChatPageIndex() >= self.nametag.getNumChatPages() - 1:
-            self.nametag.setActive(0)
-            self.nametag.setChatButton(NametagGlobals.noButton)
-            self.nametag.updateAll()
-
-            self.autoClearChat = True
-            self.nametag.clearChatText()
-
-            self.ignore(self.uniqueName('chatClicked'))
-
-            self.interacting = False
-
             self.d_requestExit()
-
             return
 
         nextIndex = self.nametag.getChatPageIndex() + 1
@@ -220,7 +218,29 @@ class DistributedNPCToon(DistributedToon):
             self.nametag.setChatButton(NametagGlobals.quitButton)
             self.nametag.updateAll()
 
-        self.nametag.setChatPageIndex(nextIndex)
+        self.b_setChatPageIndex(nextIndex)
+
+    def _stopInteraction(self):
+        self.startLookAround()
+
+        self.nametag.setActive(0)
+        self.nametag.setChatButton(NametagGlobals.noButton)
+        self.nametag.updateAll()
+
+        self.autoClearChat = True
+        self.nametag.clearChatText()
+
+        self.ignore(self.uniqueName('chatClicked'))
+
+        self.interacting = False
+
+    def setChatPageIndex(self, index):
+        if self.nametag.getNumChatPages() > index:
+            self.nametag.setChatPageIndex(index)
+
+    def b_setChatPageIndex(self, index):
+        self.sendUpdate('setChatPageIndex', [index])
+        self.setChatPageIndex(index)
 
     def b_setChat(self, chat):
         if self.interacting:
@@ -228,7 +248,7 @@ class DistributedNPCToon(DistributedToon):
             length = len(chat.split("\x07"))
             btn = NametagGlobals.pageButton
             if length == 1:
-                NametagGlobals.quitButton
+                btn = NametagGlobals.quitButton
             self.nametag.setChatButton(btn)
             self.nametag.updateAll()
 
@@ -240,13 +260,13 @@ class DistributedNPCToon(DistributedToon):
         DistributedToon.b_setChat(self, chat)
 
     def d_requestExit(self):
+        self._stopInteraction()
         self.sendUpdate('requestExit', [])
 
     def rejectEnter(self):
         self.exitAccepted()
 
     def exitAccepted(self):
-        self.startLookAround()
         self.stopCameraTrack()
         self.cr.playGame.getPlace().fsm.request('walk')
         self.acceptCollisions()

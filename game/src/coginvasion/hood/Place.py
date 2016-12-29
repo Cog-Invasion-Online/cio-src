@@ -91,6 +91,7 @@ class Place(StateData):
             if trolley.toZone == prevZone:
                 print "Found the trolley"
                 trolley.localAvOnTrolley = True
+                CIGlobals.showWaitForOthers()
                 trolley.sendUpdate('arrivedInTrolley', [slot])
                     
     def exitTrolleyOut(self):
@@ -124,6 +125,7 @@ class Place(StateData):
         self.ignore('DistributedDoor_localAvatarGoingInDoor')
 
     def handleDoorInDone(self, requestStatus):
+        print "WENT INSIDE DOOR!!!"
         self.doneStatus = requestStatus
         messenger.send(self.doneEvent)
 
@@ -258,14 +260,16 @@ class Place(StateData):
         base.localAvatar.createLaffMeter()
         base.localAvatar.createMoney()
         #base.localAvatar.showBookButton()
-        base.localAvatar.enableGags(0)
+        if base.localAvatar.inBattle:
+            base.localAvatar.enableGags(0)
 
     def exitStop(self):
         base.localAvatar.stopSmartCamera()
         base.localAvatar.detachCamera()
         base.localAvatar.disableLaffMeter()
         base.localAvatar.disableMoney()
-        base.localAvatar.disableGags()
+        if base.localAvatar.inBattle:
+            base.localAvatar.disableGags()
         #base.localAvatar.hideBookButton()
 
     def load(self):

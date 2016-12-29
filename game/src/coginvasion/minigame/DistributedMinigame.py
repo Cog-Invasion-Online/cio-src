@@ -178,12 +178,10 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         del self.descDialog
 
     def enterWaitForOthers(self):
-        self.waitLbl = DirectLabel(text="Waiting for other players...", relief=None,
-                                text_fg=(1,1,1,1), text_scale=0.08, text_shadow=(0,0,0,1))
+        CIGlobals.showWaitForOthers()
 
     def exitWaitForOthers(self):
-        self.waitLbl.destroy()
-        del self.waitLbl
+        CIGlobals.hideWaitForOthers()
 
     def setLoserPrize(self, prize):
         self.loserPrize = prize

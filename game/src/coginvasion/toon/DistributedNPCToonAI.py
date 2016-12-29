@@ -144,8 +144,10 @@ class DistributedNPCToonAI(DistributedToonAI):
                 return False
             return True
 
-    def requestExit(self):
-        avId = self.air.getAvatarIdFromSender()
+    def requestExit(self, avId = None):
+        if not avId:
+            avId = self.air.getAvatarIdFromSender()
+
         if self.currentAvatar != None:
             if avId == self.currentAvatar:
                 self.stopWatchingCurrentAvatar()

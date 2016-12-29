@@ -88,7 +88,7 @@ class DistributedBattleTrolleyAI(DistributedObjectAI):
         avId = self.air.getAvatarIdFromSender()
         self.slotTakenByAvatarId[avId] = slot
         self.numToonsArrived += 1
-        if self.numToonsArrived >= self.numToonsArrived:
+        if self.numToonsArrived >= self.numToonsArriving:
             for avId, slot in self.slotTakenByAvatarId.items():
                 self.sendUpdate('putAvatarInTrolley', [avId, slot])
             # Everyone is in the exiting trolley, let's arrive.

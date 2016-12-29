@@ -109,14 +109,18 @@ class NPCDialogue:
     Goodbyes = ["Have a great day!", "Have fun in Toontown!", "Goodbye!", "See you soon!"]
     QuestAssignGoodbyes = Goodbyes + ["Good luck!", "I believe in you!", "You can do it!"]
 
-    QuestCompletedIntros = ["Say there, %s!", "Hello, %s!", "Hi there, %s.", "Thank you, %s!", "Hey, %s!"]
-    QuestCompletedCongrats = ["Great job, %s!", "Great job completing that Quest!", "Nice job, %s.",
-                                "Nice job completing that Quest.", "Amazing job, %s!", "Good job, %s!"]
+    QuestCompletedIntros = ["Say there, %s!", "Hello, %s!", "Hi there, %s.", "Thank you, %s!", "Hey, %s!", "Howdy, %s!"]
+    QuestCompletedCongrats = ["Great job, %s!", "Great job completing that ToonTask!", "Nice job, %s.",
+                                "Nice job completing that ToonTask.", "Amazing job, %s!", "Good job, %s!"]
 
     FindNPC = ["You can find %s at %s...", "%s is located at %s..."]
     WhichIs = "...which is %s"
 
     Reward = ["Enjoy having %s!", "You have earned %s.", "You now have %s."]
+
+    PickQuestTimeOut = "Need more time to think?"
+    PickQuest = "Choose a ToonTask."
+    CancelQuestPicker = "Come back later if you need a ToonTask, bye!"
 
 def makePastTense(text):
     if text.endswith('e'):

@@ -43,6 +43,7 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.charId = 0
         self.geoEyes = 0
         self.avatarType = CIGlobals.CChar
+        self.headNode = None
         self.isInRange = False
         self.currentPointLetter = "a"
         self.walkIval = None
@@ -199,6 +200,11 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
             if self.speechSound is not None:
                 base.audio3d.attachSoundToObject(self.speechSound, self)
         self.setupNameTag()
+
+        #self.headNode = self.attachNewNode('headNode')
+        #self.headNode.setZ(self.getHeight() - 0.5)
+        #smiley = loader.loadModel('models/smiley.egg.pz')
+        #smiley.reparentTo(self.headNode)
 
         self.ears = []
 
@@ -402,6 +408,10 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.talkEnabled = None
         self.speechSound = None
         self.chatsSinceLastNoise = None
+
+        if self.headNode:
+            self.headNode.removeNode()
+            self.headNode = None
 
         self.eyes = None
         self.lpupil = None

@@ -6,13 +6,17 @@
 
 """
 
+from pandac.PandaModules import PerspectiveLens, LensNode, Texture
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Parallel, Sequence, LerpHprInterval
 from direct.actor import Actor
 
-from pandac.PandaModules import Texture
+
 from src.coginvasion.toon import ToonGlobals
+
 from src.coginvasion.globals import CIGlobals
+
 import random
 
 class ToonHead(Actor.Actor):
@@ -43,6 +47,7 @@ class ToonHead(Actor.Actor):
         self.head = None
         self.headType = None
         self.gender = None
+        self.eyeLensNP = None
         self.__eyelashOpened = None
         self.__eyelashClosed = None
         self.__eyes = None
@@ -302,6 +307,16 @@ class ToonHead(Actor.Actor):
                 pass
 
     def startLookAround(self):
+        if not self.eyeLensNP:
+            lens = PerspectiveLens()
+            lens.setMinFov(180.0 / (4./3.))
+            node = LensNode('toonEyes', lens)
+            node.activateLens(0)
+            #node.showFrustum()
+            self.eyeLensNP = self.attachNewNode(node)
+            self.eyeLensNP.setZ(self.getHeight() - 0.5)
+            self.eyeLensNP.setY(-1)
+
         delay = random.randint(3, 15)
         taskMgr.doMethodLater(delay, self.lookAroundTask, self.lookAroundTaskName)
 
@@ -329,16 +344,18 @@ class ToonHead(Actor.Actor):
 
     def findSomethingToLookAt(self):
         toons = []
-        if hasattr(base, 'localAvatar'):
+        if hasattr(self, 'doId'):
             for key in self.cr.doId2do.keys():
                 val = self.cr.doId2do[key]
-                if not val.doId == base.localAvatar.doId:
-                    if val.__class__.__name__ in ["DistributedToon", "DistributedSuit"]:
-                        if base.camNode.isInView(val.getPos(camera)):
-                            if val.__class__.__name__ == "DistributedToon":
+                if not val.doId == self.doId:
+                    if CIGlobals.isSuit(val) or CIGlobals.isToon(val) or CIGlobals.isDisneyChar(val):
+                        if self.eyeLensNP.node().isInView(val.getPos(self.eyeLensNP)):
+                            if CIGlobals.isToon(val):
                                 toons.append(val.getPart('head'))
-                            elif val.__class__.__name__ == "DistributedSuit":
+                            elif CIGlobals.isSuit(val):
                                 toons.append(val.headModel)
+                            elif CIGlobals.isDisneyChar(val):
+                                toons.append(val.headNode)
 
         decision = random.randint(0, 3)
         if toons == [] or decision == 3:
@@ -347,6 +364,7 @@ class ToonHead(Actor.Actor):
             startH = self.getPart('head').getH()
             startP = self.getPart('head').getP()
             startR = self.getPart('head').getR()
+
             toon = random.randint(0, len(toons) - 1)
             if toons[toon]:
                 self.getPart('head').lookAt(toons[toon], 0, 0, -0.75)
@@ -355,8 +373,9 @@ class ToonHead(Actor.Actor):
             endH = self.getPart('head').getH()
             endP = self.getPart('head').getP()
             endR = self.getPart('head').getR()
+
             self.getPart('head').setHpr(startH, startP, startR)
-            return tuple((endH, endP, endR))
+            return (endH, endP, endR)
 
     def randomLookSpot(self):
         spots = [(0, 0, 0),
@@ -398,6 +417,9 @@ class ToonHead(Actor.Actor):
             del self.lookAroundTaskName
             del self.doLookAroundTaskName
             del self.openEyesTaskName
+            if self.eyeLensNP:
+                self.eyeLensNP.removeNode()
+                self.eyeLensNP = None
             self.gender = None
             self.head = None
             self.headType = None

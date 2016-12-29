@@ -40,7 +40,7 @@ class QuestManager(QuestManagerBase):
         if objective.AreaSpecific:
             # This objective is sometimes area specific.
             if objective.area == Anywhere:
-                taskInfo += "\nAnywhere" if not speech else " Anywhere"
+                taskInfo += "\nAnywhere" if not speech else " anywhere"
             else:
                 # Say what area the objective must be completed in.
                 taskInfo += "\nin " + ZoneUtil.getHoodId(objective.area) if not speech else " in " + ZoneUtil.getHoodId(objective.area)

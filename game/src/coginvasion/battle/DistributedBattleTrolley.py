@@ -187,12 +187,11 @@ class DistributedBattleTrolley(DistributedObject):
             av.stopSmooth()
             av.wrtReparentTo(self.trolleyCar)
             av.setAnimState('off')
+            slotPos = self.STAND_POSITIONS[slot]
+            av.setPos(slotPos)
             if slot <= 3:
-                av.setPos(Point3(-5, -4.5 + slot * 3, 1.4))
                 av.loop('sit')
             else:
-                slotPos = self.STAND_POSITIONS[slot]
-                av.setPos(slotPos)
                 av.loop('neutral')
             av.setHpr(90, 0, 0)
 
@@ -263,6 +262,7 @@ class DistributedBattleTrolley(DistributedObject):
 
     def enterArriving(self, ts = 0):
         if self.localAvOnTrolley == True:
+            CIGlobals.hideWaitForOthers()
             camera.wrtReparentTo(self.trolleyCar)
             camera.setPos(0, -18.55, 3.75)
             camera.setHpr(0, 0, 0)
@@ -310,34 +310,20 @@ class DistributedBattleTrolley(DistributedObject):
         toon.stopSmooth()
         if toon:
             toon.wrtReparentTo(self.trolleyCar)
+            slotPos = self.STAND_POSITIONS[index]
+            toon.headsUp(slotPos)
+            track = Sequence(
+                Func(toon.setAnimState, 'run'),
+                LerpPosInterval(toon, 0.75, slotPos),
+                LerpHprInterval(toon, 0.25, Point3(90, 0, 0)))
             if index <= 3:
-                slotPos = Point3(-5, -4.5 + index * 3, 1.4)
                 sitStartDuration = toon.getDuration('start-sit')
-                toon.headsUp(slotPos)
-                track = Sequence(
-                    Func(toon.setAnimState, 'run'),
-                    LerpPosInterval(toon, 0.75, Point3(-5, -4.5 + index * 3, 1.4)),
-                    LerpHprInterval(toon, 0.25, Point3(90, 0, 0)),
-                    Parallel(
-                        ActorInterval(toon, 'start-sit'),
-                        Sequence(Wait(sitStartDuration * 0.25),
-                            LerpPosInterval(toon, sitStartDuration * 0.25, Point3(-3.9, -4.5 + index * 3, 3.0)))),
-                    Func(toon.loop, 'sit')
-                )
+                track.append(Parallel(ActorInterval(toon, 'start-sit'),
+                                      Sequence(Wait(sitStartDuration * 0.25),
+                                               LerpPosInterval(toon, sitStartDuration * 0.25, Point3(-3.9, -4.5 + index * 3, 3.0)))))
+                track.append(Func(toon.loop, 'sit'))
             else:
-                slotPos = self.STAND_POSITIONS[index]
-                toon.headsUp(slotPos)
-                track = Sequence(
-                 Func(toon.setAnimState, 'run'),
-                 LerpPosInterval(
-                  toon,
-                  duration = 1.0,
-                  pos = slotPos,
-                  startPos = toon.getPos()
-                 ),
-                 Func(toon.setAnimState, 'neutral'),
-                 Func(toon.setHpr, 90, 0, 0)
-            )
+                track.append(Func(toon.loop, 'neutral'))
             track.start()
         if avId == base.localAvatar.doId:
             self.localAvOnTrolley = True

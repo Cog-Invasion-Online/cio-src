@@ -106,6 +106,9 @@ class LocalToon(DistributedToon):
 
         self.jumpHardLandIval = None
 
+        # Modified by DistributedBattleZone.
+        self.inBattle = False
+
         #base.cTrav.showCollisions(render)
 
     def _handleWentInTunnel(self, requestStatus):

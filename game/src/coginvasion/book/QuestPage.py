@@ -16,7 +16,7 @@ from BookPage import BookPage
 class QuestPage(BookPage):
 
     def __init__(self, book):
-        BookPage.__init__(self, book, 'Quests')
+        BookPage.__init__(self, book, 'ToonTasks')
 
         #self.posters = []
         self.notes = []
@@ -43,8 +43,8 @@ class QuestPage(BookPage):
         #    poster.update()
         #    self.posters.append(poster)
 
-        self.infoText = OnscreenText(text = "Return completed Quests to an HQ Officer at any Toon HQ building.",
-            pos = (0, -0.6), scale = 0.045)
+        #self.infoText = OnscreenText(text = "Return completed ToonTasks to an HQ Officer at any Toon HQ building.",
+        #    pos = (0, -0.6), scale = 0.045)
 
     def exit(self):
         for poster in self.notes:
