@@ -255,10 +255,9 @@ class DistributedElevator(DistributedObject):
     def fillSlot(self, index, avId):
         toon = self.cr.doId2do.get(avId)
         if toon:
+
             point = ElevatorPoints[index]
-            toon.stopSmooth()
-            toon.wrtReparentTo(self.getElevatorModel())
-            toon.headsUp(point)
+            
             track = Sequence()
             track.append(Func(toon.animFSM.request, 'run'))
             track.append(LerpPosInterval(toon, duration = 0.5, pos = point,
@@ -266,6 +265,7 @@ class DistributedElevator(DistributedObject):
             track.append(LerpHprInterval(toon, duration = 0.1, hpr = (180, 0, 0),
                          startHpr = toon.getHpr(self.getElevatorModel())))
             track.append(Func(toon.animFSM.request, 'neutral'))
+
             if avId == base.localAvatar.doId:
                 self.localAvOnElevator = True
                 track.append(Func(self.showHopOffButton))
@@ -274,6 +274,11 @@ class DistributedElevator(DistributedObject):
                 base.camera.wrtReparentTo(self.getElevatorModel())
                 cameraBoardTrack = LerpPosHprInterval(camera, 1.5, Point3(0, -16, 5.5), Point3(0, 0, 0))
                 cameraBoardTrack.start()
+
+            toon.stopSmooth()
+            toon.wrtReparentTo(self.getElevatorModel())
+            toon.headsUp(point)
+            
             track.start()
 
     def emptySlot(self, index, avId):
@@ -287,7 +292,8 @@ class DistributedElevator(DistributedObject):
                 Func(toon.animFSM.request, 'run'),
                 LerpPosInterval(toon, duration = 0.5, pos = OutPoint, startPos = InPoint),
                 Func(toon.animFSM.request, 'neutral'),
-                Func(toon.startSmooth))
+                Func(toon.startSmooth),
+                Func(toon.wrtReparentTo, render))
             if avId == base.localAvatar.doId:
                 self.localAvOnElevator = False
                 track.append(Func(self.freedom))

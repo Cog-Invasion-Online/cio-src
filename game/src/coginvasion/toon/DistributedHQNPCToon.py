@@ -73,7 +73,7 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
         self.timer.load()
         self.timer.setScale(0.3)
         self.timer.reparentTo(self.questFrame)
-        self.timer.setPos(-0.2, 0, -0.8)
+        self.timer.setPos(-0.1, 0, -0.8)
         self.timer.setInitialTime(20)
         self.timer.setZeroCommand(self.__cancelQuestPicker)
         self.timer.startTiming()

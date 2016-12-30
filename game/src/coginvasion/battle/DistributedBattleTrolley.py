@@ -306,25 +306,6 @@ class DistributedBattleTrolley(DistributedObject):
         self.__maybeAcceptCollisions()
 
     def fillSlot(self, index, avId):
-        toon = self.cr.doId2do.get(avId)
-        toon.stopSmooth()
-        if toon:
-            toon.wrtReparentTo(self.trolleyCar)
-            slotPos = self.STAND_POSITIONS[index]
-            toon.headsUp(slotPos)
-            track = Sequence(
-                Func(toon.setAnimState, 'run'),
-                LerpPosInterval(toon, 0.75, slotPos),
-                LerpHprInterval(toon, 0.25, Point3(90, 0, 0)))
-            if index <= 3:
-                sitStartDuration = toon.getDuration('start-sit')
-                track.append(Parallel(ActorInterval(toon, 'start-sit'),
-                                      Sequence(Wait(sitStartDuration * 0.25),
-                                               LerpPosInterval(toon, sitStartDuration * 0.25, Point3(-3.9, -4.5 + index * 3, 3.0)))))
-                track.append(Func(toon.loop, 'sit'))
-            else:
-                track.append(Func(toon.loop, 'neutral'))
-            track.start()
         if avId == base.localAvatar.doId:
             self.localAvOnTrolley = True
             base.localAvatar.stopSmartCamera()
@@ -347,6 +328,27 @@ class DistributedBattleTrolley(DistributedObject):
             ), Func(self.enableExitButton))
             camTrack.start()
             self.mySlot = index
+
+        toon = self.cr.doId2do.get(avId)
+        toon.stopSmooth()
+        if toon:
+            toon.wrtReparentTo(self.trolleyCar)
+            slotPos = self.STAND_POSITIONS[index]
+            toon.headsUp(slotPos)
+            track = Sequence(
+                Func(toon.setAnimState, 'run'),
+                LerpPosInterval(toon, 0.75, slotPos),
+                LerpHprInterval(toon, 0.25, Point3(90, 0, 0)))
+            if index <= 3:
+                sitStartDuration = toon.getDuration('start-sit')
+                track.append(Parallel(ActorInterval(toon, 'start-sit'),
+                                      Sequence(Wait(sitStartDuration * 0.25),
+                                               LerpPosInterval(toon, sitStartDuration * 0.25, Point3(-3.9, -4.5 + index * 3, 3.0)))))
+                track.append(Func(toon.loop, 'sit'))
+            else:
+                track.append(Func(toon.loop, 'neutral'))
+            track.start()
+        
 
     def enableExitButton(self):
         if self.fsm.getCurrentState().getName() != 'leaving':

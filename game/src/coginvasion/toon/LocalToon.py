@@ -387,7 +387,7 @@ class LocalToon(DistributedToon):
         self.accept('shift-tab', self.smartCamera.nextCameraPos, [0])
         self.accept('page_up', self.smartCamera.pageUp)
         self.accept('page_down', self.smartCamera.pageDown)
-        self.accept('p', self.printPos)
+        #self.accept('p', self.printPos)
         self.accept('jumpStart', self.__jump)
         self.accept('jumpLand', self.__handleJumpLand)
         self.accept('jumpHardLand', self.__handleJumpHardLand)

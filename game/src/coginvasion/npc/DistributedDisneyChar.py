@@ -201,8 +201,8 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
                 base.audio3d.attachSoundToObject(self.speechSound, self)
         self.setupNameTag()
 
-        #self.headNode = self.attachNewNode('headNode')
-        #self.headNode.setZ(self.getHeight() - 0.5)
+        self.headNode = self.attachNewNode('headNode')
+        self.headNode.setZ(self.getHeight() - 0.5)
         #smiley = loader.loadModel('models/smiley.egg.pz')
         #smiley.reparentTo(self.headNode)
 

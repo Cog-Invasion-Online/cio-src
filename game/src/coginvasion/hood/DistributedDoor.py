@@ -137,6 +137,8 @@ class DistributedDoor(DistributedObject.DistributedObject):
 
     def enterRightDoorClosed(self, ts = 0):
         self.rightDoor.setH(self.getRightDoorClosedH())
+        self.toggleDoorHole('Right')
+        self.rightDoor.hide()
 
     def exitRightDoorClosed(self):
         pass
@@ -153,7 +155,6 @@ class DistributedDoor(DistributedObject.DistributedObject):
             self.rightTrack = None
         self.rightTrack = Sequence(LerpQuatInterval(self.rightDoor, duration = 1.0, quat = (self.getRightDoorClosedH(), 0, 0),
             startHpr = (self.getRightDoorOpenH(), 0, 0), blendType = 'easeIn'),
-            Func(self.toggleDoorHole, 'right'),
             Func(base.playSfx, self.doorShutSound, 0, 1, None, 0.0, self.rightDoor))
         self.rightTrack.start()
 
@@ -163,10 +164,12 @@ class DistributedDoor(DistributedObject.DistributedObject):
             self.rightTrack = None
 
     def enterRightDoorOpening(self, ts = 0):
+        self.toggleDoorHole('Right', show = True)
+        self.rightDoor.show()
         if self.rightTrack:
             self.rightTrack.finish()
             self.rightTrack = None
-        self.rightTrack = Sequence(Wait(0.5), Parallel(Func(self.toggleDoorHole, 'right', True), LerpQuatInterval(self.rightDoor, duration = 0.7, quat = (self.getRightDoorOpenH(), 0, 0),
+        self.rightTrack = Sequence(Wait(0.5), Parallel(LerpQuatInterval(self.rightDoor, duration = 0.7, quat = (self.getRightDoorOpenH(), 0, 0),
             startHpr = (self.getRightDoorClosedH(), 0, 0), blendType = 'easeInOut'), SoundInterval(self.doorOpenSound, node = self.rightDoor)))
         self.rightTrack.start()
 
@@ -177,6 +180,8 @@ class DistributedDoor(DistributedObject.DistributedObject):
 
     def enterLeftDoorClosed(self, ts = 0):
         self.leftDoor.setH(self.getLeftDoorClosedH())
+        self.toggleDoorHole('Left')
+        self.leftDoor.hide()
 
     def exitLeftDoorClosed(self):
         pass
@@ -194,7 +199,6 @@ class DistributedDoor(DistributedObject.DistributedObject):
         self.leftTrack = Sequence(LerpQuatInterval(
             self.leftDoor, duration = 1.0, quat = (self.getLeftDoorClosedH(), 0, 0),
             startHpr = (self.getLeftDoorOpenH(), 0, 0), blendType = 'easeIn'),
-            Func(self.toggleDoorHole, 'left'),
             Func(base.playSfx, self.doorShutSound, 0, 1, None, 0.0, self.leftDoor))
         self.leftTrack.start()
 
@@ -204,10 +208,12 @@ class DistributedDoor(DistributedObject.DistributedObject):
             self.leftTrack = None
 
     def enterLeftDoorOpening(self, ts = 0):
+        self.leftDoor.show()
+        self.toggleDoorHole('Left', show = True)
         if self.leftTrack:
             self.leftTrack.finish()
             self.leftTrack = None
-        self.leftTrack = Sequence(Wait(0.5), Parallel(Func(self.toggleDoorHole, 'left', True), LerpQuatInterval(self.leftDoor, duration = 0.7, quat = (self.getLeftDoorOpenH(), 0, 0),
+        self.leftTrack = Sequence(Wait(0.5), Parallel(LerpQuatInterval(self.leftDoor, duration = 0.7, quat = (self.getLeftDoorOpenH(), 0, 0),
             startHpr = (self.getLeftDoorClosedH(), 0, 0), blendType = 'easeInOut'), SoundInterval(self.doorOpenSound, node = self.leftDoor)))
         self.leftTrack.start()
 
@@ -288,9 +294,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
     def getTriggerName(self):
         if self.getDoorType() == self.INT_STANDARD or self.getDoorType() == self.EXT_STANDARD or self.getDoorType() == self.EXT_GAGSHOP:
             return 'door_trigger_' + str(self.getBlock())
-        elif self.getDoorType() == self.EXT_HQ:
-            return 'door_trigger_' + str(self.doorIndex)
-        elif self.getDoorType() == self.INT_HQ:
+        elif self.getDoorType() == self.INT_HQ or self.getDoorType() == self.EXT_HQ:
             return 'door_trigger_' + str(self.block) + '0' + str(self.doorIndex)
 
     def getEnterTriggerEvent(self):
@@ -348,14 +352,20 @@ class DistributedDoor(DistributedObject.DistributedObject):
             )
         )
         if base.localAvatar.doId == av.doId:
-            parallel.append(Sequence(Wait(0.5), Func(messenger.send, 'DistributedDoor_localAvatarGoingInDoor'), Wait(1.0)))
+            parallel.append(Sequence(Wait(0.5), Func(self.sendGoingIn), Wait(1.0)))
         track.append(parallel)
         if base.localAvatar.doId == av.doId:
-            track.append(Func(messenger.send, 'DistributedDoor_localAvatarWentInDoor'))
+            track.append(Func(self.sendWentInDoor))
         track.setDoneEvent(track.getName())
         track.delayDelete = DelayDelete.DelayDelete(av, track.getName())
         self.acceptOnce(track.getDoneEvent(), self.__avatarTrackDone, [track])
         return track
+
+    def sendGoingIn(self):
+        messenger.send('DistributedDoor_localAvatarGoingInDoor')
+
+    def sendWentInDoor(self):
+        messenger.send('DistributedDoor_localAvatarWentInDoor')
 
     def getAvatarExitTrack(self, av):
         track = Sequence(name = av.uniqueName('avatarExitDoorTrack'))
@@ -427,10 +437,16 @@ class DistributedDoor(DistributedObject.DistributedObject):
     def startBuildingPoll(self):
         base.taskMgr.add(self.__pollBuilding, self.uniqueName('pollBuilding'))
 
+    def fixHQTrigger(self):
+        trig = self.building.find('**/door_' + str(self.doorIndex) + '/**/door_trigger*')
+        if not trig.isEmpty():
+            trig.node().setName(self.getTriggerName())
+
     def generated(self):
         self.doorNode = self.findDoorNodePath()
         self.rightDoor = self.findDoorNode("rightDoor")
         self.leftDoor = self.findDoorNode("leftDoor")
+
         self.enterDoorWalkBackNode = self.doorNode.attachNewNode(self.uniqueName('enterWalkBackNode'))
         self.enterDoorWalkBackNode.setPos(1.6, -5.5, 0.0)
         self.enterDoorWalkInNode = self.doorNode.attachNewNode(self.uniqueName('enterWalkInNode'))
@@ -443,24 +459,34 @@ class DistributedDoor(DistributedObject.DistributedObject):
         self.doorShutSound = base.audio3d.loadSfx('phase_3.5/audio/sfx/Door_Close_1.ogg')
         base.audio3d.attachSoundToObject(self.doorOpenSound, self.doorNode)
         base.audio3d.attachSoundToObject(self.doorShutSound, self.doorNode)
+
+        if self.doorType == self.EXT_HQ:
+            self.fixHQTrigger()
+
         self.acceptOnce(self.getEnterTriggerEvent(), self._handleTrigger)
         self.ready = True
-        self.toggleDoorHole('Left')
-        self.toggleDoorHole('Right')
 
     def toggleDoorHole(self, side, show = False):
         side = side.title()
         if self.building:
-            hole = self.building.find('**/doorFrameHole%s' % side)
-            
+
             if self.getDoorType() == self.EXT_HQ:
                 hole = self.building.find('**/doorFrameHole%s_%d' % (side, self.doorIndex))
+                geom = self.building.find('**/doorFrameHole%sGeom_%d' % (side, self.doorIndex))
+            elif self.getDoorType() == self.INT_HQ:
+                hole = render.find('**/door_' + str(self.doorIndex) + '/**/doorFrameHole%s;+s+i' % side)
+                geom = render.find('**/door_' + str(self.doorIndex) + '/**/doorFrameHole%sGeom;+s+i' % side)
+            else:
+                hole = self.building.find('**/doorFrameHole%s' % side)
+                geom = self.building.find('**/doorFrameHole%sGeom' % side)
             
-            if hole and not hole.isEmpty():
+            if not hole.isEmpty() and not geom.isEmpty():
                 if not show:
                     hole.hide()
+                    geom.hide()
                 else:
                     hole.show()
+                    geom.show()
 
     def printBuildingPos(self):
         self.notify.info(self.building.getPos(render))
