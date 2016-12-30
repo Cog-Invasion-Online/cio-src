@@ -8,7 +8,7 @@ from direct.interval.IntervalGlobal import Parallel, LerpPosInterval, LerpQuatIn
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.quests import Quests
-from src.coginvasion.quests.QuestGlobals import NPCDialogue
+from src.coginvasion.quests.QuestGlobals import NPCDialogue, getPossessive
 from src.coginvasion.quests import Rewards
 from src.coginvasion.nametag import NametagGlobals
 from DistributedToon import DistributedToon
@@ -98,7 +98,10 @@ class DistributedNPCToon(DistributedToon):
 
         name = CIGlobals.NPCToonNames[npcId]
         shopName = CIGlobals.zone2TitleDict[npcZone][0]
-        chat = random.choice(NPCDialogue.FindNPC) % (name, shopName)
+        chat = random.choice(NPCDialogue.FindNPC)
+        if "[p]" in chat:
+            chat.replace("[p]", getPossessive(name))
+        chat = chat % (name, shopName)
         chat += "\x07"
         locationSpeech = NPCDialogue.WhichIs
         if ZoneUtil.isOnCurrentPlayground(npcZone):
@@ -113,8 +116,12 @@ class DistributedNPCToon(DistributedToon):
                 ZoneUtil.getStreetName(npcZone))
         else:
             # NPC is in a completely different playground from where we are.
-            locationSpeech = (locationSpeech % "on %s in %s." %
-                (ZoneUtil.getStreetName(npcZone), ZoneUtil.getHoodId(npcZone, 1)))
+            if ZoneUtil.isStreet(ZoneUtil.getBranchZone(npcZone)):
+                loc = "on %s" % ZoneUtil.getStreetName(npcZone)
+            else:
+                loc = "at the playground"
+            locationSpeech = (locationSpeech % "%s in %s." %
+                (loc, ZoneUtil.getHoodId(npcZone, 1)))
         chat += locationSpeech
         chat += "\x07"
 

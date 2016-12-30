@@ -79,7 +79,7 @@ class ToonTalker:
     def isThought(self, message):
         if message.isspace() or len(message) == 0:
             return False
-        if message[0] == self.THOUGHT_PREFIX:
+        if message[0] == self.THOUGHT_PREFIX and not CIGlobals.isNPCToon(self):
             return True
         else:
             return False

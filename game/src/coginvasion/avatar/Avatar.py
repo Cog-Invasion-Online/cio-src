@@ -55,6 +55,8 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         self._name = None
         self.tag = None
         self.height = 0
+
+        self.thoughtInProg = False
         return
 
     def chatStompComplete(self, text):
@@ -106,10 +108,12 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         self.nametag.setChatType(NametagGlobals.CHAT)
         shouldClear = self.autoClearChat
         if self.isThought(chatString):
+            self.thoughtInProg = True
             chatString = self.removeThoughtPrefix(chatString)
             self.nametag.setChatBalloonType(NametagGlobals.THOUGHT_BALLOON)
             shouldClear = False
         else:
+            self.thoughtInProg = False
             self.nametag.setChatBalloonType(NametagGlobals.CHAT_BALLOON)
         self.nametag.setChatText(chatString, timeout = shouldClear)
 

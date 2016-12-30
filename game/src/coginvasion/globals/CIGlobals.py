@@ -103,6 +103,10 @@ def isToon(toon):
     from src.coginvasion.toon.DistributedToon import DistributedToon
     return isinstance(toon, DistributedToon)
 
+def isNPCToon(toon):
+    from src.coginvasion.toon.DistributedNPCToon import DistributedNPCToon
+    return isinstance(toon, DistributedNPCToon)
+
 def isSuit(suit):
     from src.coginvasion.cog.DistributedSuit import DistributedSuit
     return isinstance(suit, DistributedSuit)

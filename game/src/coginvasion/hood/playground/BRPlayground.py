@@ -21,10 +21,8 @@ class BRPlayground(Playground.Playground):
 	def enter(self, requestStatus):
 		Playground.Playground.enter(self, requestStatus)
 		self.water = BRWater.BRWater(self)
-		self.startWind()
 		
 	def exit(self):
-		self.stopWind()
 		self.water.fsm.requestFinalState()
 		Playground.Playground.exit(self)
 		

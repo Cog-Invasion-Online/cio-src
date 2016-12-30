@@ -113,7 +113,7 @@ class NPCDialogue:
     QuestCompletedCongrats = ["Great job, %s!", "Great job completing that ToonTask!", "Nice job, %s.",
                                 "Nice job completing that ToonTask.", "Amazing job, %s!", "Good job, %s!"]
 
-    FindNPC = ["You can find %s at %s...", "%s is located at %s..."]
+    FindNPC = ["You can find %s at %s...", "%s is located at %s...", "%s[p] building is called %s..."]
     WhichIs = "...which is %s"
 
     Reward = ["Enjoy having %s!", "You have earned %s.", "You now have %s."]
@@ -158,3 +158,11 @@ def getNumName(number):
         return "Four"
     elif number == 5:
         return "Five"
+
+def getPossessive(word):
+    lastLetter = word[len(word) - 1]
+    if lastLetter != 's':
+        word += "'s"
+    else:
+        word += "'"
+    return word
