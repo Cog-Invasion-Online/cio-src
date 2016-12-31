@@ -9,7 +9,10 @@ from direct.fsm.ClassicFSM import ClassicFSM
 from direct.directutil import Mopath
 from direct.interval.IntervalGlobal import MopathInterval, Parallel, LerpQuatInterval, SoundInterval, Sequence, Wait
 
+from panda3d.core import CollisionSphere, CollisionNode 
+
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.holiday.HolidayManager import HolidayType
 
 class DistributedBoat(DistributedObject):
     notify = directNotify.newCategory("DistributedBoat")
@@ -41,6 +44,10 @@ class DistributedBoat(DistributedObject):
         self.boatPath = '*donalds_boat*'
         self.track = None
         self.state = None
+        
+        # Variables that handle the winter collision node.
+        self.crashColl = None
+        self.crashCollNP = None
 
     def __handleOnBoat(self, entry):
         base.localAvatar.b_setParent(CIGlobals.SPDonaldsBoat)
@@ -80,6 +87,19 @@ class DistributedBoat(DistributedObject):
         self.accept('exitdonalds_boat_floor', self.__handleOffBoat)
         self.d_requestCurrentStateAndTimestamp()
         self.fsm.enterInitialState()
+        
+        if base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
+            self.boat.setPosHpr(12.73, -1.6, -4.7, 341.57, 350.0, 26.5)
+            self.fsm.request('off')
+            
+            self.crashColl = CollisionSphere(0, 0, 0, 15)
+            self.crashCollNP = self.boat.attachNewNode(CollisionNode('crashed_boat_collision'))
+            self.crashCollNP.node().addSolid(self.crashColl)
+            self.crashCollNP.node().setCollideMask(CIGlobals.WallBitmask)
+            self.crashCollNP.setSz(2)
+            self.crashCollNP.setSx(0.75)
+            self.crashCollNP.setSy(1.25)
+            self.crashCollNP.setPosHpr(2.05, 3.21, 1.66, 8.44, 6.93, 332.61)
 
     def disable(self):
         base.taskMgr.remove(self.uniqueName('__pollBoat'))
@@ -87,6 +107,12 @@ class DistributedBoat(DistributedObject):
         self.ignore('enterdonalds_boat_floor')
         self.ignore('exitdonalds_boat_floor')
         self.fsm.requestFinalState()
+        
+        if self.crashCollNP:
+            self.crashCollNP.removeNode()
+            del self.crashCollNP
+            del self.crashColl
+        
         del self.fsm
         del self.soundFogHorn
         del self.soundShipBell
@@ -121,7 +147,7 @@ class DistributedBoat(DistributedObject):
         else:
             ts = globalClockDelta.localElapsedTime(timestamp)
         self.state = state
-        if self.boat:
+        if self.boat and base.cr.holidayManager.getHoliday() != HolidayType.CHRISTMAS:
             self.fsm.request(state, [ts])
 
     def enterEastToWest(self, ts = 0):

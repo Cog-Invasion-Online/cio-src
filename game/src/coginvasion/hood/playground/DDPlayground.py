@@ -6,12 +6,19 @@ from direct.interval.SoundInterval import SoundInterval
 import Playground
 
 import random
+from src.coginvasion.holiday.HolidayManager import HolidayType
+from src.coginvasion.globals import CIGlobals
 
 class DDPlayground(Playground.Playground):
     
     def __init__(self, loader, parentFSM, doneEvent):
         Playground.Playground.__init__(self, loader, parentFSM, doneEvent)
         self.birdSfx = None
+        
+        # Let's handle the Christmas effects.
+        if base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
+            water = self.loader.geom.find('**/water')
+            water.setCollideMask(CIGlobals.FloorBitmask)
 
     def enter(self, requestStatus):
         Playground.Playground.enter(self, requestStatus)
