@@ -1,22 +1,32 @@
-#include "ct_music_data.h"
+/**
+ * COG INVASION ONLINE
+ * Copyright (c) CIO Team. All rights reserved.
+ *
+ * @file ctMusicData.cxx
+ * @author Brian Lach
+ * @date 2016-06-28
+ */
 
-#include "tools.cpp"
+#include "ctMusicData.h"
+
+#include "tools.cxx"
 
 bool CTMusicData::initialized = false;
 CTMusicData::MusicDataMap CTMusicData::data;
 PT(AudioManager) CTMusicData::audio_mgr;
 PT(GenericAsyncTask) CTMusicData::am_update_task = NULL;
 
-CTMusicData::CTMusicData()
-{
+CTMusicData::
+CTMusicData() {
 }
 
-CTMusicData::~CTMusicData()
-{
+CTMusicData::
+~CTMusicData() {
 }
 
-void CTMusicData::stop_am_update_task() {
-	AsyncTaskManager* taskmgr = AsyncTaskManager::get_global_ptr();
+void CTMusicData::
+stop_am_update_task() {
+	AsyncTaskManager *taskmgr = AsyncTaskManager::get_global_ptr();
 	if (am_update_task != NULL) {
 		if (taskmgr->has_task(am_update_task)) {
 			taskmgr->remove(am_update_task);
@@ -25,12 +35,14 @@ void CTMusicData::stop_am_update_task() {
 	}
 }
 
-AsyncTask::DoneStatus CTMusicData::audiomgr_update_task(GenericAsyncTask* task, void* data) {
+AsyncTask::DoneStatus CTMusicData::
+audiomgr_update_task(GenericAsyncTask *task, void *data) {
 	CTMusicData::audio_mgr->update();
 	return AsyncTask::DS_cont;
 }
 
-void CTMusicData::initialize_chunk_data() {
+void CTMusicData::
+initialize_chunk_data() {
 
 	// This should only be called once on startup, so make the task chain.
 	PT(AsyncTaskChain) taskchain = AsyncTaskManager::get_global_ptr()->make_task_chain("TournamentMusicThread");

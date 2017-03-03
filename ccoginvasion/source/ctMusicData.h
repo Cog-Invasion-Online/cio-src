@@ -1,3 +1,12 @@
+/**
+ * COG INVASION ONLINE
+ * Copyright (c) CIO Team. All rights reserved.
+ *
+ * @file ctMusicData.h
+ * @author Brian Lach
+ * @date 2016-06-28
+ */
+
 #ifndef CTMUSICDATA_H
 #define CTMUSICDATA_H
 
@@ -8,11 +17,9 @@
 #include <map>
 #include <fstream>
 
-#include "stdafx.h"
-
-#include "asyncTaskManager.h"
-#include "genericAsyncTask.h"
-#include "threadPriority.h"
+#include <asyncTaskManager.h>
+#include <genericAsyncTask.h>
+#include <threadPriority.h>
 
 #include "audioManager.h"
 
@@ -32,7 +39,7 @@ public:
 
 	static PT(GenericAsyncTask) am_update_task;
 
-	static AsyncTask::DoneStatus audiomgr_update_task(GenericAsyncTask* task, void* data);
+	static AsyncTask::DoneStatus audiomgr_update_task(GenericAsyncTask *task, void *data);
 
 PUBLISHED:
 

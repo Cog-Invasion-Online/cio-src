@@ -1,10 +1,19 @@
-#include "ct_music_mgr.h"
+/**
+ * COG INVASION ONLINE
+ * Copyright (c) CIO Team. All rights reserved.
+ *
+ * @file ctMusicMgr.cxx
+ * @author Brian Lach
+ * @date 2016-06-28
+ */
+
+#include "ctMusicMgr.h"
 
 #include <stdlib.h>
 #include <time.h>
 
 #include "eventHandler.h"
-#include "tools.cpp"
+#include "tools.cxx"
 
 #include "config_ccoginvasion.h"
 
@@ -12,24 +21,24 @@ bool CTMusicManager::loaded = false;
 CTMusicManager::MusicChunkMap CTMusicManager::tournament_music_chunks;
 CTMusicManager::MusicClipMap CTMusicManager::tournament_music_clips;
 
-CTMusicManager::~CTMusicManager()
-{
+CTMusicManager::
+~CTMusicManager() {
 }
 
-bool CTMusicManager::is_loaded()
-{
+bool CTMusicManager::
+is_loaded() {
 	return loaded;
 }
 
-void CTMusicManager::spawn_load_tournament_music_task()
-{
+void CTMusicManager::
+spawn_load_tournament_music_task() {
 	PT(GenericAsyncTask) task = new GenericAsyncTask("LTM", &CTMusicManager::load_tournament_music, (void*)NULL);
 	task->set_task_chain("TournamentMusicThread");
 	AsyncTaskManager::get_global_ptr()->add(task);
 }
 
-AsyncTask::DoneStatus CTMusicManager::load_tournament_music(GenericAsyncTask* task, void* data)
-{
+AsyncTask::DoneStatus CTMusicManager::
+load_tournament_music(GenericAsyncTask *task, void *data) {
 	if (loaded) {
 		cout << "Redundant call to CTMusicManager::load_tournament_music()" << endl;
 		return AsyncTask::DS_done;
@@ -44,8 +53,8 @@ AsyncTask::DoneStatus CTMusicManager::load_tournament_music(GenericAsyncTask* ta
 		CTMusicData::initialize_chunk_data();
 	}
 
-	for (CTMusicData::MusicDataMap::iterator rootMapItr = CTMusicData::data.begin(); rootMapItr != CTMusicData::data.end(); ++rootMapItr)
-	{
+	for (CTMusicData::MusicDataMap::iterator rootMapItr = CTMusicData::data.begin();
+       rootMapItr != CTMusicData::data.end(); ++rootMapItr) {
 
 		string song_name = rootMapItr->first;
 
@@ -59,8 +68,8 @@ AsyncTask::DoneStatus CTMusicManager::load_tournament_music(GenericAsyncTask* ta
 
 		cout << song_name << endl;
 
-		for (CTMusicData::ChunkDataMap::iterator chunkMapItr = chunkdata.begin(); chunkMapItr != chunkdata.end(); ++chunkMapItr)
-		{
+		for (CTMusicData::ChunkDataMap::iterator chunkMapItr = chunkdata.begin();
+         chunkMapItr != chunkdata.end(); ++chunkMapItr) {
 
 			string chunk_name = chunkMapItr->first;
 			vector<int> file_range = chunkMapItr->second;
@@ -85,7 +94,7 @@ AsyncTask::DoneStatus CTMusicManager::load_tournament_music(GenericAsyncTask* ta
 
 			}
 
-		    tournament_music_clips[song_name][chunk_name] = AudioClip(tournament_music_chunks[song_name][chunk_name], chunk_name);
+		  tournament_music_clips[song_name][chunk_name] = AudioClip(tournament_music_chunks[song_name][chunk_name], chunk_name);
 		}
 	}
 
@@ -94,56 +103,56 @@ AsyncTask::DoneStatus CTMusicManager::load_tournament_music(GenericAsyncTask* ta
 	return AsyncTask::DS_done;
 }
 
-CTMusicManager::CTMusicManager() : _curr_clip(NULL)
-{
+CTMusicManager::
+CTMusicManager() :
+  _curr_clip(NULL) {
 	_next_clip_request = "NONE";
 	_curr_clip_name = "NONE";
 }
 
-void CTMusicManager::set_song_name(const string& name)
-{
+void CTMusicManager::
+set_song_name(const string &name) {
 	_song_name = name;
 }
 
-string CTMusicManager::get_song_name() const
-{
+string CTMusicManager::
+get_song_name() const {
 	return _song_name;
 }
 
-void CTMusicManager::set_clip_request(const string& clip)
-{
+void CTMusicManager::
+set_clip_request(const string &clip) {
 	_next_clip_request = clip;
 }
 
-string CTMusicManager::get_clip_request() const
-{
+string CTMusicManager::
+get_clip_request() const {
 	return _next_clip_request;
 }
 
-string CTMusicManager::get_clip_name() const
-{
+string CTMusicManager::
+get_clip_name() const {
 	return _curr_clip_name;
 }
 
-string CTMusicManager::get_style_of_clipname(const string& clip_name) const
-{
+string CTMusicManager::
+get_style_of_clipname(const string &clip_name) const {
 	vector<string> split_name = explode("_", clip_name);
 	string style = split_name[split_name.size() - 1];
 	if (style.find("orchestra") != string::npos || style.find("base") != string::npos) {
 		return "_" + style;
-	}
-	else {
+	} else {
 		return "_orchestra";
 	}
 }
 
-string CTMusicManager::get_curr_style() const
-{
+string CTMusicManager::
+get_curr_style() const {
 	return get_style_of_clipname(_curr_clip_name);
 }
 
-void CTMusicManager::start_music(const string& base_or_orc)
-{
+void CTMusicManager::
+start_music(const string &base_or_orc) {
 	if (!loaded) {
 		cout << "CTMusicManager: Cannot start the music before loading!" << endl;
 		return;
@@ -153,25 +162,25 @@ void CTMusicManager::start_music(const string& base_or_orc)
 
 	play_clip("intro" + base_or_orc);
 
-	EventHandler* evhandl = EventHandler::get_global_event_handler();
+	EventHandler *evhandl = EventHandler::get_global_event_handler();
 	evhandl->add_hook(AudioClip::get_part_done_event(), &handle_part_done_event, this);
 	evhandl->add_hook(AudioClip::get_clip_done_event(), &handle_clip_done, this);
 }
 
-void CTMusicManager::play_clip(string& clip_name)
-{
+void CTMusicManager::
+play_clip(string &clip_name) {
 	stop_clip();
 
 	_curr_clip_name = clip_name;
 
-	AudioClip* ac = &tournament_music_clips[_song_name][clip_name];
+	AudioClip *ac = &tournament_music_clips[_song_name][clip_name];
 	ac->active = true;
 	ac->play_all_parts();
 	_curr_clip = ac;
 }
 
-void CTMusicManager::stop_clip()
-{
+void CTMusicManager::
+stop_clip() {
 	if (_curr_clip != NULL) {
 		_curr_clip->active = false;
 		_curr_clip->stop();
@@ -180,13 +189,13 @@ void CTMusicManager::stop_clip()
 	_curr_clip_name = "NONE";
 }
 
-void CTMusicManager::handle_clip_done(const Event* e, void* data)
-{
-	((CTMusicManager*)data)->play_new_clip();
+void CTMusicManager::
+handle_clip_done(const Event *e, void *data) {
+	((CTMusicManager *)data)->play_new_clip();
 }
 
-void CTMusicManager::play_new_clip()
-{
+void CTMusicManager::
+play_new_clip() {
 	if (_curr_clip_name.find("evaded") != string::npos || _curr_clip_name.find("arrested") != string::npos) {
 		// Don't play a new clip if we just played an evade or arrest clip (we're done).
 		return;
@@ -203,21 +212,21 @@ void CTMusicManager::play_new_clip()
 	play_clip(new_clip);
 }
 
-void CTMusicManager::handle_part_done_event(const Event* e, void* data)
-{
-	((CTMusicManager*)data)->handle_part_done(e->get_parameter(0).get_int_value());
+void CTMusicManager::
+handle_part_done_event(const Event *e, void *data) {
+	((CTMusicManager *)data)->handle_part_done(e->get_parameter(0).get_int_value());
 }
 
-void CTMusicManager::handle_part_done(int part_index)
-{
+void CTMusicManager::
+handle_part_done(int part_index) {
 	if (_next_clip_request != "NONE" && _curr_clip_name.find(explode("_", _next_clip_request)[0]) == string::npos) {
 		play_new_clip();
 	}
 	else if (_next_clip_request != "NONE" && _curr_clip_name.find(explode("_", _next_clip_request)[0]) != string::npos &&
-		     get_curr_style() != get_style_of_clipname(_next_clip_request)) {
+		       get_curr_style() != get_style_of_clipname(_next_clip_request)) {
 		// We requested the same clip but in a different style. Play from the same index but in the different style.
 		stop_clip();
-		AudioClip* ac = &tournament_music_clips[_song_name][_next_clip_request];
+		AudioClip *ac = &tournament_music_clips[_song_name][_next_clip_request];
 		ac->active = true;
 		ac->play_from_index(part_index + 1);
 		_curr_clip_name = _next_clip_request;

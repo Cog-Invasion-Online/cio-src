@@ -1,3 +1,12 @@
+/**
+ * COG INVASION ONLINE
+ * Copyright (c) CIO Team. All rights reserved.
+ *
+ * @file tools.cxx
+ * @author Brian Lach
+ * @date 2016-06-28
+ */
+
 #include <vector>
 #include <fstream>
 #include <windows.h>
@@ -35,7 +44,7 @@ static vector<string> explode(const string &delimiter, const string &str)
 	return arr;
 }
 
-static int get_file_length(ifstream& t)
+static int get_file_length(ifstream &t)
 {
 	int length;
 	t.seekg(0, ios::end);
