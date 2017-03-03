@@ -1,6 +1,3 @@
-#ifndef CTMUSICMGR_H
-#define CTMUSICMGR_H
-
 /**
  * COG INVASION ONLINE
  * Copyright (c) CIO Team. All rights reserved.
@@ -9,6 +6,9 @@
  * @author Brian Lach
  * @date 2016-06-28
  */
+
+#ifndef CTMUSICMGR_H
+#define CTMUSICMGR_H
 
 #include <map>
 

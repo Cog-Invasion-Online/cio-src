@@ -7,8 +7,8 @@
  * @date 2016-06-28
  */
 
-
-#pragma once
+#ifndef __CONFIG_CCOGINVASION_H__
+#define __CONFIG_CCOGINVASION_H__
 
 #include <pandabase.h>
 #include <notifyCategoryProxy.h>
@@ -21,4 +21,6 @@ NotifyCategoryDecl(ccoginvasion, EXPORT_CLASS, EXPORT_TEMPL);
 extern ConfigVariableInt ctmusic_numsongs;
 
 extern void initccoginvasion();
+
+#endif // __CONFIG_CCOGINVASION_H__
 
