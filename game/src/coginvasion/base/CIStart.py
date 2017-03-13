@@ -60,6 +60,8 @@ jsonfile = "settings.json"
 print "CIStart: Reading settings file " + jsonfile
 sm = SettingsManager()
 
+import datetime
+
 class game:
     name = 'coginvasion'
     process = 'client'
@@ -67,6 +69,7 @@ class game:
     build = 0
     buildtype = "Dev"
     version = "0.0.0"
+    builddate = "{:%B %d, %Y}".format(datetime.datetime.now())
 
 __builtin__.game = game
 
@@ -90,6 +93,7 @@ try:
     game.build = int(builddata.BUILDNUM)
     game.buildtype = builddata.BUILDTYPE
     game.version = builddata.BUILDVER
+    game.builddate = builddata.BUILDDATE
     
     print "Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype)
 except:
