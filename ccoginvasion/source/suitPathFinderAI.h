@@ -58,7 +58,9 @@ private:
 
 class AStarPath : public ReferenceCount {
 public:
-  AStarPath(AStarPath *p, AStarVertex *v, double h, double tc);
+  AStarPath(AStarPath *p, AStarVertex *v, double tc, double h);
+
+  //bool operator <(const AStarPath &other) const;
 
   AStarPath *parent;
   AStarVertex *vertex;
@@ -83,7 +85,7 @@ private:
   void do_iteration();
 
   vector<PT(AStarPath)> _open_list;
-  set<AStarVertex *> _closed_list;
+  vector<AStarVertex *> _closed_list;
   map<AStarVertex *, PT(AStarPath)> _paths;
 
   AStarVertex *_to_vert;
@@ -102,6 +104,7 @@ PUBLISHED:
   void build_neighbors();
 
 private:
+
   struct PPTLResult {
     bool success;
     LVector2f result;

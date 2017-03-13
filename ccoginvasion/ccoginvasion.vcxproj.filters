@@ -18,60 +18,57 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\audioclip.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ct_music_data.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ct_music_mgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\config_ccoginvasion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\c_nametag.h">
+    <ClInclude Include="source\suitPathFinderAI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\c_nametag3d.h">
+    <ClInclude Include="source\cNametag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cNametag3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ctMusicData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ctMusicMgr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\audioClip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\audioclip.cpp">
+    <ClCompile Include="source\suitPathFinderAI.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\ccoginvasion.cpp">
+    <ClCompile Include="source\audioClip.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\ct_music_data.cpp">
+    <ClCompile Include="source\cNametag.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\ct_music_mgr.cpp">
+    <ClCompile Include="source\cNametag3d.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\dllmain.cpp">
+    <ClCompile Include="source\ctMusicMgr.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\stdafx.cpp">
+    <ClCompile Include="source\ctMusicData.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\tools.cpp">
+    <ClCompile Include="source\config_ccoginvasion.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\config_ccoginvasion.cpp">
+    <ClCompile Include="source\tools.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\c_nametag.cpp">
+    <ClCompile Include="ccoginvasion_igate.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\c_nametag3d.cpp">
+    <ClCompile Include="ccoginvasion_module.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

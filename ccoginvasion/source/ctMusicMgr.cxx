@@ -32,7 +32,7 @@ is_loaded() {
 
 void CTMusicManager::
 spawn_load_tournament_music_task() {
-	PT(GenericAsyncTask) task = new GenericAsyncTask("LTM", &CTMusicManager::load_tournament_music, (void*)NULL);
+	PT(GenericAsyncTask) task = new GenericAsyncTask("LTM", &CTMusicManager::load_tournament_music, NULL);
 	task->set_task_chain("TournamentMusicThread");
 	AsyncTaskManager::get_global_ptr()->add(task);
 }

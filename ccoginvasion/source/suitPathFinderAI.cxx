@@ -66,6 +66,9 @@ set_polygonal_neighbors(AStarVertex *prev, AStarVertex *next) {
 
   // Find the angle and convert it to an unsigned angle.
   float angle = fmod(vectoprev.signed_angle_deg(vectonext), 360);
+  if (angle < 0) {
+    angle += 360;
+  }
 
   _prev_poly_nbr = prev;
   _next_poly_nbr = next;
@@ -73,7 +76,7 @@ set_polygonal_neighbors(AStarVertex *prev, AStarVertex *next) {
   _interior_angle = angle;
 
   float prevangle = LVector2f(1, 0).signed_angle_deg(vectoprev);
-  float extrudeangle = prevangle + _interior_angle / 2.0 + 180;
+  float extrudeangle = prevangle + (_interior_angle / 2.0) + 180;
   extrudeangle *= PI / 180; // Degrees to radians
 
   _do_extrusion = true;
@@ -95,6 +98,13 @@ is_vertex_inside_angle(AStarVertex *other) const {
   // Find the angle and convert it to an unsigned angle.
   float angle = fmod(vectoprev.signed_angle_deg(vectoother), 360);
 
+  // std::fmod doesn't care about negatives
+  // (doing fmod(-50, 360) will still be -50 because it doesn't go below -360)
+  // we'll work around that here:
+  if (angle < 0) {
+    angle += 360.0;
+  }
+
   // 'angle' represents the degrees CCW from the vectoprev, while
   // _interior_angle represents the overall degrees CCW that our corner
   // has (and it may be >180 if this is a concave angle). Therefore, if the
@@ -115,6 +125,13 @@ is_vertex_inside_opposite(AStarVertex *other) const {
 
   // Find the angle, spin it around to test the opposite, and convert to an unsigned angle.
   float angle = fmod(vectoprev.signed_angle_deg(vectoother) - 180, 360);
+
+  // std::fmod doesn't care about negatives
+  // (doing fmod(-50, 360) will still be -50 because it doesn't go below -360)
+  // we'll work around that here:
+  if (angle < 0) {
+    angle += 360.0;
+  }
 
   return angle < _interior_angle;
 }
@@ -163,7 +180,7 @@ get_cost_to(AStarVertex *other) const {
 //////////////////////////////////////////////////////////////////////////////
 
 AStarPath::
-AStarPath(AStarPath *p, AStarVertex *v, double h, double tc) :
+AStarPath(AStarPath *p, AStarVertex *v, double tc, double h) :
   parent(p), vertex(v), heuristic(h), total_cost(tc) {
 }
 
@@ -174,13 +191,21 @@ AStarSearch() :
   _to_vert(NULL) {
 }
 
+static void
+vert_pos(AStarVertex *vert) {
+  cout << "(" << vert->get_pos().get_x() << ", " << vert->get_pos().get_y() << ")" << endl;
+}
+
 AStarSearch::SearchResult AStarSearch::
 search(AStarVertex *fromvert, AStarVertex *tovert) {
   _open_list.clear();
-  _open_list.push_back(new AStarPath(NULL, fromvert, 0, 0));
+  PT(AStarPath) frompath = new AStarPath(NULL, fromvert, 0, 0);
+  _open_list.push_back(frompath);
   _closed_list.clear();
+  _paths.clear();
 
   _to_vert = tovert;
+  // Keep iterating all long as we have open verts and the destination vert is not in the paths.
   while (_open_list.size() > (size_t)0 && _paths.find(tovert) == _paths.end()) {
     do_iteration();
   }
@@ -188,12 +213,8 @@ search(AStarVertex *fromvert, AStarVertex *tovert) {
   SearchResult result;
 
   // Did we find something?
-  AStarPath *path = _paths[tovert];
-  if (path == NULL) {
-    // We failed. And the test will be terminated.
-    result.success = false;
-  } else {
-    // We found a path!
+  if (_paths.find(tovert) != _paths.end()) {
+    AStarPath *path = _paths[tovert];
     result.success = true;
     result.pathverts = get_vertices_to_path(path);
   }
@@ -206,12 +227,12 @@ do_iteration() {
   PT(AStarPath) path = _open_list[0];
   _open_list.erase(_open_list.begin());
   AStarVertex *vertex = path->vertex;
-  _closed_list.insert(vertex);
+  _closed_list.push_back(vertex);
 
   vector<AStarVertex *> neighbors = vertex->get_neighbors();
   for (size_t i = 0; i < neighbors.size(); i++) {
     AStarVertex *neighbor = neighbors[i];
-    if (_closed_list.find(neighbor) != _closed_list.end()) {
+    if (find(_closed_list.begin(), _closed_list.end(), neighbor) != _closed_list.end()) {
       // We've already visited this neighbor; ignore.
       continue;
     }
@@ -235,10 +256,29 @@ do_iteration() {
     }
 
     PT(AStarPath) newpath = new AStarPath(path, neighbor, cost, neighbor->get_heuristic_to(_to_vert));
+
+    for (map<AStarVertex *, PT(AStarPath)>::iterator itr = _paths.begin(); itr != _paths.end(); ++itr) {
+      if (itr->second == newpath) {
+        break;
+      }
+    }
     _paths[neighbor] = newpath;
 
-    vector<PT(AStarPath)>::iterator where = lower_bound(_open_list.begin(), _open_list.end(), newpath);
-    _open_list.insert(where, newpath);
+    _open_list.push_back(newpath);
+
+    sort(_open_list.begin(), _open_list.end(),
+      [](PT(AStarPath) a, PT(AStarPath) b) -> bool {
+        return (a->total_cost + a->heuristic) < (b->total_cost + b->heuristic);
+      }
+    );
+  }
+}
+
+static void
+walk_parents(vector<AStarVertex *> &result, AStarPath *path) {
+  if (path != NULL) {
+    result.insert(result.begin(), path->vertex);
+    walk_parents(result, path->parent);
   }
 }
 
@@ -246,11 +286,14 @@ vector<AStarVertex *> AStarSearch::
 get_vertices_to_path(AStarPath *path) {
   // Traces backwards along all of the path's parents to build up a forward list
   // of vertices to visit along the path.
+
   vector<AStarVertex *> result;
+
   while (path != NULL) {
     result.insert(result.begin(), path->vertex);
     path = path->parent;
   }
+
   return result;
 }
 
@@ -261,6 +304,7 @@ get_vertices_to_path(AStarPath *path) {
 
 SuitPathFinderAI::
 SuitPathFinderAI(PyObject *polys) {
+
   if (polys != (PyObject *)NULL) {
     Py_ssize_t len = PyList_Size(polys);
     for (Py_ssize_t i = 0; i < len; i++) {
@@ -278,7 +322,14 @@ add_polygon(PyObject *points) {
   Py_ssize_t len = PyList_Size(points);
   for (Py_ssize_t i = 0; i < len; i++) {
     PyObject *vert = PyList_GetItem(points, i);
-    PyObject *prevvert = PyList_GetItem(points, i - 1);
+
+    PyObject *prevvert;
+    if (i == 0) {
+      prevvert = PyList_GetItem(points, PyList_Size(points) - 1);
+    } else {
+      prevvert = PyList_GetItem(points, i - 1);
+    }
+
     double x = PyFloat_AsDouble(PyTuple_GetItem(vert, 0));
     double y = PyFloat_AsDouble(PyTuple_GetItem(vert, 1));
 
@@ -302,7 +353,14 @@ add_polygon(PyObject *points) {
   // Now set up the polygonal neighbors on all vertices:
   for (size_t i = 0; i < new_verts.size(); i++) {
     AStarVertex *vert = new_verts[i];
-    AStarVertex *prevvert = new_verts[i - 1];
+
+    AStarVertex *prevvert;
+    if (i == 0) {
+      prevvert = new_verts[new_verts.size() - 1];
+    } else {
+      prevvert = new_verts[i - 1];
+    }
+
     AStarVertex *nextvert = new_verts[(i + 1) % new_verts.size()];
 
     vert->set_polygonal_neighbors(prevvert, nextvert);
@@ -579,7 +637,11 @@ test_line_intersections(vector<float> points, vector<BorderPoints> bords) {
   // Tests if "points" intersects any of the lines in the "bords" list.
   // Each line is a tuple of (x1, y1, x2, y2).
 
-  float x1, y1, x2, y2 = points[0], points[1], points[2], points[3];
+  float x1 = points[0];
+  float y1 = points[1];
+  float x2 = points[2];
+  float y2 = points[3];
+
   MLMResult matres = make_line_mat(x1, y1, x2, y2);
 
   if (!matres.success) {
@@ -621,7 +683,7 @@ test_line_intersections(vector<float> points, vector<BorderPoints> bords) {
     // This is an exclusive range as *grazing* the line (skimming by one
     // of its endpoints) is OK.
     float epsilon = 0.001;
-    if (0.0 + epsilon < b < 1.0 - epsilon) {
+    if (0.0 + epsilon < b && b < 1.0 - epsilon) {
       return true;
     }
   }

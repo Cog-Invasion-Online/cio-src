@@ -11,7 +11,6 @@
 
 #include "dconfig.h"
 
-
 Configure(config_ccoginvasion);
 NotifyCategoryDef(ccoginvasion, "");
 

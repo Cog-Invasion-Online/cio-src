@@ -32,9 +32,9 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -77,9 +77,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
-    <TargetExt>.lib</TargetExt>
+    <IncludePath>D:\OTHER\lachb\Documents\cio\ccoginvasion\source;D:\OTHER\lachb\Documents\cio\Panda3D-CI\python\include;D:\OTHER\lachb\Documents\cio\Panda3D-CI\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\OTHER\lachb\Documents\cio\Panda3D-CI\python\libs;D:\OTHER\lachb\Documents\cio\Panda3D-CI\lib;$(LibraryPath)</LibraryPath>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -129,7 +129,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libp3framework.lib;libpanda.lib;libpandaexpress.lib;libp3dtool.lib;libp3dtoolconfig.lib;libp3direct.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libp3framework.lib;libpanda.lib;libpandaexpress.lib;libp3dtool.lib;libp3dtoolconfig.lib;libp3direct.lib;libp3pystub.lib;libp3interrogatedb.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>echo Interrogating...
@@ -158,26 +158,25 @@ interrogate.bat</Command>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\audioclip.h" />
+    <ClInclude Include="source\audioClip.h" />
     <ClInclude Include="source\config_ccoginvasion.h" />
-    <ClInclude Include="source\ct_music_data.h" />
-    <ClInclude Include="source\ct_music_mgr.h" />
-    <ClInclude Include="source\c_nametag.h" />
-    <ClInclude Include="source\c_nametag3d.h" />
-    <ClInclude Include="source\stdafx.h" />
-    <ClInclude Include="source\targetver.h" />
+    <ClInclude Include="source\ctMusicData.h" />
+    <ClInclude Include="source\ctMusicMgr.h" />
+    <ClInclude Include="source\cNametag.h" />
+    <ClInclude Include="source\cNametag3d.h" />
+    <ClInclude Include="source\suitPathFinderAI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\audioclip.cpp" />
-    <ClCompile Include="source\ccoginvasion.cpp" />
-    <ClCompile Include="source\config_ccoginvasion.cpp" />
-    <ClCompile Include="source\ct_music_data.cpp" />
-    <ClCompile Include="source\ct_music_mgr.cpp" />
-    <ClCompile Include="source\c_nametag.cpp" />
-    <ClCompile Include="source\c_nametag3d.cpp" />
-    <ClCompile Include="source\dllmain.cpp" />
-    <ClCompile Include="source\stdafx.cpp" />
-    <ClCompile Include="source\tools.cpp" />
+    <ClCompile Include="ccoginvasion_igate.cxx" />
+    <ClCompile Include="ccoginvasion_module.cxx" />
+    <ClCompile Include="source\audioClip.cxx" />
+    <ClCompile Include="source\config_ccoginvasion.cxx" />
+    <ClCompile Include="source\ctMusicData.cxx" />
+    <ClCompile Include="source\ctMusicMgr.cxx" />
+    <ClCompile Include="source\cNametag.cxx" />
+    <ClCompile Include="source\cNametag3d.cxx" />
+    <ClCompile Include="source\suitPathFinderAI.cxx" />
+    <ClCompile Include="source\tools.cxx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
