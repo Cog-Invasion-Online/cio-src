@@ -3,7 +3,7 @@
 
 from CogOfficeConstants import *
 
-from src.coginvasion.cog.SuitPathFinderAI import SuitPathFinderAI
+from ccoginvasion import SuitPathFinderAI
 
 PathPolygons = {
     EXECUTIVE_FLOOR: [
