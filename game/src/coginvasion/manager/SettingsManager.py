@@ -8,41 +8,118 @@
 from pandac.PandaModules import AntialiasAttrib, TextureStage
 from pandac.PandaModules import loadPrcFileData, WindowProperties
 from direct.directnotify.DirectNotify import DirectNotify
+
 import json
 
 notify = DirectNotify().newCategory("SettingsManager")
 
 class SettingsManager:
 
-    def applySettings(self, jsonfile):
-        if not jsonfile:
-            raise IOError("no file specified!")
+    def __init__(self):
+        self.jsonData = None
+        self.jsonFile = None
+        self.jsonFilename = None
 
-        #print "Reading and applying settings from %s..." % (jsonfile)
+    def loadFile(self, jsonfile):
+        self.jsonFilename = jsonfile
+        self.jsonFile = open(self.jsonFilename)
+        self.jsonData = json.load(self.jsonFile)
 
-        info = open(jsonfile)
-        jsonInfo = json.load(info)
+    def applySettings(self):
+        settings = self.jsonData["settings"]
 
-        settings = jsonInfo["settings"]
-        width, height = settings["resolution"]
-        fs = settings["fullscreen"]
-        music = settings["music"]
-        sfx = settings["sfx"]
-        tex_detail = settings["texture-detail"]
-        model_detail = settings["model-detail"]
-        aa = settings["aa"]
+        # Game screen resolution
+        res = settings.get("resolution", None)
+        if res == None:
+            res = self.updateAndWriteSetting("resolution", (640, 480))
+
+        # Fullscreen toggle
+        fs = settings.get("fullscreen", None)
+        if fs == None:
+            fs = self.updateAndWriteSetting("fs", False)
+
+        # music toggle
+        music = settings.get("music", None)
+        if music == None:
+            music = self.updateAndWriteSetting("music", True)
+
+        # music volume
+        musvol = settings.get("musvol", None)
+        if musvol == None:
+            musvol = self.updateAndWriteSetting("musvol", 0.65)
+
+        # sfx toggle
+        sfx = settings.get("sfx", None)
+        if sfx == None:
+            sfx = self.updateAndWriteSetting("sfx", True)
+
+        # sfx volume
+        sfxvol = settings.get("sfxvol", None)
+        if sfxvol == None:
+            sfxvol = self.updateAndWriteSetting("sfxvol", 1.0)
+
+        # texture quality
+        tex_detail = settings.get("texture-detail", None)
+        if tex_detail == None:
+            tex_detail = self.updateAndWriteSetting("texture-detail", "high")
+
+        # model quality
+        model_detail = settings.get('model-detail', None)
+        if model_detail == None:
+            model_detail = self.updateAndWriteSetting('model-detail', "high")
+
+        # Antialiasing
+        aa = settings.get("aa", None)
+        if aa == None:
+            aa = self.updateAndWriteSetting("aa", 0)
+
+        # Anisotropic filtering/degree
         af = settings.get("af", None)
         if af == None:
-            self.writeSettingToFile("af", "off", "settings.json")
+            af = self.updateAndWriteSetting("af", 0)
+
+        # Chat sounds
+        chs = settings.get("chs", None)
+        if chs == None:
+            chs = self.updateAndWriteSetting("chs", True)
+
+        # General gameplay FOV
+        genfov = settings.get("genfov", None)
+        if genfov == None:
+            genfov = self.updateAndWriteSetting("genfov", 52.0)
+
+        # First person minigame FOV
+        fpmgfov = settings.get("fpmgfov", None)
+        if fpmgfov == None:
+            fpmgfov = self.updateAndWriteSetting("fpmgfov", 70.0)
+
+        # First person minigame mouse sensitivity
+        fpmgms = settings.get("fpmgms", None)
+        if fpmgms == None:
+            fpmgms = self.updateAndWriteSetting("fpmgms", 0.1)
+
+        # Gag key
+        gagkey = settings.get("gagkey", None)
+        if gagkey == None:
+            gagkey = self.updateAndWriteSetting("gagkey", "alt")
+
+        # Maintain aspect ratio
+        maspr = settings.get("maspr", None)
+        if maspr == None:
+            maspr = self.updateAndWriteSetting("maspr", True)
 
         base.enableMusic(music)
         base.enableSoundEffects(sfx)
 
-        if aa == "on":
+        base.musicManager.setVolume(musvol)
+        base.sfxManagerList[0].setVolume(sfxvol)
+
+        if aa != 0:
             render.set_antialias(AntialiasAttrib.MMultisample)
             aspect2d.set_antialias(AntialiasAttrib.MMultisample)
         else:
             render.clear_antialias()
+            aspect2d.clear_antialias()
 
         ts = TextureStage('ts')
 
@@ -51,49 +128,36 @@ class SettingsManager:
         elif tex_detail == "low":
             loadPrcFileData("", "compressed-textures 1")
 
+        from src.coginvasion.globals import CIGlobals
+
+        CIGlobals.DefaultCameraFov = genfov
+        CIGlobals.GunGameFov = fpmgfov
+
         wp = WindowProperties()
-        wp.setSize(width, height)
+        wp.setSize(res[0], res[1])
         wp.setFullscreen(fs)
         base.win.requestProperties(wp)
 
-        info.close()
-
     def maybeFixAA(self):
-        if self.getSettings('settings.json')[7] != "on":
+        if self.getSetting("aa") == 0:
             print "Fixing anti-aliasing..."
             loadPrcFileData('', 'framebuffer-multisample 0')
             loadPrcFileData('', 'multisamples 0')
-
-    def getSettings(self, jsonfile):
-        if jsonfile:
-            info = open(jsonfile)
-            jsonInfo = json.load(info)
-
-            settings = jsonInfo["settings"]
-            width, height = settings["resolution"]
-            fs = settings["fullscreen"]
-            music = settings["music"]
-            sfx = settings["sfx"]
-            tex_detail = settings["texture-detail"]
-            model_detail = settings["model-detail"]
-            aa = settings["aa"]
-            af = settings["af"]
-
-            return tuple((width, height, fs, music, sfx, tex_detail, model_detail, aa, af))
         else:
-            raise StandardError("no file specified!")
+            loadPrcFileData('', 'framebuffer-multisample 1')
+            loadPrcFileData('', 'multisamples ' + str(self.getSetting("aa")))
 
-    def writeSettingToFile(self, setting, value, jsonfile, apply=0):
-        info = open(jsonfile)
+    def getSetting(self, setting):
+        return self.jsonData["settings"][setting]
 
-        jsonInfo = json.load(info)
-        if setting =="fullscreen":
-            jsonInfo["settings"][setting] = value[0]
-        else:
-            jsonInfo["settings"][setting] = value
+    def getSettings(self):
+        return self.jsonData["settings"]
 
-        jsonFile = open(jsonfile, "w+")
-        jsonFile.write(json.dumps(jsonInfo))
+    def updateAndWriteSetting(self, setting, value, apply=0):
+        self.jsonData["settings"][setting] = value
+
+        jsonFile = open(self.jsonFilename, "w+")
+        jsonFile.write(json.dumps(self.jsonData, indent = 4))
         jsonFile.close()
 
         if apply:
@@ -107,5 +171,4 @@ class SettingsManager:
                 wp.setFullscreen(value[0])
                 base.win.requestProperties(wp)
 
-
-        info.close()
+        return value

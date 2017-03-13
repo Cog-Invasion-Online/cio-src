@@ -12,6 +12,10 @@ from pandac.PandaModules import Multifile, Filename, VirtualFileSystem, PandaSys
 from pandac.PandaModules import Thread, loadPrcFile, loadPrcFileData, CollisionTraverser, CullBinManager
 from pandac.PandaModules import ConfigVariableDouble, PStatClient
 
+import Logger
+logger = Logger.Starter()
+logger.startNotifyLogging()
+
 globals()['__debug__'] = True
 
 import __builtin__
@@ -50,15 +54,13 @@ for phase in phases:
         vfs.mount(packMf, '.', 0)
         print 'Mounted %s from resource pack.' % phase
 
-import Logger
-Logger.Starter()
-
 print "__debug__ == " + str(__debug__)
 
 from src.coginvasion.manager.SettingsManager import SettingsManager
 jsonfile = "settings.json"
 print "CIStart: Reading settings file " + jsonfile
 sm = SettingsManager()
+sm.loadFile(jsonfile)
 
 import datetime
 
@@ -100,11 +102,19 @@ except:
     loadPrcFile('config/Confauto.prc')
     loadPrcFile('config/config_client.prc')
     print "Running dev"
+
 sm.maybeFixAA()
 
-from direct.showbase.ShowBase import ShowBase
-base = ShowBase()
+import CIBase
+base = CIBase.CIBase()
+
 base.cTrav = CollisionTraverser()
+
+import AnisotropicFiltering
+AnisotropicFiltering.startApplying()
+
+from src.coginvasion.globals import CIGlobals
+CIGlobals.SettingsMgr = sm
 
 display = base.config.GetString('load-display')
 audio = base.config.GetString('audio-library-name').replace('p3', '').replace('_audio', '')
@@ -151,7 +161,7 @@ base.transitions.FadeModelName = "phase_3/models/misc/fade.bam"
 base.accept('f9', ScreenshotHandler.__takeScreenshot)
 
 print "CIStart: Setting display preferences..."
-sm.applySettings(jsonfile)
+sm.applySettings()
 if base.win == None:
     print "CIStart: Unable to open window; aborting."
     sys.exit()
@@ -226,7 +236,7 @@ base.mouseWatcherNode.setButtonUpPattern('button-up-%r')
 def maybeDoSomethingWithMusic(condition):
     # 0 = paused
     # 1 = restarted
-    _, _, _, music, _, _, _, _, _ = sm.getSettings(jsonfile)
+    music = sm.getSetting("music")
     if music:
         base.enableMusic(condition)
 

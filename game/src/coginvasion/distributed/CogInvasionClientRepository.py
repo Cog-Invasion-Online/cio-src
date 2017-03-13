@@ -681,6 +681,13 @@ class CogInvasionClientRepository(AstronClientRepository):
             #	self.hashFiles(pyc)
             #self.timeManager.d_setSignature(self.userSignature, h.asBin(), pyc.asBin())
             #self.timeManager.sendCpuInfo()
+
+            # Turn off somewhat spammy time manager info
+            self.timeManager.notify.setInfo(False)
+
+            from direct.distributed.ClockDelta import globalClockDelta
+            globalClockDelta.notify.setInfo(False)
+
             if self.timeManager.synchronize('startup'):
                 self.accept('gotTimeSync', self.gotTimeSync, [status])
             else:
@@ -833,6 +840,10 @@ class CogInvasionClientRepository(AstronClientRepository):
         gsg = base.win.getGsg()
         if gsg:
             render2d.prepareScene(gsg)
+        base.graphicsEngine.renderFrame()
+
+    def renderFrames(self):
+        base.graphicsEngine.renderFrame()
         base.graphicsEngine.renderFrame()
 
     def handleDatagram(self, di):

@@ -254,63 +254,20 @@ class CharSelection(DirectObject):
                                     extraArgs = ['quit'], text_scale = 0.06, geom = CIGlobals.getDefaultBtnGeom(),
                                     relief = None, text_pos = (0, -0.01))
 
-        textRolloverColor = Vec4(1, 1, 0, 1)
-        textDownColor = Vec4(0.5, 0.9, 1, 1)
-        textDisabledColor = Vec4(0.4, 0.8, 0.4, 1)
-
         for slot in range(6):
             if self.avChooser.hasToonInSlot(slot):
                 choice = self.avChooser.getAvChoiceBySlot(slot)
                 text = choice.name
             else:
                 text = self.NO_TOON
-            btn = DirectButton(
-                relief=None, text = text, text_scale=0.06,
-                text_align=TextNode.ALeft, text1_bg=textDownColor, text2_bg=textRolloverColor,
-                text3_fg=textDisabledColor, textMayChange=0, command=self.__handleCharButton,
-                extraArgs=[slot], text_pos = (0, 0, 0.0)
-            )
+            btn = CIGlobals.makeDefaultScrolledListBtn(text = text, text_scale = 0.06, command = self.__handleCharButton, extraArgs = [slot])
             btn.setPythonTag('slot', slot)
             self.charButtons.append(btn)
             btn['state'] = DGG.NORMAL
 
-        gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui.bam')
-        listXorigin = -0.02
-        listFrameSizeX = 0.625
-        listZorigin = -0.43
-        listFrameSizeZ = 0.51
-        arrowButtonScale = 0.0
-        itemFrameXorigin = -0.237
-        itemFrameZorigin = 0.365
-        buttonXstart = itemFrameXorigin + 0.293
-
-        self.charList = DirectScrolledList(
-            relief=None,
-            pos=(0.75, 0, -0.225),
-            incButton_image=None,
-            #incButton_relief=None,
-            incButton_scale=(arrowButtonScale, arrowButtonScale, -arrowButtonScale),
-            #incButton_pos=(buttonXstart, 0, itemFrameZorigin - 0.999),
-            #incButton_image3_color=Vec4(1, 1, 1, 0.2),
-            decButton_image=None,
-            #decButton_relief=None,
-            decButton_scale=(arrowButtonScale, arrowButtonScale, arrowButtonScale),
-            #decButton_pos=(buttonXstart, 0, itemFrameZorigin + 0.125),
-            #decButton_image3_color=Vec4(1, 1, 1, 0.2),
-            itemFrame_pos=(itemFrameXorigin, 0, itemFrameZorigin),
-            itemFrame_scale=1.0,
-            itemFrame_relief=DGG.SUNKEN,
-            itemFrame_frameSize=(listXorigin,
-                listXorigin + listFrameSizeX,
-                listZorigin,
-                listZorigin + listFrameSizeZ),
-            itemFrame_frameColor=(0.85, 0.95, 1, 1),
-            itemFrame_borderWidth=(0.01, 0.01),
-            numItemsVisible=15,
-            forceHeight=0.075,
-            items=self.charButtons,
-            parent = self.frame
-        )
+        self.charList = CIGlobals.makeDefaultScrolledList(pos = (0.75, 0, -0.225), listZorigin = -0.43,
+                                                          listFrameSizeZ = 0.51, arrowButtonScale = 0.0, items = self.charButtons,
+                                                          parent = self.frame)
 
         base.camera.setPos(75.12, 63.22, -23)
         base.camera.setHpr(26.57, 9.62, 0)

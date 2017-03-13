@@ -175,6 +175,10 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.stop()
 
     def chatStompComplete(self, chatString):
+        if CIGlobals.getSettingsMgr().getSetting("chs") is False:
+            # No chat sounds!
+            return
+
         if self.chatsSinceLastNoise >= self.chatsWithoutNoise or self.chatsSinceLastNoise == 0:
             base.playSfx(self.speechSound, node = self)
             self.chatsSinceLastNoise = 0

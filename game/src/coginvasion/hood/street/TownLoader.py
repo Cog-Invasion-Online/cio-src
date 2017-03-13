@@ -14,6 +14,7 @@ from src.coginvasion.hood import LinkTunnel
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.hood import ToonInterior
 from src.coginvasion.cogoffice import CogOfficeInterior
+from src.coginvasion.globals import CIGlobals
 
 class TownLoader(StateData):
     notify = directNotify.newCategory("TownLoader")

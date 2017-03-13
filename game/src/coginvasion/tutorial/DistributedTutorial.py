@@ -20,7 +20,7 @@ from src.coginvasion.nametag import NametagGlobals
 class DistributedTutorial(DistributedObject):
     notify = directNotify.newCategory('DistributedTutorial')
 
-    GUIDE_NAME = 'Professor Prepostera'
+    GUIDE_NPCID = 2020
     GUIDE_START_POS = (5, 10, -0.5)
     GUIDE_WATCH_POS = (12.4, 27.92, 0)
     GUIDE_WATCH_HPR = (41.63, 0, 0)
@@ -397,8 +397,8 @@ class DistributedTutorial(DistributedObject):
         base.transitions.fadeScreen(0.0)
         self.guide = Toon(base.cr)
         self.guide.autoClearChat = False
-        self.guide.parseDNAStrand(NPCGlobals.NPC_DNA[self.GUIDE_NAME])
-        self.guide.setName(self.GUIDE_NAME)
+        self.guide.parseDNAStrand(CIGlobals.NPCToonDict[self.GUIDE_NPCID][2])
+        self.guide.setName(CIGlobals.NPCToonDict[self.GUIDE_NPCID][1])
         self.guide.generateToon()
         self.guide.nametag.setNametagColor(NametagGlobals.NametagColors[NametagGlobals.CCNPC])
         self.guide.nametag.setActive(0)

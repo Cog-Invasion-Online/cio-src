@@ -920,24 +920,32 @@ class MakeAToon:
         self.updateColorShopButtonsDir(0)
 
     def nextShirt(self):
-        newShirt, newSleeve = self.toonGen.getNextShirtAndSleeve()
-        newColor = self.toonGen.getNextColor('shirt')
-        self.toonGen.toon.shirtColor = self.toonGen.toon.colorDNA2color[newColor]
-        self.toonGen.toon.sleeveColor = self.toonGen.toon.colorDNA2color[newColor]
-        if newShirt != None and newSleeve != None:
-            self.toonGen.toon.shirt = self.toonGen.toon.shirtDNA2shirt[newShirt]
-            self.toonGen.toon.sleeve = self.toonGen.toon.sleeveDNA2sleeve[newSleeve]
+        newShirt = self.toonGen.getNextShirt()
+        newColor = self.toonGen.getNextClothColor('tops')
+        self.toonGen.toon.shirtColor = self.toonGen.toon.clothesColorDNA2clothesColor[newColor]
+        self.toonGen.toon.sleeveColor = self.toonGen.toon.shirtColor
+        if newShirt != None:
+            if self.toonGen.toon.gender == 'girl':
+                tops = self.toonGen.toon.femaleTopDNA2femaleTop
+            else:
+                tops = self.toonGen.toon.maleTopDNA2maleTop
+            self.toonGen.toon.shirt = tops[newShirt][0]
+            self.toonGen.toon.sleeve = self.toonGen.toon.Sleeves[tops[newShirt][1]]
         self.toonGen.toon.setClothes()
         self.updateClothShopButtonsDir(1)
 
     def prevShirt(self):
-        newShirt, newSleeve = self.toonGen.getPrevShirtAndSleeve()
-        newColor = self.toonGen.getPrevColor('shirt')
+        newShirt = self.toonGen.getPrevShirt()
+        newColor = self.toonGen.getPrevClothColor('tops')
         self.toonGen.toon.shirtColor = self.toonGen.toon.colorDNA2color[newColor]
-        self.toonGen.toon.sleeveColor = self.toonGen.toon.colorDNA2color[newColor]
-        if newShirt != None and newSleeve != None:
-            self.toonGen.toon.shirt = self.toonGen.toon.shirtDNA2shirt[newShirt]
-            self.toonGen.toon.sleeve = self.toonGen.toon.sleeveDNA2sleeve[newSleeve]
+        self.toonGen.toon.sleeveColor = self.toonGen.toon.shirtColor
+        if newShirt != None:
+            if self.toonGen.toon.gender == 'girl':
+                tops = self.toonGen.toon.femaleTopDNA2femaleTop
+            else:
+                tops = self.toonGen.toon.maleTopDNA2maleTop
+            self.toonGen.toon.shirt = tops[newShirt][0]
+            self.toonGen.toon.sleeve = self.toonGen.toon.Sleeves[tops[newShirt][1]]
         self.toonGen.toon.setClothes()
         self.updateClothShopButtonsDir(1)
 
@@ -946,31 +954,49 @@ class MakeAToon:
         self.prevShirtBtn['state'] = DGG.NORMAL
         self.nextShortsBtn['state'] = DGG.NORMAL
         self.prevShortsBtn['state'] = DGG.NORMAL
+
+        if self.toonGen.toon.gender == 'girl':
+            tops = self.toonGen.toon.femaleTop2femaleTopDNA
+            bots = self.toonGen.toon.femaleBottom2femaleBottomDNA
+        else:
+            tops = self.toonGen.toon.maleTop2maleTopDNA
+            bots = self.toonGen.toon.maleBottom2maleBottomDNA
+
         if direction == 1:
-            if self.toonGen.getNextShirt() == '00':
+
+            if self.toonGen.isFinalShirt(tops[self.toonGen.toon.shirt], 1) and self.toonGen.isFinalTopColor(tops[self.toonGen.toon.shirt], 1):
                 self.nextShirtBtn['state'] = DGG.DISABLED
-            if self.toonGen.getNextShorts() == '00':
+            if self.toonGen.isFinalShorts(bots[self.toonGen.toon.shorts], 1) and self.toonGen.isFinalBotColor(bots[self.toonGen.toon.shorts], 1):
                 self.nextShortsBtn['state'] = DGG.DISABLED
-            if self.toonGen.getPrevShirt() == '22':
+
+            if self.toonGen.isFinalShirt(tops[self.toonGen.toon.shirt], 0) and self.toonGen.isFinalTopColor(tops[self.toonGen.toon.shirt], 0):
                 self.prevShirtBtn['state'] = DGG.DISABLED
-            if self.toonGen.getPrevShorts() == '16':
+            if self.toonGen.isFinalShorts(bots[self.toonGen.toon.shorts], 0) and self.toonGen.isFinalBotColor(bots[self.toonGen.toon.shorts], 0):
                 self.prevShortsBtn['state'] = DGG.DISABLED
 
     def nextShorts(self):
         newShorts = self.toonGen.getNextShorts()
-        newColor = self.toonGen.getNextColor('shorts')
-        self.toonGen.toon.shortColor = self.toonGen.toon.colorDNA2color[newColor]
+        newColor = self.toonGen.getNextClothColor('bots')
+        self.toonGen.toon.shortColor = self.toonGen.toon.clothesColorDNA2clothesColor[newColor]
         if newShorts != None:
-            self.toonGen.toon.shorts = self.toonGen.toon.shortDNA2short[newShorts]
+            if self.toonGen.toon.gender == 'girl':
+                bots = self.toonGen.toon.femaleBottomDNA2femaleBottom
+            else:
+                bots = self.toonGen.toon.maleBottomDNA2maleBottom
+            self.toonGen.toon.shorts = bots[newShorts][0]
         self.toonGen.toon.setClothes()
         self.updateClothShopButtonsDir(1)
 
     def prevShorts(self):
         newShorts = self.toonGen.getPrevShorts()
-        newColor = self.toonGen.getPrevColor('shorts')
-        self.toonGen.toon.shortColor = self.toonGen.toon.colorDNA2color[newColor]
+        newColor = self.toonGen.getPrevClothColor('bots')
+        self.toonGen.toon.shortColor = self.toonGen.toon.clothesColorDNA2clothesColor[newColor]
         if newShorts != None:
-            self.toonGen.toon.shorts = self.toonGen.toon.shortDNA2short[newShorts]
+            if self.toonGen.toon.gender == 'girl':
+                bots = self.toonGen.toon.femaleBottomDNA2femaleBottom
+            else:
+                bots = self.toonGen.toon.maleBottomDNA2maleBottom
+            self.toonGen.toon.shorts = bots[newShorts][0]
         self.toonGen.toon.setClothes()
         self.updateClothShopButtonsDir(1)
 

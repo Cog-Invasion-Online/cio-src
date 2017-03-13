@@ -71,6 +71,8 @@ class DistributedNPCToon(DistributedToon):
     def doCameraNPCInteraction(self, pickingQuest = False):
         self.stopCameraTrack()
 
+        localAvatar.headsUp(self)
+
         camera.wrtReparentTo(render)
 
         if not pickingQuest:

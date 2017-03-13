@@ -9,11 +9,8 @@ from direct.gui.DirectGui import DirectScrolledList, DirectFrame
 from direct.gui.DirectGui import DirectButton, OnscreenText
 from direct.gui.DirectGui import DGG
 
+from src.coginvasion.globals import CIGlobals
 from src.coginvasion.book.BookPage import BookPage
-
-textRolloverColor = Vec4(1, 1, 0, 1)
-textDownColor = Vec4(0.5, 0.9, 1, 1)
-textDisabledColor = Vec4(0.4, 0.8, 0.4, 1)
 
 class DistrictsPage(BookPage, DirectFrame):
 
@@ -69,60 +66,14 @@ class DistrictsPage(BookPage, DirectFrame):
         for shard in base.cr.activeDistricts.values():
             shardName = shard.getDistrictName()
             shardId = shard.doId
-            btn = DirectButton(
-                relief=None, text=shardName, text_scale=0.07,
-                text_align=TextNode.ALeft, text1_bg=textDownColor, text2_bg=textRolloverColor,
-                text3_fg=textDisabledColor, textMayChange=0, command=self.__handleShardButton,
-                extraArgs=[shardId], text_pos = (0, 0, 0.0), parent = self
-            )
+            btn = CIGlobals.makeDefaultScrolledListBtn(text = shardName, parent = self, command = self.__handleShardButton, extraArgs = [shardId])
             if shardId == base.localAvatar.parentId:
                 btn['state'] = DGG.DISABLED
             else:
                 btn['state'] = DGG.NORMAL
             self.shardButtons.append(btn)
 
-        gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui.bam')
-        listXorigin = -0.02
-        listFrameSizeX = 0.625
-        listZorigin = -0.96
-        listFrameSizeZ = 1.04
-        arrowButtonScale = 1.3
-        itemFrameXorigin = -0.237
-        itemFrameZorigin = 0.365
-        buttonXstart = itemFrameXorigin + 0.293
-
-        self.districtList = DirectScrolledList(
-            relief=None,
-            pos=(-0.54, 0, 0.08),
-            incButton_image=(gui.find('**/FndsLst_ScrollUp'),
-                gui.find('**/FndsLst_ScrollDN'),
-                gui.find('**/FndsLst_ScrollUp_Rllvr'),
-                gui.find('**/FndsLst_ScrollUp')),
-            incButton_relief=None,
-            incButton_scale=(arrowButtonScale, arrowButtonScale, -arrowButtonScale),
-            incButton_pos=(buttonXstart, 0, itemFrameZorigin - 0.999),
-            incButton_image3_color=Vec4(1, 1, 1, 0.2),
-            decButton_image=(gui.find('**/FndsLst_ScrollUp'),
-                gui.find('**/FndsLst_ScrollDN'),
-                gui.find('**/FndsLst_ScrollUp_Rllvr'),
-                gui.find('**/FndsLst_ScrollUp')),
-            decButton_relief=None,
-            decButton_scale=(arrowButtonScale, arrowButtonScale, arrowButtonScale),
-            decButton_pos=(buttonXstart, 0, itemFrameZorigin + 0.125),
-            decButton_image3_color=Vec4(1, 1, 1, 0.2),
-            itemFrame_pos=(itemFrameXorigin, 0, itemFrameZorigin),
-            itemFrame_scale=1.0,
-            itemFrame_relief=DGG.SUNKEN,
-            itemFrame_frameSize=(listXorigin,
-                listXorigin + listFrameSizeX,
-                listZorigin,
-                listZorigin + listFrameSizeZ),
-            itemFrame_frameColor=(0.85, 0.95, 1, 1),
-            itemFrame_borderWidth=(0.01, 0.01),
-            numItemsVisible=15,
-            forceHeight=0.075,
-            items=self.shardButtons, parent = self
-        )
+        self.districtList = CIGlobals.makeDefaultScrolledList(items = self.shardButtons, parent = self, pos = (-0.54, 0, 0.08))
 
     def unload(self):
         BookPage.unload(self)

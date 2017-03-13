@@ -77,7 +77,7 @@ class CreateToonProcess:
                 "setQuestHistory": ([],),
                 "setTier": (13,),
                 "setFriendsList": ([],),
-                "setTutorialCompleted": (str(self.choice[3]),),
+                "setTutorialCompleted": (self.choice[3],),
                 "setHoodsDiscovered": ([CIGlobals.ToontownCentralId],),
                 "setTeleportAccess": ([],),
                 "setLastHood": (CIGlobals.ToontownCentralId,),

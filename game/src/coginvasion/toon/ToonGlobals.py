@@ -29,6 +29,8 @@ ANIMATIONS = {
     "win" : [3.5, "victory-dance"],
     "squirt" : [5, "water-gun"],
     "zend" : [3.5, "jump-zend"],
+    "zstart" : [3.5, "jump-zstart"],
+    "zhang" : [3.5, "jump-zhang"],
     "tele" : [3.5, "teleport"],
     "book" : [3.5, "book"],
     "leap": [3.5, "leap_zhang"],

@@ -480,7 +480,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             base.playSfx(sfx, node = self)
 
     def chatStompComplete(self, chatString):
-        if not self.thoughtInProg:
+        if not self.thoughtInProg and CIGlobals.getSettingsMgr().getSetting("chs") is True:
             self.playChatSfx(chatString)
 
     def setName(self, nameString):
@@ -494,7 +494,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
     def generateMask(self):
         # No accessories yet.
 
-        if self.shirt == self.shirtDNA2shirt['27']:
+        if False:
             # This toon is wearing the tsa suit, give them some sweet shades.
             name = 'tsaGlasses'
             glasses = loader.loadModel(AccessoryGlobals.AccessoryName2Model[name])

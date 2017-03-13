@@ -5,17 +5,18 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{306e2ac4-d120-45a2-be56-442c5a5b7047}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>vs_cl_start.py</StartupFile>
+    <StartupFile>
+    </StartupFile>
     <SearchPath>..\Panda3D-CI\</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <InterpreterId>{19c632dc-65b6-4995-a6bb-427cba0bcd2e}</InterpreterId>
+    <InterpreterId>Global|VisualStudio|CIO Python</InterpreterId>
     <InterpreterVersion>2.7</InterpreterVersion>
     <IsWindowsApplication>False</IsWindowsApplication>
     <InterpreterPath>..\Panda3D-CI\python\ppython.exe</InterpreterPath>
-    <InterpreterArguments>-B</InterpreterArguments>
+    <InterpreterArguments>-B -m src.coginvasion.base.CIStartGlobal</InterpreterArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <Environment>ACCOUNT_NAME=orange12345
 GAME_SERVER=127.0.0.1:7032
@@ -25,7 +26,6 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <PropertyGroup>
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
-    <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="astron\config\astrond.yml" />
@@ -46,9 +46,6 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="astron\databases\DatabaseManager.py" />
-    <Compile Include="building_test.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="src\coginvasion\achievement\__init__.py" />
     <Compile Include="src\coginvasion\ai\AIBase.py" />
     <Compile Include="src\coginvasion\ai\AIBaseGlobal.py" />
@@ -158,7 +155,6 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\cog\SuitPanicBehaviorAI.py" />
     <Compile Include="src\coginvasion\cog\SuitPathBehaviorAI.py" />
     <Compile Include="src\coginvasion\cog\SuitPathDataAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitPathFinderAI.py" />
     <Compile Include="src\coginvasion\cog\SuitPursueToonBehaviorAI.py" />
     <Compile Include="src\coginvasion\cog\SuitRandomStrollBehaviorAI.py" />
     <Compile Include="src\coginvasion\cog\SuitState.py" />
@@ -646,7 +642,6 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="tools\VirusKiller.py" />
     <Compile Include="tools\whitelist.py" />
     <Compile Include="tools\__main__.py" />
-    <Compile Include="vs_cl_start.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="astron" />
@@ -696,8 +691,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Folder Include="tools\nirai\" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="{19c632dc-65b6-4995-a6bb-427cba0bcd2e}\2.7" />
+    <InterpreterReference Include="Global|VisualStudio|CIO Python" />
   </ItemGroup>
-  <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

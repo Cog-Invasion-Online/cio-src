@@ -13,7 +13,6 @@ from direct.actor.Actor import Actor
 from pandac.PandaModules import ModelPool, TexturePool, NodePath
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.manager.SettingsManager import SettingsManager
 from src.coginvasion.hood.QuietZoneState import QuietZoneState
 from src.coginvasion.hood import ToonInterior
 from src.coginvasion.hood import LinkTunnel
@@ -81,18 +80,6 @@ class SafeZoneLoader(StateData):
             child.hide()
 
         self.parentFSMState.addChild(self.fsm)
-        _, _, _, _, _, _, _, _, af = SettingsManager().getSettings("settings.json")
-        if af == "on":
-            self.notify.info("Anisotropic Filtering is on, applying to textures.")
-            for nodepath in self.geom.findAllMatches('*'):
-                try:
-                    for node in nodepath.findAllMatches('**'):
-                        try:
-                            node.findTexture('*').setAnisotropicDegree(8)
-                        except:
-                            pass
-                except:
-                    continue
 
     def unload(self):
         StateData.unload(self)

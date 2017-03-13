@@ -3,18 +3,19 @@
 # Created by:   DecodedLogic (01Apr15)
 ########################################
 
-from src.coginvasion.npc import NPCGlobals
+from src.coginvasion.globals import CIGlobals
 from src.coginvasion.toon.ToonDNA import ToonDNA
 from src.coginvasion.minigame import UnoGameGlobals as UGG
 import random
 
 class UnoGameAIPlayer(ToonDNA):
 
-    def __init__(self, npc_name, doId, uno_ai):
+    def __init__(self, npc_id, doId, uno_ai):
         ToonDNA.__init__(self)
         self.game = uno_ai
-        self.name = npc_name
-        self.dna = NPCGlobals.NPC_DNA[npc_name]
+        self.npc_id = npc_id
+        self.name = CIGlobals.NPCToonDict[npc_id][1]
+        self.dna = CIGlobals.NPCToonDict[npc_id][2]
         self.cards = []
         self.dealingCards = []
         self.strategicCards = []

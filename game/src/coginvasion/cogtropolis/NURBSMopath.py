@@ -89,8 +89,8 @@ class NURBSMopath:
             v = Vec3()
             self.nurbs.evalPoint(t, p)
             self.node.setPos(self.rope, p)
-            self.nurbs.evalTangent(t, v)
             if self.rotate:
+                self.nurbs.evalTangent(t, v)
                 v = render.getRelativeVector(self.rope, v)
                 self.node.lookAt(self.node.getPos() + v)
 

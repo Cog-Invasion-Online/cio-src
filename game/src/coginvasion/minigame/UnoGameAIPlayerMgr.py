@@ -5,7 +5,7 @@
     
 """
 
-from src.coginvasion.npc import NPCGlobals
+from src.coginvasion.globals import CIGlobals
 from src.coginvasion.minigame.UnoGameAIPlayer import UnoGameAIPlayer
 from pandac.PandaModules import UniqueIdAllocator
 import random
@@ -18,8 +18,8 @@ class UnoGameAIPlayerMgr:
         self.idAllocator = UniqueIdAllocator(1, 4)
         
     def createPlayer(self, difficulty = None):
-        npc_name = random.choice(NPCGlobals.NPC_DNA.keys())
-        player = UnoGameAIPlayer(npc_name, self.idAllocator.allocate(), self.game)
+        npc_id = random.choice(CIGlobals.NPCToonDict.keys())
+        player = UnoGameAIPlayer(npc_id, self.idAllocator.allocate(), self.game)
         player.generate()
         self.players.append(player)
         return player

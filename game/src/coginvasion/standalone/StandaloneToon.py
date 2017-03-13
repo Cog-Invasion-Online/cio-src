@@ -11,6 +11,8 @@ loadPrcFileData('', 'tk-main-loop 0')
 loadPrcFileData('', 'egg-load-old-curves 0')
 loadPrcFileData('', 'textures-power-2 none')
 loadPrcFileData('', 'load-display pandagl')
+loadPrcFileData('', 'egg-flatten 0')
+loadPrcFileData('', 'window-title Panda')
 #loadPrcFileData('', 'fullscreen #t')
 #loadPrcFileData('', 'win-size 1920 1080')
 
@@ -124,7 +126,7 @@ base.queue = CollisionHandlerQueue()
 base.cr = ClientRepository(['phase_3/etc/direct.dc', 'phase_3/etc/toon.dc'])
 base.cr.isShowingPlayerIds = False
 base.minigame = None
-base.cr.localAvChoice = AvChoice('01/01/04/03/05/03/02/03/27/25/28/00/00/00/00', 'Deputy B.D.', 0, 0)#"00/08/00/10/01/12/01/10/18/18/07/00/00/00/00", "Ducky", 0, 0)
+base.cr.localAvChoice = AvChoice("00/08/00/10/01/12/01/10/13/05/27/27/00", "Ducky", 0, 0)
 base.musicManager.setVolume(0.65)
 
 dclass = base.cr.dclassesByName['DistributedToon']

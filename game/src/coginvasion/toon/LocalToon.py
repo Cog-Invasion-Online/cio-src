@@ -47,8 +47,6 @@ class LocalToon(DistributedToon):
         except:
             self.LocalToon_initialized = 1
         DistributedToon.__init__(self, cr)
-        self.gagStartKey = config.GetString('gag-start-key')
-        self.gagThrowKey = config.GetString('gag-throw-key')
         self.avatarChoice = cr.localAvChoice
         self.smartCamera = SmartCamera()
         self.chatInput = ChatInput()
@@ -98,6 +96,8 @@ class LocalToon(DistributedToon):
         self.rolledOverTag = None
         
         self.clickToonCallback = None
+
+        self.walkControls = None
 
         self.inTutorial = False
         self.hasDoneJump = False
@@ -273,6 +273,12 @@ class LocalToon(DistributedToon):
         self.walkControls.cEventSphereNodePath.node().setFromCollideMask(CIGlobals.WallBitmask | CIGlobals.WeaponBitmask
             | GunGameGlobals.HILL_BITMASK)
         self.walkControls.setAirborneHeightFunc(self.getAirborneHeight)
+
+    def destroyControls(self):
+        self.walkControls.disableAvatarControls()
+        self.walkControls.setCollisionsActive(0)
+        self.walkControls.deleteCollisions()
+        self.walkControls = None
 
     def setWalkSpeedNormal(self):
         self.walkControls.setWalkSpeed(
@@ -580,6 +586,7 @@ class LocalToon(DistributedToon):
                 self.playMovementSfx("run")
             else:
                 self.resetHeadHpr()
+                self.stopLookAround()
                 self.startLookAround()
                 self.playMovementSfx(None)
         return task.cont
@@ -620,8 +627,9 @@ class LocalToon(DistributedToon):
         if self.gagThrowBtn:
             self.gagThrowBtn.bind(DGG.B1PRESS, self.startGag)
             self.gagThrowBtn.bind(DGG.B1RELEASE, self.throwGag)
-        self.accept(self.gagStartKey, self.startGag)
-        self.accept(self.gagThrowKey, self.throwGag)
+        key = CIGlobals.getSettingsMgr().getSetting("gagkey")
+        self.accept(key, self.startGag)
+        self.accept(key + "-up", self.throwGag)
         self.gagsEnabled = True
 
     def disableGagKeys(self):
@@ -629,8 +637,9 @@ class LocalToon(DistributedToon):
         if self.gagThrowBtn:
             self.gagThrowBtn.unbind(DGG.B1PRESS)
             self.gagThrowBtn.unbind(DGG.B1RELEASE)
-        self.ignore(self.gagStartKey)
-        self.ignore(self.gagThrowKey)
+        key = CIGlobals.getSettingsMgr().getSetting("gagkey")
+        self.ignore(key)
+        self.ignore(key + "-up")
 
     def disableGags(self):
         self.disableGagKeys()

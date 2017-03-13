@@ -8,6 +8,8 @@
 from pandac.PandaModules import WindowProperties
 from direct.showbase.DirectObject import DirectObject
 
+from src.coginvasion.globals import CIGlobals
+
 class FirstPerson(DirectObject):
 
     def __init__(self):
@@ -75,8 +77,12 @@ class FirstPerson(DirectObject):
             x = md.getX()
             y = md.getY()
             if base.win.movePointer(0, base.win.getXSize()/2, base.win.getYSize()/2):
-                camera.setP(camera.getP() - (y - base.win.getYSize()/2)*0.1)
-                base.localAvatar.setH(base.localAvatar.getH() - (x - base.win.getXSize()/2)*0.1)
+
+                # Get the mouse sensitivity
+                sens = CIGlobals.getSettingsMgr().getSetting("fpmgms")
+
+                camera.setP(camera.getP() - (y - base.win.getYSize()/2) * sens)
+                base.localAvatar.setH(base.localAvatar.getH() - (x - base.win.getXSize()/2) * sens)
                 if camera.getP() < self.min_camerap:
                     camera.setP(self.min_camerap)
                 elif camera.getP() > self.max_camerap:

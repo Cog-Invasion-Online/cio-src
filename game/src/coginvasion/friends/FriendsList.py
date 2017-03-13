@@ -43,24 +43,9 @@ class FriendsList(DirectFrame):
             itemFrame_pos = (0, 0, 0.3275),
             itemFrame_relief = None,
             relief = None)
-
-        self.fwdBtn = DirectButton(geom = (gui.find('**/Horiz_Arrow_UP'),
-            gui.find('**/Horiz_Arrow_DN'),
-            gui.find('**/Horiz_Arrow_Rllvr'),
-            gui.find('**/Horiz_Arrow_UP')),
-            relief = None,
-            parent = self,
-            pos = (0.17, 0.0, -0.38),
-            command = self.doState)
-        self.backBtn = DirectButton(geom = (gui.find('**/Horiz_Arrow_UP'),
-            gui.find('**/Horiz_Arrow_DN'),
-            gui.find('**/Horiz_Arrow_Rllvr'),
-            gui.find('**/Horiz_Arrow_UP')),
-            relief = None,
-            parent = self,
-            pos = (-0.15, 0.0, -0.38),
-            hpr = (180, 0, 0),
-            command = self.doState)
+        
+        self.fwdBtn = CIGlobals.makeDirectionalBtn(1, self, (0.17, 0.0, -0.38), command = self.doState)
+        self.backBtn = CIGlobals.makeDirectionalBtn(0, self, (-0.15, 0.0, -0.38), command = self.doState)
 
         self.closeBtn = DirectButton(geom = CIGlobals.getCancelBtnGeom(), relief = None,
             parent = self, command = self.exitClicked)
