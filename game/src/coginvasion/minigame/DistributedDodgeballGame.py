@@ -141,13 +141,10 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         self.fsm.request('announceGameOver', [time])
 
     def getTeamDNAColor(self, team):
-        print "getTeamDNAColor"
         if team == TEAM1:
-            print "blue"
-            return ToonDNA.colorName2DNAcolor['blue']
+            return ToonDNA.colorDNA2color['18']
         elif team == TEAM2:
-            print "bright red"
-            return ToonDNA.colorName2DNAcolor['bright red']
+            return ToonDNA.colorDNA2color['02']
 
     def enterDisplayWinners(self):
         base.localAvatar.stopLookAround()
