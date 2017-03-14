@@ -697,7 +697,7 @@ class LocalToon(DistributedToon):
         if self.gagThrowBtn:
             self.gagThrowBtn.unbind(DGG.B1PRESS)
 
-        self.ignore(self.gagStartKey)
+        self.ignore(CIGlobals.getSettingsMgr().getSetting("gagkey"))
         self.resetHeadHpr()
         self.b_gagStart(self.backpack.getCurrentGag().getID())
 
@@ -708,7 +708,7 @@ class LocalToon(DistributedToon):
         if self.gagThrowBtn:
              self.gagThrowBtn.unbind(DGG.B1RELEASE)
 
-        self.ignore(self.gagThrowKey)
+        self.ignore(CIGlobals.getSettingsMgr().getSetting("gagkey") + "-up")
 
         if self.backpack.getActiveGag().getType() == GagType.SQUIRT and self.backpack.getActiveGag().getName() in [CIGlobals.SeltzerBottle]:
             self.b_gagRelease(self.backpack.getActiveGag().getID())
