@@ -5,7 +5,7 @@
 
 """
 
-from pandac.PandaModules import TextNode, VBase4
+from pandac.PandaModules import TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
@@ -38,13 +38,9 @@ class RemoteAvatar:
     def setTeam(self, team):
         self.team = team
 
-        print "setteam"
-
         # Make this toon the complete color of the team.
         color = self.mg.getTeamDNAColor(team)
         if color is not None:
-            print "changing shit"
-
             # Store the original style so we can restore it.
             self.ogHeadColor = self.avatar.headcolor
             self.ogTorsoColor = self.avatar.torsocolor
@@ -55,6 +51,12 @@ class RemoteAvatar:
             self.ogShirt = self.avatar.shirt
             self.ogSleeve = self.avatar.sleeve
             self.ogShort = self.avatar.shorts
+            
+            topsDict = self.avatar.maleTopDNA2maleTop
+            btmsDict = self.avatar.maleBottomDNA2maleBottom
+            if self.avatar.gender == 'girl':
+                topsDict = self.avatar.femaleTopDNA2femaleTop
+                btmsDict = self.avatar.femaleBottomDNA2femaleBottom
 
             self.avatar.headcolor = color
             self.avatar.torsocolor = color
@@ -62,12 +64,9 @@ class RemoteAvatar:
             self.avatar.shirtColor = color
             self.avatar.sleeveColor = color
             self.avatar.shortColor = color
-            self.avatar.shirt = self.avatar.shirtDNA2shirt['00']
-            self.avatar.sleeve = self.avatar.sleeveDNA2sleeve['00']
-            if self.avatar.gender == 'girl':
-                self.avatar.shorts = self.avatar.shortDNA2short['10']
-            elif self.avatar.gender == 'boy':
-                self.avatar.shorts = self.avatar.shortDNA2short['00']
+            self.avatar.shirt = topsDict['00'][0]
+            self.avatar.sleeve = self.avatar.Sleeves[0]
+            self.avatar.shorts = btmsDict['00'][0]
             # Generate the new dna strand and regenerate the toon.
             self.avatar.generateDNAStrandWithCurrentStyle()
             self.dnaWasChanged = True
