@@ -23,7 +23,7 @@ from pandac.PandaModules import UniqueIdAllocator
 from src.coginvasion.globals import CIGlobals
 from AIZoneData import AIZoneDataStore
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from src.coginvasion.distributed.CogInvasionDoGlobals import DO_ID_DISTRICT_NAME_MANAGER
+from src.coginvasion.distributed.CogInvasionDoGlobals import DO_ID_DISTRICT_NAME_MANAGER, DO_ID_HOLIDAY_MANAGER
 
 #PStatClient.connect()
 
@@ -37,7 +37,6 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         )
         self.notify.setInfo(True)
         self.district = None
-        #self.aiWorld = AIWorld(render) # Used for cogs
         self.zoneAllocator = UniqueIdAllocator(CIGlobals.DynamicZonesBegin,
                                             CIGlobals.DynamicZonesEnd)
         self.zoneDataStore = AIZoneDataStore()
@@ -45,18 +44,7 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         self.dnaStoreMap = {}
         self.dnaDataMap = {}
         self.districtNameMgr = self.generateGlobalObject(DO_ID_DISTRICT_NAME_MANAGER, 'DistrictNameManager')
-
-    def updateAIWorld(self, task):
-        # Adjust ai walk speed according to the frame rate.
-        for hood in self.hoods.values():
-            if hood.suitManager:
-                for suit in hood.suitManager.suits.values():
-                    suit.aiChar.setMass(suit.aiChar.getMass() * globalClock.getDt() - 50 * CIGlobals.NPCWalkSpeed / globalClock.getDt())
-
-        # Make this a try-except because sometimes it fails to update.
-        try: self.aiWorld.update()
-        except: pass
-        return task.again
+        self.holidayMgr = self.generateGlobalObject(DO_ID_HOLIDAY_MANAGER, 'HolidayManager')
 
     def gotDistrictName(self, name):
         self.notify.info("This District will be called: %s" % name)
@@ -105,6 +93,9 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
 
     def handleConnected(self):
         self.districtNameMgr.d_requestDistrictName()
+        
+        print self.holidayMgr.__class__.__name__
+        self.holidayMgr.d_srvRequestHoliday()
 
     def toonsAreInZone(self, zoneId):
         numToons = 0
@@ -115,7 +106,6 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         return numToons > 0
 
     def shutdown(self):
-        taskMgr.remove('updateAIWorld')
         for hood in self.hoods.values():
             hood.shutdown()
         if self.timeManager:

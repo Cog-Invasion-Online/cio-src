@@ -20,3 +20,12 @@ class HolidayManagerUD(DistributedObjectGlobalUD):
     def requestHoliday(self):
         sender = self.air.getAccountIdFromSender()
         self.sendUpdateToAccountId(sender, 'setHoliday', [self.holiday])
+        
+    def srvRequestHoliday(self):
+        # Our good ol' pal, AI, is requesting the current holiday.
+        sender = self.air.getMsgSender()
+        self.sendUpdateToChannel(sender, 'setHoliday', [self.holiday])
+        
+    def delete(self):
+        del self.holiday
+        DistributedObjectGlobalUD.delete(self)
