@@ -11,13 +11,14 @@ from src.coginvasion.cog import Dept
 from src.coginvasion.cog.Head import Head
 from src.coginvasion.cog import Voice
 from src.coginvasion.cog import SuitAttacks
+from src.coginvasion.globals import CIGlobals
 
 class SuitPlan:
 
     def __init__(self, name, suitType, dept, head, scale, nametagZ, height, headColor = None,
                  headTex = None, headAnims = None, handColor = None, forcedVariant = None, forcedVoice = None,
                  levelRange = None, forcedLevel = None, attacks = SuitAttacks.SuitAttackLengths.keys(),
-                 headShadowName = "", headShadowScale = 0, headShadowPos = None):
+                 headShadowName = "", headShadowScale = 0, headShadowPos = None, gagWeaknesses = {}):
         self.name = name
         self.height = height
         self.suitType = suitType
@@ -34,6 +35,12 @@ class SuitPlan:
         self.headShadowScale = headShadowScale
         self.headShadowPos = headShadowPos
         self.behaviors = []
+        
+        # Gag weaknesses are stored as a dictionary like so:
+        # Gag Name : Percentage Bonus (0.0-1.0)
+        # If % is equal to 1, this is an immunity,
+        # if less than 1, the gag is a weakness.
+        self.gagWeaknesses = gagWeaknesses
 
         if 'phase' in head:
             self.head = Head(None, head, headColor = headColor, headTex = headTex, headAnims = headAnims)
@@ -97,6 +104,9 @@ class SuitPlan:
 
     def getBehaviors(self):
         return self.behaviors
+    
+    def getGagWeaknesses(self):
+        return self.gagWeaknesses
 
 TheBigCheese = SuitPlan(
     SuitGlobals.TheBigCheese,
@@ -138,7 +148,8 @@ HeadHunter = SuitPlan(
     levelRange = (6, 10),
     headShadowName = 'shadow6',
     headShadowScale = 1.05,
-    headShadowPos = Vec3(0, 10, -0.0425)
+    headShadowPos = Vec3(0, 10, -0.0425),
+    gagWeaknesses = {CIGlobals.GrandPiano : 0.2}
 )
 Downsizer = SuitPlan(
     SuitGlobals.Downsizer,
@@ -151,7 +162,8 @@ Downsizer = SuitPlan(
     levelRange = (5, 9),
     headShadowName = 'shadow5',
     headShadowScale = 1.0,
-    headShadowPos = Vec3(-0.02, 10, -0.01)
+    headShadowPos = Vec3(-0.02, 10, -0.01),
+    gagWeaknesses = {CIGlobals.TrapDoor : 0.2}
 )
 Micromanager = SuitPlan(
     SuitGlobals.Micromanager,
@@ -164,7 +176,8 @@ Micromanager = SuitPlan(
     levelRange = (4, 8),
     headShadowName = 'shadow4',
     headShadowScale = 1.0,
-    headShadowPos = Vec3(0, 10, -0.02)
+    headShadowPos = Vec3(0, 10, -0.02),
+    gagWeaknesses = {CIGlobals.Anvil : 0.2}
 )
 Yesman = SuitPlan(
     SuitGlobals.Yesman,
@@ -177,7 +190,8 @@ Yesman = SuitPlan(
     levelRange = (3, 7),
     headShadowName = 'shadow3',
     headShadowScale = 1.125,
-    headShadowPos = Vec3(0, 10, -0.015)
+    headShadowPos = Vec3(0, 10, -0.015),
+    gagWeaknesses = {CIGlobals.FruitPieSlice : 0.2}
 )
 PencilPusher = SuitPlan(
     SuitGlobals.PencilPusher,
@@ -190,7 +204,8 @@ PencilPusher = SuitPlan(
     levelRange = (2, 6),
     headShadowName = 'shadow2',
     headShadowScale = 0.9,
-    headShadowPos = Vec3(0, 10, 0)
+    headShadowPos = Vec3(0, 10, 0),
+    gagWeaknesses = {CIGlobals.WaterGlass : 0.2}
 )
 Flunky = SuitPlan(
     SuitGlobals.Flunky,
@@ -216,7 +231,8 @@ BigWig = SuitPlan(
     levelRange = (8, 13),
     headShadowName = 'shadow16',
     headShadowScale = 0.85,
-    headShadowPos = Vec3(-0.005, 10, -0.035)
+    headShadowPos = Vec3(-0.005, 10, -0.035),
+    gagWeaknesses = {CIGlobals.StormCloud : 0.2}
 )
 LegalEagle = SuitPlan(
     SuitGlobals.LegalEagle,
@@ -230,7 +246,8 @@ LegalEagle = SuitPlan(
     levelRange = (7, 11),
     headShadowName = 'shadow15',
     headShadowScale = 1.125,
-    headShadowPos = Vec3(0.005, 10, -0.035)
+    headShadowPos = Vec3(0.005, 10, -0.035),
+    gagWeaknesses = {CIGlobals.StormCloud : 0.2}
 )
 SpinDoctor = SuitPlan(
     SuitGlobals.SpinDoctor,
@@ -245,7 +262,8 @@ SpinDoctor = SuitPlan(
     levelRange = (6, 10),
     headShadowName = 'shadow14',
     headShadowScale = 0.95,
-    headShadowPos = Vec3(0, 10, -0.01)
+    headShadowPos = Vec3(0, 10, -0.01),
+    gagWeaknesses = {CIGlobals.Anvil : 0.2}
 )
 BackStabber = SuitPlan(
     SuitGlobals.BackStabber,
@@ -258,7 +276,8 @@ BackStabber = SuitPlan(
     levelRange = (5, 9),
     headShadowName = 'shadow13',
     headShadowScale = 0.9,
-    headShadowPos = Vec3(0.005, 10, -0.01)
+    headShadowPos = Vec3(0.005, 10, -0.01),
+    gagWeaknesses = {CIGlobals.BigWeight : 0.2}
 )
 AmbulanceChaser = SuitPlan(
     SuitGlobals.AmbulanceChaser,
@@ -271,7 +290,8 @@ AmbulanceChaser = SuitPlan(
     levelRange = (4, 8),
     headShadowName = 'shadow12',
     headShadowScale = 1.0,
-    headShadowPos = Vec3(0, 10, -0.01)
+    headShadowPos = Vec3(0, 10, -0.01),
+    gagWeaknesses = {CIGlobals.Aoogah : 0.2}
 )
 DoubleTalker = SuitPlan(
     SuitGlobals.DoubleTalker,
@@ -300,7 +320,8 @@ Bloodsucker = SuitPlan(
     levelRange = (2, 6),
     headShadowName = 'shadow10',
     headShadowScale = 1.0,
-    headShadowPos = Vec3(0, 10, -0.01)
+    headShadowPos = Vec3(0, 10, -0.01),
+    gagWeaknesses = {CIGlobals.Cupcake : 0.2}
 )
 BottomFeeder = SuitPlan(
     SuitGlobals.BottomFeeder,
@@ -314,7 +335,8 @@ BottomFeeder = SuitPlan(
     levelRange = (1, 5),
     headShadowName = 'shadow9',
     headShadowScale = 1.25,
-    headShadowPos = Vec3(0, 10, -0.03)
+    headShadowPos = Vec3(0, 10, -0.03),
+    gagWeaknesses = {CIGlobals.BananaPeel : 0.2}
 )
 RobberBaron = SuitPlan(
     SuitGlobals.RobberBaron,
@@ -328,7 +350,7 @@ RobberBaron = SuitPlan(
     levelRange = (8, 13),
     headShadowName = 'shadow24',
     headShadowScale = 0.9,
-    headShadowPos = Vec3(0, 10, -0.03)
+    headShadowPos = Vec3(0, 10, -0.03),
 )
 LoanShark = SuitPlan(
     SuitGlobals.LoanShark,
@@ -342,7 +364,8 @@ LoanShark = SuitPlan(
     levelRange = (7, 11),
     headShadowName = 'shadow23',
     headShadowScale = 0.95,
-    headShadowPos = Vec3(0.02, 10, -0.0175)
+    headShadowPos = Vec3(0.02, 10, -0.0175),
+    gagWeaknesses = {CIGlobals.Geyser : 0.2}
 )
 MoneyBags = SuitPlan(
     SuitGlobals.MoneyBags,
@@ -355,7 +378,8 @@ MoneyBags = SuitPlan(
     levelRange = (6, 10),
     headShadowName = 'shadow22',
     headShadowScale = 1.0,
-    headShadowPos = Vec3(0, 10, -0.06)
+    headShadowPos = Vec3(0, 10, -0.06),
+    gagWeaknesses = {CIGlobals.Safe : 0.2}
 )
 NumberCruncher = SuitPlan(
     SuitGlobals.NumberCruncher,
@@ -381,7 +405,8 @@ BeanCounter = SuitPlan(
     levelRange = (4, 8),
     headShadowName = 'shadow20',
     headShadowScale = 1.0,
-    headShadowPos = Vec3(0, 10, 0)
+    headShadowPos = Vec3(0, 10, 0),
+    gagWeaknesses = {CIGlobals.Quicksand : 0.2}
 )
 Tightwad = SuitPlan(
     SuitGlobals.Tightwad,
@@ -394,7 +419,8 @@ Tightwad = SuitPlan(
     levelRange = (3, 7),
     headShadowName = 'shadow19',
     headShadowScale = 1.1,
-    headShadowPos = Vec3(0, 10, -0.04)
+    headShadowPos = Vec3(0, 10, -0.04),
+    gagWeaknesses = {CIGlobals.Sandbag : 0.2}
 )
 PennyPincher = SuitPlan(
     SuitGlobals.PennyPincher,
@@ -408,7 +434,7 @@ PennyPincher = SuitPlan(
     levelRange = (2, 6),
     headShadowName = 'shadow18',
     headShadowScale = 1.05,
-    headShadowPos = Vec3(0, 10, 0)
+    headShadowPos = Vec3(0, 10, 0),
 )
 ShortChange = SuitPlan(
     SuitGlobals.ShortChange,
@@ -421,7 +447,8 @@ ShortChange = SuitPlan(
     levelRange = (1, 5),
     headShadowName = 'shadow17',
     headShadowScale = 1.2,
-    headShadowPos = Vec3(0, 10, -0.01)
+    headShadowPos = Vec3(0, 10, -0.01),
+    gagWeaknesses = {CIGlobals.FlowerPot : 0.2}
 )
 MrHollywood = SuitPlan(
     SuitGlobals.MrHollywood,
@@ -434,7 +461,8 @@ MrHollywood = SuitPlan(
     levelRange = (8, 13),
     headShadowName = 'shadow32',
     headShadowScale = 0.9,
-    headShadowPos = Vec3(0.0025, 10, -0.03)
+    headShadowPos = Vec3(0.0025, 10, -0.03),
+    gagWeaknesses = {CIGlobals.WeddingCake : 0.2}
 )
 TheMingler = SuitPlan(
     SuitGlobals.TheMingler,
@@ -448,7 +476,8 @@ TheMingler = SuitPlan(
     levelRange = (7, 11),
     headShadowName = 'shadow31',
     headShadowScale = 1.0,
-    headShadowPos = Vec3(0, 10, -0.02)
+    headShadowPos = Vec3(0, 10, -0.02),
+    gagWeaknesses = {CIGlobals.BirthdayCake : 0.2}
 )
 TwoFace = SuitPlan(
     SuitGlobals.TwoFace,
@@ -474,7 +503,8 @@ MoverShaker = SuitPlan(
     levelRange = (5, 9),
     headShadowName = 'shadow29',
     headShadowScale = 0.93,
-    headShadowPos = Vec3(0.005, 10, -0.01)
+    headShadowPos = Vec3(0.005, 10, -0.01),
+    gagWeaknesses = {CIGlobals.CreamPieSlice : 0.2}
 )
 GladHander = SuitPlan(
     SuitGlobals.GladHander,
@@ -487,7 +517,8 @@ GladHander = SuitPlan(
     levelRange = (4, 8),
     headShadowName = 'shadow28',
     headShadowScale = 1.1,
-    headShadowPos = Vec3(0, 10, -0.04)
+    headShadowPos = Vec3(0, 10, -0.04),
+    gagWeaknesses = {CIGlobals.WholeFruitPie : 0.2}
 )
 NameDropper = SuitPlan(
     SuitGlobals.NameDropper,
@@ -501,7 +532,8 @@ NameDropper = SuitPlan(
     levelRange = (3, 7),
     headShadowName = 'shadow27',
     headShadowScale = 1.0,
-    headShadowPos = Vec3(0, 10, 0)
+    headShadowPos = Vec3(0, 10, 0),
+    gagWeaknesses = {CIGlobals.Anvil : 0.2}
 )
 Telemarketer = SuitPlan(
     SuitGlobals.Telemarketer,
@@ -514,7 +546,8 @@ Telemarketer = SuitPlan(
     levelRange = (2, 6),
     headShadowName = 'shadow26',
     headShadowScale = 1.0,
-    headShadowPos = Vec3(0, 10, 0)
+    headShadowPos = Vec3(0, 10, 0),
+    gagWeaknesses = {CIGlobals.Whistle : 0.2}
 )
 ColdCaller = SuitPlan(
     SuitGlobals.ColdCaller,
@@ -529,7 +562,8 @@ ColdCaller = SuitPlan(
     levelRange = (1, 5),
     headShadowName = 'shadow25',
     headShadowScale = 1.15,
-    headShadowPos = Vec3(0, 10, -0.01)
+    headShadowPos = Vec3(0, 10, -0.01),
+    gagWeaknesses = {CIGlobals.SquirtFlower : 0.2}
 )
 # Bosses:
 VicePresident = SuitPlan(

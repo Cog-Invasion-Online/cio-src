@@ -70,7 +70,12 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.comboDataTaskName = None
         self.clearComboDataTime = 3
         self.showComboDamageTime = 0.75
-        self.comboDamage = 0
+        
+        # These variables are for handling gag weaknesses.
+        self.showWeaknessBonusDamageTime = 0.50
+        
+        # The variable that stores the special sequence that handles tactical attacks.
+        self.tacticalSeq = None
 
         self.allowHits = True
 
@@ -263,6 +268,58 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
 
         task.delayTime = self.clearComboDataTime
         return Task.again
+    
+    def __handleGagWeakness(self, gagName, gagDmg):
+        weaknesses = self.suitPlan.getGagWeaknesses()
+        isWeakness = False
+        isImmunity = False
+        damage = 0
+        
+        # Let's check if this gag name is in our weaknesses.
+        if gagName in weaknesses.keys():
+            # This is a weakness of the Cog.
+            isWeakness = True
+            
+            # Let's obtain the percentage.
+            weaknessPerct = weaknesses.get(gagName)
+            
+            # This is an immunity if the weakness percentage is 1.
+            isImmunity = (weaknessPerct == 1)
+            
+            if not isImmunity:
+                damage = int(math.ceil(float(gagDmg) * weaknessPerct))
+            
+        return isWeakness, isImmunity, damage
+            
+    def __handleTacticalAttacks(self, avId, gagName, gagData):
+        dmg = gagData.get('damage')
+        isWeakness, isImmunity, weaknessDmg = self.__handleGagWeakness(gagName, dmg)
+        self.tacticalSeq = Sequence()
+        
+        # If we're not immune to this gag, we need to take damage.
+        if not isImmunity:
+            # Let's handle combos.
+            isCombo, comboDamage = self.__handleCombos(avId, gagName)
+
+            # Take damage and announce the damage we just took.
+            self.b_setHealth(self.getHealth() - dmg)
+            self.tacticalSeq.append(Func(self.d_announceHealth, 0, dmg))
+            
+            if isCombo and comboDamage > 0:
+                # Great job, team! We just did a combo attack!
+                self.b_setHealth(self.getHealth() - comboDamage)
+                self.tacticalSeq.append(Wait(self.showComboDamageTime))
+                self.tacticalSeq.append(Func(self.d_announceHealth, 2, comboDamage))
+                
+            if isWeakness and weaknessDmg > 0:
+                self.b_setHealth(self.getHealth() - weaknessDmg)
+                self.tacticalSeq.append(Wait(self.showWeaknessBonusDamageTime))
+                self.tacticalSeq.append(Func(self.d_announceHealth, 3, weaknessDmg))
+        else:
+            # Oh geez! This Cog isn't having any of that.
+            pass
+        
+        self.tacticalSeq.start()
 
     def __handleCombos(self, avId, gagName):
         track = GagGlobals.getTrackOfGag(gagName)
@@ -272,13 +329,14 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         data = self.comboData.values()
         tracks = []
         damages = []
-
+        
         for hitData in data:
             for track, damage in hitData.iteritems():
                 tracks.append(track)
                 damages.append(damage)
 
         isCombo = False
+        comboDamage = 0
         comboPerct = 0.35
         totalDamage = 0
         totalGags = 0
@@ -299,28 +357,22 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             continue
 
         if isCombo:
-            self.comboDamage = int((float(totalDamage) / float(totalGags)) * comboPerct)
-            self.b_setHealth(self.getHealth() - self.comboDamage)
+            comboDamage = int((float(totalDamage) / float(totalGags)) * comboPerct)
+            self.b_setHealth(self.getHealth() - comboDamage)
             self.comboData.clear()
             taskMgr.remove(self.comboDataTaskName)
-
-    def __showComboLabel(self):
-        if self.comboDamage > 0:
-            self.d_announceHealth(2, self.comboDamage)
-            self.comboDamage = 0
+            
+        return isCombo, comboDamage
 
     # The new method for handling gags.
     def hitByGag(self, gagId):
         avatar = self.air.doId2do.get(self.air.getAvatarIdFromSender(), None)
         gagName = GagGlobals.getGagByID(gagId)
         data = GagGlobals.getGagData(gagId)
-        dmg = data.get('damage')
         track = GagGlobals.getTrackOfGag(gagId, getId = True)
 
         if self.canGetHit():
-            self.b_setHealth(self.getHealth() - dmg)
-            Sequence(Func(self.d_announceHealth, 0, dmg), Wait(self.showComboDamageTime), Func(self.__showComboLabel)).start()
-            self.__handleCombos(avatar.doId, gagName)
+            self.__handleTacticalAttacks(avatar.doId, gagName, data)
 
             if self.isDead():
                 if track == GagType.THROW or gagName == CIGlobals.TNT:
@@ -503,6 +555,9 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             self.brain.stopThinking()
             self.brain.unloadBehaviors()
             self.brain = None
+        if self.tacticalSeq:
+            self.tacticalSeq.pause()
+            self.tacticalSeq = None
         self.itemDropper.cleanup()
         self.itemDropper = None
         self.lateX = None
@@ -526,7 +581,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.comboData = None
         self.clearComboDataTime = None
         self.showComboDamageTime = None
-        self.comboDamage = None
+        self.showWeaknessBonusDamageTime = None
 
     def delete(self):
         self.DELETED = True
@@ -555,7 +610,8 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         del self.comboDataTaskName
         del self.clearComboDataTime
         del self.showComboDamageTime
-        del self.comboDamage
+        del self.showWeaknessBonusDamageTime
+        del self.tacticalSeq
         DistributedAvatarAI.delete(self)
         DistributedSmoothNodeAI.delete(self)
 
