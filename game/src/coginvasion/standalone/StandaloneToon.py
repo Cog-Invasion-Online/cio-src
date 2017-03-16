@@ -38,8 +38,18 @@ cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
 cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
 cbm.addBin('gui-popup', CullBinManager.BTUnsorted, 60)
 
+from src.coginvasion.manager.SettingsManager import SettingsManager
+
+sm = SettingsManager()
+sm.loadFile("settings.json")
+
+sm.maybeFixAA()
+
 from direct.showbase.ShowBase import ShowBase
 base = ShowBase()
+sm.applySettings()
+from src.coginvasion.globals import CIGlobals
+CIGlobals.SettingsMgr = sm
 from direct.showbase.Audio3DManager import Audio3DManager
 base.audio3d = Audio3DManager(base.sfxManagerList[0], camera)
 base.audio3d.setDistanceFactor(25)
@@ -50,7 +60,7 @@ from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.margins.MarginManager import MarginManager
 from src.coginvasion.margins import MarginGlobals
 from direct.gui import DirectGuiGlobals
-from src.coginvasion.globals import CIGlobals
+
 
 DirectGuiGlobals.setDefaultFontFunc(CIGlobals.getToonFont)
 DirectGuiGlobals.setDefaultFont(CIGlobals.getToonFont())

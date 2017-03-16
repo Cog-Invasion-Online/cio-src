@@ -29,7 +29,7 @@ class Jellybean(NodePath, DirectObject):
         
         self.gui = gui
 
-        self.particle = ParticleLoader.loadParticleEffect('cmg_bean_sparkle.ptf')
+        self.particle = ParticleLoader.loadParticleEffect('phase_4/etc/cmg_bean_sparkle.ptf')
         self.particle.reparentTo(self)
 
         self.mdl = loader.loadModel("phase_4/models/props/jellybean4.bam")
@@ -676,7 +676,7 @@ class Game:
         
         self.crates = []
         
-        self.music = base.loadMusic('resources/phase_4/audio/bgm/MG_Crash_brrrgh.ogg')
+        self.music = base.loadMusic('phase_4/audio/bgm/MG_Crash_brrrgh.ogg')
 
         self.dnaStore = DNAStorage()
         loadDNAFile(self.dnaStore, 'phase_4/dna/storage.pdna')
@@ -684,7 +684,7 @@ class Game:
         loadDNAFile(self.dnaStore, 'phase_8/dna/storage_BR.pdna')
         loadDNAFile(self.dnaStore, 'phase_8/dna/storage_BR_town.pdna')
 
-        node = loadDNAFile(self.dnaStore, 'test_brrrgh_ch_lvl.pdna')
+        node = loadDNAFile(self.dnaStore, 'phase_4/dna/test_brrrgh_ch_lvl.pdna')
 
         if node.getNumParents() == 1:
             geom = NodePath(node.getParent(0))
