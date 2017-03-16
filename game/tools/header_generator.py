@@ -57,6 +57,7 @@ class HeaderGenerator:
 		print 'Please select the files you would like to generate headers for.'
 		r = Tk()
 		r.withdraw()
+		
 		files = tkFileDialog.askopenfiles(mode = 'r+', title = 'Generate code headers for...')
 		
 		for file in files:
@@ -67,6 +68,7 @@ class HeaderGenerator:
 				f.write(header.rstrip('\r\n') + '\n\n' + content)
 			file.close()
 		
+		r.destroy()
 		print 'Done!'
 		
 	def generateHeader(self, fileName):
