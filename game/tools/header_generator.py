@@ -13,6 +13,36 @@ from Tkinter import *
 import tkFileDialog
 import os
 
+PY_HEADER = """\"\"\"
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file {0}
+@author {1}
+@date {2}
+
+\"\"\""""
+
+CXX_HEADER = """/**
+ * COG INVASION ONLINE
+ * Copyright (c) CIO Team. All rights reserved.
+ *
+ * @file {0}
+ * @author {1}
+ * @date {2}
+ */"""
+ 
+ext2header = {
+	'py':   PY_HEADER,
+	'cxx':  CXX_HEADER,
+	'cpp':  CXX_HEADER,
+	'h':    CXX_HEADER,
+	'hpp':  CXX_HEADER,
+	'hxx':  CXX_HEADER,
+	'cc':   CXX_HEADER,
+	'java': CXX_HEADER
+}
+
 class HeaderGenerator:
 
 	def __init__(self):
@@ -57,31 +87,28 @@ class HeaderGenerator:
 		print 'Please select the files you would like to generate headers for.'
 		r = Tk()
 		r.withdraw()
+
+		files = tkFileDialog.askopenfilenames(title = 'Generate code headers for...')
+		files = r.tk.splitlist(files)
 		
-		files = tkFileDialog.askopenfiles(mode = 'r+', title = 'Generate code headers for...')
-		
-		for file in files:
-			with file as f:
-				header = self.generateHeader(os.path.basename(file.name))
-				content = f.read()
-				f.seek(0, 0)
-				f.write(header.rstrip('\r\n') + '\n\n' + content)
-			file.close()
+		for path in files:
+			print path
+			f = open(path, 'r+')
+			header = self.generateHeader(os.path.basename(f.name))
+			content = f.read()
+			f.seek(0, 0)
+			f.write(header.rstrip('\r\n') + '\n\n' + content)
+			f.close()
 		
 		r.destroy()
+		
 		print 'Done!'
 		
 	def generateHeader(self, fileName):
 		print 'Generating header... Please wait...'
 		_, fileExt = fileName.split('.')
-		blockCmtStartChars = '"""'
-		blockCmtEndChars = blockCmtStartChars
 		
-		if fileExt in ['java', 'h', 'cxx', 'cpp', 'hpp', 'hxx', 'cc']:
-			blockCmtStartChars = '/*'
-			blockCmtEndChars = '*/'
-		
-		header = self.header % (blockCmtStartChars, fileName, self.fileAuthor, self.getDate(), blockCmtEndChars)
+		header = ext2header[fileExt].format(fileName, self.fileAuthor, self.getDate())
 		return header
 		
 	def getDate(self):
