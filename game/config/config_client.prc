@@ -7,12 +7,12 @@ aux-display pandagl
 
 
 # Logging...
-notify-level warning
-default-directnotify-level warning
+notify-level info
+default-directnotify-level info
 
 # Filenames...
-cursor-filename toonmono.cur
-icon-filename icon.ico
+cursor-filename resources/toonmono.cur
+icon-filename resources/icon.ico
 
 default-model-extension .egg
 

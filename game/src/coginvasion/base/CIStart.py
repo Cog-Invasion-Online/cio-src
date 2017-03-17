@@ -16,10 +16,60 @@ import Logger
 logger = Logger.Starter()
 logger.startNotifyLogging()
 
-globals()['__debug__'] = True
+print "CIStart: Starting the game."
 
-import __builtin__
 import os, sys
+import datetime
+
+class game:
+    name = 'coginvasion'
+    process = 'client'
+    serverAddress = os.environ.get("GAME_SERVER")
+    build = 0
+    buildtype = "Dev"
+    version = "0.0.0"
+    builddate = "{:%B %d, %Y}".format(datetime.datetime.now())
+    production = False
+    phasedir = './resources/'
+   
+import __builtin__
+__builtin__.game = game
+
+try:
+    import aes
+    import config
+    # Config
+    prc = config.CONFIG
+    iv, key, prc = prc[:16], prc[16:32], prc[32:]
+    prc = aes.decrypt(prc, key, iv)
+    for line in prc.split('\n'):
+        line = line.strip()
+        if line:
+            loadPrcFileData('coginvasion config', line)
+    
+    import builddata
+    game.build = int(builddata.BUILDNUM)
+    game.buildtype = builddata.BUILDTYPE
+    game.version = builddata.BUILDVER
+    game.builddate = builddata.BUILDDATE
+    
+    # Load phases from root dir in production
+    game.phasedir = './'
+    game.production = True
+    
+    print "Running production"
+    
+except:
+    loadPrcFile('config/Confauto.prc')
+    loadPrcFile('config/config_client.prc')
+    
+    # Load phases from resoures folder in dev mode
+    game.phasedir = './resources/'
+    game.production = False
+    print "Running dev"
+    
+print "Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype)
+print "Phase dir:", game.phasedir
 
 vfs = VirtualFileSystem.getGlobalPtr()
 
@@ -30,7 +80,7 @@ packExtensions = ['.jpg', '.jpeg', '.png', '.ogg', '.rgb', '.mid']
 for phase in phases:
     mf = Multifile()
     mf.setEncryptionPassword('cio-03-06-16_lsphases')
-    mf.openReadWrite(Filename(phase + '.mf'))
+    mf.openReadWrite(Filename(game.phasedir + phase + '.mf'))
     packMf = None
 
     if os.path.exists('resourcepack/%s.mf' % phase):
@@ -54,54 +104,14 @@ for phase in phases:
         vfs.mount(packMf, '.', 0)
         print 'Mounted %s from resource pack.' % phase
 
-print "__debug__ == " + str(__debug__)
-
 from src.coginvasion.manager.SettingsManager import SettingsManager
 jsonfile = "settings.json"
 print "CIStart: Reading settings file " + jsonfile
 sm = SettingsManager()
 sm.loadFile(jsonfile)
 
-import datetime
-
-class game:
-    name = 'coginvasion'
-    process = 'client'
-    serverAddress = os.environ.get("GAME_SERVER")
-    build = 0
-    buildtype = "Dev"
-    version = "0.0.0"
-    builddate = "{:%B %d, %Y}".format(datetime.datetime.now())
-
-__builtin__.game = game
-
-print "CIStart: Starting the game."
 print "CIStart: Using Panda3D version {0}".format(PandaSystem.getVersionString())
 print 'CIStart: True threading: ' + str(Thread.isTrueThreads())
-
-try:
-    import aes
-    import config
-    # Config
-    prc = config.CONFIG
-    iv, key, prc = prc[:16], prc[16:32], prc[32:]
-    prc = aes.decrypt(prc, key, iv)
-    for line in prc.split('\n'):
-        line = line.strip()
-        if line:
-            loadPrcFileData('coginvasion config', line)
-    
-    import builddata
-    game.build = int(builddata.BUILDNUM)
-    game.buildtype = builddata.BUILDTYPE
-    game.version = builddata.BUILDVER
-    game.builddate = builddata.BUILDDATE
-    
-    print "Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype)
-except:
-    loadPrcFile('config/Confauto.prc')
-    loadPrcFile('config/config_client.prc')
-    print "Running dev"
 
 sm.maybeFixAA()
 
