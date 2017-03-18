@@ -1,11 +1,17 @@
 import paramiko
 import hashlib
+import os
+import sys
+import winsound
 
-host = "ftp.coginvasion.com"
+def playDone():
+    winsound.PlaySound('tools/deploydone.wav', winsound.SND_FILENAME)
+
+host = "69.195.114.97"
 port = 22
 transport = paramiko.Transport((host, port))
 
-password = "toontownTf2!"
+password = "CIO-6_17_14-justhost"
 username = "coginvas"
 transport.connect(username = username, password = password)
 
@@ -13,17 +19,100 @@ sftp = paramiko.SFTPClient.from_transport(transport)
 
 print 'Sucessfully opened sftp connection!'
 
-# Let's take the file_info.txt and turn it into file_info_old.txt
-file_info = open('file_info.txt', 'r')
-file_info_old = open('file_info_old.txt', 'w')
-file_info_old.write(file_info.read())
-file_info_old.flush()
-file_info_old.close()
+servData = {}
 
-filesToUpload = []
+print "Reading current server hash file..."
 
-file_info.seek(0)
-for line in file_info.readlines():
-    if not "//" in line:
+srvFile = sftp.file("public_html/download/file_info.txt", "r")
+
+for line in srvFile.readlines():
+    if not "//" in line and len(line) > 0 and not line.isspace():
         filename, sha = line.split(' ')
-        if hashlib.sha1()
+        sha = sha.replace('\n', '')
+        if "-" in sha:
+           sha = sha.replace('-', '')
+        sha = sha.lower()
+        servData[filename] = sha
+
+bbin = raw_input("\nDo you need coginvasion.bin to be built?\n(Python code changes) [1/0] ")
+if bbin in ["1"]:
+    print "Building coginvasion.bin..."
+    os.chdir("tools/nirai/")
+    os.system("build_bin")
+    os.chdir("../../")
+
+bexe = raw_input("\nDo you need to build the exes?\n(C++ changes / Panda3D update) [1/0] ")
+if bexe in ["1"]:
+    print "Building the exes (OpenGL + DX9)"
+    os.chdir("tools/nirai/")
+    os.system("build_exe")
+    os.chdir("../../")
+
+print "Examining local game directory..."
+
+class LocalFile:
+
+    def __init__(self, fullfile):
+        self.fullfile = fullfile
+        splPath = fullfile.split('/')
+        self.filename = splPath[len(splPath) - 1]
+
+lclData = {}
+
+filesToDeploy = []
+
+files = open('tools/files.txt', 'r')
+for fpath in files.readlines():
+    fpath = fpath.replace('\n', '')
+    splPath = fpath.split('/')
+    lclFile = LocalFile(fpath)
+    f = open(fpath, 'rb')
+    sha = hashlib.sha1(f.read()).hexdigest()
+    f.close()
+    lclData[lclFile] = sha
+
+for lclFile, lclSha in lclData.items():
+    srvSha = servData.get(lclFile.filename)
+
+    if (srvSha != lclSha):
+        print "\nI noticed that your {0} differs from the server's {0}".format(lclFile.filename)
+        upd = raw_input("Do you want your {0} to be deployed? [1/0] ".format(lclFile.filename))
+        if upd not in ["1"]:
+            # They don't want this file to be deployed. Keep the same hash from before.
+            lclData[lclFile] = srvSha
+        else:
+            filesToDeploy.append(lclFile)
+
+print
+
+if not len(filesToDeploy):
+    print "Everything matches with the server -- nothing to deploy!"
+    print "Done!"
+    sftp.close()
+    playDone()
+    sys.exit(0)
+
+print "Writing and deploying hash file..."
+hashfw = open('file_info.txt', 'w')
+for lclFile, sha in lclData.items():
+    hashfw.write(lclFile.filename + " " + sha + "\n")
+hashfw.flush()
+hashfw.close()
+
+hashfr = open('file_info.txt', 'r')
+sftp.putfo(hashfr, "public_html/download/file_info.txt")
+hashfr.close()
+os.remove("file_info.txt")
+
+print "Deploying {0} files...".format(len(filesToDeploy))
+
+for lclFile in filesToDeploy:
+    print "Deploying {0}...".format(lclFile.fullfile)
+    f = open(lclFile.fullfile, 'rb')
+    sftp.putfo(f, "public_html/download/" + lclFile.filename)
+    f.close()
+
+sftp.close()
+
+print "Done!"
+playDone()
