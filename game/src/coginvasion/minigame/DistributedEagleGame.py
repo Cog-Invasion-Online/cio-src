@@ -331,7 +331,8 @@ class DistributedEagleGame(DistributedMinigame):
         del self.text
 
     def allPlayersReady(self):
-        self.waitLbl.hide()
+        # CIGlobals handles the waiting for others label now.
+        pass
 
     def load(self):
         self.hitEagleSfx = base.loadSfx('phase_4/audio/sfx/AA_drop_anvil_miss.ogg')
