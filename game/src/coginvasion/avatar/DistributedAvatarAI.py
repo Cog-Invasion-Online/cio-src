@@ -94,8 +94,8 @@ class DistributedAvatarAI(DistributedNodeAI.DistributedNodeAI):
     def getHealth(self):
         return self.health
 
-    def d_announceHealth(self, level, hp):
-        self.sendUpdate('announceHealth', [level, hp])
+    def d_announceHealth(self, level, hp, extraId = -1):
+        self.sendUpdate('announceHealth', [level, hp, extraId])
 
     def disable(self):
         self.health = None

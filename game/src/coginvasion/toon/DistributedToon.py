@@ -553,19 +553,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
                 self.getPart("head").setColorScale(0, 0, 0, 1)
                 Sequence(Wait(3.0), Func(self.resetHeadColor)).start()
 
-        # Stop the current fade interval if it exists.
-        if self.dmgFadeIval:
-            self.dmgFadeIval.finish()
-            self.dmgFadeIval = None
-
-        geomNode = self.getGeomNode()
-        # Do a fade effect when we get hit so we are more aware that we were damaged.
-        self.dmgFadeIval = Sequence(
-            Func(geomNode.setTransparency, 1),
-            LerpColorScaleInterval(geomNode, 0.3, (1, 1, 1, 0.5), (1, 1, 1, 1), blendType = 'easeOut'),
-            LerpColorScaleInterval(geomNode, 0.3, (1, 1, 1, 1), (1, 1, 1, 0.5), blendType = 'easeIn'),
-            Func(geomNode.setTransparency, 0))
-        self.dmgFadeIval.start()
+        self.doDamageFade()
 
     def resetHeadColor(self):
         head = self.getPart('head')
@@ -692,8 +680,8 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
     def wrtReparentTo(self, parent):
         DistributedSmoothNode.wrtReparentTo(self, parent)
 
-    def announceHealthAndPlaySound(self, level, hp):
-        DistributedAvatar.announceHealth(self, level, hp)
+    def announceHealthAndPlaySound(self, level, hp, extraId = -1):
+        DistributedAvatar.announceHealth(self, level, hp, extraId)
         hpSfx = base.audio3d.loadSfx("phase_11/audio/sfx/LB_toonup.ogg")
         base.audio3d.attachSoundToObject(hpSfx, self)
         SoundInterval(hpSfx, node = self).start()

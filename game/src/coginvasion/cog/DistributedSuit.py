@@ -328,13 +328,15 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
             self.hpFlash.start()
         self.updateHealthBar(health)
 
-    def announceHealth(self, level, hp):
-        DistributedAvatar.announceHealth(self, level, hp)
+    def announceHealth(self, level, hp, extraId = -1):
+        DistributedAvatar.announceHealth(self, level, hp, extraId)
         if level == 1:
             healthSfx = base.audio3d.loadSfx(SuitGlobals.healedSfx)
             base.audio3d.attachSoundToObject(healthSfx, self)
             SoundInterval(healthSfx, node = self).start()
             del healthSfx
+        if hp < 0:
+            self.doDamageFade()
 
     #
     #    'setSuit' sets the suit type and generates it.

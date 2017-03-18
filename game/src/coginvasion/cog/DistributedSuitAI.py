@@ -268,56 +268,38 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
 
         task.delayTime = self.clearComboDataTime
         return Task.again
-    
-    def __handleGagWeakness(self, gagName, gagDmg):
-        weaknesses = self.suitPlan.getGagWeaknesses()
-        isWeakness = False
-        isImmunity = False
-        damage = 0
-        
-        # Let's check if this gag name is in our weaknesses.
-        if gagName in weaknesses.keys():
-            # This is a weakness of the Cog.
-            isWeakness = True
-            
-            # Let's obtain the percentage.
-            weaknessPerct = weaknesses.get(gagName)
-            
-            # This is an immunity if the weakness percentage is 1.
-            isImmunity = (weaknessPerct == 1)
-            
-            if not isImmunity:
-                damage = int(math.ceil(float(gagDmg) * weaknessPerct))
-            
-        return isWeakness, isImmunity, damage
             
     def __handleTacticalAttacks(self, avId, gagName, gagData):
-        dmg = gagData.get('damage')
-        isWeakness, isImmunity, weaknessDmg = self.__handleGagWeakness(gagName, dmg)
+        # Factor in any weaknesses / immunities to the damage this gag does.
+        weaknessFactor = self.suitPlan.getGagWeaknesses().get(gagName, 1.0)
+        baseDmg = float(gagData.get('damage', 0.0))
+        dmgOffset = int(math.ceil(baseDmg * weaknessFactor)) - baseDmg
+
         self.tacticalSeq = Sequence()
         
-        # If we're not immune to this gag, we need to take damage.
-        if not isImmunity:
-            # Let's handle combos.
-            isCombo, comboDamage = self.__handleCombos(avId, gagName)
+        # Let's handle combos.
+        isCombo, comboDamage = self.__handleCombos(avId, gagName)
 
+        finalDmg = baseDmg + dmgOffset + comboDamage
+
+        self.b_setHealth(self.getHealth() - finalDmg)
+        if dmgOffset < 0.0:
             # Take damage and announce the damage we just took.
-            self.b_setHealth(self.getHealth() - dmg)
-            self.tacticalSeq.append(Func(self.d_announceHealth, 0, dmg))
-            
-            if isCombo and comboDamage > 0:
-                # Great job, team! We just did a combo attack!
-                self.b_setHealth(self.getHealth() - comboDamage)
-                self.tacticalSeq.append(Wait(self.showComboDamageTime))
-                self.tacticalSeq.append(Func(self.d_announceHealth, 2, comboDamage))
-                
-            if isWeakness and weaknessDmg > 0:
-                self.b_setHealth(self.getHealth() - weaknessDmg)
-                self.tacticalSeq.append(Wait(self.showWeaknessBonusDamageTime))
-                self.tacticalSeq.append(Func(self.d_announceHealth, 3, weaknessDmg))
+            self.tacticalSeq.append(Func(self.d_announceHealth, 3, -(baseDmg + dmgOffset), 0))
         else:
-            # Oh geez! This Cog isn't having any of that.
-            pass
+            self.tacticalSeq.append(Func(self.d_announceHealth, 0, -baseDmg))
+
+        if dmgOffset > 0.0:
+            # There is some sort of damage offset bonus.
+            self.tacticalSeq.append(Wait(self.showWeaknessBonusDamageTime))
+            # Show the opposite of the dmgOffset because a negative damage offset means less damage the gag does,
+            # meaning adding health to the cog. Vice-versa
+            self.tacticalSeq.append(Func(self.d_announceHealth, 3, -dmgOffset, 2))
+            
+        if isCombo and comboDamage > 0:
+            # Great job, team! We just did a combo attack!
+            self.tacticalSeq.append(Wait(self.showComboDamageTime))
+            self.tacticalSeq.append(Func(self.d_announceHealth, 2, -comboDamage, 1))
         
         self.tacticalSeq.start()
 
@@ -440,7 +422,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             if hp < 0:
                 hp = 0
             toon.b_setHealth(hp)
-            toon.d_announceHealth(0, dmg)
+            toon.d_announceHealth(0, -dmg)
             self.handleAvatarDefeat(toon)
 
     def turretHitByWeapon(self, weaponId, avId):
