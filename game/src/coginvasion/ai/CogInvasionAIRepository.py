@@ -75,8 +75,8 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
 
     def makeAreasTask(self, task):
         if self.areaIndex >= len(self.areas):
-           self.done()
-           return task.done
+            self.done()
+            return task.done
         area = self.areas[self.areaIndex]
         area(self)
         self.areaIndex += 1
@@ -92,9 +92,8 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         self.notify.error("Cannot create District: There are no available names!")
 
     def handleConnected(self):
+        CogInvasionInternalRepository.handleConnected(self)
         self.districtNameMgr.d_requestDistrictName()
-        
-        print self.holidayMgr.__class__.__name__
         self.holidayMgr.d_srvRequestHoliday()
 
     def toonsAreInZone(self, zoneId):

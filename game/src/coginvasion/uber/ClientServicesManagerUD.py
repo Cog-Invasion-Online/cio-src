@@ -235,8 +235,19 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         dg.addChannel(sender << 32 | avId)
         self.air.send(dg)
 
-        # Tell the friends manager a toon has gone online.
-        self.__handleToonOnline(avId)
+        # OLD WAY: Tell the friends manager a toon has gone online.
+        # self.__handleToonOnline(avId)
+        
+        # NEW WAY: Tell the FriendsManagerUD that a toon is online.
+        # Let's use the netMessenger.
+        self.air.netMessenger.send('avatarOnline', [avId])
+        
+        # Let's prepare the avatarOffline message if the avatar disconnects unexpectedly.
+        cleanupDatagram = self.air.netMessenger.prepare('avatarOffline', [avId])
+        dg = PyDatagram()
+        dg.addServerHeader(accId, self.air.ourChannel, CLIENTAGENT_ADD_POST_REMOVE)
+        dg.addString(cleanupDatagram.getMessage())
+        self.air.send(dg)
 
     def __handleToonOnline(self, avId):
 
@@ -303,7 +314,7 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         self.air.send(dg)
 
         # Tell the friends manager a toon has gone offline.
-        self.__handleToonOffline(doId)
+        #self.__handleToonOffline(doId)
 
     def __handleToonOffline(self, avId):
 

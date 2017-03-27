@@ -92,6 +92,8 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
     def __init__(self, air):
         DistributedObjectGlobalUD.__init__(self, air)
         self.toonsOnline = []
+        self.air.netMessenger.accept('avatarOnline', self, self.toonOnline)
+        self.air.netMessenger.accept('avatarOffline', self, self.toonOffline)
 
     def sendWhisper(self, target, message):
         sender = self.air.getAvatarIdFromSender()
@@ -112,6 +114,42 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
         if sender == None:
             sender = self.air.getAvatarIdFromSender()
         RequestFriendsListProcess(self, self.air, sender)
+        
+    def toonOnline(self, avatarId):
+
+        def avatarResponse(dclass, fields):
+            if dclass != self.air.dclassesByName['DistributedToonUD']:
+                self.notify.warning('#toonOnline: Attempted to get name of a newly online Toon and retrieved non-toon.')
+                return
+
+            name = fields['setName'][0]
+            friendsList = fields['setFriendsList'][0]
+            self.d_toonOnline(avatarId, friendsList, name)
+            self.notify.info('Declaring that this Toon is now online!')
+        
+        self.air.dbInterface.queryObject(
+            self.air.dbId,
+            avatarId,
+            avatarResponse
+        )
+        
+    def toonOffline(self, avatarId):
+        
+        def avatarResponse(dclass, fields):
+            if dclass != self.air.dclassesByName['DistributedToonUD']:
+                self.notify.warning('#toonOffline: Attempted to get name of an offline Toon and retrieved non-toon.')
+                return
+
+            name = fields['setName'][0]
+            friendsList = fields['setFriendsList'][0]
+            self.d_toonOffline(avatarId, friendsList, name)
+            self.notify.info('Declaring that this Toon is now offline.')
+        
+        self.air.dbInterface.queryObject(
+            self.air.dbId,
+            avatarId,
+            avatarResponse
+        )
 
     def d_toonOnline(self, avatarId, friendsList, name):
         if not avatarId in self.toonsOnline:

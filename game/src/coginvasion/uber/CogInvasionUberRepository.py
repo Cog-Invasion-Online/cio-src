@@ -119,6 +119,7 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
         return 300
 
     def handleConnected(self):
+        CogInvasionInternalRepository.handleConnected(self)
         rootObj = DistributedRootAI(self)
         rootObj.generateWithRequiredAndId(self.getGameDoId(), 0, 0)
 
