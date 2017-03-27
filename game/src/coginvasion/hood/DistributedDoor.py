@@ -9,8 +9,6 @@ from direct.interval.IntervalGlobal import Parallel, ParallelEndTogether, Sequen
 from direct.interval.IntervalGlobal import Wait, Func, LerpQuatInterval, SoundInterval
 from direct.interval.IntervalGlobal import LerpPosInterval
 
-from src.coginvasion.npc.NPCWalker import NPCWalkInterval
-
 class DistributedDoor(DistributedObject.DistributedObject):
     notify = directNotify.newCategory("DistributedDoor")
     notify.setInfo(True)
@@ -137,8 +135,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
 
     def enterRightDoorClosed(self, ts = 0):
         self.rightDoor.setH(self.getRightDoorClosedH())
-        self.toggleDoorHole('Right')
-        self.rightDoor.hide()
+        self.toggleDoorHole('Right', show = False)
 
     def exitRightDoorClosed(self):
         pass
@@ -165,7 +162,6 @@ class DistributedDoor(DistributedObject.DistributedObject):
 
     def enterRightDoorOpening(self, ts = 0):
         self.toggleDoorHole('Right', show = True)
-        self.rightDoor.show()
         if self.rightTrack:
             self.rightTrack.finish()
             self.rightTrack = None
@@ -180,8 +176,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
 
     def enterLeftDoorClosed(self, ts = 0):
         self.leftDoor.setH(self.getLeftDoorClosedH())
-        self.toggleDoorHole('Left')
-        self.leftDoor.hide()
+        self.toggleDoorHole('Left', show = False)
 
     def exitLeftDoorClosed(self):
         pass
@@ -208,7 +203,6 @@ class DistributedDoor(DistributedObject.DistributedObject):
             self.leftTrack = None
 
     def enterLeftDoorOpening(self, ts = 0):
-        self.leftDoor.show()
         self.toggleDoorHole('Left', show = True)
         if self.leftTrack:
             self.leftTrack.finish()
@@ -426,13 +420,13 @@ class DistributedDoor(DistributedObject.DistributedObject):
         DistributedObject.DistributedObject.announceGenerate(self)
         try:
             self.building = self.findBuilding()
+            self.generated()
         except:
             self.startBuildingPoll()
             return
         if self.building.isEmpty():
             self.startBuildingPoll()
             return
-        self.generated()
 
     def startBuildingPoll(self):
         base.taskMgr.add(self.__pollBuilding, self.uniqueName('pollBuilding'))
@@ -444,8 +438,10 @@ class DistributedDoor(DistributedObject.DistributedObject):
 
     def generated(self):
         self.doorNode = self.findDoorNodePath()
-        self.rightDoor = self.findDoorNode("rightDoor")
-        self.leftDoor = self.findDoorNode("leftDoor")
+        self.rightDoor = self.findDoorNode('rightDoor')
+        self.leftDoor = self.findDoorNode('leftDoor')
+        self.toggleDoorHole('Right', show = False)
+        self.toggleDoorHole('Left', show = False)
 
         self.enterDoorWalkBackNode = self.doorNode.attachNewNode(self.uniqueName('enterWalkBackNode'))
         self.enterDoorWalkBackNode.setPos(1.6, -5.5, 0.0)
@@ -469,24 +465,27 @@ class DistributedDoor(DistributedObject.DistributedObject):
     def toggleDoorHole(self, side, show = False):
         side = side.title()
         if self.building:
+            # When we updated our libpandadna, doorFrameHoleGeoms were removed for some reason.
+            # Because of our if statement checking if both the hole and the geom is empty,
+            # it made doors break.
+            # To counter this, searching for door hole geom nodes have been removed.
+            # In the future if we downgrade libpandadna or they are added back use the following code:
+            # doorFrameHoleGeom for EXT_HQ door type: self.building.find('**/doorFrameHole%sGeom_%d' % (side, self.doorIndex))
+            # doorFrameHoleGeom for INT_HQ door type: render.find('**/door_' + str(self.doorIndex) + '/**/doorFrameHole%sGeom;+s+i' % side)
+            # doorFrameHoleGeom for every other type: self.building.find('**/doorFrameHole%sGeom' % side)
 
             if self.getDoorType() == self.EXT_HQ:
                 hole = self.building.find('**/doorFrameHole%s_%d' % (side, self.doorIndex))
-                geom = self.building.find('**/doorFrameHole%sGeom_%d' % (side, self.doorIndex))
             elif self.getDoorType() == self.INT_HQ:
                 hole = render.find('**/door_' + str(self.doorIndex) + '/**/doorFrameHole%s;+s+i' % side)
-                geom = render.find('**/door_' + str(self.doorIndex) + '/**/doorFrameHole%sGeom;+s+i' % side)
             else:
                 hole = self.building.find('**/doorFrameHole%s' % side)
-                geom = self.building.find('**/doorFrameHole%sGeom' % side)
             
-            if not hole.isEmpty() and not geom.isEmpty():
+            if not hole.isEmpty():
                 if not show:
                     hole.hide()
-                    geom.hide()
                 else:
                     hole.show()
-                    geom.show()
 
     def printBuildingPos(self):
         self.notify.info(self.building.getPos(render))
