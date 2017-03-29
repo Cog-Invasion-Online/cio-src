@@ -450,7 +450,8 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             self.track = Sequence(Wait(6.0), Func(self.closeSuit))
             self.track.start()
 
-    def closeSuit(self, dropItem = True):
+    def closeSuit(self):
+        dropItem = base.config.GetBool('want-suit-drops', True)
         if dropItem:
             self.itemDropper.drop()
         if self.getManager():

@@ -6,6 +6,7 @@ want-suits #t
 want-suit #t
 want-suit-invasion #t
 want-suit-tournament #t
+want-suit-drops #f
 
 # Minigames
 want-minigames #t
