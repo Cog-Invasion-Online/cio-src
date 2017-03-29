@@ -3,16 +3,47 @@
 
 from direct.showbase.DirectObject import DirectObject
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
 
+from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
+from src.coginvasion.quests.poster.QuestPoster import QuestPoster
 from QuestManagerBase import QuestManagerBase
-import QuestNote
-import Quests
-from QuestGlobals import *
+from QuestGlobals import Anywhere
 import Objectives
 
-class QuestManager(QuestManagerBase):
+class QuestManager(QuestManagerBase, DirectObject):
+    
+    def __init__(self):
+        QuestManagerBase.__init__(self)
+        DirectObject.__init__(self)
+        
+        # The quest posters that are shown when hitting the hotkey.
+        self.posters = []
+        
+        self.acceptOnce('end', self.showQuests)
+        
+    def showQuests(self):
+        positions = [(-0.45, 0.75, 0.3), (0.45, 0.75, 0.3), (-0.45, 0.75, -0.3), (0.45, 0.75, -0.3)]
+        for i in xrange(len(self.quests.values())):
+            quest = self.quests.values()[i]
+            objective = quest.currentObjective
+            poster = None
+            if objective.__class__ in Objectives.DoubleFrameObjectives:
+                poster = DoubleFrameQuestPoster(quest, parent = aspect2d)
+            else:
+                poster = QuestPoster(quest, parent = aspect2d)
+            poster.setup()
+            poster.setPos(positions[i])
+            poster.setScale(0.95)
+            poster.show()
+            self.posters.append(poster)
+        self.acceptOnce('end-up', self.hideQuests)
+        
+    def hideQuests(self):
+        for poster in self.posters:
+            poster.destroy()
+        self.posters = []
+        self.acceptOnce('end', self.showQuests)
 
     def makeQuestsFromData(self):
         QuestManagerBase.makeQuestsFromData(self, base.localAvatar)
@@ -28,14 +59,16 @@ class QuestManager(QuestManagerBase):
         if speech:
             # If it's speech, add the objective's header (e.g Defeat, Recover, Deliver) to the beginning of the sentence.
             taskInfo += objective.Header + " "
-
+            
+        """
         if objective.goal > 1:
             taskInfo += "%d " % objective.goal
         else:
             taskInfo += "a "
+        """
 
         # Add objective specific task info
-        taskInfo += objective.getTaskInfo()
+        taskInfo += objective.getTaskInfo(speech)
 
         if objective.AreaSpecific:
             # This objective is sometimes area specific.
@@ -50,12 +83,11 @@ class QuestManager(QuestManagerBase):
             taskInfo += "."
 
         return taskInfo
-
+    
+    """
     def makeQuestNotes(self, quests = None):
-        """
         Generates and returns a list of QuestNote objects that display information about the quests.
         You can specify a custom quest list. If you don't it will use the QuestManager's quest dictionary.
-        """
 
         # This is what will be returned at the end. It's going to hold our QuestNotes we generate.
         notes = []
@@ -146,4 +178,4 @@ class QuestManager(QuestManagerBase):
 
             notes.append(note)
 
-        return notes
+        return notes"""

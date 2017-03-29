@@ -5,17 +5,17 @@
 
 """
 
-from src.coginvasion.globals import CIGlobals
 from direct.distributed.DistributedSmoothNodeAI import DistributedSmoothNodeAI
 from direct.directnotify.DirectNotify import DirectNotify
+from direct.interval.IntervalGlobal import Sequence, Wait, Func
+
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
 from src.coginvasion.quests.QuestManagerAI import QuestManagerAI
+from src.coginvasion.globals import CIGlobals
 from src.coginvasion.tutorial.DistributedTutorialAI import DistributedTutorialAI
-from direct.interval.IntervalGlobal import Sequence, Wait, Func
-import ToonDNA
 from src.coginvasion.gags import GagGlobals
-
+import ToonDNA
 import types
 
 class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.ToonDNA):
@@ -511,7 +511,6 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
                         needsToUpdate = True
             if needsToUpdate:
                 self.backpack.updateNetAmmo()
-
 
     def delete(self):
         try:

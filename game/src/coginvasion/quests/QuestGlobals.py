@@ -1,10 +1,9 @@
 # Filename: QuestGlobals.py
 # Created by:  blach (29Jul15)
 
-from pandac.PandaModules import Vec4, Point3
-
-from src.coginvasion.suit import CogBattleGlobals
-from src.coginvasion.globals.CIGlobals import *
+from panda3d.core import Vec4, Point3
+from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
 
 #####################################################################
 # Quest posters
@@ -17,6 +16,8 @@ DEFEAT = 'Defeat'
 VISIT = 'Visit'
 RECOVER = 'Recover'
 DELIVER = 'Deliver'
+PLAY = 'Play'
+INSPECT = 'Inspect'
 TO = 'to:'
 FROM = 'from:'
 
@@ -69,6 +70,30 @@ WHITE = Vec4(1, 1, 1, 1)
 
 TEXT_COLOR = Vec4(0.3, 0.25, 0.2, 1)
 
+Suit2PosterZNDScale = {
+    'bigcheese' : [-0.05, 0.18],
+    'tightwad' : [-0.035, 0.3],
+    'headhunter' : [-0.04, 0.3],
+    'beancounter' : [-0.05, 0.2],
+    'micromanager' : [-0.04, 0.25],
+    'yesman' : [-0.045, 0.2],
+    'pencilpusher' : [-0.05, IMAGE_SCALE_SMALL],
+    'flunky' : [-0.04, 0.3], # GLASSES AREN'T SCALING CORRECTLY
+    'bigwig' : [-0.05, 0.25],
+    'legaleagle' : [-0.04, 0.3],
+    'telemarketer' : [-0.05, 0.18],
+    'backstabber' : [-0.0575, 0.14],
+    'ambulancechaser' : [-0.055, 0.16],
+    'twoface' : [-0.05, 0.18],
+    'movershaker' : [-0.055, 0.18],
+    'loanshark' : [-0.06, 0.25],
+    'moneybags' : [-0.04, 0.2],
+    'numbercruncher' : [-0.055, 0.17],
+    'pennypincher' : [-0.05, 0.12],
+    'coldcaller' : [-0.045, 0.25],
+    'gladhander' : [-0.0425, 0.225]
+}
+
 def getTPAccessIcon():
     geom = loader.loadModel('phase_3.5/models/gui/sos_textures.bam').find('**/teleportIcon')
     return geom
@@ -80,6 +105,16 @@ def getPackageIcon():
     geom = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
     geom = geom.find('**/package')
     geom.setScale(0.12)
+    return geom
+
+def getTrolleyIcon():
+    geom = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
+    geom = geom.find('**/trolley')
+    return geom
+
+def getCogBuildingIcon():
+    geom = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
+    geom = geom.find('**/COG_building')
     return geom
 
 def getCogIcon():
@@ -141,6 +176,29 @@ def makePlural(text):
     else:
         return text + 's'
 
+def getLocationText(location):
+    if location in CIGlobals.ZoneId2Hood.keys():
+        if location == CIGlobals.MinigameAreaId:
+            return CIGlobals.ZoneId2Hood.get(location)
+        return '%s\n%s' % ('Any Street', CIGlobals.ZoneId2Hood.get(location))
+    elif location in CIGlobals.BranchZone2StreetName.keys():
+        streetName = CIGlobals.BranchZone2StreetName.get(location)
+        playground = CIGlobals.ZoneId2Hood.get(location - (location % 1000))
+        return '%s\n%s' % (streetName, playground)
+    elif location in CIGlobals.zone2TitleDict.keys():
+        shop = CIGlobals.zone2TitleDict.get(location)[0]
+        streetZone = ZoneUtil.getBranchZone(location)
+        if streetZone % 1000 >= 100:
+            streetName = CIGlobals.BranchZone2StreetName[streetZone]
+        else:
+            streetName = PLAYGROUND
+        hoodName = ZoneUtil.getHoodId(streetZone, 1)
+        return '%s\n%s\n%s' % (shop, streetName, hoodName)
+    elif not location:
+        return 'Any Street\nAny Playground'
+    
+def isShopLocation(location):
+    return location in CIGlobals.zone2TitleDict.keys()
 
 def getOrdinal(number):
     """Returns number as a string with an ordinal. Ex: 1st, 2nd, 3rd"""

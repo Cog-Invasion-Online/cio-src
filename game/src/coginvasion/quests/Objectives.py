@@ -10,18 +10,20 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
-from src.coginvasion.cog import SuitBank
+from src.coginvasion.cog import Variant
+from src.coginvasion.gags import GagGlobals
 import QuestGlobals
 
 ####################################
 # Objective types
 
 DefeatCog = 1
-DefeatCogDept = 2
+RecoverItem = 2
+DeliverItem = 6
 DefeatCogInvasion = 3
 DefeatCogTournament = 4
-DefeatCogLevel = 11
 DefeatCogBuilding = 13
+InspectLocation = 15
 
 PlayMinigame = 14
 
@@ -30,10 +32,10 @@ VisitHQOfficer = 12
 #####################################
 
 # This is so we know what objectives react to QuestManagerAI.cogDefeated
-DefeatCogObjectives = [DefeatCog, DefeatCogDept, DefeatCogLevel]
+DefeatCogObjectives = [DefeatCog]
 
 # This is so we know which objectives you have to defeat stuff.
-DefeatObjectives = [DefeatCog, DefeatCogDept, DefeatCogInvasion, DefeatCogTournament, DefeatCogLevel, DefeatCogBuilding]
+DefeatObjectives = [DefeatCog, DefeatCogInvasion, DefeatCogTournament, DefeatCogBuilding]
 
 class Objective:
     """ [goal, area] """
@@ -68,11 +70,6 @@ class Objective:
 
         self.showAsComplete = 0
 
-        self.didEditLeft = False
-
-    def getDidEditLeft(self):
-        return self.didEditLeft
-
     def setupQuestPoster(self):
         if self.HasProgress:
             self.quest.setProgressText(self.getProgressText())
@@ -83,32 +80,6 @@ class Objective:
         else:
             return 'A '
 
-    def setCogsGeneralIcon(self):
-        # Let's load up the general Cogs picture.
-        icon = QuestGlobals.getCogIcon()
-
-        if self.didEditLeft:
-            self.quest.setLeftIconGeom(icon)
-            self.quest.setLeftIconScale(icon.getScale())
-        else:
-            self.quest.setRightIconGeom(icon)
-            self.quest.setRightIconScale(icon.getScale())
-
-    def setCogSpecificIcon(self, cog, poster):
-        # Let's load up the head.
-        head = SuitBank.getSuitByName(cog).getHead().generate()
-        head.setName('%sHead' % CIGlobals.Suit)
-        head.setScale(2)
-        head.setH(180)
-        head.setDepthWrite(1)
-        head.setDepthTest(1)
-        poster.fitGeometry(head, fFlip = 1)
-
-        if leftFrame:
-           self.quest.setLeftIconGeom(head)
-        else:
-           self.quest.setRightIconGeom(head)
-
     def getProgressText(self):
         return "%d of %d " % (self.progress, self.goal) + QuestGlobals.makePastTense(self.Header)
 
@@ -116,7 +87,7 @@ class Objective:
         # We have nothing to do here
         pass
 
-    def getTaskInfo(self):
+    def getTaskInfo(self, speech = False):
         return ""
 
     def isComplete(self):
@@ -128,7 +99,7 @@ class VisitNPCObjective(Objective):
     0 npcId = HQ Officer
     """
 
-    Header = "Visit"
+    Header = QuestGlobals.VISIT
 
     def __init__(self, npcId, showAsComplete = 0):
         Objective.__init__(self, None, None)
@@ -143,12 +114,31 @@ class VisitNPCObjective(Objective):
             self.npcZone = 0
         else:
             self.npcZone = CIGlobals.NPCToonDict[npcId][0]
+            self.area = self.npcZone 
 
     def isComplete(self):
         return False
+    
+class DeliverItemObjective(VisitNPCObjective):
+    Header = QuestGlobals.DELIVER
+    HasProgress = True
+    
+    def __init__(self, goal, area, npcId, itemName, 
+        itemIcon = QuestGlobals.getPackageIcon(), showAsComplete = 0):
+        VisitNPCObjective.__init__(self, npcId, showAsComplete)
+        self.itemName = itemName
+        self.itemIcon = itemIcon
+        
+        if self.itemName in GagGlobals.gagIds.values():
+            invIcons = loader.loadModel('phase_3.5/models/gui/inventory_icons.bam')
+            self.itemIcon = invIcons.find('**/%s' % GagGlobals.InventoryIconByName[self.itemName])
+            invIcons.removeNode()
+        
+    def isComplete(self):
+        return Objective.isComplete(self)
 
 class DefeatObjective(Objective):
-    Header = "Defeat"
+    Header = QuestGlobals.DEFEAT
     HasProgress = True
 
     def isValidLocation(self, hood):
@@ -158,153 +148,89 @@ class DefeatObjective(Objective):
             hood == CIGlobals.BattleTTC)
 
 class CogObjective(DefeatObjective):
-    """ [cogName, goal, area] """
+    """ [cogName, goal, area, level, levelRange, name, variant, dept] """
 
-    def __init__(self, cog, goal, area):
+    def __init__(self, name, goal, area, level = None, levelRange = None, 
+            variant = None, dept = None):
         DefeatObjective.__init__(self, goal, area)
-        self.cog = cog
-
-    def setupQuestPoster(self, poster):
-        leftFrame = True
-        self.didEditLeft = leftFrame
-        frameColor = QuestGlobals.BLUE
-        auxText = self.Header
-
-        infoText = self.getInfoText()
-
-        if self.cog == QuestGlobals.Any:
-            self.setCogsGeneralIcon()
-            text = CIGlobals.Suit if self.goal == 1 else CIGlobals.Suits
-            infoText += text
-        else:
-            nameText = self.cog
-            if self.goal > 1:
-                nameText = QuestGlobals.makePlural(self.cog)
-            infoText += nameText
-
-            self.setCogSpecificIcon(self.cog, poster)
-
-        if leftFrame:
-           self.quest.setInfoText(infoText)
-           self.quest.setAuxTex(self.Header)
-        else:
-           self.quest.setInfo02Text(infoText)
-           self.quest.setInfo02Pos(QuestGlobals.RECOVER_INFO2_POS)
-           self.quest.setRightPicturePos(QuestGlobals.DEFAULT_RIGHT_PICTURE_POS)
-
-        self.quest.setPictureFrameColor(frameColor)
-
-    def handleProgress(self, cog):
-        if not self.isComplete():
-
-            if (self.cog == QuestGlobals.Any) or (self.cog == cog.suitPlan.getName()):
-
-                if self.isValidLocation(cog.getHood()):
-
-                    self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId)
-
-    def getTaskInfo(self):
-        if self.cog == QuestGlobals.Any:
-            taskInfo = CIGlobals.Suits
-        else:
-            if self.goal > 1:
-                taskInfo = QuestGlobals.makePlural(self.cog)
-            else:
-                taskInfo = self.cog
-
-        return taskInfo
-
-class CogLevelObjective(DefeatObjective):
-    """ [minCogLevel, goal, area] """
-
-    def __init__(self, minCogLevel, goal, area):
-        DefeatObjective.__init__(self, goal, area)
-        self.minCogLevel = minCogLevel
-
-    def setupQuestPoster(self):
-        leftFrame = True
-        self.didEditLeft = leftFrame
-        frameColor = QuestGlobals.BLUE
-        auxText = self.Header
-
-        self.setCogsGeneralIcon()
-
-        infoText = self.getInfoText()
-
-        infoText += "Level %s+ %s" % (self.minCogLevel, CIGlobals.Suit if self.goal == 1 else CIGlobals.Suits)
-
-        if leftFrame:
-            self.quest.setInfoText(infoText)
-            self.quest.setAuxText(auxText)
-        else:
-            self.quest.setInfo02Text(infoText)
-            self.quest.setInfo02Pos(QuestGlobals.RECOVER_INFO2_POS)
-            self.quest.setRightPicturePos(QuestGlobals.DEFAULT_RIGHT_PICTURE_POS)
-
-        self.quest.setProgressText('%s of %s %s' % (self.progress, self.goal, QuestGlobals.makePastTense(auxText).lower()))
-        self.quest.setPictureFrameColor(frameColor)
-
-    def handleProgress(self, cog):
-        if not self.isComplete():
-
-            if (cog.getLevel() >= self.minCogLevel) and self.isValidLocation(cog.getHood()):
-
-                    self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId)
-
-    def getTaskInfo(self):
-        if self.goal > 1:
-            taskInfo = "Level %d+ %s" % (self.minCogLevel, CIGlobals.Suits)
-        else:
-            taskInfo = "Level %d+ %s" % (self.minCogLevel, CIGlobals.Suit)
-
-        return taskInfo
-
-class CogDeptObjective(DefeatObjective):
-    """ [dept, goal, area] """
-
-    def __init__(self, dept, goal, area):
-        DefeatObjective.__init__(self, goal, area)
+        self.cog = name
+        self.level = level
+        self.levelRange = levelRange
         self.dept = dept
-
-    def setupQuestPoster(self):
-        leftFrame = True
-        self.didEditLeft = leftFrame
-        frameColor = QuestGlobals.BLUE
-        auxText = self.Header
-
-        self.setCogsGeneralIcon()
-
-        infoText = self.getInfoText()
-
-        infoText += self.dept.getName() if self.goal == 1 else QuestGlobals.makePlural(self.dept.getName())
-
-        if leftFrame:
-            self.quest.setInfoText(infoText)
-            self.quest.setAuxText(auxText)
-        else:
-            self.quest.setInfo02Text(infoText)
-            self.quest.setInfo02Pos(QuestGlobals.RECOVER_INFO2_POS)
-            self.quest.setRightPicturePos(QuestGlobals.DEFAULT_RIGHT_PICTURE_POS)
-
-        self.quest.setProgressText('%s of %s %s' % (self.progress, self.goal, QuestGlobals.makePastTense(auxText).lower()))
-        self.quest.setPictureFrameColor(frameColor)
+        self.variant = variant
 
     def handleProgress(self, cog):
-        if not self.isComplete():
+        if not self.isComplete() and self.isNeededCog(cog):
+            self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId)
+                    
+    def isNeededCog(self, cog):
+        if not self.isValidLocation(cog.getHood()):
+            return False
 
-            if self.dept == cog.dept:
+        if self.levelRange and not self.isInLevelRange(cog.level):
+            return False
+        
+        if self.cog and not self.cog == QuestGlobals.Any and not cog.name == self.cog:
+            return False
+        
+        if self.dept and not cog.dept == self.dept:
+            return False
+        
+        if self.variant and not cog.variant == self.variant:
+            return False
+        
+        return True
+        
+    def isInLevelRange(self, level):
+        if self.levelRange:
+            return self.levelRange[0] <= level and self.levelRange[1] >= level
+        return True
+                    
+    def getTaskInfo(self, speech = False):
+        infoText = QuestGlobals.DEFEAT + ' ' if speech else ''
+        infoText += (str(self.goal)) if self.goal > 1 else 'A'
+        
+        if self.level:
+            infoText += (str('%s Level %s' % (infoText, str(self.level))))
+        elif self.levelRange:
+            infoText += str('%s Level %s+' % (infoText, str(self.levelRange[0])))
+            
+        if self.variant:
+            variantTxt = Variant.VariantToName.get(self.variant)
+            if self.goal > 1:
+                variantTxt = QuestGlobals.makePlural(variantTxt)
+            infoText = str('%s %s' % (infoText, variantTxt))
+            
+        if self.dept:
+            deptName = self.dept.getName() if not self.goal > 1 else QuestGlobals.makePlural(self.dept.getName())
+            infoText = str('%s %s' % (infoText, deptName))
+        elif self.cog == QuestGlobals.Any:
+            text = CIGlobals.Suit if not self.goal > 1 else CIGlobals.Suits
+            infoText = str('%s %s' % (infoText, text))
+        elif not self.cog == QuestGlobals.Any:
+            nameText = self.cog if not self.goal > 1 else QuestGlobals.makePlural(self.cog)
+            infoText = str('%s %s' % (infoText, nameText))
 
-                if self.isValidLocation(cog.getHood()):
-
-                    self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId)
-
-    def getTaskInfo(self):
-        if self.goal > 1:
-            taskInfo = self.dept.getName()
-        else:
-            taskInfo = QuestGlobals.makeSingular(self.dept.getName())
-
-        return taskInfo
+        return infoText
+    
+class RecoverItemObjective(CogObjective):
+    Header = QuestGlobals.RECOVER
+    HasProgress = True
+    
+    def __init__(self, goal, area, itemName, itemIcon = QuestGlobals.getPackageIcon(),
+            name = QuestGlobals.Any, level = None, levelRange = None, 
+        variant = None, dept = None):
+        CogObjective.__init__(self, name, goal, area, level, levelRange, variant, dept)
+        self.itemName = itemName
+        self.itemIcon = itemIcon
+        
+    def getTaskInfo(self, speech = False):
+        cogObjInfo = CogObjective.getTaskInfo(self)
+        infoText = QuestGlobals.RECOVER + ' ';
+        infoText += str('a %s' % self.itemName) if self.goal == 1 else str('%d %s' % (self.goal, 
+            QuestGlobals.makePlural(self.itemName)))
+        infoText = str('%s from %s' % (infoText, cogObjInfo))
+        return infoText
 
 class CogInvasionObjective(DefeatObjective):
     """ [goal, area] """
@@ -318,7 +244,7 @@ class CogInvasionObjective(DefeatObjective):
 
                 self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId)
 
-    def getTaskInfo(self):
+    def getTaskInfo(self, speech = False):
         if self.goal > 1:
             taskInfo = QuestGlobals.QuestSubjects[1]
         else:
@@ -338,7 +264,7 @@ class CogTournamentObjective(DefeatObjective):
 
                 self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId)
 
-    def getTaskInfo(self):
+    def getTaskInfo(self, speech = False):
         if self.goal > 1:
             taskInfo = self.Name
         else:
@@ -365,15 +291,19 @@ class CogBuildingObjective(DefeatObjective):
 
                     self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId)
 
-    def getTaskInfo(self):
-        taskInfo = ""
+    def getTaskInfo(self, speech = False):
+        taskInfo = 'A ' if self.goal == 1 else '%d ' % self.goal
         if self.minFloors != QuestGlobals.Any:
             taskInfo += "%s+ Story " % QuestGlobals.getNumName(self.minFloors)
-
+        
+        name = self.Name
+        if not speech:
+            name = '%s\nBuilding'
+        
         if self.dept == QuestGlobals.Any:
-            subject = self.Name % CIGlobals.Suit
+            subject = name % CIGlobals.Suit
         else:
-            subject = self.Name % self.dept.getName()
+            subject = name % self.dept.getName()
 
         if self.goal > 1:
             subject = QuestGlobals.makePlural(subject)
@@ -381,12 +311,6 @@ class CogBuildingObjective(DefeatObjective):
         taskInfo += subject
 
         return taskInfo
-
-class RecoverObjective(Objective):
-    Header = "Recover"
-    HasProgress = True
-
-    # Not implemented.
 
 class MinigameObjective(Objective):
     """ [minigameName, goal] """
@@ -398,6 +322,7 @@ class MinigameObjective(Objective):
     def __init__(self, minigame, goal):
         Objective.__init__(self, goal, None)
         self.minigame = minigame
+        self.area = CIGlobals.MinigameAreaId
 
     def handleProgress(self, minigame):
 
@@ -406,18 +331,30 @@ class MinigameObjective(Objective):
             if minigame == self.minigame:
                 self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId)
 
-    def getTaskInfo(self):
+    def getTaskInfo(self, speech = False):
         if self.goal > 1:
-            taskInfo = "games of %s"
+            taskInfo = str(self.goal) + " Rounds of %s"
         else:
-            taskInfo = "game of %s"
+            taskInfo = "A Round of %s"
         taskInfo = taskInfo % self.minigame
         return taskInfo
+    
+class InspectLocation(Objective):
+    
+    Header = QuestGlobals.INSPECT
+    HasProgress = True
+    
+    def __init__(self, inspectionSiteId):
+        
+        Objective.__init__(self, goal = 1, area = area)
+    
+# The objectives listed below require the double frame poster style.
+DoubleFrameObjectives = [RecoverItemObjective, DeliverItemObjective]
 
 ObjectiveType2ObjectiveClass = {
     DefeatCog:           CogObjective,
-    DefeatCogLevel:      CogLevelObjective,
-    DefeatCogDept:       CogDeptObjective,
+    RecoverItem:      RecoverItemObjective,
+    DeliverItem:       DeliverItemObjective,
     DefeatCogInvasion:   CogInvasionObjective,
     DefeatCogTournament: CogTournamentObjective,
     DefeatCogBuilding:   CogBuildingObjective,

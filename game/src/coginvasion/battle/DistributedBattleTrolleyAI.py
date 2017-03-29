@@ -70,7 +70,6 @@ class DistributedBattleTrolleyAI(DistributedObjectAI):
         base.taskMgr.remove(self.uniqueName('sendOffToons'))
 
     def enterLeaving(self):
-        print "Trolley leaving (to zone {0})".format(self.toZone)
         base.taskMgr.doMethodLater(5.0, self.__trolleyLeft, self.uniqueName('trolleyLeft'))
 
     def __trolleyLeft(self, task):
@@ -98,7 +97,6 @@ class DistributedBattleTrolleyAI(DistributedObjectAI):
         base.taskMgr.remove(self.uniqueName('trolleyLeft'))
 
     def enterArriving(self):
-        print "trolley arriving (from zone {0})".format(self.otherTrolley.zoneId)
         base.taskMgr.doMethodLater(5.0, self.__trolleyArrived, self.uniqueName('trolleyArrived'))
 
     def __trolleyArrived(self, task):

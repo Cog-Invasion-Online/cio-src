@@ -21,6 +21,30 @@ finalInTier = "lastQuestInTier"
 args = "args"
 assigner = "assigner"
 objType = "objType"
+name = "name"
+
+"""
+1: {objectives: [
+        {objType: CogBuildingObjective, args: [Dept.BOSS, 0, 1, CIGlobals.DaisyGardensId]}
+    ],
+    reward: (GagSlot, 3),
+    tier: Tiers.TT,
+    requiredQuests: [0]},
+
+2: {objectives: [
+        {objType: CogBuildingObjective, args: [Any, 3, 3, Anywhere]}
+    ],
+    reward: (Health, 2),
+    tier: Tiers.TT,
+    requiredQuests: [0]},
+
+3: {objectives: [
+        {objType: MinigameObjective, args: [CIGlobals.UnoGame, 1]}
+    ],
+    reward: (Health, 1),
+    tier: Tiers.TT,
+    requiredQuests: [0]},
+"""
 
 Quests = {
 
@@ -34,28 +58,16 @@ Quests = {
             "Nice work completing the tutorial!\x07You're probably already exhausted, but " + CIGlobals.NPCToonNames[2003] + " needs"
             " you right away.\x07"
         ),
-        finishSpeech: ("Great job, young lad.\x07I see loads of potential in you.\x07One day you will be one of the best Cog busters around!\x07")},
-
-    1: {objectives: [
-            {objType: CogBuildingObjective, args: [Dept.BOSS, 0, 1, CIGlobals.DaisyGardensId]}
-        ],
-        reward: (GagSlot, 3),
-        tier: Tiers.TT,
-        requiredQuests: [0]},
-
-    2: {objectives: [
-            {objType: CogBuildingObjective, args: [Any, 3, 3, Anywhere]}
-        ],
-        reward: (Health, 2),
-        tier: Tiers.TT,
-        requiredQuests: [0]},
-
+        finishSpeech: ("Great job, young lad.\x07I see loads of potential in you.\x07One day you will be one of the best Cog busters around!\x07"),
+        name: 'Schooled'},
+          
     3: {objectives: [
             {objType: MinigameObjective, args: [CIGlobals.UnoGame, 1]}
         ],
         reward: (Health, 1),
         tier: Tiers.TT,
-        requiredQuests: [0]},
+        requiredQuests: [0],
+        name: 'Minigame Layout'},
 
     4: {objectives: [
             {objType: VisitNPCObjective, args: [2322]},
@@ -70,7 +82,28 @@ Quests = {
                "Nobody else has been available to help, and " + CIGlobals.NPCToonNames[2322] + " is in desperate need of someone.\x07"
                "Go see him and find out what the problem is.\x07"),
         finishSpeech: ("What a great friend " + CIGlobals.NPCToonNames[2108] + " is, right?\x07Wow, thank you so much!\x07You know, some of his books are really great. "
-                       "There's this one about a clock that--\x07You know what, I should let you be on your way.\x07Here, take this as a reward for your awesome help...\x07")}
+                       "There's this one about a clock that--\x07You know what, I should let you be on your way.\x07Here, take this as a reward for your awesome help...\x07"),
+        name: 'Strange Occurrences'},
+          
+    5: {objectives: [
+            {objType: RecoverItemObjective, args: [5, CIGlobals.ToontownCentralId, 'Lipgloss', QuestGlobals.getPackageIcon(), SuitGlobals.TheMingler]}
+        ],
+        reward: (Health, 1),
+        tier: Tiers.TT,
+        assignSpeech: (
+            "Nice work completing the tutorial!\x07You're probably already exhausted, but " + CIGlobals.NPCToonNames[2003] + " needs"
+            " you right away.\x07"
+        ),
+        finishSpeech: ("Great job, young lad.\x07I see loads of potential in you.\x07One day you will be one of the best Cog busters around!\x07"),
+        name: 'Mingle Mangle'},
+          
+    20: {objectives: [
+            {objType: CogBuildingObjective, args: [Dept.CASH, 3, 3, CIGlobals.DaisyGardensId]}
+        ],
+        reward: (GagSlot, 3),
+        tier: Tiers.TT,
+        requiredQuests: [0],
+        name: 'Building Layout'},
 }
 
 QuestNPCDialogue = {
@@ -129,135 +162,7 @@ class Quest:
         self.objectiveDialogue = QuestNPCDialogue.get(questId)
 
         self.lastQuestInTier = self.questData.get(finalInTier, False)
-
-        #self.resetGUIVariables()
-
-    #################################################################
-    # GUI methods
-
-    def resetGUIVariables(self):
-        # Variables that handle creation of the posters.
-        self.auxText = ''
-        self.auxTextPos = QuestGlobals.DEFAULT_AUX_POS
-        self.infoText = ''
-        self.infoPos = QuestGlobals.DEFAULT_INFO_POS
-        self.info02Text = ''
-        self.info02Pos = QuestGlobals.DEFAULT_INFO2_POS
-        self.lPicturePos = QuestGlobals.DEFAULT_LEFT_PICTURE_POS
-        self.lIconGeom = QuestGlobals.getPackageIcon()
-        self.lIconScale = self.lIconGeom.getScale()
-        self.rPicturePos = QuestGlobals.DEFAULT_RIGHT_PICTURE_POS
-        self.rIconGeom = QuestGlobals.getPackageIcon()
-        self.rIconScale = self.rIconGeom.getScale()
-        self.pictureFrameColor = Vec4(*QuestGlobals.GREEN)
-        self.progressBarText = ''
-        self.locationText = 'N/A'
-        self.locationY = 0
-        self.middleText = ''
-
-    def setAuxText(self, text):
-        self.auxText = text
-
-    def getAuxText(self):
-        return self.auxText
-
-    def setAuxPos(self, pos):
-        self.auxTextPos = pos
-
-    def getAuxPos(self):
-        return self.auxTextPos
-
-    def setInfoPos(self, pos):
-        self.infoPos = pos
-
-    def getInfoPos(self):
-        return self.infoPos
-
-    def setInfoText(self, text):
-        self.infoText = text
-
-    def getInfoText(self):
-        return self.infoText
-
-    def setInfo02Pos(self, pos):
-        self.info02Pos = pos
-
-    def getInfo02Pos(self):
-        return self.info02Pos
-
-    def setInfo02Text(self, text):
-        self.info02Text = text
-
-    def getInfo02Text(self):
-        return self.info02Text
-
-    def setLeftPicturePos(self, pos):
-        self.lPicturePos = pos
-
-    def getLeftPicturePos(self):
-        return self.lPicturePos
-
-    def setLeftIconGeom(self, geom):
-        self.lIconGeom = geom
-
-    def getLeftIconGeom(self):
-        return self.lIconGeom
-
-    def setLeftIconScale(self, scale):
-        self.lIconScale = scale
-
-    def getLeftIconScale(self):
-        return self.lIconScale
-
-    def setRightIconGeom(self, geom):
-        self.rIconGeom = geom
-
-    def getRightIconGeom(self):
-        return self.rIconGeom
-
-    def setRightIconScale(self, scale):
-        self.rIconScale = scale
-
-    def getRightIconScale(self):
-        return self.rIconScale
-
-    def setRightPicturePos(self, pos):
-        self.rPicturePos = pos
-
-    def getRightPicturePos(self):
-        return self.rPicturePos
-
-    def setPictureFrameColor(self, color):
-        self.pictureFrameColor = Vec4(*color)
-
-    def getPictureFrameColor(self):
-        return self.pictureFrameColor
-
-    def setLocationText(self, text):
-        self.locationText = text
-
-    def getLocationText(self):
-        return self.locationText
-
-    def setLocationY(self, y):
-        self.locationY = y
-
-    def getLocationY(self):
-        return self.locationY
-
-    def setProgressText(self, text):
-        self.progressBarText = text
-
-    def getProgressText(self):
-        return self.progressBarText
-
-    def setMiddleText(self, text):
-        self.middleText = text
-
-    def getMiddleText(self):
-        return self.middleText
-
-    ##########################################################
+        self.name = self.questData[name]
 
     def getIndex(self):
         return self.index
@@ -316,6 +221,9 @@ class Quest:
 
     def getCurrentObjectiveIndex(self):
         return self.currentObjectiveIndex
+    
+    def getName(self):
+        return self.name
 
     ############################################
 

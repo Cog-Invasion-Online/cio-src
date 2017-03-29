@@ -8,9 +8,9 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 """
 
-from direct.gui.DirectGui import OnscreenText
-
-#from src.coginvasion.quest.QuestPoster import QuestPoster
+from src.coginvasion.quests.poster.QuestPoster import QuestPoster
+from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
+from src.coginvasion.quests import Objectives
 from BookPage import BookPage
 
 class QuestPage(BookPage):
@@ -18,8 +18,8 @@ class QuestPage(BookPage):
     def __init__(self, book):
         BookPage.__init__(self, book, 'ToonTasks')
 
-        #self.posters = []
-        self.notes = []
+        self.posters = []
+        #self.notes = []
         self.infoText = None
 
     def load(self):
@@ -33,23 +33,26 @@ class QuestPage(BookPage):
     def enter(self):
         BookPage.enter(self)
         
-        self.notes = base.localAvatar.questManager.makeQuestNotes()
-        for note in self.notes:
-            note.show()
+        positions = [(-0.45, 0.75, 0.3), (0.45, 0.75, 0.3), (-0.45, 0.75, -0.3), (0.45, 0.75, -0.3)]
 
-        #self.posters = []
-        #for quest in base.localAvatar.questManager.getQuests():
-        #    poster = QuestPoster(quest)
-        #    poster.update()
-        #    self.posters.append(poster)
-
-        #self.infoText = OnscreenText(text = "Return completed ToonTasks to an HQ Officer at any Toon HQ building.",
-        #    pos = (0, -0.6), scale = 0.045)
+        for i in xrange(len(base.localAvatar.questManager.quests.values())):
+            quest = base.localAvatar.questManager.quests.values()[i]
+            objective = quest.currentObjective
+            poster = None
+            if objective.__class__ in Objectives.DoubleFrameObjectives:
+                poster = DoubleFrameQuestPoster(quest, parent = self.book)
+            else:
+                poster = QuestPoster(quest, parent = self.book)
+            poster.setup()
+            poster.setPos(positions[i])
+            poster.setScale(0.95)
+            poster.show()
+            self.posters.append(poster)
 
     def exit(self):
-        for poster in self.notes:
+        for poster in self.posters:
             poster.destroy()
-        self.notes = []
+        self.posters = []
         if self.infoText:
             self.infoText.destroy()
             self.infoText = None
