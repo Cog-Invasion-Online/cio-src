@@ -11,11 +11,14 @@ Copyright (c) CIO Team. All rights reserved.
 from pandac.PandaModules import PandaSystem
 
 from OptionsCategory import OptionsCategory
+
+from direct.showbase.DirectObject import DirectObject
 from direct.gui.DirectGui import OnscreenImage, OnscreenText
 
+from src.coginvasion.book.Credits import Credits
 from src.coginvasion.globals import CIGlobals
 
-class AboutCategory(OptionsCategory):
+class AboutCategory(OptionsCategory, DirectObject):
     Name = "About"
     AppendOptions = False
     ApplyCancelButtons = False
@@ -23,6 +26,7 @@ class AboutCategory(OptionsCategory):
 
     def __init__(self, page):
         OptionsCategory.__init__(self, page)
+        DirectObject.__init__(self)
         self.defaultLogoScale = 0.75
         self.logo = loader.loadTexture("phase_3/maps/CogInvasion_Logo.png")
         self.logoNode = self.page.book.attachNewNode('logoNode')
@@ -30,6 +34,7 @@ class AboutCategory(OptionsCategory):
         self.logoNode.setPos(0, 0, 0.48)
         self.logoImg = OnscreenImage(image = self.logo, scale = (0.685, 0, 0.325), parent=self.logoNode)
         self.logoImg.setTransparency(True)
+        self.creditsScreen = None
 
         self.gVersionText = OnscreenText(text = "Version {0} (Build {1} : {2})".format(game.version,
                                                                                       game.build, 
@@ -42,6 +47,20 @@ class AboutCategory(OptionsCategory):
 
         self.exitToontown = CIGlobals.makeDefaultBtn("Exit Toontown", pos = (-0.62, -0.62, -0.62), parent = self.page.book, scale = 1.2,
                                                      command = self.page.book.finished, extraArgs = ["exit"], geom_scale = (0.8, 0.8, 0.8))
+        
+        self.credits = CIGlobals.makeDefaultBtn("Credits", pos = (0.0, 0.5, -0.62), parent = self.page.book, scale = 1.2,
+                                                     command = self.rollCredits, geom_scale = (0.8, 0.8, 0.8))
+        
+    def rollCredits(self):
+        self.creditsScreen = Credits()
+        self.creditsScreen.setup()
+        base.localAvatar.toggleAspect2d()
+        self.page.book.hide()
+        self.acceptOnce('credits-Complete', self.showBook)
+        
+    def showBook(self):
+        self.page.book.show()
+        base.localAvatar.toggleAspect2d()
 
     def cleanup(self):
         if hasattr(self, 'gVersionText'):
@@ -65,4 +84,10 @@ class AboutCategory(OptionsCategory):
         if hasattr(self, 'exitToontown'):
             self.exitToontown.destroy()
             del self.exitToontown
+        if hasattr(self, 'credits'):
+            self.credits.destroy()
+            del self.credits
+        if hasattr(self, 'creditsScreen'):
+            self.creditsScreen = None
+            del self.creditsScreen
         del self.defaultLogoScale

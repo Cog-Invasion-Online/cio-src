@@ -416,6 +416,18 @@ def getModelDetail(avatar):
     ModelDetail = ModelPolys[avatar][model_detail]
     return ModelDetail
 
+def getRolloverSound():
+    global rolloverSfx
+    rolloverSfx = loader.loadSfx('phase_3/audio/sfx/GUI_rollover.ogg')
+    rolloverSfx.setVolume(0.85)
+    return rolloverSfx
+
+def getClickSound():
+    global clickSfx
+    clickSfx = loader.loadSfx('phase_3/audio/sfx/GUI_click.ogg')
+    clickSfx.setVolume(0.85)
+    return clickSfx
+
 def getOkayBtnGeom():
     global OkayBtnGeom
     if not OkayBtnGeom:
@@ -448,7 +460,8 @@ def makeOkayButton(text = "Okay", parent = None, text_scale = 0.045, text_pos = 
         parent = aspect2d
     btn = DirectButton(text = text, geom = getOkayBtnGeom(),
                        parent = parent, pos = pos, text_scale = text_scale, text_pos = text_pos,
-                       command = command, extraArgs = extraArgs, relief = None, geom_scale = geom_scale)
+                       command = command, extraArgs = extraArgs, relief = None, geom_scale = geom_scale,
+                       rolloverSound = getRolloverSound(), clickSound = getClickSound())
     return btn
 
 def makeCancelButton(text = "Cancel", parent = None, text_scale = 0.045, text_pos = (0, -0.075),
@@ -458,7 +471,8 @@ def makeCancelButton(text = "Cancel", parent = None, text_scale = 0.045, text_po
         parent = aspect2d
     btn = DirectButton(text = text, geom = getCancelBtnGeom(),
                        parent = parent, pos = pos, text_scale = text_scale, text_pos = text_pos,
-                       command = command, extraArgs = extraArgs, relief = None, geom_scale = geom_scale)
+                       command = command, extraArgs = extraArgs, relief = None, geom_scale = geom_scale,
+                       rolloverSound = getRolloverSound(), clickSound = getClickSound())
     return btn
 
 def makeDirectionalBtn(direction, parent = None, pos = (0, 0, 0), command = None, extraArgs = []):
@@ -482,7 +496,8 @@ def makeDirectionalBtn(direction, parent = None, pos = (0, 0, 0), command = None
                                                                gui.find('**/Horiz_Arrow_DN'),
                                                                gui.find('**/Horiz_Arrow_Rllvr'),
                                                                gui.find('**/Horiz_Arrow_UP')),
-                       hpr = hpr, pos = pos, command = command, extraArgs = extraArgs)
+                       hpr = hpr, pos = pos, command = command, extraArgs = extraArgs,
+                       rolloverSound = getRolloverSound(), clickSound = getClickSound())
     return btn
 
 def makeDefaultScrolledListBtn(text = "", text_scale = 0.07, text_align = None, text1_bg = None, text2_bg = None, text3_fg = None,
@@ -505,7 +520,8 @@ def makeDefaultScrolledListBtn(text = "", text_scale = 0.07, text_align = None, 
         relief=None, text=text, text_scale=text_scale,
         text_align=text_align, text1_bg=text1_bg, text2_bg=text2_bg,
         text3_fg=text3_fg, textMayChange=textMayChange, command=command,
-        extraArgs=extraArgs, text_pos = text_pos, parent = parent
+        extraArgs=extraArgs, text_pos = text_pos, parent = parent,
+        rolloverSound = getRolloverSound(), clickSound = getClickSound()
     )
     return btn
 
@@ -579,7 +595,8 @@ def makeDefaultBtn(text = "", text_pos = (0, -0.015), text_scale = 0.045, geom_s
 
 
     btn = DirectButton(text = text, text_pos = text_pos, text_scale = text_scale, geom_scale = geom_scale, command = command, text_font = font,
-                       extraArgs = extraArgs, pos = pos, hpr = hpr, scale = scale, parent = parent, relief = relief, geom = getDefaultBtnGeom())
+                       extraArgs = extraArgs, pos = pos, hpr = hpr, scale = scale, parent = parent, relief = relief, geom = getDefaultBtnGeom(),
+                       rolloverSound = getRolloverSound(), clickSound = getClickSound())
 
     return btn
 
@@ -595,7 +612,8 @@ def getExitButton(cmd = None, extraArgs = [], pos = (0, 0, 0)):
                               text_pos=(0, -0.23), text_scale = 0.8,
                               image_scale = (11, 1, 11), pos = pos,
                               scale = 0.15, command = cmd, extraArgs = extraArgs,
-                              image_color = (1, 0, 0, 1))
+                              image_color = (1, 0, 0, 1), rolloverSound = getRolloverSound(), 
+                              clickSound = getClickSound())
     return exitButton
 
 ShadowScales = {Suit: 0.4,

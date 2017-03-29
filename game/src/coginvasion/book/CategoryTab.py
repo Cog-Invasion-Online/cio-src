@@ -13,6 +13,8 @@ from pandac.PandaModules import TextNode, Vec4
 from direct.gui.DirectGui import DirectButton
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
+from src.coginvasion.globals import CIGlobals
+
 class CategoryTab(DirectButton):
     notify = directNotify.newCategory("CategoryTab")
 
@@ -30,6 +32,7 @@ class CategoryTab(DirectButton):
                               text_align = TextNode.ALeft, text_pos = (0.07, 0.0, 0.0), image = gui.find('**/tabs/polySurface1'),
                               image_pos = (0.6, 1, -0.91), image_hpr = (0, 0, -90), image_scale = (0.033, 0.033, 0.035),
                               image_color = self.normalColor, image1_color = self.clickColor, image2_color = self.rolloverColor,
-                              image3_color = self.disabledColor, text_fg = Vec4(0.2, 0.1, 0, 1), command = self.page.pickCategory, pos = pos)
+                              image3_color = self.disabledColor, text_fg = Vec4(0.2, 0.1, 0, 1), command = self.page.pickCategory, pos = pos,
+                              rolloverSound = CIGlobals.getRolloverSound(), clickSound = CIGlobals.getClickSound())
 
         self.initialiseoptions(CategoryTab)

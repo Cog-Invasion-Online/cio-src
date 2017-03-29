@@ -125,7 +125,6 @@ class Place(StateData):
         self.ignore('DistributedDoor_localAvatarGoingInDoor')
 
     def handleDoorInDone(self, requestStatus):
-        print "WENT INSIDE DOOR!!!"
         self.doneStatus = requestStatus
         messenger.send(self.doneEvent)
 

@@ -107,11 +107,11 @@ class ShtickerBook(DirectFrame, StateData):
 
             self.prevPageBtn = DirectButton(parent = self, geom = (button, button_dn, button_rlvr),
                 relief = None, pos = (-0.83, 0, -0.655), scale = (-0.1, 0.1, 0.1), command = self.changePage,
-            extraArgs = [1])
+            extraArgs = [1], rolloverSound = CIGlobals.getRolloverSound(), clickSound = CIGlobals.getClickSound())
 
             self.nextPageBtn = DirectButton(parent = self, geom = (button, button_dn, button_rlvr),
                 relief = None, pos = (0.83, 0, -0.655), scale = (0.1, 0.1, 0.1), command = self.changePage,
-            extraArgs = [0])
+            extraArgs = [0], rolloverSound = CIGlobals.getRolloverSound(), clickSound = CIGlobals.getClickSound())
 
         pIndex = self.pages.index(self.currentPage)
         if pIndex - 1 < 0:
@@ -146,6 +146,8 @@ class ShtickerBook(DirectFrame, StateData):
                 image_scale = page.getIconScale(),
                 geom_scale = page.getIconScale(),
                 geom_color = page.getIconColor(),
+                clickSound = CIGlobals.getClickSound(),
+                rolloverSound = CIGlobals.getRolloverSound(),
                 pos=(0, 0, -btnOffset),
             scale=0.06, command = self.setCurrentPage, extraArgs = [page])
             page.tabButton = pageBtn

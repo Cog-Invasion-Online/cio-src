@@ -11,7 +11,6 @@ from direct.distributed.ClockDelta import globalClockDelta
 from direct.fsm import ClassicFSM, State
 from direct.interval.IntervalGlobal import LerpPosInterval, LerpHprInterval, LerpQuatInterval, ActorInterval, Parallel, Sequence, Wait, Func
 from direct.interval.IntervalGlobal import SoundInterval, LerpFunctionInterval
-from direct.gui.DirectGui import DirectButton
 
 from src.coginvasion.holiday.HolidayManager import HolidayType
 from src.coginvasion.globals import CIGlobals

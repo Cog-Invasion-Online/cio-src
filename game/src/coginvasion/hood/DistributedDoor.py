@@ -162,6 +162,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
 
     def enterRightDoorOpening(self, ts = 0):
         self.toggleDoorHole('Right', show = True)
+        self.rightDoor.show()
         if self.rightTrack:
             self.rightTrack.finish()
             self.rightTrack = None
@@ -204,6 +205,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
 
     def enterLeftDoorOpening(self, ts = 0):
         self.toggleDoorHole('Left', show = True)
+        self.leftDoor.show()
         if self.leftTrack:
             self.leftTrack.finish()
             self.leftTrack = None
@@ -465,27 +467,25 @@ class DistributedDoor(DistributedObject.DistributedObject):
     def toggleDoorHole(self, side, show = False):
         side = side.title()
         if self.building:
-            # When we updated our libpandadna, doorFrameHoleGeoms were removed for some reason.
-            # Because of our if statement checking if both the hole and the geom is empty,
-            # it made doors break.
-            # To counter this, searching for door hole geom nodes have been removed.
-            # In the future if we downgrade libpandadna or they are added back use the following code:
-            # doorFrameHoleGeom for EXT_HQ door type: self.building.find('**/doorFrameHole%sGeom_%d' % (side, self.doorIndex))
-            # doorFrameHoleGeom for INT_HQ door type: render.find('**/door_' + str(self.doorIndex) + '/**/doorFrameHole%sGeom;+s+i' % side)
-            # doorFrameHoleGeom for every other type: self.building.find('**/doorFrameHole%sGeom' % side)
-
             if self.getDoorType() == self.EXT_HQ:
                 hole = self.building.find('**/doorFrameHole%s_%d' % (side, self.doorIndex))
+                geom = self.building.find('**/doorFrameHole%sGeom_%d' % (side, self.doorIndex))
             elif self.getDoorType() == self.INT_HQ:
                 hole = render.find('**/door_' + str(self.doorIndex) + '/**/doorFrameHole%s;+s+i' % side)
+                geom = render.find('**/door_' + str(self.doorIndex) + '/**/doorFrameHole%sGeom;+s+i' % side)
             else:
                 hole = self.building.find('**/doorFrameHole%s' % side)
+                geom = self.building.find('**/doorFrameHole%sGeom' % side)
             
             if not hole.isEmpty():
                 if not show:
                     hole.hide()
+                    if not geom.isEmpty():
+                        geom.hide()
                 else:
                     hole.show()
+                    if not geom.isEmpty():
+                        geom.show()
 
     def printBuildingPos(self):
         self.notify.info(self.building.getPos(render))
