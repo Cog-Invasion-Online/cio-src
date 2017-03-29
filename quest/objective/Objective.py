@@ -25,6 +25,9 @@ class Objective:
 
         # This is the dialog the NPC says before the objective is given to you.
         self.assignDialog = assignDialog
+        
+    def getTaskInfo(self):
+        pass
 
     def updateInfo(self):
         # Setup the location text.

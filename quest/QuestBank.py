@@ -5,10 +5,12 @@
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.quest.Quest import Quest
-from src.coginvasion.quest.VisitNPCObjective import VisitNPCObjective
-from src.coginvasion.quest.CogObjective import CogObjective
+from src.coginvasion.quest.objective.VisitNPCObjective import VisitNPCObjective
+from src.coginvasion.quest.objective.CogObjective import CogObjective
 from src.coginvasion.quest.QuestReward import QuestReward
 from src.coginvasion.quest import RewardType
+
+from collections import OrderedDict
 
 import copy
 
@@ -30,6 +32,23 @@ def getQuestById(questId):
 
 def getQuests():
     return quests
+
+name = 'name'
+objectives = 'objectives'
+rewards = 'rewards'
+assignSpeech = 'assignSpeech'
+finishSpeech = 'finishSpeech'
+requirements = 'requirements'
+tier = 'tier'
+
+
+quests = [
+    {name : 'Schooled', requirements : [], tier : 0, rewards : {RewardType.LAFF_POINTS : 2},
+     objectives: OrderedDict([(
+        VisitNPCObjective, {'npcId' : 2003, 'assignDialog' : ["Nice work completing the tutorial!\x07",
+            "I know you're probably exhausted, but you must see " + CIGlobals.NPCToonNames[2003] + " immediately!\x07"]}
+    )])}
+]
 
 quests = [
     Quest('Schooled', None, -1, 0, [QuestReward(RewardType.LAFF_POINTS, 2)],

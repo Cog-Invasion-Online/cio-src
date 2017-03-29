@@ -109,8 +109,6 @@ class LocalToon(DistributedToon):
         # Modified by DistributedBattleZone.
         self.inBattle = False
 
-        #base.cTrav.showCollisions(render)
-
     def _handleWentInTunnel(self, requestStatus):
         self.cr.playGame.getPlace().doneStatus = requestStatus
         messenger.send(self.cr.playGame.getPlace().doneEvent)
@@ -393,7 +391,6 @@ class LocalToon(DistributedToon):
         self.accept('shift-tab', self.smartCamera.nextCameraPos, [0])
         self.accept('page_up', self.smartCamera.pageUp)
         self.accept('page_down', self.smartCamera.pageDown)
-        #self.accept('p', self.printPos)
         self.accept('jumpStart', self.__jump)
         self.accept('jumpLand', self.__handleJumpLand)
         self.accept('jumpHardLand', self.__handleJumpHardLand)

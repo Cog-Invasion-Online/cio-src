@@ -4,12 +4,10 @@
 from direct.showbase.DirectObject import DirectObject
 
 from src.coginvasion.hood import ZoneUtil
-
-from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
-from src.coginvasion.quests.poster.QuestPoster import QuestPoster
 from QuestManagerBase import QuestManagerBase
 from QuestGlobals import Anywhere
-import Objectives
+
+import QuestGlobals
 
 class QuestManager(QuestManagerBase, DirectObject):
     
@@ -26,13 +24,7 @@ class QuestManager(QuestManagerBase, DirectObject):
         positions = [(-0.45, 0.75, 0.3), (0.45, 0.75, 0.3), (-0.45, 0.75, -0.3), (0.45, 0.75, -0.3)]
         for i in xrange(len(self.quests.values())):
             quest = self.quests.values()[i]
-            objective = quest.currentObjective
-            poster = None
-            if objective.__class__ in Objectives.DoubleFrameObjectives:
-                poster = DoubleFrameQuestPoster(quest, parent = aspect2d)
-            else:
-                poster = QuestPoster(quest, parent = aspect2d)
-            poster.setup()
+            poster = QuestGlobals.generatePoster(quest, aspect2d)
             poster.setPos(positions[i])
             poster.setScale(0.95)
             poster.show()
@@ -47,6 +39,11 @@ class QuestManager(QuestManagerBase, DirectObject):
 
     def makeQuestsFromData(self):
         QuestManagerBase.makeQuestsFromData(self, base.localAvatar)
+        
+    def cleanup(self):
+        QuestManagerBase.cleanup(self)
+        self.hideQuests()
+        self.ignoreAll()
 
     def getTaskInfo(self, objective, speech = False):
         """

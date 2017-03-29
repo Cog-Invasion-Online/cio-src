@@ -5,7 +5,7 @@
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.quest.VisitNPCObjective import VisitNPCObjective
+from src.coginvasion.quest.objective.VisitNPCObjective import VisitNPCObjective
 from src.coginvasion.quest import QuestGlobals
 from src.coginvasion.gags import GagGlobals
 

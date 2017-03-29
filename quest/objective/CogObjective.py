@@ -12,7 +12,7 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.quest.Objective import Objective
+from src.coginvasion.quest.objective.Objective import Objective
 from src.coginvasion.quest import QuestGlobals
 from src.coginvasion.cog import SuitBank, SuitGlobals, Dept
 

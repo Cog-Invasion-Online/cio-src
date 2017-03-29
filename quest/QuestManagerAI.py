@@ -6,9 +6,9 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.quest.QuestManagerBase import QuestManagerBase
-from src.coginvasion.quest.CogObjective import CogObjective
+from src.coginvasion.quest.objective import CogObjective.CogObjective
 from src.coginvasion.quest import QuestBank
-from src.coginvasion.quest.VisitNPCObjective import VisitNPCObjective
+from src.coginvasion.quest.objective import VisitNPCObjective.VisitNPCObjective
 
 class QuestManagerAI(QuestManagerBase):
     notify = directNotify.newCategory('QuestManagerAI')

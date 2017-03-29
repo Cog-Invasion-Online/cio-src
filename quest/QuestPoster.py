@@ -11,14 +11,13 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectFrame, DirectLabel, DirectWaitBar, DGG
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.quest import QuestGlobals, RewardType, CogObjective,\
-    VisitNPCObjective
+from src.coginvasion.quest import QuestGlobals, RewardType
+from src.coginvasion.quest.objective.CogObjective import CogObjective
+from src.coginvasion.quest.objective.VisitNPCObjective import VisitNPCObjective
 from src.coginvasion.cog import SuitBank
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
-from src.coginvasion.quest.CogObjective import CogObjective
 from src.coginvasion.cog.Head import Head
 from src.coginvasion.toon.ToonHead import ToonHead
-from src.coginvasion.quest.VisitNPCObjective import VisitNPCObjective
 
 POSTER_WIDTH = 0.7
 TEXT_SCALE = QuestGlobals.QPtextScale

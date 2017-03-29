@@ -7,11 +7,11 @@ from direct.gui.DirectGui import DirectFrame, DirectButton, DGG
 
 import DistributedNPCToon
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.quests import Quests, QuestNote, Objectives
-from src.coginvasion.quests.poster.QuestPoster import QuestPoster
-from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
+from src.coginvasion.quests import Quests, Objectives
 from src.coginvasion.quests.QuestGlobals import NPCDialogue
 from src.coginvasion.minigame.Timer import Timer
+
+from src.coginvasion.quests import QuestGlobals
 
 import random
 
@@ -85,10 +85,7 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
         for i in xrange(len(quests)):
             poster = None
             quest = quests[i]
-            if quest.currentObjective.__class__ in Objectives.DoubleFrameObjectives:
-                poster = DoubleFrameQuestPoster(quest)
-            else:
-                poster = QuestPoster(quest)
+            poster = QuestGlobals.generatePoster(quest, parent = aspect2d)
             poster.setScale(0.85)
             poster.setPos(0, 0, 0)
             poster.setup()

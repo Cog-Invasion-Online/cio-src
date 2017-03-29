@@ -5,7 +5,7 @@
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.quest.CogObjective import CogObjective
+from src.coginvasion.quest.objective.CogObjective import CogObjective
 from src.coginvasion.quest import QuestGlobals
 
 class RecoverItemObjective(CogObjective):

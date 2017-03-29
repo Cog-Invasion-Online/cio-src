@@ -1,12 +1,14 @@
-# Filename: QuestGlobals.py
-# Created by:  blach (29Jul15)
+"""
 
-from panda3d.core import Vec4, Point3
+  Filename: QuestGlobals.py
+  Created by: DecodedLogic (13Nov15)
+
+"""
+
+from pandac.PandaModules import Vec4, Point3
+
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
-
-#####################################################################
-# Quest posters
 
 JUST_FOR_FUN = 'Just for fun!'
 SIDE_QUEST = 'Side Quest'
@@ -16,10 +18,9 @@ DEFEAT = 'Defeat'
 VISIT = 'Visit'
 RECOVER = 'Recover'
 DELIVER = 'Deliver'
-PLAY = 'Play'
-INSPECT = 'Inspect'
 TO = 'to:'
 FROM = 'from:'
+NOBODY = -1
 
 QPauxText = 0.04
 QPtextScale = 0.045
@@ -104,58 +105,16 @@ def getFilmIcon():
 def getPackageIcon():
     geom = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
     geom = geom.find('**/package')
-    geom.setScale(0.12)
-    return geom
-
-def getTrolleyIcon():
-    geom = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
-    geom = geom.find('**/trolley')
-    return geom
-
-def getCogBuildingIcon():
-    geom = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
-    geom = geom.find('**/COG_building')
     return geom
 
 def getCogIcon():
     geom = loader.loadModel('phase_3/models/gui/cog_icons.bam')
     geom = geom.find('**/cog')
-    #geom.setScale(IMAGE_SCALE_SMALL)
     return geom
 
 def getJBIcon():
     geom = loader.loadModel('phase_3.5/models/gui/jar_gui.bam')
     return geom
-
-###########################################################################
-
-Any = 0
-Anywhere = 0
-
-class Tiers:
-    TT = 13
-    DD = 14
-    DG = 15
-    ML = 16
-    BR = 17
-    DL = 18
-
-class NPCDialogue:
-    Goodbyes = ["Have a great day!", "Have fun in Toontown!", "Goodbye!", "See you soon!"]
-    QuestAssignGoodbyes = Goodbyes + ["Good luck!", "I believe in you!", "You can do it!"]
-
-    QuestCompletedIntros = ["Say there, %s!", "Hello, %s!", "Hi there, %s.", "Thank you, %s!", "Hey, %s!", "Howdy, %s!"]
-    QuestCompletedCongrats = ["Great job, %s!", "Great job completing that ToonTask!", "Nice job, %s.",
-                                "Nice job completing that ToonTask.", "Amazing job, %s!", "Good job, %s!"]
-
-    FindNPC = ["You can find %s at %s...", "%s is located at %s...", "%s[p] building is called %s..."]
-    WhichIs = "...which is %s"
-
-    Reward = ["Enjoy having %s!", "You have earned %s.", "You now have %s."]
-
-    PickQuestTimeOut = "Need more time to think?"
-    PickQuest = "Choose a ToonTask."
-    CancelQuestPicker = "Come back later if you need a ToonTask, bye!"
 
 def makePastTense(text):
     if text.endswith('e'):
@@ -176,10 +135,10 @@ def makePlural(text):
     else:
         return text + 's'
 
+# Gets the location text for a location.
+
 def getLocationText(location):
     if location in CIGlobals.ZoneId2Hood.keys():
-        if location == CIGlobals.MinigameAreaId:
-            return CIGlobals.ZoneId2Hood.get(location)
         return '%s\n%s' % ('Any Street', CIGlobals.ZoneId2Hood.get(location))
     elif location in CIGlobals.BranchZone2StreetName.keys():
         streetName = CIGlobals.BranchZone2StreetName.get(location)
@@ -196,18 +155,6 @@ def getLocationText(location):
         return '%s\n%s\n%s' % (shop, streetName, hoodName)
     elif not location:
         return 'Any Street\nAny Playground'
-    
-def generatePoster(quest, parent):
-    objective = quest.currentObjective
-    import Objectives
-    if objective.__class__ in Objectives.DoubleFrameObjectives:
-        from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
-        poster = DoubleFrameQuestPoster(quest, parent = parent)
-    else:
-        from src.coginvasion.quests.poster.QuestPoster import QuestPoster
-        poster = QuestPoster(quest, parent = parent)
-    poster.setup()
-    return poster
     
 def isShopLocation(location):
     return location in CIGlobals.zone2TitleDict.keys()

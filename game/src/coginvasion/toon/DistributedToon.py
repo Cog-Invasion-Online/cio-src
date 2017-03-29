@@ -14,14 +14,12 @@ from src.coginvasion.quests.QuestManager import QuestManager
 from src.coginvasion.globals import ChatGlobals
 from src.coginvasion.hood import LinkTunnel
 
-from src.coginvasion.suit.PythonCTMusicMgr import PythonCTMusicManager as PCTMM
-
 from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
 from direct.distributed.ClockDelta import globalClockDelta
 from direct.distributed.DelayDeletable import DelayDeletable
 from direct.distributed import DelayDelete
 from direct.interval.SoundInterval import SoundInterval
-from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpColorScaleInterval
+from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from direct.interval.IntervalGlobal import Parallel, LerpPosInterval, LerpQuatInterval, LerpHprInterval
 from direct.directnotify.DirectNotify import DirectNotify
 from pandac.PandaModules import Point3
@@ -706,7 +704,49 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         if self.dmgFadeIval:
             self.dmgFadeIval.finish()
             self.dmgFadeIval = None
-        self.busy = None
+        if self.questManager:
+            self.questManager.cleanup()
+        if self.token:
+            self.token = None
+        if self.ghost:
+            self.ghost = None
+        if self.puInventory:
+            self.puInventory = None
+        if self.equippedPU:
+            self.equippedPU = None
+        if self.backpack:
+            self.backpack = None
+        if self.animState2animId:
+            self.animState2animId = None
+        if self.animId2animState:
+            self.animId2animState = None
+        if self.firstTimeChangingHP:
+            self.firstTimeChangingHP = None
+        if self.quests:
+            self.quests = None
+        if self.tier:
+            self.tier = None
+        if self.questHistory:
+            self.questHistory = None
+        if self.busy:
+            self.busy = None
+        if self.friends:
+            self.friends = None
+        if self.tutDone:
+            self.tutDone = None
+        if self.hoodsDiscovered:
+            self.hoodsDiscovered = None
+        if self.teleportAccess:
+            self.teleportAccess = None
+        if self.lastHood:
+            self.lastHood = None
+        if self.defaultShard:
+            self.defaultShard = None
+        if self.numGagSlots:
+            self.numGagSlots = None
+        self.__removeHeadMeter()
+        self.destroyBattleMeter()
+
         taskMgr.remove(self.uniqueName('sBAL'))
         taskMgr.remove(self.uniqueName('blinkOnTurn'))
         if self.track != None:
@@ -714,21 +754,41 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
             DelayDelete.cleanupDelayDeletes(self.track)
             self.track = None
         self.stopBlink()
-        self.__removeHeadMeter()
         self.ignore('showAvId')
         self.ignore('showName')
         self.token = None
         self.stopSmooth()
         Toon.Toon.disable(self)
         DistributedAvatar.disable(self)
+        DistributedSmoothNode.disable(self)
 
     def delete(self):
         try:
             self.DistributedToon_deleted
         except:
             self.DistributedToon_deleted = 1
-            self.tutDone = None
-            self.defaultShard = None
+            del self.tunnelTrack
+            del self.dmgFadeIval
+            del self.questManager
+            del self.token
+            del self.ghost
+            del self.puInventory
+            del self.equippedPU
+            del self.backpack
+            del self.animState2animId
+            del self.animId2animState
+            del self.firstTimeChangingHP
+            del self.quests
+            del self.tier
+            del self.questHistory
+            del self.busy
+            del self.friends
+            del self.tutDone
+            del self.hoodsDiscovered
+            del self.teleportAccess
+            del self.lastHood
+            del self.defaultShard
+            del self.numGagSlots
             Toon.Toon.delete(self)
             DistributedAvatar.delete(self)
             DistributedSmoothNode.delete(self)
