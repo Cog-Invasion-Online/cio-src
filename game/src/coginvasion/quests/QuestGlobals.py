@@ -128,15 +128,16 @@ def getJBIcon():
     geom = loader.loadModel('phase_3.5/models/gui/jar_gui.bam')
     return geom
 
+def getHQIcon():
+    icons = loader.loadModel('phase_4/models/gui/tfa_images.bam')
+    geom = icons.find('**/hq-dialog-image')
+    icons.removeNode()
+    return geom
+
 ###########################################################################
 
 Any = 0
 Anywhere = 0
-HQOfficerIds = []
-
-for npcId, name in CIGlobals.NPCToonNames.items():
-    if name in [CIGlobals.lHQOfficerF, CIGlobals.lHQOfficerM]:
-        HQOfficerIds.append(npcId)
 
 class Tiers:
     TT = 13

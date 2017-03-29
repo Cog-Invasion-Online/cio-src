@@ -247,6 +247,7 @@ class QuestPoster(DirectFrame):
             headScale = data[1]
             icon.setScale(headScale)
             icon.setZ(icon.getZ() + zOffset)
+            
             geom.setH(180)
     
     def handleCogObjective(self, iconElement = auxIcon, auxText = QuestGlobals.DEFEAT, frameColor = QuestGlobals.BLUE):
@@ -289,8 +290,14 @@ class QuestPoster(DirectFrame):
             cogHead = cogHeadInstance.generate()
             cogHead.setName('%sHead' % CIGlobals.Suit)
             cogHead.setPythonTag('Settings', cogHeadInstance.head)
-            cogHeadInstance.setScale(2)
+            cogHead.setScale(2)
             self.handleComplexIcon(cogHead, iconElement)
+            
+            # HACK FIX: Corrects the buggy Flunky glasses.
+            glasses = cogHead.find('**/glasses')
+            if glasses and not glasses.isEmpty():
+                glasses.setScale(1)
+                glasses.reparentTo(cogHead)
             
         if not iconElement is self.auxIcon:
             if hasattr(self, 'goalInfo'):
@@ -378,7 +385,6 @@ class QuestPoster(DirectFrame):
         npcId = objective.npcId if hasattr(objective, 'npcId') else objective.assigner
 
         if npcId == 0:
-            npcId = random.choice(QuestGlobals.HQOfficerIds)
             infoText = 'A %s' % CIGlobals.lHQOfficerF
         else:
             infoText = CIGlobals.NPCToonNames[npcId]
@@ -387,12 +393,15 @@ class QuestPoster(DirectFrame):
             iconElement = self.auxIcon
         
         # Let's generate the head.
-        dna = ToonDNA()
-        dna.setDNAStrand(CIGlobals.NPCToonDict.get(npcId)[2])
-        head = ToonHead(base.cr)
-        head.generateHead(dna.getGender(), dna.getAnimal(), dna.getHead(), forGui = 1)
-        head.setHeadColor(dna.getHeadColor())
-        self.handleComplexIcon(head, iconElement)
+        if not objective.isComplete() and not CIGlobals.NPCToonNames[npcId] == CIGlobals.lHQOfficerF:
+            dna = ToonDNA()
+            dna.setDNAStrand(CIGlobals.NPCToonDict.get(npcId)[2])
+            head = ToonHead(base.cr)
+            head.generateHead(dna.getGender(), dna.getAnimal(), dna.getHead(), forGui = 1)
+            head.setHeadColor(dna.getHeadColor())
+            self.handleComplexIcon(head, iconElement)
+        else:
+            self.handleSimpleIcon(QuestGlobals.getHQIcon(), 0.12, iconElement)
         
         self.auxText['text'] = auxText
         
