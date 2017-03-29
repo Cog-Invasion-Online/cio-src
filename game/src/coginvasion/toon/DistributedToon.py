@@ -10,7 +10,6 @@ from src.coginvasion.avatar.DistributedAvatar import DistributedAvatar
 from src.coginvasion.gags.backpack.Backpack import Backpack
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
-from src.coginvasion.quests.QuestManager import QuestManager
 from src.coginvasion.globals import ChatGlobals
 from src.coginvasion.hood import LinkTunnel
 
@@ -41,7 +40,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         Toon.Toon.__init__(self, cr)
         DistributedAvatar.__init__(self, cr)
         DistributedSmoothNode.__init__(self, cr)
-        self.questManager = QuestManager()
         self.token = -1
         self.ghost = 0
         self.puInventory = []
@@ -256,13 +254,13 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         return self.tier
 
     def incrementQuestObjective(self, questId):
-        self.questManager.incrementObjective(questId)
+        base.localAvatar.questManager.incrementObjective(questId)
 
     def setQuestObjective(self, questId, objId):
-        self.questManager.setCurrentObjective(questId, objId)
+        base.localAvatar.questManager.setCurrentObjective(questId, objId)
 
     def getQuestObjective(self, questId):
-        return self.questManager.getQuestByID(questId).getCurrentObjective()
+        return base.localAvatar.questManager.getQuestByID(questId).getCurrentObjective()
 
     def setQuestHistory(self, array):
         self.questHistory = array
@@ -272,7 +270,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
 
     def setQuests(self, questIds, currentObjectives, currentObjectivesProgress):
         self.quests = [questIds, currentObjectives, currentObjectivesProgress]
-        self.questManager.makeQuestsFromData()
+        base.localAvatar.questManager.makeQuestsFromData()
 
     def getQuests(self):
         return self.quests
@@ -704,8 +702,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         if self.dmgFadeIval:
             self.dmgFadeIval.finish()
             self.dmgFadeIval = None
-        if self.questManager:
-            self.questManager.cleanup()
         if self.token:
             self.token = None
         if self.ghost:
@@ -769,7 +765,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
             self.DistributedToon_deleted = 1
             del self.tunnelTrack
             del self.dmgFadeIval
-            del self.questManager
             del self.token
             del self.ghost
             del self.puInventory

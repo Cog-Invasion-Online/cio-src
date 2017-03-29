@@ -18,6 +18,7 @@ RECOVER = 'Recover'
 DELIVER = 'Deliver'
 PLAY = 'Play'
 INSPECT = 'Inspect'
+RETURN = 'Return'
 TO = 'to:'
 FROM = 'from:'
 
@@ -131,6 +132,11 @@ def getJBIcon():
 
 Any = 0
 Anywhere = 0
+HQOfficerIds = []
+
+for npcId, name in CIGlobals.NPCToonNames.items():
+    if name in [CIGlobals.lHQOfficerF, CIGlobals.lHQOfficerM]:
+        HQOfficerIds.append(npcId)
 
 class Tiers:
     TT = 13
@@ -176,7 +182,16 @@ def makePlural(text):
     else:
         return text + 's'
 
-def getLocationText(location):
+def getLocationText(location, objective = None):
+    # Let's handle when the location is None, this means we want to go
+    # to the objective's assigner. OR if we're looking for an HQ officer.
+    if location == 0 or not location and objective:
+        # Let's figure out where the assigner is at, fam.
+        if location == 0 or objective.assigner == 0:
+            return 'Toon HQ\nAny Street\nAny Neighborhood'
+        else:
+            return getLocationText(CIGlobals.NPCToonDict[objective.assigner][0])
+    
     if location in CIGlobals.ZoneId2Hood.keys():
         if location == CIGlobals.MinigameAreaId:
             return CIGlobals.ZoneId2Hood.get(location)
@@ -200,7 +215,7 @@ def getLocationText(location):
 def generatePoster(quest, parent):
     objective = quest.currentObjective
     import Objectives
-    if objective.__class__ in Objectives.DoubleFrameObjectives:
+    if objective.isComplete() or objective.__class__ in Objectives.DoubleFrameObjectives:
         from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
         poster = DoubleFrameQuestPoster(quest, parent = parent)
     else:
@@ -210,7 +225,7 @@ def generatePoster(quest, parent):
     return poster
     
 def isShopLocation(location):
-    return location in CIGlobals.zone2TitleDict.keys()
+    return location in CIGlobals.zone2TitleDict.keys() or location == 0
 
 def getOrdinal(number):
     """Returns number as a string with an ordinal. Ex: 1st, 2nd, 3rd"""

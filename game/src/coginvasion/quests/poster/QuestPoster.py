@@ -28,6 +28,8 @@ from src.coginvasion.cog import Dept, SuitGlobals, SuitBank
 from src.coginvasion.toon.ToonHead import ToonHead
 from src.coginvasion.toon.ToonDNA import ToonDNA
 
+import random
+
 class QuestPoster(DirectFrame):
     notify = directNotify.newCategory('QuestPoster')
     
@@ -42,11 +44,14 @@ class QuestPoster(DirectFrame):
         # The quest this poster is representing.
         self.quest = quest
         
+        isObjComplete = self.quest.currentObjective.isComplete()
+        
         # Let's define our options for the DirectFrame.
         bookModel = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
         optiondefs = (('relief', None, None),
          ('image', bookModel.find('**/questCard'), None),
          ('image_scale', (0.8, 1.0, 0.58), None),
+         ('image_color', (1.0, 1.0, 1.0, 1.0) if not isObjComplete else Vec4(*QuestGlobals.LIGHT_GREEN), None),
          ('state', DGG.NORMAL, None))
         self.defineoptions(kw, optiondefs)
         
@@ -188,8 +193,9 @@ class QuestPoster(DirectFrame):
         self.objectiveInfo.show()
         self.auxFrame.show()
         
-        self.locationInfo['text'] = QuestGlobals.getLocationText(objective.area)
-        self.locationInfo['text_pos'] = (0, 0 if not QuestGlobals.isShopLocation(objective.area) else 0.025)
+        isShopLoc = QuestGlobals.isShopLocation(objective.area) if not objective.isComplete() else True
+        self.locationInfo['text'] = QuestGlobals.getLocationText(objective.area) if not objective.isComplete() else QuestGlobals.getLocationText(None, objective)
+        self.locationInfo['text_pos'] = (0, 0 if not isShopLoc else 0.025)
         self.locationInfo.show()
         
         # Let's setup the quest progress bar
@@ -199,7 +205,7 @@ class QuestPoster(DirectFrame):
             self.progressBar['range'] = objective.goal
             self.progressBar['value'] = progress & pow(2, 16) - 1
         
-        if objective.HasProgress and objective.goal > 1:
+        if objective.HasProgress and objective.goal > 1 and not objective.isComplete():
             self.progressBar.show()
         
         self.auxText.show()
@@ -369,18 +375,20 @@ class QuestPoster(DirectFrame):
         
     def handleNPCObjective(self, iconElement = auxIcon, auxText = QuestGlobals.VISIT, frameColor = QuestGlobals.BROWN):
         objective = self.quest.currentObjective
-        infoText = CIGlobals.NPCToonNames[objective.npcId]
+        npcId = objective.npcId if hasattr(objective, 'npcId') else objective.assigner
+
+        if npcId == 0:
+            npcId = random.choice(QuestGlobals.HQOfficerIds)
+            infoText = 'A %s' % CIGlobals.lHQOfficerF
+        else:
+            infoText = CIGlobals.NPCToonNames[npcId]
         
         if not iconElement:
             iconElement = self.auxIcon
         
-        # Let's make sure we have a current objective that is
-        # an instance of the CogObjective class and this poster isn't destroyed.
-        if not objective or not hasattr(self, 'titleLabel') or not isinstance(objective, VisitNPCObjective): return
-        
         # Let's generate the head.
         dna = ToonDNA()
-        dna.setDNAStrand(CIGlobals.NPCToonDict.get(objective.npcId)[2])
+        dna.setDNAStrand(CIGlobals.NPCToonDict.get(npcId)[2])
         head = ToonHead(base.cr)
         head.generateHead(dna.getGender(), dna.getAnimal(), dna.getHead(), forGui = 1)
         head.setHeadColor(dna.getHeadColor())

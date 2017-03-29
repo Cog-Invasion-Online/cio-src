@@ -202,7 +202,6 @@ class QuestManagerAI(QuestManagerBase):
                 continue
 
             if objective.type in types:
-                print "__doProgress"
                 objective.handleProgress(*args)
 
     def minigamePlayed(self, minigame):

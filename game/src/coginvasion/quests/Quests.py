@@ -98,12 +98,12 @@ Quests = {
         name: 'Mingle Mangle'},
           
     20: {objectives: [
-            {objType: CogBuildingObjective, args: [Dept.CASH, 3, 3, CIGlobals.DaisyGardensId]}
+            {objType: CogBuildingObjective, args: [Any, Any, 1, CIGlobals.DaisyGardensId]}
         ],
         reward: (GagSlot, 3),
         tier: Tiers.TT,
         requiredQuests: [0],
-        name: 'Building Layout'},
+        name: 'Pick 1, Pick Anyone!'},
 }
 
 QuestNPCDialogue = {

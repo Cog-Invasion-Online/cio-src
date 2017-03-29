@@ -28,6 +28,7 @@ from src.coginvasion.friends.FriendRequestManager import FriendRequestManager
 from src.coginvasion.base.PositionExaminer import PositionExaminer
 from src.coginvasion.friends.FriendsList import FriendsList
 from src.coginvasion.cog import SuitAttacks
+from src.coginvasion.quests.QuestManager import QuestManager
 
 from src.coginvasion.suit.PythonCTMusicMgr import PythonCTMusicManager as PCTMM
 
@@ -55,6 +56,7 @@ class LocalToon(DistributedToon):
         self.positionExaminer = PositionExaminer()
         self.friendRequestManager = FriendRequestManager()
         self.friendsList = FriendsList()
+        self.questManager = QuestManager()
         self.panel = ToonPanel()
         self.firstTimeGenerating = True
         friendsgui = loader.loadModel('phase_3.5/models/gui/friendslist_gui.bam')
