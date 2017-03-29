@@ -9,6 +9,7 @@
 *.yaml
 
 !*.lib
+game/*.py
 game/resourcepack
 game/settings.json
 game/safe_test.py
