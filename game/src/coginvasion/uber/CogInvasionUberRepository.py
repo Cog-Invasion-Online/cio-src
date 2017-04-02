@@ -14,6 +14,7 @@ from LoginToken import LoginToken
 from LoginServerConnection import LoginServerConnection
 
 STORE_LOGIN_TOKEN = 100
+DEFAULT_LOGIN_TOKEN_LIFE = 300
 
 class CogInvasionUberRepository(CogInvasionInternalRepository):
     notify = directNotify.newCategory("CIUberRepository")
@@ -82,7 +83,7 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
 
         # First, add the token to the activeTokens list.
         self.activeTokens.append(tokenObj)
-        print "Activated token: %s, IP: %s" % (tokenObj.getToken(), tokenObj.getIP())
+        self.notify.debug('Activated token: %s, IP: %s' % (tokenObj.getToken(), tokenObj.getIP()))
 
         # Then, start the deactivateToken task.
         taskMgr.doMethodLater(self.getActiveTokenLength(), self.deleteTokenTask, 
@@ -103,7 +104,7 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
         # First, stop the deactivate task.
         taskMgr.remove(token.getDeleteTask())
 
-        print "Deactivated token: %s, IP: %s" % (token.getToken(), token.getIP())
+        self.notify.debug('Deactivated token: %s, IP: %s' % (token.getToken(), token.getIP()))
 
         # Next, cleanup the object.
         token.cleanup()
@@ -116,7 +117,7 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
 
     def getActiveTokenLength(self):
         # How long (in seconds) a login token can be active.
-        return 300
+        return int(args.login_token_life) if args.login_token_life else DEFAULT_LOGIN_TOKEN_LIFE
 
     def handleConnected(self):
         CogInvasionInternalRepository.handleConnected(self)
