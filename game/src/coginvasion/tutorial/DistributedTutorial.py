@@ -118,6 +118,13 @@ class DistributedTutorial(DistributedObject):
         base.taskMgr.remove('playerEmergeTask')
         base.transitions.noTransitions()
 
+    def __prepareTutChat(self):
+        self.guide.autoClearChat = False
+        self.guide.nametag.setChatButton(NametagGlobals.pageButton)
+        self.guide.nametag.updateAll()
+        self.guide.nametag.setActive(1)
+        self.accept('tutGuide-click', self.__handleClickTutChat)
+
     def enterGuideIntroSpeech(self):
         base.localAvatar.attachCamera()
         renderPos = base.camera.getPos(render)
@@ -129,8 +136,10 @@ class DistributedTutorial(DistributedObject):
         endHpr = base.camera.getHpr(render)
         base.camera.setPos(renderPos)
         base.camera.setHpr(renderHpr)
-        self.chatIndex = -1
-        self.doNextIntroSpeech()
+
+        self.__prepareTutChat()
+        self.__doTutChat(DistributedTutorial.GUIDE_INTRO_SPEECH)
+
         self.camMoveTrack = Sequence(Parallel(LerpPosInterval(base.camera, duration = 3.0, pos = endPos,
                                      startPos = renderPos, blendType = 'easeOut'),
                                      LerpQuatInterval(base.camera, duration = 3.0, hpr = endHpr,
@@ -138,24 +147,54 @@ class DistributedTutorial(DistributedObject):
                                      Func(base.localAvatar.getGeomNode().hide))
         self.camMoveTrack.start()
 
-    def __finishedReadingGuideIntroSpeech(self):
-        self.guide.autoClearChat = True
-        self.guide.setChat(self.GUIDE_START_TRAINING)
-        self.fsm.request('introSpeech2Training')
+    def __doTutChat(self, speechList):
+        finalSpeech = ""
+        for i in xrange(len(speechList)):
+            speech = speechList[i]
+            if i < len(speechList) - 1:
+                finalSpeech += speech + "\x07"
+            else:
+                finalSpeech += speech
+        self.guide.setChat(finalSpeech)
 
-    def doNextIntroSpeech(self):
-        self.chatIndex += 1
-        if self.chatIndex >= len(self.GUIDE_INTRO_SPEECH):
-            self.__finishedReadingGuideIntroSpeech()
-            return
-        self.guide.setChat(self.GUIDE_INTRO_SPEECH[self.chatIndex])
-        Sequence(Wait(0.1), Func(self.acceptOnce, 'mouse1-up', self.doNextIntroSpeech)).start()
+    def __handleClickTutChat(self):
+        if self.guide.nametag.getChatPageIndex() >= self.guide.nametag.getNumChatPages() - 1:
+            self.guide.nametag.setActive(0)
+            self.guide.nametag.setChatButton(NametagGlobals.noButton)
+            self.guide.nametag.updateAll()
+
+            #self.guide.autoClearChat = True
+            self.guide.nametag.clearChatText()
+
+            self.ignore('tutGuide-click')
+
+            if self.fsm.getCurrentState().getName() == 'introSpeech':
+                self.guide.setChat(self.GUIDE_START_TRAINING)
+                self.fsm.request('introSpeech2Training')
+
+            elif self.fsm.getCurrentState().getName() == 'training2info':
+                self.fsm.request('training2')
+
+            elif self.fsm.getCurrentState().getName() == 'training3info':
+                self.fsm.request('training3')
+
+            elif self.fsm.getCurrentState().getName() == 'trainingDone':
+                self.fsm.request('leaveTutorial')
+
+        else:
+            nextIndex = self.guide.nametag.getChatPageIndex() + 1
+
+            if nextIndex >= self.guide.nametag.getNumChatPages() - 1:
+                self.guide.nametag.setChatButton(NametagGlobals.quitButton)
+                self.guide.nametag.updateAll()
+
+            if self.guide.nametag.getNumChatPages() > nextIndex:
+                self.guide.nametag.setChatPageIndex(nextIndex)
 
     def exitGuideIntroSpeech(self):
         self.camMoveTrack.finish()
         base.localAvatar.getGeomNode().show()
         del self.camMoveTrack
-        del self.chatIndex
 
     def enterIntroSpeech2Training(self):
         startCamPos = base.camera.getPos(render)
@@ -192,10 +231,6 @@ class DistributedTutorial(DistributedObject):
         self.camMoveIval.finish()
         del self.camMoveIval
 
-    def makeWhisper(self, msg):
-        whisper = WhisperPopup(msg, CIGlobals.getToonFont(), ChatGlobals.WTSystem)
-        whisper.manage(base.marginManager)
-
     def enterTrainingPT1(self):
         self.music.stop()
         base.playMusic(self.battleMusic, volume = 0.9, looping = 1)
@@ -210,19 +245,22 @@ class DistributedTutorial(DistributedObject):
         base.localAvatar.enableGags(1)
         base.localAvatar.showGagButton()
         base.localAvatar.startTrackAnimToSpeed()
-        self.makeWhisper("This should be pretty simple. Just throw a gag at this dummy bot to defeat it.")
+        self.guide.setChat('This should be pretty simple. Just throw a gag at this dummy bot to defeat it.')
 
     def suitNoHealth(self, index):
         if index == 0:
-            self.makeWhisper("Good job, {0}!".format(base.localAvatar.getName()))
+            self.guide.setChat("Good job, {0}!".format(base.localAvatar.getName()))
         elif index == 1:
-            self.makeWhisper("Wow, you're doing very well!")
+            self.guide.setChat("Wow, you're doing very well!")
 
     def suitExploded(self, index):
-        if index == 0:
-            self.makeWhisper("Pick up the jellybean that he dropped. You can use them to buy more gags for your Toon.")
+        doDrops = False#base.config.GetBool('want-suit-drops', True)
+        if index == 0 and doDrops:
+            self.guide.setChat("Pick up the jellybean that he dropped. You can use them to buy more gags for your Toon.")
         self.battleMusic.stop()
         base.playMusic(self.music, looping = 1, volume = 0.8)
+        if not doDrops:
+            self.pickedUpJellybean()
 
     def pickedUpJellybean(self):
         if self.fsm.getCurrentState().getName() == 'training1':
@@ -248,26 +286,12 @@ class DistributedTutorial(DistributedObject):
     def enterTraining2Info(self):
         base.camera.setPos(3.09, 37.16, 3.93)
         base.camera.setHpr(225, 0, 0)
-        self.guide.autoClearChat = False
-        self.chatIndex = -1
-        self.doNextTraining2Speech()
 
-    def __finishedReadingGuideTraining2Speech(self):
-        self.guide.autoClearChat = True
-        self.guide.clearChat()
-        self.fsm.request('training2')
-
-    def doNextTraining2Speech(self):
-        self.chatIndex += 1
-        if self.chatIndex >= len(self.GUIDE_PT2_INFO):
-            self.__finishedReadingGuideTraining2Speech()
-            return
-        self.guide.setChat(self.GUIDE_PT2_INFO[self.chatIndex])
-        Sequence(Wait(0.1), Func(self.acceptOnce, 'mouse1-up', self.doNextTraining2Speech)).start()
+        self.__prepareTutChat()
+        self.__doTutChat(DistributedTutorial.GUIDE_PT2_INFO)
 
     def exitTraining2Info(self):
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
-        del self.chatIndex
 
     def enterTrainingPT2(self):
         self.music.stop()
@@ -300,26 +324,11 @@ class DistributedTutorial(DistributedObject):
     def enterTraining3Info(self):
         base.camera.setPos(3.09, 37.16, 3.93)
         base.camera.setHpr(225, 0, 0)
-        self.guide.autoClearChat = False
-        self.chatIndex = -1
-        self.doNextTraining3Speech()
-
-    def __finishedReadingGuideTraining3Speech(self):
-        self.guide.autoClearChat = True
-        self.guide.clearChat()
-        self.fsm.request('training3')
-
-    def doNextTraining3Speech(self):
-        self.chatIndex += 1
-        if self.chatIndex >= len(self.GUIDE_PT3_INFO):
-            self.__finishedReadingGuideTraining3Speech()
-            return
-        self.guide.setChat(self.GUIDE_PT3_INFO[self.chatIndex])
-        Sequence(Wait(0.1), Func(self.acceptOnce, 'mouse1-up', self.doNextTraining3Speech)).start()
+        self.__prepareTutChat()
+        self.__doTutChat(DistributedTutorial.GUIDE_PT3_INFO)
 
     def exitTraining3Info(self):
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
-        del self.chatIndex
 
     def enterTrainingPT3(self):
         self.music.stop()
@@ -352,26 +361,11 @@ class DistributedTutorial(DistributedObject):
     def enterTrainingDone(self):
         base.camera.setPos(3.09, 37.16, 3.93)
         base.camera.setHpr(225, 0, 0)
-        self.guide.autoClearChat = False
-        self.chatIndex = -1
-        self.doNextTrainingDoneSpeech()
-
-    def __finishedReadingGuideTrainingDoneSpeech(self):
-        self.guide.autoClearChat = True
-        self.guide.clearChat()
-        self.fsm.request('leaveTutorial')
-
-    def doNextTrainingDoneSpeech(self):
-        self.chatIndex += 1
-        if self.chatIndex >= len(self.GUIDE_DONE):
-            self.__finishedReadingGuideTrainingDoneSpeech()
-            return
-        self.guide.setChat(self.GUIDE_DONE[self.chatIndex])
-        Sequence(Wait(0.1), Func(self.acceptOnce, 'mouse1-up', self.doNextTrainingDoneSpeech)).start()
+        self.__prepareTutChat()
+        self.__doTutChat(DistributedTutorial.GUIDE_DONE)
 
     def exitTrainingDone(self):
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
-        del self.chatIndex
 
     def enterLeaveTutorial(self):
         base.localAvatar.attachCamera()
@@ -403,6 +397,8 @@ class DistributedTutorial(DistributedObject):
         self.guide.nametag.setNametagColor(NametagGlobals.NametagColors[NametagGlobals.CCNPC])
         self.guide.nametag.setActive(0)
         self.guide.nametag.updateAll()
+        self.guide.nametag.getNametag3d().setClickEvent('tutGuide-click')
+        self.guide.nametag.getNametag2d().setClickEvent('tutGuide-click')
         self.guide.startBlink()
         self.guide.reparentTo(render)
         base.localAvatar.reparentTo(render)
