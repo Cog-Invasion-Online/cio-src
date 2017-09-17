@@ -163,7 +163,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                         ['fax_paper', -67.48, -9.22, 4.02, 343.74, 0, 0, 1],
                         ['clock', -23.238, 9.498, 9.774, 0, 0, -90, 1],
                         ['plant', -27.48, 17.63, 0, 132.71, 0, 0, 12],
-                        ['photo_frame_bh', -40.64, -22.54, 7.99, 90, 0, 90, 1],
+                        ['photo_frame', -40.64, -22.54, 7.99, 90, 0, 90, 1],
 
                         # Large room:
                         ['rug', -0.154, 97.92, 0, -90, 0, 0, 1],

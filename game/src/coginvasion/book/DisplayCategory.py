@@ -28,11 +28,14 @@ class DisplayCategory(OptionsCategory):
         self.masprText = OnscreenText(text = "Maintain aspect ratio?", scale = 0.045, parent = page.book, align = TextNode.ALeft, pos = (-0.7, 0.4))
         self.maspr = DirectCheckButton(scale = 0.07, parent = page.book, pos = (-0.19, 0, 0.41), command = self.__toggleMaspr)
 
-        self.fs = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.2), self.__chooseFS, "Fullscreen")
+        self.fs = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.25), self.__chooseFS, "Fullscreen")
 
-        self.aa = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, -0.07), self.__chooseAA, "Antialiasing")
+        self.aa = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, 0.07), self.__chooseAA, "Antialiasing")
 
-        self.af = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, -0.34), self.__chooseAF, "Anisotropic Filtering")
+        self.af = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, -0.11), self.__chooseAF, "Anisotropic Filtering")
+        
+        self.shadows = ChoiceWidget(page, ["Low", "Medium", "High", "Ultra High"], (0, 0, -0.29), 
+                                 self.__chooseShadowQuality, "Shadows", 0.06)
 
         self.discardChanges()
 
@@ -52,6 +55,9 @@ class DisplayCategory(OptionsCategory):
 
         self.origMaspr = CIGlobals.getSettingsMgr().getSetting("maspr")
         self.masprChoice = self.origMaspr
+        
+        self.origShadows = CIGlobals.getSettingsMgr().getSetting("shadows");
+        self.shadowChoice = self.origShadows
 
     def __toggleMaspr(self, choice):
         if choice:
@@ -91,6 +97,9 @@ class DisplayCategory(OptionsCategory):
             print "chose af degree", degree
 
         self.afChoice = degree
+        
+    def __chooseShadowQuality(self, choice):
+        self.shadowChoice = choice
 
     def applyChanges(self):
         self._showApplying()
@@ -126,6 +135,10 @@ class DisplayCategory(OptionsCategory):
                 base.doOldToontownRatio()
             else:
                 base.doRegularRatio()
+                
+        if (self.shadowChoice != self.origShadows):
+            # Update the shadow quality choice.
+            CIGlobals.getSettingsMgr().updateAndWriteSetting("shadows", self.shadowChoice)
 
         self._setDefaults()
 
@@ -148,6 +161,11 @@ class DisplayCategory(OptionsCategory):
             self.af.goto(self.af.options.index("x" + str(self.afChoice)))
 
         self.maspr['indicatorValue'] = self.masprChoice
+        
+        if (self.shadowChoice == 0):
+            self.shadows.goto(0)
+        else:
+            self.shadows.goto(self.shadows.options.index("None"))
 
     def cleanup(self):
         if hasattr(self, 'reso'):
@@ -165,6 +183,10 @@ class DisplayCategory(OptionsCategory):
         if hasattr(self, 'af'):
             self.af.cleanup()
             del self.af
+            
+        if hasattr(self, 'shadows'):
+            self.shadows.cleanup()
+            del self.shadows
 
         if hasattr(self, 'masprText'):
             self.masprText.destroy()
@@ -189,4 +211,7 @@ class DisplayCategory(OptionsCategory):
         del self.origReso
         del self.resoChoice
         del self.resoChoiceStr
+        
+        del self.origShadows
+        del self.shadowChoice
         OptionsCategory.cleanup(self)
