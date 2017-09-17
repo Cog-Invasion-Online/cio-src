@@ -115,6 +115,7 @@ def windowEvent(win):
     base.marginManager.updateMarginVisibles()
 base.windowEvent = windowEvent
 
+
 base.mouseWatcherNode.setEnterPattern('mouse-enter-%r')
 base.mouseWatcherNode.setLeavePattern('mouse-leave-%r')
 base.mouseWatcherNode.setButtonDownPattern('button-down-%r')
@@ -139,6 +140,7 @@ base.minigame = None
 base.cr.localAvChoice = AvChoice("00/08/00/10/01/12/01/10/13/05/27/27/00", "Ducky", 0, 0)
 base.musicManager.setVolume(0.65)
 
+
 dclass = base.cr.dclassesByName['DistributedToon']
 base.localAvatar = LocalToon.LocalToon(base.cr)
 base.localAvatar.dclass = dclass
@@ -151,6 +153,7 @@ base.localAvatar.setDNAStrand(base.cr.localAvChoice.getDNA())
 base.localAvatar.announceGenerate()
 base.localAvatar.reparentTo(base.render)
 base.localAvatar.enableAvatarControls()
+
 
 base.enableParticles()
 
