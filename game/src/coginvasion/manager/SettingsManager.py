@@ -77,6 +77,10 @@ class SettingsManager:
         af = settings.get("af", None)
         if af == None:
             af = self.updateAndWriteSetting("af", 0)
+            
+        shadows = settings.get("shadows", None)
+        if shadows == None:
+            shadows = self.updateAndWriteSetting("shadows", 0)
 
         # Chat sounds
         chs = settings.get("chs", None)
