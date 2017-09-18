@@ -56,7 +56,7 @@ class DisplayCategory(OptionsCategory):
         self.origMaspr = CIGlobals.getSettingsMgr().getSetting("maspr")
         self.masprChoice = self.origMaspr
         
-        self.origShadows = CIGlobals.getSettingsMgr().getSetting("shadows");
+        self.origShadows = CIGlobals.getSettingsMgr().getSetting("shadows")
         self.shadowChoice = self.origShadows
 
     def __toggleMaspr(self, choice):

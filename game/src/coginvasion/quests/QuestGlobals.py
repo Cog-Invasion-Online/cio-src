@@ -29,18 +29,22 @@ QPtextWordwrap = 15.6
 IMAGE_SCALE_LARGE = 0.2
 IMAGE_SCALE_SMALL = 0.15
 
+GAG_SLOT_ICON_SCALE = 0.035
+LEFT_GAG_SLOT_POS = Point3(-0.275, 0, -0.2425)
+RIGHT_GAG_SLOT_POS = Point3(0.2825, 0, -0.2425)
+
 # Constants for the reward frame on posters.
 JB_JAR_SCALE = 0.225
-LEFT_JB_JAR_POS = Point3(-0.275, 0, 0.05)
-RIGHT_JB_JAR_POS = Point3(0.2825, 0, 0.05)
+LEFT_JB_JAR_POS = Point3(-0.275, 0, -0.18)
+RIGHT_JB_JAR_POS = Point3(0.2825, 0, -0.18)
 
 LAFF_METER_SCALE = 0.035
-LEFT_LAFF_METER_POS = Point3(-0.2875, 0, 0.0475)
-RIGHT_LAFF_METER_POS = Point3(0.25, 0, 0.0275)
+LEFT_LAFF_METER_POS = Point3(-0.2875, 0, -0.19)
+RIGHT_LAFF_METER_POS = Point3(0.25, 0, -0.19)
 
-TP_ACCESS_SCALE = 0.1
-LEFT_TP_ACCESS_POS = Point3(-0.2725, 0, 0.05)
-RIGHT_TP_ACCESS_POS = Point3(0.285, 0, 0.05)
+TP_ACCESS_SCALE = 0.1125
+LEFT_TP_ACCESS_POS = Point3(-0.275, 0, -0.2)
+RIGHT_TP_ACCESS_POS = Point3(0.285, 0, -0.2)
 
 # Default positions for elements on posters.
 DEFAULT_INFO_POS = Point3(0, 0, -0.02)
@@ -133,6 +137,9 @@ def getHQIcon():
     geom = icons.find('**/hq-dialog-image')
     icons.removeNode()
     return geom
+
+def getGagSlotIcon(slot):
+    return loader.loadTexture('phase_3.5/maps/slot_%s_%s.png' % (str(slot), 'selected'))
 
 ###########################################################################
 

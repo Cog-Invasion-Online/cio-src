@@ -88,7 +88,7 @@ Quests = {
     5: {objectives: [
             {objType: RecoverItemObjective, args: [5, CIGlobals.ToontownCentralId, 'Lipgloss', QuestGlobals.getPackageIcon(), SuitGlobals.TheMingler]}
         ],
-        reward: (Health, 1),
+        reward: (Jellybeans, 350),
         tier: Tiers.TT,
         assignSpeech: (
             "Nice work completing the tutorial!\x07You're probably already exhausted, but " + CIGlobals.NPCToonNames[2003] + " needs"
@@ -100,7 +100,7 @@ Quests = {
     20: {objectives: [
             {objType: CogBuildingObjective, args: [Any, Any, 1, CIGlobals.DaisyGardensId]}
         ],
-        reward: (GagSlot, 3),
+        reward: (GagSlot, 2),
         tier: Tiers.TT,
         requiredQuests: [0],
         name: 'Pick 1, Pick Anyone!'},

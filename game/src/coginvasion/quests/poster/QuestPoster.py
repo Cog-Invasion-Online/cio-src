@@ -18,6 +18,7 @@ from panda3d.core import TextNode, Point3, Vec4
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.quests import QuestGlobals
+from src.coginvasion.quests.poster.QuestRewardFrame import QuestRewardFrame
 from src.coginvasion.quests.Objectives import CogObjective
 from src.coginvasion.quests.Objectives import CogBuildingObjective
 from src.coginvasion.quests.Objectives import VisitNPCObjective
@@ -166,6 +167,9 @@ class QuestPoster(DirectFrame):
             geom_scale = (0.615, 0, 0.4),
         pos = (-0.01, 0, -0.25))
         
+        # Let's setup our reward frames.
+        self.lReward = QuestRewardFrame(self, self.quest.reward)
+        
         # The text displayed on the right side of the frame with additional information, if necessary.
         self.sideInfo = DirectLabel(parent = self,
             relief = None,
@@ -219,6 +223,8 @@ class QuestPoster(DirectFrame):
             self.handleMinigameObjective()
         elif objective.__class__ == VisitNPCObjective:
             self.handleNPCObjective()
+            
+        self.lReward.setup()
         
         self.titleLabel.initialiseoptions(DirectLabel)
         self.auxIcon.initialiseoptions(DirectFrame)
@@ -227,6 +233,7 @@ class QuestPoster(DirectFrame):
         self.locationInfo.initialiseoptions(DirectLabel)
         self.rewardFrame.initialiseoptions(DirectFrame)
         self.sideInfo.initialiseoptions(DirectLabel)
+        self.lReward.initialiseoptions(DirectFrame)
     
     # Changes geometry and scale of an icon.
     def handleSimpleIcon(self, geom, scale, icon):
@@ -449,6 +456,7 @@ class QuestPoster(DirectFrame):
             self.progressBar.destroy()
             self.rewardFrame.destroy()
             self.sideInfo.destroy()
+            self.lReward.destroy()
             del self.titleLabel
             del self.auxFrame
             del self.auxIcon
@@ -458,5 +466,6 @@ class QuestPoster(DirectFrame):
             del self.progressBar
             del self.rewardFrame
             del self.sideInfo
+            del self.lReward
             DirectFrame.destroy(self)
             self.notify.debug('Destroyed all elements.')

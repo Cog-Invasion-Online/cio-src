@@ -4,7 +4,7 @@
 from pandac.PandaModules import *
 loadPrcFile('config/Confauto.prc')
 loadPrcFile('config/config_client.prc')
-loadPrcFileData('', 'model-path ../../../')
+loadPrcFileData('', 'model-path resources')
 loadPrcFileData('', 'framebuffer-multisample 1')
 loadPrcFileData('', 'multisamples 2048')
 loadPrcFileData('', 'tk-main-loop 0')

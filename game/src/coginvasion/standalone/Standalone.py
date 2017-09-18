@@ -5,8 +5,6 @@
   This is so you can use client objects in a stand-alone program easily.
   
 """
-
-from direct.distributed.ClientRepository import ClientRepository
 from pandac.PandaModules import CollisionTraverser, AntialiasAttrib, loadPrcFile, loadPrcFileData
 from pandac.PandaModules import CullBinManager
 import __builtin__
@@ -16,6 +14,14 @@ loadPrcFileData('', 'framebuffer-multisample 0')
 loadPrcFileData('', 'multisamples 16')
 loadPrcFileData('', 'tk-main-loop 0')
 loadPrcFileData('', 'egg-load-old-curves 0')
+loadPrcFileData('', 'model-path resources')
+
+from direct.distributed.ClientRepository import ClientRepository
+
+class game:
+    process = 'client'
+
+__builtin__.game = game()
 
 cbm = CullBinManager.getGlobalPtr()
 cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
