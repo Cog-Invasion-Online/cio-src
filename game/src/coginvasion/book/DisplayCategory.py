@@ -165,7 +165,7 @@ class DisplayCategory(OptionsCategory):
         if (self.shadowChoice == 0):
             self.shadows.goto(0)
         else:
-            self.shadows.goto(self.shadows.options.index("None"))
+            self.shadows.goto(self.shadows.options.index("Low"))
 
     def cleanup(self):
         if hasattr(self, 'reso'):

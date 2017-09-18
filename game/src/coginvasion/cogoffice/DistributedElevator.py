@@ -274,15 +274,15 @@ class DistributedElevator(DistributedObject):
                 base.camera.wrtReparentTo(self.getElevatorModel())
                 cameraBoardTrack = LerpPosHprInterval(camera, 1.5, Point3(0, -16, 5.5), Point3(0, 0, 0))
                 cameraBoardTrack.start()
-
+            
             toon.stopSmooth()
             toon.wrtReparentTo(self.getElevatorModel())
             toon.headsUp(point)
-            
             track.start()
 
     def emptySlot(self, index, avId):
         toon = self.cr.doId2do.get(avId)
+        
         if toon:
             OutPoint = ElevatorOutPoints[index]
             InPoint = ElevatorPoints[index]
@@ -292,8 +292,9 @@ class DistributedElevator(DistributedObject):
                 Func(toon.animFSM.request, 'run'),
                 LerpPosInterval(toon, duration = 0.5, pos = OutPoint, startPos = InPoint),
                 Func(toon.animFSM.request, 'neutral'),
-                Func(toon.startSmooth),
-                Func(toon.wrtReparentTo, render))
+                Func(toon.wrtReparentTo, render),
+                Func(toon.startSmooth)
+            )
             if avId == base.localAvatar.doId:
                 self.localAvOnElevator = False
                 track.append(Func(self.freedom))

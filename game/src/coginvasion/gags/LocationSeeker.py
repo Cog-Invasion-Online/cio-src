@@ -145,7 +145,6 @@ class LocationSeeker:
                 self.shadowNP.removeNode()
                 self.shadowRay = None
                 self.shadowNP = None
-                self.shadowSphNP = None
             
     def cleanup(self):
         if self.avatar:
@@ -171,7 +170,6 @@ class LocationSeeker:
             del self.cameraRay
             del self.shadowNP
             del self.shadowRay
-            del self.shadowSphNP
             del self.shadowScale
             del self.rejectSfx
             del self.avatar
