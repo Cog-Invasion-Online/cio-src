@@ -48,8 +48,8 @@ class MinigameBase(DirectObject):
         for avatar in avatars:
             self.minigame.appendAvatar(avatar)
         self.minigame.setGameName(game)
-        self.minigame.generateWithRequired(self.zoneId)
         self.minigame.setNumPlayers(numPlayers)
+        self.minigame.generateWithRequired(self.zoneId)
         taskMgr.add(self.monitorAvatars, self.cr.uniqueName("monitorAvatars"))
 
     def monitorAvatars(self, task):

@@ -2,9 +2,11 @@
 window-title Cog Invasion Online (Alpha)
 win-origin -1 -1
 win-size 640 480
-load-display pandadx9
+load-display pandagl
 aux-display pandagl
 
+#clock-mode limited
+#clock-frame-rate 10
 
 # Logging...
 notify-level info
@@ -52,7 +54,7 @@ server-address gameserver.coginvasion.com
 hardware-animated-vertices #f
 sync-video #f
 smooth-lag 0.4
-basic-shaders-only #t
+basic-shaders-only #f
 framebuffer-multisample 1
 multisamples 16
 
@@ -68,11 +70,22 @@ gag-start-key alt
 gag-throw-key alt-up
 want-firstperson-battle #f
 chat-key t
-want-WASD #f
+want-WASD #t
+want-gta-controls #t
 show-minigame-dates #f
+want-real-shadows #f
+load-stuff #f
 
-ctmusic-numsongs 1
+ctmusic-numsongs 3
 
 want-pstats 0
 
 egg-load-old-curves 0
+
+#threading-model App/Cull/Draw
+
+gl-finish #f
+gl-force-no-error #t
+gl-check-errors #f
+gl-force-no-flush #t
+gl-force-no-scissor #t

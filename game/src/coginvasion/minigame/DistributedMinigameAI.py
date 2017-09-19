@@ -29,6 +29,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
         self.finalScoreAvIds = []
         return
 
+
     def setGameName(self, game):
         self.gameName = game
 
@@ -87,6 +88,13 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
 
     def setNumPlayers(self, players):
         self.numPlayers = players
+
+    def d_setNumPlayers(self, players):
+        self.sendUpdate('setNumPlayers', [players])
+
+    def b_setNumPlayers(self, players):
+        self.d_setNumPlayers(players)
+        self.setNumPlayers(players)
 
     def getNumPlayers(self):
         return self.numPlayers

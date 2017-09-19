@@ -52,11 +52,19 @@ class AboutCategory(OptionsCategory, DirectObject):
                                                      command = self.rollCredits, geom_scale = (0.8, 0.8, 0.8))
         
     def rollCredits(self):
+        base.muteMusic()
+        base.muteSfx()
+        base.transitions.fadeOut(1.0)
+        base.taskMgr.doMethodLater(1.1, self.__rollCreditsTask, "doRollCredits")
+
+    def __rollCreditsTask(self, task):
         self.creditsScreen = Credits()
         self.creditsScreen.setup()
         base.localAvatar.toggleAspect2d()
         self.page.book.hide()
         self.acceptOnce('credits-Complete', self.showBook)
+        base.transitions.fadeIn(1.0)
+        return task.done
         
     def showBook(self):
         self.page.book.show()

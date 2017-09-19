@@ -371,6 +371,10 @@ class Suit(Avatar):
         self.variant = variant
         self.setVoice(voice)
         self.generateCog()
+		
+        mat = CIGlobals.getShinyMaterial()
+        self.setMaterial(mat)
+		
         if hideFirst:
             self.hide()
 

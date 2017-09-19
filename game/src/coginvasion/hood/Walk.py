@@ -10,6 +10,8 @@ from direct.fsm.StateData import StateData
 from direct.fsm.State import State
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
+from src.coginvasion.toon.TPMouseMovement import TPMouseMovement
+
 class Walk(StateData):
     notify = directNotify.newCategory("Walk")
 
@@ -23,9 +25,14 @@ class Walk(StateData):
         self.fsm.enterInitialState()
 
     def load(self):
-        pass
+        if base.localAvatar.GTAControls:
+            self.mouseMov = TPMouseMovement()
+            self.mouseMov.initialize()
 
     def unload(self):
+        if base.localAvatar.GTAControls:
+            self.mouseMov.cleanup()
+            del self.mouseMov
         del self.fsm
 
     def enter(self):
@@ -38,7 +45,8 @@ class Walk(StateData):
         if not base.localAvatar.walkControls.getCollisionsActive():
             base.localAvatar.walkControls.setCollisionsActive(1)
         base.localAvatar.enableAvatarControls()
-        
+        if base.localAvatar.GTAControls:
+            self.mouseMov.enableMovement()
 
     def exit(self):
         base.localAvatar.lastState = None
@@ -52,6 +60,8 @@ class Walk(StateData):
         base.localAvatar.stopBlink()
         base.localAvatar.collisionsOff()
         base.localAvatar.controlManager.placeOnFloor()
+        if base.localAvatar.GTAControls:
+            self.mouseMov.disableMovement()
         
 
     def enterOff(self):

@@ -4,6 +4,7 @@
 from pandac.PandaModules import CompassEffect, NodePath, CollisionSphere, CollisionNode, TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
+from direct.interval.IntervalGlobal import SoundInterval
 from direct.gui.DirectGui import OnscreenText, DirectLabel
 from direct.fsm import State
 
@@ -11,6 +12,7 @@ from src.coginvasion.minigame.DistributedMinigame import DistributedMinigame
 from src.coginvasion.hood.SkyUtil import SkyUtil
 from src.coginvasion.globals import CIGlobals
 import DeliveryGameGlobals as DGG
+from DeliveryGamePie import DeliveryGamePie
 
 import random
 
@@ -37,6 +39,7 @@ class DistributedDeliveryGame(DistributedMinigame):
         self.barrelsRemaining = 0
         self.barrelsStolen = 0
         self.barrelsDelivered = 0
+        self.pies = []
 
     def allBarrelsGone(self):
         self.fsm.request('announceGameOver')
@@ -75,8 +78,9 @@ class DistributedDeliveryGame(DistributedMinigame):
     def giveBarrelToSuit(self, suitId):
         suit = self.cr.doId2do.get(suitId)
         if suit:
+            suit.ls()
             barrel = loader.loadModel('phase_4/models/cogHQ/gagTank.bam')
-            barrel.reparentTo(suit.find('**/def_joint_right_hold'))
+            barrel.reparentTo(suit.find('**/joint_Rhold'))
             barrel.setP(180)
             #barrel.setZ(0.25)
             barrel.setScale(0.2)
@@ -97,8 +101,8 @@ class DistributedDeliveryGame(DistributedMinigame):
             barrel = loader.loadModel('phase_4/models/cogHQ/gagTank.bam')
             barrel.reparentTo(av.find('**/def_joint_right_hold'))
             barrel.setP(90)
-            barrel.setZ(0.25)
-            barrel.setScale(0.2)
+            barrel.setZ(0.35)
+            barrel.setScale(0.3)
             barrel.find('**/gagTankColl').removeNode()
             self.barrelsByAvId[avId] = barrel
 
@@ -123,6 +127,8 @@ class DistributedDeliveryGame(DistributedMinigame):
         base.localAvatar.setHpr(0, 0, 0)
         self.soundPickUpBarrel = base.loadSfx('phase_6/audio/sfx/SZ_MM_gliss.ogg')
         self.soundDropOff = base.loadSfx('phase_4/audio/sfx/MG_sfx_travel_game_bell_for_trolley.ogg')
+        self.soundBeep = base.loadSfx('phase_4/audio/sfx/MG_delivery_truck_beep.ogg')
+        self.soundDoorOpen = base.loadSfx("phase_9/audio/sfx/CHQ_VP_door_open.ogg")
         self.setMinigameMusic('phase_4/audio/bgm/MG_Delivery.ogg')
         self.setDescription('A new supply of Gags were just shipped to Toontown! ' + \
             'Run over to a truck with Gag barrels to take a barrel out. Then, carry it over to the Gag Shop. ' + \
@@ -154,8 +160,7 @@ class DistributedDeliveryGame(DistributedMinigame):
 
     def enterStart(self):
         DistributedMinigame.enterStart(self)
-        beepSound = base.loadSfx('phase_4/audio/sfx/MG_delivery_truck_beep.ogg')
-        SoundInterval(beepSound).start()
+        base.playSfx(self.soundBeep)
 
     def enterPlay(self):
         DistributedMinigame.enterPlay(self)
@@ -163,6 +168,7 @@ class DistributedDeliveryGame(DistributedMinigame):
         base.localAvatar.startSmartCamera()
         base.localAvatar.enableAvatarControls()
         base.localAvatar.startTrackAnimToSpeed()
+        base.localAvatar.setWalkSpeedNormalNoJump()
         self.brLabel = OnscreenText(text = "", parent = base.a2dTopRight,
                                     fg = (1, 1, 1, 1), shadow = (0, 0, 0, 1),
                                     pos = (-0.1, -0.1, 0), align = TextNode.ARight)
@@ -173,6 +179,27 @@ class DistributedDeliveryGame(DistributedMinigame):
                                     fg = (1, 1, 1, 1), shadow = (0, 0, 0, 1),
                                     pos = (0.1, -0.2, 0), align = TextNode.ALeft)
         self.accept('enterMGDeliveryGagShop', self.__maybeDropOffBarrel)
+        self.accept('alt', self.__maybeThrowGag)
+
+    def __maybeThrowGag(self):
+        if base.localAvatar.hasBarrel:
+            return
+
+        self.b_throwPie()
+
+    def b_throwPie(self):
+        self.sendUpdate('throwPie', [base.localAvatar.doId])
+        self.throwPie(base.localAvatar.doId)
+
+    def throwPie(self, avId):
+        toon = self.cr.doId2do.get(avId)
+        if toon:
+            pie = DeliveryGamePie(toon, self)
+            self.pies.append(pie)
+
+    def pieSplat(self, index):
+        pie = self.pies[index]
+        pie.splat()
 
     def __maybeDropOffBarrel(self, entry):
         if base.localAvatar.hasBarrel and self.truckBarrelIsFrom != None:
@@ -193,6 +220,7 @@ class DistributedDeliveryGame(DistributedMinigame):
         base.localAvatar.stopSmartCamera()
         base.localAvatar.detachCamera()
         base.localAvatar.stopTrackAnimToSpeed()
+        base.localAvatar.setWalkSpeedNormal()
         self.brLabel.destroy()
         self.brLabel = None
         self.bsLabel.destroy()
@@ -222,6 +250,7 @@ class DistributedDeliveryGame(DistributedMinigame):
         self.soundPickUpBarrel = None
         self.soundDropOff = None
         self.truckBarrelIsFrom = None
-        del base.localAvatar.hasBarrel
+        if hasattr(base.localAvatar, 'hasBarrel'):
+            del base.localAvatar.hasBarrel
         self.barrelsByAvId = None
         DistributedMinigame.disable(self)

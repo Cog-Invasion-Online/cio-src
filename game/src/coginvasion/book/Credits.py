@@ -58,6 +58,7 @@ class Credits(DirectObject):
         self.posInterval = None
         
         self.creditsAudioMgr = AudioManager.createAudioManager()
+        self.creditsAudioMgr.setVolume(0.65)
         self.bgm = self.creditsAudioMgr.getSound('phase_3/audio/bgm/ci_theme2.ogg')
         
     def buildCreditsText(self):
@@ -117,11 +118,17 @@ class Credits(DirectObject):
         return message
     
     def exit(self, key):
+        base.transitions.fadeOut(1.0)
+        base.taskMgr.doMethodLater(1.1, self.__exitTask, "exitTask")
+
+    def __exitTask(self, task):
         messenger.send('credits-Complete')
-        base.enableMusic(True)
-        base.enableSoundEffects(True)
         self.ignoreAll()
         self.destroy()
+        base.unMuteMusic()
+        base.unMuteSfx()
+        base.transitions.fadeIn(1.0)
+        return task.done
     
     def watchTextPosition(self, task):
         if self.textParent.getY() >= 5.187:
@@ -145,9 +152,6 @@ class Credits(DirectObject):
         self.fadeTexture.setWrapU(Texture.WMClamp)
         self.fadeTexture.setWrapV(Texture.WMClamp)
         
-        self.textParent.setDepthTest(0)
-        self.textParent.setDepthWrite(0)
-        
         texStage = TextureStage('texStage')
         self.textParent.setTexGen(texStage, TexGenAttrib.MWorldPosition)
         self.textParent.setTexScale(texStage, 0.5, 0.5)
@@ -167,8 +171,6 @@ class Credits(DirectObject):
         displayRegion.setCamera(self.creditsCamNP)
         displayRegion.setSort(1000)
         
-        base.enableMusic(False)
-        base.enableSoundEffects(False)
         self.bgm.setLoop(1)
         self.bgm.play()
         
@@ -214,7 +216,7 @@ class Credits(DirectObject):
             self.npParent.removeNode()
             self.npParent = None
         if self.creditsAudioMgr:
-            self.creditsAudioMgr.shutdown()
+            self.creditsAudioMgr.stopAllSounds()
             self.creditsAudioMgr = None
         self.developers = None
         self.webDevelopers = None

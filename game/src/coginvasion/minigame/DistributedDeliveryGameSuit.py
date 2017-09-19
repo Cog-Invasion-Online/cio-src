@@ -42,7 +42,17 @@ class DistributedDeliveryGameSuit(DistributedSuit):
         self.animFSM.request('flyAway', [ts])
 
     def enterWalking(self, startIndex, endIndex, ts = 0.0):
+        numPlayers = base.minigame.getNumPlayers()
+
         durationFactor = 0.2
+
+        if numPlayers == 2:
+            durationFactor = 0.15
+        elif numPlayers == 3:
+            durationFactor = 0.1
+        elif numPlayers == 4:
+            durationFactor = 0.08
+
         if startIndex > -1:
             startPos = DGG.SpawnPoints[startIndex]
         else:

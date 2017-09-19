@@ -8,14 +8,15 @@
  */
 
 #include "config_ccoginvasion.h"
+#include "ciShaderGenerator.h"
 
-#include "dconfig.h"
+#include <dconfig.h>
 
 Configure(config_ccoginvasion);
 NotifyCategoryDef(ccoginvasion, "");
 
 ConfigureFn(config_ccoginvasion) {
-	initccoginvasion();
+  initccoginvasion();
 }
 
 ConfigVariableInt ctmusic_numsongs
@@ -23,13 +24,14 @@ ConfigVariableInt ctmusic_numsongs
 
 void
 initccoginvasion() {
-	static bool initialized = false;
-	if (initialized) {
-		return;
-	}
-	initialized = true;
+  static bool initialized = false;
+  if (initialized) {
+    return;
+  }
+  initialized = true;
 
-	return;
+  CIShaderGenerator::init_type();
+
 }
 
 

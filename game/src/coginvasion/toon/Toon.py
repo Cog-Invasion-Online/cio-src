@@ -1,4 +1,4 @@
-"""
+﻿"""
 
   Filename: Toon.py
   Created by: blach (??July14)
@@ -7,7 +7,7 @@
 
 
 from direct.actor.Actor import Actor
-from direct.directnotify.DirectNotify import DirectNotify
+from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.interval.IntervalGlobal import Sequence, LerpScaleInterval
@@ -23,13 +23,13 @@ from src.coginvasion.avatar import Avatar
 
 import AccessoryGlobals
 
-from pandac.PandaModules import VBase3, VBase4, Point3, Vec3
+from pandac.PandaModules import VBase3, VBase4, Point3, Vec3, ConfigVariableBool
 from pandac.PandaModules import BitMask32, CollisionHandlerPusher
+from pandac.PandaModules import Material
 import ToonDNA, random
 
-notify = DirectNotify().newCategory("Toon")
-
 class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
+    notify = directNotify.newCategory("Toon")
 
     def __init__(self, cr, mat=0):
         self.cr = cr
@@ -131,7 +131,13 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                                     ('strafe', 1.0), ('strafe', -1.0))
         self.setSpeed(self.forwardSpeed, self.rotateSpeed)
 
+        if ConfigVariableBool('want-gta-controls', False) and 0:
+            self.enableBlend()
+            self.loop('run')
+            self.loop('neutral')
+
     def exitHappy(self):
+        self.disableBlend()
         self.standWalkRunReverse = None
         self.stop()
 
@@ -140,7 +146,13 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.standWalkRunReverse = (('dneutral', 1.0), ('dwalk', 1.2), ('dwalk', 1.2), ('dwalk', -1.0))
         self.setSpeed(0, 0)
 
+        if ConfigVariableBool('want-gta-controls', False) and 0:
+            self.enableBlend()
+            self.loop('dneutral')
+            self.loop('dwalk')
+
     def exitSad(self):
+        self.disableBlend()
         self.standWalkRunReverse = None
         self.stop()
         #if hasattr(self, 'doId'):
@@ -154,15 +166,51 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.strafeSpeed = strafeSpeed
         action = None
         if self.standWalkRunReverse != None:
+
+            if strafeSpeed == 0:
+                spine = self.find("**/def_spineB")
+                if (not spine.isEmpty()):
+                    spine.setH(0)
+                    spine.detachNode()
+                    self.getPart("legs").setH(0)
+                    self.releaseJoint("torso", "def_spineB")
+
             if (forwardSpeed >= CIGlobals.RunCutOff and
                 strafeSpeed < CIGlobals.RunCutOff and
                 strafeSpeed > -CIGlobals.RunCutOff):
                 action = CIGlobals.RUN_INDEX
-            elif strafeSpeed >= CIGlobals.RunCutOff or strafeSpeed <= -CIGlobals.RunCutOff:
-                if strafeSpeed > 0:
-                    action = CIGlobals.STRAFE_RIGHT_INDEX
-                elif strafeSpeed < 0:
-                    action = CIGlobals.STRAFE_LEFT_INDEX
+
+            elif strafeSpeed > 0 or strafeSpeed < 0:
+                spine = self.find("**/def_spineB")
+
+                if spine.isEmpty():
+                    spine = self.controlJoint(None, "torso", "def_spineB")
+
+                if strafeSpeed > 0 and forwardSpeed == 0:
+                    action = CIGlobals.RUN_INDEX
+                    self.getPart("legs").setH(-90)
+                    spine.setH(90)
+                elif strafeSpeed < 0 and forwardSpeed == 0:
+                    action = CIGlobals.RUN_INDEX
+                    self.getPart("legs").setH(90)
+                    spine.setH(-90)
+                elif strafeSpeed > 0 and forwardSpeed > 0:
+                    action = CIGlobals.RUN_INDEX
+                    self.getPart("legs").setH(-45)
+                    spine.setH(45)
+                elif strafeSpeed > 0 and forwardSpeed < 0:
+                    action = CIGlobals.REVERSE_INDEX
+                    self.getPart('legs').setH(45)
+                    spine.setH(-45)
+                elif strafeSpeed < 0 and forwardSpeed < 0:
+                    action = CIGlobals.REVERSE_INDEX
+                    self.getPart("legs").setH(-45)
+                    spine.setH(45)
+                elif strafeSpeed < 0 and forwardSpeed > 0:
+                    action = CIGlobals.RUN_INDEX
+                    self.getPart('legs').setH(45)
+                    spine.setH(-45)
+
             elif forwardSpeed > CIGlobals.WalkCutOff:
                 action = CIGlobals.WALK_INDEX
             elif forwardSpeed < -CIGlobals.WalkCutOff:
@@ -171,24 +219,29 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                 action = CIGlobals.WALK_INDEX
             else:
                 action = CIGlobals.STAND_INDEX
+
             anim, rate = self.standWalkRunReverse[action]
             if anim != self.playingAnim or rate != self.playingRate:
                 self.playingAnim = anim
                 self.playingRate = rate
+
                 doingGagAnim = False
                 if self.backpack:
                     if self.backpack.getCurrentGag():
                         if self.backpack.getCurrentGag().getState() in [GagState.START, GagState.RELEASED]:
                             doingGagAnim = True
                             self.loop(anim, partName = "legs")
-                            if self.animal == "dog":
-                                self.loop(anim, partName = "head")
+                            self.loop(anim, partName = "torso-pants")
+                            self.loop(anim, partName = "head")
                 if not doingGagAnim:
                     if self.forcedTorsoAnim == None:
                         self.loop(anim)
                     else:
                         self.loop(self.forcedTorsoAnim, partName = 'head')
-                        self.loop(self.forcedTorsoAnim, partName = 'torso')
+                        self.loop(self.forcedTorsoAnim, partName = 'torso-top')
+
+                        # Whatever happens to the legs should also happen on the pants.
+                        self.loop(anim, partName = 'torso-pants')
                         self.loop(anim, partName = 'legs')
                 self.setPlayRate(rate, anim)
         return action
@@ -325,9 +378,9 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             if not self.animFSM.isInternalStateInFlux():
                 self.animFSM.request('off')
             else:
-                notify.warning("animFSM in flux, state=%s, not requesting off" % self.animFSM.getCurrentState().getName())
+                self.notify.warning("animFSM in flux, state=%s, not requesting off" % self.animFSM.getCurrentState().getName())
         else:
-            notify.warning("animFSM has been deleted")
+            self.notify.warning("animFSM has been deleted")
         if self.track != None:
             self.track.finish()
             DelayDelete.cleanupDelayDeletes(self.track)
@@ -434,6 +487,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             del self._Actor__commonBundleHandles['torso']
         if 'legs' in self._Actor__commonBundleHandles:
             del self._Actor__commonBundleHandles['legs']
+        if ConfigVariableBool('want-gta-controls', False):
+            self.clearPythonData()
         self.deleteShadow()
         self.removePart('head')
         self.removePart('torso')
@@ -526,6 +581,11 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.rescaleToon()
         self.generateMask()
 
+        # Make torso subparts so we can play a run animation on the pants but another animation on the spine and arms.
+        if ConfigVariableBool('want-gta-controls', False):
+            self.makeSubpart("torso-pants", ["def_left_pant_bottom", "def_left_pant_top", "def_right_pant_bottom", "def_right_pant_top"], parent = "torso")
+            self.makeSubpart("torso-top", ["def_spineB"], parent = "torso")
+
         if makeTag:
             self.setupNameTag()
         Avatar.Avatar.initShadow(self)
@@ -534,6 +594,15 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.updateChatSoundDict()
         self.setBlend(frameBlend = True)
         self.loop('neutral')
+
+        bodyMat = CIGlobals.getShinyMaterial(25.0)
+        bodyMat.setSpecular((0.2, 0.2, 0.2, 1.0))
+        self.getPart("head").setMaterial(bodyMat)
+        self.find("**/arms").setMaterial(bodyMat)
+        self.find("**/feet").setMaterial(bodyMat)
+        self.find("**/neck").setMaterial(bodyMat)
+        self.find("**/legs").setMaterial(bodyMat)
+        #self.setMaterial(toonMat)
 
     def attachTNT(self):
         self.pies.attachTNT()
@@ -816,6 +885,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.acceptOnce(self.track.getDoneEvent(), self.__doCallback, [callback, extraArgs])
         self.track.start(ts)
         self.book3.play("chan", fromFrame=CIGlobals.CloseBookFromFrame, toFrame=CIGlobals.CloseBookToFrame)
+        self.lerpLookAt(self.getPart('head'), (0, 0, 0))
 
     def exitCloseBook(self):
         if self.track:
@@ -840,7 +910,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         else:
             name = 'enterTeleportOut'
         self.track = Sequence(Wait(0.4), Func(self.teleportOutSfx), Wait(1.3),
-                    Func(self.throwPortal), Wait(3.4), name = name)
+                    Func(self.throwPortal), Wait(1.1), Func(self.shadow.hide), Wait(1.5), name = name)
         self.track.delayDelete = DelayDelete.DelayDelete(self, name)
         self.track.setDoneEvent(self.track.getName())
         self.acceptOnce(self.track.getName(), self.teleportOutDone, [callback, extraArgs])
@@ -878,6 +948,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         if self.portal1:
             self.portal1.cleanup()
             self.portal1 = None
+        if hasattr(self, 'shadow') and self.shadow is not None:
+            self.shadow.show()
         self.playingAnim = 'neutral'
 
     def getTeleportInTrack(self, portal):

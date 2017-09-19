@@ -12,13 +12,8 @@ from src.coginvasion.globals import CIGlobals
 class DistributedDeliveryTruck(DistributedNode):
     notify = directNotify.newCategory('DistributedDeliveryTruck')
 
-    barrelscale = 0.15
-    barrelpoints = [(1.05, 2.68, 0.84), (0, 2.68, 0.84), (-1.05, 2.68, 0.84),
-                    (1.05, 3.68, 0.84), (0, 3.68, 0.84), (-1.05, 3.68, 0.84),
-                    (1.05, 4.68, 0.84), (0, 4.68, 0.84), (-1.05, 4.68, 0.84),
-                    (1.05, 5.68, 0.84), (0, 5.68, 0.84), (-1.05, 5.68, 0.84),
-                    (1.05, 6.68, 0.84), (0, 6.68, 0.84), (-1.05, 6.68, 0.84),
-                    (1.05, 7.68, 0.84), (0, 7.68, 0.84), (-1.05, 7.68, 0.84)]
+    
+    
 
     def __init__(self, cr):
         DistributedNode.__init__(self, cr)

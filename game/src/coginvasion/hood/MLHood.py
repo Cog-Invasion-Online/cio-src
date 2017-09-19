@@ -1,6 +1,8 @@
 # Filename: MLHood.py
 # Created by:  blach (24Jul15)
 
+from panda3d.core import VBase4, Vec3
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from ToonHood import ToonHood
@@ -26,6 +28,10 @@ class MLHood(ToonHood):
         self.spookySkyFile = "phase_3.5/models/props/BR_sky.bam"
         self.titleColor = (0.945, 0.54, 1.0, 1.0)
         self.loaderDoneEvent = 'MLHood-loaderDone'
+
+        self.ambient = VBase4(110 / 255.0, 180 / 255.0, 204 / 255.0, 1.0)
+        self.sun = VBase4(255 / 255.0, 109 / 255.0, 86 / 255.0, 1.0)
+        self.sunPos = Vec3(-750, 100, 500)
 
     def load(self):
         ToonHood.load(self)

@@ -4,7 +4,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 @file ControlsCategory.py
 @author Brian Lach
-@date 2017-03-13
+@date March 13, 2017
 
 """
 
@@ -20,7 +20,7 @@ class ControlsCategory(OptionsCategory):
     def __init__(self, page):
         OptionsCategory.__init__(self, page)
 
-        self.gagKey = ChoiceWidget(page, ["Alt", "Delete"], (0, 0.47, 0.47), self.__handleChooseGK, "Use Gag Key")
+        self.gagKey = ChoiceWidget(page, ["Mouse1"], (0, 0.47, 0.47), self.__handleChooseGK, "Use Gag Key")
 
         self.fpmsSlider = SliderWidget(page, "Mouse Sensitivity\n(First Person)", (0.05, 0.3), self.__setFPMS, (0, 0, 0.2))
         self.fpfovSlider = SliderWidget(page, "Field of View\n(First Person)", (54.0, 70.0), self.__setFPFov, (0, 0, -0.1))
@@ -42,9 +42,7 @@ class ControlsCategory(OptionsCategory):
     def __handleChooseGK(self, choice):
         key = ""
         if (choice == 0):
-            key = "alt"
-        elif (choice == 1):
-            key = "delete"
+            key = "mouse1"
 
         self.gagKeyChoice = key
 
@@ -90,10 +88,8 @@ class ControlsCategory(OptionsCategory):
     def discardChanges(self):
         self._setDefaults()
 
-        if self.origGagKey == "alt":
+        if self.origGagKey == "mouse1":
             self.gagKey.goto(0)
-        elif self.origGagKey == "delete":
-            self.gagKey.goto(1)
 
         self.fpmsSlider.setSliderVal(self.origFPms)
         self.fpmsSlider.setValText("{:.1f}".format(self.origFPms * 10.0))

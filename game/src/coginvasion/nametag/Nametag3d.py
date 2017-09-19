@@ -1,12 +1,13 @@
 from direct.task.Task import Task
 import math
 from pandac.PandaModules import BillboardEffect, Vec3, Point3, PGButton, VBase4
-from pandac.PandaModules import DepthWriteAttrib, Point2, CardMaker
+from pandac.PandaModules import DepthWriteAttrib, Point2, CardMaker, BitMask32
 
 from src.coginvasion.toon.ChatBalloon import ChatBalloon
 import NametagGlobals
 from Nametag import Nametag
 from src.coginvasion.gui.Clickable3d import Clickable3d
+from src.coginvasion.globals import CIGlobals
 
 from ccoginvasion import CNametag3d
 
@@ -18,6 +19,11 @@ class Nametag3d(Nametag, Clickable3d):
     def __init__(self):
         Nametag.__init__(self)
         Clickable3d.__init__(self, 'Nametag3d')
+
+        self.contents.setLightOff()
+        self.contents.setMaterialOff()
+        self.contents.setShaderOff()
+        self.contents.hide(CIGlobals.ShadowCameraBitmask)
         
         self.cTag = CNametag3d()
 

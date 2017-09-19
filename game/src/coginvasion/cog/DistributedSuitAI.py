@@ -266,6 +266,9 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
     def clearComboData(self, task):
         self.comboData = {}
 
+        if not hasattr(self, 'clearComboDataTime'):
+            return Task.done
+
         task.delayTime = self.clearComboDataTime
         return Task.again
             

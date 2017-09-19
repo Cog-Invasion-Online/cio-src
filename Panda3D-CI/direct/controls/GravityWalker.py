@@ -509,10 +509,10 @@ class GravityWalker(DirectObject.DirectObject):
         # be slower than normal walk/run. Let's try full speed.
         #self.slideSpeed=(slideLeft and -self.avatarControlForwardSpeed*0.75 or
         #                 slideRight and self.avatarControlForwardSpeed*0.75)
-        self.slideSpeed=(reverse and slideLeft and -self.avatarControlReverseSpeed*0.75 or
-                         reverse and slideRight and self.avatarControlReverseSpeed*0.75 or
-                         slideLeft and -self.avatarControlForwardSpeed*0.75 or
-                         slideRight and self.avatarControlForwardSpeed*0.75)
+        self.slideSpeed=(reverse and slideLeft and -self.avatarControlReverseSpeed or
+                         reverse and slideRight and self.avatarControlReverseSpeed or
+                         slideLeft and -self.avatarControlForwardSpeed or
+                         slideRight and self.avatarControlForwardSpeed)
         self.rotationSpeed=not (slideLeft or slideRight) and (
                 (turnLeft and self.avatarControlRotateSpeed) or
                 (turnRight and -self.avatarControlRotateSpeed))

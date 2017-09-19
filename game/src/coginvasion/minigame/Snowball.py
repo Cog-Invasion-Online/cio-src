@@ -132,7 +132,7 @@ class Snowball(NodePath, DirectObject):
     def handleHitGround(self):
         self.pauseThrowIval()
         self.reparentTo(render)
-        self.setZ(0.5)
+        self.setZ(0)
         self.setHpr(0, 0, 0)
         self.isAirborne = False
         self.owner = None

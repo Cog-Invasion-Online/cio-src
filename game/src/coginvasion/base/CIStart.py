@@ -1,12 +1,14 @@
-# COG INVASION ONLINE
-# Copyright (c) Brian Lach       <brianlach72@gmail.com>
-#               Maverick Liberty <maverick.liberty29@gmail.com>
-#
-# file:    CIStart.py
-# author:  Brian Lach
-# date:    2014-06-17
-#
-# purpose: This is the starting point for the game. It initializes a ton of stuff.
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file CIStart.py
+@author Brian Lach
+@date June 17, 2014
+
+@desc This is the starting point for the game. It initializes a ton of stuff.
+
+"""
 
 from pandac.PandaModules import Multifile, Filename, VirtualFileSystem, PandaSystem
 from pandac.PandaModules import Thread, loadPrcFile, loadPrcFileData, CollisionTraverser, CullBinManager
@@ -31,6 +33,9 @@ class game:
     builddate = "{:%B %d, %Y}".format(datetime.datetime.now())
     production = False
     phasedir = './resources/'
+    usepipeline = False
+    uselighting = True
+    userealshadows = False
    
 import __builtin__
 __builtin__.game = game
@@ -62,12 +67,15 @@ try:
 except:
     loadPrcFile('config/Confauto.prc')
     loadPrcFile('config/config_client.prc')
+
+    if game.usepipeline:
+        sys.path.insert(0, "./renderpipeline")
     
     # Load phases from resoures folder in dev mode
     game.phasedir = './resources/'
     game.production = False
     print "Running dev"
-    
+
 print "Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype)
 print "Phase dir:", game.phasedir
 
@@ -118,6 +126,11 @@ sm.maybeFixAA()
 import CIBase
 base = CIBase.CIBase()
 
+# Use our shader generator extension
+#import ccoginvasion
+#shGen = ccoginvasion.CIShaderGenerator(base.win.getGsg(), base.win)
+#base.win.getGsg().setShaderGenerator(shGen)
+
 base.cTrav = CollisionTraverser()
 
 import AnisotropicFiltering
@@ -159,7 +172,8 @@ __builtin__.loader = base.loader
 from src.coginvasion.globals import CIGlobals
 cbm = CullBinManager.getGlobalPtr()
 cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
-cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
+if not game.userealshadows:
+    cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
 cbm.addBin('gui-popup', CullBinManager.BTUnsorted, 60)
 base.setBackgroundColor(CIGlobals.DefaultBackgroundColor)
 base.disableMouse()
@@ -265,6 +279,13 @@ def doneInitLoad():
     print "CIStart: Initial game load finished."
     from src.coginvasion.distributed import CogInvasionClientRepository
     base.cr = CogInvasionClientRepository.CogInvasionClientRepository(music, "ver-" + game.version)
+
+from pandac.PandaModules import LightRampAttrib
+
+if game.uselighting:
+    render.show(CIGlobals.ShadowCameraBitmask)
+    render.setAttrib(LightRampAttrib.makeHdr0())
+    render.setShaderAuto()
 
 print "CIStart: Starting initial game load..."
 from InitialLoad import InitialLoad

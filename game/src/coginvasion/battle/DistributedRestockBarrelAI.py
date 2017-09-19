@@ -1,7 +1,12 @@
-########################################
-# Filename: DistributedRestockBarrelAI.py
-# Created by: DecodedLogic (28Feb16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedRestockBarrelAI.py
+@author Maverick Liberty
+@date February 28, 2016
+
+"""
 
 from direct.distributed.DistributedNodeAI import DistributedNodeAI
 

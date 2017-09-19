@@ -1,7 +1,12 @@
-########################################
-# Filename: ShadowPlacer.py
-# Created by: blach (11Aug14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file ShadowPlacer.py
+@author Brian Lach
+@date August 11, 2014
+
+"""
 
 from pandac.PandaModules import CollisionRay, CollisionNode, BitMask32
 from pandac.PandaModules import CollisionHandlerFloor

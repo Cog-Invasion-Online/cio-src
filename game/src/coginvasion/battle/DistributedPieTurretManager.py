@@ -1,6 +1,14 @@
-# Filename: DistributedPieTurretManager.py
-# Created by:  blach (14Jun15)
-# Updated by:  DecodedLogic (10Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedPieTurretManager.py
+@author Brian Lach
+@date June 14, 2015
+@author Maverick Liberty
+@date August 10, 2015
+
+"""
 
 from direct.distributed.DistributedObject import DistributedObject
 from direct.directnotify.DirectNotifyGlobal import directNotify

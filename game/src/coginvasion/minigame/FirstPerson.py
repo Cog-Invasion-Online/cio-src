@@ -73,20 +73,31 @@ class FirstPerson(DirectObject):
 
     def cameraMovement(self, task):
         if hasattr(self, 'min_camerap') and hasattr(self, 'max_camerap'):
+            if not base.mouseWatcherNode.hasMouse():
+                return task.cont
+                
             md = base.win.getPointer(0)
             x = md.getX()
             y = md.getY()
-            if base.win.movePointer(0, base.win.getXSize()/2, base.win.getYSize()/2):
+            centerX = base.win.getXSize() / 2
+            centerY = base.win.getYSize() / 2
+            
+            if abs(x - centerX) > 0 or abs(y - centerY) > 0:
+                base.win.movePointer(0, centerX, centerY)
 
-                # Get the mouse sensitivity
-                sens = CIGlobals.getSettingsMgr().getSetting("fpmgms")
+            # Get the mouse sensitivity
+            sens = CIGlobals.getSettingsMgr().getSetting("fpmgms")
+            
+            dt = globalClock.getDt()
 
-                camera.setP(camera.getP() - (y - base.win.getYSize()/2) * sens)
-                base.localAvatar.setH(base.localAvatar.getH() - (x - base.win.getXSize()/2) * sens)
-                if camera.getP() < self.min_camerap:
-                    camera.setP(self.min_camerap)
-                elif camera.getP() > self.max_camerap:
-                    camera.setP(self.max_camerap)
+            camera.setP(camera.getP() - (y - centerY) * (sens * 20) * dt)
+            base.localAvatar.setH(base.localAvatar.getH() - (x - centerX) * (sens * 20) * dt)
+            
+            if camera.getP() < self.min_camerap:
+                camera.setP(self.min_camerap)
+            elif camera.getP() > self.max_camerap:
+                camera.setP(self.max_camerap)
+                
             return task.cont
         else:
             return task.done

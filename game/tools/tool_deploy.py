@@ -1,3 +1,13 @@
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file tool_deploy.py
+@author Brian Lach
+@date March 18, 2017
+
+"""
+
 import paramiko
 import hashlib
 import os
@@ -7,7 +17,7 @@ import winsound
 def playDone():
     winsound.PlaySound('tools/deploydone.wav', winsound.SND_FILENAME)
 
-host = "69.195.114.97"
+host = "50.87.26.220"
 port = 22
 transport = paramiko.Transport((host, port))
 

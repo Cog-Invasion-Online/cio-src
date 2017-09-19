@@ -1,7 +1,12 @@
-########################################
-# Filename: Logger.py
-# Created by: blach (27Jul14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Logger.py
+@author Brian Lach
+@date July 27, 2014
+
+"""
 
 import os
 import sys
@@ -14,6 +19,7 @@ class Logger:
     def __init__(self, orig, log):
         self.orig = orig
         self.log = log
+        self.closed = orig.closed
         
     def write(self, string):
         #string = "[" + str(time.strftime("%m-%d-%Y %H:%M:%S")) + "] " + string
@@ -43,8 +49,10 @@ class Starter:
         logErr = Logger(sys.stderr, log)
         sys.stdout = logOut
         sys.stderr = logErr
+        
 
     def startNotifyLogging(self):
+        
         self.nout = MultiplexStream()
         Notify.ptr().setOstreamPtr(self.nout, 0)
         self.nout.addFile(Filename(self.logfile))

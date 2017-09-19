@@ -40,4 +40,4 @@ class DistributedMinigameStation(DistributedGroupStation, MinigameStation.Miniga
                     'shardId': None,
                     'wantLaffMeter': laffMeter}
         self.cr.playGame.getPlace().fsm.request('teleportOut', [requestStatus])
-        Sequence(Wait(5.0), Func(self.d_leaving)).start()
+        Sequence(Wait(3.0), Func(self.d_leaving)).start()

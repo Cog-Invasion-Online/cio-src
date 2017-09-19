@@ -1,4 +1,6 @@
-from pandac.PandaModules import VBase4, NodePath, DepthWriteAttrib, AntialiasAttrib
+from pandac.PandaModules import VBase4, NodePath, DepthWriteAttrib, AntialiasAttrib, BitMask32
+
+from src.coginvasion.globals import CIGlobals
 
 
 class ChatBalloon(NodePath):
@@ -24,6 +26,11 @@ class ChatBalloon(NodePath):
                  foreground=VBase4(0, 0, 0, 1), background=VBase4(1, 1, 1, 1),
                  reversed=False, button=None, is2d = False):
         NodePath.__init__(self, 'chatBalloon')
+
+        self.setLightOff()
+        self.setShaderOff()
+        self.setMaterialOff()
+        self.hide(CIGlobals.ShadowCameraBitmask)
 
         self.model = model
         self.modelWidth = modelWidth

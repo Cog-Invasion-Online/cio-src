@@ -1,7 +1,12 @@
-########################################
-# Filename: AdminPage.py
-# Created by: DecodedLogic (18Jun16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file AdminPage.py
+@author Maverick Liberty
+@date June 18, 2016
+
+"""
 
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State

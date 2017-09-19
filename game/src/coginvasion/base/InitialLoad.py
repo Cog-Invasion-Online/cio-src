@@ -1,7 +1,12 @@
-########################################
-# Filename: InitialLoad.py
-# Created by: blach (17Jun14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file InitialLoad.py
+@author Brian Lach
+@date June 17, 2014
+
+"""
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gui.Dialog import GlobalDialog, NoButtons

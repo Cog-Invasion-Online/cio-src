@@ -18,6 +18,7 @@ class ChatInput(DirectObject, StateData.StateData):
     def __init__(self):
         DirectObject.__init__(self)
         StateData.StateData.__init__(self, 'chatInputDone')
+
         # Keys that can be pressed to trigger the chat input box.
         self.keyList = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
                         "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x",
@@ -29,6 +30,7 @@ class ChatInput(DirectObject, StateData.StateData):
             "5": "%", "6": "^", "7": "&", "8": "*", "9": "(", "0": ")", "-": "_",
             "=": "+", "`": "~", "[": "{", "]": "}", "\\": "|", ";": ":", "'": "\"",
             ",": "<", ".": ">"}
+
         self.chat_btn_model = None
         self.chatBx = None
         self.chat_btn = None
@@ -87,9 +89,12 @@ class ChatInput(DirectObject, StateData.StateData):
 
     def enableKeyboardShortcuts(self):
         # Enable the shortcuts to open the chat box.
-        for key in self.keyList:
-            self.acceptOnce(key, self.openChatInput, [key])
-            self.acceptOnce("shift-" + key, self.openChatInput, ["shift-" + key.upper()])
+        if not base.localAvatar.GTAControls:
+            for key in self.keyList:
+                self.acceptOnce(key, self.openChatInput, [key])
+                self.acceptOnce("shift-" + key, self.openChatInput, ["shift-" + key.upper()])
+        else:
+            self.acceptOnce("t", self.openChatInput, [""])
 
     def openChatInput(self, key):
         if "shift-" in key:
@@ -101,13 +106,19 @@ class ChatInput(DirectObject, StateData.StateData):
 
     def disableKeyboardShortcuts(self):
         # Disable the shortcuts to open the chat box.
-        for key in self.keyList:
-            self.ignore(key)
-            self.ignore("shift-" + key)
+        if not base.localAvatar.GTAControls:
+            for key in self.keyList:
+                self.ignore(key)
+                self.ignore("shift-" + key)
+        else:
+            self.ignore('t')
 
     def enterInput(self, key, command = None, extraArgs = []):
         if base.localAvatar.invGui:
             base.localAvatar.invGui.disableWeaponSwitch()
+
+        if base.localAvatar.GTAControls:
+            key = ""
         
         if command == None:
             command = self.sendChat

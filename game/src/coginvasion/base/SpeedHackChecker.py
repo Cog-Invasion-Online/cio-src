@@ -1,7 +1,12 @@
-########################################
-# Filename: SpeedHackChecker.py
-# Created by: blach (19Apr15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SpeedHackChecker.py
+@author Brian Lach
+@date April 19, 2015
+
+"""
 
 import sys
 import time

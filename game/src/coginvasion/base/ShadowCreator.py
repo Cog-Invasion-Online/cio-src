@@ -1,7 +1,12 @@
-########################################
-# Filename: ShadowCreator.py
-# Created by: blach (06Apr15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file ShadowCreator.py
+@author Brian Lach
+@date April 06, 2015
+
+"""
 
 from pandac.PandaModules import BitMask32, NodePath
 from direct.filter.CommonFilters import CommonFilters

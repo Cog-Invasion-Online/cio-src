@@ -77,6 +77,7 @@ class DistributedBoat(DistributedObject):
     #        base.taskMgr.add(self.__pollBoat, self.uniqueName('__pollBoat'))
     #        return
         self.boat = self.cr.playGame.hood.loader.geom.find('**/' + self.boatPath)
+        self.boat.setMaterial(CIGlobals.getShinyMaterial())
         self.generated()
 
     def generated(self):

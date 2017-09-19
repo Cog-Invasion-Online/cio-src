@@ -1,9 +1,15 @@
-########################################
-# Filename: ScreenshotHandler.py
-# Created by: DecodedLogic (19Apr16)
-########################################
-# System used to combat problems that occur when taking
-# screenshots in the same thread as everything else is running in.
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file ScreenshotHandler.py
+@author Maverick Liberty
+@date April 19, 2016
+
+@desc System used to combat problems that occur when taking
+      screenshots in the same thread as everything else is running in.
+
+"""
 
 from datetime import datetime
 from pandac.PandaModules import Filename

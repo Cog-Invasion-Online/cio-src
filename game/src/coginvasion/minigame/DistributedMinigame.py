@@ -89,6 +89,7 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         self.winnerPrize = 0
         self.loserPrize = 0
         self.round = 0
+        self.numPlayers = 0
         self.winnerMsg = "Winner!\nYou have earned: %s Jellybeans"
         self.loserMsg = "Loser!\nYou have earned: %s Jellybeans"
         self.allWinnerMsgs = ["Nice try!\nYou have earned: %s", "Good job!\nYou have earned: %s",
@@ -102,6 +103,12 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         self.gameOverLbl.setBin('gui-popup', 60)
         self.gameOverLbl.hide()
         return
+
+    def setNumPlayers(self, num):
+        self.numPlayers = num
+
+    def getNumPlayers(self):
+        return self.numPlayers
 
     def roundOver(self):
         pass
@@ -322,19 +329,24 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
     def disable(self):
         self.deleteTimer()
         base.localAvatar.getGeomNode().setColorScale(VBase4(1, 1, 1, 1))
-        self.gameOverLbl.destroy()
-        self.gameOverLbl = None
+        if hasattr(self, 'gameOverLbl') and self.gameOverLbl is not None:
+            self.gameOverLbl.destroy()
+            self.gameOverLbl = None
         NametagGlobals.setWant2dNametags(True)
         base.localAvatar.setPosHpr(0, 0, 0, 0, 0, 0)
-        self.fsm.requestFinalState()
-        del self.fsm
+        if hasattr(self, 'fsm'):
+            self.fsm.requestFinalState()
+            del self.fsm
         self.winSfx = None
         self.loseSfx = None
         self.prizeHigh = None
         self.prizeLow = None
-        self.headPanels.delete()
-        self.headPanels = None
-        self.finalScoreUI.unload()
-        self.finalScoreUI = None
+        if self.headPanels is not None:
+            self.headPanels.delete()
+            self.headPanels = None
+        if self.finalScoreUI is not None:
+            self.finalScoreUI.unload()
+            self.finalScoreUI = None
+        self.numPlayers = None
         base.minigame = None
         DistributedObject.DistributedObject.disable(self)

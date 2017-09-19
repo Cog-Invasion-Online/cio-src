@@ -54,7 +54,7 @@ class Street(Place):
         taskMgr.remove('Street.elevatorInTask')
 
     def enter(self, requestStatus, visibilityFlag = 1):
-        Place.enter(self)
+        
         self.fsm.enterInitialState()
         base.playMusic(self.loader.music, volume = 0.8, looping = 1)
         self.loader.geom.reparentTo(render)
@@ -63,6 +63,7 @@ class Street(Place):
         self.loader.hood.startSky()
         self.enterZone(requestStatus['zoneId'])
         self.fsm.request(requestStatus['how'], [requestStatus])
+        Place.enter(self)
         return
 
     def exit(self, vis = 1):

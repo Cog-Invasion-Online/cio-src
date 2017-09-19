@@ -1899,6 +1899,11 @@ class Actor(DirectObject, NodePath):
             model = self.loader.loadSync(Filename(modelPath), loaderOptions)
             if model is not None:
                 model = NodePath(model)
+                try:
+                    from src.coginvasion.globals import CIGlobals
+                    CIGlobals.fixGrayscaleTextures(model)
+                except:
+                    pass
 
         if (model == None):
             raise IOError("Could not load Actor model %s" % (modelPath))

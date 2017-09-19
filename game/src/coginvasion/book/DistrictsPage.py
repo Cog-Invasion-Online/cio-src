@@ -1,7 +1,12 @@
-########################################
-# Filename: DistrictsPage.py
-# Created by: DecodedLogic (18Jun16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistrictsPage.py
+@author Maverick Liberty
+@date June 18, 2016
+
+"""
 
 from pandac.PandaModules import Vec4, TextNode
 

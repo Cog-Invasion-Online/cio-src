@@ -14,11 +14,13 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.dna.DNALoader import *
 from src.coginvasion.holiday.HolidayManager import HolidayType
 
-from pandac.PandaModules import Vec4, AmbientLight, ModelPool, TexturePool
-from pandac.PandaModules import Fog, CompassEffect, NodePath
+from pandac.PandaModules import Vec4, AmbientLight, ModelPool, TexturePool, DirectionalLight
+from pandac.PandaModules import Fog, CompassEffect, NodePath, VBase4, Vec3
 
 import ZoneUtil
 from QuietZoneState import QuietZoneState
+
+import math
 
 class Hood(StateData):
 
@@ -36,10 +38,26 @@ class Hood(StateData):
         self.suitLightColor = (0.4, 0.4, 0.4, 1)
         self.suitFogData = [(0.3, 0.3, 0.3), 0.0025]
         self.titleColor = (1, 1, 1, 1)
+
+        self.wantLighting = True
+
+        self.ambient = VBase4(172 / 255.0, 196 / 255.0, 202 / 255.0, 1.0)
+        self.ambientNP = None
+
+        self.sun = VBase4(252 / 255.0, 239 / 255.0, 209 / 255.0, 1.0)
+        self.sunPos = Vec3(-250, 100, 500)
+        self.sunNP = None
+
         return
 
     def enter(self, requestStatus):
         StateData.enter(self)
+
+        if (self.wantLighting and game.uselighting):
+            render.setLight(self.ambientNP)
+            
+            render.setLight(self.sunNP)
+
         hoodId = requestStatus['hoodId']
         zoneId = requestStatus['zoneId']
         rootZone = ZoneUtil.getZoneId(hoodId)
@@ -91,6 +109,9 @@ class Hood(StateData):
             self.titleText.hide()
 
     def exit(self):
+        if (self.wantLighting and game.uselighting):
+            render.clearLight(self.ambientNP)
+            render.clearLight(self.sunNP)
         if self.titleText:
             self.titleText.cleanup()
             self.titleText = None
@@ -107,9 +128,34 @@ class Hood(StateData):
             self.createNormalSky()
         else:
             self.createSpookySky()
+        
+        if (self.wantLighting and game.uselighting):
+            amb = AmbientLight("playground-ambient")
+            amb.setColor(self.ambient)
+            self.ambientNP = render.attachNewNode(amb)
 
+            sun = DirectionalLight("playground-sun")
+            sun.getLens().setFilmSize(256, 256)
+            sun.getLens().setNearFar(1, 10000)
+            sun.setColor(self.sun)
+            sun.setShadowCaster(game.userealshadows, 8912, 8912)
+            
+            self.sunNP = camera.attachNewNode(sun)
+            self.sunNP.setCompass()
+            self.sunNP.setPos(self.sunPos)
+            self.sunNP.lookAt(render, 0, 0, 0)
+           
+            
     def unload(self):
         self.notify.info("unload()")
+        if (self.wantLighting and game.uselighting):
+            if (self.sunNP):
+                self.sunNP.removeNode()
+                self.sunNP = None
+            if (self.ambientNP):
+                self.ambientNP.removeNode()
+                self.ambientNP = None
+
         if hasattr(self, 'loader'):
             self.loader.exit()
             self.loader.unload()
@@ -211,6 +257,9 @@ class Hood(StateData):
         if self.__class__.__name__ != 'CTHood':
             self.sky.setScale(1.0)
             self.sky.setFogOff()
+            self.sky.setLightOff()
+            self.sky.setMaterialOff()
+            self.sky.setShaderOff()
         else:
             self.sky.setScale(5.0)
 
@@ -219,6 +268,10 @@ class Hood(StateData):
         self.sky = loader.loadModel(self.spookySkyFile)
         self.sky.setScale(5.0)
         self.sky.setFogOff()
+        self.sky.setFogOff()
+        self.sky.setLightOff()
+        self.sky.setMaterialOff()
+        self.sky.setShaderOff()
 
     def deleteCurrentSky(self):
         if hasattr(self, 'sky'):
@@ -260,6 +313,7 @@ class Hood(StateData):
         self.sky.setHpr(0.0, 0.0, 0.0)
         ce = CompassEffect.make(NodePath(), CompassEffect.PRot | CompassEffect.PZ)
         self.sky.node().setEffect(ce)
+        self.sky.hide(CIGlobals.ShadowCameraBitmask)
 
     def stopSky(self):
         self.sky.reparentTo(hidden)

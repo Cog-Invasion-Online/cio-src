@@ -1,7 +1,12 @@
-########################################
-# Filename: EnterLoad.py
-# Created by: blach (18Apr15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file EnterLoad.py
+@author Brian Lach
+@date April 18, 2015
+
+"""
 
 import FileUtility
 from LoadUtility import LoadUtility

@@ -10,16 +10,16 @@ want-suit-drops #f
 
 # Minigames
 want-minigames #t
-want-uno-game #t
+want-uno-game #f
 want-race-game #t
 want-toon-battle #t
 want-factory-sneak #f
 want-camera-shy #t
 want-eagle-game #t
-want-delivery-game #f
+want-delivery-game #t
 want-dodgeball-game #t
 
 # Trolley...
-trolley-slots 4
+trolley-slots 8
 
 # want-pstats 1

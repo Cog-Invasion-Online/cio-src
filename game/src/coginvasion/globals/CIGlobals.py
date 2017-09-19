@@ -5,7 +5,8 @@
 
 """
 
-from pandac.PandaModules import BitMask32, LPoint3f, Point3, VirtualFileSystem
+from pandac.PandaModules import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool
+from pandac.PandaModules import Material, PNMImage, Texture
 
 from src.coginvasion.cog import SuitGlobals
 
@@ -82,6 +83,13 @@ ChatGarblerBear = ['growl', 'grrr']
 ChatGarblerPig = ['oink', 'oik', 'snort']
 ChatGarblerDefault = ['blah']
 
+def getShinyMaterial(shininess = 250.0):
+    mat = Material()
+    mat.setSpecular((1, 1, 1, 1))
+    mat.setShininess(shininess)
+
+    return mat
+
 SettingsMgr = None
 
 def getSettingsMgr():
@@ -144,11 +152,11 @@ def getThemeSong():
     if not ThemeSong:
         themeList = []
         themeList.append('phase_3/audio/bgm/tt_theme.mid')
-        vfs = VirtualFileSystem.getGlobalPtr()
-        for fileName in vfs.scanDirectory('phase_3/audio/bgm/'):
-            fullpath = fileName.get_filename().get_fullpath()
-            if 'ci_theme' in fullpath:
-                themeList.append(fullpath)
+        #vfs = VirtualFileSystem.getGlobalPtr()
+        #for fileName in vfs.scanDirectory('phase_3/audio/bgm/'):
+        #    fullpath = fileName.get_filename().get_fullpath()
+        #    if 'ci_theme' in fullpath:
+        #        themeList.append(fullpath)
         import random
         ThemeSong = random.choice(themeList)
 
@@ -166,6 +174,15 @@ def areFacingEachOther(obj1, obj2):
     h1 = obj1.getH(render) % 360
     h2 = obj2.getH(render) % 360
     return not (-90.0 <= (h1 - h2) <= 90.0)
+    
+def fixGrayscaleTextures(np):
+    for tex in np.findAllTextures():
+        if (tex.getFormat() == Texture.F_luminance):
+            print "Upgrading {0} from 1 component to 3.".format(tex.getName())
+            img = PNMImage()
+            tex.store(img)
+            img.makeRgb()
+            tex.load(img)
 
 FloorBitmask = BitMask32(2)
 WallBitmask = BitMask32(1)
@@ -233,7 +250,10 @@ safeZoneLSRanges = {ToontownCentral: 6,
     MinigameArea: 6,
     RecoverArea: 8}
 ToonStandableGround = 0.707
-ToonSpeedFactor = 1.0
+if (ConfigVariableBool('want-gta-controls', False)):
+    ToonSpeedFactor = 1.0
+else:
+    ToonSpeedFactor = 1.0
 ToonForwardSpeed = 16.0 * ToonSpeedFactor
 ToonJumpForce = 24.0
 ToonReverseSpeed = 8.0 * ToonSpeedFactor
@@ -460,8 +480,7 @@ def makeOkayButton(text = "Okay", parent = None, text_scale = 0.045, text_pos = 
         parent = aspect2d
     btn = DirectButton(text = text, geom = getOkayBtnGeom(),
                        parent = parent, pos = pos, text_scale = text_scale, text_pos = text_pos,
-                       command = command, extraArgs = extraArgs, relief = None, geom_scale = geom_scale,
-                       rolloverSound = getRolloverSound(), clickSound = getClickSound())
+                       command = command, extraArgs = extraArgs, relief = None, geom_scale = geom_scale)
     return btn
 
 def makeCancelButton(text = "Cancel", parent = None, text_scale = 0.045, text_pos = (0, -0.075),
@@ -471,8 +490,7 @@ def makeCancelButton(text = "Cancel", parent = None, text_scale = 0.045, text_po
         parent = aspect2d
     btn = DirectButton(text = text, geom = getCancelBtnGeom(),
                        parent = parent, pos = pos, text_scale = text_scale, text_pos = text_pos,
-                       command = command, extraArgs = extraArgs, relief = None, geom_scale = geom_scale,
-                       rolloverSound = getRolloverSound(), clickSound = getClickSound())
+                       command = command, extraArgs = extraArgs, relief = None, geom_scale = geom_scale)
     return btn
 
 def makeDirectionalBtn(direction, parent = None, pos = (0, 0, 0), command = None, extraArgs = []):
@@ -496,8 +514,7 @@ def makeDirectionalBtn(direction, parent = None, pos = (0, 0, 0), command = None
                                                                gui.find('**/Horiz_Arrow_DN'),
                                                                gui.find('**/Horiz_Arrow_Rllvr'),
                                                                gui.find('**/Horiz_Arrow_UP')),
-                       hpr = hpr, pos = pos, command = command, extraArgs = extraArgs,
-                       rolloverSound = getRolloverSound(), clickSound = getClickSound())
+                       hpr = hpr, pos = pos, command = command, extraArgs = extraArgs)
     return btn
 
 def makeDefaultScrolledListBtn(text = "", text_scale = 0.07, text_align = None, text1_bg = None, text2_bg = None, text3_fg = None,
@@ -520,8 +537,7 @@ def makeDefaultScrolledListBtn(text = "", text_scale = 0.07, text_align = None, 
         relief=None, text=text, text_scale=text_scale,
         text_align=text_align, text1_bg=text1_bg, text2_bg=text2_bg,
         text3_fg=text3_fg, textMayChange=textMayChange, command=command,
-        extraArgs=extraArgs, text_pos = text_pos, parent = parent,
-        rolloverSound = getRolloverSound(), clickSound = getClickSound()
+        extraArgs=extraArgs, text_pos = text_pos, parent = parent
     )
     return btn
 
@@ -596,7 +612,7 @@ def makeDefaultBtn(text = "", text_pos = (0, -0.015), text_scale = 0.045, geom_s
 
     btn = DirectButton(text = text, text_pos = text_pos, text_scale = text_scale, geom_scale = geom_scale, command = command, text_font = font,
                        extraArgs = extraArgs, pos = pos, hpr = hpr, scale = scale, parent = parent, relief = relief, geom = getDefaultBtnGeom(),
-                       rolloverSound = getRolloverSound(), clickSound = getClickSound())
+                       )
 
     return btn
 
@@ -612,8 +628,7 @@ def getExitButton(cmd = None, extraArgs = [], pos = (0, 0, 0)):
                               text_pos=(0, -0.23), text_scale = 0.8,
                               image_scale = (11, 1, 11), pos = pos,
                               scale = 0.15, command = cmd, extraArgs = extraArgs,
-                              image_color = (1, 0, 0, 1), rolloverSound = getRolloverSound(), 
-                              clickSound = getClickSound())
+                              image_color = (1, 0, 0, 1))
     return exitButton
 
 ShadowScales = {Suit: 0.4,

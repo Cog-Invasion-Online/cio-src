@@ -1,5 +1,12 @@
-# Filename: PositionExaminer.py
-# Created by:  blach (03Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file PositionExaminer.py
+@author Brian Lach
+@date August 03, 2015
+
+"""
 
 from direct.showbase.DirectObject import DirectObject
 

@@ -1,9 +1,15 @@
-########################################
-# Filename: MapPage.py
-# Created by: DecodedLogic (17Jun16)
-# HAPPY BIRTHDAY COG INVASION ONLINE!!!
-#         2 YEAR ANNIVERSARY
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file MapPage.py
+@author Maverick Liberty
+@date June 17, 2016
+
+@desc HAPPY BIRTHDAY COG INVASION ONLINE!!!
+             2 YEAR ANNIVERSARY
+
+"""
 
 from pandac.PandaModules import Vec4, TextNode
 

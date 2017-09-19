@@ -1,10 +1,16 @@
-########################################
-# Filename: Avatar.py
-# Created by: blach (??Jul14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Avatar.py
+@author Brian Lach
+@date July ??, 2014
+
+"""
 
 from pandac.PandaModules import CollisionNode, CollisionTube, BitMask32, CollisionSphere, \
-                                CollisionHandlerPusher, CollisionHandlerEvent, CollisionRay
+                                CollisionHandlerPusher, CollisionHandlerEvent, CollisionRay, \
+                                ConfigVariableBool, Material
 
 from direct.actor.Actor import Actor
 from direct.directnotify.DirectNotify import DirectNotify
@@ -24,6 +30,7 @@ import random
 notify = DirectNotify().newCategory("Avatar")
 
 class Avatar(ToonTalker.ToonTalker, Actor):
+    RealShadows = ConfigVariableBool('want-real-shadows', False)
 
     def __init__(self, mat=0):
         try:
@@ -49,6 +56,8 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         self.nametag3d = self.attachNewNode('nametag3d')
         self.nametag3d.setTag('cam', 'nametag')
         self.setTwoSided(False)
+
+        self.enableBlend()
 
         self.avatarType = None
         self.charName = None
@@ -302,18 +311,22 @@ class Avatar(ToonTalker.ToonTalker, Actor):
     def initShadow(self):
         #self.shadow = arbitraryShadow(self.getGeomNode())
 
-        self.shadow = loader.loadModel("phase_3/models/props/drop_shadow.bam")
-        self.shadow.setScale(CIGlobals.ShadowScales[self.avatarType])
-        self.shadow.flattenMedium()
-        self.shadow.setBillboardAxis(4)
-        self.shadow.setColor(0, 0, 0, 0.5, 1)
-        self.shadowPlacer = ShadowPlacer(self.shadow, self.mat)
-        if self.avatarType == CIGlobals.Toon:
-            self.shadow.reparentTo(self.getPart('legs').find('**/joint_shadow'))
-        elif self.avatarType == CIGlobals.Suit:
-            self.shadow.reparentTo(self)#.find('**/joint_shadow'))
+        if self.RealShadows:
+            self.shadow = self.attachNewNode("fakeShadow")
+            self.shadowPlacer = ShadowPlacer(self.shadow, self.mat)
         else:
-            self.shadow.reparentTo(self)
+            self.shadow = loader.loadModel("phase_3/models/props/drop_shadow.bam")
+            self.shadow.setScale(CIGlobals.ShadowScales[self.avatarType])
+            self.shadow.flattenMedium()
+            self.shadow.setBillboardAxis(4)
+            self.shadow.setColor(0, 0, 0, 0.5, 1)
+            self.shadowPlacer = ShadowPlacer(self.shadow, self.mat)
+            if self.avatarType == CIGlobals.Toon:
+                self.shadow.reparentTo(self.getPart('legs').find('**/joint_shadow'))
+            elif self.avatarType == CIGlobals.Suit:
+                self.shadow.reparentTo(self)#.find('**/joint_shadow'))
+            else:
+                self.shadow.reparentTo(self)
 
     def deleteShadow(self):
         if hasattr(self, 'shadow'):

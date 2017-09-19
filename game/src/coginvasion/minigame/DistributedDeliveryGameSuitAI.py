@@ -18,16 +18,33 @@ class DistributedDeliveryGameSuitAI(DistributedSuitAI):
     def __init__(self, air, mg):
         DistributedSuitAI.__init__(self, air)
         self.mg = mg
-        self.truck = random.choice(self.mg.trucks)
-        self.truckIndex = self.mg.trucks.index(self.truck)
+        self.truck = random.choice(self.mg.getTrucksWithBarrels())
+        self.truckIndex = self.truck.getIndex()
         self.spawnPoint = None
+        self.holdingBarrel = False
+        self.track = None
+
+    def getTruckIndex(self):
+        return self.truckIndex
 
     def walkToTruck(self):
+        if self.mg.barrelsRemaining == 0:
+            return
+
         index = DGG.WalkToTruckIndex
         pos = DGG.TruckSuitPointsByIndex[self.truckIndex]
         startPos = self.getPos(render)
         self.b_setSuitState(1, -1, index)
+
+        numPlayers = self.mg.getNumPlayers()
         durationFactor = 0.2
+        if numPlayers == 2:
+            durationFactor = 0.15
+        elif numPlayers == 3:
+            durationFactor = 0.1
+        elif numPlayers == 4:
+            durationFactor = 0.08
+
         pathName = self.uniqueName('WalkToTruck')
         self.walkTrack = NPCWalkInterval(self, pos, startPos = startPos,
             name = pathName, durationFactor = durationFactor, fluid = 1
@@ -38,14 +55,27 @@ class DistributedDeliveryGameSuitAI(DistributedSuitAI):
         self.b_setAnimState(SuitGlobals.getAnimId(SuitGlobals.getAnimByName('walk')))
 
     def __walkedToTruck(self):
+        if self.mg.barrelsRemaining == 0:
+            return
         self.truck.suitPickUpBarrel(self.doId)
+        self.holdingBarrel = True
         self.walkBackToSpawnPointWithBarrel()
 
     def walkBackToSpawnPointWithBarrel(self):
+
         pos = DGG.SpawnPoints[self.spawnPoint]
         startPos = self.getPos(render)
         self.b_setSuitState(1, -1, self.spawnPoint)
+
+        numPlayers = self.mg.getNumPlayers()
         durationFactor = 0.2
+        if numPlayers == 2:
+            durationFactor = 0.15
+        elif numPlayers == 3:
+            durationFactor = 0.1
+        elif numPlayers == 4:
+            durationFactor = 0.08
+
         pathName = self.uniqueName('WalkBackToSpawn')
         self.walkTrack = NPCWalkInterval(self, pos, startPos = startPos,
             name = pathName, durationFactor = durationFactor, fluid = 1
@@ -74,7 +104,7 @@ class DistributedDeliveryGameSuitAI(DistributedSuitAI):
             startPos = pos + (0, 0, 50))
         flyTrack.start()
         self.track = Sequence()
-        self.track.append(Wait(5.4))
+        self.track.append(Wait(6))
         self.track.append(Func(self.b_setAnimState, 'neutral'))
         self.track.append(Wait(1.0))
         self.track.append(Func(self.walkToTruck))

@@ -5,7 +5,7 @@
 
 """
 
-from pandac.PandaModules import CollisionTraverser, Point3, CollisionRay, CollisionNode, BitMask32, CollisionHandlerQueue
+from pandac.PandaModules import CollisionTraverser, Point3, CollisionRay, CollisionNode, BitMask32, CollisionHandlerQueue, ConfigVariableBool
 from src.coginvasion.globals import CIGlobals
 from direct.controls import ControlManager
 from direct.controls.GravityWalker import GravityWalker
@@ -40,6 +40,8 @@ from src.coginvasion.minigame import GunGameGlobals
 
 class LocalToon(DistributedToon):
     neverDisable = 1
+
+    GTAControls = ConfigVariableBool('want-gta-controls', False)
 
     def __init__(self, cr):
         try:
@@ -261,7 +263,18 @@ class LocalToon(DistributedToon):
     def getAirborneHeight(self):
         return self.offset + 0.025000000000000001
 
+    def isMoving(self):
+        fwd, rot, sli = self.walkControls.getSpeeds()
+        return fwd != 0.0 or rot != 0.0 or sli != 0.0
+
     def setupControls(self):
+        if self.GTAControls:
+            self.prepareToSwitchControlType()
+            self.controlManager.wantWASD = True
+            self.controlManager.disable()
+            self.controlManager.enable()
+            self.controlManager.setWASDTurn(False)
+
         self.walkControls = GravityWalker(legacyLifter=False)
         self.walkControls.setWallBitMask(CIGlobals.WallBitmask)
         self.walkControls.setFloorBitMask(CIGlobals.FloorBitmask)
@@ -283,6 +296,12 @@ class LocalToon(DistributedToon):
     def setWalkSpeedNormal(self):
         self.walkControls.setWalkSpeed(
             CIGlobals.ToonForwardSpeed, CIGlobals.ToonJumpForce,
+            CIGlobals.ToonReverseSpeed, CIGlobals.ToonRotateSpeed
+        )
+
+    def setWalkSpeedNormalNoJump(self):
+        self.walkControls.setWalkSpeed(
+            CIGlobals.ToonForwardSpeed, 0.0,
             CIGlobals.ToonReverseSpeed, CIGlobals.ToonRotateSpeed
         )
 
@@ -572,14 +591,14 @@ class LocalToon(DistributedToon):
                     self.setWalkSpeedSlow()
                 else:
                     self.setWalkSpeedNormal()
-        action = self.setSpeed(speed, rotSpeed)
+        action = self.setSpeed(speed, rotSpeed, slideSpeed)
         if action != self.lastAction:
             self.lastAction = action
             if action == CIGlobals.WALK_INDEX or action == CIGlobals.REVERSE_INDEX:
                 self.resetHeadHpr()
                 self.stopLookAround()
                 self.playMovementSfx("walk")
-            elif action == CIGlobals.RUN_INDEX:
+            elif action == CIGlobals.RUN_INDEX or action in [CIGlobals.STRAFE_LEFT_INDEX, CIGlobals.STRAFE_RIGHT_INDEX]:
                 self.resetHeadHpr()
                 self.stopLookAround()
                 self.playMovementSfx("run")

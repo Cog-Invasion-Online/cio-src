@@ -8,6 +8,8 @@
 
 """
 
+from panda3d.core import Spotlight, VBase4, Vec3, Point3, NodePath
+
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.fsm.StateData import StateData
@@ -37,6 +39,8 @@ class Place(StateData):
         self.snowEffect = SnowEffect(self)
         self.lastBookPage = 2
         self.useFirstPerson = config.GetBool('want-firstperson-battle')
+        self.lampLights = []
+        self.lampLightColor = VBase4(255 / 255.0, 255 / 255.0, 218 / 255.0, 1.0)
         return
 
     def maybeUpdateAdminPage(self):
@@ -67,6 +71,32 @@ class Place(StateData):
 
     def enter(self):
         StateData.enter(self)
+
+        if hasattr(self.loader, 'geom') and False:
+            for lamp in self.loader.geom.findAllMatches("**"):
+                if "light" not in lamp.getName().lower() or "lamp" not in lamp.getName().lower() or "coll" in lamp.getName().lower():
+                    continue
+                #smiley = loader.loadModel("models/smiley.egg.pz")
+                pl = Spotlight(lamp.getName() + "-pointlight")
+                pl.setColor(self.lampLightColor)
+                pl.setExponent(1)
+                pl.setAttenuation(Point3(1, 0, 0))
+                pl.getLens().setFov(50)
+                #pl.setAttenuation(Point3(1, 0.025, 0.0075))
+                plnp = lamp.find("**/+GeomNode").attachNewNode(pl)
+                plnp.setP(-90)
+                if (plnp.getErrorType() != NodePath.ET_ok):
+                    continue
+                if (plnp.getPos(render) == Point3.zero()):
+                    plnp.removeNode()
+                    continue
+                lamp.setDepthOffset(1)
+                lamp.setLightOff()
+                plnp.setZ(10)
+                #smiley.reparentTo(plnp)
+                render.setLight(plnp)
+                self.lampLights.append(plnp)
+
         base.localAvatar.createChatInput()
         if not self.interior and (base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS
                                   or base.cr.playGame.getCurrentWorldName() == 'BRHood'):
@@ -78,10 +108,15 @@ class Place(StateData):
             self.snowEffect.stop()
         base.localAvatar.disableChatInput()
         del self.lastBookPage
+
+        for light in self.lampLights:
+            render.clearLight(light)
+            light.removeNode()
+        self.lampLights = []
+
         StateData.exit(self)
         
     def enterTrolleyOut(self, requestStatus):
-        print "enterTrolleyOut"
         base.localAvatar.walkControls.setCollisionsActive(0)
         base.transitions.fadeScreen(1.0)
         
@@ -89,7 +124,6 @@ class Place(StateData):
         slot = requestStatus['slot']
         for trolley in base.cr.doFindAll("DistributedBattleTrolley"):
             if trolley.toZone == prevZone:
-                print "Found the trolley"
                 trolley.localAvOnTrolley = True
                 CIGlobals.showWaitForOthers()
                 trolley.sendUpdate('arrivedInTrolley', [slot])

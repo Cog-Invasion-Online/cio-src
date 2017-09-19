@@ -1,7 +1,12 @@
-########################################
-# Filename: DistributedBattleZone.py
-# Created by: DecodedLogic (25Jul16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedBattleZone.py
+@author Maverick Liberty
+@date July 25, 2016
+
+"""
 
 from direct.distributed.DistributedObject import DistributedObject
 from direct.directnotify.DirectNotifyGlobal import directNotify

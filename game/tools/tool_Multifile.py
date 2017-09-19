@@ -1,8 +1,11 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: tool_Multifile.py
-  Created by: DuckyDuck1553 (6Nov14)
-  
+@file tool_Multifile.py
+@author Brian Lach
+@date November 6, 2014
+
 """
 
 import os, argparse, glob

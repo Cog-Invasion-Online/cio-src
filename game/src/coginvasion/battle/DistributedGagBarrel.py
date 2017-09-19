@@ -1,7 +1,12 @@
-########################################
-# Filename: DistributedGagBarrel.py
-# Created by: DecodedLogic (12Mar16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedGagBarrel.py
+@author Maverick Liberty
+@date March 12, 2016
+
+"""
 
 from DistributedRestockBarrel import DistributedRestockBarrel
 

@@ -67,6 +67,9 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
                             {'chan': 'phase_3.5/models/props/HQ_telescope-chan.bam'}, copy=0)
         self.telescope.reparentTo(self.geom.find('**/tb20:toon_landmark_hqTT_DNARoot'))
         self.telescope.setPos(1, 0.46, 0)
+		
+        waterMat = CIGlobals.getShinyMaterial()
+        self.geom.find("**/mainfloor").setMaterial(waterMat)
 
         self.geom.flattenMedium()
 

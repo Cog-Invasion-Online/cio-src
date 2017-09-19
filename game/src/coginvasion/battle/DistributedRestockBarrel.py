@@ -1,7 +1,12 @@
-########################################
-# Filename: DistributedRestockBarrel.py
-# Created by: DecodedLogic (28Feb16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedRestockBarrel.py
+@author Maverick Liberty
+@date February 28, 2016
+
+"""
 
 from pandac.PandaModules import CollisionSphere, CollisionNode, NodePath
 

@@ -73,16 +73,6 @@ class SmartCamera:
           Point3(0.0, camHeight, camHeight * 1.33),
           Point3(0.0, camHeight, camHeight * 0.66),
           1),
-         (Point3(5.7 * heightScaleFactor, 7.65 * heightScaleFactor, camHeight + 2.0),
-          Point3(0.0, 1.0, camHeight),
-          Point3(0.0, 1.0, camHeight * 4.0),
-          Point3(0.0, 1.0, camHeight * -1.0),
-          0),
-         (Point3(0.0, 8.65 * heightScaleFactor, camHeight),
-          Point3(0.0, 1.0, camHeight),
-          Point3(0.0, 1.0, camHeight * 4.0),
-          Point3(0.0, 1.0, camHeight * -1.0),
-          0),
          (Point3(0.0, -24.0 * heightScaleFactor, camHeight + 4.0),
           defLookAt,
           Point3(0.0, 1.5, camHeight * 4.0),
@@ -93,6 +83,20 @@ class SmartCamera:
           Point3(0.0, 1.5, camHeight * 4.0),
           Point3(0.0, 1.5, camHeight * -1.0),
           0)]
+          
+        gta = base.config.GetBool("want-gta-controls", False)
+        if not gta:
+            # Insert the two front facing camera angles.
+            self.cameraPositions.insert(2, (Point3(5.7 * heightScaleFactor, 7.65 * heightScaleFactor, camHeight + 2.0),
+                                            Point3(0.0, 1.0, camHeight),
+                                            Point3(0.0, 1.0, camHeight * 4.0),
+                                            Point3(0.0, 1.0, camHeight * -1.0),
+                                            0))
+            self.cameraPositions.insert(3,(Point3(0.0, 8.65 * heightScaleFactor, camHeight),
+                                           Point3(0.0, 1.0, camHeight),
+                                           Point3(0.0, 1.0, camHeight * 4.0),
+                                           Point3(0.0, 1.0, camHeight * -1.0),
+                                           0))
 
     def pageUp(self):
         if not base.localAvatar.avatarMovementEnabled:

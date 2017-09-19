@@ -15,12 +15,13 @@ class MGSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
     def __init__(self, hood, parentFSM, doneEvent):
         SafeZoneLoader.SafeZoneLoader.__init__(self, hood, parentFSM, doneEvent)
         self.playground = MGPlayground.MGPlayground
-        self.pgMusicFilename = 'phase_13/audio/bgm/minigame_area.ogg' #['phase_13/audio/bgm/party_original_theme.ogg',
-                                #'phase_13/audio/bgm/party_generic_theme.ogg',
-                                #'phase_13/audio/bgm/party_generic_theme_jazzy.ogg',
-                                #'phase_13/audio/bgm/party_polka_dance.ogg',
-                                #'phase_13/audio/bgm/party_swing_dance.ogg',
-                                #'phase_13/audio/bgm/party_waltz_dance.ogg']
+        self.pgMusicFilename = ['phase_13/audio/bgm/party_original_theme.mid',
+                                'phase_13/audio/bgm/party_generic_theme.mid',
+                                'phase_13/audio/bgm/party_generic_theme_jazzy.mid',
+                                'phase_13/audio/bgm/party_polka_dance.mid',
+                                'phase_13/audio/bgm/party_swing_dance.mid',
+                                'phase_13/audio/bgm/party_waltz_dance.mid']
+        # 'phase_13/audio/bgm/minigame_area.ogg'
         self.interiorMusicFilename = None
         self.battleMusicFile = None
         self.invasionMusicFiles = None

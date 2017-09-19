@@ -62,7 +62,7 @@ class QuestManager(QuestManagerBase, DirectObject):
 
         if objective.AreaSpecific:
             # This objective is sometimes area specific.
-            if objective.area == Anywhere:
+            if objective.area == QuestGlobals.Anywhere:
                 taskInfo += "\nAnywhere" if not speech else " anywhere"
             else:
                 # Say what area the objective must be completed in.

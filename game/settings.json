@@ -1,1 +1,24 @@
-{"settings": {"aa": "off", "fullscreen": false, "sfx": true, "af": "off", "music": true, "model-detail": "high", "resolution": [640, 480], "texture-detail": "normal"}}
+{
+    "settings": {
+        "aa": 16, 
+        "fullscreen": false, 
+        "musvol": 0.650584876537323, 
+        "sfx": true, 
+        "af": 16, 
+        "fpmgfov": 70.0, 
+        "maspr": true, 
+        "fpmgms": 0.30000001192092896, 
+        "chs": true, 
+        "music": true, 
+        "genfov": 51.990379333496094, 
+        "model-detail": "high", 
+        "shadows": 0, 
+        "texture-detail": "normal", 
+        "resolution": [
+            640, 
+            480
+        ], 
+        "gagkey": "mouse1", 
+        "sfxvol": 1.0
+    }
+}

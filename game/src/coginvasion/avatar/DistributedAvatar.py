@@ -1,7 +1,12 @@
-########################################
-# Filename: DistributedAvatar.py
-# Created by: blach (02Nov14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedAvatar.py
+@author Brian Lach
+@date November 02, 2014
+
+"""
 
 from pandac.PandaModules import TextNode
 

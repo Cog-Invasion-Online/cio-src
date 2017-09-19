@@ -4,7 +4,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 @file OptionsPage.py
 @author Brian Lach
-@date 2016-12-30
+@date December 30, 2016
 
 """
 

@@ -29,11 +29,16 @@ class PublicWalk(Walk.Walk):
             base.localAvatar.enableGags(1)
 
         base.localAvatar.createMoney()
-        self.acceptOnce('escape-up', base.localAvatar.bookButtonClicked)
+        
+        if not base.localAvatar.GTAControls:
+            self.acceptOnce('escape-up', base.localAvatar.bookButtonClicked)
 
     def exit(self):
         Walk.Walk.exit(self)
-        self.ignore('escape-up')
+        
+        if not base.localAvatar.GTAControls:
+            self.ignore('escape-up')
+            
         base.localAvatar.hideBookButton()
         base.localAvatar.disableLaffMeter()
 

@@ -92,12 +92,26 @@ class DistributedDeliveryGameAI(DistributedMinigameAI):
     def getBarrelsDelivered(self):
         return self.barrelsDelivered
 
+    def getTrucksWithBarrels(self):
+        trucks = []
+        for truck in self.trucks:
+            if truck.getNumBarrels() > 0:
+                trucks.append(truck)
+
+        return trucks
+
     def announceGenerate(self):
         DistributedMinigameAI.announceGenerate(self)
         truck0 = DistributedDeliveryTruckAI(self.air, self, 0)
         truck0.setNumBarrels(self.NumBarrelsInEachTruck)
         truck0.generateWithRequired(self.zoneId)
         self.trucks.append(truck0)
+        if self.getNumPlayers() >= 3:
+            truck1 = DistributedDeliveryTruckAI(self.air, self, 1)
+            truck1.setNumBarrels(self.NumBarrelsInEachTruck)
+            truck1.generateWithRequired(self.zoneId)
+            self.trucks.append(truck1)
+        
         totalBarrels = 0
         for truck in self.trucks:
             totalBarrels += truck.getNumBarrels()
@@ -130,6 +144,9 @@ class DistributedDeliveryGameAI(DistributedMinigameAI):
         base.taskMgr.doMethodLater(time, self.__spawnSuit, self.uniqueName('suitSpawner'))
 
     def __spawnSuit(self, task):
+        if self.barrelsRemaining == 0:
+            return task.done
+
         plan = random.choice(SuitBank.getSuits())
         level = 0
         variant = Variant.NORMAL

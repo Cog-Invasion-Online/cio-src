@@ -1,7 +1,12 @@
-########################################
-# Filename: FileUtility.py
-# Created by: blach (18Apr15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file FileUtility.py
+@author Brian Lach
+@date April 18, 2015
+
+"""
 
 from pandac.PandaModules import VirtualFileSystem, Filename
 vfs = VirtualFileSystem.getGlobalPtr()

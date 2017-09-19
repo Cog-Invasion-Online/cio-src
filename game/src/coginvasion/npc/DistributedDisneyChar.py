@@ -297,6 +297,8 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.initializeRay(self.avatarType, 1)
         self.disableShadowRay()
 
+        self.setMaterial(CIGlobals.getShinyMaterial(25.0))
+
         self.__blinkName = 'blink-' + data[3]
 
     def setupNameTag(self):

@@ -1,4 +1,14 @@
-﻿from src.coginvasion.standalone.StandaloneToon import *
+﻿"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file crash_minigame_prototype.py
+@author Brian Lach
+@date July 14, 2016
+
+"""
+
+from src.coginvasion.standalone.StandaloneToon import *
 from direct.interval.IntervalGlobal import *
 from direct.gui.DirectGui import *
 from direct.fsm.ClassicFSM import ClassicFSM
@@ -20,6 +30,11 @@ base.localAvatar.disableAvatarControls()
 base.localAvatar.attachCamera()
 base.localAvatar.startSmartCamera()
 base.localAvatar.setAnimState('off')
+
+base.localAvatar.controlManager.disable()
+base.localAvatar.prepareToSwitchControlType()
+base.localAvatar.controlManager.wantWASD = 0
+base.localAvatar.controlManager.enable()
 
 class Jellybean(NodePath, DirectObject):
     notify = directNotify.newCategory("Jellybean")
@@ -281,7 +296,7 @@ class Crate(NodePath, DirectObject):
             game.gui.jbs.append(jb)
             self.beans.append(jb)
         
-        self.mdl = Actor('phase_4/models/minigames/crash_crate.egg', {'bounce': 'phase_4/models/minigames/crash_crate-bounce.egg'})
+        self.mdl = Actor('phase_4/models/minigames/cc_opt/crash_crate.egg', {'bounce': 'phase_4/models/minigames/cc_opt/crash_crate-bounce.egg'})
         self.mdl.setScale(1.5)
         self.mdl.reparentTo(self)
 
@@ -300,14 +315,17 @@ class Crate(NodePath, DirectObject):
         self.find("**/top_coll").setName(self.topName)
         self.topColl = self.find("**/" + self.topName)
         self.topColl.setCollideMask(CIGlobals.FloorBitmask)
+        self.topColl.hide()
 
         self.botName = "bot_coll_" + str(self.crateId)
         self.find("**/bot_coll").setName(self.botName)
         self.botColl = self.find("**/" + self.botName)
-        self.botColl.setCollideMask(CIGlobals.EventBitmask)
-        self.botColl.setCollideMask(CIGlobals.WallBitmask)
+        self.botColl.setCollideMask(CIGlobals.EventBitmask | CIGlobals.WallBitmask)
+        self.botColl.hide()
         
         self.sideColl = self.find("**/side_coll")
+        self.sideColl.setCollideMask(CIGlobals.WallBitmask)
+        self.sideColl.hide()
         
         self.accept("enter" + self.topName, self.__handleJumpedOnCrate)
         self.accept("exit" + self.topName, self.__handleJumpedOffCrate)
@@ -320,7 +338,7 @@ class Crate(NodePath, DirectObject):
             LerpHprInterval(
                 self.find("**/side_1"),
                 duration = 1,
-                hpr = (0, -90, 0),
+                hpr = (-90, 0, 0),
                 startHpr = (0, 0, 0),
                 blendType = "easeIn"
             ),
@@ -357,6 +375,8 @@ class Crate(NodePath, DirectObject):
         Func(self.setTransparency, 1),
         LerpColorScaleInterval(self, duration = 1.0, colorScale = (1, 1, 1, 0), startColorScale = (1, 1, 1, 1)),
         Func(self.cleanup))
+
+        self.ls()
         
         self.reparentTo(render)
 
@@ -398,7 +418,7 @@ class Crate(NodePath, DirectObject):
         taskMgr.add(self.__watchOnCrate, "watchOnCrate" + str(self.crateId))
 
     def __watchOnCrate(self, task):
-        if (base.localAvatar.getZ(self.topColl) <= 0.1 and base.localAvatar.getZ(self.topColl) >= 0 and base.localAvatar.walkControls.isAirborne):
+        if (base.localAvatar.getZ(self.topColl) <= 2.2 and base.localAvatar.getZ(self.topColl) >= 0 and base.localAvatar.walkControls.isAirborne):
             if (globalClock.getFrameTime() - self.lastHitTopT >= 0.05):
                 self.lastHitTopT = globalClock.getFrameTime()
                 messenger.send(self.getHitTopEvent())
@@ -936,5 +956,7 @@ class Game:
         #base.acceptOnce('enterplatform_coll', self.__handleSteppedOnPlatform)
 
 game = Game()
+
+base.cTrav.showCollisions(render)
 
 base.run()

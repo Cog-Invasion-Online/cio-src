@@ -1,7 +1,12 @@
-########################################
-# Filename: GagsPage.py
-# Created by: DecodedLogic (18Jun16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file GagsPage.py
+@author Maverick Liberty
+@date June 18, 2016
+
+"""
 
 from src.coginvasion.book.BookPage import BookPage
 from src.coginvasion.gui.BackpackGUI import BackpackGUI

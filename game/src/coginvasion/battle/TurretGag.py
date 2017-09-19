@@ -1,7 +1,12 @@
-########################################
-# Filename: TurretGag.py
-# Created by: DecodedLogic (10Aug15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file TurretGag.py
+@author Maverick Liberty
+@date August 10, 2015
+
+"""
 
 from pandac.PandaModules import CollisionSphere, CollisionNode, BitMask32, CollisionHandlerEvent, NodePath
 

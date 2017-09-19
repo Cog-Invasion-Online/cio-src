@@ -1,6 +1,8 @@
 # Filename: DLHood.py
 # Created by:  blach (24Jul15)
 
+from pandac.PandaModules import PolylightEffect, VBase4
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from ToonHood import ToonHood
@@ -27,10 +29,16 @@ class DLHood(ToonHood):
         self.titleColor = (0.443, 0.21, 1.0, 1.0)
         self.loaderDoneEvent = 'DLHood-loaderDone'
 
+        self.ambient = VBase4(82 / 255.0, 132 / 255.0, 190 / 255.0, 1.0)
+        self.sun = VBase4(224 / 255.0, 213 / 255.0, 208 / 255.0, 1.0)
+
     def load(self):
         ToonHood.load(self)
         self.parentFSM.getStateNamed('DLHood').addChild(self.fsm)
 
+        render.setEffect(PolylightEffect.make())
+
     def unload(self):
         self.parentFSM.getStateNamed('DLHood').removeChild(self.fsm)
+        render.clearEffect(PolylightEffect.getClassType())
         ToonHood.unload(self)

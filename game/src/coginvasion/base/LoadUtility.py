@@ -1,7 +1,14 @@
-########################################
-# Filename: LoadUtility.py
-# Created by: blach (18Apr15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file LoadUtility.py
+@author Brian Lach
+@date April 18, 2015
+
+"""
+
+from pandac.PandaModules import ConfigVariableBool
 
 class LoadUtility:
 
@@ -10,9 +17,10 @@ class LoadUtility:
         self.models = []
 
     def load(self):
-        for modelFile in self.models:
-            loader.loadModel(modelFile)
-            loader.progressScreen.tick()
+        if ConfigVariableBool("load-stuff", True):
+            for modelFile in self.models:
+                loader.loadModel(modelFile)
+                loader.progressScreen.tick()
         self.done()
 
     def done(self):
