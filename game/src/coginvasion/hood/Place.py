@@ -56,6 +56,16 @@ class Place(StateData):
                                 else:
                                     text2Change2 += 'On'
                                 self.shtickerBookStateData.getCurrentPage().suitSpawnerBtn['text'] = text2Change2
+    
+    # Used to disable all GUI interaction.   
+    def __disableInteraction(self):
+        base.localAvatar.disableChatInput()
+        
+        if base.localAvatar.invGui:
+            base.localAvatar.invGui.disable()
+        base.localAvatar.disableLaffMeter()
+        base.localAvatar.disableMoney()
+        
 
     def enterStart(self):
         pass
@@ -106,7 +116,7 @@ class Place(StateData):
         if not self.interior and (base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS
                                   or base.cr.playGame.getCurrentWorldName() == 'BRHood'):
             self.snowEffect.stop()
-        base.localAvatar.disableChatInput()
+        self.__disableInteraction()
         del self.lastBookPage
 
         for light in self.lampLights:
@@ -294,13 +304,12 @@ class Place(StateData):
         base.localAvatar.createMoney()
         #base.localAvatar.showBookButton()
         if base.localAvatar.inBattle:
-            base.localAvatar.enableGags(0)
+            base.localAvatar.enableGags(andKeys = 0)
 
     def exitStop(self):
         base.localAvatar.stopSmartCamera()
         base.localAvatar.detachCamera()
-        base.localAvatar.disableLaffMeter()
-        base.localAvatar.disableMoney()
+        self.__disableInteraction()
         if base.localAvatar.inBattle:
             base.localAvatar.disableGags()
         #base.localAvatar.hideBookButton()
@@ -429,6 +438,8 @@ class Place(StateData):
             base.localAvatar.friendsList.fsm.requestFinalState()
         if base.localAvatar.panel:
             base.localAvatar.panel.fsm.requestFinalState()
+        if base.localAvatar.invGui:
+            base.localAvatar.invGui.disable()
         if self.useFirstPerson:
             if base.localAvatar.getMyBattle():
                 self.firstPerson.enableMouse()

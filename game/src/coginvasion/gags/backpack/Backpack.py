@@ -92,10 +92,8 @@ class Backpack:
 
         if self.avatar.doId == base.localAvatar.doId:
             # Let's reset the loadout to show the new one.
-            playGame = base.cr.playGame
-            if andResetGui and playGame and playGame.getPlace() and playGame.getPlace().fsm.getCurrentState().getName() == 'walk':
-                base.localAvatar.disableGags()
-                base.localAvatar.enableGags(1)
+            if self.loadoutGUI:
+                self.loadoutGUI.updateLoadout()
 
     # Adds a gag to the loadout.
     def addLoadoutGag(self, gagId):

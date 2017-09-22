@@ -5,7 +5,7 @@
 
 """
 
-from pandac.PandaModules import CollisionTraverser, Point3, CollisionRay, CollisionNode, BitMask32, CollisionHandlerQueue, ConfigVariableBool
+from pandac.PandaModules import Point3, ConfigVariableBool
 from src.coginvasion.globals import CIGlobals
 from direct.controls import ControlManager
 from direct.controls.GravityWalker import GravityWalker
@@ -635,11 +635,9 @@ class LocalToon(DistributedToon):
     def enableGags(self, andKeys = 0):
         if self.avatarMovementEnabled and andKeys:
             self.enableGagKeys()
-        self.invGui.createGui()
-        self.invGui.updateLoadout()
-        self.backpack.loadoutGUI = self.invGui
+        self.invGui.enable()
         if self.backpack.getCurrentGag():
-            self.invGui.setWeapon(self.backpack.getCurrentGag().getName(), playSound = False)
+            self.invGui.setWeapon(self.backpack.getCurrentGag().getID(), playSound = False)
 
     def enableGagKeys(self):
         if self.gagThrowBtn:
@@ -662,7 +660,7 @@ class LocalToon(DistributedToon):
     def disableGags(self):
         self.disableGagKeys()
         if self.invGui:
-            self.invGui.deleteGui()
+            self.invGui.disable()
         if hasattr(self, 'backpack'):
             if self.backpack:
                 self.backpack.setCurrentGag()
@@ -951,6 +949,8 @@ class LocalToon(DistributedToon):
         #self.accept('c', self.walkControls.setCollisionsActive, [0])
 
         self.invGui = InventoryGui()
+        self.invGui.createGui()
+        self.backpack.loadoutGUI = self.invGui
 
         # Unused developer methods.
         #self.accept('enter', self.printAvPos)
@@ -965,7 +965,7 @@ class LocalToon(DistributedToon):
         self.getGeomNode().hide()
         self.deleteNameTag()
         self.moneyGui.deleteGui()
-        self.invGui.deleteGui()
+        self.invGui.disable()
         self.hideGagButton()
         self.hideFriendButton()
         self.hideBookButton()
