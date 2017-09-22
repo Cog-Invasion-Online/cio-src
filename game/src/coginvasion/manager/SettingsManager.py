@@ -165,14 +165,12 @@ class SettingsManager:
         jsonFile.close()
 
         if apply:
+            wp = WindowProperties()
             if setting == "resolution":
                 width, height = value
-                wp = WindowProperties()
                 wp.setSize(width, height)
-                base.win.requestProperties(wp)
             elif setting == "fullscreen":
-                wp = WindowProperties()
                 wp.setFullscreen(value[0])
-                base.win.requestProperties(wp)
+            base.win.requestProperties(wp)
 
         return value

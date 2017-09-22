@@ -87,13 +87,13 @@ class Backpack:
     # Sets the loadout of the backpack.
     # Must receive a list of up to 4 gag ids or
     # an empty list.
-    def setLoadout(self, gagIds):
+    def setLoadout(self, gagIds, andResetGui = True):
         self.loadout = gagIds
 
         if self.avatar.doId == base.localAvatar.doId:
             # Let's reset the loadout to show the new one.
             playGame = base.cr.playGame
-            if playGame and playGame.getPlace() and playGame.getPlace().fsm.getCurrentState().getName() == 'walk':
+            if andResetGui and playGame and playGame.getPlace() and playGame.getPlace().fsm.getCurrentState().getName() == 'walk':
                 base.localAvatar.disableGags()
                 base.localAvatar.enableGags(1)
 

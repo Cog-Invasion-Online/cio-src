@@ -21,6 +21,8 @@ from pandac.PandaModules import TransparencyAttrib, TextNode
 import types
 
 class Slot(DirectFrame):
+    
+    RechargeCompleteCooldown = 0.30
 
     def __init__(self, baseGui, index, pos, parent):
         DirectFrame.__init__(self, pos = pos, parent = parent, image = loader.loadTexture('phase_3.5/maps/slot_%s_%s.png' % (str(index), 'idle')), scale = 0.15,
@@ -33,6 +35,7 @@ class Slot(DirectFrame):
         self.gag = None
         self.mouseRlvrSfx = base.loadSfx('phase_3/audio/sfx/GUI_rollover.ogg')
         self.soundRecharged = base.loadSfx('phase_3.5/audio/sfx/tt_s_gui_sbk_cdrSuccess.ogg')
+        self.switchUnavailableSfx = base.loadSfx("phase_4/audio/sfx/ring_miss.ogg")
 
         # The no ammo text over the gag when you run out of ammo.
         self.infoText = OnscreenText(text = "No\nAmmo", fg = (1, 0, 0, 1), parent = self,
@@ -142,6 +145,7 @@ class Slot(DirectFrame):
                 nextGagIndex = index - 1
 
             if nextGagIndex < 0 or nextGagIndex >= len(useTrack):
+                base.playSfx(self.switchUnavailableSfx)
                 return
 
             gagId = GagGlobals.getIDByName(useTrack[nextGagIndex])
@@ -151,9 +155,15 @@ class Slot(DirectFrame):
 
                 if not self.gag in loadout:
                     return
-
-                loadout[loadout.index(self.gag)] = self.gui.backpack.getGagByID(gagId)
-                self.gui.backpack.setLoadout(loadout)
+                
+                newGag = self.gui.backpack.getGagByID(gagId)
+                loadout[loadout.index(self.gag)] = newGag
+                self.gui.backpack.setLoadout(loadout, andResetGui = False)
+                
+                if self.gui.activeSlot == self and newGag.getState() == GagState.LOADED:
+                    self.setGag(newGag)
+                    self.gui.update()
+                    self.gui.setWeapon(self)
 
     def showNoAmmo(self):
         self.infoText['text'] = "No\nAmmo"
@@ -184,17 +194,17 @@ class Slot(DirectFrame):
             self.rechargeBar['value'] = barValue
 
             if barValue == 0:
-                self.gui.setWeapon(self, playSound = False)
-                self.setOutlineImage('no_ammo')
                 self.showRecharging()
             elif barValue >= 100:
-                base.playSfx(self.soundRecharged)
                 slotImage = 'idle'
+                track = Sequence(Wait(self.RechargeCompleteCooldown), Func(base.playSfx, self.soundRecharged))
                 if base.localAvatar.getBackpack().getSupply(self.gag.getID()) <= 0:
                     slotImage = 'no_ammo'
                 elif self.gui.getActiveSlot() == self:
                     slotImage = 'selected'
-                Sequence(Wait(0.5), Func(self.setOutlineImage, slotImage)).start()
+                    track.append(Func(self.gui.setWeapon, self, True))
+                track.append(Func(self.setOutlineImage, slotImage))
+                track.start()
 
     def hideInfoText(self):
         self.infoText.hide()
@@ -312,6 +322,7 @@ class InventoryGui(DirectObject):
         self.visibilityBtnStatus = 0
         self.switchSound = True
         self.switchSoundSfx = base.loadSfx("phase_3/audio/sfx/GUI_balloon_popup.ogg")
+        self.switchUnavailableSfx = base.loadSfx("phase_4/audio/sfx/ring_miss.ogg")
 
         self.visibilityFSM = ClassicFSM('InventoryGui-VisibilityFSM',
                                         [State('off', self.enterOff, self.exitOff),
@@ -322,6 +333,12 @@ class InventoryGui(DirectObject):
                                         'off', 'off')
         self.visibilityFSM.enterInitialState()
         self.visibilityFSM.request('hidden')
+        
+        # Variables having to do with making the gui remain on the screen.
+        self.keepVisibleSfx = base.loadSfx('phase_5/audio/sfx/General_device_appear.ogg')
+        self.disableKeepVisibleSfx = base.loadSfx('phase_5/audio/sfx/GUI_battleselect.ogg')
+        self.slotsVisible = False
+        self.slotsForceShown = False
 
     def enterOff(self):
         pass
@@ -332,6 +349,7 @@ class InventoryGui(DirectObject):
     def enterHidden(self):
         self.inventoryFrame.setPos(InventoryGui.HiddenPos)
         self.inventoryFrame.hide()
+        self.slotsVisible = False
 
     def exitHidden(self):
         pass
@@ -344,7 +362,8 @@ class InventoryGui(DirectObject):
             if autoShow is False:
                 # our mouse is no longer in the visibility button.
                 self.visibilityFSM.request('visible2hidden')
-
+        self.slotsVisible = True
+        
     def exitVisible(self):
         pass
 
@@ -372,9 +391,40 @@ class InventoryGui(DirectObject):
         self.ignore("visible2hidden")
         self.moveIval.finish()
         del self.moveIval
+        
+    def __toggleForcedVisibility(self):
+        if self.slotsForceShown:
+            self.slotsForceShown = False
+            
+            # We want to hide the GUI if it is visible.
+            if self.slotsVisible:
+                self.__autoVisExit()
+            self.ignore('hidden2visible')
+            
+            # If we want switch sounds, we most likely want all sfx based on this GUI.
+            if self.switchSound:
+                base.playSfx(self.disableKeepVisibleSfx)
+        else:
+            self.slotsForceShown = True
+
+            # We want to show the GUI if it is not visible.
+            if not self.slotsVisible:
+                self.__autoVisEnter()
+            self.ignore('visible2hidden')
+            
+            # If we want switch sounds, we most likely want all sfx based on this GUI.
+            if self.switchSound:
+                base.playSfx(self.keepVisibleSfx)
 
     def click_setWeapon(self, slot, cmd):
         self.setWeapon(slot, playSound = False)
+        
+    def __switchTrackGag(self, forward):
+        if self.activeSlot:
+            self.activeSlot.updateLoadout(forward)
+        
+    def __hasSupplyRemaining(self, gag):
+        return self.backpack.getSupply(gag) > 0
 
     def setWeapon(self, slot, playSound = True, showUpIfHidden = False):
         if isinstance(slot, str):
@@ -385,28 +435,31 @@ class InventoryGui(DirectObject):
         if self.activeSlot and slot != self.activeSlot:
             self.activeSlot.setOutlineImage('idle')
             self.prevSlot = self.activeSlot
-        if slot.getGag() and self.backpack.getSupply(slot.getGag().getID()) > 0 and not slot.getGag().getState() == GagState.RECHARGING:
-            if self.activeSlot != slot:
+        if slot.getGag():
+            if self.activeSlot != slot or self.activeSlot == slot and self.backpack.currentGag != slot.getGag().getID():
                 gagId = slot.getGag().getID()
-                # We need to wait until our current gag has finished its time
-                # out in order to equip the new gag.
+
                 base.localAvatar.needsToSwitchToGag = gagId
                 if base.localAvatar.gagsTimedOut == False:
                     base.localAvatar.b_equip(gagId)
                     base.localAvatar.enableGagKeys()
+                
                 slot.setOutlineImage('selected')
                 self.activeSlot = slot
-            elif self.activeSlot == slot and slot.getGag().getState() in [GagState.LOADED, GagState.RECHARGING]:
+            else:
                 base.localAvatar.needsToSwitchToGag = 'unequip'
                 if base.localAvatar.gagsTimedOut == False:
                     base.localAvatar.b_unEquip()
                     base.localAvatar.enableGagKeys()
-                self.activeSlot = None
-            self.update()
             if self.switchSound and playSound:
                 base.playSfx(self.switchSoundSfx)
+        else:
+            # If we want the switch sound, we'll assume we want the switch unavailable sound too.
+            if self.switchSound:
+                base.playSfx(self.switchUnavailableSfx)
+        self.update()
 
-        if showUpIfHidden:
+        if showUpIfHidden and not self.slotsForceShown:
             base.taskMgr.remove("showUpIfHidden")
             self.__autoVisEnter()
             base.taskMgr.doMethodLater(InventoryGui.AutoShowTime, self.__autoVisExitTask, "showUpIfHidden")
@@ -426,12 +479,15 @@ class InventoryGui(DirectObject):
             self.visibilityFSM.request('hidden2visible', [autoShow])
         elif self.visibilityFSM.getCurrentState().getName() == 'visible2hidden':
             self.visibilityFSM.request('visible')
+            
+    def __autoVisExit(self):
+        self.__handleVisExit(None, True)
 
     def __handleVisExit(self, foo, updateBtnStatus = True):
         if updateBtnStatus:
             self.visibilityBtnStatus = 0
         base.taskMgr.remove("showUpIfHidden")
-        if self.visibilityFSM.getCurrentState().getName() == 'visible':
+        if self.visibilityFSM.getCurrentState().getName() == 'visible' and not self.slotsForceShown:
             self.visibilityFSM.request('visible2hidden')
 
     def createGui(self):
@@ -456,6 +512,7 @@ class InventoryGui(DirectObject):
         #if self.visibilityBtn:
         #    self.visibilityBtn.destroy()
         #    self.visibilityBtn = None
+        self.ignoreAll()
         self.disableWeaponSwitch()
         for slot in self.slots:
             slot.destroy()
@@ -466,6 +523,8 @@ class InventoryGui(DirectObject):
         #if self.inventoryFrame:
         #    self.inventoryFrame.destroy()
         #    self.inventoryFrame = None
+        self.slotsForceShown = False
+        self.slotsVisible = False
         self.DELETED = True
 
     def resetScroll(self):
@@ -506,23 +565,22 @@ class InventoryGui(DirectObject):
             if not gag and len(self.backpack.getGags()) - 1 >= index:
                 gag = self.backpack.getGagByIndex(index)
                 slot.setGag(gag)
-                if self.backpack.getSupply(gag.getID()) > 0 and not gag.getState() == GagState.RECHARGING:
+                if supply > 0 and not gag.getState() == GagState.RECHARGING:
                     slot.setOutlineImage('idle')
                 else:
                     slot.setOutlineImage('no_ammo')
+                    
+                if slot == self.activeSlot:
+                    self.activeSlot = None
             else:
                 if slot == self.activeSlot:
+                    slot.setOutlineImage('selected')
                     self.ammoLabel['text_fg'] = (1, 1, 1, 1)
-                    if supply > 0 and not gag.getState() == GagState.RECHARGING:
-                        slot.setOutlineImage('selected')
-                    else:
-                        if supply <= 0:
-                            self.ammoLabel['text_fg'] = (0.9, 0, 0, 1)
-                        slot.setOutlineImage('no_ammo')
-                        self.activeSlot = None
+                    if supply <= 0:
+                        self.ammoLabel['text_fg'] = (0.9, 0, 0, 1)
                     self.ammoLabel.show()
                     self.ammoLabel['text'] = 'Ammo: %s' % (self.backpack.getSupply(slot.getGag().getID()))
-                elif self.backpack.getSupply(slot.getGag().getID()) > 0 and not gag.getState() == GagState.RECHARGING:
+                elif self.__hasSupplyRemaining(slot.getGag().getID()) > 0:
                     slot.setOutlineImage('idle')
                 else:
                     slot.setOutlineImage('no_ammo')
@@ -566,9 +624,12 @@ class InventoryGui(DirectObject):
     def enableWeaponSwitch(self):
         for index in range(len(self.slots)):
             self.accept(str(index + 1), self.setWeapon, extraArgs = [self.slots[index], True, True])
+        self.accept('e', self.__toggleForcedVisibility)
+        self.accept('z', self.__switchTrackGag, [0])
+        self.accept('c', self.__switchTrackGag, [1])
 
     def disableWeaponSwitch(self):
-        for key in ['1', '2', '3', '4', 'wheel_down', 'wheel_up']:
+        for key in ['1', '2', '3', '4', 'wheel_down', 'wheel_up', 'e', 'z', 'c']:
             self.ignore(key)
 
     def getSlots(self):
