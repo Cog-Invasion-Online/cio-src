@@ -12,7 +12,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.dna.DNALoader import *
-from src.coginvasion.holiday.HolidayManager import HolidayType
+from src.coginvasion.hood.SnowEffect import SnowEffect
 
 from pandac.PandaModules import Vec4, AmbientLight, ModelPool, TexturePool, DirectionalLight
 from pandac.PandaModules import Fog, CompassEffect, NodePath, VBase4, Vec3
@@ -38,25 +38,32 @@ class Hood(StateData):
         self.suitLightColor = (0.4, 0.4, 0.4, 1)
         self.suitFogData = [(0.3, 0.3, 0.3), 0.0025]
         self.titleColor = (1, 1, 1, 1)
+        
+        self.snowEffect = SnowEffect(self)
 
         self.wantLighting = True
 
+        ###############################################################
+        # Outdoor lighting configuration (street, playground)
         self.ambient = VBase4(172 / 255.0, 196 / 255.0, 202 / 255.0, 1.0)
         self.ambientNP = None
 
         self.sun = VBase4(252 / 255.0, 239 / 255.0, 209 / 255.0, 1.0)
-        self.sunPos = Vec3(-250, 100, 500)
+        self.sunPos = Vec3(-150, 50, 500)
         self.sunNP = None
+        
+        # For aerial perspective effect.
+        # Fog color should be similar to the sky color in the playground.
+        self.fog = VBase4(0.8, 0.8, 1.0, 1.0)
+        self.fogDensity = 0.001
+        self.fogNode = None
+
+        ################################################################
 
         return
 
     def enter(self, requestStatus):
         StateData.enter(self)
-
-        if (self.wantLighting and game.uselighting):
-            render.setLight(self.ambientNP)
-            
-            render.setLight(self.sunNP)
 
         hoodId = requestStatus['hoodId']
         zoneId = requestStatus['zoneId']
@@ -109,14 +116,58 @@ class Hood(StateData):
             self.titleText.hide()
 
     def exit(self):
-        if (self.wantLighting and game.uselighting):
-            render.clearLight(self.ambientNP)
-            render.clearLight(self.sunNP)
         if self.titleText:
             self.titleText.cleanup()
             self.titleText = None
         StateData.exit(self)
         return
+
+    def setupOutdoorLighting(self):
+        if self.wantLighting and game.uselighting:
+            self.ambientNP = CIGlobals.makeAmbientLight("outdoor", self.ambient)
+            self.sunNP = CIGlobals.makeDirectionalLight("outdoor", self.sun, self.sunPos)
+            
+            if base.cr.isChristmas():
+                self.snowEffect.load()
+            else:
+                self.fogNode = CIGlobals.makeFog("outdoor", self.fog, self.fogDensity)
+
+    def enableOutdoorLighting(self):
+        if self.wantLighting and game.uselighting:
+            if self.ambientNP:
+                render.setLight(self.ambientNP)
+            if self.sunNP:
+                render.setLight(self.sunNP)
+            if base.cr.isChristmas():
+                self.snowEffect.start()
+            else:
+                if self.fogNode:
+                    render.setFog(self.fogNode)
+                
+
+    def disableOutdoorLighting(self):
+        if self.wantLighting and game.uselighting:
+            if self.ambientNP:
+                render.clearLight(self.ambientNP)
+            if self.sunNP:
+                render.clearLight(self.sunNP)
+            if base.cr.isChristmas():
+                self.snowEffect.stop()
+            else:
+                if self.fogNode:
+                    render.clearFog()
+
+    def cleanupOutdoorLighting(self):
+        if game.uselighting and self.wantLighting:
+            if self.ambientNP:
+                self.ambientNP.removeNode()
+                self.ambientNP = None
+            if self.sunNP:
+                self.sunNP.removeNode()
+                self.sunNP = None
+            self.fogNode = None
+            if base.cr.isChristmas():
+                self.snowEffect.unload()
 
     def load(self):
         StateData.load(self)
@@ -124,37 +175,15 @@ class Hood(StateData):
             loadDNAFile(self.dnaStore, self.storageDNAFile)
         if self.holidayDNAFile:
             loadDNAFile(self.dnaStore, self.holidayDNAFile)
-        if not base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
+        if not base.cr.isChristmas():
             self.createNormalSky()
         else:
             self.createSpookySky()
-        
-        if (self.wantLighting and game.uselighting):
-            amb = AmbientLight("playground-ambient")
-            amb.setColor(self.ambient)
-            self.ambientNP = render.attachNewNode(amb)
 
-            sun = DirectionalLight("playground-sun")
-            sun.getLens().setFilmSize(256, 256)
-            sun.getLens().setNearFar(1, 10000)
-            sun.setColor(self.sun)
-            sun.setShadowCaster(game.userealshadows, 8912, 8912)
-            
-            self.sunNP = camera.attachNewNode(sun)
-            self.sunNP.setCompass()
-            self.sunNP.setPos(self.sunPos)
-            self.sunNP.lookAt(render, 0, 0, 0)
-           
+        self.setupOutdoorLighting()
             
     def unload(self):
-        self.notify.info("unload()")
-        if (self.wantLighting and game.uselighting):
-            if (self.sunNP):
-                self.sunNP.removeNode()
-                self.sunNP = None
-            if (self.ambientNP):
-                self.ambientNP.removeNode()
-                self.ambientNP = None
+        self.cleanupOutdoorLighting()
 
         if hasattr(self, 'loader'):
             self.loader.exit()
@@ -293,7 +322,7 @@ class Hood(StateData):
         Hood.startSky(self)
 
     def stopSuitEffect(self, newSky = 1):
-        render.clearFog()
+        #render.clearFog()
         if self.suitLight:
             render.clearLight(self.suitLight)
             self.suitLight.removeNode()

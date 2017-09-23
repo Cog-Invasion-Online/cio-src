@@ -17,6 +17,8 @@ from src.coginvasion.holiday.HolidayManager import HolidayType
 class DistributedTreasure(DistributedObject):
     notify = directNotify.newCategory('DistributedTreasure')
 
+    WinterTreasureMdl = 'phase_6/models/karting/qbox.bam'
+
     def __init__(self, cr):
         DistributedObject.__init__(self, cr)
         self.grabSoundPath = None
@@ -40,6 +42,10 @@ class DistributedTreasure(DistributedObject):
     def announceGenerate(self):
         DistributedObject.announceGenerate(self)
         self.spinTaskName = self.uniqueName('treasureRotate')
+
+        if base.cr.isChristmas():
+            self.modelPath = DistributedTreasure.WinterTreasureMdl
+
         self.loadModel(self.modelPath, self.modelChildString)
         self.startAnimation()
         self.nodePath.reparentTo(render)
@@ -50,14 +56,15 @@ class DistributedTreasure(DistributedObject):
         self.rejectSound = base.loadSfx(self.rejectSoundPath)
         if self.nodePath == None:
             self.makeNodePath()
-        else: self.treasure.getChildren().detach()
+        else:
+            self.treasure.getChildren().detach()
         model = loader.loadModel(mdlPath)
-        if self.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
+        if base.cr.isChristmas():
             model.setTransparency(1)
         if childString:
             model = model.find('**/' + childString)
         model.instanceTo(self.treasure)
-        if self.cr.holidayManager.getHoliday() != 0:
+        if base.cr.isChristmas():
             self.treasure.setScale(1.5, 1.5, 1.5)
             self.treasure.setZ(0.8)
             taskMgr.add(self.__spinTreasure, self.spinTaskName)

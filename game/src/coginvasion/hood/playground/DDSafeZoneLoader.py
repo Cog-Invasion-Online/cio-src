@@ -42,8 +42,8 @@ class DDSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
 
     def enter(self, requestStatus):
         SafeZoneLoader.SafeZoneLoader.enter(self, requestStatus)
-        self.hood.setWhiteFog()
+        #self.hood.setWhiteFog()
 
     def exit(self):
-        self.hood.setNoFog()
+        #self.hood.setNoFog()
         SafeZoneLoader.SafeZoneLoader.exit(self)

@@ -125,7 +125,8 @@ class SettingsManager:
             render.clear_antialias()
             aspect2d.clear_antialias()
 
-        ts = TextureStage('ts')
+        print "Anisotropic degree of {0}".format(af)
+        loadPrcFileData("", "texture-anisotropic-degree {0}".format(af))
 
         if tex_detail == "high":
             pass

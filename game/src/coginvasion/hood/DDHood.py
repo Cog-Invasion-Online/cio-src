@@ -1,7 +1,7 @@
 # Filename: DDHood.py
 # Created by:  blach (26Jul15)
 
-from pandac.PandaModules import Fog
+from pandac.PandaModules import VBase4
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.holiday.HolidayManager import HolidayType
 
@@ -26,14 +26,13 @@ class DDHood(ToonHood):
         self.spookySkyFile = "phase_3.5/models/props/BR_sky.bam"
         self.titleColor = (0.80000000000000004, 0.59999999999999998, 0.5, 1.0)
         self.loaderDoneEvent = 'DDHood-loaderDone'
-        self.fog = None
+        self.fog = VBase4(0.80000000000000004, 0.80000000000000004, 0.80000000000000004, 1)
+        self.fogDensity = 0.0035
 
     def load(self):
         ToonHood.load(self)
-        self.fog = Fog('DDFog')
         self.parentFSM.getStateNamed('DDHood').addChild(self.fsm)
 
     def unload(self):
         self.parentFSM.getStateNamed('DDHood').removeChild(self.fsm)
-        del self.fog
         ToonHood.unload(self)

@@ -54,9 +54,12 @@ class Street(Place):
         taskMgr.remove('Street.elevatorInTask')
 
     def enter(self, requestStatus, visibilityFlag = 1):
+
+        self.loader.hood.enableOutdoorLighting()
         
         self.fsm.enterInitialState()
         base.playMusic(self.loader.music, volume = 0.8, looping = 1)
+        
         self.loader.geom.reparentTo(render)
         if visibilityFlag:
             self.visibilityOn()
@@ -72,6 +75,9 @@ class Street(Place):
         self.loader.geom.reparentTo(hidden)
         self.loader.hood.stopSky()
         self.loader.music.stop()
+
+        self.loader.hood.disableOutdoorLighting()
+        
         Place.exit(self)
 
     def load(self):

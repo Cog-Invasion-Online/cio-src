@@ -25,7 +25,7 @@ class PublicWalk(Walk.Walk):
         base.localAvatar.showBookButton()
         base.localAvatar.createLaffMeter()
 
-        if base.localAvatar.inBattle:
+        if base.localAvatar.inBattle or base.config.GetBool("want-playground-gags", False):
             base.localAvatar.enableGags(1)
 
         base.localAvatar.createMoney()
@@ -42,7 +42,7 @@ class PublicWalk(Walk.Walk):
         base.localAvatar.hideBookButton()
         base.localAvatar.disableLaffMeter()
 
-        if base.localAvatar.inBattle:
+        if base.localAvatar.inBattle or base.config.GetBool("want-playground-gags", False):
             base.localAvatar.disableGags()
 
         base.localAvatar.disableMoney()

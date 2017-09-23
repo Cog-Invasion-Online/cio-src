@@ -36,6 +36,8 @@ from src.coginvasion.toon import LocalToon
 from src.coginvasion.hood.QuietZoneState import QuietZoneState
 from src.coginvasion.hood import ZoneUtil
 
+from src.coginvasion.holiday.HolidayManager import HolidayType
+
 from CogInvasionDoGlobals import DO_ID_COGINVASION, DO_ID_CLIENT_SERVICES_MANAGER
 from CogInvasionDoGlobals import DO_ID_FRIENDS_MANAGER, DO_ID_HOLIDAY_MANAGER
 from CogInvasionDoGlobals import DO_ID_NAME_SERVICES_MANAGER
@@ -167,6 +169,9 @@ class CogInvasionClientRepository(AstronClientRepository):
         ccoginvasion.CTMusicData.stop_am_update_task()
 
         self.gameFSM.request('closeShard', ['off'])
+        
+    def isChristmas(self):
+        return self.holidayManager.getHoliday() == HolidayType.CHRISTMAS
 
     def showPlayerIds(self):
         print "Showing player ids..."

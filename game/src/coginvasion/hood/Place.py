@@ -82,47 +82,11 @@ class Place(StateData):
     def enter(self):
         StateData.enter(self)
 
-        if hasattr(self.loader, 'geom') and False:
-            for lamp in self.loader.geom.findAllMatches("**"):
-                if "light" not in lamp.getName().lower() or "lamp" not in lamp.getName().lower() or "coll" in lamp.getName().lower():
-                    continue
-                #smiley = loader.loadModel("models/smiley.egg.pz")
-                pl = Spotlight(lamp.getName() + "-pointlight")
-                pl.setColor(self.lampLightColor)
-                pl.setExponent(1)
-                pl.setAttenuation(Point3(1, 0, 0))
-                pl.getLens().setFov(50)
-                #pl.setAttenuation(Point3(1, 0.025, 0.0075))
-                plnp = lamp.find("**/+GeomNode").attachNewNode(pl)
-                plnp.setP(-90)
-                if (plnp.getErrorType() != NodePath.ET_ok):
-                    continue
-                if (plnp.getPos(render) == Point3.zero()):
-                    plnp.removeNode()
-                    continue
-                lamp.setDepthOffset(1)
-                lamp.setLightOff()
-                plnp.setZ(10)
-                #smiley.reparentTo(plnp)
-                render.setLight(plnp)
-                self.lampLights.append(plnp)
-
         base.localAvatar.createChatInput()
-        if not self.interior and (base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS
-                                  or base.cr.playGame.getCurrentWorldName() == 'BRHood'):
-            self.snowEffect.start()
 
     def exit(self):
-        if not self.interior and (base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS
-                                  or base.cr.playGame.getCurrentWorldName() == 'BRHood'):
-            self.snowEffect.stop()
         self.__disableInteraction()
         del self.lastBookPage
-
-        for light in self.lampLights:
-            render.clearLight(light)
-            light.removeNode()
-        self.lampLights = []
 
         StateData.exit(self)
         

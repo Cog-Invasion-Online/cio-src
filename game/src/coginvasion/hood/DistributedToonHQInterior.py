@@ -1,7 +1,7 @@
 # Filename: DistributedToonHQInterior.py
 # Created by:  blach (29Jul15)
 
-from pandac.PandaModules import ModelNode, NodePath
+from pandac.PandaModules import ModelNode, NodePath, Point3
 
 import DistributedToonInterior
 import ToonInteriorColors
@@ -12,6 +12,10 @@ from src.coginvasion.globals import CIGlobals
 import random
 
 class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior):
+
+    def __init__(self, cr):
+        DistributedToonInterior.DistributedToonInterior.__init__(self, cr)
+        self.lights = [Point3(-5, 30, 11.5)]
 
     def makeInterior(self):
         self.dnaStore = self.cr.playGame.dnaStore

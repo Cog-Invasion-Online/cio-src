@@ -10,13 +10,13 @@ import random
 
 class SnowEffect:
 
-    def __init__(self, place):
-        self.place = place
-        self.loader = place.loader
+    def __init__(self, hood):
+        self.hood = hood
         self.particles = None
         self.particlesRender = None
         self.fog = None
         self.windSfx = None
+        self.loaded = False
         self.windNoises = [
             'phase_8/audio/sfx/SZ_TB_wind_1.ogg',
             'phase_8/audio/sfx/SZ_TB_wind_2.ogg',
@@ -44,14 +44,19 @@ class SnowEffect:
         return task.again
 
     def load(self):
+        if self.loaded:
+            return
+            
         self.particles = ParticleLoader.loadParticleEffect('phase_8/etc/snowdisk.ptf')
         self.particles.setPos(0, 0, 5)
-        self.particlesRender = self.loader.geom.attachNewNode('snowRender')
+        self.particlesRender = render.attachNewNode('snowRender')
         self.particlesRender.setDepthWrite(0)
         self.particlesRender.setBin('fixed', 1)
         self.fog = Fog('snowFog')
         self.fog.setColor(0.486, 0.784, 1)
         self.fog.setExpDensity(0.003)
+        
+        self.loaded = True
 
     def start(self):
         self.particles.start(parent = camera, renderParent = self.particlesRender)
@@ -64,6 +69,9 @@ class SnowEffect:
         base.render.clearFog()
 
     def unload(self):
+        if not self.loaded:
+            return
+            
         if self.particles:
             self.particles.cleanup()
             self.particlesRender.removeNode()
@@ -71,3 +79,5 @@ class SnowEffect:
             base.render.clearFog()
             self.fog = None
             self.particles = None
+            
+        self.loaded = False

@@ -46,8 +46,8 @@ class Playground(Place.Place):
         return
 
     def enter(self, requestStatus):
-        Place.Place.enter(self)
         self.fsm.enterInitialState()
+        self.loader.hood.enableOutdoorLighting()
         messenger.send('enterPlayground')
         if self.loader.music:
             if self.__class__.__name__ == 'CTPlayground':
@@ -57,15 +57,18 @@ class Playground(Place.Place):
             base.playMusic(self.loader.music, looping = 1, volume = volume)
         self.loader.geom.reparentTo(render)
         self.loader.hood.startSky()
+        
         self.zoneId = requestStatus['zoneId']
         if base.cr.playGame.suitManager:
             base.cr.playGame.suitManager.d_requestSuitInfo()
         how = requestStatus['how']
         self.fsm.request(how, [requestStatus])
+        Place.Place.enter(self)
 
     def exit(self):
         self.ignoreAll()
         messenger.send('exitPlayground')
+        
         self.loader.geom.reparentTo(hidden)
         self.loader.hood.stopSky()
         if self.loader.music:
@@ -78,13 +81,14 @@ class Playground(Place.Place):
             self.loader.invasionMusic.stop()
         if self.loader.tournamentMusic:
             self.loader.tournamentMusic.stop()
+
+        self.loader.hood.disableOutdoorLighting()
+        
         Place.Place.exit(self)
 
     def load(self):
         Place.Place.load(self)
         self.parentFSM.getStateNamed('playground').addChild(self.fsm)
-
-        
 
     def unload(self):
         self.parentFSM.getStateNamed('playground').removeChild(self.fsm)

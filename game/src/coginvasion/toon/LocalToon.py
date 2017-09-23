@@ -296,13 +296,13 @@ class LocalToon(DistributedToon):
     def setWalkSpeedNormal(self):
         self.walkControls.setWalkSpeed(
             CIGlobals.ToonForwardSpeed, CIGlobals.ToonJumpForce,
-            CIGlobals.ToonReverseSpeed, CIGlobals.ToonRotateSpeed
+            CIGlobals.ToonForwardSpeed, CIGlobals.ToonRotateSpeed
         )
 
     def setWalkSpeedNormalNoJump(self):
         self.walkControls.setWalkSpeed(
             CIGlobals.ToonForwardSpeed, 0.0,
-            CIGlobals.ToonReverseSpeed, CIGlobals.ToonRotateSpeed
+            CIGlobals.ToonForwardSpeed, CIGlobals.ToonRotateSpeed
         )
 
     def setWalkSpeedSlow(self):
@@ -513,12 +513,13 @@ class LocalToon(DistributedToon):
     def __reverse(self):
         self.resetHeadHpr()
         self.stopLookAround()
-        self.playMovementSfx("walk")
         if self.getHealth() < 1:
             self.setPlayRate(-1.0, 'dwalk')
             self.setAnimState('deadWalk')
+            self.playMovementSfx("walk")
         else:
             self.setAnimState("walkBack")
+            self.playMovementSfx("run")
         self.isMoving_side = False
         self.isMoving_forward = False
         self.isMoving_back = True
@@ -594,11 +595,11 @@ class LocalToon(DistributedToon):
         action = self.setSpeed(speed, rotSpeed, slideSpeed)
         if action != self.lastAction:
             self.lastAction = action
-            if action == CIGlobals.WALK_INDEX or action == CIGlobals.REVERSE_INDEX:
+            if action == CIGlobals.WALK_INDEX:
                 self.resetHeadHpr()
                 self.stopLookAround()
                 self.playMovementSfx("walk")
-            elif action == CIGlobals.RUN_INDEX or action in [CIGlobals.STRAFE_LEFT_INDEX, CIGlobals.STRAFE_RIGHT_INDEX]:
+            elif action == CIGlobals.RUN_INDEX or action in [CIGlobals.STRAFE_LEFT_INDEX, CIGlobals.STRAFE_RIGHT_INDEX] or action == CIGlobals.REVERSE_INDEX:
                 self.resetHeadHpr()
                 self.stopLookAround()
                 self.playMovementSfx("run")

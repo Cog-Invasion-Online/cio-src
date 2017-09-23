@@ -21,8 +21,8 @@ class DDPlayground(Playground.Playground):
             water.setCollideMask(CIGlobals.FloorBitmask)
 
     def enter(self, requestStatus):
-        Playground.Playground.enter(self, requestStatus)
         self.startBirds()
+        Playground.Playground.enter(self, requestStatus)
 
     def startBirds(self):
         taskMgr.add(self.birdTask, "DDPlayground-birdTask")

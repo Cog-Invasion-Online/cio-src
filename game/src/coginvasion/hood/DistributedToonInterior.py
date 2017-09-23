@@ -1,9 +1,11 @@
 # Filename: DistributedToonInterior.py
 # Created by:  blach (27Jul15)
 
-from pandac.PandaModules import Mat4, Point3
+from pandac.PandaModules import Mat4, Point3, VBase4
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed import DistributedObject
+
+from src.coginvasion.globals import CIGlobals
 
 from libpandadna import *
 import ToonInteriorColors
@@ -24,6 +26,32 @@ class DistributedToonInterior(DistributedObject.DistributedObject):
         DistributedObject.DistributedObject.__init__(self, cr)
         self.interior = None
         self.block = None
+
+        self.ambient = VBase4(252 / 255.0, 239 / 255.0, 209 / 255.0, 1.0)
+        self.ambientNP = None
+        self.light = VBase4(0.7, 0.7, 0.7, 1.0)
+        self.lights = [Point3(0, 10, 11.5)]
+        self.lightNPs = []
+
+    def setupLighting(self):
+        self.ambientNP = CIGlobals.makeAmbientLight('tooninterior', self.ambient)
+        render.setLight(self.ambientNP)
+        for lightPos in self.lights:
+            light = CIGlobals.makePointLight('tooninterior', self.light, lightPos)
+            #smiley = loader.loadModel("models/smiley.egg.pz")
+            #smiley.reparentTo(light)
+            self.lightNPs.append(light)
+            render.setLight(light)
+
+    def cleanupLighting(self):
+        for light in self.lightNPs:
+            render.clearLight(light)
+            light.removeNode()
+        self.lightNPs = []
+        if self.ambientNP:
+            render.clearLight(self.ambientNP)
+            self.ambientNP.removeNode()
+            self.ambientNP = None
 
     def randomDNAItem(self, category, findFunc):
         codeCount = self.dnaStore.getNumCatalogCodes(category)
@@ -121,9 +149,11 @@ class DistributedToonInterior(DistributedObject.DistributedObject):
     def announceGenerate(self):
         DistributedObject.DistributedObject.announceGenerate(self)
         self.makeInterior()
+        self.setupLighting()
 
     def disable(self):
         if self.interior:
             self.interior.removeNode()
             self.interior = None
+        self.cleanupLighting()
         DistributedObject.DistributedObject.disable(self)

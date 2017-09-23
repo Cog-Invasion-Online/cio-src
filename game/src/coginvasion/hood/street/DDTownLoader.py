@@ -23,8 +23,8 @@ class DDTownLoader(TownLoader.TownLoader):
 
     def enter(self, requestStatus):
         TownLoader.TownLoader.enter(self, requestStatus)
-        self.hood.setWhiteFog()
+        #self.hood.setWhiteFog()
 
     def exit(self):
-        self.hood.setNoFog()
+        #self.hood.setNoFog()
         TownLoader.TownLoader.exit(self)

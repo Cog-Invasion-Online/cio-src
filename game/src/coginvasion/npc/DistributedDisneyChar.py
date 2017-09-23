@@ -296,8 +296,10 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.initializeBodyCollisions(self.avatarType, self.getHeight(), 1.0)
         self.initializeRay(self.avatarType, 1)
         self.disableShadowRay()
-
-        self.setMaterial(CIGlobals.getShinyMaterial(25.0))
+        
+        bodyMat = CIGlobals.getShinyMaterial(20.0)
+        bodyMat.setSpecular((0.2, 0.2, 0.2, 1.0))
+        self.setMaterial(bodyMat)
 
         self.__blinkName = 'blink-' + data[3]
 

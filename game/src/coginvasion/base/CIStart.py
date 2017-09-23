@@ -133,8 +133,8 @@ base = CIBase.CIBase()
 
 base.cTrav = CollisionTraverser()
 
-import AnisotropicFiltering
-AnisotropicFiltering.startApplying()
+#import AnisotropicFiltering
+#AnisotropicFiltering.startApplying()
 
 from src.coginvasion.globals import CIGlobals
 CIGlobals.SettingsMgr = sm

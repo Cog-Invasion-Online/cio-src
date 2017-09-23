@@ -5,8 +5,8 @@
 
 """
 
-from pandac.PandaModules import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool
-from pandac.PandaModules import Material, PNMImage, Texture
+from pandac.PandaModules import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog
+from pandac.PandaModules import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
 
 from src.coginvasion.cog import SuitGlobals
 
@@ -94,6 +94,34 @@ SettingsMgr = None
 
 def getSettingsMgr():
     return SettingsMgr
+
+def makeAmbientLight(name, color):
+    amb = AmbientLight(name + "-ambient")
+    amb.setColor(color)
+    ambient = render.attachNewNode(amb)
+    return ambient
+
+def makeDirectionalLight(name, color, pos):
+    dir = DirectionalLight(name + "-directional")
+    dir.setColor(color)
+    directional = camera.attachNewNode(dir)
+    directional.setCompass()
+    directional.setPos(pos)
+    directional.lookAt(render, 0, 0, 0)
+    return directional
+
+def makePointLight(name, color, pos):
+    point = PointLight(name + "-point")
+    point.setColor(color)
+    pnp = render.attachNewNode(point)
+    pnp.setPos(pos)
+    return pnp
+
+def makeFog(name, color, expDensity):
+    fog = Fog(name + "-fog")
+    fog.setColor(color)
+    fog.setExpDensity(expDensity)
+    return fog
 
 NoToken = -1
 DevToken = 0

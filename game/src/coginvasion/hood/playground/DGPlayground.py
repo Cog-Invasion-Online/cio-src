@@ -16,8 +16,8 @@ class DGPlayground(Playground.Playground):
         self.birdSfx = None
 
     def enter(self, requestStatus):
-        Playground.Playground.enter(self, requestStatus)
         self.startBirds()
+        Playground.Playground.enter(self, requestStatus)
 
     def startBirds(self):
         taskMgr.add(self.birdTask, "DGPlayground-birdTask")

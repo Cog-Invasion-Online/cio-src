@@ -74,16 +74,22 @@ class Slot(DirectFrame):
             command = self.updateLoadout, extraArgs = [1], geom3_color = (0.5, 0.5, 0.5, 1.0))
         self.rightArrow.setBin('fixed', 60)
 
+        if base.localAvatar.GTAControls:
+            # no arrows in gta controls
+            self.leftArrow.hide()
+            self.rightArrow.hide()
+
         self.hoverObj = DirectButton(relief = None, parent = self, frameSize = self['frameSize'])
 
         self.setBin('transparent', 30)
         self.setOutlineImage('idle')
 
-        # Let's handle mouse entering and leaving.
-        self.hoverObj.guiItem.setActive(True)
-        self.hoverObj.bind(DGG.WITHIN, self.mouseEntered)
-        self.hoverObj.bind(DGG.WITHOUT, self.mouseExited)
-        self.hoverObj.bind(DGG.B1CLICK, self.gui.click_setWeapon, [self])
+        if not base.localAvatar.GTAControls:
+            # Let's handle mouse entering and leaving.
+            self.hoverObj.guiItem.setActive(True)
+            self.hoverObj.bind(DGG.WITHIN, self.mouseEntered)
+            self.hoverObj.bind(DGG.WITHOUT, self.mouseExited)
+            self.hoverObj.bind(DGG.B1CLICK, self.gui.click_setWeapon, [self])
 
     def toggleArrows(self, left, right):
         if left:
@@ -371,7 +377,8 @@ class InventoryGui(DirectObject):
         
         # Variables having to do with making the gui remain on the screen.
         self.keepVisibleSfx = base.loadSfx('phase_5/audio/sfx/General_device_appear.ogg')
-        self.disableKeepVisibleSfx = base.loadSfx('phase_5/audio/sfx/GUI_battleselect.ogg')
+        self.keepVisibleSfx.setVolume(0.5)
+        self.disableKeepVisibleSfx = self.keepVisibleSfx#base.loadSfx('phase_5/audio/sfx/GUI_battleselect.ogg')
         self.slotsVisible = False
         self.slotsForceShown = False
         self.disable(True)
@@ -409,6 +416,7 @@ class InventoryGui(DirectObject):
         self.moveIval.setDoneEvent("hidden2visible")
         self.acceptOnce("hidden2visible", self.visibilityFSM.request, ["visible", [autoShow]])
         self.moveIval.start()
+        #base.playSfx(self.keepVisibleSfx)
 
     def exitHidden2Visible(self):
         self.ignore("hidden2visible")
@@ -433,22 +441,18 @@ class InventoryGui(DirectObject):
             self.moveIval = None
         
     def __toggleForcedVisibility(self):
-        if self.slotsForceShown:
+        if self.slotsForceShown and self.slotsVisible:
             self.slotsForceShown = False
             
-            # We want to hide the GUI if it is visible.
-            if self.slotsVisible:
-                self.__autoVisExit()
+            self.__autoVisExit()
             
             # If we want switch sounds, we most likely want all sfx based on this GUI.
             if self.switchSound:
                 base.playSfx(self.disableKeepVisibleSfx)
-        else:
+        elif not self.slotsForceShown and not self.slotsVisible:
             self.slotsForceShown = True
 
-            # We want to show the GUI if it is not visible.
-            if not self.slotsVisible:
-                self.__autoVisEnter()
+            self.__autoVisEnter()
             self.ignore('visible2hidden')
             
             # If we want switch sounds, we most likely want all sfx based on this GUI.

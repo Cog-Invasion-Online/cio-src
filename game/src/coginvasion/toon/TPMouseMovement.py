@@ -103,14 +103,15 @@ class TPMouseMovement(DirectObject):
 
             # Do some mouse movement smoothing / lerping
             goalPos = base.localAvatar.getPos(render)
-            goalH = self.player_node.getH() - (x - centerX) * (sens * 20) * dt
-            goalP = camera.getP() - (y - centerY) * (sens * 20) * dt
+            goalH = self.player_node.getH() - (x - centerX) * sens
+            goalP = self.player_node.getP() - (y - centerY) * sens
 
             #lastPNPos = self.pnLerp.lerpToP3(goalPos)
             
             #self.player_node.setPos(lastPNPos)
             self.player_node.setPos(goalPos)
             self.player_node.setH(goalH)
+            #self.player_node.setP(goalP)
 
             if base.localAvatar.isMoving():
                 # We can turn our character with the mouse while moving.

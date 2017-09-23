@@ -24,6 +24,9 @@ class LaffOMeter(DirectFrame):
 
         if forRender:
             self.container.setY(0)
+            self.setLightOff()
+            self.setFogOff()
+            self.setMaterialOff()
         self.forRender = forRender
 
     def generate(self, r, g, b, animal, maxHP = 50, initialHP = 50):
