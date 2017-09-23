@@ -16,6 +16,8 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.manager.UserInputStorage import UserInputStorage
 from src.coginvasion.globals import CIGlobals
 
+import __builtin__
+
 if game.usepipeline:
     from rpcore import RenderPipeline
 
@@ -29,9 +31,12 @@ class CIBase(ShowBase):
             self.pipeline.create(self)
         else:
             ShowBase.__init__(self)
-            uis = UserInputStorage()
-            self.inputStore = uis
-            self.userInputStorage = uis
+
+        uis = UserInputStorage()
+        self.inputStore = uis
+        self.userInputStorage = uis
+        __builtin__.inputStore = uis
+        __builtin__.userInputStorage = uis
 
     def setTimeOfDay(self, time):
         if game.usepipeline:
