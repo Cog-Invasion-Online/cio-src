@@ -149,6 +149,7 @@ base.localAvatar.health = 50
 base.localAvatar.generate()
 base.localAvatar.setName(base.cr.localAvChoice.getName())
 base.localAvatar.setDNAStrand(base.cr.localAvChoice.getDNA())
+base.localAvatar.setBackpackAmmo([], [])
 base.localAvatar.announceGenerate()
 base.localAvatar.reparentTo(base.render)
 base.localAvatar.enableAvatarControls()
