@@ -10,11 +10,11 @@ from direct.directnotify.DirectNotify import DirectNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
-from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
 from src.coginvasion.quests.QuestManagerAI import QuestManagerAI
+from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
+from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.tutorial.DistributedTutorialAI import DistributedTutorialAI
-from src.coginvasion.gags import GagGlobals
 import ToonDNA
 import types
 
@@ -423,7 +423,6 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
             self.ejectSelf()
             return
         self.b_setGagAmmo(gagId, amt)
-        self.backpack.updateNetAmmo()
 
     def setLoadout(self, gagIds):
         if self.backpack:
@@ -446,23 +445,28 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
 
     def setGagAmmo(self, gagId, ammo):
         self.backpack.setSupply(gagId, ammo)
-
-    def setBackpackAmmo(self, gagIds, ammoList):
+    
+    def setBackpackAmmo(self, netString):
         if not self.backpack:
             self.backpack = BackpackAI(self)
-            for i in xrange(len(gagIds)):
-                gagId = gagIds[i]
-                ammo = ammoList[i]
-
-                if not self.backpack.hasGag(gagId):
-                    self.backpack.addGag(gagId, ammo, GagGlobals.getGagData(gagId).get('maxSupply'))
-
-    def b_setBackpackAmmo(self, gagIds, ammoList):
-        self.setBackpackAmmo(gagIds, ammoList)
-        self.sendUpdate('setBackpackAmmo', [gagIds, ammoList])
-
+        data = self.backpack.fromNetString(netString)
+        
+        for gagId in data.keys():
+            supply = data[gagId]
+            maxSupply = GagGlobals.getGagData(gagId).get('maxSupply')
+            self.backpack.addGag(gagId, supply, maxSupply)
+    
+    def b_setBackpackAmmo(self, netString):
+        self.setBackpackAmmo(netString)
+        self.sendUpdate('setBackpackAmmo', [netString])
+        
     def getBackpackAmmo(self):
-        return list(), list()
+        if self.backpack:
+            netString = self.backpack.toNetString()
+            return netString
+        else:
+            defaultBackpack = GagGlobals.getDefaultBackpack(isAI = True)
+            return defaultBackpack.toNetString()
 
     def getInventory(self):
         return self.backpack.getGags().keys()

@@ -23,13 +23,13 @@ class CategoryTab(DirectButton):
     rolloverColor = (0.15,0.82, 1.0, 1)
     disabledColor = (1, 0.98,0.15, 1)
 
-    def __init__(self, page, text, extraArgs, pos = (0, 0, 0)):
+    def __init__(self, page, text, extraArgs, pos = (0, 0, 0), text_pos_x = 0.07):
         self.page = page
 
         gui = loader.loadModel('phase_3.5/models/gui/fishingBook.bam')
 
         DirectButton.__init__(self, parent = page.tabsFrame, relief = None, extraArgs = extraArgs, text = text, text_scale = 0.07,
-                              text_align = TextNode.ALeft, text_pos = (0.07, 0.0, 0.0), image = gui.find('**/tabs/polySurface1'),
+                              text_align = TextNode.ALeft, text_pos = (text_pos_x, 0.0, 0.0), image = gui.find('**/tabs/polySurface1'),
                               image_pos = (0.6, 1, -0.91), image_hpr = (0, 0, -90), image_scale = (0.033, 0.033, 0.035),
                               image_color = self.normalColor, image1_color = self.clickColor, image2_color = self.rolloverColor,
                               image3_color = self.disabledColor, text_fg = Vec4(0.2, 0.1, 0, 1), command = self.page.pickCategory, pos = pos,

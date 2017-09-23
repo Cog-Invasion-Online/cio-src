@@ -43,7 +43,7 @@ class TPMouseMovement(DirectObject):
         props.setCursorHidden(True)
         props.setMouseMode(WindowProperties.MConfined)
         base.win.requestProperties(props)
-        self.acceptOnce("escape", self.disableMovement)
+        self.acceptOnce(base.inputStore.ToggleGTAControls, self.disableMovement)
         
         self.player_node.setHpr(base.localAvatar, 0, 0, 0)
 
@@ -68,7 +68,7 @@ class TPMouseMovement(DirectObject):
         props.setMouseMode(WindowProperties.MAbsolute)
         base.win.requestProperties(props)
         camera.wrtReparentTo(base.localAvatar)
-        self.acceptOnce("escape", self.enableMovement)
+        self.acceptOnce(base.inputStore.ToggleGTAControls, self.enableMovement)
 
     def cleanup(self):
         self.disableMovement()

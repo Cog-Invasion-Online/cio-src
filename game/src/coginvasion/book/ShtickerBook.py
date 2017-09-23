@@ -116,17 +116,17 @@ class ShtickerBook(DirectFrame, StateData):
         pIndex = self.pages.index(self.currentPage)
         if pIndex - 1 < 0:
             self.prevPageBtn.hide()
-            self.ignore('arrow_left')
+            self.ignore(base.inputStore.PreviousBookPage)
         else:
             self.prevPageBtn.show()
-            self.acceptOnce('arrow_left', self.changePage, [1])
+            self.acceptOnce(base.inputStore.PreviousBookPage, self.changePage, [1])
 
         if pIndex + 1 == len(self.pages):
             self.nextPageBtn.hide()
-            self.ignore('arrow_right')
+            self.ignore(base.inputStore.NextBookPage)
         else:
             self.nextPageBtn.show()
-            self.acceptOnce('arrow_right', self.changePage, [0])
+            self.acceptOnce(base.inputStore.NextBookPage, self.changePage, [0])
 
     def loadPageTabButtons(self):
         for i in xrange(len(self.pages)):
@@ -195,8 +195,8 @@ class ShtickerBook(DirectFrame, StateData):
             self.bookCloseSfx.play()
 
             # Let's ignore the page buttons.
-            self.ignore('arrow_right')
-            self.ignore('arrow_left')
+            self.ignore(base.inputStore.NextBookPage)
+            self.ignore(base.inputStore.PreviousBookPage)
         StateData.exit(self)
 
     def load(self):

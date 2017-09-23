@@ -589,23 +589,16 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
                 if gag:
                     loadout.append(gag)
             self.backpack.setLoadout(loadout)
-
-    def setBackpackAmmo(self, gagIds, ammoList):
+    
+    def setBackpackAmmo(self, netString):
         if not self.backpack:
             self.backpack = Backpack(self)
-        # We just want to update the network ammo sometimes,
-        # let's ignore updates if we're not constructing a backpack.
-        for i in xrange(len(gagIds)):
-            gagId = gagIds[i]
-            ammo = ammoList[i]
-
-            if not self.backpack.hasGag(gagId):
-                self.backpack.addGag(gagId, ammo, GagGlobals.getGagData(gagId).get('maxSupply'))
-            else:
-                self.backpack.setSupply(gagId, ammo)
-
+        self.backpack.updateSuppliesFromNetString(netString)
+    
     def getBackpackAmmo(self):
-        return [], []
+        if self.backpack:
+            return self.backpack.toNetString()
+        return GagGlobals.getDefaultBackpack().toNetString()
 
     def setGagAmmo(self, gagId, ammo):
         self.backpack.setSupply(gagId, ammo)

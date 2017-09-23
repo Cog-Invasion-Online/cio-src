@@ -34,7 +34,7 @@ class game:
     production = False
     phasedir = './resources/'
     usepipeline = False
-    uselighting = True
+    uselighting = False
     userealshadows = False
    
 import __builtin__
@@ -182,7 +182,7 @@ base.musicManager.setVolume(0.65)
 base.camLens.setNearFar(CIGlobals.DefaultCameraNear, CIGlobals.DefaultCameraFar)
 base.transitions.IrisModelName = "phase_3/models/misc/iris.bam"
 base.transitions.FadeModelName = "phase_3/models/misc/fade.bam"
-base.accept('f9', ScreenshotHandler.__takeScreenshot)
+base.accept(base.inputStore.TakeScreenshot, ScreenshotHandler.__takeScreenshot)
 
 print "CIStart: Setting display preferences..."
 sm.applySettings()

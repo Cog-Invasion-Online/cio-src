@@ -19,8 +19,9 @@ class ControlsCategory(OptionsCategory):
 
     def __init__(self, page):
         OptionsCategory.__init__(self, page)
-
-        self.gagKey = ChoiceWidget(page, ["Mouse1"], (0, 0.47, 0.47), self.__handleChooseGK, "Use Gag Key")
+        
+        gagKeys = base.inputStore.getControlOptions('UseGag')
+        self.gagKey = ChoiceWidget(page, gagKeys, (0, 0.47, 0.47), self.__handleChooseGK, "Use Gag Key")
 
         self.fpmsSlider = SliderWidget(page, "Mouse Sensitivity\n(First Person)", (0.05, 0.3), self.__setFPMS, (0, 0, 0.2))
         self.fpfovSlider = SliderWidget(page, "Field of View\n(First Person)", (54.0, 70.0), self.__setFPFov, (0, 0, -0.1))
@@ -40,11 +41,7 @@ class ControlsCategory(OptionsCategory):
         self.genFov = self.origGenFov
 
     def __handleChooseGK(self, choice):
-        key = ""
-        if (choice == 0):
-            key = "mouse1"
-
-        self.gagKeyChoice = key
+        self.gagKeyChoice = self.gagKey.options[choice]
 
     def __setFPMS(self):
         val = self.fpmsSlider.getSliderVal()
@@ -87,9 +84,7 @@ class ControlsCategory(OptionsCategory):
 
     def discardChanges(self):
         self._setDefaults()
-
-        if self.origGagKey == "mouse1":
-            self.gagKey.goto(0)
+        self.gagKey.goto(self.gagKey.options.index(self.origGagKey))
 
         self.fpmsSlider.setSliderVal(self.origFPms)
         self.fpmsSlider.setValText("{:.1f}".format(self.origFPms * 10.0))

@@ -731,12 +731,16 @@ class InventoryGui(DirectObject):
             self.accept(str(index + 1), self.setWeapon, extraArgs = [self.slots[index], True, True])
         self.slotsForceShown = False
         self.slotsVisible = False
-        self.accept('e', self.__toggleForcedVisibility)
-        self.accept('z', self.__switchTrackGag, [0])
-        self.accept('c', self.__switchTrackGag, [1])
+        self.accept(base.inputStore.ToggleLoadoutVisibility, self.__toggleForcedVisibility)
+        self.accept(base.inputStore.PreviousTrackGag, self.__switchTrackGag, [0])
+        self.accept(base.inputStore.NextTrackGag, self.__switchTrackGag, [1])
 
     def disableWeaponSwitch(self):
-        for key in ['1', '2', '3', '4', 'wheel_down', 'wheel_up', 'e', 'z', 'c']:
+        ctrls = base.inputStore
+        for key in ['1', '2', '3', '4', 'wheel_down', 'wheel_up', 
+                    ctrls.ToggleLoadoutVisibility, 
+                    ctrls.PreviousTrackGag, 
+                    ctrls.NextTrackGag]:
             self.ignore(key)
 
     def getSlots(self):

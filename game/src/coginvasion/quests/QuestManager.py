@@ -16,7 +16,7 @@ class QuestManager(QuestManagerBase, DirectObject):
         # The quest posters that are shown when hitting the hotkey.
         self.posters = []
         
-        self.acceptOnce('q', self.showQuests)
+        self.acceptOnce(base.inputStore.ViewQuests, self.showQuests)
         
     def showQuests(self):
         assert self is base.localAvatar.questManager
@@ -34,7 +34,7 @@ class QuestManager(QuestManagerBase, DirectObject):
         for poster in self.posters:
             poster.destroy()
         self.posters = []
-        self.acceptOnce('q', self.showQuests)
+        self.acceptOnce(base.inputStore.ViewQuests, self.showQuests)
 
     def makeQuestsFromData(self):
         QuestManagerBase.makeQuestsFromData(self, base.localAvatar)

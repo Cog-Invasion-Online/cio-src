@@ -13,6 +13,7 @@ from panda3d.core import loadPrcFile
 from direct.showbase.ShowBase import ShowBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
+from src.coginvasion.manager.UserInputStorage import UserInputStorage
 from src.coginvasion.globals import CIGlobals
 
 if game.usepipeline:
@@ -28,6 +29,9 @@ class CIBase(ShowBase):
             self.pipeline.create(self)
         else:
             ShowBase.__init__(self)
+            uis = UserInputStorage()
+            self.inputStore = uis
+            self.userInputStorage = uis
 
     def setTimeOfDay(self, time):
         if game.usepipeline:

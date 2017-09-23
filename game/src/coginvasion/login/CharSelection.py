@@ -127,6 +127,7 @@ class CharSelection(DirectObject):
             func = self.enterMAT
         elif action == 'quit':
             func = sys.exit
+            doFade = False
         if doFade:
             base.transitions.fadeOut(0.3)
             if arg != None:
