@@ -458,7 +458,7 @@ class InventoryGui(DirectObject):
             self.moveIval = None
         
     def __toggleForcedVisibility(self):
-        if self.slotsForceShown:
+        if self.slotsForceShown and self.slotsVisible:
             self.slotsForceShown = False
             
             self.__autoVisExit()
@@ -466,7 +466,7 @@ class InventoryGui(DirectObject):
             # If we want switch sounds, we most likely want all sfx based on this GUI.
             if self.switchSound:
                 base.playSfx(self.disableKeepVisibleSfx)
-        elif not self.slotsForceShown:
+        elif not self.slotsForceShown and not self.slotsVisible:
             self.slotsForceShown = True
 
             self.__autoVisEnter()
