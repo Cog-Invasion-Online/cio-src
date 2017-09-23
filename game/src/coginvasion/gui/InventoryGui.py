@@ -38,12 +38,17 @@ class Slot(DirectFrame):
         self.soundRecharged = base.loadSfx('phase_3.5/audio/sfx/tt_s_gui_sbk_cdrSuccess.ogg')
         self.switchUnavailableSfx = base.loadSfx("phase_4/audio/sfx/ring_miss.ogg")
 
-        # The no ammo text over the gag when you run out of ammo.
-        self.infoText = OnscreenText(text = "No\nAmmo", fg = (1, 0, 0, 1), parent = self,
+        # The recharging text.
+        self.infoText = OnscreenText(text = "", fg = (1, 0, 0, 1), parent = self,
                                        scale = 0.5, shadow = (0, 0, 0, 1), align = TextNode.ACenter,
                                        pos = (0, 0.1))
         self.infoText.setBin('unsorted', 100)
         self.infoText.hide()
+
+        # Text in the bottom left corner that shows the gags remaining.
+        self.grText = OnscreenText(text = "", fg = (1, 1, 1, 1), parent = self,
+                                   scale = 0.4, shadow = (0, 0, 0, 1), align = TextNode.ALeft,
+                                   pos = (-0.87, -0.87))
 
         # The recharging progress bar.
         self.rechargeBar = DirectWaitBar(value = 0, range = 100, frameColor = (1, 1, 1, 1),
@@ -81,8 +86,9 @@ class Slot(DirectFrame):
 
         self.hoverObj = DirectButton(relief = None, parent = self, frameSize = self['frameSize'])
 
-        self.setBin('transparent', 30)
+        self.setBin('gui-popup', 100)
         self.setOutlineImage('idle')
+        self.setDepthWrite(False)
 
         if not base.localAvatar.GTAControls:
             # Let's handle mouse entering and leaving.
@@ -172,12 +178,20 @@ class Slot(DirectFrame):
                     self.gui.update()
                     self.gui.setWeapon(self)
 
+    def makeGrTextRed(self):
+        self.grText['fg'] = (1, 0, 0, 1)
+
+    def makeGrTextWhite(self):
+        self.grText['fg'] = (1, 1, 1, 1)
+
     def showNoAmmo(self):
-        self.infoText['text'] = "No\nAmmo"
-        self.infoText['scale'] = 0.5
-        self.infoText['fg'] = (1, 0, 0, 1)
-        self.infoText['pos'] = (0, 0.1)
-        self.infoText.show()
+        #self.infoText['text'] = ""
+        #self.infoText['scale'] = 0.5
+        #self.infoText['fg'] = (1, 0, 0, 1)
+        #self.infoText['pos'] = (0, 0.1)
+        #self.infoText.show()
+
+        self.grText['fg'] = (1, 0, 0, 1)
 
         if self.gag and self.gag.getState() == GagState.RECHARGING:
             self.rechargeBar.show()
@@ -244,7 +258,7 @@ class Slot(DirectFrame):
                     self.showRecharging()
                 else:
                     # Show the no ammo text.
-                    self.showNoAmmo()
+                    self.makeGrTextRed()
                     self.rechargeBar.hide()
                 # When we have no ammo, render the frame in front of the gag image.
                 self.setBin('fixed', 40)
@@ -253,6 +267,7 @@ class Slot(DirectFrame):
                     self.gagImage.setBin('transparent', 30)
             else:
                 # Hide the no ammo text if we're not out of ammo.
+                self.makeGrTextWhite()
                 self.hideInfoText()
                 # Render the gag image in front of the frame.
                 if self.gagImage:
@@ -474,7 +489,7 @@ class InventoryGui(DirectObject):
             self.activeSlot.setOutlineImage('idle')
             self.prevSlot = self.activeSlot
         if slot.getGag():
-            if self.activeSlot != slot or self.activeSlot == slot and self.backpack.currentGag != slot.getGag().getID():
+            if self.activeSlot != slot or (self.activeSlot == slot and self.backpack.currentGag != slot.getGag().getID()):
                 gagId = slot.getGag().getID()
 
                 base.localAvatar.needsToSwitchToGag = gagId
@@ -535,7 +550,7 @@ class InventoryGui(DirectObject):
             self.slots.append(slotObj)
             if slot == 3:
                 slotObj.hide()
-        self.ammoLabel = DirectLabel(text = "Ammo: 0", text_fg=(1,1,1,1), relief=None, text_shadow=(0,0,0,1), text_scale=0.08, pos=(0.2, 0, 0.35), parent=base.a2dBottomLeft)
+        self.ammoLabel = DirectLabel(text = "Ammo: 0", text_fg=(1,1,1,1), relief=None, text_shadow=(0,0,0,1), text_scale=0.08, pos=(0.2, 0, 0.35), parent=hidden)#base.a2dBottomLeft)
         self.ammoLabel.hide()
         
     def enable(self):
@@ -641,21 +656,29 @@ class InventoryGui(DirectObject):
         self.accept('wheel_up', self.setWeapon, extraArgs = [self.slots[prevGag], True, True])
 
     def update(self):
-        if not self.backpack: return
+        if not self.backpack:
+            return
+
         for element in [self.ammoLabel, self.inventoryFrame]:
-            if not element: return
+            if not element:
+                return
+
         updateSlots = list(self.slots)
+
         for slot in self.slots:
             gag = slot.getGag()
             if not gag:
                 updateSlots.remove(slot)
                 slot.hide()
                 continue
+
             supply = self.backpack.getSupply(gag.getID())
             index = self.slots.index(slot)
+
             if not gag and len(self.backpack.getGags()) - 1 >= index:
                 gag = self.backpack.getGagByIndex(index)
                 slot.setGag(gag)
+
                 if supply > 0 and not gag.getState() == GagState.RECHARGING:
                     slot.setOutlineImage('idle')
                 else:
@@ -664,17 +687,26 @@ class InventoryGui(DirectObject):
                 if slot == self.activeSlot:
                     self.activeSlot = None
             else:
+
                 if slot == self.activeSlot:
                     slot.setOutlineImage('selected')
-                    self.ammoLabel['text_fg'] = (1, 1, 1, 1)
-                    if supply <= 0:
-                        self.ammoLabel['text_fg'] = (0.9, 0, 0, 1)
-                    self.ammoLabel.show()
-                    self.ammoLabel['text'] = 'Ammo: %s' % (self.backpack.getSupply(slot.getGag().getID()))
+                    #self.ammoLabel['text_fg'] = (1, 1, 1, 1)
+                    #if supply <= 0:
+                    #    self.ammoLabel['text_fg'] = (0.9, 0, 0, 1)
+                    #self.ammoLabel.show()
+                    #self.ammoLabel['text'] = 'Ammo: %s' % (self.backpack.getSupply(slot.getGag().getID()))
+
                 elif self.__hasSupplyRemaining(slot.getGag().getID()) > 0:
                     slot.setOutlineImage('idle')
+
                 else:
                     slot.setOutlineImage('no_ammo')
+
+            if supply < 1:
+                slot.makeGrTextRed()
+            else:
+                slot.makeGrTextWhite()
+            slot.grText.setText(str(supply))
 
         numSlots = len(updateSlots)
         posGroup = {1 : self.oneSlotPos, 2 : self.twoSlotsPos, 3 : self.threeSlotsPos, 4 : self.fourSlotPos}.get(numSlots)
