@@ -15,6 +15,12 @@ loadPrcFileData('', 'window-title Panda')
 #loadPrcFileData('', 'fullscreen #t')
 #loadPrcFileData('', 'win-size 1920 1080')
 
+import __builtin__
+class game:
+    process = 'client'
+    usepipeline = False
+__builtin__.game = game
+
 vfs = VirtualFileSystem.getGlobalPtr()
 vfs.mount(Filename("resources/phase_0.mf"), ".", VirtualFileSystem.MFReadOnly)
 vfs.mount(Filename("resources/phase_3.mf"), ".", VirtualFileSystem.MFReadOnly)
@@ -44,8 +50,8 @@ sm.loadFile("settings.json")
 
 sm.maybeFixAA()
 
-from direct.showbase.ShowBase import ShowBase
-base = ShowBase()
+from src.coginvasion.base.CIBase import CIBase
+base = CIBase()
 sm.applySettings()
 from src.coginvasion.globals import CIGlobals
 CIGlobals.SettingsMgr = sm
@@ -120,11 +126,6 @@ base.mouseWatcherNode.setLeavePattern('mouse-leave-%r')
 base.mouseWatcherNode.setButtonDownPattern('button-down-%r')
 base.mouseWatcherNode.setButtonUpPattern('button-up-%r')
 
-import __builtin__
-class game:
-	process = 'client'
-__builtin__.game = game()
-
 from src.coginvasion.toon import LocalToon
 from src.coginvasion.login.AvChoice import AvChoice
 
@@ -149,7 +150,7 @@ base.localAvatar.health = 50
 base.localAvatar.generate()
 base.localAvatar.setName(base.cr.localAvChoice.getName())
 base.localAvatar.setDNAStrand(base.cr.localAvChoice.getDNA())
-base.localAvatar.setBackpackAmmo([], [])
+base.localAvatar.setBackpackAmmo("")
 base.localAvatar.announceGenerate()
 base.localAvatar.reparentTo(base.render)
 base.localAvatar.enableAvatarControls()
