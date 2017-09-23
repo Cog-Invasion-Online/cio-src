@@ -10,6 +10,8 @@ from direct.distributed.MsgTypes import *
 from src.coginvasion.distributed.CogInvasionErrorCodes import *
 from direct.distributed.PyDatagram import PyDatagram
 from direct.directnotify.DirectNotifyGlobal import directNotify
+
+from src.coginvasion.gags import GagGlobals
 from pandac.PandaModules import NetDatagram
 import anydbm
 import os
@@ -68,9 +70,7 @@ class CreateToonProcess:
                 "setHealth": (100,),
                 "setMaxHealth": (100,),
                 "setMoney": (5000,),
-                "setBackpackAmmo": ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-                    19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35], [7, 10, 3, 3, 3, 4, 3, 7, 3, 10,
-                    10, 10, 7, 15, 7, 7, 10, 5, 7, 5, 3, 1, 15, 10, 10, 5, 8, 12, 10, 1, 7, 3, 10, 7, 5, 15],),
+                "setBackpackAmmo": (GagGlobals.getDefaultBackpack().toNetString(),),
                 "setLoadout": ([13, 35],), # Start with cupcake and squirting flower.
                 "setAdminToken": (CIGlobals.NoToken,),
                 "setQuests": ([], [], [],),

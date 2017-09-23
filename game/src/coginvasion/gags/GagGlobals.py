@@ -304,3 +304,17 @@ def getTrackOfGag(arg, getId = False):
                 else:
                     # Return the int ID of the track
                     return TrackIdByName[trackName]
+
+def getDefaultBackpack(isAI = False):
+    defaultBackpack = None
+    if not isAI:
+        from src.coginvasion.gags.backpack.Backpack import Backpack
+        defaultBackpack = Backpack(None)
+    else:
+        from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
+        defaultBackpack = BackpackAI(None)
+    for gagId in gagIds.keys():
+        data = getGagData(gagId)
+        maxSupply = data.get('maxSupply')
+        defaultBackpack.addGag(gagId, data.get('supply'), maxSupply)
+    return defaultBackpack

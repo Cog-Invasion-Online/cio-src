@@ -7,6 +7,10 @@
 from src.coginvasion.gags.GagManager import GagManager
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags import GagGlobals
+
+from direct.distributed.PyDatagram import PyDatagram
+from direct.distributed.PyDatagramIterator import PyDatagramIterator
+
 import types
 
 class Backpack:
@@ -81,7 +85,8 @@ class Backpack:
             gagName = GagGlobals.getGagByID(gagId)
             if not gagName is None:
                 gag = self.gagManager.getGagByName(gagName)
-                gag.setAvatar(self.avatar)
+                if self.avatar:
+                    gag.setAvatar(self.avatar)
                 self.gags.update({gagId : [gag, curSupply, maxSupply]})
 
     # Sets the loadout of the backpack.
@@ -192,6 +197,45 @@ class Backpack:
     # Returns the gags in the backpack.
     def getGags(self):
         return self.gags
+    
+    # Converts out backpack to a blob for storing.
+    # Returns a blob of bytes.
+    def toNetString(self):
+        dg = PyDatagram()
+        for gagId in self.gags.keys():
+            supply = self.gags[gagId][1]
+            dg.addUint8(gagId)
+            dg.addUint8(supply)
+        dgi = PyDatagramIterator(dg)
+        return dgi.getRemainingBytes()
+    
+    # Converts a net string blob back to data that we can handle.
+    # Returns a dictionary of {gagIds : supply}
+    def fromNetString(self, netString):
+        dg = PyDatagram(netString)
+        dgi = PyDatagramIterator(dg)
+        dictionary = {}
+        
+        while dgi.getRemainingSize() > 0:
+            gagId = dgi.getUint8()
+            supply = dgi.getUint8()
+            dictionary[gagId] = supply
+        return dictionary
+    
+    # Converts a net string blob back to useable data and then
+    # updates supplies.
+    def updateSuppliesFromNetString(self, netString):
+        dg = PyDatagram(netString)
+        dgi = PyDatagramIterator(dg)
+        
+        while dgi.getRemainingSize() > 0:
+            gagId = dgi.getUint8()
+            supply = dgi.getUint8()
+            
+            if gagId in self.gags.keys():
+                self.setSupply(gagId, supply)
+            else:
+                self.addGag(gagId, supply, maxSupply = GagGlobals.getGagData(gagId).get('maxSupply'))
 
     # Cleans up all the variables that are no longer needed.
     def cleanup(self):

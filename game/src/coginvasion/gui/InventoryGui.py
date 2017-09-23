@@ -5,7 +5,7 @@
 
 from direct.showbase.DirectObject import DirectObject
 from direct.directnotify.DirectNotify import DirectNotify
-from direct.gui.DirectGui import DirectFrame, OnscreenImage, DirectLabel, OnscreenText, DGG
+from direct.gui.DirectGui import DirectFrame, OnscreenImage, OnscreenText, DGG
 from direct.gui.DirectButton import DirectButton
 from direct.gui.DirectWaitBar import DirectWaitBar
 from direct.fsm.ClassicFSM import ClassicFSM
@@ -322,6 +322,8 @@ class Slot(DirectFrame):
             self.hoverObj = None
         if self.infoText:
             self.infoText.destroy()
+        if self.grText:
+            self.grText.destroy()
         if self.rechargeBar:
             self.rechargeBar.destroy()
         if self.mouseRlvrSfx:
@@ -330,7 +332,6 @@ class Slot(DirectFrame):
             self.soundRecharged = None
         if self.switchUnavailableSfx:
             self.switchUnavailableSfx = None
-        DirectFrame.destroy(self)
         del self.gui
         del self.index
         del self.gagImage
@@ -342,6 +343,8 @@ class Slot(DirectFrame):
         del self.soundRecharged
         del self.switchUnavailableSfx
         del self.rechargeCompleteTrack
+        del self.grText
+        DirectFrame.destroy(self)
 
 class InventoryGui(DirectObject):
     directNotify = DirectNotify().newCategory('InventoryGui')
@@ -371,7 +374,6 @@ class InventoryGui(DirectObject):
         self.activeSlot = None
         self.defaultSlots = 3
         self.prevSlot = None
-        self.ammoLabel = None
 
         self.inventoryFrame = DirectFrame(parent = base.a2dRightCenter, pos = (-0.1725, 0, 0))
         self.moveIval = None
@@ -456,7 +458,7 @@ class InventoryGui(DirectObject):
             self.moveIval = None
         
     def __toggleForcedVisibility(self):
-        if self.slotsForceShown and self.slotsVisible:
+        if self.slotsForceShown:
             self.slotsForceShown = False
             
             self.__autoVisExit()
@@ -464,7 +466,7 @@ class InventoryGui(DirectObject):
             # If we want switch sounds, we most likely want all sfx based on this GUI.
             if self.switchSound:
                 base.playSfx(self.disableKeepVisibleSfx)
-        elif not self.slotsForceShown and not self.slotsVisible:
+        elif not self.slotsForceShown:
             self.slotsForceShown = True
 
             self.__autoVisEnter()
@@ -550,8 +552,6 @@ class InventoryGui(DirectObject):
             self.slots.append(slotObj)
             if slot == 3:
                 slotObj.hide()
-        self.ammoLabel = DirectLabel(text = "Ammo: 0", text_fg=(1,1,1,1), relief=None, text_shadow=(0,0,0,1), text_scale=0.08, pos=(0.2, 0, 0.35), parent=hidden)#base.a2dBottomLeft)
-        self.ammoLabel.hide()
         
     def enable(self):
         self.Enabled = True
@@ -564,9 +564,6 @@ class InventoryGui(DirectObject):
         for slot in self.slots:
             slot.destroy()
         self.slots = []
-        if self.ammoLabel:
-            self.ammoLabel.destroy()
-            self.ammoLabel = None
         if self.inventoryFrame:
             self.inventoryFrame.destroy()
             self.inventoryFrame = None
@@ -599,7 +596,6 @@ class InventoryGui(DirectObject):
         if self.disableKeepVisibleSfx:
             self.disableKeepVisibleSfx = None
         del self.slots
-        del self.ammoLabel
         del self.inventoryFrame
         del self.backpack
         del self.oneSlotPos
@@ -622,8 +618,6 @@ class InventoryGui(DirectObject):
         if self.moveIval:
             self.moveIval.finish()
             self.moveIval = None
-        if self.ammoLabel:
-            self.ammoLabel.hide()
         self.disableWeaponSwitch()
         self.activeSlot = None
         self.slotsForceShown = False
@@ -656,12 +650,8 @@ class InventoryGui(DirectObject):
         self.accept('wheel_up', self.setWeapon, extraArgs = [self.slots[prevGag], True, True])
 
     def update(self):
-        if not self.backpack:
+        if not self.backpack or not self.inventoryFrame:
             return
-
-        for element in [self.ammoLabel, self.inventoryFrame]:
-            if not element:
-                return
 
         updateSlots = list(self.slots)
 
@@ -690,23 +680,16 @@ class InventoryGui(DirectObject):
 
                 if slot == self.activeSlot:
                     slot.setOutlineImage('selected')
-                    #self.ammoLabel['text_fg'] = (1, 1, 1, 1)
-                    #if supply <= 0:
-                    #    self.ammoLabel['text_fg'] = (0.9, 0, 0, 1)
-                    #self.ammoLabel.show()
-                    #self.ammoLabel['text'] = 'Ammo: %s' % (self.backpack.getSupply(slot.getGag().getID()))
-
                 elif self.__hasSupplyRemaining(slot.getGag().getID()) > 0:
                     slot.setOutlineImage('idle')
-
                 else:
                     slot.setOutlineImage('no_ammo')
 
-            if supply < 1:
-                slot.makeGrTextRed()
-            else:
-                slot.makeGrTextWhite()
-            slot.grText.setText(str(supply))
+                if supply < 1:
+                    slot.makeGrTextRed()
+                else:
+                    slot.makeGrTextWhite()
+                slot.grText.setText(str(supply))
 
         numSlots = len(updateSlots)
         posGroup = {1 : self.oneSlotPos, 2 : self.twoSlotsPos, 3 : self.threeSlotsPos, 4 : self.fourSlotPos}.get(numSlots)
@@ -714,10 +697,6 @@ class InventoryGui(DirectObject):
         for i in xrange(len(updateSlots)):
             updateSlots[i].setPos(posGroup[i])
             updateSlots[i].show()
-
-        if self.activeSlot == None:
-            self.ammoLabel.hide()
-            self.ammoLabel['text'] = 'Ammo: 0'
         self.resetScroll()
 
     def setBackpack(self, backpack):

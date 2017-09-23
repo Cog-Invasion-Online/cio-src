@@ -5,6 +5,9 @@
 # The server version of the backpack.
 from src.coginvasion.gags import GagGlobals
 
+from direct.distributed.PyDatagram import PyDatagram
+from direct.distributed.PyDatagramIterator import PyDatagramIterator
+
 class BackpackAI:
     
     def __init__(self, owner):
@@ -81,14 +84,33 @@ class BackpackAI:
     def getLoadout(self):
         return self.loadout
     
+    # Converts out backpack to a blob for storing.
+    # Returns a blob of bytes.
+    def toNetString(self):
+        dg = PyDatagram()
+        for gagId in self.gags.keys():
+            supply = self.gags[gagId][0]
+            dg.addUint8(gagId)
+            dg.addUint8(supply)
+        dgi = PyDatagramIterator(dg)
+        return dgi.getRemainingBytes()
+    
+    # Converts a net string blob back to data that we can handle.
+    # Returns a dictionary of {gagIds : supply}
+    def fromNetString(self, netString):
+        dg = PyDatagram(netString)
+        dgi = PyDatagramIterator(dg)
+        dictionary = {}
+        
+        while dgi.getRemainingSize() > 0:
+            gagId = dgi.getUint8()
+            supply = dgi.getUint8()
+            dictionary[gagId] = supply
+        return dictionary
+    
     # Update the network ammo.
     def updateNetAmmo(self):
-        gagIds = self.gags.keys()
-        ammo = []
-        for i in xrange(len(gagIds)):
-            gagId = gagIds[i]
-            ammo.append(self.gags.get(gagId)[0])
-        self.owner.b_setBackpackAmmo(gagIds, ammo)
+        self.owner.b_setBackpackAmmo(self.toNetString())
     
     # Cleans up the backpack.
     def cleanup(self):

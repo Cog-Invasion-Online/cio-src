@@ -46,7 +46,8 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         self.b_setAvatars(self.avIds)
 
     def _removeAvatar(self, avId):
-        self.avIds.remove(avId)
+        if avId in self.avIds:
+            self.avIds.remove(avId)
 
         if avId in self.cogKills.keys():
             self.cogKills.pop(avId)

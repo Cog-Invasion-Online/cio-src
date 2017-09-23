@@ -14,7 +14,7 @@ Copyright (c) CIO Team. All rights reserved.
 from datetime import datetime
 from pandac.PandaModules import Filename
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
-import threading
+from direct.stdpy.threading2 import Thread
 import os
 
 FILEPATH = 'screenshots/'
@@ -49,6 +49,6 @@ def __saveScreenshot(shot):
 
 def __takeScreenshot():
     shot = base.win.getScreenshot()
-    thread = threading.Thread(target = __saveScreenshot, args = (shot,))
+    thread = Thread(target = __saveScreenshot, args = (shot,))
     thread.start()
     __doEffects()
