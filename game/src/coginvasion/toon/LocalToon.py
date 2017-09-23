@@ -408,10 +408,10 @@ class LocalToon(DistributedToon):
         self.walkControls.enableAvatarControls()
         self.accept("control", self.updateMovementKeymap, ["jump", 1])
         self.accept("control-up", self.updateMovementKeymap, ["jump", 0])
-        self.accept('tab', self.smartCamera.nextCameraPos, [1])
-        self.accept('shift-tab', self.smartCamera.nextCameraPos, [0])
-        self.accept('page_up', self.smartCamera.pageUp)
-        self.accept('page_down', self.smartCamera.pageDown)
+        self.accept(base.inputStore.NextCameraPosition, self.smartCamera.nextCameraPos, [1])
+        self.accept(base.inputStore.PreviousCameraPosition, self.smartCamera.nextCameraPos, [0])
+        self.accept(base.inputStore.LookUp, self.smartCamera.pageUp)
+        self.accept(base.inputStore.LookDown, self.smartCamera.pageDown)
         self.accept('jumpStart', self.__jump)
         self.accept('jumpLand', self.__handleJumpLand)
         self.accept('jumpHardLand', self.__handleJumpHardLand)
@@ -945,7 +945,7 @@ class LocalToon(DistributedToon):
         self.friendRequestManager.watch()
         self.accept("gotLookSpot", self.handleLookSpot)
         self.accept("clickedWhisper", self.handleClickedSentWhisper)
-        self.accept('f2', self.toggleAspect2d)
+        self.accept(base.inputStore.ToggleAspect2D, self.toggleAspect2d)
 
         #self.accept('c', self.walkControls.setCollisionsActive, [0])
 
