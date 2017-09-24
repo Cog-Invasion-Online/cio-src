@@ -34,7 +34,7 @@ class game:
     production = False
     phasedir = './resources/'
     usepipeline = False
-    uselighting = False
+    uselighting = True
     userealshadows = False
    
 import __builtin__
