@@ -51,7 +51,7 @@ server-port 7032
 server-address gameserver.coginvasion.com
 
 # Performance...
-hardware-animated-vertices #f
+hardware-animated-vertices #t
 sync-video #f
 smooth-lag 0.4
 basic-shaders-only #f
@@ -75,6 +75,7 @@ want-gta-controls #t
 show-minigame-dates #f
 want-real-shadows #f
 load-stuff #f
+want-playground-gags #t
 
 ctmusic-numsongs 3
 
@@ -82,7 +83,7 @@ want-pstats 0
 
 egg-load-old-curves 0
 
-#threading-model App/Cull/Draw
+threading-model App/Cull/Draw
 
 gl-finish #f
 gl-force-no-error #t
