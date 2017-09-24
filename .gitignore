@@ -8,6 +8,12 @@
 *.pyc
 *.yaml
 
+Panda3D-CI-new
+Panda3D-CI-old
+game/renderpipeline
+game/renderpipelinenew
+demomaster-0.8
+
 !*.lib
 game/*.py
 game/resourcepack
@@ -97,3 +103,5 @@ game/tools/nirai
 !game/astron/libeay32.dll
 !game/astron/ssleay32.dll
 !game/tools/*.bat
+
+.vs

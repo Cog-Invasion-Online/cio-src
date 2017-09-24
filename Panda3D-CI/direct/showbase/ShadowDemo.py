@@ -1,8 +1,3 @@
-"""Undocumented Module"""
-
-__all__ = ['ShadowCaster', 'avatarShadow', 'piratesAvatarShadow', 'arbitraryShadow']
-
-
 """Create a cheesy shadow effect by rendering the view of an
 object (e.g. the local avatar) from a special camera as seen from
 above (as if from the sun), using a solid gray foreground and a
@@ -13,6 +8,8 @@ This is meant primarily as a demonstration of multipass and
 multitexture rendering techniques.  It's not a particularly great
 way to do shadows.
 """
+
+__all__ = ['ShadowCaster', 'avatarShadow', 'piratesAvatarShadow', 'arbitraryShadow']
 
 from panda3d.core import *
 from direct.task import Task
@@ -110,7 +107,7 @@ class ShadowCaster:
 def avatarShadow():
     # Turn off the existing drop shadow.
     # stash it so that when the game hides and shows it, it will still be gone
-    #base.localAvatar.dropShadow.stash()
+    base.localAvatar.dropShadow.stash()
 
     # Set up a new node to hold the "light": this is an abitrary point
     # somewhere above the avatar, looking down, as if from the sun.
@@ -166,7 +163,7 @@ def arbitraryShadow(node):
 
     # We can change this position at will to change the angle of the
     # sun.
-    lightPath.setPos(50, 0, 5)
+    lightPath.setPos(50, 0, 50)
 
     # We need a task to keep the shadowCamera rotated in the same
     # direction relative to render (otherwise, the shadow seems to

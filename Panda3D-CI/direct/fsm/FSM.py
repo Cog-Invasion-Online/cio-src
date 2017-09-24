@@ -1,5 +1,5 @@
 """The new Finite State Machine module. This replaces the module
-previously called FSM.py (now called ClassicFSM.py).
+previously called FSM (now called :mod:`.ClassicFSM`).
 """
 
 __all__ = ['FSMException', 'FSM']
@@ -99,12 +99,12 @@ class FSM(DirectObject):
     (this assumes that an uppercase name is a request to go directly
     to a particular state by name).
 
-    self.state may be queried at any time other than during the
+    self._state may be queried at any time other than during the
     handling of the enter() and exit() functions.  During these
-    functions, self.state contains the value None (you are not really
+    functions, self._state contains the value None (you are not really
     in any state during the transition).  However, during a transition
     you *can* query the outgoing and incoming states, respectively,
-    via self.oldState and self.newState.  At other times, self.state
+    via self.oldState and self.newState.  At other times, self._state
     contains the name of the current state.
 
     Initially, the FSM is in state 'Off'.  It does not call enterOff()

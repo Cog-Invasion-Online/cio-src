@@ -1,3 +1,9 @@
+
+"This module is deprecated.  Import from panda3d.core and other panda3d.* modules instead."
+
+if __debug__:
+    print("Warning: pandac.PandaModules is deprecated, import from panda3d.core instead")
+
 try:
     from panda3d.core import *
 except ImportError as err:

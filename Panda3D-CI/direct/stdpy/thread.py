@@ -11,18 +11,32 @@ __all__ = [
     'interrupt_main',
     'exit', 'allocate_lock', 'get_ident',
     'stack_size',
+    'force_yield', 'consider_yield',
     'forceYield', 'considerYield',
+    'TIMEOUT_MAX'
     ]
 
 from panda3d import core
+import sys
+
+if sys.platform == "win32":
+    TIMEOUT_MAX = float(0xffffffff // 1000)
+else:
+    TIMEOUT_MAX = float(0x7fffffffffffffff // 1000000000)
 
 # These methods are defined in Panda, and are particularly useful if
 # you may be running in Panda's SIMPLE_THREADS compilation mode.
-forceYield = core.Thread.forceYield
-considerYield = core.Thread.considerYield
+force_yield = core.Thread.force_yield
+consider_yield = core.Thread.consider_yield
 
-class error(Exception):
-    pass
+forceYield = force_yield
+considerYield = consider_yield
+
+if sys.version_info >= (3, 3):
+    error = RuntimeError
+else:
+    class error(Exception):
+        pass
 
 class LockType:
     """ Implements a mutex lock.  Instead of directly subclassing
@@ -36,13 +50,18 @@ class LockType:
         self.__cvar = core.ConditionVar(self.__lock)
         self.__locked = False
 
-    def acquire(self, waitflag = 1):
+    def acquire(self, waitflag = 1, timeout = -1):
         self.__lock.acquire()
         try:
             if self.__locked and not waitflag:
                 return False
-            while self.__locked:
-                self.__cvar.wait()
+
+            if timeout >= 0:
+                while self.__locked:
+                    self.__cvar.wait(timeout)
+            else:
+                while self.__locked:
+                    self.__cvar.wait()
 
             self.__locked = True
             return True
@@ -102,7 +121,7 @@ def start_new_thread(function, args, kwargs = {}, name = None):
             name = 'PythonThread-%s' % (threadId)
 
         thread = core.PythonThread(threadFunc, [threadId], name, name)
-        thread.setPythonData(threadId)
+        thread.setPythonIndex(threadId)
         _threads[threadId] = (thread, {}, None)
 
         thread.start(core.TPNormal, False)
@@ -121,7 +140,7 @@ def _add_thread(thread, wrapper):
         threadId = _nextThreadId
         _nextThreadId += 1
 
-        thread.setPythonData(threadId)
+        thread.setPythonIndex(threadId)
         _threads[threadId] = (thread, {}, wrapper)
         return threadId
 
@@ -133,8 +152,8 @@ def _get_thread_wrapper(thread, wrapperClass):
     is not one, creates an instance of the indicated wrapperClass
     instead. """
 
-    threadId = thread.getPythonData()
-    if threadId is None:
+    threadId = thread.getPythonIndex()
+    if threadId == -1:
         # The thread has never been assigned a threadId.  Go assign one.
 
         global _nextThreadId
@@ -143,7 +162,7 @@ def _get_thread_wrapper(thread, wrapperClass):
             threadId = _nextThreadId
             _nextThreadId += 1
 
-            thread.setPythonData(threadId)
+            thread.setPythonIndex(threadId)
             wrapper = wrapperClass(thread, threadId)
             _threads[threadId] = (thread, {}, wrapper)
             return wrapper
@@ -169,8 +188,8 @@ def _get_thread_locals(thread, i):
     """ Returns the locals dictionary for the indicated thread.  If
     there is not one, creates an empty dictionary. """
 
-    threadId = thread.getPythonData()
-    if threadId is None:
+    threadId = thread.getPythonIndex()
+    if threadId == -1:
         # The thread has never been assigned a threadId.  Go assign one.
 
         global _nextThreadId
@@ -179,7 +198,7 @@ def _get_thread_locals(thread, i):
             threadId = _nextThreadId
             _nextThreadId += 1
 
-            thread.setPythonData(threadId)
+            thread.setPythonIndex(threadId)
             locals = {}
             _threads[threadId] = (thread, locals, None)
             return locals.setdefault(i, {})
@@ -202,12 +221,17 @@ def _get_thread_locals(thread, i):
 def _remove_thread_id(threadId):
     """ Removes the thread with the indicated ID from the thread list. """
 
+    # On interpreter shutdown, Python may set module globals to None.
+    if _threadsLock is None or _threads is None:
+        return
+
     _threadsLock.acquire()
     try:
-        thread, locals, wrapper = _threads[threadId]
-        assert thread.getPythonData() == threadId
-        del _threads[threadId]
-        thread.setPythonData(None)
+        if threadId in _threads:
+            thread, locals, wrapper = _threads[threadId]
+            assert thread.getPythonIndex() == threadId
+            del _threads[threadId]
+            thread.setPythonIndex(-1)
 
     finally:
         _threadsLock.release()

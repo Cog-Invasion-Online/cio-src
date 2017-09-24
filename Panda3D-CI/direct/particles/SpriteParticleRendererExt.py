@@ -19,7 +19,7 @@ class SpriteParticleRendererExt(SpriteParticleRenderer):
     def getSourceTextureName(self):
         if self.sourceTextureName == None:
             SpriteParticleRendererExt.sourceTextureName = base.config.GetString(
-                'particle-sprite-texture', 'models/maps/lightbulb.rgb')
+                'particle-sprite-texture', 'maps/lightbulb.rgb')
         # Return instance copy of class variable
         return self.sourceTextureName
 

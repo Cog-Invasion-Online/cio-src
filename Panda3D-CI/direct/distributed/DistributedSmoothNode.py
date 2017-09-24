@@ -6,19 +6,21 @@ from . import DistributedNode
 from . import DistributedSmoothNodeBase
 from direct.task.Task import cont
 
+config = get_config_showbase()
+
 # This number defines our tolerance for out-of-sync telemetry packets.
 # If a packet appears to have originated from more than MaxFuture
 # seconds in the future, assume we're out of sync with the other
 # avatar and suggest a resync for both.
-MaxFuture = base.config.GetFloat("smooth-max-future", 0.2)
+MaxFuture = config.GetFloat("smooth-max-future", 0.2)
 
 # How frequently can we suggest a resynchronize with another client?
-MinSuggestResync = base.config.GetFloat("smooth-min-suggest-resync", 10)
+MinSuggestResync = config.GetFloat("smooth-min-suggest-resync", 15)
 
 # These flags indicate whether global smoothing and/or prediction is
 # allowed or disallowed.
-EnableSmoothing = base.config.GetBool("smooth-enable-smoothing", 1)
-EnablePrediction = base.config.GetBool("smooth-enable-prediction", 1)
+EnableSmoothing = config.GetBool("smooth-enable-smoothing", 1)
+EnablePrediction = config.GetBool("smooth-enable-prediction", 1)
 
 # These values represent the amount of time, in seconds, to delay the
 # apparent position of other avatars, when non-predictive and
@@ -26,8 +28,8 @@ EnablePrediction = base.config.GetBool("smooth-enable-prediction", 1)
 # addition to the automatic delay of the observed average latency from
 # each avatar, which is intended to compensate for relative clock
 # skew.
-Lag = base.config.GetDouble("smooth-lag", 0.2)
-PredictionLag = base.config.GetDouble("smooth-prediction-lag", 0.0)
+Lag = config.GetDouble("smooth-lag", 0.2)
+PredictionLag = config.GetDouble("smooth-prediction-lag", 0.0)
 
 
 GlobalSmoothing = 0
@@ -360,7 +362,7 @@ class DistributedSmoothNode(DistributedNode.DistributedNode,
                 # Too far off; advise the other client of our clock information.
                 if globalClockDelta.getUncertainty() != None and \
                    realTime - self.lastSuggestResync >= MinSuggestResync and \
-                   hasattr(self.cr, 'localAvId'):
+                   hasattr(self.cr, 'localAvatarDoId'):
                     self.lastSuggestResync = realTime
                     timestampB = globalClockDelta.localToNetworkTime(realTime)
                     serverTime = realTime - globalClockDelta.getDelta()
@@ -369,7 +371,7 @@ class DistributedSmoothNode(DistributedNode.DistributedNode,
                         self.doId, howFarFuture - chug,
                         realTime, serverTime))
                     self.d_suggestResync(
-                        self.cr.localAvId, timestamp,
+                        self.cr.localAvatarDoId, timestamp,
                         timestampB, serverTime,
                         globalClockDelta.getUncertainty())
 
@@ -461,14 +463,14 @@ class DistributedSmoothNode(DistributedNode.DistributedNode,
                 assert self.notify.info(
                     "Warning: couldn't find the avatar %d" % (avId))
             elif hasattr(other, "d_returnResync") and \
-                 hasattr(self.cr, 'localAvId'):
+                 hasattr(self.cr, 'localAvatarDoId'):
                 realTime = globalClock.getRealTime()
                 serverTime = realTime - globalClockDelta.getDelta()
                 assert self.notify.info(
                     "Returning resync for %s; local time is %s and server time is %s." % (
                     self.doId, realTime, serverTime))
                 other.d_returnResync(
-                    self.cr.localAvId, timestampB,
+                    self.cr.localAvatarDoId, timestampB,
                     serverTime,
                     globalClockDelta.getUncertainty())
 
@@ -518,7 +520,7 @@ class DistributedSmoothNode(DistributedNode.DistributedNode,
         current position, by extrapolating from old position reports.
 
         This assumes you have a client repository that knows its
-        localAvId -- stored in self.cr.localAvId
+        localAvatarDoId -- stored in self.cr.localAvatarDoId
         """
         if smoothing and EnableSmoothing:
             if prediction and EnablePrediction:
