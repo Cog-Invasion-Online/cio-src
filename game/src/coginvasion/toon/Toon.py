@@ -41,6 +41,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         Avatar.Avatar.__init__(self, mat)
         ToonDNA.ToonDNA.__init__(self)
         ToonHead.__init__(self, cr)
+        self.collsSetup = False
         self.forwardSpeed = 0.0
         self.rotateSpeed = 0.0
         self.strafeSpeed = 0.0
@@ -105,9 +106,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             'off', 'off')
         animStateList = self.animFSM.getStates()
         self.animFSM.enterInitialState()
-
-        if not hasattr(base, 'localAvatar') or not base.localAvatar == self:
-            Avatar.Avatar.initializeBodyCollisions(self, self.avatarType, 3, 1)
 
     def showAvId(self):
         pass
@@ -392,6 +390,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         except:
             self.Toon_disabled = 1
             self.backpack = None
+            self.collsSetup = False
             self.stopAnimations()
             self.removeAdminToken()
             ToonHead.delete(self)
@@ -576,6 +575,9 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.accessories.append(glassesNode)
 
     def generateToon(self, makeTag = 1):
+        if not self.collsSetup and (not hasattr(base, 'localAvatar') or base.localAvatar != self):
+            self.collsSetup = True
+            Avatar.Avatar.initializeBodyCollisions(self, self.avatarType, 3, 1)
         self.generateLegs()
         self.generateTorso()
         self.generateHead()

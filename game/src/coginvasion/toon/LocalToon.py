@@ -321,7 +321,6 @@ class LocalToon(DistributedToon):
     def setDNAStrand(self, dnaStrand):
         DistributedToon.setDNAStrand(self, dnaStrand)
         if self.firstTimeGenerating:
-            self.initCollisions()
             self.setupCamera()
             self.firstTimeGenerating = False
 

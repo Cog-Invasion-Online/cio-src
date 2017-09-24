@@ -246,27 +246,28 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         self.rayNode = None
 
     def initializeLocalCollisions(self, senRadius, senZ, name):
-        self.collNodePath.setCollideMask(BitMask32(0))
-        self.collNodePath.node().setFromCollideMask(CIGlobals.WallBitmask)
+        pass
+        #self.collNodePath.setCollideMask(BitMask32(0))
+        #self.collNodePath.node().setFromCollideMask(CIGlobals.WallBitmask)
 
-        pusher = CollisionHandlerPusher()
-        pusher.setInPattern("%in")
-        pusher.addCollider(self.collNodePath, self)
+       # pusher = CollisionHandlerPusher()
+        #pusher.setInPattern("%in")
+        #pusher.addCollider(self.collNodePath, self)
 
-        base.cTrav.addCollider(self.collNodePath, pusher)
+        #base.cTrav.addCollider(self.collNodePath, pusher)
 
-        collisionSphere = CollisionSphere(0, 0, 0, senRadius)
-        sensorNode = CollisionNode(name + "s")
-        sensorNode.addSolid(collisionSphere)
-        self.sensorNodePath = self.attachNewNode(sensorNode)
-        self.sensorNodePath.setZ(senZ)
-        self.sensorNodePath.setCollideMask(BitMask32(0))
-        self.sensorNodePath.node().setFromCollideMask(CIGlobals.WallBitmask)
+        #collisionSphere = CollisionSphere(0, 0, 0, senRadius)
+        #sensorNode = CollisionNode(name + "s")
+        #sensorNode.addSolid(collisionSphere)
+        #self.sensorNodePath = self.attachNewNode(sensorNode)
+        #self.sensorNodePath.setZ(senZ)
+        #self.sensorNodePath.setCollideMask(BitMask32(0))
+        #self.sensorNodePath.node().setFromCollideMask(CIGlobals.WallBitmask)
 
-        event = CollisionHandlerEvent()
-        event.setInPattern("%fn-into")
-        event.setOutPattern("%fn-out")
-        base.cTrav.addCollider(self.sensorNodePath, event)
+        #event = CollisionHandlerEvent()
+        #event.setInPattern("%fn-into")
+        #event.setOutPattern("%fn-out")
+        #base.cTrav.addCollider(self.sensorNodePath, event)
 
     def stashBodyCollisions(self):
         if hasattr(self, 'collNodePath'):
