@@ -62,6 +62,7 @@ class Walk(StateData):
         base.localAvatar.controlManager.placeOnFloor()
         if base.localAvatar.GTAControls:
             self.mouseMov.disableMovement()
+            self.mouseMov.ignore(base.inputStore.ToggleGTAControls)
         
 
     def enterOff(self):
