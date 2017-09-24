@@ -8,7 +8,6 @@
  */
 
 #include "config_ccoginvasion.h"
-#include "ciShaderGenerator.h"
 
 #include <dconfig.h>
 
@@ -29,8 +28,6 @@ initccoginvasion() {
     return;
   }
   initialized = true;
-
-  CIShaderGenerator::init_type();
 
 }
 

@@ -120,7 +120,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WITHIN_PANDA;WIN32;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\base;C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\suit;C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\components;C:\Users\brian\Documents\cog-invasion-online\Panda3D-CI\include;C:\Panda3D-1.9.2\python\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -164,6 +164,7 @@ interrogate.bat</Command>
     <ClInclude Include="source\ctMusicMgr.h" />
     <ClInclude Include="source\cNametag.h" />
     <ClInclude Include="source\cNametag3d.h" />
+    <ClInclude Include="source\lerper.h" />
     <ClInclude Include="source\suitPathFinderAI.h" />
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +176,7 @@ interrogate.bat</Command>
     <ClCompile Include="source\ctMusicMgr.cxx" />
     <ClCompile Include="source\cNametag.cxx" />
     <ClCompile Include="source\cNametag3d.cxx" />
+    <ClCompile Include="source\lerper.cxx" />
     <ClCompile Include="source\suitPathFinderAI.cxx" />
     <ClCompile Include="source\tools.cxx" />
   </ItemGroup>

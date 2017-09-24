@@ -39,6 +39,9 @@
     <ClInclude Include="source\audioClip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\lerper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\suitPathFinderAI.cxx">
@@ -69,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ccoginvasion_module.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\lerper.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
