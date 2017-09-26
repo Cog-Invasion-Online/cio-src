@@ -29,10 +29,10 @@ class MLHood(ToonHood):
         self.titleColor = (0.945, 0.54, 1.0, 1.0)
         self.loaderDoneEvent = 'MLHood-loaderDone'
 
-        self.ambient = VBase4(110 / 255.0, 180 / 255.0, 204 / 255.0, 1.0)
-        self.sun = VBase4(255 / 255.0, 109 / 255.0, 86 / 255.0, 1.0)
-        self.sunPos = Vec3(-750, 100, 500)
-        self.fog = VBase4(255 / 255.0, 109 / 255.0, 86 / 255.0, 1.0)
+        self.olc.ambient = VBase4(110 / 255.0, 180 / 255.0, 204 / 255.0, 1.0)
+        self.olc.sun = VBase4(255 / 255.0, 109 / 255.0, 86 / 255.0, 1.0)
+        self.olc.sunPos = Vec3(-750, 100, 500)
+        self.olc.fog = VBase4(255 / 255.0, 109 / 255.0, 86 / 255.0, 1.0)
 
     def load(self):
         ToonHood.load(self)

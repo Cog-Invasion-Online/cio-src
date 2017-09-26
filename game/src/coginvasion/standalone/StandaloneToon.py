@@ -19,6 +19,7 @@ import __builtin__
 class game:
     process = 'client'
     usepipeline = False
+    uselighting = True
 __builtin__.game = game
 
 vfs = VirtualFileSystem.getGlobalPtr()
@@ -163,3 +164,7 @@ if base.localAvatar.GTAControls:
 base.enableParticles()
 
 render.setAntialias(AntialiasAttrib.MMultisample)
+
+if game.uselighting:
+    render.setAttrib(LightRampAttrib.makeHdr0())
+    render.setShaderAuto()

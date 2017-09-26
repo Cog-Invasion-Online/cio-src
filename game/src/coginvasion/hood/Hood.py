@@ -13,6 +13,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.dna.DNALoader import *
 from src.coginvasion.hood.SnowEffect import SnowEffect
+from src.coginvasion.base.Lighting import OutdoorLightingConfig
 
 from pandac.PandaModules import Vec4, AmbientLight, ModelPool, TexturePool, DirectionalLight
 from pandac.PandaModules import Fog, CompassEffect, NodePath, VBase4, Vec3
@@ -43,22 +44,9 @@ class Hood(StateData):
 
         self.wantLighting = True
 
-        ###############################################################
-        # Outdoor lighting configuration (street, playground)
-        self.ambient = VBase4(172 / 255.0, 196 / 255.0, 202 / 255.0, 1.0)
-        self.ambientNP = None
-
-        self.sun = VBase4(252 / 255.0, 239 / 255.0, 209 / 255.0, 1.0)
-        self.sunPos = Vec3(-150, 50, 500)
-        self.sunNP = None
-        
-        # For aerial perspective effect.
-        # Fog color should be similar to the sky color in the playground.
-        self.fog = VBase4(0.8, 0.8, 1.0, 1.0)
-        self.fogDensity = 0.001
-        self.fogNode = None
-
-        ################################################################
+        self.olc = OutdoorLightingConfig.makeDefault()
+        if base.cr.isChristmas():
+            self.olc.winterOverride = True
 
         return
 
@@ -123,51 +111,25 @@ class Hood(StateData):
         return
 
     def setupOutdoorLighting(self):
-        if self.wantLighting and game.uselighting:
-            self.ambientNP = CIGlobals.makeAmbientLight("outdoor", self.ambient)
-            self.sunNP = CIGlobals.makeDirectionalLight("outdoor", self.sun, self.sunPos)
-            
-            if base.cr.isChristmas():
-                self.snowEffect.load()
-            else:
-                self.fogNode = CIGlobals.makeFog("outdoor", self.fog, self.fogDensity)
+        self.olc.setup()
+        if base.cr.isChristmas() or self.id == CIGlobals.TheBrrrgh:
+            self.snowEffect.load()
 
     def enableOutdoorLighting(self):
-        if self.wantLighting and game.uselighting:
-            if self.ambientNP:
-                render.setLight(self.ambientNP)
-            if self.sunNP:
-                render.setLight(self.sunNP)
-            if base.cr.isChristmas():
-                self.snowEffect.start()
-            else:
-                if self.fogNode:
-                    render.setFog(self.fogNode)
-                
+        self.olc.apply()
+        if base.cr.isChristmas() or self.id == CIGlobals.TheBrrrgh:
+            self.snowEffect.start()
 
     def disableOutdoorLighting(self):
-        if self.wantLighting and game.uselighting:
-            if self.ambientNP:
-                render.clearLight(self.ambientNP)
-            if self.sunNP:
-                render.clearLight(self.sunNP)
-            if base.cr.isChristmas():
-                self.snowEffect.stop()
-            else:
-                if self.fogNode:
-                    render.clearFog()
+        self.olc.unapply()
+        if base.cr.isChristmas() or self.id == CIGlobals.TheBrrrgh:
+            self.snowEffect.stop()
 
     def cleanupOutdoorLighting(self):
-        if game.uselighting and self.wantLighting:
-            if self.ambientNP:
-                self.ambientNP.removeNode()
-                self.ambientNP = None
-            if self.sunNP:
-                self.sunNP.removeNode()
-                self.sunNP = None
-            self.fogNode = None
-            if base.cr.isChristmas():
-                self.snowEffect.unload()
+        self.olc.cleanup()
+        if base.cr.isChristmas() or self.id == CIGlobals.TheBrrrgh:
+            self.snowEffect.unload()
+            self.snowEffect = None
 
     def load(self):
         StateData.load(self)

@@ -14,13 +14,14 @@ from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.npc.NPCWalker import NPCWalkInterval
 from src.coginvasion.cog import Dept, SuitBank
+from src.coginvasion.base.Lighting import IndoorLightingConfig
 from ElevatorUtils import *
 from ElevatorConstants import *
 from CogOfficeConstants import *
 import random
 
 PROPS = {'photo_frame':     'phase_7/models/props/photo_frame.egg',
-        'photo_frame_bh':   'phase_7/models/props/photo_frame_blackholes.bam',
+        'photo_frame_bh':   'phase_7/models/props/photo_frame_blackholes.egg',
         'rug':              'phase_3.5/models/modules/rug.bam',
         'rugA':             'phase_5.5/models/estate/rugA.bam',
         'rugB':             'phase_5.5/models/estate/rugB.bam',
@@ -94,18 +95,18 @@ class CogTV(NodePath):
         NodePath.__init__(self, 'cogtv')
         self.mdl = loader.loadModel(PROPS['tv_on_wall'])
         self.mdl.reparentTo(self)
-        #ts = TextureStage('tvts')
-        #self.videoTex = loader.loadTexture('phase_7/videos/cogtv.mp4')
-        #self.find('**/tv_screen').setTexture(ts, self.videoTex)
-        #self.find('**/tv_screen').setTexRotate(ts, 90)
-        #self.videoTex.setLoop(1)
-        #self.videoTex.play()
+        ts = TextureStage('tvts')
+        self.videoTex = loader.loadTexture('phase_7/videos/cogtv.mp4')
+        self.find('**/tv_screen').setTexture(ts, self.videoTex)
+        self.find('**/tv_screen').setTexRotate(ts, 90)
+        self.videoTex.setLoop(1)
+        self.videoTex.play()
 
     def removeNode(self):
         self.mdl.removeNode()
         del self.mdl
-        #self.videoTex.stop()
-        #del self.videoTex
+        self.videoTex.stop()
+        del self.videoTex
         NodePath.removeNode(self)
 
 class DistributedCogOfficeBattle(DistributedBattleZone):
@@ -149,7 +150,8 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                     # No need to provide any room sections when it's a single-sectioned room
                     'room_sections': [],
                     'room_mdl': 'phase_7/models/modules/cog_bldg_reception_flr.bam',
-                    'grounds': ['**/floor']
+                    'grounds': ['**/floor'],
+                    'cubemaps': [['phase_7/cubemaps/rf_#.jpg', 0.0, 0.0, 0.0]]
                 },
                 EXECUTIVE_FLOOR: {'props': [
                         ['BR_sky', 0, 0, -125, 0, 0, 0, 1],
@@ -185,7 +187,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                         ['LB_chairA', -4.365, 45.791, 0, -26.36, 0, 0, 1],
                         ['LB_chairA', 4.786, 53.639, 0, 154.075, 0, 0, 1],
                         ['LB_chairA', -65.39, -14.79, 0, 180, 0, 0, 1],
-                        ['photo_frame', 27.72, 43.508, 8.515, 180, 0, 90, 1],
+                        ['photo_frame_bh', 27.72, 43.508, 8.515, 180, 0, 90, 1],
                         ['clock', 1.507, -20.368, 9.956, 90, 180, 90, 1],
                         ['plant', -19.403, 102.276, 0, 0, 0, 0, 12],
                         ['plant', 20.816, 101.992, 0, 0, 0, 0, 12],
@@ -206,7 +208,8 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                     ],
                     'room_sections': ['short_floor_coll', 'long_floor_coll_part1', 'long_floor_coll_part2'],
                     'room_mdl': 'phase_7/models/modules/cog_bldg_executive_flr.bam',
-                    'grounds': ['**/short_floor', '**/long_floor']
+                    'grounds': ['**/short_floor', '**/long_floor'],
+                    'cubemaps': []
                 },
                 CONFERENCE_FLOOR: {'props': [
                         ['BR_sky', 0, 0, -100, 0, 0, 0, 1],
@@ -241,7 +244,8 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                     # No need to provide any room sections when it's a single-sectioned room
                     'room_sections': [],
                     'room_mdl': 'phase_7/models/modules/cog_bldg_conference_flr.bam',
-                    'grounds': ['**/floor', '**/floor1']
+                    'grounds': ['**/floor', '**/floor1'],
+                    'cubemaps': [['phase_7/cubemaps/cf_#.jpg', 0.0, 0.0, 0.0]]
                 },
                 #BREAK_FLOOR: {'props': [
                 #        ['rug', -41.879, 34.818, 0, 0, 0, 0, 1],
@@ -307,8 +311,8 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                     ],
                     'room_sections': [],
                     'room_mdl': 'phase_7/models/modules/cog_bldg_lounge_flr.egg',
-                    'grounds': ['**/gagroom_small_floor', '**/gagroom_big_floor', '**/floor']
-
+                    'grounds': ['**/gagroom_small_floor', '**/gagroom_big_floor', '**/floor'],
+                    'cubemaps': [['phase_7/cubemaps/lf_#.jpg', 0.0, 0.0, 0.0]]
                 }
     }
 
@@ -322,6 +326,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.exteriorZoneId = None
         self.bldgDoId = None
         self.gagDoor = None
+        self.ilc = IndoorLightingConfig.makeDefault()
         # Use the same text from eagle summit
         self.floorNameText = DistributedMinigame.getAlertText((0.75, 0.75, 0.75, 1.0), 0.15)
         self.props = []
@@ -630,7 +635,15 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.cr.playGame.hood.setNoFog()
         self.loadElevators()
 
+        self.ilc.setup()
+        self.ilc.apply()
+
     def disable(self):
+        if self.ilc:
+            self.ilc.unapply()
+            self.ilc.cleanup()
+            self.ilc = None
+
         taskMgr.remove(self.uniqueName('diedTask'))
         taskMgr.remove(self.uniqueName('monitorHP'))
         self.fsm.requestFinalState()
@@ -696,6 +709,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         if self.gagDoor:
             self.gagDoor.removeNode()
             self.gagDoor = None
+        base.cubeMapMgr.clearCubeMaps()
 
     def cleanupElevators(self):
         for elevator in self.elevators:
@@ -713,9 +727,16 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         path = self.getRoomData('room_mdl')
         grounds = self.getRoomData('grounds')
         self.floorModel = loader.loadModel(path)
+        self.floorModel.setMaterialOff()
         self.floorModel.reparentTo(render)
         for ground in grounds:
             self.floorModel.find(ground).setBin('ground', 18)
+
+        cubemaps = self.getRoomData('cubemaps')
+        for cubemap in cubemaps:
+            baseFile = cubemap[0]
+            x, y, z = cubemap[1], cubemap[2], cubemap[3]
+            base.cubeMapMgr.addCubeMap(baseFile, Point3(x, y, z))
 
     def loadProps(self):
         dataList = self.getRoomData('props')
@@ -743,6 +764,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             propMdl.reparentTo(render)
             propMdl.setPosHpr(x, y, z, h, p, r)
             propMdl.setScale(scale)
+            propMdl.setMaterialOff()
             if name == 'photo_frame':
                 painting = random.choice(self.DEPT_2_PAINTING[self.deptClass])
                 propMdl.find('**/photo').setTexture(loader.loadTexture(painting), 1)

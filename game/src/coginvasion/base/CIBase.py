@@ -8,13 +8,14 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import loadPrcFile
+from panda3d.core import loadPrcFile, NodePath
 
 from direct.showbase.ShowBase import ShowBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.manager.UserInputStorage import UserInputStorage
 from src.coginvasion.globals import CIGlobals
+from CubeMapManager import CubeMapManager
 
 import __builtin__
 
@@ -37,6 +38,25 @@ class CIBase(ShowBase):
         self.userInputStorage = uis
         __builtin__.inputStore = uis
         __builtin__.userInputStorage = uis
+
+        cbm = CubeMapManager()
+        self.cubeMapMgr = cbm
+        __builtin__.cubeMapMgr = cbm
+
+    def saveCubeMap(self, namePrefix = 'cube_map_#.jpg', size = 256):
+        # Hide all objects from our cubemap.
+        if hasattr(self, 'cr'):
+            for do in self.cr.doId2do.values():
+                if isinstance(do, NodePath):
+                    do.hide()
+
+        ShowBase.saveCubeMap(self, namePrefix, size = size)
+
+        # Reshow the objects.
+        if hasattr(self, 'cr'):
+            for do in self.cr.doId2do.values():
+                if isinstance(do, NodePath):
+                    do.show()
 
     def setTimeOfDay(self, time):
         if game.usepipeline:
