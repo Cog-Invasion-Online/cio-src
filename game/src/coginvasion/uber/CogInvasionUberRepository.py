@@ -139,3 +139,5 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
         self.holidayManager.setHoliday(self.holiday)
         self.nsm = self.generateGlobalObject(DO_ID_NAME_SERVICES_MANAGER,
                                 'NameServicesManager')
+        self.uin = self.generateGlobalObject(DO_ID_UNIQUE_INTEREST_NOTIFIER,
+                                'UniqueInterestNotifier')

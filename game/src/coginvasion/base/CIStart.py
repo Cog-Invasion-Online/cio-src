@@ -27,6 +27,7 @@ class game:
     name = 'coginvasion'
     process = 'client'
     serverAddress = os.environ.get("GAME_SERVER")
+    resourceEncryptionPwd = os.environ.get("RESOURCE_ENCRYPTION")
     build = 0
     buildtype = "Dev"
     version = "0.0.0"
@@ -87,7 +88,7 @@ packExtensions = ['.jpg', '.jpeg', '.png', '.ogg', '.rgb', '.mid']
 
 for phase in phases:
     mf = Multifile()
-    mf.setEncryptionPassword('cio-03-06-16_lsphases')
+    mf.setEncryptionPassword(game.resourceEncryptionPwd)
     mf.openReadWrite(Filename(game.phasedir + phase + '.mf'))
     packMf = None
 

@@ -23,7 +23,7 @@ from pandac.PandaModules import UniqueIdAllocator
 from src.coginvasion.globals import CIGlobals
 from AIZoneData import AIZoneDataStore
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from src.coginvasion.distributed.CogInvasionDoGlobals import DO_ID_DISTRICT_NAME_MANAGER, DO_ID_HOLIDAY_MANAGER
+from src.coginvasion.distributed.CogInvasionDoGlobals import DO_ID_DISTRICT_NAME_MANAGER, DO_ID_HOLIDAY_MANAGER, DO_ID_UNIQUE_INTEREST_NOTIFIER
 
 #PStatClient.connect()
 
@@ -45,6 +45,7 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         self.dnaDataMap = {}
         self.districtNameMgr = self.generateGlobalObject(DO_ID_DISTRICT_NAME_MANAGER, 'DistrictNameManager')
         self.holidayMgr = self.generateGlobalObject(DO_ID_HOLIDAY_MANAGER, 'HolidayManager')
+        self.uin = self.generateGlobalObject(DO_ID_UNIQUE_INTEREST_NOTIFIER, 'UniqueInterestNotifier')
 
     def gotDistrictName(self, name):
         self.notify.info("This District will be called: %s" % name)

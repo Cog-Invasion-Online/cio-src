@@ -94,7 +94,7 @@ class ChatInput(DirectObject, StateData.StateData):
                 self.acceptOnce(key, self.openChatInput, [key])
                 self.acceptOnce("shift-" + key, self.openChatInput, ["shift-" + key.upper()])
         else:
-            self.acceptOnce("t", self.openChatInput, [""])
+            self.acceptOnce(base.inputStore.Chat, self.openChatInput, [""])
 
     def openChatInput(self, key):
         if "shift-" in key:
@@ -106,12 +106,15 @@ class ChatInput(DirectObject, StateData.StateData):
 
     def disableKeyboardShortcuts(self):
         # Disable the shortcuts to open the chat box.
-        if not base.localAvatar.GTAControls:
-            for key in self.keyList:
-                self.ignore(key)
-                self.ignore("shift-" + key)
-        else:
-            self.ignore('t')
+        try: 
+            if not base.localAvatar.GTAControls:
+                for key in self.keyList:
+                    self.ignore(key)
+                    self.ignore("shift-" + key)
+            else:
+                self.ignore(base.inputStore.Chat)
+        except AttributeError:
+            pass
 
     def enterInput(self, key, command = None, extraArgs = []):
         if base.localAvatar.invGui:

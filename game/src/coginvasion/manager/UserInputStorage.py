@@ -45,6 +45,7 @@ class UserInputStorage(object):
     LookUp = Control('page_up')
     LookDown = Control('page_down')
     Interact = Control('x')
+    Chat = Control('t')
     
     # Returns the default control for an action.
     def getDefault(self, ctrl):
