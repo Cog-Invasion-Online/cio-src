@@ -27,9 +27,7 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
         self.activeTokens = []
         self.parentMgr = ParentMgr()
         self.holiday = 0
-        
-        # Let's start the login server connection server.
-        self.loginServerConn = LoginServerConnection(self, 9001)
+        self.loginServerConn = None
 
     def getParentMgr(self, zone):
         return self.parentMgr
@@ -123,10 +121,17 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
         CogInvasionInternalRepository.handleConnected(self)
         rootObj = DistributedRootAI(self)
         rootObj.generateWithRequiredAndId(self.getGameDoId(), 0, 0)
+        
+        # Let's start the login server connection server.
+        self.loginServerConn = LoginServerConnection(self, 9001)
 
         self.createObjects()
         self.notify.info('Successfully started Cog Invasion Online Uber Repository!')
-
+        
+    def shutdown(self):
+        CogInvasionInternalRepository.shutdown(self)
+        self.loginServerConn.close()
+        
     def createObjects(self):
         self.csm = self.generateGlobalObject(DO_ID_CLIENT_SERVICES_MANAGER,
                                 'ClientServicesManager')
@@ -141,3 +146,7 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
                                 'NameServicesManager')
         self.uin = self.generateGlobalObject(DO_ID_UNIQUE_INTEREST_NOTIFIER,
                                 'UniqueInterestNotifier')
+        
+    def lostConnection(self):
+        CogInvasionInternalRepository.lostConnection(self)
+        self.loginServerConn.close()

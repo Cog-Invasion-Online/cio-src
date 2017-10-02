@@ -228,6 +228,39 @@ YellowTextColor = (1, 1, 0, 1)
 # Cog classes that can be damaged by gags.
 SuitClasses = ["DistributedSuit", "DistributedTutorialSuit", "DistributedCogOfficeSuit", "DistributedTakeOverSuit"]
 
+DistrictNames = [
+    'Boingy Acres',
+    'Boingy Bay',
+    'Boingy Summit',
+    'Boingyboro',
+    'Bouncy Summit',
+    'Crazy Grove',
+    'Crazy Hills',
+    'Crazyham',
+    'Funnyfield',
+    'Giggly Bay',
+    'Giggly Grove',
+    'Giggly Hills',
+    'Giggly Point',
+    'Gigglyfield',
+    'Gigglyham',
+    'Goofy Valley',
+    'Goofyport',
+    'Kooky Grove',
+    'Kookyboro',
+    'Loopy Harbor',
+    'Nutty Hills',
+    'Nutty River',
+    'Nutty Summit',
+    'Nuttyville',
+    'Nuttywood',
+    'Silly Rapids',
+    'Silly Valley',
+    'Sillyham',
+    'Toon Valley',
+    'Zany Acres'
+]
+
 OToontown = "OToontown"
 CogTropolis = "CogTropolis"
 Estate = "The Estate"

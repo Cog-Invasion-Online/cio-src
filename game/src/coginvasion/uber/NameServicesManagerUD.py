@@ -34,7 +34,6 @@ class NameServicesManagerUD(DistributedObjectGlobalUD):
                 self.air.eject(accId, EC_NON_EXISTENT_AV, "Tried to request name for toon that isn't on their account.")
                 return
 
-            print "The name '%s' has been requested. avatar Id: %s | account Id: %s" % (name, avId, accId)
             now = datetime.datetime.now()
             date = "%s %s %s" % (now.month, now.day, now.year)
             self.requestedNames.append({'name' : name, 'avId' : avId, 'accId': accId, 'date' : date, 'status' : NAME_PENDING})
@@ -69,7 +68,3 @@ class NameServicesManagerUD(DistributedObjectGlobalUD):
     def announceGenerate(self):
         DistributedObjectGlobalUD.announceGenerate(self)
         self.loadData()
-
-        for i in xrange(len(self.requestedNames)):
-            nameRequest = self.requestedNames[i]
-            print 'Name %s, was requested on %s, by %s. Status: %s' % (nameRequest['name'], nameRequest['date'], nameRequest['avId'], nameRequest['status'])

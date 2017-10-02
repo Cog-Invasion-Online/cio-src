@@ -4,6 +4,9 @@
 from direct.distributed.DistributedObjectGlobalUD import DistributedObjectGlobalUD
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
+from src.coginvasion.globals.CIGlobals import DistrictNames
+import random
+
 class DistrictNameManagerUD(DistributedObjectGlobalUD):
     notify = directNotify.newCategory("DistrictNameManagerUD")
 
@@ -13,14 +16,14 @@ class DistrictNameManagerUD(DistributedObjectGlobalUD):
 
     def shuttingDown(self, name):
         # This district is shutting down.. make their name available.
-        print "Freeing up District name: {0}".format(name)
+        self.notify.info("Freeing up District name: {0}".format(name))
         self.availableNames.append(name)
 
     def requestDistrictName(self):
         sender = self.air.getMsgSender()
-        # Give them the first name in the array, if it exists.
+        # Let's give them a random available name.
         if len(self.availableNames) > 0:
-            name = self.availableNames[0]
+            name = self.availableNames[random.randint(0, len(self.availableNames) - 1)]
             self.sendUpdateToChannel(sender, 'claimDistrictName', [name])
             self.availableNames.remove(name)
         else:
@@ -28,12 +31,7 @@ class DistrictNameManagerUD(DistributedObjectGlobalUD):
 
     def announceGenerate(self):
         DistributedObjectGlobalUD.announceGenerate(self)
-        namesFile = open("astron/DistrictNames.txt")
-        lines = namesFile.readlines()
-        for index in range(len(lines) - 1):
-            lines[index] = lines[index][:-1]
-        self.availableNames = lines
-        namesFile.close()
+        self.availableNames = list(DistrictNames)
 
     def delete(self):
         self.availableNames = None

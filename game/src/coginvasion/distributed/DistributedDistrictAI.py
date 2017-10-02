@@ -4,12 +4,14 @@
 ########################################
 
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
+from direct.directnotify.DirectNotifyGlobal import directNotify
 import time
 
 from src.coginvasion.globals import CIGlobals
 
 class DistributedDistrictAI(DistributedObjectAI):
-
+    notify = directNotify.newCategory('DistributedDistrictAI')
+    
     def __init__(self, air):
         try:
             self.DistributedDistrictAI_initialized
@@ -52,22 +54,17 @@ class DistributedDistrictAI(DistributedObjectAI):
 
     def announceGenerate(self):
         taskMgr.add(self.monitorAvatars, "monitorAvatars")
-        base.finalExitCallbacks.append(self.__sendShutdown)
+        base.finalExitCallbacks.append(self.sendShutdown)
         DistributedObjectAI.announceGenerate(self)
 
-    def __sendShutdown(self):
+    def sendShutdown(self):
         # Tell the district name manager we are shutting down to free up the name.
         self.air.districtNameMgr.d_shuttingDown(self.name)
 
     def setPopulation(self, amount):
         self.population = amount
         if amount > self.getPopRecord():
-            print "New Population Record: " + str(amount)
-            population_file = open("astron/databases/record_population.txt", "w")
-            population_file.write(str(amount))
-            population_file.flush()
-            population_file.close()
-            del population_file
+            self.notify.info("New Population Record: " + str(amount))
             self.b_setPopRecord(amount)
 
     def d_setPopulation(self, amount):
@@ -82,14 +79,14 @@ class DistributedDistrictAI(DistributedObjectAI):
 
     def joining(self):
         avId = self.air.getAvatarIdFromSender()
-        print "[" + str(time.strftime("%m-%d-%Y %H:%M:%S")) + "] " + str(avId) + " is joining my district!"
+        self.notify.info("[" + str(time.strftime("%m-%d-%Y %H:%M:%S")) + "] " + str(avId) + " is joining my district!")
         self.avatarIds.append(avId)
         self.b_setPopulation(self.getPopulation() + 1)
 
     def monitorAvatars(self, task):
         for avId in self.avatarIds:
             if not avId in self.air.doId2do.keys():
-                print "[" + str(time.strftime("%m-%d-%Y %H:%M:%S")) + "] " + str(avId) + " is leaving my district!"
+                self.notify.info("[" + str(time.strftime("%m-%d-%Y %H:%M:%S")) + "] " + str(avId) + " is leaving my district!")
                 self.avatarIds.remove(avId)
                 self.b_setPopulation(self.getPopulation() - 1)
         task.delayTime = 0.5
@@ -103,10 +100,10 @@ class DistributedDistrictAI(DistributedObjectAI):
             if (adminToken in tokens and
             av.getAdminToken() in tokens and
             av.getAdminToken() == adminToken):
-                print "DistributedDistrictAI: Sending update 'systemMessage' with message: " + message
+                self.notify.info("Sending update 'systemMessage' with message: " + message)
                 self.sendUpdate('systemMessage', [message])
         else:
-            print "DistributedDistrictAI: Could not find the avatar that requested a system message..."
+            self.notify.info("Could not find the avatar that requested a system message...")
 
     def setAvailable(self, available):
         self.available = available

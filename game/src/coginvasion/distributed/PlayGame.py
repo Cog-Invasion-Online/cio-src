@@ -2,7 +2,6 @@
 # Created by:  blach (28Nov14)
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.distributed.CogInvasionMsgTypes import *
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.fsm.StateData import StateData

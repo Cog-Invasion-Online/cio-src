@@ -9,8 +9,6 @@ from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.fsm.StateData import StateData
 
-from src.coginvasion.distributed.CogInvasionMsgTypes import *
-
 class QuietZoneState(StateData):
 
     def __init__(self, doneEvent, moveOn = 1):

@@ -89,14 +89,9 @@ class SuitAttackBehaviorAI(SuitHabitualBehaviorAI):
             self.stopAttacking()
             return
 
-        # Let's check our panic behavior.
-        from src.coginvasion.cog.SuitPanicBehaviorAI import SuitPanicBehaviorAI
+        # If there's nobody to attack or we're taking heavy damage, let's abandon mission.
         brain = self.suit.getBrain()
-        panicBehavior = brain.getBehavior(SuitPanicBehaviorAI)
-        healthPerct = float(self.suit.getHealth()) / float(self.suit.getMaxHealth())
-        origHealthPerct = float(self.origHealth) / float(self.suit.getMaxHealth())
-
-        if len(self.avatarsInRange) < 1 or panicBehavior and healthPerct <= panicBehavior.getPanicHealthPercentage() or healthPerct - origHealthPerct >= self.ABANDON_ATTACK_PERCT:
+        if len(self.avatarsInRange) < 1 or self.isTimeToPanic():
             self.stopAttacking()
             return
         
@@ -185,6 +180,16 @@ class SuitAttackBehaviorAI(SuitHabitualBehaviorAI):
         self.exit()
         if task:
             return Task.done
+        
+    def isTimeToPanic(self):
+        from src.coginvasion.cog.SuitPanicBehaviorAI import SuitPanicBehaviorAI
+        brain = self.suit.getBrain()
+        panicBehavior = brain.getBehavior(SuitPanicBehaviorAI)
+        healthPerct = float(self.suit.getHealth()) / float(self.suit.getMaxHealth())
+        origHealthPerct = float(self.origHealth) / float(self.suit.getMaxHealth())
+        
+        return (panicBehavior and healthPerct <= panicBehavior.getPanicHealthPercentage()) \
+            or healthPerct - origHealthPerct >= self.ABANDON_ATTACK_PERCT
 
     def resetAvatarsInRange(self):
         toonObjsInRange = {}
@@ -207,10 +212,7 @@ class SuitAttackBehaviorAI(SuitHabitualBehaviorAI):
 
     def shouldStart(self):
         self.resetAvatarsInRange()
-
-        if len(self.avatarsInRange) > 0 and self.canAttack:
-            return True
-        return False
+        return len(self.avatarsInRange) > 0 and self.canAttack and not self.isTimeToPanic()
 
     def getTarget(self):
         return self.target

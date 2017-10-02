@@ -220,15 +220,15 @@ def getLocationText(location, objective = None):
     elif not location:
         return 'Any Street\nAny Playground'
     
-def generatePoster(quest, parent):
+def generatePoster(quest, parent, **kw):
     objective = quest.currentObjective
     import Objectives
     if objective.isComplete() or objective.__class__ in Objectives.DoubleFrameObjectives:
         from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
-        poster = DoubleFrameQuestPoster(quest, parent = parent)
+        poster = DoubleFrameQuestPoster(quest, parent = parent, **kw)
     else:
         from src.coginvasion.quests.poster.QuestPoster import QuestPoster
-        poster = QuestPoster(quest, parent = parent)
+        poster = QuestPoster(quest, parent = parent, **kw)
     poster.setup()
     return poster
     

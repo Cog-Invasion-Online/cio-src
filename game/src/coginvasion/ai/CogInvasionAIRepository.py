@@ -46,6 +46,9 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         self.districtNameMgr = self.generateGlobalObject(DO_ID_DISTRICT_NAME_MANAGER, 'DistrictNameManager')
         self.holidayMgr = self.generateGlobalObject(DO_ID_HOLIDAY_MANAGER, 'HolidayManager')
         self.uin = self.generateGlobalObject(DO_ID_UNIQUE_INTEREST_NOTIFIER, 'UniqueInterestNotifier')
+        
+    def handleCrash(self, e):
+        raise e
 
     def gotDistrictName(self, name):
         self.notify.info("This District will be called: %s" % name)
@@ -59,11 +62,7 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         self.claimOwnership(self.districtId)
         self.notify.info('Setting District name %s' % name)
         self.district.b_setDistrictName(name)
-        self.notify.info("Updating record population.")
-        record_population_file = open("astron/databases/record_population.txt", "r")
-        self.district.b_setPopRecord(int(record_population_file.read()))
-        record_population_file.close()
-        del record_population_file
+        self.district.b_setPopRecord(0)
 
         self.notify.info("Generating time manager...")
         self.timeManager = TimeManagerAI(self)

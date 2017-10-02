@@ -12,6 +12,16 @@ class CogInvasionInternalRepository(AstronInternalRepository):
 	GameGlobalsId = DO_ID_COGINVASION
 	dbId = 4003
 	
+	def readerPollUntilEmpty(self, task):
+		try:
+			return AstronInternalRepository.readerPollUntilEmpty(self, task)
+		except Exception as e:
+			self.handleCrash(e)
+		return task.done
+	
+	def handleCrash(self, e):
+		pass
+	
 	def handleConnected(self):
 		self.netMessenger.register(0, 'avatarOnline')
 		self.netMessenger.register(1, 'avatarOffline')
