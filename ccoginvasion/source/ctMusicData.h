@@ -23,7 +23,7 @@
 
 #include "audioManager.h"
 
-using namespace std;
+NotifyCategoryDeclNoExport(ctMusicData);
 
 class CTMusicData {
 

@@ -9,9 +9,6 @@
 
 #include "ctMusicMgr.h"
 
-#include <stdlib.h>
-#include <time.h>
-
 #include "eventHandler.h"
 #include "tools.cxx"
 
@@ -20,6 +17,8 @@
 bool CTMusicManager::loaded = false;
 CTMusicManager::MusicChunkMap CTMusicManager::tournament_music_chunks;
 CTMusicManager::MusicClipMap CTMusicManager::tournament_music_clips;
+
+NotifyCategoryDef(ctMusicManager, "");
 
 CTMusicManager::
 ~CTMusicManager() {
@@ -40,16 +39,17 @@ spawn_load_tournament_music_task() {
 AsyncTask::DoneStatus CTMusicManager::
 load_tournament_music(GenericAsyncTask *task, void *data) {
 	if (loaded) {
-		cout << "Redundant call to CTMusicManager::load_tournament_music()" << endl;
+    ctMusicManager_cat.warning()
+      << "Redundant call to CTMusicManager::load_tournament_music()\n";
 		return AsyncTask::DS_done;
 	}
 
-	cout << "Loading tournament music" << endl;
-
-	srand(time(NULL));
+  ctMusicManager_cat.info()
+    << "Loading tournament music\n";
 
 	if (!CTMusicData::initialized) {
-		cout << "Chunk data not yet initialized, initializing..." << endl;
+    ctMusicManager_cat.info()
+      << "Chunk data not yet initialized, initializing...\n";
 		CTMusicData::initialize_chunk_data();
 	}
 
@@ -60,13 +60,15 @@ load_tournament_music(GenericAsyncTask *task, void *data) {
 
 		int songnum = song_name.back() - '0';
 		if (songnum > ctmusic_numsongs) {
-			cout << "Not loading " << song_name << ": only " << ctmusic_numsongs << " song(s) specified in config" << endl;
+      ctMusicManager_cat.info()
+        << "Not loading " << song_name << ": only " << ctmusic_numsongs << " song(s) specified in config\n";
 			continue;
 		}
 
 		CTMusicData::ChunkDataMap chunkdata = rootMapItr->second;
 
-		cout << song_name << endl;
+    ctMusicManager_cat.info()
+      << song_name << "\n";
 
 		for (CTMusicData::ChunkDataMap::iterator chunkMapItr = chunkdata.begin();
          chunkMapItr != chunkdata.end(); ++chunkMapItr) {
@@ -74,7 +76,7 @@ load_tournament_music(GenericAsyncTask *task, void *data) {
 			string chunk_name = chunkMapItr->first;
 			vector<int> file_range = chunkMapItr->second;
 
-			for (int indexi = 0; indexi < file_range.size(); indexi++) {
+			for (size_t indexi = 0; indexi < file_range.size(); indexi++) {
 
 				int clip_index = file_range[indexi];
 
@@ -99,7 +101,8 @@ load_tournament_music(GenericAsyncTask *task, void *data) {
 	}
 
 	loaded = true;
-	cout << "Finished loading tournament music" << endl;
+  ctMusicManager_cat.info()
+    << "Finished loading tournament music\n";
 	return AsyncTask::DS_done;
 }
 
@@ -154,11 +157,13 @@ get_curr_style() const {
 void CTMusicManager::
 start_music(const string &base_or_orc) {
 	if (!loaded) {
-		cout << "CTMusicManager: Cannot start the music before loading!" << endl;
+    ctMusicManager_cat.error()
+      << "CTMusicManager: Cannot start the music before loading!\n";
 		return;
 	}
 
-	cout << "Starting music" << endl;
+  ctMusicManager_cat.info() <<
+    "Starting music\n";
 
 	play_clip("intro" + base_or_orc);
 

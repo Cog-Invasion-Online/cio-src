@@ -18,12 +18,14 @@ set_chatballoon_size(double width, double height) {
 	_cb_height = height;
 }
 
-void CNametag::set_panel_size(double width, double height) {
+void CNametag::
+set_panel_size(double width, double height) {
 	_panel_width = width;
 	_panel_height = height;
 }
 
-void CNametag::get_panel_region(TextNode &tn, PyObject *list) {
+void CNametag::
+get_panel_region(TextNode &tn, PyObject *list) {
 	// Here's the heavy stuff.
 
 	double centerX = (tn.get_left() + tn.get_right()) / 2.0;
@@ -42,7 +44,8 @@ void CNametag::get_panel_region(TextNode &tn, PyObject *list) {
 	PyList_Insert(list, 3, top);
 }
 
-void CNametag::get_chatballoon_region(PyObject *list) {
+void CNametag::
+get_chatballoon_region(PyObject *list) {
 	// Here's the heavy stuff.
 
 	double width = _cb_width / 2.0;
