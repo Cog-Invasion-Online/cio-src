@@ -10,7 +10,7 @@ import random
 
 class SnowEffect:
 
-    def __init__(self, hood):
+    def __init__(self, hood = None):
         self.hood = hood
         self.particles = None
         self.particlesRender = None

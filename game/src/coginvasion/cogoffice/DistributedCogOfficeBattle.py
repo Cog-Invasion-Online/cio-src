@@ -631,8 +631,8 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
     def announceGenerate(self):
         DistributedBattleZone.announceGenerate(self)
         base.setBackgroundColor(self.CEILING_COLOR)
-        self.cr.playGame.hood.sky.hide()
-        self.cr.playGame.hood.setNoFog()
+        #self.cr.playGame.hood.sky.hide()
+        #self.cr.playGame.hood.setNoFog()
         self.loadElevators()
 
         self.ilc.setup()
@@ -648,8 +648,8 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         taskMgr.remove(self.uniqueName('monitorHP'))
         self.fsm.requestFinalState()
         del self.fsm
-        if self.cr.playGame.hood is not None:
-            self.cr.playGame.hood.sky.show()
+        #if self.cr.playGame.hood is not None:
+        #    self.cr.playGame.hood.sky.show()
         self.cleanupFloor()
         self.cleanupElevators()
         if self.floorNameText:

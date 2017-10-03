@@ -1,6 +1,6 @@
 """
-
-Copyright (c) Cog Invasion Online. All rights reserved.
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
 @file Credits.py
 @author Maverick Liberty
@@ -10,10 +10,11 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 from direct.showbase.DirectObject import DirectObject
 from direct.gui.DirectGui import OnscreenImage, OnscreenText
+from direct.interval.IntervalGlobal import Parallel, LerpColorScaleInterval, Func
 
 from panda3d.core import PNMImage, Texture, TextureStage, NodePath
 from panda3d.core import TexGenAttrib, Point3, Camera, ClockObject
-from panda3d.core import AudioManager
+from panda3d.core import AudioManager, TransparencyAttrib
 
 from src.coginvasion.globals import CIGlobals
 
@@ -33,33 +34,40 @@ class Credits(DirectObject):
     
     def __init__(self):
         DirectObject.__init__(self)
-        self.backgroundImg = OnscreenImage('phase_3/maps/background.jpg', parent = render2d)
-        self.backgroundImg.setColor(0.2, 0.2, 0.2, 1)
-        self.fade = PNMImage(32, 32)
-        self.fadeTexture = Texture()
-        self.npParent = NodePath('dummyNode')
-        self.textParent = self.npParent.attachNewNode('textParent')
+
+        base.setBackgroundColor(0, 0, 0)
+
+        self.textParent = base.credits2d.attachNewNode('textParent')
+        self.textParent.setBin("gui-popup", 61)
+        self.textParent.setDepthWrite(False)
+        self.textParent.setTransparency(True)
+
         self.logoImage = OnscreenImage('phase_3/maps/CogInvasion_Logo.png', parent = self.textParent,
-            scale = (0.75, 0, 0.5))
+            scale = (0.685, 1.0, 0.325))
         self.logoImage.setTransparency(1)
-        self.logoImage.setP(-90)
         
         text = self.buildCreditsText()
         self.creditsText = OnscreenText(parent = self.textParent, font = CIGlobals.getToonFont(),
-            fg = (1, 1, 1, 1), scale = 0.065, pos = (0, -0.5, 0), text = text)
-        self.creditsText.setP(-90)
+            fg = (1, 1, 1, 1), scale = 0.065, pos = (0, -0.5, 0), text = text, shadow = (0, 0, 0, 1))
 
-        self.exitText = OnscreenText(parent = render2d, font = CIGlobals.getToonFont(),
-            fg = (0.8, 0, 0, 0.5), scale = 0.085, pos = (0, -0.96, 0), text = 'Press any key to exit')
-        self.exitText.hide()
-
-        self.creditsCam = Camera('creditsCam')
-        self.creditsCamNP = None
         self.posInterval = None
+
+        self.backgroundImg = OnscreenImage('phase_3/maps/credits_fade.png', parent = render2d)
+        self.backgroundImg.setTransparency(True)
+        self.backgroundImg.setColor(0, 0, 0, 1.0)
+        self.backgroundImg.setBin("gui-popup", 62)
+        self.backgroundImg.setDepthWrite(False)
+
+        self.exitText = OnscreenText(parent = base.credits2d, font = CIGlobals.getToonFont(),
+            fg = (1.0, 0, 0, 1.0), shadow = (0, 0, 0, 1), scale = 0.085, pos = (0, -0.96, 0), text = 'Press any key to exit')
+        self.exitText.hide()
+        self.exitText.setBin("gui-popup", 63)
+        self.exitText.setDepthWrite(False)
+        self.exitText.setTransparency(True)
         
         self.creditsAudioMgr = AudioManager.createAudioManager()
         self.creditsAudioMgr.setVolume(0.65)
-        self.bgm = self.creditsAudioMgr.getSound('phase_3/audio/bgm/ci_theme2.ogg')
+        self.bgm = self.creditsAudioMgr.getSound('phase_4/audio/bgm/new_years_fireworks_music.ogg')
         
     def buildCreditsText(self):
         def writeNames(message, namesList):
@@ -118,7 +126,7 @@ class Credits(DirectObject):
         return message
     
     def exit(self, key):
-        base.transitions.fadeOut(1.0)
+        self.__fadeOut()
         base.taskMgr.doMethodLater(1.1, self.__exitTask, "exitTask")
 
     def __exitTask(self, task):
@@ -127,57 +135,44 @@ class Credits(DirectObject):
         self.destroy()
         base.unMuteMusic()
         base.unMuteSfx()
+        base.setBackgroundColor(0.05, 0.15, 0.4)
         base.transitions.fadeIn(1.0)
         return task.done
     
     def watchTextPosition(self, task):
-        if self.textParent.getY() >= 5.187:
+        if self.textParent.getZ() >= 5.187:
             self.exitText.show()
             self.acceptOnce('button', self.exit)
             return task.done
         return task.cont
+
+    def __fadeIn(self):
+        Parallel(
+            LerpColorScaleInterval(self.textParent, 1.0, (1, 1, 1, 1), (1, 1, 1, 0)),
+            LerpColorScaleInterval(self.backgroundImg, 1.0, (1, 1, 1, 1), (1, 1, 1, 0)),
+            LerpColorScaleInterval(self.exitText, 1.0, (1, 1, 1, 1), (1, 1, 1, 0))
+        ).start()
+
+    def __fadeOut(self):
+        Parallel(
+            LerpColorScaleInterval(self.textParent, 1.0, (1, 1, 1, 0), (1, 1, 1, 1)),
+            LerpColorScaleInterval(self.backgroundImg, 1.0, (1, 1, 1, 0), (1, 1, 1, 1)),
+            LerpColorScaleInterval(self.exitText, 1.0, (1, 1, 1, 0), (1, 1, 1, 1))
+        ).start()
         
     def setup(self):
-        globalClock.setMode(ClockObject.MSlave)
+        self.__fadeIn()
 
-        self.fade.addAlpha()
-        self.fade.fill(1)
-        self.fade.alphaFill(1)
-        
-        for x in range(self.fade.getXSize()):
-            for y in range(self.fade.getYSize()):
-                self.fade.setAlpha(x, y, -0.2 + 2.5 * math.sin(math.pi * y / self.fade.getYSize()))
-        
-        self.fadeTexture.load(self.fade)
-        self.fadeTexture.setWrapU(Texture.WMClamp)
-        self.fadeTexture.setWrapV(Texture.WMClamp)
-        
-        texStage = TextureStage('texStage')
-        self.textParent.setTexGen(texStage, TexGenAttrib.MWorldPosition)
-        self.textParent.setTexScale(texStage, 0.5, 0.5)
-        self.textParent.setTexOffset(texStage, 0.25, 0.5)
-        self.textParent.setTexture(texStage, self.fadeTexture)
-        
         b3 = self.textParent.getTightBounds()
         dimensions = b3[1] - b3[0]
-        self.posInterval = self.textParent.posInterval(50, Point3(0, dimensions[1] + 2, 0), Point3(0, 0, 0))
+        self.posInterval = self.textParent.posInterval(50, Point3(0, 0, dimensions[2] + 2), Point3(0, 0, 0))
         self.posInterval.start()
-        
-        self.creditsCam.copyLens(base.cam2d.node().getLens())
-        self.creditsCamNP = self.npParent.attachNewNode(self.creditsCam)
-        self.creditsCamNP.setP(-90)
-        
-        displayRegion = base.win.makeDisplayRegion()
-        displayRegion.setCamera(self.creditsCamNP)
-        displayRegion.setSort(1000)
         
         self.bgm.setLoop(1)
         self.bgm.play()
         
         base.buttonThrowers[0].node().setButtonDownEvent('button')
         taskMgr.add(self.watchTextPosition, 'Watch Text Position')
-        
-        globalClock.setMode(ClockObject.MNormal)
         
     def destroy(self):
         if self.posInterval:
@@ -189,12 +184,6 @@ class Credits(DirectObject):
         if self.backgroundImg:
             self.backgroundImg.destroy()
             self.backgroundImg = None
-        if self.fade:
-            self.fade.clear()
-            self.fade = None
-        if self.fadeTexture:
-            self.fadeTexture.clear()
-            self.fadeTexture = None
         if self.creditsText:
             self.creditsText.destroy()
             self.creditsText = None
@@ -204,17 +193,9 @@ class Credits(DirectObject):
         if self.logoImage:
             self.logoImage.destroy()
             self.logoImage = None
-        if self.creditsCamNP:
-            self.creditsCamNP.removeNode()
-            self.creditsCamNP = None
-        if self.creditsCam:
-            self.creditsCam = None
         if self.textParent:
             self.textParent.removeNode()
             self.textParent = None
-        if self.npParent:
-            self.npParent.removeNode()
-            self.npParent = None
         if self.creditsAudioMgr:
             self.creditsAudioMgr.stopAllSounds()
             self.creditsAudioMgr = None

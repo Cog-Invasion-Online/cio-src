@@ -56,7 +56,7 @@ class Playground(Place.Place):
                 volume = 0.8
             base.playMusic(self.loader.music, looping = 1, volume = volume)
         self.loader.geom.reparentTo(render)
-        self.loader.hood.startSky()
+        #self.loader.hood.startSky()
         
         self.zoneId = requestStatus['zoneId']
         if base.cr.playGame.suitManager:
@@ -70,7 +70,7 @@ class Playground(Place.Place):
         messenger.send('exitPlayground')
         
         self.loader.geom.reparentTo(hidden)
-        self.loader.hood.stopSky()
+        #self.loader.hood.stopSky()
         if self.loader.music:
             self.loader.music.stop()
         if self.loader.bossBattleMusic:

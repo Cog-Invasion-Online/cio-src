@@ -5,7 +5,7 @@
 #         2 YEAR ANNIVERSARY
 ########################################
 
-from pandac.PandaModules import TextNode
+from pandac.PandaModules import TextNode, Vec3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.StateData import StateData
@@ -209,12 +209,14 @@ class ShtickerBook(DirectFrame, StateData):
 
         # Load up the sequence node with all the images we need.
         self.bookElements = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
+       
 
         # Let's load up the main frame.
         self['image'] = self.bookElements.find('**/big_book')
         self['image_scale'] = (2, 1, 1.5)
         self['scale'] = (2, 1, 1.5)
         self.resetFrameSize()
+        
 
         # Let's register our pages.
         self.registerPage(OptionsPage(self))

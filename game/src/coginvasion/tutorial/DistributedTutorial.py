@@ -10,12 +10,13 @@ from direct.task import Task
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, LerpQuatInterval, LerpPosInterval, LerpHprInterval
 
 from src.coginvasion.toon.Toon import Toon
+from src.coginvasion.toon.TPMouseMovement import TPMouseMovement
 from src.coginvasion.npc import NPCGlobals
 from libpandadna import *
-from src.coginvasion.hood.SkyUtil import SkyUtil
 from src.coginvasion.gui.WhisperPopup import WhisperPopup
 from src.coginvasion.globals import CIGlobals, ChatGlobals
 from src.coginvasion.nametag import NametagGlobals
+from src.coginvasion.hood import ZoneUtil
 
 class DistributedTutorial(DistributedObject):
     notify = directNotify.newCategory('DistributedTutorial')
@@ -77,13 +78,43 @@ class DistributedTutorial(DistributedObject):
         self.fsm.enterInitialState()
         self.dnaStore = DNAStorage()
         self.streetGeom = None
-        self.sky = None
-        self.skyUtil = SkyUtil()
         self.guide = None
         self.music = None
         self.battleMusic = None
         self.playerCamPos = None
         self.playerCamHpr = None
+        self.olc = None
+        self.mouseMov = None
+
+    def enableAvStuff(self):
+        base.localAvatar.startPosHprBroadcast()
+        base.localAvatar.d_broadcastPositionNow()
+        base.localAvatar.startBlink()
+        base.localAvatar.attachCamera()
+        base.localAvatar.startSmartCamera()
+        base.localAvatar.collisionsOn()
+        base.localAvatar.enableAvatarControls()
+        base.localAvatar.enableGags(1)
+        base.localAvatar.showGagButton()
+        base.localAvatar.startTrackAnimToSpeed()
+        if base.localAvatar.GTAControls:
+            self.mouseMov.enableMovement()
+
+    def disableAvStuff(self):
+        base.localAvatar.lastState = None
+        base.localAvatar.disableAvatarControls()
+        base.localAvatar.detachCamera()
+        base.localAvatar.stopSmartCamera()
+        base.localAvatar.stopPosHprBroadcast()
+        base.localAvatar.stopBlink()
+        base.localAvatar.collisionsOff()
+        base.localAvatar.controlManager.placeOnFloor()
+        base.localAvatar.disableGags()
+        base.localAvatar.stopTrackAnimToSpeed()
+        base.localAvatar.hideGagButton()
+        if base.localAvatar.GTAControls:
+            self.mouseMov.disableMovement(False)
+            self.mouseMov.ignore(base.inputStore.ToggleGTAControls)
 
     def enterOff(self):
         pass
@@ -235,16 +266,7 @@ class DistributedTutorial(DistributedObject):
         self.music.stop()
         base.playMusic(self.battleMusic, volume = 0.9, looping = 1)
         self.sendUpdate('makeSuit', [0])
-        base.localAvatar.startPosHprBroadcast()
-        base.localAvatar.d_broadcastPositionNow()
-        base.localAvatar.startBlink()
-        base.localAvatar.attachCamera()
-        base.localAvatar.startSmartCamera()
-        base.localAvatar.collisionsOn()
-        base.localAvatar.enableAvatarControls()
-        base.localAvatar.enableGags(1)
-        base.localAvatar.showGagButton()
-        base.localAvatar.startTrackAnimToSpeed()
+        self.enableAvStuff()
         self.guide.setChat('This should be pretty simple. Just throw a gag at this dummy bot to defeat it.')
 
     def suitNoHealth(self, index):
@@ -271,17 +293,7 @@ class DistributedTutorial(DistributedObject):
             self.fsm.request('trainingDone')
 
     def exitTrainingPT1(self):
-        base.localAvatar.lastState = None
-        base.localAvatar.disableAvatarControls()
-        base.localAvatar.detachCamera()
-        base.localAvatar.stopSmartCamera()
-        base.localAvatar.stopPosHprBroadcast()
-        base.localAvatar.stopBlink()
-        base.localAvatar.collisionsOff()
-        base.localAvatar.controlManager.placeOnFloor()
-        base.localAvatar.disableGags()
-        base.localAvatar.stopTrackAnimToSpeed()
-        base.localAvatar.hideGagButton()
+        self.disableAvStuff()
 
     def enterTraining2Info(self):
         base.camera.setPos(3.09, 37.16, 3.93)
@@ -297,29 +309,10 @@ class DistributedTutorial(DistributedObject):
         self.music.stop()
         base.playMusic(self.battleMusic, volume = 0.9, looping = 1)
         self.sendUpdate('makeSuit', [1])
-        base.localAvatar.startPosHprBroadcast()
-        base.localAvatar.d_broadcastPositionNow()
-        base.localAvatar.startBlink()
-        base.localAvatar.attachCamera()
-        base.localAvatar.startSmartCamera()
-        base.localAvatar.collisionsOn()
-        base.localAvatar.enableAvatarControls()
-        base.localAvatar.enableGags(1)
-        base.localAvatar.showGagButton()
-        base.localAvatar.startTrackAnimToSpeed()
+        self.enableAvStuff()
 
     def exitTrainingPT2(self):
-        base.localAvatar.lastState = None
-        base.localAvatar.disableAvatarControls()
-        base.localAvatar.detachCamera()
-        base.localAvatar.stopSmartCamera()
-        base.localAvatar.stopPosHprBroadcast()
-        base.localAvatar.stopBlink()
-        base.localAvatar.collisionsOff()
-        base.localAvatar.controlManager.placeOnFloor()
-        base.localAvatar.disableGags()
-        base.localAvatar.stopTrackAnimToSpeed()
-        base.localAvatar.hideGagButton()
+        self.disableAvStuff()
 
     def enterTraining3Info(self):
         base.camera.setPos(3.09, 37.16, 3.93)
@@ -334,29 +327,10 @@ class DistributedTutorial(DistributedObject):
         self.music.stop()
         base.playMusic(self.battleMusic, volume = 0.9, looping = 1)
         self.sendUpdate('makeSuit', [2])
-        base.localAvatar.startPosHprBroadcast()
-        base.localAvatar.d_broadcastPositionNow()
-        base.localAvatar.startBlink()
-        base.localAvatar.attachCamera()
-        base.localAvatar.startSmartCamera()
-        base.localAvatar.collisionsOn()
-        base.localAvatar.enableAvatarControls()
-        base.localAvatar.enableGags(1)
-        base.localAvatar.showGagButton()
-        base.localAvatar.startTrackAnimToSpeed()
+        self.enableAvStuff()
 
     def exitTrainingPT3(self):
-        base.localAvatar.lastState = None
-        base.localAvatar.disableAvatarControls()
-        base.localAvatar.detachCamera()
-        base.localAvatar.stopSmartCamera()
-        base.localAvatar.stopPosHprBroadcast()
-        base.localAvatar.stopBlink()
-        base.localAvatar.collisionsOff()
-        base.localAvatar.controlManager.placeOnFloor()
-        base.localAvatar.disableGags()
-        base.localAvatar.stopTrackAnimToSpeed()
-        base.localAvatar.hideGagButton()
+        self.disableAvStuff()
 
     def enterTrainingDone(self):
         base.camera.setPos(3.09, 37.16, 3.93)
@@ -416,11 +390,14 @@ class DistributedTutorial(DistributedObject):
         self.streetGeom.reparentTo(render)
         self.streetGeom.setPos(20.5, -20, 0)
         self.streetGeom.setH(90)
-        self.sky = loader.loadModel('phase_3.5/models/props/TT_sky.bam')
-        self.skyUtil.startSky(self.sky)
-        self.sky.reparentTo(camera)
-        ce = CompassEffect.make(NodePath(), CompassEffect.PRot | CompassEffect.PZ)
-        self.sky.node().setEffect(ce)
+        
+        self.olc = ZoneUtil.getOutdoorLightingConfig(CIGlobals.ToontownCentral)
+        self.olc.setupAndApply()
+
+        if base.localAvatar.GTAControls:
+            self.mouseMov = TPMouseMovement()
+            self.mouseMov.initialize()
+        
         self.music = base.loadMusic('phase_3.5/audio/bgm/TC_SZ.mid')
         base.playMusic(self.music, volume = 0.8, looping = 1)
         self.battleMusic = base.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.mid')
@@ -430,6 +407,9 @@ class DistributedTutorial(DistributedObject):
     def disable(self):
         self.fsm.requestFinalState()
         del self.fsm
+        if self.mouseMov and base.localAvatar.GTAControls:
+            self.mouseMov.cleanup()
+            self.mouseMov.ignore(base.inputStore.ToggleGTAControls)
         if self.guide:
             self.guide.disable()
             self.guide.delete()
@@ -437,15 +417,15 @@ class DistributedTutorial(DistributedObject):
         if self.streetGeom:
             self.streetGeom.removeNode()
             self.streetGeom = None
-        if self.sky:
-            self.sky.removeNode()
-            self.sky = None
         if self.music:
             self.music.stop()
             self.music = None
         if self.battleMusic:
             self.battleMusic.stop()
             self.battleMusic = None
+        if self.olc:
+            self.olc.cleanup()
+            self.olc = None
         self.dnaStore.reset_nodes()
         self.dnaStore.reset_hood_nodes()
         self.dnaStore.reset_place_nodes()
@@ -457,6 +437,5 @@ class DistributedTutorial(DistributedObject):
         self.dnaStore.reset_block_zones()
         self.dnaStore.reset_suit_points()
         self.dnaStore = None
-        self.skyUtil = None
         base.localAvatar.inTutorial = False
         DistributedObject.disable(self)

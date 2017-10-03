@@ -63,7 +63,7 @@ class Street(Place):
         self.loader.geom.reparentTo(render)
         if visibilityFlag:
             self.visibilityOn()
-        self.loader.hood.startSky()
+        #self.loader.hood.startSky()
         self.enterZone(requestStatus['zoneId'])
         self.fsm.request(requestStatus['how'], [requestStatus])
         Place.enter(self)
@@ -73,7 +73,7 @@ class Street(Place):
         if vis:
             self.visibilityOff()
         self.loader.geom.reparentTo(hidden)
-        self.loader.hood.stopSky()
+        #self.loader.hood.stopSky()
         self.loader.music.stop()
 
         self.loader.hood.disableOutdoorLighting()

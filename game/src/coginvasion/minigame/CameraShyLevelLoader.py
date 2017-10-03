@@ -12,7 +12,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from pandac.PandaModules import Point3, Vec3, NodePath, CompassEffect
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.hood.SkyUtil import SkyUtil
+from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.distributed.HoodMgr import HoodMgr
 from src.coginvasion.dna.DNALoader import *
 
@@ -28,7 +28,6 @@ class CameraShyLevelLoader:
                 'phase_4/models/minigames/maze_1player.bam' : {'name' : 'maze'},
                 'phase_4/models/minigames/maze_1player_collisions.egg' : {'name' : 'maze_collisions'},
             },
-            'sky' : 'TT',
             'spawnPoints' : [
                 [Point3(0, 0, 0), Vec3(0, 0, 0)],
                 [Point3(-23.89, 18.58, 0.00), Vec3(90.00, 0.00, 0.00)],
@@ -44,15 +43,7 @@ class CameraShyLevelLoader:
                 'phase_8/dna/storage_DG_sz.pdna',
                 'phase_8/dna/daisys_garden_sz.pdna'
             ],
-            'sky': 'TT',
             'spawnPoints': hoodMgr.dropPoints[CIGlobals.DaisyGardens]
-        }
-    }
-
-    skyData = {
-        'TT' : {
-            'model' : 'phase_3.5/models/props/TT_sky.bam',
-            'moving' : 1
         }
     }
 
@@ -61,8 +52,7 @@ class CameraShyLevelLoader:
         self.dnaStore = DNAStorage()
 
         self.levelGeom = None
-        self.skyUtil = None
-        self.skyModel = None
+        self.olc = None
 
         # To keep track of all the models.
         self.models = []
@@ -78,28 +68,8 @@ class CameraShyLevelLoader:
             self.notify.warning('Attempted to load a null level!')
             return
 
-        def loadSky(sky):
-            data = self.skyData[sky]
-
-            if data:
-                model = data['model']
-                moving = 0
-
-                if data.get('moving'):
-                    moving = data['moving']
-
-                self.skyModel = loader.loadModel(model)
-                self.skyModel.reparentTo(camera)
-                self.skyUtil = SkyUtil()
-                self.skyUtil.startSky(self.skyModel)
-
-                if moving:
-                    compass = CompassEffect.make(NodePath(), CompassEffect.PRot | CompassEffect.PZ)
-                    self.skyModel.node().setEffect(compass)
-
         self.unload()
         data = self.levelData[self.level]
-        skyType = data['sky']
 
         # Are we loading a DNA level?
         if data.get('dna'):
@@ -148,7 +118,10 @@ class CameraShyLevelLoader:
         else:
             self.notify.warning('Attempted to load a level with no data on how to generate it. Level is empty!')
             return
-        loadSky(skyType)
+
+        self.olc = ZoneUtil.getOutdoorLightingConfig(data.get('name'))
+        self.olc.setupAndApply()
+
         self.levelLoaded()
 
     def unload(self):
@@ -160,12 +133,9 @@ class CameraShyLevelLoader:
         if self.levelGeom:
             self.levelGeom.removeNode()
             self.levelGeom = None
-        if self.skyUtil:
-            self.skyUtil.stopSky()
-            self.skyUtil = None
-        if self.skyModel:
-            self.skyModel.removeNode()
-            self.skyModel = None
+        if self.olc:
+            self.olc.cleanup()
+            self.olc = None
         if self.dnaStore:
             self.dnaStore.reset_nodes()
             self.dnaStore.reset_hood_nodes()
@@ -190,8 +160,7 @@ class CameraShyLevelLoader:
                 self.unload()
             self.models = None
             self.levelGeom = None
-            self.skyUtil = None
-            self.skyModel = None
+            self.olc = None
             self.dnaStore = None
             self.levelData = None
 

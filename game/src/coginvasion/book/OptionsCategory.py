@@ -18,6 +18,7 @@ class OptionsCategory:
 
     def __init__(self, page):
         self.page = page
+        self.page.header.setScale(0.1)
         if self.WantTitle:
             self.page.header.setText(self.Name + (" Options" if self.AppendOptions else ""))
         else:
@@ -46,6 +47,7 @@ class OptionsCategory:
         self.applying.hide()
 
     def cleanup(self):
+        self.page.header.setScale(0.12)
         if hasattr(self, 'title'):
             self.title.destroy()
             del self.title

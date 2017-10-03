@@ -32,6 +32,7 @@ class BRSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         self.szStorageDNAFile = 'phase_8/dna/storage_BR_sz.pdna'
         self.szHolidayDNAFile = None
         self.telescope = None
+        base.wakeWaterHeight = 1.72918
 
     def load(self):
         SafeZoneLoader.SafeZoneLoader.load(self)
@@ -40,6 +41,10 @@ class BRSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         hq.find('**/doorFrameHoleRight_0').stash()
         hq.find('**/doorFrameHoleLeft_1').stash()
         hq.find('**/doorFrameHoleRight_1').stash()
+
+        water = self.geom.find("**/ice_water")
+        water.setTransparency(False)
+        base.waterReflectionMgr.addWaterNode(water, base.wakeWaterHeight)
 
     def unload(self):
         SafeZoneLoader.SafeZoneLoader.unload(self)

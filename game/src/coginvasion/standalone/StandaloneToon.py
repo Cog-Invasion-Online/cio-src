@@ -1,5 +1,12 @@
-# Filename: StandaloneToon.py
-# Created by:  blach (02May15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file StandaloneToon.py
+@author Brian Lach
+@date May 02, 2015
+
+"""
 
 from pandac.PandaModules import *
 loadPrcFile('config/Confauto.prc')
@@ -20,6 +27,7 @@ class game:
     process = 'client'
     usepipeline = False
     uselighting = True
+    phasedir = './resources/'
 __builtin__.game = game
 
 vfs = VirtualFileSystem.getGlobalPtr()
@@ -137,8 +145,13 @@ base.pusher = CollisionHandlerPusher()
 base.queue = CollisionHandlerQueue()
 base.cr = ClientRepository(['phase_3/etc/direct.dc', 'phase_3/etc/toon.dc'])
 base.cr.isShowingPlayerIds = False
+
+def isChristmas():
+    return False
+base.cr.isChristmas = isChristmas
+
 base.minigame = None
-base.cr.localAvChoice = AvChoice("00/01/05/19/01/19/01/19/13/05/27/27/00", "Dog", 0, 0)#"00/08/00/10/01/12/01/10/13/05/27/27/00", "Ducky", 0, 0)
+base.cr.localAvChoice = AvChoice("00/01/05/19/01/19/01/19/13/05/27/27/00", "Dog", 0, 0, 0)#"00/08/00/10/01/12/01/10/13/05/27/27/00", "Ducky", 0, 0)
 base.musicManager.setVolume(0.65)
 
 

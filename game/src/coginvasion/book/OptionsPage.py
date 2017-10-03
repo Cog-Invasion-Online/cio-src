@@ -17,6 +17,8 @@ from SoundCategory import SoundCategory
 from ControlsCategory import ControlsCategory
 from DisplayCategory import DisplayCategory
 from CategoryTab import CategoryTab
+from GeneralCategory import GeneralCategory
+from AdvancedCategory import AdvancedCategory
 
 from collections import OrderedDict
 
@@ -29,6 +31,8 @@ class OptionsPage(BookPage):
     Categories[SoundCategory] = 0.0825
     Categories[ControlsCategory] = 0.05
     Categories[DisplayCategory] = 0.07
+    Categories[GeneralCategory] = 0.07
+    Categories[AdvancedCategory] = 0.04
 
     def __init__(self, book):
         BookPage.__init__(self, book, "Options")
@@ -43,23 +47,26 @@ class OptionsPage(BookPage):
 
     def enter(self):
         BookPage.enter(self)
-        self.tabsFrame = DirectFrame(parent = self.book)
-        Z = 0.77
+        self.tabScaleFrame = DirectFrame(parent = self.book)
+        self.tabScaleFrame.setZ(0.77)
+        self.tabsFrame = DirectFrame(parent = self.tabScaleFrame)
         
         tabWidth = 0.379136800766
         spacing = 0.075
 
         totalWidth = 0.0
+        bookWidth = 2.0
 
         for i in xrange(len(self.Categories.keys())):
             if i > 0:
                 totalWidth += spacing
             totalWidth += tabWidth
             cl = self.Categories.keys()[i]
-            tab = CategoryTab(self, cl.Name, [cl], ((tabWidth + spacing) * i, 0, Z), self.Categories.values()[i])
+            tab = CategoryTab(self, cl.Name, [cl], ((tabWidth + spacing) * i, 0, 0), self.Categories.values()[i])
             self.tabs.append(tab)
 
         self.tabsFrame.setX(totalWidth / -2.0)
+        self.tabScaleFrame.setScale(min(1.0, 1.0 / (totalWidth / bookWidth)))
 
         self.pickCategory(AboutCategory)
 
@@ -87,5 +94,8 @@ class OptionsPage(BookPage):
         for tab in self.tabs:
             tab.destroy()
         self.tabsFrame.destroy()
+        del self.tabsFrame
+        self.tabScaleFrame.destroy()
+        del self.tabScaleFrame
         self.tabs = []
         BookPage.exit(self)

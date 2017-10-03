@@ -2,6 +2,7 @@
 window-title Cog Invasion Online (Alpha)
 win-origin -1 -1
 win-size 640 480
+#win-fixed-size 1
 load-display pandagl
 aux-display pandagl
 
@@ -10,6 +11,7 @@ aux-display pandagl
 
 # Logging...
 notify-level info
+notify-timestamp #f
 default-directnotify-level info
 
 # Filenames...
@@ -74,16 +76,16 @@ want-WASD #t
 want-gta-controls #t
 show-minigame-dates #f
 want-real-shadows #f
-load-stuff #f
+load-stuff #t
 want-playground-gags #t
 
-ctmusic-numsongs 3
+ctmusic-numsongs 1
 
 want-pstats 0
 
 egg-load-old-curves 0
 
-threading-model App/Cull/Draw
+#threading-model App/Cull/Draw
 
 gl-finish #f
 gl-force-no-error #t

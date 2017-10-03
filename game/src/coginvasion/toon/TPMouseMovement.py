@@ -13,8 +13,6 @@ from direct.showbase.DirectObject import DirectObject
 
 from src.coginvasion.globals import CIGlobals
 
-from ccoginvasion import Lerper
-
 class TPMouseMovement(DirectObject):
 
     def __init__(self):
@@ -22,22 +20,27 @@ class TPMouseMovement(DirectObject):
         self.player_node = None
         self.min_camerap = -45.0
         self.max_camerap = 45.0
-
-        self.pnLerp = Lerper(Point3(0), 0.5)
-        self.camPLerp = Lerper(0.0, 0.5)
-        self.laHLerp = Lerper(0.0, 0.5)
+        self.enabled = False
+        self.disabledByChat = False
+        self.enableOnChatExit = False
 
     def initialize(self):
         if self.player_node:
-            camera.wrtReparentTo(base.localAvatar)
+            camera.reparentTo(base.localAvatar)
             self.player_node.removeNode()
             self.player_node = None
 
-        self.player_node = render.attachNewNode('PlayerNode')
+        self.player_node = base.localAvatar.attachNewNode('PlayerNode')
 
     def enableMovement(self, startTask = True):
-        if self.player_node is None:
+        if self.disabledByChat:
+            self.enableOnChatExit = True
             return
+    
+        if self.player_node is None or self.enabled:
+            return
+            
+        self.enableOnChatExit = False
             
         props = WindowProperties()
         props.setCursorHidden(True)
@@ -45,33 +48,37 @@ class TPMouseMovement(DirectObject):
         base.win.requestProperties(props)
         self.acceptOnce(base.inputStore.ToggleGTAControls, self.disableMovement)
         
-        self.player_node.setHpr(base.localAvatar, 0, 0, 0)
+        self.player_node.setHpr(0, 0, 0)
 
         # Re-center the mouse.
         base.win.movePointer(0, base.win.getXSize() / 2, base.win.getYSize() / 2)
             
-        camera.wrtReparentTo(self.player_node)
+        camera.reparentTo(self.player_node)
+        
         if startTask:
-            self.camPLerp.setLastFloat(camera.getP())
-            self.laHLerp.setLastFloat(base.localAvatar.getH())
-
-            self.pnLerp.setLastP3(base.localAvatar.getPos(render))
-            self.player_node.setPos(self.pnLerp.getLastP3())
-
             taskMgr.add(self.cameraMovement, "TPMM.enableMovement")
         
+        self.enabled = True
 
-    def disableMovement(self):
+    def disableMovement(self, allowReEnable = True, byChatInput = False):
+        self.disabledByChat = byChatInput
+        self.enableOnChatExit = byChatInput
+        
+        if not self.enabled:
+            return
+        
         taskMgr.remove("TPMM.enableMovement")
         props = WindowProperties()
         props.setCursorHidden(False)
         props.setMouseMode(WindowProperties.MAbsolute)
         base.win.requestProperties(props)
         camera.wrtReparentTo(base.localAvatar)
-        self.acceptOnce(base.inputStore.ToggleGTAControls, self.enableMovement)
+        if allowReEnable:
+            self.acceptOnce(base.inputStore.ToggleGTAControls, self.enableMovement)
+        self.enabled = False
 
     def cleanup(self):
-        self.disableMovement()
+        self.disableMovement(False)
 
         if self.player_node:
             camera.wrtReparentTo(base.localAvatar)
@@ -81,9 +88,8 @@ class TPMouseMovement(DirectObject):
         if hasattr(self, 'max_camerap'):
             del self.max_camerap
             del self.min_camerap
-            del self.laHLerp
-            del self.pnLerp
-            del self.camPLerp
+            del self.enabled
+            del self.disabledByChat
 
     def cameraMovement(self, task):
         if hasattr(self, 'min_camerap') and hasattr(self, 'max_camerap') and base.mouseWatcherNode.hasMouse():
@@ -101,25 +107,13 @@ class TPMouseMovement(DirectObject):
 
             dt = globalClock.getDt()
 
-            # Do some mouse movement smoothing / lerping
-            goalPos = base.localAvatar.getPos(render)
+            # Do some mouse movement
             goalH = self.player_node.getH() - (x - centerX) * sens
-            goalP = self.player_node.getP() - (y - centerY) * sens
-
-            #lastPNPos = self.pnLerp.lerpToP3(goalPos)
-            
-            #self.player_node.setPos(lastPNPos)
-            self.player_node.setPos(goalPos)
             self.player_node.setH(goalH)
-            #self.player_node.setP(goalP)
 
             if base.localAvatar.isMoving():
                 # We can turn our character with the mouse while moving.
                 base.localAvatar.setH(render, self.player_node.getH(render))
-
-            if camera.getP() < self.min_camerap:
-                camera.setP(self.min_camerap)
-            elif camera.getP() > self.max_camerap:
-                camera.setP(self.max_camerap)
+                self.player_node.setH(0)
                 
         return task.cont

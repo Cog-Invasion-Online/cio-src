@@ -10,6 +10,7 @@ from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.fsm.StateData import StateData
 from src.coginvasion.globals import CIGlobals, ChatGlobals
+from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.holiday.HolidayManager import HolidayType, HolidayGlobals
 from src.coginvasion.gui.WhisperPopup import WhisperPopup
 from AvChoice import AvChoice
@@ -29,16 +30,20 @@ class AvChooser(StateData):
         self.parentFSM = parentFSM
         self.parentFSM.getStateNamed('avChoose').addChild(self.avChooseFSM)
         self.pickAToon = None
+        self.newToonSlot = None
         self.setAvatarsNone()
 
-    def enter(self):
+    def enter(self, newToonSlot = None):
         StateData.enter(self)
+        print "enter av chooser"
         base.transitions.noTransitions()
+        self.newToonSlot = newToonSlot
         self.avChooseFSM.request('getToonData')
 
     def exit(self):
         StateData.exit(self)
         self.setAvatarsNone()
+        self.newToonSlot = None
         self.avChooseFSM.requestFinalState()
 
     def setAvatarsNone(self):
@@ -61,7 +66,8 @@ class AvChooser(StateData):
             dna = av[1]
             name = av[2]
             slot = av[3]
-            choice = AvChoice(dna, name, slot, avId)
+            lastHood = av[4]
+            choice = AvChoice(dna, name, slot, avId, ZoneUtil.getHoodId(lastHood))
             self.avChoices.append(choice)
         self.avChooseFSM.request('avChoose')
 
@@ -73,7 +79,6 @@ class AvChooser(StateData):
             base.cr.music.stop()
             base.cr.music = base.loadMusic(CIGlobals.getHolidayTheme())
             base.cr.music.setLoop(True)
-            base.cr.music.setVolume(0.75)
             base.cr.music.play()
 
             # Create message.
@@ -81,7 +86,7 @@ class AvChooser(StateData):
             whisper.manage(base.marginManager)
 
         self.pickAToon = CharSelection(self)
-        self.pickAToon.load()
+        self.pickAToon.load(self.newToonSlot)
 
     def enterWaitForToonDelResponse(self, avId):
         self.acceptOnce(base.cr.csm.getToonDeletedEvent(), self.handleDeleteToonResp)

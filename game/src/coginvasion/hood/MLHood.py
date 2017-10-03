@@ -24,15 +24,8 @@ class MLHood(ToonHood):
         self.holidayDNAFile = None
         if base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
             self.holidayDNAFile = "phase_6/dna/winter_storage_MM.pdna"
-        self.skyFilename = "phase_6/models/props/MM_sky.bam"
-        self.spookySkyFile = "phase_3.5/models/props/BR_sky.bam"
         self.titleColor = (0.945, 0.54, 1.0, 1.0)
         self.loaderDoneEvent = 'MLHood-loaderDone'
-
-        self.olc.ambient = VBase4(110 / 255.0, 180 / 255.0, 204 / 255.0, 1.0)
-        self.olc.sun = VBase4(255 / 255.0, 109 / 255.0, 86 / 255.0, 1.0)
-        self.olc.sunPos = Vec3(-750, 100, 500)
-        self.olc.fog = VBase4(255 / 255.0, 109 / 255.0, 86 / 255.0, 1.0)
 
     def load(self):
         ToonHood.load(self)

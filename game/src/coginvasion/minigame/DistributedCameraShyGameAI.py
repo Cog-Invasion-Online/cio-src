@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DistributedCameraShyGameAI.py
-  Created by: blach (27Apr15)
+@file DistributedCameraShyGameAI.py
+@author Brian Lach
+@date April 27, 2015
 
 """
 

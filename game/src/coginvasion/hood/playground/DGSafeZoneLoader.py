@@ -1,6 +1,8 @@
 # Filename: DGSafeZoneLoader.py
 # Created by:  blach (24Jul15)
 
+from panda3d.core import TransparencyAttrib, ColorAttrib
+
 from src.coginvasion.holiday.HolidayManager import HolidayType
 import SafeZoneLoader
 import DGPlayground
@@ -36,6 +38,7 @@ class DGSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
             'phase_8/audio/sfx/SZ_DG_bird_03.ogg',
             'phase_8/audio/sfx/SZ_DG_bird_04.ogg'
         ]
+        base.wakeWaterHeight = -1.26438
 
     def load(self):
         SafeZoneLoader.SafeZoneLoader.load(self)
@@ -44,3 +47,6 @@ class DGSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         hq.find('**/doorFrameHoleRight_0').stash()
         hq.find('**/doorFrameHoleLeft_1').stash()
         hq.find('**/doorFrameHoleRight_1').stash()
+        
+        water = self.geom.find("**/water_surface")
+        base.waterReflectionMgr.addWaterNode(water, base.wakeWaterHeight)

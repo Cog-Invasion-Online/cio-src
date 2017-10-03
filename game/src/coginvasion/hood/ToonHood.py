@@ -80,24 +80,3 @@ class ToonHood(Hood.Hood):
 
     def exit(self):
         Hood.Hood.exit(self)
-
-    def setUnderwaterFog(self):
-        if base.wantFog:
-            self.fog.setColor(self.underwaterColor)
-            self.fog.setLinearRange(0.1, 100.0)
-            render.setFog(self.fog)
-            self.sky.setFog(self.fog)
-
-    def setWhiteFog(self):
-        if base.wantFog:
-            self.fog.setColor(self.whiteFogColor)
-            self.fog.setLinearRange(0.0, 400.0)
-            render.clearFog()
-            render.setFog(self.fog)
-            self.sky.clearFog()
-            self.sky.setFog(self.fog)
-
-    def setNoFog(self):
-        if base.wantFog:
-            render.clearFog()
-            self.sky.clearFog()

@@ -142,6 +142,8 @@ class CogInvasionClientRepository(AstronClientRepository):
 
         base.minigame = None
 
+        self.newToonSlot = None
+
         base.finalExitCallbacks.insert(0, self.__handleExit)
 
         self.accountName = os.environ.get('ACCOUNT_NAME', '')
@@ -271,21 +273,19 @@ class CogInvasionClientRepository(AstronClientRepository):
         del self._switchShardParams
 
     def enterBetaInform(self):
-        msg = "There may be some features that are present in the game, but are neither finished nor fully functional yet.\n\nAre you sure you want to enter?"
+        msg = ("Welcome to Cog Invasion Online!\n\nBefore playing, please remember that the game is in Alpha, "
+               "and that you may encounter bugs and incomplete features.\n\nIf you happen to encounter any bugs, "
+               "please report them to us by using the Contact Us Page at coginvasion.com.\n\nHave fun!")
         self.dialog = GlobalDialog(
             message = msg,
-            style = 1,
+            style = 3,
             doneEvent = "gameEnterChoice"
         )
         self.dialog.show()
         self.acceptOnce("gameEnterChoice", self.handleGameEnterChoice)
 
     def handleGameEnterChoice(self):
-        value = self.dialog.getValue()
-        if value:
-            self.loginFSM.request('avChoose')
-        else:
-            sys.exit()
+        self.loginFSM.request('avChoose')
 
     def exitBetaInform(self):
         self.ignore("gameEnterChoice")
@@ -484,14 +484,19 @@ class CogInvasionClientRepository(AstronClientRepository):
     def exitOff(self):
         pass
 
-    def enterAvChoose(self):
+    def playTheme(self):
+        if self.music:
+            base.playMusic(self.music, volume = 0.7, looping = 1, interrupt = 1)
+
+    def enterAvChoose(self, newToonSlot = None):
         ModelPool.garbageCollect()
         TexturePool.garbageCollect()
         self.avChooser.load()
-        self.avChooser.enter()
+        self.avChooser.enter(newToonSlot)
         if not self.music:
             self.music = base.loadMusic(CIGlobals.getThemeSong())
-            base.playMusic(self.music, volume = 0.5, looping = 1)
+            if newToonSlot is None:
+                self.playTheme()
         self.accept("enterMakeAToon", self.__handleMakeAToonReq)
         self.accept("avChooseDone", self.__handleAvChooseDone)
 
@@ -501,8 +506,8 @@ class CogInvasionClientRepository(AstronClientRepository):
     def __handleAvChooseDone(self, avChoice):
         print "------- AvChooseDone -------"
         print "Toon name: %s" % avChoice.getName()
-        print "Slot: %s" % avChoice.getSlot()
-        print "DNA: %s" % avChoice.getDNA()
+        print "Slot:      %s" % avChoice.getSlot()
+        print "DNA:       %s" % avChoice.getDNA()
         self.loginFSM.request("waitForSetAvatarResponse", [avChoice])
 
     def exitAvChoose(self):
@@ -740,6 +745,7 @@ class CogInvasionClientRepository(AstronClientRepository):
         self.ignore("createAToonFinished")
 
     def enterSubmitNewToon(self, dnaStrand, slot, name, skipTutorial = 0):
+        self.newToonSlot = slot
         self.submittingDialog = GlobalDialog(message = CIGlobals.Submitting)
         self.submittingDialog.show()
         self.acceptOnce(self.csm.getToonCreatedEvent(), self.__handleSubmitNewToonResp)
@@ -751,9 +757,10 @@ class CogInvasionClientRepository(AstronClientRepository):
             self.nameServicesManager.d_requestName(self.requestedName, avId)
             self.requestedName = None
 
-        self.loginFSM.request('avChoose')
+        self.loginFSM.request('avChoose', [self.newToonSlot])
 
     def exitSubmitNewToon(self):
+        self.newToonSlot = None
         self.ignore(self.csm.getToonCreatedEvent())
         self.submittingDialog.cleanup()
         del self.submittingDialog

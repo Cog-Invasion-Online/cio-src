@@ -33,6 +33,7 @@ class DLSafeZoneLoader(SafeZoneLoader):
         if base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
             self.szHolidayDNAFile = 'phase_8/dna/winter_storage_DL_sz.pdna'
         self.telescope = None
+        base.wakeWaterHeight = -17.0385
 
     def load(self):
         SafeZoneLoader.load(self)
@@ -41,3 +42,7 @@ class DLSafeZoneLoader(SafeZoneLoader):
         hq.find('**/doorFrameHoleRight_0').stash()
         hq.find('**/doorFrameHoleLeft_1').stash()
         hq.find('**/doorFrameHoleRight_1').stash()
+
+        water = self.geom.find("**/DLpd_water")
+        water.setTransparency(False)
+        base.waterReflectionMgr.addWaterNode(water, base.wakeWaterHeight)

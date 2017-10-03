@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DistributedCameraShyGame.py
-  Created by: blach (26Apr15)
+@file DistributedCameraShyGame.py
+@author Brian Lach
+@date April 26, 2015
 
 """
 
@@ -13,6 +16,7 @@ from direct.task import Task
 import random
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
 
 from DistributedMinigame import DistributedMinigame
 from RemoteCameraShyAvatar import RemoteCameraShyAvatar
@@ -40,7 +44,7 @@ class DistributedCameraShyGame(DistributedMinigame):
         self.remoteAvatars = []
         self.myRemoteAvatar = None
         self.thisPlayerWinsLbl = None
-        self.sky = None
+        self.olc = None
         self.firstPerson = CameraShyFirstPerson(self)
         self.skyUtil = None
         self.pbpText = None

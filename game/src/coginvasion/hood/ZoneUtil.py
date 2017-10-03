@@ -1,4 +1,7 @@
 from src.coginvasion.globals.CIGlobals import *
+from src.coginvasion.base.Lighting import OutdoorLightingConfig
+
+from panda3d.core import VBase4, Vec3
 
 def isInInterior(zoneId):
     return int(str(zoneId)[1:]) >= 500 and int(str(zoneId)[1:]) <= 999
@@ -94,3 +97,30 @@ def isLocatedInCurrentPlayground(zoneId):
     
 def isAtSamePlaygroundButDifferentBranch(zoneId):
     return isLocatedInCurrentPlayground(zoneId) and not isOnSameStreet(zoneId)
+
+def getOutdoorLightingConfig(hoodId):
+    olc = OutdoorLightingConfig.makeDefault()
+    
+    print "getOutdoorLightingConfig:", hoodId
+
+    if hoodId == DonaldsDock:
+        olc.setSkyType(olc.STCloudy)
+        olc.fogDensity = 0.0035
+
+    elif hoodId == TheBrrrgh:
+        olc.setSkyType(olc.STCloudy)
+        olc.snow = True
+
+    elif hoodId == MinniesMelodyland:
+        olc.setSkyType(olc.STEvening)
+        olc.ambient = VBase4(110 / 255.0, 180 / 255.0, 204 / 255.0, 1.0)
+        olc.sun = VBase4(255 / 255.0, 109 / 255.0, 86 / 255.0, 1.0)
+        olc.sunPos = Vec3(-750, 100, 500)
+        olc.fog = VBase4(255 / 255.0, 109 / 255.0, 86 / 255.0, 1.0)
+
+    elif hoodId == DonaldsDreamland:
+        olc.setSkyType(olc.STNight)
+        olc.ambient = VBase4(82 / 255.0, 132 / 255.0, 190 / 255.0, 1.0)
+        olc.sun = VBase4(224 / 255.0, 213 / 255.0, 208 / 255.0, 1.0)
+
+    return olc

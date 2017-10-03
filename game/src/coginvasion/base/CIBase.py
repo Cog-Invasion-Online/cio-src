@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import loadPrcFile, NodePath
+from panda3d.core import loadPrcFile, NodePath, PGTop
 
 from direct.showbase.ShowBase import ShowBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -16,6 +16,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.manager.UserInputStorage import UserInputStorage
 from src.coginvasion.globals import CIGlobals
 from CubeMapManager import CubeMapManager
+from WaterReflectionManager import WaterReflectionManager
 
 import __builtin__
 
@@ -43,12 +44,28 @@ class CIBase(ShowBase):
         self.cubeMapMgr = cbm
         __builtin__.cubeMapMgr = cbm
 
-    def saveCubeMap(self, namePrefix = 'cube_map_#.jpg', size = 256):
+        wrm = WaterReflectionManager()
+        self.waterReflectionMgr = wrm
+        __builtin__.waterReflectionMgr = wrm
+
+        self.credits2d = self.render2d.attachNewNode(PGTop("credits2d"))
+        self.credits2d.setScale(1.0 / self.getAspectRatio(), 1.0, 1.0)
+
+        self.wakeWaterHeight = -30.0
+
+    def saveCubeMap(self, namePrefix = 'cube_map_#.jpg', size = 1024):
+        namePrefix = raw_input("Cube map file: ")
+
+        base.localAvatar.stopSmooth()
+        base.localAvatar.setHpr(0, 0, 0)
+
         # Hide all objects from our cubemap.
         if hasattr(self, 'cr'):
             for do in self.cr.doId2do.values():
                 if isinstance(do, NodePath):
                     do.hide()
+
+        print "Cube map position:", camera.getPos(render)
 
         ShowBase.saveCubeMap(self, namePrefix, size = size)
 
@@ -58,12 +75,15 @@ class CIBase(ShowBase):
                 if isinstance(do, NodePath):
                     do.show()
 
+        base.localAvatar.startSmooth()
+
     def setTimeOfDay(self, time):
         if game.usepipeline:
             self.pipeline.daytime_mgr.time = time
 
     def doOldToontownRatio(self):
         ShowBase.adjustWindowAspectRatio(self, 4. / 3.)
+        self.credits2d.setScale(1.0 / (4. / 3.), 1.0, 1.0)
 
     def doRegularRatio(self):
         ShowBase.adjustWindowAspectRatio(self, self.getAspectRatio())
@@ -75,6 +95,7 @@ class CIBase(ShowBase):
         if (CIGlobals.getSettingsMgr().getSetting("maspr") is True):
             # Go ahead and maintain the aspect ratio if the user wants us to.
             ShowBase.adjustWindowAspectRatio(self, aspectRatio)
+            self.credits2d.setScale(1.0 / aspectRatio, 1.0, 1.0)
         else:
             # The user wants us to keep a 4:3 ratio no matter what (old toontown feels).
             self.doOldToontownRatio()

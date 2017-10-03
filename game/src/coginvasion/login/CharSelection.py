@@ -1,11 +1,18 @@
-# Filename: CharSelection.py
-# Created by:  blach (05Sep15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Vec4, TextNode, Fog
+@file CharSelection.py
+@author Brian Lach
+@date September 15, 2015
+"""
+
+from pandac.PandaModules import Vec4, TextNode, Fog, Point3, Vec3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State
-from direct.interval.IntervalGlobal import Sequence, Wait, Func
+from direct.interval.IntervalGlobal import (Sequence, Wait, Func, Parallel, LerpPosInterval,
+                                            LerpQuatInterval, SoundInterval, ActorInterval, LerpFunc)
 from direct.gui.DirectGui import OnscreenText, DirectButton, DGG, DirectScrolledList, DirectLabel, DirectFrame
 from direct.showbase.DirectObject import DirectObject
 
@@ -15,14 +22,47 @@ from src.coginvasion.toon.Toon import Toon
 from src.coginvasion.gui import Dialog
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.nametag import NametagGlobals
+from src.coginvasion.dna.DNALoader import *
+from src.coginvasion.hood import ZoneUtil
 
 import sys
+import random
+
+HOOD_ID_2_DNA = {
+    CIGlobals.ToontownCentral:      ["phase_4/dna/pickatoon/storage_TT_pickatoon.pdna",
+                                     "phase_4/dna/pickatoon/new_ttc_sz_pickatoon.pdna"],
+
+    CIGlobals.DonaldsDock:          ["phase_6/dna/pickatoon/storage_DD_pickatoon.pdna",
+                                     "phase_6/dna/pickatoon/donalds_dock_sz_pickatoon.pdna"],
+
+    CIGlobals.MinniesMelodyland:    ["phase_6/dna/pickatoon/storage_MM_pickatoon.pdna",
+                                     "phase_6/dna/pickatoon/minnies_melody_land_sz_pickatoon.pdna"],
+
+    CIGlobals.DaisyGardens:         ["phase_8/dna/pickatoon/storage_DG_pickatoon.pdna",
+                                     "phase_8/dna/pickatoon/daisys_garden_sz_pickatoon.pdna"],
+
+    CIGlobals.DonaldsDreamland:     ["phase_8/dna/pickatoon/storage_DL_pickatoon.pdna",
+                                     "phase_8/dna/pickatoon/donalds_dreamland_sz_pickatoon.pdna"],
+                                     
+    CIGlobals.TheBrrrgh:            ["phase_8/dna/pickatoon/storage_BR_pickatoon.pdna",
+                                     "phase_8/dna/pickatoon/the_burrrgh_sz_pickatoon.pdna"]
+}
+
+HOOD_STAGE_DATA = {
+    #                                   cam start             cam end         toon pos                     toon hpr
+    CIGlobals.ToontownCentral:      [Point3(0, 60, 15), Point3(0, 10, 3), Point3(77, 15, 7.4),          Vec3(90, 0, 0)],
+    CIGlobals.DonaldsDock:          [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-110.4, -37.3, 5.7),   Vec3(-60, 0, 0)],
+    CIGlobals.MinniesMelodyland:    [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-47, 45.23, 6.525),    Vec3(-115, 0, 0)],
+    CIGlobals.DaisyGardens:         [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-0.25, 14, 0.025),     Vec3(0, 0, 0)],
+    CIGlobals.DonaldsDreamland:     [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-6, -90.3, 0.025),     Vec3(0, 0, 0)],
+    CIGlobals.TheBrrrgh:            [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-113, -40.7, 8.55),    Vec3(-69, 0, 0)]
+}
+
+ST_RANDOM_ANIMS = ['bow', 'bored', 'shrug', 'read', 'wave', 'win', 'fallf', 'fallb']
+ST_ANIM_IVAL = [5, 35]
 
 class CharSelection(DirectObject):
     notify = directNotify.newCategory('CharSelection')
-
-    STAGE_TOON_POS = (66.4, 74.47, -25)
-    STAGE_TOON_HPR = (227.73, 0, 0)
 
     NO_TOON = "Empty Slot"
     PLAY = "Play"
@@ -38,13 +78,21 @@ class CharSelection(DirectObject):
         self.playOrCreateButton = None
         self.deleteButton = None
         self.quitButton = None
-        self.world = None
-        self.sky = None
-        self.fog = None
         self.title = None
         self.stageToon = None
+        self.stageToonRoot = None
         self.deleteConf = None
         self.frame = None
+        self.stageFSM = ClassicFSM.ClassicFSM(
+            'StageFSM',
+            [
+                State.State('off', self.enterOff, self.exitOff),
+                State.State('loadSZ', self.enterLoadSZ, self.exitLoadSZ),
+                State.State('onStage', self.enterOnStage, self.exitOnStage)
+            ],
+            'off', 'off'
+        )
+        self.stageFSM.enterInitialState()
         self.selectionFSM = ClassicFSM.ClassicFSM(
             'CharSelection',
             [
@@ -56,16 +104,34 @@ class CharSelection(DirectObject):
         )
         self.selectionFSM.enterInitialState()
 
+        self.szGeom = None
+        self.olc = None
+        self.asyncSZLoadStatus = False
+        self.isNewToon = False
+        self.newToonSlot = None
+        self.camIval = None
+        self.stAnimSeq = None
+        self.newToonAnnounceSfx = base.loadSfx("phase_4/audio/sfx/King_Crab.ogg")
+        self.newToonDrumrollSfx = base.loadSfx("phase_5/audio/sfx/SZ_MM_drumroll.ogg")
+        self.newToonRevealSfx = base.loadSfx("phase_5/audio/sfx/SZ_MM_fanfare.ogg")
+        
+        self.dnaStore = DNAStorage()
+        loader.loadDNAFile(self.dnaStore, 'phase_4/dna/pickatoon/storage_pickatoon.pdna')
+
     def __setupStageToon(self):
+        self.stageToonRoot = render.attachNewNode('stageToonRoot')
         self.stageToon = Toon(base.cr)
-        self.stageToon.setPos(self.STAGE_TOON_POS)
-        self.stageToon.setHpr(self.STAGE_TOON_HPR)
+        self.stageToon.setPosHpr(0, 0, 0, 0, 0, 0)
+        self.stageToon.reparentTo(self.stageToonRoot)
 
     def cleanupStageToon(self):
         if self.stageToon != None:
             self.stageToon.disable()
             self.stageToon.delete()
             self.stageToon = None
+        if self.stageToonRoot != None:
+            self.stageToonRoot.removeNode()
+            self.stageToonRoot = None
 
     def enterOff(self):
         pass
@@ -73,31 +139,195 @@ class CharSelection(DirectObject):
     def exitOff(self):
         pass
 
-    def enterCharSelected(self, slot):
-        self.choice = self.avChooser.getAvChoiceBySlot(slot)
+    def __async_loadSZTask(self, task = None):
+        dnas = HOOD_ID_2_DNA[self.choice.lastHood]
+        for i in xrange(len(dnas)):
+            dnaFile = dnas[i]
+            if i == len(dnas) - 1:
+                node = loader.loadDNAFile(self.dnaStore, dnaFile)
+                if node.getNumParents() == 1:
+                    self.szGeom = NodePath(node.getParent(0))
+                    self.szGeom.reparentTo(render)
+                else:
+                    self.szGeom = render.attachNewNode(node)
+                gsg = base.win.getGsg()
+                if gsg:
+                    self.szGeom.prepareScene(gsg)
+            else:
+                loader.loadDNAFile(self.dnaStore, dnaFile)
+
+        self.olc = ZoneUtil.getOutdoorLightingConfig(self.choice.lastHood)
+        self.olc.setup()
+        self.olc.apply()
+
+        self.asyncSZLoadStatus = True
+
+        if task:
+            return task.done
+
+    def enterLoadSZ(self):
+        self.loadingDlg = Dialog.GlobalDialog("Loading...")
+        self.loadingDlg.show()
+        
+        base.cr.renderFrame()
+        base.cr.renderFrame()
+
+        self.notify.info("Polling for SZ to load")
+        self.asyncSZLoadStatus = False
+        self.__async_loadSZTask()
+        self.stageFSM.request('onStage')
+
+    def exitLoadSZ(self):
+        if hasattr(self, 'loadingDlg'):
+            self.loadingDlg.cleanup()
+            del self.loadingDlg
+            
+    def __changeCamFOV(self, val):
+        base.camLens.setMinFov(val / (4. / 3.))
+
+    def enterOnStage(self):
         dna = self.choice.dna
         name = self.choice.name
         self.stageToon.setName(name)
         self.stageToon.setDNAStrand(dna)
         self.stageToon.nametag.setNametagColor(NametagGlobals.NametagColors[NametagGlobals.CCLocal])
         self.stageToon.nametag.setActive(0)
-        self.stageToon.nametag.updateAll()
         self.stageToon.nametag.nametag3d.request('Rollover')
+        self.stageToon.nametag.unmanage(base.marginManager)
+        self.stageToon.nametag.updateAll()
         self.stageToon.animFSM.request('neutral')
-        self.stageToon.reparentTo(base.render)
-        self.charNameLabel.setText(name)
-        self.playOrCreateButton['text'] = self.PLAY
-        self.playOrCreateButton['extraArgs'] = ['play']
+        self.stageToon.startBlink()
+        self.stageToon.setPosHpr(0, 0, 0, 10, 0, 0)
+        self.stageToon.show()
+
+        dat = HOOD_STAGE_DATA[self.choice.lastHood]
+
+        self.stageToonRoot.setPos(dat[2])
+        self.stageToonRoot.setHpr(dat[3])
+
+        camera.reparentTo(self.stageToonRoot)
+
+        camera.setPos(dat[0])
+        camera.lookAt(self.stageToonRoot, 0, 0, 3)
+        startHpr = camera.getHpr()
+        camera.setPos(dat[1])
+        camera.lookAt(self.stageToonRoot, 0, 0, 3)
+        endHpr = camera.getHpr()
+
+        self.camIval = Parallel(
+            LerpPosInterval(camera, 5.0, dat[1] - (1.6, 0, 0), dat[0] - (1.6, 0, 0), blendType = 'easeInOut'),
+            LerpQuatInterval(camera, 5.0, hpr = endHpr, startHpr = startHpr, blendType = 'easeInOut'),
+            LerpFunc(self.__changeCamFOV, duration = 5.0, fromData = 80.0, toData = CIGlobals.DefaultCameraFov, blendType = 'easeInOut'))
+        if self.isNewToon:
+            self.camIval.append(
+                Sequence(Func(self.stageToon.hide),
+                         Func(base.cr.music.stop),
+                         SoundInterval(self.newToonAnnounceSfx, startTime = 1.674, duration = 4.047),
+                         SoundInterval(self.newToonDrumrollSfx),
+                         Func(self.stageToon.pose, 'tele', self.stageToon.getNumFrames('tele')),
+                         Func(self.newToonAppear),
+                         Func(self.stageToon.show),
+                         SoundInterval(self.newToonRevealSfx),
+                         Func(base.cr.playTheme)))
+        else:
+            self.camIval.append(
+                Sequence(Func(self.showActionButtons), Func(self.enableAllCharButtons), Wait(5.0), Func(self.beginRandomAnims)))
+
+        self.camIval.start()
+        
+    def hideActionButtons(self):
+        self.playOrCreateButton.hide()
+        self.deleteButton.hide()
+        
+    def showActionButtons(self):
         self.playOrCreateButton.show()
         self.deleteButton.show()
 
+    def newToonAppear(self):
+        self.stopSTAnimSeq()
+
+        self.stAnimSeq = Sequence(Func(self.stageToon.animFSM.request, 'teleportIn'),
+                                  Wait(2.0),
+                                  ActorInterval(self.stageToon, 'wave'),
+                                  Func(self.stageToon.loop, 'neutral'),
+                                  Func(self.beginRandomAnims),
+                                  Func(self.enableAllCharButtons),
+                                  Func(self.showActionButtons))
+        self.stAnimSeq.start()
+
+    def stopSTAnimSeq(self):
+        if self.stAnimSeq:
+            self.stAnimSeq.finish()
+            self.stAnimSeq = None
+            
+    def unloadSZGeom(self):
+        if self.szGeom:
+            self.szGeom.removeNode()
+            self.szGeom = None
+        if self.olc:
+            self.olc.cleanup()
+            self.olc = None
+
+    def beginRandomAnims(self):
+        self.stageToon.startLookAround()
+        taskMgr.doMethodLater(random.uniform(*ST_ANIM_IVAL), self.__doRandomSTAnim, "doRandomSTAnim")
+
+    def __doRandomSTAnim(self, task):
+        anim = random.choice(ST_RANDOM_ANIMS)
+
+        self.stopSTAnimSeq()
+        
+        self.stageToon.stopLookAround()
+        
+        head = self.stageToon.getPart('head')
+
+        if anim == 'read':
+            self.stAnimSeq = Sequence(Func(self.stageToon.lerpLookAt, head, (0, -15, 0)),
+                                      Func(self.stageToon.animFSM.request, 'openBook'),
+                                      Wait(0.5),
+                                      Func(self.stageToon.animFSM.request, 'readBook'),
+                                      Wait(2.0),
+                                      Func(self.stageToon.lerpLookAt, head, (0, 0, 0)),
+                                      Func(self.stageToon.animFSM.request, 'closeBook'),
+                                      Wait(1.75),
+                                      Func(self.stageToon.loop, 'neutral'),
+                                      Func(self.stageToon.startLookAround))
+        else:
+            self.stageToon.lerpLookAt(head, (0, 0, 0))
+            self.stAnimSeq = Sequence(ActorInterval(self.stageToon, anim), Func(self.stageToon.loop, 'neutral'),
+                                      Func(self.stageToon.startLookAround))
+
+        self.stAnimSeq.start()
+
+        task.delayTime = random.uniform(*ST_ANIM_IVAL)
+        return task.again
+
+    def endRandomAnims(self):
+        taskMgr.remove("doRandomSTAnim")
+        self.stopSTAnimSeq()
+
+    def exitOnStage(self):
+        self.isNewToon = False
+        if self.camIval:
+            self.camIval.finish()
+            self.camIval = None
+        self.endRandomAnims()
+        self.stopSTAnimSeq()
+        camera.reparentTo(render)
+        camera.setPosHpr(0, 0, 0, 0, 0, 0)
+        #base.transitions.fadeScreen(1.0)
+        self.unloadSZGeom()
+        self.stageToon.stopLookAround()
+        self.stageToon.stopBlink()
+        self.stageToon.hide()
+
+    def enterCharSelected(self):
+        self.playOrCreateButton['text'] = self.PLAY
+        self.playOrCreateButton['extraArgs'] = ['play']
+
     def exitCharSelected(self):
-        self.stageToon.animFSM.requestFinalState()
-        self.stageToon.deleteCurrentToon()
-        self.stageToon.reparentTo(base.hidden)
         self.playOrCreateButton.hide()
         self.deleteButton.hide()
-        self.choice = None
 
     def enterEmptySelected(self):
         self.charNameLabel.setText(self.NO_TOON)
@@ -149,7 +379,7 @@ class CharSelection(DirectObject):
     def deleteToon(self, avId):
         # Show a confirmation message
         self.deleteConf = Dialog.GlobalDialog(
-            message = 'This will delete {0} forever. Are you sure?'.format(self.avChooser.getNameFromAvId(avId)),
+            message = 'This will delete {0} forever.\n\nAre you sure?'.format(self.avChooser.getNameFromAvId(avId)),
             style = Dialog.YesNo, doneEvent = 'deleteConfResponse', extraArgs = [avId])
         self.acceptOnce('deleteConfResponse', self.__handleDeleteConfResponse)
         self.deleteConf.show()
@@ -170,67 +400,32 @@ class CharSelection(DirectObject):
             else:
                 btn['state'] = DGG.NORMAL
         if self.avChooser.hasToonInSlot(slot):
-            self.selectionFSM.request('character', [slot])
+            self.choice = self.avChooser.getAvChoiceBySlot(slot)
+            self.selectionFSM.request('character')
+            self.stageFSM.request('loadSZ')
         else:
             self.selectionFSM.request('empty')
+            self.stageFSM.request('off')
 
-    def load(self):
+    def disableAllCharButtons(self):
+        for btn in self.charButtons:
+            btn['state'] = DGG.DISABLED
+
+    def enableAllCharButtons(self):
+        for btn in self.charButtons:
+            if not self.choice or btn.getPythonTag('slot') != self.choice.slot:
+                btn['state'] = DGG.NORMAL
+
+    def load(self, newToonSlot = None):
+        self.isNewToon = newToonSlot is not None
+        self.newToonSlot = newToonSlot
+
+        base.transitions.noTransitions()
+
         base.cr.renderFrame()
         base.camLens.setMinFov(CIGlobals.DefaultCameraFov / (4./3.))
 
         self.__setupStageToon()
-        holidayMgr = base.cr.holidayManager
-
-        self.props = []
-        self.world = loader.loadModel('phase_9/models/cogHQ/SellbotHQExterior.bam')
-        self.world.reparentTo(base.render)
-        self.world.setPos(0, 227.09, -25.36)
-        self.sky = loader.loadModel('phase_9/models/cogHQ/cog_sky.bam')
-        self.sky.setScale(1)
-        self.sky.reparentTo(base.render)
-        self.sky.find('**/InnerGroup').removeNode()
-        self.fog = Fog('charSelectFog')
-        self.fog.setColor(0.2, 0.2, 0.2)
-        self.fog.setExpDensity(0.003)
-        base.render.setFog(self.fog)
-        
-        # Let's fix the flickering doors.
-        doors = self.world.find('**/doors').getChildren()
-        
-        for door in doors:
-            for frameHole in door.findAllMatches('**/doorFrameHole*'): frameHole.removeNode()
-
-        if holidayMgr.getHoliday() == HolidayType.CHRISTMAS:
-            piles = {
-                'half' : {'pos' : (57.28, 86.47, -25.00), 'hpr' : (46.79, 0, 0)},
-                'full' : {'pos' : (71.23, 85.2, -25.00), 'hpr' : (290.82, 0, 0)},
-                'half_2' : {'pos' : (-15, 128.69, -25), 'hpr' : (60.26, 0, 0)}
-            }
-
-            for pileType, info in piles.items():
-                if '_' in pileType:
-                    pileType = pileType[:-2]
-                pile = loader.loadModel('phase_8/models/props/snow_pile_%s.bam' % (pileType))
-                pile.reparentTo(render)
-                pile.setPos(info['pos'])
-                pile.setHpr(info['hpr'])
-                self.props.append(pile)
-
-            self.world.find('**/TopRocks').removeNode()
-
-            snowTxt = loader.loadTexture('winter/maps/sbhq_snow.png')
-            self.world.find('**/Ground').setTexture(snowTxt, 1)
-
-            self.particles = ParticleLoader.loadParticleEffect('phase_8/etc/snowdisk.ptf')
-            self.particles.setPos(0, 0, 5)
-            self.particlesRender = self.world.attachNewNode('snowRender')
-            self.particlesRender.setDepthWrite(0)
-            self.particlesRender.setBin('fixed', 1)
-            self.particles.start(parent = camera, renderParent = self.particlesRender)
-            self.fog.setColor(0.486, 0.784, 1)
-            self.fog.setExpDensity(0.006)
-            base.render.setFog(self.fog)
-
 
         self.title = DirectLabel(text=self.TITLE, text_font=CIGlobals.getMickeyFont(), text_fg=(1, 0.9, 0.1, 1),
                                 relief=None, text_scale=0.13, pos=(0, 0, 0.82))
@@ -270,11 +465,13 @@ class CharSelection(DirectObject):
                                                           listFrameSizeZ = 0.51, arrowButtonScale = 0.0, items = self.charButtons,
                                                           parent = self.frame)
 
-        base.camera.setPos(75.12, 63.22, -23)
-        base.camera.setHpr(26.57, 9.62, 0)
+        if self.isNewToon:
+            self.__handleCharButton(self.newToonSlot)
+            self.disableAllCharButtons()
 
     def unload(self):
         self.selectionFSM.requestFinalState()
+        self.stageFSM.requestFinalState()
         self.cleanupStageToon()
         self.choice = None
         if self.frame:
@@ -302,26 +499,9 @@ class CharSelection(DirectObject):
         if self.quitButton:
             self.quitButton.destroy()
             self.quitButton = None
-        if self.sky:
-            self.sky.removeNode()
-            self.sky = None
-        if self.world:
-            self.world.removeNode()
-            self.world = None
         if self.title:
             self.title.destroy()
             self.title = None
-        for prop in self.props:
-            if not prop.isEmpty():
-                prop.removeNode()
-        self.props = None
-        if hasattr(self, 'particles'):
-            self.particles.cleanup()
-            self.particlesRender.removeNode()
-            self.particles = None
-            del self.particlesRender
-        base.render.clearFog()
-        self.fog = None
         base.camera.setPos(0, 0, 0)
         base.camera.setHpr(0, 0, 0)
         base.transitions.noTransitions()

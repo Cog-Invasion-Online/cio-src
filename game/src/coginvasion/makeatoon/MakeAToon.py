@@ -1,9 +1,14 @@
-########################################
-# Filename: MakeAToon.py
-# Created by:  blach (??July14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Vec4, TextNode
+@file MakeAToon.py
+@author Brian Lach
+@date July ??, 2014
+
+"""
+
+from pandac.PandaModules import Vec4, TextNode, Point3
 
 from direct.gui.DirectGui import DirectButton, DirectFrame, DirectEntry
 from direct.gui.DirectGui import OnscreenImage, DirectLabel, DGG
@@ -14,6 +19,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.makeatoon.ToonGenerator import ToonGenerator
 from src.coginvasion.gui import Dialog
+from src.coginvasion.base.Lighting import IndoorLightingConfig
 
 it = loader.loadFont("phase_3/models/fonts/ImpressBT.ttf")
 
@@ -110,7 +116,7 @@ class MakeAToon:
         pass
 
     def loadEnviron(self):
-        base.camLens.setFov(CIGlobals.OriginalCameraFov)
+        base.camLens.setMinFov(CIGlobals.OriginalCameraFov / (4. / 3.))
         camera.setPos(-4.77, -17.47, 3.30)
         camera.setH(344.05)
         self.mat_gui = loader.loadModel("phase_3/models/gui/tt_m_gui_mat_mainGui.bam")
@@ -147,31 +153,12 @@ class MakeAToon:
         self.spotlight.setScale(0.6, 0.8, 0.8)
         self.spotlight.setColor(1,1,1,0.3)
         self.spotlight_img = OnscreenImage(image=self.spotlight)
-        #self.light = render.attachNewNode(Spotlight('light'))
-        #self.light.node().setColor(Vec4(1, 1, 1, 1))
-        #light.node().setAttenuation(Point3(1, 1, 1))
-        #self.light.node().setShadowCaster(True, 2000, 2000)
-        #self.light.setPos(0, -27.11, 20)
-        #self.light.node().getLens().setFov(54)
-        #self.light.node().getLens().setNearFar(40,300)
-        #self.light.lookAt(0, 0, 3)
-        #self.light.node().setExponent( 0.0 )
-        #render.setLight(self.light)
-        #self.light.node().showFrustum()
-        #self.amb = render.attachNewNode(AmbientLight('amblight'))
-        #self.amb.node().setColor(Vec4(0.5, 0.5, 0.5, 1))
-        #render.setLight(self.amb)
-        #render.setAttrib(LightRampAttrib.makeDefault())
-        #render.setShaderAuto()
-        #render.flattenStrong()
-        #render.setTwoSided(True)
         self.toonGen = ToonGenerator(self)
-        #self.toonGen.toon.flattenStrong()
+        self.ilc = IndoorLightingConfig.makeDefault()
+        self.ilc.lights = [Point3(0, 0, 10)]
+        self.ilc.setupAndApply()
         self.music = base.loadMusic("phase_3/audio/bgm/create_a_toon.mid")
-        base.playMusic(self.music, volume=0.5, looping=1)
-        #base.enableMouse()
-        #base.oobe()
-        #self.light.place()
+        base.playMusic(self.music, volume=0.7, looping=1)
 
     def setSlot(self, slot):
         self.slot = slot
@@ -390,8 +377,6 @@ class MakeAToon:
         self.nameRoom.reparentTo(hidden)
         self.namePanel.setX(0)
         self.namePanel.reparentTo(hidden)
-        #self.spotlight_img.setX(0)
-        #self.spotlight_img.setZ(0)
         self.nameEntry.destroy()
         del self.nameEntry
         self.toonGen.setToonPosForGeneralShop()
@@ -1173,6 +1158,8 @@ class MakeAToon:
         self.colorRoom.remove()
         self.floor.remove()
         self.bg.remove()
+        self.ilc.cleanup()
+        del self.ilc
         del self.genderRoom
         del self.bodyRoom
         del self.colorRoom

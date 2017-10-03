@@ -1,7 +1,14 @@
-# Filename: DistributedDodgeballGame.py
-# Created by:  blach (18Apr16)
-#
-# OMG FINALLY THE DODGEBALL GAME!!
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedDodgeballGame.py
+@author Brian Lach
+@date April 18, 2016
+
+OMG FINALLY THE DODGEBALL GAME!!
+
+"""
 
 from pandac.PandaModules import Fog, Point3, Vec3, VBase4, TextNode
 
@@ -11,6 +18,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval
 from direct.gui.DirectGui import OnscreenText
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.toon import ParticleLoader
 from src.coginvasion.toon.ToonDNA import ToonDNA
 
@@ -123,11 +131,8 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         self.danceSound = base.loadSfx('phase_3.5/audio/sfx/ENC_Win.ogg')
 
         # Environment vars
-        self.sky = None
         self.arena = None
-        self.fog = None
-        self.snow = None
-        self.snowRender = None
+        self.olc = None
         self.trees = []
         self.snowballs = []
 
@@ -379,11 +384,6 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
     def createWorld(self):
         self.deleteWorld()
 
-        self.sky = loader.loadModel("phase_3.5/models/props/BR_sky.bam")
-        self.sky.reparentTo(render)
-        self.sky.setZ(-40)
-        self.sky.setFogOff()
-
         self.arena = loader.loadModel("phase_4/models/minigames/dodgeball_arena.egg")
         self.arena.reparentTo(render)
         self.arena.setScale(0.75)
@@ -407,17 +407,8 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
             snowball.setPos(snowdata)
             self.snowballs.append(snowball)
 
-        self.snow = ParticleLoader.loadParticleEffect('phase_8/etc/snowdisk.ptf')
-        self.snow.setPos(0, 0, 5)
-        self.snowRender = self.arena.attachNewNode('snowRender')
-        self.snowRender.setDepthWrite(0)
-        self.snowRender.setBin('fixed', 1)
-        self.snow.start(camera, self.snowRender)
-
-        self.fog = Fog('snowFog')
-        self.fog.setColor(0.486, 0.784, 1)
-        self.fog.setExpDensity(0.003)
-        render.setFog(self.fog)
+        self.olc = ZoneUtil.getOutdoorLightingConfig(CIGlobals.TheBrrrgh)
+        self.olc.setupAndApply()
 
     def throw(self, snowballIndex, p):
         snowball = self.snowballs[snowballIndex]
@@ -442,16 +433,9 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         for tree in self.trees:
             tree.removeNode()
         self.trees = []
-        if self.snow:
-            self.snow.cleanup()
-            self.snow = None
-        if self.snowRender:
-            self.snowRender.removeNode()
-            self.snowRender = None
-        self.fog = None
-        if self.sky:
-            self.sky.removeNode()
-            self.sky = None
+        if self.olc:
+            self.olc.cleanup()
+            self.olc = None
         if self.arena:
             self.arena.removeNode()
             self.arena = None

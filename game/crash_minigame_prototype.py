@@ -17,10 +17,9 @@ from direct.showbase.DirectObject import DirectObject
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.dna.DNALoader import *
-
 from src.coginvasion.minigame.CrashWalker import CrashWalker
-
 from src.coginvasion.toon import ParticleLoader
+from src.coginvasion.hood import ZoneUtil
 
 base.transitions.fadeScreen(1.0)
 
@@ -388,7 +387,13 @@ class Crate(NodePath, DirectObject):
 
     def _doCrateBounce(self, direction):
         base.localAvatar.walkControls.lifter.setVelocity(0)
-        base.localAvatar.walkControls.lifter.addVelocity(base.localAvatar.walkControls.avatarControlJumpForce if direction else -base.localAvatar.walkControls.avatarControlJumpForce)
+        forceOffset = 0
+        if direction:
+            force = base.localAvatar.walkControls.avatarControlJumpForce - forceOffset
+        else:
+            force = -base.localAvatar.walkControls.avatarControlJumpForce + forceOffset
+        print force
+        base.localAvatar.walkControls.lifter.addVelocity(force)
         messenger.send("jumpStart")
         base.localAvatar.walkControls.isAirborne = 1
 
@@ -716,6 +721,9 @@ class Game:
             geom.prepareScene(gsg)
         geom.setName('test_level')
         geom.reparentTo(render)
+        
+        self.olc = ZoneUtil.getOutdoorLightingConfig(CIGlobals.TheBrrrgh)
+        self.olc.setupAndApply()
 
         self.area = geom
         self.area.setH(90)
@@ -902,7 +910,7 @@ class Game:
         regCrateTrans = ((-35, 30, 0), (-15, 10, 0),
         (-27, 45, 0), (-22, 45, 0), (-17, 45, 0),(-12, 45, 0))#, (25, 20, 0), (33, 10, 0), (33, 20, 0), (20, 16, 0))
 
-        bouCrateTrans = ((-5, 20, 0), (-5, 20, 11), (-20, 100, 0), (-20, 100, 11))
+        bouCrateTrans = ((-5, 20, 0), (-5, 20, 13), (-20, 100, 0), (-20, 100, 13))
         
         for trans in regCrateTrans:
             beans = random.randint(1, 4)
@@ -938,7 +946,7 @@ class Game:
         base.localAvatar.setAnimState('teleportIn', callback = self.teleInDone)
         
         base.localAvatar.smartCamera.setCameraPositionByIndex(4)
-        base.playMusic(self.music, looping = 1, volume = 0.7)\
+        base.playMusic(self.music, looping = 1, volume = 0.7)
         
         base.localAvatar.stopSmartCamera()
         base.localAvatar.detachCamera()
@@ -957,6 +965,6 @@ class Game:
 
 game = Game()
 
-base.cTrav.showCollisions(render)
+#base.cTrav.showCollisions(render)
 
 base.run()

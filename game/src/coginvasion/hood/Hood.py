@@ -12,7 +12,6 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.dna.DNALoader import *
-from src.coginvasion.hood.SnowEffect import SnowEffect
 from src.coginvasion.base.Lighting import OutdoorLightingConfig
 
 from pandac.PandaModules import Vec4, AmbientLight, ModelPool, TexturePool, DirectionalLight
@@ -40,13 +39,9 @@ class Hood(StateData):
         self.suitFogData = [(0.3, 0.3, 0.3), 0.0025]
         self.titleColor = (1, 1, 1, 1)
         
-        self.snowEffect = SnowEffect(self)
-
         self.wantLighting = True
 
-        self.olc = OutdoorLightingConfig.makeDefault()
-        if base.cr.isChristmas():
-            self.olc.winterOverride = True
+        self.olc = ZoneUtil.getOutdoorLightingConfig(self.hoodId)
 
         return
 
@@ -112,24 +107,15 @@ class Hood(StateData):
 
     def setupOutdoorLighting(self):
         self.olc.setup()
-        if base.cr.isChristmas() or self.id == CIGlobals.TheBrrrgh:
-            self.snowEffect.load()
 
     def enableOutdoorLighting(self):
         self.olc.apply()
-        if base.cr.isChristmas() or self.id == CIGlobals.TheBrrrgh:
-            self.snowEffect.start()
 
     def disableOutdoorLighting(self):
         self.olc.unapply()
-        if base.cr.isChristmas() or self.id == CIGlobals.TheBrrrgh:
-            self.snowEffect.stop()
 
     def cleanupOutdoorLighting(self):
         self.olc.cleanup()
-        if base.cr.isChristmas() or self.id == CIGlobals.TheBrrrgh:
-            self.snowEffect.unload()
-            self.snowEffect = None
 
     def load(self):
         StateData.load(self)
@@ -137,10 +123,6 @@ class Hood(StateData):
             loadDNAFile(self.dnaStore, self.storageDNAFile)
         if self.holidayDNAFile:
             loadDNAFile(self.dnaStore, self.holidayDNAFile)
-        if not base.cr.isChristmas():
-            self.createNormalSky()
-        else:
-            self.createSpookySky()
 
         self.setupOutdoorLighting()
             
@@ -164,8 +146,6 @@ class Hood(StateData):
         self.dnaStore.reset_block_zones()
         self.dnaStore.reset_suit_points()
         del self.dnaStore
-        self.deleteCurrentSky()
-        self.stopSuitEffect(0)
         self.ignoreAll()
         ModelPool.garbageCollect()
         TexturePool.garbageCollect()
@@ -241,70 +221,3 @@ class Hood(StateData):
         else:
             self.doneStatus = doneStatus
             messenger.send(self.doneEvent)
-
-    def createNormalSky(self):
-        self.deleteCurrentSky()
-        self.sky = loader.loadModel(self.skyFilename)
-        if self.__class__.__name__ != 'CTHood':
-            self.sky.setScale(1.0)
-            self.sky.setFogOff()
-            self.sky.setLightOff()
-            self.sky.setMaterialOff()
-            self.sky.setShaderOff()
-        else:
-            self.sky.setScale(5.0)
-
-    def createSpookySky(self):
-        self.deleteCurrentSky()
-        self.sky = loader.loadModel(self.spookySkyFile)
-        self.sky.setScale(5.0)
-        self.sky.setFogOff()
-        self.sky.setFogOff()
-        self.sky.setLightOff()
-        self.sky.setMaterialOff()
-        self.sky.setShaderOff()
-
-    def deleteCurrentSky(self):
-        if hasattr(self, 'sky'):
-            if self.sky:
-                self.sky.removeNode()
-                del self.sky
-
-    def startSuitEffect(self):
-        self.stopSuitEffect()
-        light = AmbientLight("suitLight")
-        light.setColor(Vec4(*self.suitLightColor))
-        self.suitLight = render.attachNewNode(light)
-        render.setLight(self.suitLight)
-        self.suitFog = Fog("suitFog")
-        self.suitFog.setColor(*self.suitFogData[0])
-        self.suitFog.setExpDensity(self.suitFogData[1])
-        render.setFog(self.suitFog)
-        self.createSpookySky()
-        Hood.startSky(self)
-
-    def stopSuitEffect(self, newSky = 1):
-        #render.clearFog()
-        if self.suitLight:
-            render.clearLight(self.suitLight)
-            self.suitLight.removeNode()
-            self.suitLight = None
-        if self.suitFog:
-            self.suitFog = None
-        if newSky:
-            if not base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
-                self.createNormalSky()
-            else:
-                self.createSpookySky()
-            self.startSky()
-
-    def startSky(self):
-        self.sky.reparentTo(camera)
-        self.sky.setZ(0.0)
-        self.sky.setHpr(0.0, 0.0, 0.0)
-        ce = CompassEffect.make(NodePath(), CompassEffect.PRot | CompassEffect.PZ)
-        self.sky.node().setEffect(ce)
-        self.sky.hide(CIGlobals.ShadowCameraBitmask)
-
-    def stopSky(self):
-        self.sky.reparentTo(hidden)

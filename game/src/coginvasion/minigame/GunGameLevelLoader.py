@@ -9,7 +9,7 @@ from pandac.PandaModules import NodePath, Vec3, Point3, CompassEffect
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import OnscreenText
 
-from src.coginvasion.hood.SkyUtil import SkyUtil
+from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.distributed.HoodMgr import HoodMgr
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.dna.DNALoader import *
@@ -184,8 +184,7 @@ class GunGameLevelLoader:
 
         # for not momada only:
         self.levelGeom = None
-        self.skyUtil = None
-        self.skyModel = None
+        self.olc = None
         self.occluders = None
 
         # for momada only:
@@ -266,12 +265,6 @@ class GunGameLevelLoader:
             self.levelGeom = loader.loadModel(modelPath)
             self.levelGeom.flattenMedium()
             self.levelGeom.reparentTo(render)
-            if self.LevelData[self.levelName]['sky'] != None:
-                self.skyModel = loader.loadModel(self.SkyData['cog'] + '/cog_sky.bam')
-                self.skyUtil = SkyUtil()
-                self.skyUtil.startSky(self.skyModel)
-                self.skyModel.reparentTo(render)
-                self.skyModel.setScale(self.LevelData[self.levelName].get('sky_scale', 1.0))
             if self.LevelData[self.levelName].get('occluders'):
                 self.occluders = loader.loadModel(self.LevelData[self.levelName]['occluders'])
                 for occluderNode in self.occluders.findAllMatches('**/+OccluderNode'):
@@ -283,8 +276,6 @@ class GunGameLevelLoader:
             # It's a playground with dna and stuff. Just do the
             # normal loading procedure.
             dnaFiles = self.LevelData[self.levelName]['dna']
-            skyType = self.LevelData[self.levelName]['sky']
-            skyPhase = self.SkyData[skyType]
             loadDNAFile(self.dnaStore, 'phase_4/dna/storage.pdna')
             for index in range(len(dnaFiles)):
                 if index == len(dnaFiles) - 1:
@@ -308,12 +299,10 @@ class GunGameLevelLoader:
             
             for child in children:
                 child.hide()
-            self.skyModel = loader.loadModel(skyPhase + "/" + skyType + "_sky.bam")
-            self.skyUtil = SkyUtil()
-            self.skyUtil.startSky(self.skyModel)
-            self.skyModel.reparentTo(camera)
-            ce = CompassEffect.make(NodePath(), CompassEffect.PRot | CompassEffect.PZ)
-            self.skyModel.node().setEffect(ce)
+
+        self.olc = ZoneUtil.getOutdoorLightingConfig(self.LevelData[self.levelName].get('name'))
+        self.olc.setupAndApply()
+
         if self.loadingText:
             self.loadingText.destroy()
             self.loadingText = None
@@ -346,6 +335,9 @@ class GunGameLevelLoader:
 
     def unload(self):
         render.clearOccluder()
+        if self.olc:
+            self.olc.cleanup()
+            self.olc = None
         if self.levelName == "sbf":
             base.camLens.setFar(CIGlobals.DefaultCameraFar)
         if self.levelName == "momada":
@@ -359,12 +351,6 @@ class GunGameLevelLoader:
             if self.occluders:
                 self.occluders.removeNode()
                 self.occluders = None
-            if self.skyUtil:
-                self.skyUtil.stopSky()
-                self.skyUtil = None
-            if self.skyModel:
-                self.skyModel.removeNode()
-                self.skyModel = None
             if self.levelGeom:
                 self.levelGeom.removeNode()
                 self.levelGeom = None

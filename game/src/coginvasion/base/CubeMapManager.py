@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import TextureStage, Point3, NodePath, TexGenAttrib
+from panda3d.core import TextureStage, Point3, NodePath, TexGenAttrib, VBase4
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
@@ -18,26 +18,36 @@ class CubeMap:
         self.baseFile = baseFile
         self.position = position
         self.cubeTex = loader.loadCubeMap(baseFile)
-        self.cubeStage = TextureStage('cube-' + baseFile + "-stage")
-        self.cubeStage.setMode(TextureStage.MModulate)
+        self.projector = render.attachNewNode('cubemap_projector')
+        self.projector.setPos(0, 0, 0)
+        self.projector.setP(90)
 
     def cleanup(self):
         self.baseFile = None
         self.position = None
         self.cubeTex = None
-        self.cubeStage = None
+        if self.projector:
+            self.projector.removeNode()
+            self.projector = None
 
 class Node:
 
-    def __init__(self, np):
+    def __init__(self, np, reflectiveness):
         self.nodePath = np
+
+        self.stage = TextureStage(self.nodePath.getName() + "-cubemap_stage")
+        self.stage.setPriority(1)
+        self.stage.setMode(TextureStage.MModulate)
+        self.stage.setColor(VBase4(reflectiveness, reflectiveness, reflectiveness, 1.0))
+        self.nodePath.setTexGen(self.stage, TexGenAttrib.MWorldCubeMap)
+
         self.currentCube = None
 
     def clearCurrentCube(self):
         if self.currentCube:
             if self.nodePath and not self.nodePath.isEmpty():
-                self.nodePath.clearTexture(self.currentCube.cubeStage)
-                self.nodePath.clearTexGen(self.currentCube.cubeStage)
+                #self.nodePath.clearTexProjector(self.stage)
+                self.nodePath.clearTexture(self.stage)
             self.currentCube = None
 
     def setCurrentCube(self, cube):
@@ -46,12 +56,17 @@ class Node:
         self.currentCube = cube
 
         if self.nodePath and not self.nodePath.isEmpty():
-            self.nodePath.setTexGen(self.currentCube.cubeStage, TexGenAttrib.MWorldCubeMap)
-            self.nodePath.setTexture(self.currentCube.cubeStage, self.currentCube.cubeTex)
+            #self.nodePath.setTexProjector(self.stage, self.currentCube.projector, self.nodePath)
+            self.nodePath.setTexture(self.stage, self.currentCube.cubeTex)
 
     def cleanup(self):
         self.clearCurrentCube()
-        self.nodePath = None
+
+        if self.nodePath and not self.nodePath.isEmpty():
+            self.nodePath.clearTexGen(self.stage)
+            self.nodePath = None
+
+        self.stage = None
 
 class CubeMapManager:
     notify = directNotify.newCategory("CubeMapManager")
@@ -64,6 +79,9 @@ class CubeMapManager:
         taskMgr.add(self.__tick, "cubeMapManager.__tick")
 
     def __tick(self, task):
+        if len(self.cubeMaps) == 0:
+            return task.cont
+
         for node in self.nodes:
             if not node.nodePath or node.nodePath.isEmpty():
                 self.nodes.remove(node)
@@ -84,13 +102,13 @@ class CubeMapManager:
         cm = CubeMap(baseFile, position)
         self.cubeMaps.append(cm)
 
-    def addNode(self, node):
+    def addNode(self, node, reflectiveness = 1.0):
         if not isinstance(node, NodePath):
             self.notify.warning("addNode: non-NodePath object cannot be added!")
             return
 
         if not node.isEmpty():
-            self.nodes.append(Node(node))
+            self.nodes.append(Node(node, reflectiveness))
 
     def clearAll(self):
         self.clearNodes()

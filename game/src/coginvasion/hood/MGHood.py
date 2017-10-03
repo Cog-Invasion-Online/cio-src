@@ -11,7 +11,6 @@ from direct.fsm.State import State
 from pandac.PandaModules import TransparencyAttrib
 import ToonHood
 from playground import MGSafeZoneLoader
-import SkyUtil
 
 class MGHood(ToonHood.ToonHood):
     notify = directNotify.newCategory("MGHood")
@@ -23,11 +22,8 @@ class MGHood(ToonHood.ToonHood):
         self.id = CIGlobals.MinigameArea
         self.abbr = "MG"
         self.safeZoneLoader = MGSafeZoneLoader.MGSafeZoneLoader
-        self.skyUtil = SkyUtil.SkyUtil()
         self.storageDNAFile = None
         self.holidayDNAFile = None
-        self.skyFilename = "phase_3.5/models/props/TT_sky.bam"
-        self.spookySkyFile = "phase_3.5/models/props/BR_sky.bam"
         self.titleColor = (1.0, 0.5, 0.4, 1.0)
         self.loaderDoneEvent = 'MGHood-loaderDone'
         self.mgWantsLaffMeter = None
@@ -53,12 +49,3 @@ class MGHood(ToonHood.ToonHood):
             base.localAvatar.disableLaffMeter()
             self.mgWantsLaffMeter = None
         base.localAvatar.stopPosHprBroadcast()
-
-    def startSky(self):
-        ToonHood.ToonHood.startSky(self)
-        self.sky.setTransparency(TransparencyAttrib.MDual, 1)
-        self.skyUtil.startSky(self.sky)
-
-    def stopSky(self):
-        ToonHood.ToonHood.stopSky(self)
-        self.skyUtil.stopSky()

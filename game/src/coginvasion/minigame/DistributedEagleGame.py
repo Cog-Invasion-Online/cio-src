@@ -1,7 +1,7 @@
 # Filename: DistributedEagleGame.py
 # Created by:  blach (04Jul15)
 
-from pandac.PandaModules import Fog, NodePath, Point3, Vec3, CollisionNode
+from pandac.PandaModules import Fog, NodePath, Point3, Vec3, CollisionNode, VBase4
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM
@@ -14,6 +14,7 @@ from direct.distributed.ClockDelta import globalClockDelta
 from direct.actor.Actor import Actor
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.base.Lighting import OutdoorLightingConfig
 from FlightProjectileInterval import FlightProjectileInterval
 from DistributedMinigame import DistributedMinigame
 import EagleGameGlobals as EGG
@@ -101,6 +102,7 @@ class DistributedEagleGame(DistributedMinigame):
         self.round = 0
         self.world = None
         self.world2 = None
+        self.olc = None
         self.worldModelPath = 'phase_5/models/cogdominium/tt_m_ara_cfg_quadrant2.bam'
         self.nodesToStash = ['lights', 'streamers', 'tt_m_ara_cfg_girders2b:Rwall_col',
             'tt_m_ara_cfg_girders2b:Lwall_col']
@@ -388,12 +390,13 @@ class DistributedEagleGame(DistributedMinigame):
             trigger = self.world.find('**/' + triggerName)
             trigger.setCollideMask(CIGlobals.WallBitmask)
             self.accept('enter' + triggerName, self.__handleHitWall)
-            
-        self.fog = Fog("DEagleGame-sceneFog")
-        self.fog.setColor(*self.bgColor)
-        self.fog.setExpDensity(0.01)
         
-        render.setFog(self.fog)
+        self.olc = OutdoorLightingConfig.makeDefault()
+        self.olc.setSkyType(OutdoorLightingConfig.STNone)
+        self.olc.fogDensity = 0.01
+        self.olc.fog = VBase4(self.bgColor[0], self.bgColor[1], self.bgColor[2], 1.0)
+        self.olc.setupAndApply()
+
         render.hide()
         
         self.fsm.request('waitForOthers')
@@ -605,7 +608,9 @@ class DistributedEagleGame(DistributedMinigame):
             self.world2 = None
         self.worldModelPath = None
         self.nodesToStash = None
-        self.fog = None
+        if self.olc:
+            self.olc.cleanup()
+            self.olc = None
         self.round = None
         for platform in self.platforms:
             platform.removeNode()

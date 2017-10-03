@@ -28,6 +28,11 @@ from pandac.PandaModules import BitMask32, CollisionHandlerPusher
 from pandac.PandaModules import Material
 import ToonDNA, random
 
+import types
+
+def uniqueName(toon, string):
+    return string + "-" + str(id(toon))
+
 class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
     notify = directNotify.newCategory("Toon")
 
@@ -106,6 +111,10 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             'off', 'off')
         animStateList = self.animFSM.getStates()
         self.animFSM.enterInitialState()
+        
+        if not hasattr(self, 'uniqueName'):
+            print "Using hacky uniqueName function"
+            self.uniqueName = types.MethodType(uniqueName, self)
 
     def showAvId(self):
         pass
@@ -997,7 +1006,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.track = self.getTeleportInTrack(self.portal2)
         self.track.setDoneEvent(self.track.getName())
         self.acceptOnce(self.track.getName(), self.teleportInDone, [callback, extraArgs])
-        self.track.delayDelete = DelayDelete.DelayDelete(self, self.track.getName())
+        if hasattr(self, 'acquireDelayDelete'):
+            self.track.delayDelete = DelayDelete.DelayDelete(self, self.track.getName())
         self.track.start(ts)
 
     def teleportInDone(self, callback, extraArgs):

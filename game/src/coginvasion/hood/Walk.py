@@ -23,16 +23,12 @@ class Walk(StateData):
             State('deadWalking', self.enterDeadWalking, self.exitDeadWalking)],
             'off', 'off')
         self.fsm.enterInitialState()
-
-    def load(self):
+        
         if base.localAvatar.GTAControls:
             self.mouseMov = TPMouseMovement()
             self.mouseMov.initialize()
 
     def unload(self):
-        if base.localAvatar.GTAControls:
-            self.mouseMov.cleanup()
-            del self.mouseMov
         del self.fsm
 
     def enter(self):

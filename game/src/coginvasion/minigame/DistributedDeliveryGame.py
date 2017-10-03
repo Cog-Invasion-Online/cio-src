@@ -9,7 +9,7 @@ from direct.gui.DirectGui import OnscreenText, DirectLabel
 from direct.fsm import State
 
 from src.coginvasion.minigame.DistributedMinigame import DistributedMinigame
-from src.coginvasion.hood.SkyUtil import SkyUtil
+from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.globals import CIGlobals
 import DeliveryGameGlobals as DGG
 from DeliveryGamePie import DeliveryGamePie
@@ -25,8 +25,7 @@ class DistributedDeliveryGame(DistributedMinigame):
         self.fsm.getStateNamed('play').addTransition('announceGameOver')
         self.world = None
         self.gagShop = None
-        self.sky = None
-        self.skyUtil = SkyUtil()
+        self.olc = None
         base.localAvatar.hasBarrel = False
         self.truckBarrelIsFrom = None
         self.soundPickUpBarrel = None
@@ -148,12 +147,8 @@ class DistributedDeliveryGame(DistributedMinigame):
         self.world.setY(-5)
         self.world.reparentTo(base.render)
         self.world.find('**/ground').setBin('ground', 18)
-        self.sky = loader.loadModel('phase_3.5/models/props/TT_sky.bam')
-        self.sky.reparentTo(base.camera)
-        ce = CompassEffect.make(NodePath(), CompassEffect.PRot | CompassEffect.PZ)
-        self.sky.node().setEffect(ce)
-        self.sky.setZ(-20)
-        self.skyUtil.startSky(self.sky)
+        self.olc = ZoneUtil.getOutdoorLightingConfig(CIGlobals.ToontownCentral)
+        self.olc.setupAndApply()
         base.camera.setPos(20, 50, 30)
         base.camera.lookAt(20, 0, 7.5)
         DistributedMinigame.load(self)
@@ -240,13 +235,12 @@ class DistributedDeliveryGame(DistributedMinigame):
         if self.gagShop:
             self.gagShop.removeNode()
             self.gagShop = None
-        if self.sky:
-            self.sky.removeNode()
-            self.sky = None
+        if self.olc:
+            self.olc.cleanup()
+            self.olc = None
         if self.gagShopCollNP:
             self.gagShopCollNP.removeNode()
             self.gagShopCollNP = None
-        self.skyUtil = None
         self.soundPickUpBarrel = None
         self.soundDropOff = None
         self.truckBarrelIsFrom = None

@@ -14,6 +14,7 @@ import json
 notify = DirectNotify().newCategory("SettingsManager")
 
 class SettingsManager:
+    MouseCursors = {"None": "", "Toontown": game.phasedir + "toonmono.cur"}
 
     def __init__(self):
         self.jsonData = None
@@ -111,6 +112,10 @@ class SettingsManager:
         maspr = settings.get("maspr", None)
         if maspr == None:
             maspr = self.updateAndWriteSetting("maspr", True)
+            
+        cursor = settings.get("cursor", None)
+        if cursor == None:
+            cursor = self.updateAndWriteSetting("cursor", SettingsManager.MouseCursors.keys()[0])
 
         base.enableMusic(music)
         base.enableSoundEffects(sfx)
@@ -141,6 +146,7 @@ class SettingsManager:
         wp = WindowProperties()
         wp.setSize(res[0], res[1])
         wp.setFullscreen(fs)
+        wp.setCursorFilename(SettingsManager.MouseCursors[cursor])
         base.win.requestProperties(wp)
 
     def maybeFixAA(self):

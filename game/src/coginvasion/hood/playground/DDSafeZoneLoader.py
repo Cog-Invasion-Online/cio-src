@@ -32,6 +32,10 @@ class DDSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         self.telescope = None
         self.birdNoise = 'phase_6/audio/sfx/SZ_DD_Seagull.ogg'
 
+        self.wRefl = None
+
+        base.wakeWaterHeight = 1.64415
+
     def load(self):
         SafeZoneLoader.SafeZoneLoader.load(self)
         hq = self.geom.find('**/*toon_landmark_hqDD*')
@@ -39,6 +43,11 @@ class DDSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         hq.find('**/doorFrameHoleRight_0').stash()
         hq.find('**/doorFrameHoleLeft_1').stash()
         hq.find('**/doorFrameHoleRight_1').stash()
+
+        water = self.geom.find("**/top_surface")
+        water.setTwoSided(True)
+        self.geom.find("**/bottom_surface").stash()
+        base.waterReflectionMgr.addWaterNode(water, base.wakeWaterHeight)
 
     def enter(self, requestStatus):
         SafeZoneLoader.SafeZoneLoader.enter(self, requestStatus)

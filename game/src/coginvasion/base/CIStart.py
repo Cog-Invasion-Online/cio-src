@@ -12,13 +12,17 @@ Copyright (c) CIO Team. All rights reserved.
 
 from pandac.PandaModules import Multifile, Filename, VirtualFileSystem, PandaSystem
 from pandac.PandaModules import Thread, loadPrcFile, loadPrcFileData, CollisionTraverser, CullBinManager
-from pandac.PandaModules import ConfigVariableDouble, PStatClient
+from pandac.PandaModules import ConfigVariableDouble, PStatClient, WindowProperties
 
 import Logger
 logger = Logger.Starter()
 logger.startNotifyLogging()
 
-print "CIStart: Starting the game."
+from direct.directnotify.DirectNotifyGlobal import directNotify
+notify = directNotify.newCategory("CIStart")
+notify.setInfo(True)
+
+notify.info("Starting the game.")
 
 import os, sys
 import datetime
@@ -63,7 +67,7 @@ try:
     game.phasedir = './'
     game.production = True
     
-    print "Running production"
+    notify.info("Running production")
     
 except:
     loadPrcFile('config/Confauto.prc')
@@ -75,10 +79,10 @@ except:
     # Load phases from resoures folder in dev mode
     game.phasedir = './resources/'
     game.production = False
-    print "Running dev"
+    notify.info("Running dev")
 
-print "Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype)
-print "Phase dir:", game.phasedir
+notify.info("Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype))
+notify.info("Phase dir: " + game.phasedir)
 
 vfs = VirtualFileSystem.getGlobalPtr()
 
@@ -108,19 +112,19 @@ for phase in phases:
             if ext not in packExtensions:
                 packMf.removeSubfile(subFile)
     vfs.mount(mf, '.', 0)
-    print 'Mounted %s from default.' % phase
+    notify.info('Mounted %s from default.' % phase)
     if packMf:
         vfs.mount(packMf, '.', 0)
-        print 'Mounted %s from resource pack.' % phase
+        notify.info('Mounted %s from resource pack.' % phase)
 
 from src.coginvasion.manager.SettingsManager import SettingsManager
 jsonfile = "settings.json"
-print "CIStart: Reading settings file " + jsonfile
+notify.info("Reading settings file " + jsonfile)
 sm = SettingsManager()
 sm.loadFile(jsonfile)
 
-print "CIStart: Using Panda3D version {0}".format(PandaSystem.getVersionString())
-print 'CIStart: True threading: ' + str(Thread.isTrueThreads())
+notify.info("Using Panda3D version {0}".format(PandaSystem.getVersionString()))
+notify.info("True threading: " + str(Thread.isTrueThreads()))
 
 sm.maybeFixAA()
 
@@ -149,7 +153,7 @@ elif 'pandadx' in display:
     display = 'DirectX %s' % (str(display.replace('pandadx', '')))
 else:
     display = 'unknown'
-print 'CIStart: Using %s graphics library.' % display
+notify.info('Using %s graphics library.' % display)
 
 if audio == 'miles':
     audio = 'Miles'
@@ -157,7 +161,8 @@ elif audio == 'fmod':
     audio = 'FMOD'
 elif audio == 'openal':
     audio = 'OpenAL'
-print 'CIStart: Using %s audio library.' % audio
+
+notify.info('Using %s audio library.' % audio)
 
 # Define all of the admin commands.
 from src.coginvasion.distributed.AdminCommands import *
@@ -185,13 +190,13 @@ base.transitions.IrisModelName = "phase_3/models/misc/iris.bam"
 base.transitions.FadeModelName = "phase_3/models/misc/fade.bam"
 base.accept(base.inputStore.TakeScreenshot, ScreenshotHandler.__takeScreenshot)
 
-print "CIStart: Setting display preferences..."
+notify.info("Setting display preferences...")
 sm.applySettings()
 if base.win == None:
-    print "CIStart: Unable to open window; aborting."
+    notify.warning("Unable to open window; aborting.")
     sys.exit()
 else:
-    print "CIStart: Successfully opened window."
+    notify.info("Successfully opened window.")
 ConfigVariableDouble('decompressor-step-time').setValue(0.01)
 ConfigVariableDouble('extractor-step-time').setValue(0.01)
 
@@ -277,7 +282,7 @@ base.accept("PandaRestarted", maybeDoSomethingWithMusic, [1])
 base.accept('MusicEnabled', handleMusicEnabled)
 
 def doneInitLoad():
-    print "CIStart: Initial game load finished."
+    notify.info("Initial game load finished.")
     from src.coginvasion.distributed import CogInvasionClientRepository
     base.cr = CogInvasionClientRepository.CogInvasionClientRepository(music, "ver-" + game.version)
 
@@ -288,11 +293,11 @@ if game.uselighting:
     render.setAttrib(LightRampAttrib.makeHdr0())
     render.setShaderAuto()
 
-print "CIStart: Starting initial game load..."
+notify.info("Starting initial game load...")
 from InitialLoad import InitialLoad
 il = InitialLoad(doneInitLoad)
 music = base.loadMusic(CIGlobals.getThemeSong())
-base.playMusic(music, looping = 1, volume = 0.5)
+base.playMusic(music, looping = 1, volume = 0.7)
 il.load()
 
 base.run()

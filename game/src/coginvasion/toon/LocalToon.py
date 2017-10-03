@@ -1,8 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: LocalToon.py
-  Created by: blach (30Nov14)
-
+@file LocalToon.py
+@author Brian Lach
+@date November 30, 2014
 """
 
 from pandac.PandaModules import Point3, ConfigVariableBool
@@ -953,7 +955,7 @@ class LocalToon(DistributedToon):
         self.backpack.loadoutGUI = self.invGui
 
         # Unused developer methods.
-        #self.accept('enter', self.printAvPos)
+        self.accept('/', self.printAvPos)
         #self.accept('p', self.enterPictureMode)
         #self.accept('c', self.teleportToCT)
         #posBtn = DirectButton(text = "Get Pos", scale = 0.08, pos = (0.3, 0, 0), parent = base.a2dLeftCenter, command = self.printAvPos)

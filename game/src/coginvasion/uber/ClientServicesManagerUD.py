@@ -408,7 +408,8 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
                         )
                     collectedAvatars.append([avId, fields['setDNAStrand'][0],
                             fields['setName'][0],
-                            accFields['AVATAR_IDS'].index(avId)])
+                            accFields['AVATAR_IDS'].index(avId),
+                            fields['setLastHood'][0]])
                     pendingAvatars.remove(avId)
                     if not pendingAvatars:
                         self.sendToons(collectedAvatars, accId)
