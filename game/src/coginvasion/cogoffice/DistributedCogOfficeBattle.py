@@ -527,10 +527,10 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                 track = Sequence(
                     Func(toon.setAnimState, 'run'),
                     LerpPosInterval(toon, duration = 1.5, pos = pos,
-                        startPos = toon.getPos(render), blendType = 'easeOut'),
+                        startPos = toon.getPos(render)),
                     Func(toon.setAnimState, 'walk'),
                     LerpQuatInterval(toon, duration = 1.0, hpr = hpr,
-                        startHpr = lambda toon = toon: toon.getHpr(render), blendType = 'easeInOut'),
+                        startHpr = lambda toon = toon: toon.getHpr(render)),
                     Func(toon.setAnimState, 'neutral'))
                 runTrack.append(track)
 
