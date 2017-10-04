@@ -17,8 +17,12 @@ AudioClip() {
 
 AudioClip::
 AudioClip(vector<PT(AudioSound)> chunks, string &clip_name) :
-  _chunks(chunks), _taskmgr(AsyncTaskManager::get_global_ptr()),
-  _clip_name(clip_name), _ticktask(NULL), _current_sound(NULL) {
+  _chunks(chunks),
+  _clip_name(clip_name),
+  _ticktask(NULL), 
+  _current_sound(NULL),
+  _taskmgr(AsyncTaskManager::get_global_ptr())
+{
 }
 
 AudioClip::
@@ -100,12 +104,14 @@ play_audio_tick(GenericAsyncTask *task, PT(AudioSound) sound, int index) {
 		return AsyncTask::DS_done;
 	}
 
-	if ((sound->status() != AudioSound::PLAYING || sound->get_time() >= sound->length() / 2.0) && sound == _current_sound && _curr_clip_started == false) {
+	if ((sound->status() != AudioSound::PLAYING || sound->get_time() >= sound->length() / 2.0) &&
+      sound == _current_sound && _curr_clip_started == false) {
 		_curr_clip_started = true;
 		sound->play();
 	}
 
-	if ((sound->status() != AudioSound::PLAYING || sound->get_time() >= sound->length() / 2.0) && sound == _current_sound && _curr_clip_started == true) {
+	if ((sound->status() != AudioSound::PLAYING || sound->get_time() >= sound->length() / 2.0) &&
+      sound == _current_sound && _curr_clip_started == true) {
 		// This part is done!
 		sound->stop();
 		if (index == _chunks.size() - 1) {

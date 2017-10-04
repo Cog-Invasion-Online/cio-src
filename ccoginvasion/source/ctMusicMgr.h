@@ -15,6 +15,8 @@
 #include "audioClip.h"
 #include "ctMusicData.h"
 
+NotifyCategoryDeclNoExport(ctMusicManager);
+
 class CTMusicManager {
 PUBLISHED:
 

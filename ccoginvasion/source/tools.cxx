@@ -13,7 +13,8 @@
 
 using namespace std;
 
-static vector<string> explode(const string &delimiter, const string &str)
+static vector<string>
+explode(const string &delimiter, const string &str)
 {
 	vector<string> arr;
 
@@ -44,7 +45,8 @@ static vector<string> explode(const string &delimiter, const string &str)
 	return arr;
 }
 
-static int get_file_length(ifstream &t)
+static int
+get_file_length(ifstream &t)
 {
 	int length;
 	t.seekg(0, ios::end);
@@ -53,7 +55,8 @@ static int get_file_length(ifstream &t)
 	return length;
 }
 
-static vector<int> range(int start, int end) {
+static vector<int>
+range(int start, int end) {
 	vector<int> range_vector;
 	range_vector.push_back(start);
 	int index = 1;
@@ -64,13 +67,15 @@ static vector<int> range(int start, int end) {
 	return range_vector;
 }
 
-static vector<int> one_num_vec(int num) {
+static vector<int>
+one_num_vec(int num) {
 	vector<int> vec;
 	vec.push_back(num);
 	return vec;
 }
 
-static int filter(unsigned int code) {
+static int
+filter(unsigned int code) {
 	if (code == EXCEPTION_ACCESS_VIOLATION) {
 		return EXCEPTION_EXECUTE_HANDLER;
 	}

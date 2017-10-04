@@ -11,7 +11,8 @@
 
 #include <cmath>
 
-void CNametag3d::get_chatballoon_region(LPoint3 &center, double height_3d, PyObject *list)
+void CNametag3d::
+get_chatballoon_region(LPoint3 &center, double height_3d, PyObject *list)
 {
 	double left = center[0] - (_cb_width / 2.0);
 	double right = left + _cb_width;
@@ -29,7 +30,8 @@ void CNametag3d::get_chatballoon_region(LPoint3 &center, double height_3d, PyObj
 	PyList_Insert(list, 3, top_py);
 }
 
-double CNametag3d::get_scale(double distance, double scale_factor)
+double CNametag3d::
+get_scale(double distance, double scale_factor)
 {
 	return sqrt(distance) * scale_factor;
 }
