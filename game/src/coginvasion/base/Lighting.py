@@ -8,13 +8,11 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import VBase4, Vec3, Point3
+from panda3d.core import Point3
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood.SkyUtil import SkyUtil
 from src.coginvasion.hood.SnowEffect import SnowEffect
-
-DEFAULT_AMBIENT = VBase4(172 / 255.0, 196 / 255.0, 202 / 255.0, 1.0)
 
 class LightingConfig:
 
@@ -99,13 +97,15 @@ class OutdoorLightingConfig(LightingConfig):
 
     @staticmethod
     def makeDefault():
-        return OutdoorLightingConfig(DEFAULT_AMBIENT,
-                                     VBase4(252 / 255.0, 239 / 255.0, 209 / 255.0, 1.0),
-                                     Vec3(-150, 50, 500),
-                                     VBase4(0.8, 0.8, 1.0, 1.0),
-                                     0.001,
-                                     OutdoorLightingConfig.STMidday,
-                                     False)
+        envConfig = base.loader.envConfig
+
+        return OutdoorLightingConfig(envConfig.defaultOutdoorAmbientColor,
+            envConfig.defaultSunColor,
+            envConfig.defaultSunPosition,
+            envConfig.defaultFogColor,
+            envConfig.defaultFogDensity,
+            envConfig.defaultSkyType,
+        False)
 
     def setup(self):
         LightingConfig.setup(self)
@@ -197,9 +197,11 @@ class IndoorLightingConfig(LightingConfig):
 
     @staticmethod
     def makeDefault():
-        return IndoorLightingConfig(VBase4(252 / 255.0, 239 / 255.0, 209 / 255.0, 1.0),
-                                    VBase4(0.7, 0.7, 0.7, 1.0),
-                                    [Point3(0, 10, 11.5)])
+        envConfig = base.loader.envConfig
+        
+        return IndoorLightingConfig(envConfig.defaultIndoorAmbientColor,
+            envConfig.defaultInteriorLightColor,
+        [Point3(0, 10, 11.5)])
 
     def setup(self):
         LightingConfig.setup(self)

@@ -219,7 +219,7 @@ CameraBitmask = BitMask32(4)
 ShadowCameraBitmask = BitMask32.bit(5)
 WeaponBitmask = BitMask32.bit(6)
 DialogColor = (1, 1, 0.75, 1)
-DefaultBackgroundColor = (0, 0, 0, 1)
+DefaultBackgroundColor = (0.3, 0.3, 0.3, 1)
 PositiveTextColor = (0, 1, 0, 1)
 NegativeTextColor = (1, 0, 0, 1)
 OrangeTextColor = (1, 0.5, 0, 1)
@@ -288,7 +288,9 @@ Hood2ZoneId = {ToontownCentral: 2000, DonaldsDock: 1000, TheBrrrgh: 3000,
 ZoneId2Hood = {2000: ToontownCentral, 1000: DonaldsDock, 3000: TheBrrrgh,
                4000: MinniesMelodyland, 5000: DaisyGardens, 9000: DonaldsDreamland,
                10000: MinigameArea, 12000: CogTropolis}
-ZoneId2HoodAbbr = {2000: "TT", 1000: "DD", 3000: "BR", 4000: "MM", 5000: "DG", 9000: "DL"}
+HoodAbbr2Hood = {"TT" : ToontownCentral, "DD" : DonaldsDock, "BR" : TheBrrrgh, "MM" : MinniesMelodyland,
+                 "DG" : DaisyGardens, "DL" : DonaldsDreamland, "MG" : MinigameArea}
+ZoneId2HoodAbbr = {2000: "TT", 1000: "DD", 3000: "BR", 4000: "MM", 5000: "DG", 9000: "DL", 10000: "MG"}
 
 SellbotFactory = "Sellbot Factory"
 ToonBattleOriginalLevel = "Original Level"
@@ -328,7 +330,7 @@ SecretPlace = "Secret Place"
 TryAgain = "Try again?"
 NoConnectionMsg = "Could not connect to %s."
 DisconnectionMsg = "Your internet connection to the servers has been unexpectedly broken."
-JoinFailureMsg = "There was a problem getting you into " + config.GetString('game-name') + ". Please restart the game."
+#JoinFailureMsg = "There was a problem getting you into " + config.GetString('game-name') + ". Please restart the game."
 SuitDefeatMsg = "You have been defeated by the " + Suits + "! Try again?"
 ConnectingMsg = "Connecting..."
 ServerUnavailable = "The server appears to be temporarily unavailable. Still trying..."

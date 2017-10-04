@@ -25,7 +25,7 @@ class InitialLoad(LoadUtility):
 
     def __init__(self, callback):
         LoadUtility.__init__(self, callback)
-        phasesToScan = ["models", "phase_3/models"]
+        phasesToScan = ["phase_3/models"]
         self.models = FileUtility.findAllModelFilesInVFS(phasesToScan)
         self.version_lbl = None
         self.clouds = None

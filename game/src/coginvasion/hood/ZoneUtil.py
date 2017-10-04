@@ -103,24 +103,15 @@ def getOutdoorLightingConfig(hoodId):
     
     print "getOutdoorLightingConfig:", hoodId
 
-    if hoodId == DonaldsDock:
-        olc.setSkyType(olc.STCloudy)
-        olc.fogDensity = 0.0035
-
-    elif hoodId == TheBrrrgh:
-        olc.setSkyType(olc.STCloudy)
+    if hoodId == TheBrrrgh:
         olc.snow = True
-
-    elif hoodId == MinniesMelodyland:
-        olc.setSkyType(olc.STEvening)
-        olc.ambient = VBase4(110 / 255.0, 180 / 255.0, 204 / 255.0, 1.0)
-        olc.sun = VBase4(255 / 255.0, 109 / 255.0, 86 / 255.0, 1.0)
-        olc.sunPos = Vec3(-750, 100, 500)
-        olc.fog = VBase4(255 / 255.0, 109 / 255.0, 86 / 255.0, 1.0)
-
-    elif hoodId == DonaldsDreamland:
-        olc.setSkyType(olc.STNight)
-        olc.ambient = VBase4(82 / 255.0, 132 / 255.0, 190 / 255.0, 1.0)
-        olc.sun = VBase4(224 / 255.0, 213 / 255.0, 208 / 255.0, 1.0)
+        
+    data = base.loader.envConfig.getHoodSection(hoodId)
+    olc.setSkyType(data.skyType)
+    olc.ambient = data.outdoorAmbientColor
+    olc.sun = data.sunColor
+    olc.sunPos = data.sunPosition
+    olc.fog = data.fogColor
+    olc.fogDensity = data.fogDensity
 
     return olc

@@ -84,38 +84,8 @@ except:
 notify.info("Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype))
 notify.info("Phase dir: " + game.phasedir)
 
-vfs = VirtualFileSystem.getGlobalPtr()
-
-phases = ['phase_3', 'phase_3.5', 'phase_4', 'phase_5', 'phase_5.5', 'phase_6', 'phase_7', 'phase_8', 'phase_9',
-    'phase_10', 'phase_11', 'phase_12', 'phase_13', 'phase_0', 'phase_14', 'tournament_music']
-packExtensions = ['.jpg', '.jpeg', '.png', '.ogg', '.rgb', '.mid']
-
-for phase in phases:
-    mf = Multifile()
-    mf.setEncryptionPassword(game.resourceEncryptionPwd)
-    mf.openReadWrite(Filename(game.phasedir + phase + '.mf'))
-    packMf = None
-
-    if os.path.exists('resourcepack/%s.mf' % phase):
-        # Let's remove the unneeded files.
-        for subFile in mf.getSubfileNames():
-            ext = os.path.splitext(subFile)[1]
-            if ext in packExtensions:
-                mf.removeSubfile(subFile)
-
-        packMf = Multifile()
-        packMf.openReadWrite(Filename('resourcepack/%s.mf' % phase))
-
-        # Let's remove all the default files.
-        for subFile in packMf.getSubfileNames():
-            ext = os.path.splitext(subFile)[1]
-            if ext not in packExtensions:
-                packMf.removeSubfile(subFile)
-    vfs.mount(mf, '.', 0)
-    notify.info('Mounted %s from default.' % phase)
-    if packMf:
-        vfs.mount(packMf, '.', 0)
-        notify.info('Mounted %s from resource pack.' % phase)
+from CIBase import CIBase
+base = CIBase()
 
 from src.coginvasion.manager.SettingsManager import SettingsManager
 jsonfile = "settings.json"
@@ -123,13 +93,17 @@ notify.info("Reading settings file " + jsonfile)
 sm = SettingsManager()
 sm.loadFile(jsonfile)
 
+from CogInvasionLoader import CogInvasionLoader
+base.loader = CogInvasionLoader(base)
+__builtin__.loader = base.loader
+
+# Let's load up our multifiles
+base.loader.mountMultifiles()
+
 notify.info("Using Panda3D version {0}".format(PandaSystem.getVersionString()))
 notify.info("True threading: " + str(Thread.isTrueThreads()))
 
 sm.maybeFixAA()
-
-import CIBase
-base = CIBase.CIBase()
 
 # Use our shader generator extension
 #import ccoginvasion
@@ -170,11 +144,8 @@ from src.coginvasion.distributed.AdminCommands import *
 from direct.gui import DirectGuiGlobals
 
 from src.coginvasion.base import ScreenshotHandler
-import CogInvasionLoader
 
-base.loader = CogInvasionLoader.CogInvasionLoader(base)
 base.graphicsEngine.setDefaultLoader(base.loader.loader)
-__builtin__.loader = base.loader
 from src.coginvasion.globals import CIGlobals
 cbm = CullBinManager.getGlobalPtr()
 cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
