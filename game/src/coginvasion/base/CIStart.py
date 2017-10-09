@@ -98,7 +98,7 @@ base.loader = CogInvasionLoader(base)
 __builtin__.loader = base.loader
 
 # Let's load up our multifiles
-base.loader.mountMultifiles()
+base.loader.mountMultifiles(sm.getSetting("resourcepack"))
 
 notify.info("Using Panda3D version {0}".format(PandaSystem.getVersionString()))
 notify.info("True threading: " + str(Thread.isTrueThreads()))

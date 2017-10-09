@@ -20,14 +20,12 @@ boolean = 'boolean'
 color = 'color'
 position = 'position'
 numberValue = 'number'
-
-STMidday = 0
-STCloudy = 1
-STEvening = 2
-STNight = 3
-STCog = 4
+stringValue = 'string'
+stringList = 'stringList'
+anyValue = 'any'
 
 class Modifier:
+    notify = directNotify.newCategory('YAMLConfigurationModifier')
     
     def __init__(self, modType = color):
         self.modType = modType
@@ -37,40 +35,52 @@ class Modifier:
     def digest(self, data):
         if self.modType is color:
             if not isinstance(data, list) or len(data) != 3:
-                print 'Expected 3 [0-255] rgb values for color.'
-                print 'Instead, %d values were found.' % len(data)
+                self.notify.warning('Expected 3 [0-255] rgb values for color.')
+                self.notify.warning('Instead, %d values were found.' % len(data))
                 return None
             elif isinstance(data, list) and len(data) == 3:
                 for n in data:
                     if isinstance(n, (int, long)):
                         if not (0 <= n <= 255):
-                            print 'Illegal number value for color. Only [0-255] is allowed!'
+                            self.notify.warning('Illegal number value for color. Only [0-255] is allowed!')
                             return None
                     else:
-                        print 'Received a non-int value for color.'
+                        self.notify.warning('Received a non-int value for color.')
                         return None
             return VBase4(data[0] / 255.0, data[1] / 255.0, data[2] / 255.0, 1.0)
+        elif self.modType is stringList:
+            if not isinstance(data, list):
+                self.notify.warning('Expected a list of strings.')
+                return None
+            return data
         elif self.modType is position:
             if not isinstance(data, list) or len(data) != 3:
-                print 'Expected 3 integer values for position.'
-                print 'Instead, %d values were found.' % len(data)
+                self.notify.warning('Expected 3 integer values for position.')
+                self.notify.warning('Instead, %d values were found.' % len(data))
                 return None
             elif isinstance(data, list) and len(data) == 3:
                 for n in data:
                     if not isinstance(n, (int, long)):
-                        print 'Positional values must be integers.'
+                        self.notify.warning('Positional values must be integers.')
                         return None
             return Vec3(data[0], data[1], data[2])
         elif self.modType is numberValue:
             try:
                 return float(data)
             except ValueError:
-                print 'Expected a single number value for fog density'
+                self.notify.warning('Expected a single number value for fog density')
                 return None
         elif self.modType is boolean:
             if not type(data) == type(True):
-                print 'Expected a boolean value for want-reflections.'
+                self.notify.warning('Expected a boolean value for want-reflections.')
                 return None
+            return data
+        elif self.modType is stringValue:
+            if not isinstance(data, basestring):
+                self.notify.warning('Expected a string value.')
+                return None
+            return data
+        elif self.modType is anyValue:
             return data
 
 class HoodData(object):
@@ -156,7 +166,7 @@ class EnvironmentConfiguration:
         for hood in HoodAbbr2Hood.keys():
             self.hoodData[hood] = HoodData(self)
             
-    def __processData(self, data):
+    def processData(self, data):
         # This is the section where our environment data can be found.
         environ = data if not self.section else data[self.section]
 
@@ -182,7 +192,7 @@ class EnvironmentConfiguration:
                         fileHoodDataToLoad.append(key)
                     continue
                 else:
-                    print 'Unexpected key %s was found.' % key
+                    self.notify.warning('Unexpected key %s was found.' % key)
             
             fileDataLoaded = 0
             for i in xrange(0, len(self.hoodData.keys())):
@@ -202,9 +212,9 @@ class EnvironmentConfiguration:
     def digest(self):
         if self.configPath:
             with open(self.configPath, 'r') as stream:
-                self.__processData(load(stream))
+                self.processData(load(stream))
         elif self.configStream:
-            self.__processData(load(self.configStream))
+            self.processData(load(self.configStream))
                     
     def getHoodSection(self, key):
         index = -1 if not key in HoodAbbr2Hood.values() else HoodAbbr2Hood.values().index(key)
