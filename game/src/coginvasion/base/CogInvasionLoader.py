@@ -15,6 +15,7 @@ from panda3d.core import Multifile, Filename, VirtualFileSystem
 
 from src.coginvasion.gui.CIProgressScreen import CIProgressScreen
 from src.coginvasion.resourcepack.EnvironmentConfiguration import EnvironmentConfiguration
+from src.coginvasion.resourcepack.ResourcePack import ResourcePack
 from src.coginvasion.dna.DNALoader import loadDNAFile
 from src.coginvasion.globals import CIGlobals
 
@@ -38,19 +39,36 @@ class CogInvasionLoader(Loader.Loader):
         self.wantAutoTick = False
         self.envConfig = None
         self.envConfigStream = None
+        self.resourcePack = None
         return
     
     def mountMultifiles(self, resourcePackName = None):
         rsPackPath = None if not resourcePackName else 'resourcepacks/' + resourcePackName
+        
+        # This boolean flag is set false if pack.yaml is not found.
+        allowResourcePackLoad = True
+        
+        if os.path.exists(rsPackPath):
+            if not os.path.exists(rsPackPath + '/pack.yaml'):
+                self.notify.warning('You must have a \'pack.yaml\' configuration in the directory of your resource pack to use it.')
+                allowResourcePackLoad = False
+            else:
+                self.resourcePack = ResourcePack(rsPackPath)
+                allowResourcePackLoad = self.resourcePack.digest()
+                
+                if allowResourcePackLoad:
+                    author = '' if len(self.resourcePack.authors) == 0 else self.resourcePack.authors[0]
+                    self.notify.info('Loading Resource Pack %s [%s] by %s...' % (self.resourcePack.name,
+                        self.resourcePack.version, author))
+                    
+                    self.envConfig = self.resourcePack
+                    self.notify.info('Using Resource Pack Environment Configuration.')
         
         # This is a boolean flag that stores if we let the user know that a resource
         # pack directory was not found.
         warnedOfMissingPack = False
         
         vfs = VirtualFileSystem.getGlobalPtr()
-        
-        if resourcePackName:
-            rsPackPath = 'resourcepacks/%s'
         
         for phase in self.Phases:
             mf = Multifile()
@@ -61,30 +79,31 @@ class CogInvasionLoader(Loader.Loader):
             rsPackMf = None
             loadedRsPackMf = False
             
-            if rsPackPath and os.path.exists(rsPackPath):
-                rsPhasePath = '%s/%s.mf' % (rsPackPath, phase)
-                if os.path.exists(rsPhasePath):
-                    # This is the phase that exists within the resource pack.
-                    rsPackMf = Multifile()
-                    rsPackMf.openReadWrite(Filename(rsPhasePath))
-                    
-                    # Let's remove the unneeded files from the default multifile for this phase.
-                    for subFile in mf.getSubfileNames():
-                        ext = os.path.splitext(subFile)[1][1:]
+            if allowResourcePackLoad:
+                if rsPackPath and os.path.exists(rsPackPath):
+                    rsPhasePath = '%s/%s.mf' % (rsPackPath, phase)
+                    if os.path.exists(rsPhasePath):
+                        # This is the phase that exists within the resource pack.
+                        rsPackMf = Multifile()
+                        rsPackMf.openReadWrite(Filename(rsPhasePath))
                         
-                        # This code removes files that are overwritten by the resource pack.
-                        if ext in self.LegalResourcePackExtensions and subFile in rsPackMf.getSubfileNames():
-                            mf.removeSubFile(subFile)
+                        # Let's remove the unneeded files from the default multifile for this phase.
+                        for subFile in mf.getSubfileNames():
+                            ext = os.path.splitext(subFile)[1][1:]
+                            
+                            # This code removes files that are overwritten by the resource pack.
+                            if ext in self.LegalResourcePackExtensions and subFile in rsPackMf.getSubfileNames():
+                                mf.removeSubfile(subFile)
+                            
+                            # This code removes illegal files inside of the resource pack multifile.
+                            elif not ext in self.LegalResourcePackExtensions and subFile in rsPackMf.getSubfileNames():
+                                rsPackMf.removeSubfile(subFile)
                         
-                        # This code removes illegal files inside of the resource pack multifile.
-                        elif not ext in self.LegalResourcePackExtensions and subFile in rsPackMf.getSubfileNames():
-                            rsPackMf.removeSubfile(subFile)
-                    
-                    # Let's flag that we've loaded a resource pack multifile.
-                    loadedRsPackMf = True
-            elif rsPackPath and not os.path.exists(rsPackPath) and not warnedOfMissingPack:
-                self.notify.warning('Desired resource pack could not be found in the \'resourcepacks\' directory.')
-                warnedOfMissingPack = True
+                        # Let's flag that we've loaded a resource pack multifile.
+                        loadedRsPackMf = True
+                elif rsPackPath and not os.path.exists(rsPackPath) and not warnedOfMissingPack:
+                    self.notify.warning('Desired resource pack could not be found in the \'resourcepacks\' directory.')
+                    warnedOfMissingPack = True
             vfs.mount(mf, '.', 0)
             
             if loadedRsPackMf:
