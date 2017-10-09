@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: MoneyGui.py
-  Created by: blach (06Aug14)
+@file MoneyGui.py
+@author Brian Lach
+@date August 06, 2014
 
 """
 

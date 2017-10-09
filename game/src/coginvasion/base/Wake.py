@@ -9,7 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 
-from pandac.PandaModules import *
+from panda3d.core import *
 from direct.interval.IntervalGlobal import *
 
 class Wake(NodePath):

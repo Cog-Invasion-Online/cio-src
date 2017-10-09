@@ -1,5 +1,12 @@
-# Filename: DGSafeZoneLoader.py
-# Created by:  blach (24Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DGSafeZoneLoader.py
+@author Brian Lach
+@date July 24, 2015
+
+"""
 
 from panda3d.core import TransparencyAttrib, ColorAttrib
 

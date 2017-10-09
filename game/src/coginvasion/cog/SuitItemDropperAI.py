@@ -1,5 +1,12 @@
-# Filename: SuitItemDropperAI.py
-# Created by:  DecodedLogic (24Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitItemDropperAI.py
+@author Maverick Liberty
+@date July 24, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.gags import GagGlobals

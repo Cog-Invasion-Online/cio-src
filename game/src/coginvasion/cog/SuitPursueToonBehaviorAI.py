@@ -1,7 +1,14 @@
-# Filename: SuitPursueToonBehaviorAI.py
-# Created by:  blach (29Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Vec2, Point2
+@file SuitPursueToonBehaviorAI.py
+@author Brian Lach
+@date December 29, 2015
+
+"""
+
+from panda3d.core import Vec2, Point2
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State

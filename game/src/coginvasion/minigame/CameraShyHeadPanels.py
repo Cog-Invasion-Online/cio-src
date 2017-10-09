@@ -1,7 +1,7 @@
 # Filename: CameraShyHeadPanels.py
 # Created by:  blach (09Jul15)
 
-from pandac.PandaModules import Point3, VBase4
+from panda3d.core import Point3, VBase4
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectFrame
 

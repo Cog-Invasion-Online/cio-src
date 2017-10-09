@@ -12,7 +12,7 @@ from direct.distributed.PyDatagram import PyDatagram
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.gags import GagGlobals
-from pandac.PandaModules import NetDatagram
+from panda3d.core import NetDatagram
 import anydbm
 import os
 

@@ -1,5 +1,12 @@
-# Filename: FriendRequest.py
-# Created by:  blach (04Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file FriendRequest.py
+@author Brian Lach
+@date August 04, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectFrame, OnscreenText, DirectButton

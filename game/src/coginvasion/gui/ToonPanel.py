@@ -1,7 +1,14 @@
-# Filename: ToonPanel.py
-# Created by:  blach (03Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import TextNode
+@file ToonPanel.py
+@author Brian Lach
+@date August 03, 2015
+
+"""
+
+from panda3d.core import TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectFrame, DirectButton, OnscreenText, DGG

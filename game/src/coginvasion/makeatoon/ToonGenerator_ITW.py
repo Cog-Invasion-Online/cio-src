@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: ToonGenerator.py
-  Created by: blach (??July14)
+@file ToonGenerator.py
+@author Brian Lach
+@date July ??, 2014
 
 """
 

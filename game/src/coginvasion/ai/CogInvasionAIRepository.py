@@ -1,7 +1,12 @@
-########################################
-# Filename: CogInvasionAIRepository.py
-# Created by: blach (14Feb14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file CogInvasionAIRepository.py
+@author Brian Lach
+@date Februrary 14, 2015
+
+"""
 
 from src.coginvasion.distributed.CogInvasionInternalRepository import CogInvasionInternalRepository
 from src.coginvasion.distributed.DistributedDistrictAI import DistributedDistrictAI
@@ -19,7 +24,7 @@ from src.coginvasion.hood.DGHoodAI import DGHoodAI
 from src.coginvasion.hood.DDHoodAI import DDHoodAI
 from src.coginvasion.cogtropolis.CTHoodAI import CTHoodAI
 
-from pandac.PandaModules import UniqueIdAllocator
+from panda3d.core import UniqueIdAllocator
 from src.coginvasion.globals import CIGlobals
 from AIZoneData import AIZoneDataStore
 from direct.directnotify.DirectNotifyGlobal import directNotify

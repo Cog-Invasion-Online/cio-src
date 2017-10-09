@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: WholeCreamPie.py
-  Created by: DecodedLogic (07Jul15)
+@file WholeCreamPie.py
+@author Maverick Liberty
+@date July 07, 2015
 
 """
 

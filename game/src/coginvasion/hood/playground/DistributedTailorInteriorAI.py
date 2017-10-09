@@ -1,5 +1,12 @@
-# Filename: DistributedTailorInteriorAI.py
-# Created by:  DecodedLogic (11Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedTailorInteriorAI.py
+@author Maverick Liberty
+@date August 11, 2015
+
+"""
 
 from src.coginvasion.hood import DistributedToonInteriorAI
 

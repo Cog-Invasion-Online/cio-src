@@ -1,7 +1,12 @@
-########################################
-# Filename: Anvil.py
-# Created by: DecodedLogic (13Aug15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Anvil.py
+@author Maverick Liberty
+@date August 13, 2015
+
+"""
 
 from src.coginvasion.gags.LightDropGag import LightDropGag
 from src.coginvasion.globals import CIGlobals

@@ -1,11 +1,17 @@
-########################################
-# Filename: ShtickerBook.py
-# Created by: DecodedLogic (17Jun16)
-# HAPPY BIRTHDAY COG INVASION ONLINE!!!
-#         2 YEAR ANNIVERSARY
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import TextNode, Vec3
+@file ShtickerBook.py
+@author Maverick Liberty
+@date June 17, 2016
+
+HAPPY BIRTHDAY COG INVASION ONLINE!!!
+         2 YEAR ANNIVERSARY
+
+"""
+
+from panda3d.core import TextNode, Vec3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.StateData import StateData

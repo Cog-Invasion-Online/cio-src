@@ -1,15 +1,17 @@
-# COG INVASION ONLINE
-# Copyright (c) Brian Lach       <brianlach72@gmail.com>
-#               Maverick Liberty <maverick.liberty29@gmail.com>
-#
-# file:    KickBanDialog.py
-# author:  Brian Lach
-# date:    2016-09-05
-#
-# purpose: This is the dialog window that appears when we are
-#          prompted to click on a Toon to kick or ban.
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import TextNode
+@file KickBanDialog.py
+@author Brian Lach
+@date September 05, 2016
+
+@desc This is the dialog window that appears when we are
+      prompted to cick on a Toon to kick or ban.
+
+"""
+
+from panda3d.core import TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

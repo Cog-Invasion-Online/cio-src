@@ -1,11 +1,14 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: ThrowGag.py
-  Created by: DecodedLogic (07Jul15)
+@file ThrowGag.py
+@author Maverick Liberty
+@date July 07, 2015
 
 """
 
-from pandac.PandaModules import CollisionSphere, BitMask32, CollisionNode, NodePath, CollisionHandlerEvent
+from panda3d.core import CollisionSphere, BitMask32, CollisionNode, NodePath, CollisionHandlerEvent
 from direct.interval.ProjectileInterval import ProjectileInterval
 from direct.gui.DirectGui import DirectWaitBar, DGG
 

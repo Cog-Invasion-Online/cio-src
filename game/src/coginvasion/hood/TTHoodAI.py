@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: TTHoodAI.py
-  Created by: blach (20Dec14)
+@file TTHoodAI.py
+@author Brian Lach
+@date December 20, 2014
 
 """
 

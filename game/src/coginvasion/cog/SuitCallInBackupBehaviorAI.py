@@ -1,7 +1,12 @@
-########################################
-# Filename: SuitCallInBackupBehaviorAI.py
-# Created by: DecodedLogic (14Sep15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitCallInBackupBehaviorAI.py
+@author Maverick Liberty
+@date September 14, 2015
+
+"""
 
 from src.coginvasion.cog.SuitBehaviorBaseAI import SuitBehaviorBaseAI
 from src.coginvasion.cog.SuitFollowBossBehaviorAI import SuitFollowBossBehaviorAI

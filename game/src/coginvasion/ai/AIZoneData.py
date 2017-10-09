@@ -3,7 +3,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.task import Task
 from direct.showbase import LeakDetectors
 
-from pandac.PandaModules import NodePath, CollisionTraverser
+from panda3d.core import NodePath, CollisionTraverser
 
 from src.coginvasion.globals import CIGlobals
 

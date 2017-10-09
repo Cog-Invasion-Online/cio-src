@@ -1,11 +1,14 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: CTCSafeZoneLoader.py
-  Created by: blach (14Dec14)
+@file CTCSafeZoneLoader.py
+@author Brian Lach
+@date December 14, 2014
 
 """
 
-from pandac.PandaModules import TransparencyAttrib
+from panda3d.core import TransparencyAttrib
 
 from src.coginvasion.holiday.HolidayManager import HolidayType
 import SafeZoneLoader, CTCPlayground

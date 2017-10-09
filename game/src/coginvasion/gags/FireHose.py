@@ -1,7 +1,14 @@
-# Filename: FireHose.py
-# Created by:  blach (15Nov15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Point3, Vec3
+@file FireHose.py
+@author Brian Lach
+@date November 15, 2015
+
+"""
+
+from panda3d.core import Point3, Vec3
 
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval, LerpScaleInterval, Parallel
 

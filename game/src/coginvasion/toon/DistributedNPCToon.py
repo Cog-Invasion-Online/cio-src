@@ -1,7 +1,7 @@
 # Filename: DistributedNPCToon.py
 # Created by:  blach (31Jul15)
 
-from pandac.PandaModules import CollisionNode, CollisionSphere
+from panda3d.core import CollisionNode, CollisionSphere
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Parallel, LerpPosInterval, LerpQuatInterval, Sequence, Wait, Func
 

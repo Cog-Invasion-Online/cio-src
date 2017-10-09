@@ -4,7 +4,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 @file UserInputStorage.py
 @author Maverick Liberty
-@date 2017-09-23
+@date September 23, 2017
 
 """
 

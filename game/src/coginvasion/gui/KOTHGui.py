@@ -1,7 +1,12 @@
-########################################
-# Filename: KOTHGui.py
-# Created by: DecodedLogic (16Jun16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file KOTHGui.py
+@author Maverick Liberty
+@date June 16, 2016
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectFrame, OnscreenText, OnscreenImage

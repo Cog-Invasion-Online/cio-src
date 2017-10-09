@@ -1,4 +1,4 @@
-from pandac.PandaModules import VBase4, PGButton, TP_normal
+from panda3d.core import VBase4, PGButton, TP_normal
 
 
 CCLocal = 0

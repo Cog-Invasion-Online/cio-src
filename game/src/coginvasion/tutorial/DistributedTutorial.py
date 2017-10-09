@@ -1,7 +1,7 @@
 # Filename: DistributedTutorial.py
 # Created by:  blach (16Oct15)
 
-from pandac.PandaModules import NodePath, CompassEffect
+from panda3d.core import NodePath, CompassEffect
 
 from direct.distributed.DistributedObject import DistributedObject
 from direct.directnotify.DirectNotifyGlobal import directNotify

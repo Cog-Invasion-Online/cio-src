@@ -1,8 +1,11 @@
 """
-  
-  Filename: HoodGui.py
-  Created by: blach (04Oct14)
-  
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file HoodGui.py
+@author Brian Lach
+@date October 04, 2014
+
 """
 
 from direct.gui.DirectGui import OnscreenText

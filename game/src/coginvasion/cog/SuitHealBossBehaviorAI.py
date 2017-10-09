@@ -1,7 +1,12 @@
-########################################
-# Filename: SuitHealBossBehaviorAI.py
-# Created by: DecodedLogic (20Sep15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitHealBossBehaviorAI.py
+@author Maverick Liberty
+@date September 20, 2015
+
+"""
 
 from src.coginvasion.cog.SuitHabitualBehaviorAI import SuitHabitualBehaviorAI
 from src.coginvasion.cog import SuitAttacks

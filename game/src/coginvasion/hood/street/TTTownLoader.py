@@ -1,5 +1,12 @@
-# Filename: TTTownLoader.py
-# Created by:  blach (25Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file TTTownLoader.py
+@author Brian Lach
+@date July 25, 2015
+
+"""
 
 import TownLoader
 import TTStreet

@@ -1,11 +1,14 @@
 """
-  
-  Filename: SkyUtil.py
-  Created by: blach (??July14)
-  
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SkyUtil.py
+@author Brian Lach
+@date July ??, 2014
+
 """
 
-from pandac.PandaModules import Vec3
+from panda3d.core import Vec3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

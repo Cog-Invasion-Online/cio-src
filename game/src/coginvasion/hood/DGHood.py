@@ -1,7 +1,14 @@
-# Filename: DGHood.py
-# Created by:  blach (24Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import TransparencyAttrib
+@file DGHood.py
+@author Brian Lach
+@date July 24, 2015
+
+"""
+
+from panda3d.core import TransparencyAttrib
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from ToonHood import ToonHood

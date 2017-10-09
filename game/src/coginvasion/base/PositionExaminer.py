@@ -10,9 +10,9 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.showbase.DirectObject import DirectObject
 
-from pandac.PandaModules import NodePath, CollisionRay, CollisionNode, BitMask32
-from pandac.PandaModules import CollisionSphere, CollisionSegment, CollisionTraverser
-from pandac.PandaModules import CollisionHandlerQueue
+from panda3d.core import NodePath, CollisionRay, CollisionNode, BitMask32
+from panda3d.core import CollisionSphere, CollisionSegment, CollisionTraverser
+from panda3d.core import CollisionHandlerQueue
 
 from src.coginvasion.globals import CIGlobals
 

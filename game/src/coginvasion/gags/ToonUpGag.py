@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: ToonUpGag.py
-  Created by: DecodedLogic (17Jul15)
+@file ToonUpGag.py
+@author Maverick Liberty
+@date July 17, 2015
 
 """
 
@@ -9,7 +12,7 @@ from direct.interval.IntervalGlobal import ActorInterval
 
 from src.coginvasion.gags.Gag import Gag
 from src.coginvasion.gags.GagType import GagType
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 import random
 
 class ToonUpGag(Gag):

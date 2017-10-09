@@ -1,7 +1,12 @@
-########################################
-# Filename: DropGag.py
-# Created by: DecodedLogic (16Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DropGag.py
+@author Maverick Liberty
+@date July 16, 2015
+
+"""
 
 from src.coginvasion.gags.Gag import Gag
 from src.coginvasion.gags.GagType import GagType
@@ -12,7 +17,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Func, SoundInterval, Wait, LerpScaleInterval, Parallel
 from direct.interval.LerpInterval import LerpPosHprInterval,\
     LerpColorScaleInterval
-from pandac.PandaModules import CollisionHandlerFloor, Point3, TransparencyAttrib, Vec4
+from panda3d.core import CollisionHandlerFloor, Point3, TransparencyAttrib, Vec4
 import abc
 
 class DropGag(Gag, LocationGag):

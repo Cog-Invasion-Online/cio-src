@@ -1,13 +1,16 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: CTCHood.py
-  Created by: blach (01Dec14)
+@file CTCHood.py
+@author Brian Lach
+@date December 01, 2014
 
 """
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.holiday.HolidayManager import HolidayType
-from pandac.PandaModules import TransparencyAttrib
+from panda3d.core import TransparencyAttrib
 
 from playground import CTCSafeZoneLoader
 from street import TTTownLoader

@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import ConfigVariableBool
+from panda3d.core import ConfigVariableBool
 
 class LoadUtility:
 

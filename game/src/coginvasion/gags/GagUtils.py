@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: GagUtils.py
-  Created by: DecodedLogic (30Aug15)
+@file GagUtils.py
+@author Maverick Liberty
+@date August 30, 2015
 
 """
 

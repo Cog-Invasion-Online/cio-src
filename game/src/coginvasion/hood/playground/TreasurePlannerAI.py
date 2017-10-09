@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: TreasurePlannerAI.py
-  Created by: DecodedLogic (15Jul15)
+@file TreasurePlannerAI.py
+@author Maverick Liberty
+@date July 15, 2015
 
 """
 

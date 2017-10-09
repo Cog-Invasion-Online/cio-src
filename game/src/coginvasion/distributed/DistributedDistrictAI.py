@@ -1,7 +1,12 @@
-########################################
-# Filename: DistributedDistrictAI.py
-# Created by: blach (14Dec14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedDistrictAI.py
+@author Brian Lach
+@date December 14, 2014
+
+"""
 
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 from direct.directnotify.DirectNotifyGlobal import directNotify

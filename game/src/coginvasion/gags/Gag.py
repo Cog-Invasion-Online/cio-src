@@ -1,7 +1,12 @@
-########################################
-# Filename: Gag.py
-# Created by: DecodedLogic (07Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Gag.py
+@author Maverick Liberty
+@date July 07, 2015
+
+"""
 
 from direct.task.Task import Task
 from direct.actor.Actor import Actor
@@ -9,7 +14,7 @@ from direct.interval.IntervalGlobal import Parallel, Sequence, LerpScaleInterval
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags import GagGlobals
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 from abc import ABCMeta
 import abc
 

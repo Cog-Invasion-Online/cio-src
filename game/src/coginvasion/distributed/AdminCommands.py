@@ -1,13 +1,15 @@
-# COG INVASION ONLINE
-# Copyright (c) Brian Lach       <brianlach72@gmail.com>
-#               Maverick Liberty <maverick.liberty29@gmail.com>
-#
-# file:    AdminCommands.py
-# author:  Brian Lach
-# date:    2016-09-05
-#
-# purpose: Houses methods for admin commands in game.
-#          The methods are basically like preprocessor #defines but in Python.
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file AdminCommands.py
+@author Brian Lach
+@date September 09, 2016
+
+@desc Houses methods for admin commands in game.
+      The methods are basically like macros but in Python.
+
+"""
 
 import __builtin__
 

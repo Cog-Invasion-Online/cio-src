@@ -1,13 +1,18 @@
-########################################
-# Filename: BambooCane.py
-# Created by: DecodedLogic (17Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file BambooCane.py
+@author Maverick Liberty
+@date July 17, 2015
+
+"""
 
 from src.coginvasion.gags.ToonUpGag import ToonUpGag
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, ActorInterval
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 
 class BambooCane(ToonUpGag):
 

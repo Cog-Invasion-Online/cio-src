@@ -1,5 +1,12 @@
-# Filename: TTPlayground.py
-# Created by:  blach (25Oct15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file TTPlayground.py
+@author Brian Lach
+@date October 25, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.SoundInterval import SoundInterval

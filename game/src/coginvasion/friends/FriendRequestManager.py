@@ -1,5 +1,12 @@
-# Filename: FriendRequestManager.py
-# Created by:  blach (04Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file FriendRequestManager.py
+@author Brian Lach
+@date August 04, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.showbase.DirectObject import DirectObject

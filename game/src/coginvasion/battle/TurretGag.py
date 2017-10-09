@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import CollisionSphere, CollisionNode, BitMask32, CollisionHandlerEvent, NodePath
+from panda3d.core import CollisionSphere, CollisionNode, BitMask32, CollisionHandlerEvent, NodePath
 
 from direct.showbase.DirectObject import DirectObject
 from direct.interval.ProjectileInterval import ProjectileInterval

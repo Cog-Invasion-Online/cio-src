@@ -4,7 +4,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 @file Credits.py
 @author Maverick Liberty
-@date 2017-03-27
+@date March 27, 2017
 
 """
 

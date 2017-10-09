@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import Point3, Vec3, Vec4, CollisionSphere, CollisionNode
+from panda3d.core import Point3, Vec3, Vec4, CollisionSphere, CollisionNode
 
 from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
 from direct.directnotify.DirectNotifyGlobal import directNotify

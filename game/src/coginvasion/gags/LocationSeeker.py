@@ -1,11 +1,14 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: LocationSeeker.py
-  Created by: DecodedLogic (24Jul15)
+@file LocationSeeker.py
+@author Maverick Liberty
+@date July 24, 2015
 
 """
 
-from pandac.PandaModules import CollisionNode, CollisionRay, CollisionHandlerQueue
+from panda3d.core import CollisionNode, CollisionRay, CollisionHandlerQueue
 from src.coginvasion.globals import CIGlobals
 from direct.task.Task import Task
 

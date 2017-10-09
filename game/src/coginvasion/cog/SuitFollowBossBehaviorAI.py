@@ -1,6 +1,14 @@
-# Filename: SuitFollowBossBehaviorAI.py
-# Created by:  DecodedLogic (02Sep15)
-# Updated by:  blach (09Dec15) - Fixed backup cogs having no functionality at all.
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitFollowBossBehaviorAI.py
+@author Maverick Liberty
+@date September 02, 2015
+@author Brian Lach (Fixed backup cogs having no functionality at all.)
+@date December 09, 2015
+
+"""
 
 from src.coginvasion.cog.SuitPathBehaviorAI import SuitPathBehaviorAI
 from src.coginvasion.cog.SuitHabitualBehaviorAI import SuitHabitualBehaviorAI

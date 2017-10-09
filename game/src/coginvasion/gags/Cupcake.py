@@ -1,5 +1,12 @@
-# Filename: Cupcake.py
-# Created by:  blach (23Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Cupcake.py
+@author Brian Lach
+@date July 23, 2015
+
+"""
 
 from src.coginvasion.gags.ThrowGag import ThrowGag
 from src.coginvasion.gags import GagGlobals

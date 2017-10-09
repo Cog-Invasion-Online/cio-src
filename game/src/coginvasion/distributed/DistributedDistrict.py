@@ -1,7 +1,12 @@
-########################################
-# Filename: DistributedDistrict.py
-# Created by: blach (14Dec14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedDistrict.py
+@author Brian Lach
+@date December 14, 2014
+
+"""
 
 from direct.distributed.DistributedObject import DistributedObject
 from src.coginvasion.gui.WhisperPopup import WhisperPopup

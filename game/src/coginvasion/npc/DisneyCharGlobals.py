@@ -1,7 +1,14 @@
-# Filename: DisneyCharGlobals.py
-# Created by:  blach (21Jun16)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Point3
+@file DisneyCharGlobals.py
+@author Brian Lach
+@date June 21, 2016
+
+"""
+
+from panda3d.core import Point3
 
 from src.coginvasion.globals import CIGlobals
 

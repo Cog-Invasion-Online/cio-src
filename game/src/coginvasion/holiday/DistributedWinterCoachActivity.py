@@ -1,13 +1,16 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DistributedWinterCoachActivity.py
-  Created by: DecodedLogic (14Nov15)
+@file DistributedWinterCoachActivity.py
+@author Maverick Liberty
+@date November 14, 2015
 
 """
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedNode import DistributedNode
-from pandac.PandaModules import NodePath, CollisionSphere, CollisionNode
+from panda3d.core import NodePath, CollisionSphere, CollisionNode
 
 from src.coginvasion.toon.Toon import Toon
 from src.coginvasion.globals import CIGlobals

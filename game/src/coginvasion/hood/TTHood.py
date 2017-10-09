@@ -1,12 +1,19 @@
-# Filename: TTHood.py
-# Created by:  blach (25Oct15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file TTHood.py
+@author Brian Lach
+@date October 25, 2015
+
+"""
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.holiday.HolidayManager import HolidayType
 from playground import TTSafeZoneLoader
 from street import TTTownLoader
 import ToonHood
-from pandac.PandaModules import TransparencyAttrib
+from panda3d.core import TransparencyAttrib
 
 class TTHood(ToonHood.ToonHood):
 

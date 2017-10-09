@@ -1,5 +1,12 @@
-# Filename: PlayGame.py
-# Created by:  blach (28Nov14)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file PlayGame.py
+@author Brian Lach
+@date November 28, 2014
+
+"""
 
 from src.coginvasion.globals import CIGlobals
 from direct.fsm.ClassicFSM import ClassicFSM

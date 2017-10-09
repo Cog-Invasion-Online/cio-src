@@ -1,5 +1,12 @@
-# Filename: SuitCogOfficeBehavior.py
-# Created by:  blach (17Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitCogOfficeBehavior.py
+@author Brian Lach
+@date December 17, 2015
+
+"""
 
 from direct.fsm import ClassicFSM, State
 

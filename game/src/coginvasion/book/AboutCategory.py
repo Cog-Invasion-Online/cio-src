@@ -4,11 +4,11 @@ Copyright (c) CIO Team. All rights reserved.
 
 @file AboutCategory.py
 @author Brian Lach
-@date 2017-03-13
+@date March 13, 2017
 
 """
 
-from pandac.PandaModules import PandaSystem
+from panda3d.core import PandaSystem
 
 from OptionsCategory import OptionsCategory
 

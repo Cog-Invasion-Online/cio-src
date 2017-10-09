@@ -1,7 +1,12 @@
-########################################
-# Filename: CogInvasionErrorCodes.py
-# Created by: blach (25Jan15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file CogInvasionErrorCodes.py
+@author Brian Lach
+@date January 25, 2015
+
+"""
 
 EC_MULTIPLE_LOGINS = 110
 EC_BAD_TOKEN = 111

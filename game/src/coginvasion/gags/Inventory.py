@@ -1,5 +1,12 @@
-# Filename: Inventory.py
-# Created by:  blach (20Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Inventory.py
+@author Brian Lach
+@date July 20, 2015
+
+"""
 
 from direct.directNotify.DirectNotifyGlobal import directNotify
 from direct.showbase.DirectObject import DirectObject

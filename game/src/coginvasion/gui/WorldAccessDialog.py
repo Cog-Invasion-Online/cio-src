@@ -1,14 +1,16 @@
-# COG INVASION ONLINE
-# Copyright (c) Brian Lach       <brianlach72@gmail.com>
-#               Maverick Liberty <maverick.liberty29@gmail.com>
-#
-# file:    WorldAccessDialog.py
-# author:  Brian Lach
-# date:    2016-09-12
-#
-# purpose: Admin dialog for giving world and tp access to players.
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import TextNode
+@file WorldAccessDialog.py
+@author Brian Lach
+@date September 12, 2016
+
+@desc Admin dialog for giving world and tp access to players.
+
+"""
+
+from panda3d.core import TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

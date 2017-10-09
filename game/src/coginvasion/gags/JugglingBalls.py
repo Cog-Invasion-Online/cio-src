@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: JugglingBalls.py
-  Created by: DecodedLogic (18Jul15)
+@file JugglingBalls.py
+@author Maverick Liberty
+@date July 18, 2015
 
 """
 

@@ -1,10 +1,13 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Place.py
-  Created by: blach (15Dec14)
+@file Place.py
+@author Brian Lach
+@date December 15, 2014
 
-  Description: Handles the avatar events that happen while the avatar is
-               in a place such as a playground.
+@desc Handles avatar events that happen while the avatar is
+      in a place such as a playground.
 
 """
 

@@ -1,14 +1,17 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: LocationGag.py
-  Created by: DecodedLogic (24Jul15)
+@file LocationGag.py
+@author Maverick Liberty
+@date July 24, 2015
 
 """
 
 from LocationSeeker import LocationSeeker
 from direct.interval.IntervalGlobal import Sequence, Func, Parallel, SoundInterval, Wait, ActorInterval
 from direct.gui.DirectGui import OnscreenText
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 from src.coginvasion.globals import CIGlobals
 
 class LocationGag:

@@ -10,7 +10,7 @@ OMG FINALLY THE DODGEBALL GAME!!
 
 """
 
-from pandac.PandaModules import Fog, Point3, Vec3, VBase4, TextNode
+from panda3d.core import Fog, Point3, Vec3, VBase4, TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.State import State

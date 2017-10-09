@@ -1,7 +1,14 @@
-# Filename: BRWater.py
-# Created by:  blach (02Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import VBase4, WindowProperties
+@file BRWater.py
+@author Brian Lach
+@date July 02, 2015
+
+"""
+
+from panda3d.core import VBase4, WindowProperties
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM

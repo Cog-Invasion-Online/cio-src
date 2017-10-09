@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DistributedWinterCoachActivityAI.py
-  Created by: DecodedLogic (14Nov15)
+@file DistributedWinterCoachActivityAI.py
+@author Maverick Liberty
+@date November 14, 2015
 
 """
 

@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: TossTrapGag.py
-  Created by: DecodedLogic (24Jul15)
+@file TossTrapGag.py
+@author Maverick Liberty
+@date July 24, 2015
 
 """
 
@@ -9,7 +12,7 @@ from src.coginvasion.gags.TrapGag import TrapGag
 from src.coginvasion.globals import CIGlobals
 from direct.particles.ParticleEffect import ParticleEffect
 from direct.interval.IntervalGlobal import ProjectileInterval
-from pandac.PandaModules import NodePath, BitMask32, CollisionSphere, CollisionNode, CollisionHandlerEvent
+from panda3d.core import NodePath, BitMask32, CollisionSphere, CollisionNode, CollisionHandlerEvent
 
 class TossTrapGag(TrapGag):
 

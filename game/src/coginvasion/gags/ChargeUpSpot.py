@@ -1,14 +1,19 @@
-########################################
-# Filename: ChargeUpSpot.py
-# Created by: DecodedLogic (17Aug15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file ChargeUpSpot.py
+@author Maverick Liberty
+@date August 17, 2015
+
+"""
 
 from src.coginvasion.gags.LocationSeeker import LocationSeeker
 from direct.showbase.InputStateGlobal import inputState
 from direct.interval.IntervalGlobal import Sequence, Parallel, LerpScaleInterval, SoundInterval
 from direct.interval.IntervalGlobal import Func, LerpColorScaleInterval
 from direct.task.Task import Task
-from pandac.PandaModules import VBase4
+from panda3d.core import VBase4
 from src.coginvasion.globals import CIGlobals
 
 class ChargeUpSpot(LocationSeeker):

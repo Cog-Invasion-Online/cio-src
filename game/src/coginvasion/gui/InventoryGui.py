@@ -1,7 +1,12 @@
-########################################
-# Filename: InventoryGui.py
-# Created by: DecodedLogic (12Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file BackpackGUI.py
+@author Maverick Liberty
+@date July 12, 2015
+
+"""
 
 from direct.showbase.DirectObject import DirectObject
 from direct.directnotify.DirectNotify import DirectNotify
@@ -16,7 +21,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags import GagGlobals
 
-from pandac.PandaModules import TransparencyAttrib, TextNode
+from panda3d.core import TransparencyAttrib, TextNode
 
 import types
 

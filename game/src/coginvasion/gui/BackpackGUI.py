@@ -1,7 +1,14 @@
-# Filename: BackpackGUI.py
-# Created by:  blach (20Sep15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Vec4, TextNode
+@file BackpackGUI.py
+@author Brian Lach
+@date September 20, 2015
+
+"""
+
+from panda3d.core import Vec4, TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DGG, DirectButton, DirectFrame, OnscreenText
@@ -11,19 +18,19 @@ from src.coginvasion.gags import GagGlobals, GagManager
 from src.coginvasion.globals import CIGlobals
 
 TrackZValueByName = {GagGlobals.ToonUp : 0.4,
- GagGlobals.Trap : 0.285,
- GagGlobals.Lure : 0.17,
- GagGlobals.Sound : 0.055,
- GagGlobals.Throw : -0.06,
- GagGlobals.Squirt : -0.175,
- GagGlobals.Drop : -0.29}
+                     GagGlobals.Trap : 0.285,
+                     GagGlobals.Lure : 0.17,
+                     GagGlobals.Sound : 0.055,
+                     GagGlobals.Throw : -0.06,
+                     GagGlobals.Squirt : -0.175,
+                     GagGlobals.Drop : -0.29}
 GagButtonXValues = [-0.38,
- -0.2,
- -0.02,
- 0.16,
- 0.34,
- 0.52,
- 0.7]
+                    -0.2,
+                    -0.02,
+                    0.16,
+                    0.34,
+                    0.52,
+                    0.7]
 
 class BackpackGUI(DirectFrame):
     notify = directNotify.newCategory('BackpackGUI')

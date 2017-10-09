@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Walk.py
-  Created by: blach (15Dec14)
+@file Walk.py
+@author Brian Lach
+@date December 15, 2014
 
 """
 

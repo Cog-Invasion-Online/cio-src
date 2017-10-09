@@ -1,5 +1,5 @@
 from direct.task.Task import Task
-from pandac.PandaModules import TextNode, VBase4
+from panda3d.core import TextNode, VBase4
 
 from src.coginvasion.toon.ChatBalloon import ChatBalloon
 import NametagGlobals

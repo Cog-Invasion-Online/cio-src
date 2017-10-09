@@ -21,9 +21,9 @@ from direct.showbase.DirectObject import DirectObject
 from direct.showbase.InputStateGlobal import inputState
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from pandac.PandaModules import PNMImage, Texture, CollisionTraverser
-from pandac.PandaModules import CollisionRay, CollisionNode, BitMask32
-from pandac.PandaModules import CollisionHandlerQueue
+from panda3d.core import PNMImage, Texture, CollisionTraverser
+from panda3d.core import CollisionRay, CollisionNode, BitMask32
+from panda3d.core import CollisionHandlerQueue
 
 from ToonFPSGui import ToonFPSGui
 from direct.task import Task

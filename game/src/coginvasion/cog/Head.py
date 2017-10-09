@@ -1,12 +1,17 @@
-########################################
-# Filename: Head.py
-# Created by: DecodedLogic (31Jul14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Head.py
+@author Maverick Liberty
+@date July 31, 2015
+
+"""
 
 from src.coginvasion.cog.SuitType import SuitType
 from direct.actor.Actor import Actor
 
-from pandac.PandaModules import Texture
+from panda3d.core import Texture
 
 class Head:
 

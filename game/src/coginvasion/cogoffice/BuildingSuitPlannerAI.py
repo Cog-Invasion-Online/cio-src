@@ -1,5 +1,12 @@
-# Filename: BuildingSuitPlannerAI.py
-# Created by:  blach (13Jun16)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file BuildingSuitPlannerAI.py
+@author Brian Lach
+@date June 13, 2016
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

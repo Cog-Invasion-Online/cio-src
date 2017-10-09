@@ -1,14 +1,16 @@
-# COG INVASION ONLINE
-# Copyright (c) Brian Lach       <brianlach72@gmail.com>
-#               Maverick Liberty <maverick.liberty29@gmail.com>
-#
-# file:    AdminTokenDialog.py
-# author:  Brian Lach
-# date:    2016-09-05
-#
-# purpose: For the UI that shows when we are changing someone's admin token.
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import TextNode, Vec4
+@file AdminTokenDialog.py
+@author Brian Lach
+@date September 05, 2016
+
+@desc For the UI that shows when we are changing someone's admin token.
+
+"""
+
+from panda3d.core import TextNode, Vec4
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectButton, DGG, DirectScrolledList

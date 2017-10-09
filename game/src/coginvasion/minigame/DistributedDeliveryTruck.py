@@ -1,7 +1,7 @@
 # Filename: DistributedDeliveryTruck.py
 # Created by:  blach (04Oct15)
 
-from pandac.PandaModules import CollisionSphere, CollisionNode
+from panda3d.core import CollisionSphere, CollisionNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedNode import DistributedNode

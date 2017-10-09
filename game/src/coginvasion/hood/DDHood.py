@@ -1,7 +1,14 @@
-# Filename: DDHood.py
-# Created by:  blach (26Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import VBase4
+@file DDHood.py
+@author Brian Lach
+@date July 26, 2015
+
+"""
+
+from panda3d.core import VBase4
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.holiday.HolidayManager import HolidayType
 

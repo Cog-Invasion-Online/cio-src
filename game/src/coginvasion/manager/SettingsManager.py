@@ -1,12 +1,15 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: SettingsManager.py
-  Created by: blach (??July14)
+@file SettingsManager.py
+@author Brian Lach
+@date July ??, 2014
 
 """
 
-from pandac.PandaModules import AntialiasAttrib, TextureStage
-from pandac.PandaModules import loadPrcFileData, WindowProperties
+from panda3d.core import AntialiasAttrib, TextureStage
+from panda3d.core import loadPrcFileData, WindowProperties
 from direct.directnotify.DirectNotify import DirectNotify
 
 import json

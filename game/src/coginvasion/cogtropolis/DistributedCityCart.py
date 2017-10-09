@@ -1,7 +1,14 @@
-# Filename: DistributedCityCart.py
-# Created by:  blach (13Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import CollisionSphere, CollisionNode
+@file DistributedCityCart.py
+@author Brian Lach
+@date August 13, 2015
+
+"""
+
+from panda3d.core import CollisionSphere, CollisionNode
 
 from direct.distributed.DistributedNode import DistributedNode
 from direct.distributed import ClockDelta

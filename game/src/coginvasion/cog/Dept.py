@@ -1,9 +1,14 @@
-########################################
-# Filename: Dept.py
-# Created by: DecodedLogic (31Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import VBase4
+@file Dept.py
+@author Maverick Liberty
+@date July 31, 2015
+
+"""
+
+from panda3d.core import VBase4
 
 class Dept:
 

@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: StormCloud.py
-  Created by: DecodedLogic (30Aug15)
+@file StormCloud.py
+@author Maverick Liberty
+@date August 30, 2015
 
 """
 
@@ -14,7 +17,7 @@ from direct.actor.Actor import Actor
 from direct.interval.IntervalGlobal import Sequence, Func, Wait
 from direct.interval.IntervalGlobal import Parallel, LerpScaleInterval, ParticleInterval
 from direct.interval.IntervalGlobal import ActorInterval
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 
 class StormCloud(SquirtGag, LocationGag):
 

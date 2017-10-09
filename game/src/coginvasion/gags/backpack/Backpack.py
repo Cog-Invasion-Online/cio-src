@@ -1,8 +1,14 @@
-########################################
-# Filename: Backpack.py
-# Created by: DecodedLogic (20Mar16)
-########################################
-# The client version of the backpack.
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Backpack.py
+@author Maverick Liberty
+@date March 20, 2016
+
+@desc The client version of the backpack.
+
+"""
 
 from src.coginvasion.gags.GagManager import GagManager
 from src.coginvasion.gags.GagState import GagState

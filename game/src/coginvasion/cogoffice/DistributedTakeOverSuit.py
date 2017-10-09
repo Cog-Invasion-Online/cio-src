@@ -1,7 +1,14 @@
-# Filename: DistributedTakeOverSuit.py
-# Created by:  blach (14Jun16)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Point3
+@file DistributedTakeOverSuit.py
+@author Brian Lach
+@date June 14, 2016
+
+"""
+
+from panda3d.core import Point3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM

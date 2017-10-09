@@ -8,7 +8,7 @@
 import argparse, sys
 sys.dont_write_bytecode = True
 
-from pandac.PandaModules import VirtualFileSystem, Filename, loadPrcFile, loadPrcFileData
+from panda3d.core import VirtualFileSystem, Filename, loadPrcFile, loadPrcFileData
 from src.coginvasion.uber.CogInvasionUberRepository import DEFAULT_LOGIN_TOKEN_LIFE
 
 DEFAULT_UBER_PORT = 7033

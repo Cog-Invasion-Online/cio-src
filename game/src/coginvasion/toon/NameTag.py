@@ -1,7 +1,7 @@
 # Filename: NameTag.py
 # Created by:  blach (??Jul14)
 
-from pandac.PandaModules import TextNode
+from panda3d.core import TextNode
 from direct.fsm import ClassicFSM, State
 
 from src.coginvasion.globals import CIGlobals

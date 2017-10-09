@@ -1,7 +1,12 @@
-########################################
-# Filename: BackpackManager.py
-# Created by: DecodedLogic (08Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file BackpackManager.py
+@author Maverick Liberty
+@date July 08, 2015
+
+"""
 
 from src.coginvasion.gags.backpack.SmallPouch import SmallPouch
 from src.coginvasion.gags.backpack.AdminPouch import AdminPouch

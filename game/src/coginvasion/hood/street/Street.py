@@ -1,7 +1,14 @@
-# Filename: Street.py
-# Created by:  blach (25Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import CollisionEntry
+@file Street.py
+@author Brian Lach
+@date July 25, 2015
+
+"""
+
+from panda3d.core import CollisionEntry
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.State import State

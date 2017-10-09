@@ -1,7 +1,14 @@
-# Filename: DistributedCogOfficeBattle.py
-# Created by:  blach (15Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Point3, Vec3, NodePath, TextureStage
+@file DistributedCogOfficeBattle.py
+@author Brian Lach
+@date December 15, 2015
+
+"""
+
+from panda3d.core import Point3, Vec3, NodePath, TextureStage
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.ClockDelta import globalClockDelta

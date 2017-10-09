@@ -1,7 +1,12 @@
-########################################
-# Filename: Suit.py
-# Created by: DecodedLogic (31Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Suit.py
+@author Maverick Liberty
+@date July 31, 2015
+
+"""
 
 from src.coginvasion.avatar.Avatar import Avatar
 from src.coginvasion.globals import CIGlobals
@@ -18,7 +23,7 @@ from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.showbase.Audio3DManager import Audio3DManager
 from direct.task.Task import Task
-from pandac.PandaModules import Vec4, VBase4, Texture
+from panda3d.core import Vec4, VBase4, Texture
 import random
 
 class Suit(Avatar):

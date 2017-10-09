@@ -1,7 +1,12 @@
-########################################
-# Filename: AIBase.py
-# Created by: blach (25Jan15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file AIBase.py
+@author Brian Lach
+@date January 25, 2015
+
+"""
 
 import time
 
@@ -14,8 +19,8 @@ from direct.showbase.MessengerGlobal import *
 from direct.task import Task
 from direct.task.TaskManagerGlobal import *
 
-from pandac.PandaModules import VirtualFileSystem, NodePath, GraphicsEngine
-from pandac.PandaModules import ClockObject, TrueClock, Notify, PandaNode
+from panda3d.core import VirtualFileSystem, NodePath, GraphicsEngine
+from panda3d.core import ClockObject, TrueClock, Notify, PandaNode
 from pandac.PandaModules import getConfigShowbase
 
 class AIBase:

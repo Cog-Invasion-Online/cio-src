@@ -5,7 +5,7 @@
 
 """
 
-from pandac.PandaModules import VBase4, TextNode
+from panda3d.core import VBase4, TextNode
 from src.coginvasion.globals import CIGlobals
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import *

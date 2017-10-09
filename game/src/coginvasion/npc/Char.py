@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Char.py
-  Created by: blach (??July14)
+@file Char.py
+@author Brian Lach
+@date July ??, 2014
 
 """
 
@@ -9,7 +12,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.avatar import Avatar
 from src.coginvasion.nametag import NametagGlobals
 
-from pandac.PandaModules import CharacterJointEffect, ModelNode
+from panda3d.core import CharacterJointEffect, ModelNode
 
 from direct.directnotify.DirectNotify import DirectNotify
 from direct.fsm.ClassicFSM import ClassicFSM

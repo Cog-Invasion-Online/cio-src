@@ -5,7 +5,7 @@
 
 """
 
-from pandac.PandaModules import WindowProperties
+from panda3d.core import WindowProperties
 from direct.showbase.DirectObject import DirectObject
 
 from src.coginvasion.globals import CIGlobals

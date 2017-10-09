@@ -1,16 +1,23 @@
-########################################
-# Filename: ActivateTrapGag.py
-# Created by: DecodedLogic (24Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file ActivateTrapGag.py
+@author Maverick Liberty
+@date July 24, 2015
+
+"""
+
+from panda3d.core import Point3, CollisionSphere, BitMask32, CollisionNode, CollisionHandlerEvent, NodePath
+
+from direct.interval.IntervalGlobal import Sequence, SoundInterval, Wait, Func, LerpScaleInterval, ActorInterval, ProjectileInterval
+from direct.task.Task import Task
+from direct.actor.Actor import Actor
 
 from src.coginvasion.gags.TrapGag import TrapGag
 from src.coginvasion.gags.LocationGag import LocationGag
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
-from direct.interval.IntervalGlobal import Sequence, SoundInterval, Wait, Func, LerpScaleInterval, ActorInterval, ProjectileInterval
-from direct.task.Task import Task
-from direct.actor.Actor import Actor
-from pandac.PandaModules import Point3, CollisionSphere, BitMask32, CollisionNode, CollisionHandlerEvent, NodePath
 
 class ActivateTrapGag(TrapGag, LocationGag):
 

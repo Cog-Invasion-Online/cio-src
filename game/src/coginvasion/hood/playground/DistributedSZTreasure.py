@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DistributedSZTreasure.py
-  Created by: DecodedLogic (15Jul15)
+@file DistributedSZTreasure.py
+@author Brian Lach
+@date July 15, 2015
 
 """
 

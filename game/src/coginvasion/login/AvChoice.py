@@ -1,8 +1,11 @@
 """
-  
-  Filename: AvChoice.py
-  Created by: blach (28Nov14)
-  
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file AvChoice.py
+@author Brian Lach
+@date November 28, 2014
+
 """
 
 class AvChoice:

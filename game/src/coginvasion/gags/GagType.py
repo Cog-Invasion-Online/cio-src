@@ -1,8 +1,11 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: GagType.py
-  Created by: DecodedLogic (07Jul15)
-  
+@file GagType.py
+@author Maverick Liberty
+@date July 07, 2015
+
 """
 
 class GagType:

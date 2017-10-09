@@ -1,13 +1,16 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: CIProgressScreen.py
-  Created by: blach (12Aug14)
+@file CIProgressScreen.py
+@author Brian Lach
+@date August 12, 2014
 
 """
 
 from src.coginvasion.globals import CIGlobals
 from direct.directnotify.DirectNotify import DirectNotify
-from pandac.PandaModules import TextNode
+from panda3d.core import TextNode
 from direct.gui.DirectGui import OnscreenImage, DirectWaitBar, DirectLabel, DirectFrame, OnscreenText
 
 import random

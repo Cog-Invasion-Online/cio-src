@@ -7,7 +7,7 @@
 
 from direct.particles.Particles import Particles
 from direct.particles.ParticleEffect import ParticleEffect
-from pandac.PandaModules import Filename
+from panda3d.core import Filename
 
 def loadParticleEffect(file):
 	p = ParticleEffect()

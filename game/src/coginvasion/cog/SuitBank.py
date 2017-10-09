@@ -1,9 +1,14 @@
-########################################
-# Filename: SuitBank.py
-# Created by: DecodedLogic (01Sep15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import VBase4, Vec3
+@file Dept.py
+@author Maverick Liberty
+@date September 01, 2015
+
+"""
+
+from panda3d.core import VBase4, Vec3
 
 from src.coginvasion.cog import SuitGlobals
 from src.coginvasion.cog.SuitType import SuitType

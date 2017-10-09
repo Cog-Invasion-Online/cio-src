@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import TextNode
+from panda3d.core import TextNode
 
 from direct.gui.DirectGui import DirectFrame, OnscreenText, DGG
 from direct.directnotify.DirectNotifyGlobal import directNotify

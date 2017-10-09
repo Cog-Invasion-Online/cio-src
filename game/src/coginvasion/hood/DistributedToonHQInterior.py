@@ -1,7 +1,14 @@
-# Filename: DistributedToonHQInterior.py
-# Created by:  blach (29Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import ModelNode, NodePath, Point3
+@file DistributedToonHQInterior.py
+@author Brian Lach
+@date July 29, 2015
+
+"""
+
+from panda3d.core import ModelNode, NodePath, Point3
 
 import DistributedToonInterior
 import ToonInteriorColors

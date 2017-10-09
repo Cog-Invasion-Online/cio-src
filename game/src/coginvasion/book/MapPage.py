@@ -11,7 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import Vec4, TextNode
+from panda3d.core import Vec4, TextNode
 
 from direct.gui.DirectGui import DirectFrame, DirectButton
 from direct.gui.DirectLabel import DirectLabel

@@ -1,7 +1,14 @@
-# Filename: HolidayManager.py
-# Created by:  DecodedLogic (13Nov15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import VirtualFileSystem, Filename
+@file HolidayManager.py
+@author Maverick Liberty
+@date November 13, 2015
+
+"""
+
+from panda3d.core import VirtualFileSystem, Filename
 
 from direct.distributed.DistributedObjectGlobal import DistributedObjectGlobal
 from direct.directnotify.DirectNotifyGlobal import directNotify

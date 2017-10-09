@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: SoundGag.py
-  Created by: DecodedLogic (07Aug15)
+@file SoundGag.py
+@author Maverick Liberty
+@date August 07, 2015
 
 """
 
@@ -11,7 +14,7 @@ from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags.GagState import GagState
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, SoundInterval
 from direct.particles.ParticleEffect import ParticleEffect
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 import random
 
 class SoundGag(Gag):

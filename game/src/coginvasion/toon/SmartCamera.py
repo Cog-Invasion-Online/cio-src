@@ -5,11 +5,11 @@
 
 """
 
-from pandac.PandaModules import CollisionTraverser, Point3, Vec3, CollisionNode
-from pandac.PandaModules import CollisionSegment, CollisionHandlerPusher
-from pandac.PandaModules import CollisionSphere, BitMask32, CollisionHandlerQueue
-from pandac.PandaModules import CollisionRay, CollisionHandlerFloor
-from pandac.PandaModules import deg2Rad
+from panda3d.core import CollisionTraverser, Point3, Vec3, CollisionNode
+from panda3d.core import CollisionSegment, CollisionHandlerPusher
+from panda3d.core import CollisionSphere, BitMask32, CollisionHandlerQueue
+from panda3d.core import CollisionRay, CollisionHandlerFloor
+from panda3d.core import deg2Rad
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.task import Task

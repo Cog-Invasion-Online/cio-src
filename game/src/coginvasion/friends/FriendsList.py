@@ -1,7 +1,14 @@
-# Filename: FriendsList.py
-# Created by:  blach (04Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import TextNode, Vec4
+@file FriendsList.py
+@author Brian Lach
+@date August 04, 2015
+
+"""
+
+from panda3d.core import TextNode, Vec4
 from direct.directnotify import DirectNotifyGlobal
 from direct.gui.DirectGui import DirectButton, OnscreenText, DirectFrame, DirectScrolledList, DGG
 from direct.fsm import ClassicFSM, State

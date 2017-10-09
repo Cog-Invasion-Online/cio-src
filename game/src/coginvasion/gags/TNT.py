@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: TNT.py
-  Created by: DecodedLogic (08Jul15)
+@file TNT.py
+@author Maverick Liberty
+@date July 08, 2015
 
 """
 

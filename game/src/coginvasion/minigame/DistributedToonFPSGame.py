@@ -1,7 +1,7 @@
 # Filename: DistributedToonFPSGame.py
 # Created by:  blach (30Mar15)
 
-from pandac.PandaModules import Vec4
+from panda3d.core import Vec4
 
 from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, LerpColorScaleInterval, Parallel
 from direct.directnotify.DirectNotifyGlobal import directNotify

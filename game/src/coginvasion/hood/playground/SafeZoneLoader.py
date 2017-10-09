@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: SafeZoneLoader.py
-  Created by: blach (14Dec14)
+@file SafeZoneLoader.py
+@author Brian Lach
+@date December 14, 2014
 
 """
 
@@ -10,7 +13,7 @@ from direct.fsm.StateData import StateData
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.actor.Actor import Actor
-from pandac.PandaModules import ModelPool, TexturePool, NodePath
+from panda3d.core import ModelPool, TexturePool, NodePath
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood.QuietZoneState import QuietZoneState

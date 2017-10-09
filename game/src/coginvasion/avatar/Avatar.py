@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import CollisionNode, CollisionTube, BitMask32, CollisionSphere, \
+from panda3d.core import CollisionNode, CollisionTube, BitMask32, CollisionSphere, \
                                 CollisionHandlerPusher, CollisionHandlerEvent, CollisionRay, \
                                 ConfigVariableBool, Material
 

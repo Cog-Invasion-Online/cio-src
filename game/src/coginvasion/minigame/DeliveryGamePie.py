@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import NodePath, VBase4
+from panda3d.core import NodePath, VBase4
 
 from direct.showbase.DirectObject import DirectObject
 from direct.interval.IntervalGlobal import ProjectileInterval

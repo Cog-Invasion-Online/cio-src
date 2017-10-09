@@ -10,7 +10,7 @@ from src.coginvasion.globals import CIGlobals
 from direct.gui.DirectGui import DirectFrame, DirectWaitBar
 from direct.gui.DirectGui import DGG, OnscreenText, DirectLabel
 
-from pandac.PandaModules import TextNode
+from panda3d.core import TextNode
 
 from MinigameUtils import *
 

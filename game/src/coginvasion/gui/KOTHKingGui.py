@@ -1,9 +1,15 @@
-########################################
-# Filename: KOTHKingGui.py
-# Created by: DecodedLogic (17Jun16)
-# HAPPY BIRTHDAY COG INVASION ONLINE!!!
-#         2 YEAR ANNIVERSARY!
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file KOTHKingGui.py
+@author Maverick Liberty
+@date June 17, 2016
+
+HAPPY BIRTHDAY COG INVASION ONLINE!!!
+        2 YEAR ANNIVERSARY!
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectFrame, OnscreenText, OnscreenImage, DGG

@@ -1,5 +1,12 @@
-# Filename: DistributedCogOfficeSuitAI.py
-# Created by:  blach (17Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedCogOfficeSuitAI.py
+@author Brian Lach
+@date December 17, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State

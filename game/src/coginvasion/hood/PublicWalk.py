@@ -1,12 +1,15 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: PublicWalk.py
-  Created by: blach (15Dec14)
+@file PublicWalk.py
+@author Brian Lach
+@date December 15, 2014
 
-  Description: PublicWalk is used for avatar movement in public areas such
-               as playgrounds. All it does is inherent from Walk and enable
-               the shticker book, laff meter, and Gag throwing when we
-               enter the StateData.
+@desc PublicWalk is used for avatar movement in public areas such
+      as playgrounds. All it does it inherit from Walk and enable
+      the shticker book, laff meter, and Gag throwing when we
+      enter the StateData.
 
 """
 

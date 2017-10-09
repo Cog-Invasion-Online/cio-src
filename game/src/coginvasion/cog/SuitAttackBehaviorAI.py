@@ -1,7 +1,12 @@
-########################################
-# Filename: SuitAttackBehaviorAI.py
-# Created by: DecodedLogic (13Sep15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitAttackBehaviorAI.py
+@author Maverick Liberty
+@date September 13, 2015
+
+"""
 
 from SuitHabitualBehaviorAI import SuitHabitualBehaviorAI
 from SuitType import SuitType

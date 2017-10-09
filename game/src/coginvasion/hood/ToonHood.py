@@ -1,11 +1,14 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: ToonHood.py
-  Created by: blach (14Dec14)
+@file ToonHood.py
+@author Brian Lach
+@date December 14, 2014
 
 """
 
-from pandac.PandaModules import Vec4
+from panda3d.core import Vec4
 
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State

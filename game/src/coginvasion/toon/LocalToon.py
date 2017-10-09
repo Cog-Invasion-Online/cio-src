@@ -7,7 +7,7 @@ Copyright (c) CIO Team. All rights reserved.
 @date November 30, 2014
 """
 
-from pandac.PandaModules import Point3, ConfigVariableBool
+from panda3d.core import Point3, ConfigVariableBool
 from src.coginvasion.globals import CIGlobals
 from direct.controls import ControlManager
 from direct.controls.GravityWalker import GravityWalker

@@ -1,12 +1,15 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: CIGlobals.py
-  Created by: blach (17June14)
+@file CIGlobals.py
+@author Brian Lach
+@date June 17, 2014
 
 """
 
-from pandac.PandaModules import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog
-from pandac.PandaModules import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
+from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog
+from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
 
 from src.coginvasion.cog import SuitGlobals
 
@@ -583,7 +586,7 @@ def makeDirectionalBtn(direction, parent = None, pos = (0, 0, 0), command = None
 def makeDefaultScrolledListBtn(text = "", text_scale = 0.07, text_align = None, text1_bg = None, text2_bg = None, text3_fg = None,
                                textMayChange = 0, command = None, extraArgs = [], text_pos = (0, 0, 0), parent = None):
     from direct.gui.DirectGui import DirectButton
-    from pandac.PandaModules import TextNode, Vec4
+    from panda3d.core import TextNode, Vec4
 
     if not text_align:
         text_align = TextNode.ALeft
@@ -609,7 +612,7 @@ def makeDefaultScrolledList(listXorigin = -0.02, listFrameSizeX = 0.625, listZor
                             pos = (0, 0, 0), itemFrame_relief = None, itemFrame_scale = 1.0, numItemsVisible = 15, forceHeight = 0.075, parent = None,
                             itemFrame_borderWidth = (0.01, 0.01), itemFrame_frameColor = (0.85, 0.95, 1, 1)):
     from direct.gui.DirectGui import DirectScrolledList, DGG
-    from pandac.PandaModules import Vec4
+    from panda3d.core import Vec4
 
     gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui.bam')
 

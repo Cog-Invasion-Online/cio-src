@@ -1,7 +1,7 @@
 # Filename: DistributedHQNPCToon.py
 # Created by:  blach (2Aug15)
 
-from pandac.PandaModules import Vec4
+from panda3d.core import Vec4
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectFrame, DirectButton, DGG
 

@@ -1,7 +1,12 @@
-########################################
-# Filename: SuitPanicBehaviorAI.py
-# Created by: DecodedLogic (02Sep15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitPanicBehaviorAI.py
+@author Maverick Liberty
+@date September 02, 2015
+
+"""
 
 from src.coginvasion.cog.SuitPathBehaviorAI import SuitPathBehaviorAI
 import random

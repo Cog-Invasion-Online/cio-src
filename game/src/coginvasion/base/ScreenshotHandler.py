@@ -12,7 +12,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from datetime import datetime
-from pandac.PandaModules import Filename
+from panda3d.core import Filename
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from direct.stdpy.threading2 import Thread
 import os

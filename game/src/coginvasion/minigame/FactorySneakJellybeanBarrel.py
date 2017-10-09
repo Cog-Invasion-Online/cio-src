@@ -1,7 +1,7 @@
 # Filename: FactorySneakJellybeanBarrel.py
 # Created by:  blach (20Aug15)
 
-from pandac.PandaModules import NodePath, CollisionNode, CollisionSphere, Vec4
+from panda3d.core import NodePath, CollisionNode, CollisionSphere, Vec4
 
 from direct.fsm import FSM
 from direct.directnotify.DirectNotifyGlobal import directNotify

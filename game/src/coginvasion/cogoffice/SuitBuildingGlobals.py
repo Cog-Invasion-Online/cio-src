@@ -1,5 +1,12 @@
-# Filename: SuitBuildingGlobals.py
-# Created by:  blach (13Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitBuildingGlobals.py
+@author Brian Lach
+@date December 13, 2015
+
+"""
 
 from ElevatorConstants import *
 from src.coginvasion.globals import CIGlobals

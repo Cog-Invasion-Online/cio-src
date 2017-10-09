@@ -1,9 +1,16 @@
-# Filename: DistributedBattleTrolley.py
-# Created by:  blach (25Oct15)
-#
-# This is a new way to go into the future to battle -- the trolley.
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Point3, Vec3, TextNode, Fog
+@file DistributedBattleTrolley.py
+@author Brian Lach
+@date October 25, 2015
+
+@desc This is a new way to go into the future to battle -- the trolley.
+
+"""
+
+from panda3d.core import Point3, Vec3, TextNode, Fog
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObject import DistributedObject

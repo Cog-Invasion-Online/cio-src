@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Dialog.py
-  Created by: blach (05Nov14)
+@file Dialog.py
+@author Brian Lach
+@date November 05, 2014
 
 """
 

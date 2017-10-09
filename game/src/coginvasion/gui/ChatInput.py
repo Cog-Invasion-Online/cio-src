@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: ChatInput.py
-  Created by: blach (04Oct14)
+@file ChatInput.py
+@author Brian Lach
+@date October 04, 2014
 
 """
 

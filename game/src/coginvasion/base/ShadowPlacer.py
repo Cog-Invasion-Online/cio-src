@@ -8,8 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import CollisionRay, CollisionNode, BitMask32
-from pandac.PandaModules import CollisionHandlerFloor
+from panda3d.core import CollisionRay, CollisionNode, BitMask32
+from panda3d.core import CollisionHandlerFloor
 from src.coginvasion.globals import CIGlobals
 
 from direct.directnotify.DirectNotifyGlobal import directNotify

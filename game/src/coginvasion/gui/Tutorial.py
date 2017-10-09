@@ -1,11 +1,14 @@
 """
-  
-  Filename: Tutorial.py
-  Created by: blach (15Sep14)
-  
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Tutorial.py
+@author Brian Lach
+@date September 15, 2014
+
 """
 
-from pandac.PandaModules import MovieTexture, CardMaker, NodePath, TextureStage, AudioSound
+from panda3d.core import MovieTexture, CardMaker, NodePath, TextureStage, AudioSound
 
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from direct.showbase.Transitions import Transitions

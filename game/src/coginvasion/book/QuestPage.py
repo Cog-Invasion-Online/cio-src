@@ -1,10 +1,10 @@
 """
-
-Copyright (c) Cog Invasion Online. All rights reserved.
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
 @file QuestPage.py
 @author Brian Lach
-@date 2016-07-27
+@date July 27, 2016
 
 """
 

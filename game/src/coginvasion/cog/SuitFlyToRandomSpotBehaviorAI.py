@@ -1,7 +1,12 @@
-########################################
-# Filename: SuitFlyToRandomSpotBehaviorAI.py
-# Created by: DecodedLogic (06Sep15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitFlyToRandomSpotBehaviorAI.py
+@author Maverick Liberty
+@date September 06, 2015
+
+"""
 
 from src.coginvasion.cog.SuitHabitualBehaviorAI import SuitHabitualBehaviorAI
 from src.coginvasion.globals import CIGlobals

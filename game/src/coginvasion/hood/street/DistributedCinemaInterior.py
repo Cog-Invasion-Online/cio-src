@@ -1,7 +1,14 @@
-# Filename: DistributedCinemaInterior.py
-# Created by:  blach (29Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import TextureStage, MovieTexture, NodePath, CardMaker
+@file DistributedCinemaInterior.py
+@author Brian Lach
+@date July 29, 2015
+
+"""
+
+from panda3d.core import TextureStage, MovieTexture, NodePath, CardMaker
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.ClockDelta import globalClockDelta

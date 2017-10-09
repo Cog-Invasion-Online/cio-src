@@ -1,7 +1,12 @@
-########################################
-# Filename: ChargeUpGag.py
-# Created by: DecodedLogic (17Aug15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file ChargeUpGag.py
+@author Maverick Liberty
+@date August 17, 2015
+
+"""
 
 from src.coginvasion.gags.ChargeUpSpot import ChargeUpSpot
 from direct.interval.IntervalGlobal import Sequence, Func

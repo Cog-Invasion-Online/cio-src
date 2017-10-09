@@ -1,7 +1,12 @@
-########################################
-# Filename: SmallPouch.py
-# Created by: DecodedLogic (07Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SmallPouch.py
+@author Maverick Liberty
+@date July 07, 2015
+
+"""
 
 from src.coginvasion.gags.backpack.Backpack import Backpack
 

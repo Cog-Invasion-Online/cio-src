@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: CTCPlayground.py
-  Created by: blach (14Dec14)
+@file CTCPlayground.py
+@author Brian Lach
+@date December 14, 2014
 
 """
 

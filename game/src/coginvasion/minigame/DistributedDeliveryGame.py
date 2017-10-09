@@ -1,7 +1,7 @@
 # Filename: DistributedDeliveryGame.py
 # Created by:  blach (04Oct15)
 
-from pandac.PandaModules import CompassEffect, NodePath, CollisionSphere, CollisionNode, TextNode
+from panda3d.core import CompassEffect, NodePath, CollisionSphere, CollisionNode, TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import SoundInterval

@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DistributedTBTreasure.py
-  Created by: DecodedLogic (15Jul15)
+@file DistributedTBTreasure.py
+@author Maverick Liberty
+@date July 15, 2015
 
 """
 

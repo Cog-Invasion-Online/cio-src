@@ -1,7 +1,14 @@
-# Filename: DistributedToonInterior.py
-# Created by:  blach (27Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Mat4, Point3, VBase4
+@file DistributedToonInterior.py
+@author Brian Lach
+@date July 27, 2015
+
+"""
+
+from panda3d.core import Mat4, Point3, VBase4
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed import DistributedObject
 

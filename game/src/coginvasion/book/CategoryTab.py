@@ -4,11 +4,11 @@ Copyright (c) CIO Team. All rights reserved.
 
 @file CategoryTab.py
 @author Brian Lach
-@date 2017-03-13
+@date March 13, 2017
 
 """
 
-from pandac.PandaModules import TextNode, Vec4
+from panda3d.core import TextNode, Vec4
 
 from direct.gui.DirectGui import DirectButton
 from direct.directnotify.DirectNotifyGlobal import directNotify

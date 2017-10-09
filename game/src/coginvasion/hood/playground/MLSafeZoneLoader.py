@@ -1,5 +1,12 @@
-# Filename: MLSafeZoneLoader.py
-# Created by:  blach (24Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file MLSafeZoneLoader.py
+@author Brian Lach
+@date July 24, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

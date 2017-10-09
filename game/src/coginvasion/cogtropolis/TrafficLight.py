@@ -1,7 +1,14 @@
-# Filename: TrafficLight.py
-# Created by:  blach (13Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import NodePath
+@file TrafficLight.py
+@author Brian Lach
+@date August 13, 2015
+
+"""
+
+from panda3d.core import NodePath
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.task import Task
@@ -11,16 +18,16 @@ class TrafficLight(NodePath):
     notify = directNotify.newCategory("TrafficLight")
 
     colors = {'light-grey': (0.141, 0.141, 0.141, 1.0),
-        'grey': (0.090, 0.090, 0.090, 1.0),
-        'dark-grey': (0.027, 0.027, 0.027, 1.0),
-        'black': (0, 0, 0, 1),
-        'yellow': (1, 0.711, 0, 1)}
+              'grey':       (0.090, 0.090, 0.090, 1.0),
+              'dark-grey':  (0.027, 0.027, 0.027, 1.0),
+              'black':      (0, 0, 0, 1),
+              'yellow':     (1, 0.711, 0, 1)}
 
-    part2Color = {'*_holder': 'dark-grey',
-        '*_*light': 'grey',
-        'pole*': 'light-grey',
-        'wire': 'black',
-        'light-*': 'black'}
+    part2Color = {'*_holder':   'dark-grey',
+                  '*_*light':   'grey',
+                  'pole*':      'light-grey',
+                  'wire':       'black',
+                  'light-*':    'black'}
 
     def __init__(self, index = 0):
         NodePath.__init__(self, 'TrafficLight-' + str(id(self)))

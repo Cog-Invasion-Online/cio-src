@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Hood.py
-  Created by: blach (14Dec14)
+@file Hood.py
+@author Brian Lach
+@date December 14, 2014
 
 """
 
@@ -14,8 +17,8 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.dna.DNALoader import *
 from src.coginvasion.base.Lighting import OutdoorLightingConfig
 
-from pandac.PandaModules import Vec4, AmbientLight, ModelPool, TexturePool, DirectionalLight
-from pandac.PandaModules import Fog, CompassEffect, NodePath, VBase4, Vec3
+from panda3d.core import Vec4, AmbientLight, ModelPool, TexturePool, DirectionalLight
+from panda3d.core import Fog, CompassEffect, NodePath, VBase4, Vec3
 
 import ZoneUtil
 from QuietZoneState import QuietZoneState

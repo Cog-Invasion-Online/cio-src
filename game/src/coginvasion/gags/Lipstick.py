@@ -1,13 +1,18 @@
-########################################
-# Filename: Lipstick.py
-# Created by: DecodedLogic (27Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Lipstick.py
+@author Maverick Liberty
+@date July 27, 2015
+
+"""
 
 from src.coginvasion.gags.ToonUpGag import ToonUpGag
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, LerpPosInterval, LerpScaleInterval, ActorInterval
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 
 class Lipstick(ToonUpGag):
 

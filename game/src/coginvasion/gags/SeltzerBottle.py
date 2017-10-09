@@ -1,14 +1,17 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: SeltzerBottle.py
-  Created by: DecodedLogic (10Jul15)
+@file SeltzerBottle.py
+@author Maverick Liberty
+@date July 10, 2015
 
 """
 
 from src.coginvasion.gags.SquirtGag import SquirtGag
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 
 class SeltzerBottle(SquirtGag):
 

@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: LightDropGag.py
-  Created by: DecodedLogic (13Aug15)
+@file LightDropGag.py
+@author Maverick Liberty
+@date August 13, 2015
 
 """
 
@@ -10,7 +13,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.minigame.FlightProjectileInterval import FlightProjectileInterval
 from direct.interval.IntervalGlobal import Sequence, LerpPosInterval, LerpScaleInterval, Func, Wait, Parallel
 from direct.showutil import Effects
-from pandac.PandaModules import OmniBoundingVolume, Point3, CollisionSphere, CollisionNode, CollisionHandlerEvent, BitMask32
+from panda3d.core import OmniBoundingVolume, Point3, CollisionSphere, CollisionNode, CollisionHandlerEvent, BitMask32
 
 class LightDropGag(DropGag):
 

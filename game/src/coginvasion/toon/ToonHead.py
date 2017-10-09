@@ -6,7 +6,7 @@
 
 """
 
-from pandac.PandaModules import PerspectiveLens, LensNode, Texture
+from panda3d.core import PerspectiveLens, LensNode, Texture
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Parallel, Sequence, LerpHprInterval

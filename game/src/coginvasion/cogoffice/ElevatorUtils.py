@@ -1,7 +1,14 @@
-# Filename: ElevatorUtils.py
-# Created by:  blach (13Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Point3
+@file ElevatorUtils.py
+@author Brian Lach
+@date December 13, 2015
+
+"""
+
+from panda3d.core import Point3
 
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval, SoundInterval, Parallel
 

@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: SquirtGag.py
-  Created by: DecodedLogic (10Jul15)
+@file SquirtGag.py
+@author Maverick Liberty
+@date July 10, 2015
 
 """
 
@@ -11,7 +14,7 @@ from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Func, Wait, LerpScaleInterval, Parallel
 from direct.interval.IntervalGlobal import ActorInterval
-from pandac.PandaModules import Point3, Vec3, NodePath, CollisionSphere, CollisionHandlerEvent, CollisionNode
+from panda3d.core import Point3, Vec3, NodePath, CollisionSphere, CollisionHandlerEvent, CollisionNode
 import abc
 
 class SquirtGag(Gag):

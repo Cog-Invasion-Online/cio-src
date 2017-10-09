@@ -1,4 +1,4 @@
-from pandac.PandaModules import PandaNode
+from panda3d.core import PandaNode
 import random
 
 from MarginCell import MarginCell

@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: MGHoodAI.py
-  Created by: blach (05Jan15)
+@file MGHoodAI.py
+@author Brian Lach
+@date January 05, 2015
 
 """
 

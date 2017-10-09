@@ -1,7 +1,7 @@
 # Filename: FactorySneakPlayer.py
 # Created by:  blach (21Aug15)
 
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 
 from direct.showbase.DirectObject import DirectObject
 from direct.directnotify.DirectNotifyGlobal import directNotify

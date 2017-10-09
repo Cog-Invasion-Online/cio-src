@@ -1,5 +1,12 @@
-# Filename: DistributedElevatorAI.py
-# Created by:  blach (14Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedElevatorAI.py
+@author Brian Lach
+@date December 14, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObjectAI import DistributedObjectAI

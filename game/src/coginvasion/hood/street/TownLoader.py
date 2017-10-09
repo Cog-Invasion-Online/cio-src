@@ -1,7 +1,14 @@
-# Filename: TownLoader.py
-# Created by:  blach (25Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import ModelPool, TexturePool, NodePath, Vec4
+@file TownLoader.py
+@author Brian Lach
+@date July 25, 2015
+
+"""
+
+from panda3d.core import ModelPool, TexturePool, NodePath, Vec4
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.StateData import StateData

@@ -9,7 +9,7 @@ from direct.distributed.DistributedNode import DistributedNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.shop.ItemType import ItemType
-from pandac.PandaModules import NodePath, CollisionSphere, CollisionNode
+from panda3d.core import NodePath, CollisionSphere, CollisionNode
 import abc
 
 class DistributedShop(DistributedNode):

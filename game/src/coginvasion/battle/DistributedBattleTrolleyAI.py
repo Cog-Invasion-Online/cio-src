@@ -1,5 +1,12 @@
-# Filename: DistributedBattleTrolleyAI.py
-# Created by:  blach (28Oct15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedBattleTrolleyAI.py
+@author Brian Lach
+@date October 28, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObjectAI import DistributedObjectAI

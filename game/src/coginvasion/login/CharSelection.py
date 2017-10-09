@@ -5,9 +5,10 @@ Copyright (c) CIO Team. All rights reserved.
 @file CharSelection.py
 @author Brian Lach
 @date September 15, 2015
+
 """
 
-from pandac.PandaModules import Vec4, TextNode, Fog, Point3, Vec3
+from panda3d.core import Vec4, TextNode, Fog, Point3, Vec3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State

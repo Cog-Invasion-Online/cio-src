@@ -1,8 +1,11 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DistributedChar.py
-  Created by: blach (??July14)
-  
+@file DistributedChar.py
+@author Brian Lach
+@date July ??, 2014
+
 """
 
 from src.coginvasion.npc import Char

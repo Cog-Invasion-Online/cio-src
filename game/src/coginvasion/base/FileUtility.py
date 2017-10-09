@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import VirtualFileSystem, Filename
+from panda3d.core import VirtualFileSystem, Filename
 vfs = VirtualFileSystem.getGlobalPtr()
 
 def handleFileList(models, fileList):

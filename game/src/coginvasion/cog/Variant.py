@@ -1,7 +1,12 @@
-########################################
-# Filename: Variant.py
-# Created by: DecodedLogic (31Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Variant.py
+@author Maverick Liberty
+@date July 31, 2015
+
+"""
 
 NORMAL = 0
 SKELETON = 1

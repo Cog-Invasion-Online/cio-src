@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: RegenTreasurePlannerAI.py
-  Created by: DecodedLogic (15Jul15)
+@file RegenTreasurePlannerAI.py
+@author Maverick Liberty
+@date July 15, 2015
 
 """
 

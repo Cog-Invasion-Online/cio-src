@@ -1,7 +1,12 @@
-########################################
-# Filename: SuitType.py
-# Created by: DecodedLogic (31Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitType.py
+@author Maverick Liberty
+@date July 31, 2015
+
+"""
 
 class SuitType:
     A = 'A'

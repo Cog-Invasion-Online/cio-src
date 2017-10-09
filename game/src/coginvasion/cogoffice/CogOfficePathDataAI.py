@@ -1,5 +1,12 @@
-# Filename: CogOfficePathDataAI.py
-# Created by:  blach (15Feb16)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file CogOfficePathDataAI.py
+@author Brian Lach
+@date Februrary 15, 2016
+
+"""
 
 from CogOfficeConstants import *
 

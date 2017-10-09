@@ -1,8 +1,11 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: GagState.py
-  Created by: DecodedLogic (07Jul15)
-  
+@file GagState.py
+@author Maverick Liberty
+@date July 07, 2015
+
 """
 
 class GagState:

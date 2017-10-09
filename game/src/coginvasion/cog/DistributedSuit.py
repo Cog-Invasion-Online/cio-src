@@ -1,9 +1,14 @@
-########################################
-# Filename: DistributedSuit.py
-# Created by: DecodedLogic (01Sep15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Point3, VBase4
+@file DistributedSuit.py
+@author Maverick Liberty
+@date September 01, 2015
+
+"""
+
+from panda3d.core import Point3, VBase4
 
 from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
 from direct.distributed.DelayDeletable import DelayDeletable

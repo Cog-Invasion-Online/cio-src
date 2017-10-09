@@ -1,5 +1,12 @@
-# Filename: MLHood.py
-# Created by:  blach (24Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file MLHood.py
+@author Brian Lach
+@date July 24, 2015
+
+"""
 
 from panda3d.core import VBase4, Vec3
 

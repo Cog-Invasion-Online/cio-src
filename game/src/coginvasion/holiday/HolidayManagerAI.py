@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: HolidayManagerAI.py
-  Created by: DecodedLogic (14Mar17)
+@file HolidayManagerAI.py
+@author Maverick Liberty
+@date March 14, 2017
 
 """
 

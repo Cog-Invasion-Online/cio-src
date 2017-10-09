@@ -1,14 +1,18 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: LaffOMeter.py
-  Created by: blach (??July14)
+@file LaffOMeter.py
+@author Brian Lach
+@date July ??, 2014
 
 """
+
 from src.coginvasion.base import ToontownIntervals
 
 from direct.gui.DirectGui import DirectFrame, DirectLabel
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from pandac.PandaModules import Vec4
+from panda3d.core import Vec4
 
 notify = directNotify.newCategory("LaffOMeter")
 

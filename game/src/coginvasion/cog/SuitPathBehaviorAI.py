@@ -1,9 +1,14 @@
-########################################
-# Filename: SuitPathBehaviorAI.py
-# Created by: DecodedLogic (03Sep15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Point3, Point2
+@file SuitPathBehaviorAI.py
+@author Maverick Liberty
+@date September 03, 2015
+
+"""
+
+from panda3d.core import Point3, Point2
 
 from src.coginvasion.cog.SuitBehaviorBaseAI import SuitBehaviorBaseAI
 from src.coginvasion.globals import CIGlobals

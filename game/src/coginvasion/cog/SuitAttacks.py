@@ -1,7 +1,12 @@
-########################################
-# Filename: SuitAttacks.py
-# Created by: blach (04Apr15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitAttacks.py
+@author Brian Lach
+@date April 04, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval, SoundInterval
@@ -9,7 +14,7 @@ from direct.interval.IntervalGlobal import ActorInterval, Parallel, LerpScaleInt
 from direct.interval.ProjectileInterval import ProjectileInterval
 from direct.showbase.DirectObject import DirectObject
 from direct.distributed import DelayDelete
-from pandac.PandaModules import CollisionSphere, CollisionNode, CollisionHandlerEvent, NodePath, Vec3, VBase4, Point3, BitMask32, Vec4
+from panda3d.core import CollisionSphere, CollisionNode, CollisionHandlerEvent, NodePath, Vec3, VBase4, Point3, BitMask32, Vec4
 from src.coginvasion.toon import ParticleLoader
 from direct.actor.Actor import Actor
 from src.coginvasion.globals import CIGlobals

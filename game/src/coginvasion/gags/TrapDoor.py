@@ -1,15 +1,18 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: TrapDoor.py
-  Created by: DecodedLogic (24Jul15)
-  
+@file TrapDoor.py
+@author Maverick Liberty
+@date July 24, 2015
+
 """
 
 from src.coginvasion.gags.ActivateTrapGag import ActivateTrapGag
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Parallel, Wait, Func, LerpScaleInterval, LerpPosInterval, SoundInterval, ActorInterval
-from pandac.PandaModules import Vec4, Point3
+from panda3d.core import Vec4, Point3
 
 class TrapDoor(ActivateTrapGag):
     

@@ -1,5 +1,12 @@
-# Filename: CinemaGlobals.py
-# Created by:  blach (29Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file CinemaGlobals.py
+@author Brian Lach
+@date July 29, 2015
+
+"""
 
 Cinemas = {0: ("cinemas/steamboat_willie.mp4", "cinemas/steamboat_willie.mp3"),
     1: ("cinemas/mr_mouse_takes_a_trip.mp4", "cinemas/mr_mouse_takes_a_trip.mp3"),

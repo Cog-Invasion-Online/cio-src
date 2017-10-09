@@ -1,7 +1,14 @@
-# Filename: CogOfficeConstants.py
-# Created by:  blach (17Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Point3
+@file CogOfficeConstants.py
+@author Brian Lach
+@date December 17, 2015
+
+"""
+
+from panda3d.core import Point3
 
 from src.coginvasion.cog import Dept
 

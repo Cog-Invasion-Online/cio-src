@@ -1,5 +1,12 @@
-# Filename: DistributedDoorAI.py
-# Created by:  blach (27Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedDoorAI.py
+@author Brian Lach
+@date July 27, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed import DistributedObjectAI, ClockDelta

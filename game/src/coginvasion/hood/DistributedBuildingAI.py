@@ -1,5 +1,12 @@
-# Filename: DistributedBuildingAI.py
-# Created by:  blach (14Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedBuildingAI.py
+@author Brian Lach
+@date December 14, 2015
+
+"""
 
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 from direct.directnotify.DirectNotifyGlobal import directNotify

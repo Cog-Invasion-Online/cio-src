@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import WindowProperties, Point3
+from panda3d.core import WindowProperties, Point3
 from direct.showbase.DirectObject import DirectObject
 
 from src.coginvasion.globals import CIGlobals

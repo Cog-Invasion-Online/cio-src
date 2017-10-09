@@ -1,6 +1,6 @@
 from direct.task.Task import Task
 import math
-from pandac.PandaModules import PGButton, VBase4, DepthWriteAttrib, Point3
+from panda3d.core import PGButton, VBase4, DepthWriteAttrib, Point3
 
 from src.coginvasion.toon.ChatBalloon import ChatBalloon
 from src.coginvasion.margins import MarginGlobals

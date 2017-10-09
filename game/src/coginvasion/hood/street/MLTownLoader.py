@@ -1,5 +1,12 @@
-# Filename: MLTownLoader.py
-# Created by:  blach (26Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file MLTownLoader.py
+@author Brian Lach
+@date July 26, 2015
+
+"""
 
 import TownLoader
 import MLStreet

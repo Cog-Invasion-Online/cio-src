@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: AvChooser.py
-  Created by: blach (10Nov14)
+@file AvChooser.py
+@author Brian Lach
+@date November 10, 2014
 
 """
 

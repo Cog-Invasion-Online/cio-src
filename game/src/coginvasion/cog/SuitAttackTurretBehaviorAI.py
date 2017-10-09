@@ -1,5 +1,12 @@
-# Filename: SuitAttackTurretBehaviorAI.py
-# Created by:  blach (30Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitAttackTurretBehaviorAI.py
+@author Brian Lach
+@date December 30, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func

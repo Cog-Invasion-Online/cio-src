@@ -1,7 +1,12 @@
-########################################
-# Filename: FruitPieSlice.py
-# Created by: DecodedLogic (15Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file FruitPieSlice.py
+@author Maverick Liberty
+@date July 15, 2015
+
+"""
 
 from src.coginvasion.gags.ThrowGag import ThrowGag
 from src.coginvasion.gags import GagGlobals

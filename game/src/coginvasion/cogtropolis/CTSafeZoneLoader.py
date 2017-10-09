@@ -1,7 +1,14 @@
-# Filename: CTSafeZoneLoader.py
-# Created by:  blach (13Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Point3, Vec3, Fog
+@file CTSafeZoneLoader.py
+@author Brian Lach
+@date August 13, 2015
+
+"""
+
+from panda3d.core import Point3, Vec3, Fog
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

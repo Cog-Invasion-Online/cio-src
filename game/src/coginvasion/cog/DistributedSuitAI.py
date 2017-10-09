@@ -1,5 +1,12 @@
-# Filename: DistributedSuitAI.py
-# Created by:  DecodedLogic (01Sep15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedSuitAI.py
+@author Maverick Liberty
+@date September 01, 2015
+
+"""
 
 from direct.distributed.DistributedSmoothNodeAI import DistributedSmoothNodeAI
 from direct.distributed.ClockDelta import globalClockDelta

@@ -1,7 +1,14 @@
-# Filename: DistributedBuilding.py
-# Created by:  blach (13Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import TextNode, Vec3, VBase4, Point3, DecalEffect
+@file DistributedBuilding.py
+@author Brian Lach
+@date December 13, 2015
+
+"""
+
+from panda3d.core import TextNode, Vec3, VBase4, Point3, DecalEffect
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObject import DistributedObject

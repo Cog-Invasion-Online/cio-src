@@ -1,13 +1,18 @@
-########################################
-# Filename: BananaPeel.py
-# Created by: DecodedLogic (26Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file BananaPeel.py
+@author Maverick Liberty
+@date July 26, 2015
+
+"""
 
 from src.coginvasion.gags.ActivateTrapGag import ActivateTrapGag
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Parallel, Sequence, Wait, LerpPosInterval, LerpScaleInterval, ActorInterval, SoundInterval
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 
 class BananaPeel(ActivateTrapGag):
 

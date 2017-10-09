@@ -1,7 +1,12 @@
-########################################
-# Filename: HoodMgr.py
-# Created by: blach (15Dec14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file HoodMgr.py
+@author Brian Lach
+@date December 15, 2014
+
+"""
 
 from direct.showbase.DirectObject import DirectObject
 from direct.directnotify.DirectNotifyGlobal import directNotify

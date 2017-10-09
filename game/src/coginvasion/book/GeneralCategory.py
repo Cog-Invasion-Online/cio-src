@@ -4,7 +4,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 @file GeneralCategory.py
 @author Brian Lach
-@date 2017-09-28
+@date September 28, 2017
 
 """
 

@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Opera.py
-  Created by: DecodedLogic (09Aug15)
+@file Opera.py
+@author Maverick Liberty
+@date August 09, 2015
 
 """
 
@@ -9,7 +12,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.SoundGag import SoundGag
 from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, SoundInterval, ParticleInterval, ActorInterval
-from pandac.PandaModules import Vec3, Point3
+from panda3d.core import Vec3, Point3
 from direct.particles.ParticleEffect import ParticleEffect
 
 class Opera(SoundGag):

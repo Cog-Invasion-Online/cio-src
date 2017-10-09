@@ -1,7 +1,7 @@
 # Filename: Snowball.py
 # Created by:  blach (19Apr16)
 
-from pandac.PandaModules import NodePath, CollisionNode, CollisionSphere, BitMask32, CollisionHandlerEvent
+from panda3d.core import NodePath, CollisionNode, CollisionSphere, BitMask32, CollisionHandlerEvent
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import ProjectileInterval

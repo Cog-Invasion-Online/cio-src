@@ -1,5 +1,12 @@
-# Filename: BRPlayground.py
-# Created by:  blach (01Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file BRPlayground.py
+@author Brian Lach
+@date July 01, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.SoundInterval import SoundInterval

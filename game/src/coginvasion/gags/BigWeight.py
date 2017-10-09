@@ -1,14 +1,19 @@
-########################################
-# Filename: BigWeight.py
-# Created by: DecodedLogic (30Aug15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file BigWeight.py
+@author Maverick Liberty
+@date August 30, 2015
+
+"""
 
 from src.coginvasion.gags.DropGag import DropGag
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, LerpPosInterval, LerpScaleInterval, Func, Wait, Parallel
 from direct.showutil import Effects
-from pandac.PandaModules import OmniBoundingVolume, Point3, CollisionSphere, CollisionNode, CollisionHandlerEvent, BitMask32
+from panda3d.core import OmniBoundingVolume, Point3, CollisionSphere, CollisionNode, CollisionHandlerEvent, BitMask32
 
 class BigWeight(DropGag):
 

@@ -1,7 +1,7 @@
 # Filename: FinalScoreGUI.py
 # Created by:  blach (09Jul15)
 
-from pandac.PandaModules import TextNode
+from panda3d.core import TextNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DGG, DirectFrame, OnscreenImage, OnscreenText
 

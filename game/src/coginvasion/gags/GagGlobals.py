@@ -1,9 +1,14 @@
-########################################
-# Filename: GagGlobals.py
-# Created by: DecodedLogic (07Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import VBase4, Point4, Point3
+@file GagGlobals.py
+@author Maverick Liberty
+@date July 07, 2015
+
+"""
+
+from panda3d.core import VBase4, Point4, Point3
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags.GagType import GagType
 import types

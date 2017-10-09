@@ -1,7 +1,12 @@
-########################################
-# Filename: SuitBehaviorBaseAI.py
-# Created by: DecodedLogic (02Sep15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitBehaviorBaseAI.py
+@author Maverick Liberty
+@date September 02, 2015
+
+"""
 
 from direct.showbase.DirectObject import DirectObject
 

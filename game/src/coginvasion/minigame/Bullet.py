@@ -5,8 +5,8 @@
 
 """
 
-from pandac.PandaModules import CollisionSphere, CollisionNode, NodePath
-from pandac.PandaModules import CollisionHandlerEvent, BitMask32
+from panda3d.core import CollisionSphere, CollisionNode, NodePath
+from panda3d.core import CollisionHandlerEvent, BitMask32
 
 from direct.showbase.DirectObject import DirectObject
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval

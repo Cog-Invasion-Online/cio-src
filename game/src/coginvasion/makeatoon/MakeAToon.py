@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import Vec4, TextNode, Point3
+from panda3d.core import Vec4, TextNode, Point3
 
 from direct.gui.DirectGui import DirectButton, DirectFrame, DirectEntry
 from direct.gui.DirectGui import OnscreenImage, DirectLabel, DGG

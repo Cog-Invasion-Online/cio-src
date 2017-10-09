@@ -12,7 +12,7 @@ import os
 import sys
 import time
 
-from pandac.PandaModules import Notify, MultiplexStream, Filename
+from panda3d.core import Notify, MultiplexStream, Filename
 
 class Logger:
     

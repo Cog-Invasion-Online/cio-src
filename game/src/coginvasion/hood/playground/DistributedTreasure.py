@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DistributedTreasure.py
-  Created by: DecodedLogic (15Jul15)
+@file DistributedTreasure.py
+@author Maverick Liberty
+@date July 15, 2015
 
 """
 
@@ -9,7 +12,7 @@ from direct.distributed.DistributedObject import DistributedObject
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, LerpPosInterval, LerpColorScaleInterval, Func
 from direct.task.Task import Task
-from pandac.PandaModules import NodePath, CollisionSphere, CollisionNode, Point3, VBase4
+from panda3d.core import NodePath, CollisionSphere, CollisionNode, Point3, VBase4
 from panda3d.direct import HideInterval, ShowInterval
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.holiday.HolidayManager import HolidayType

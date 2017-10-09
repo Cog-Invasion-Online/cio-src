@@ -1,6 +1,6 @@
 from AIBase import AIBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from pandac.PandaModules import RescaleNormalAttrib, NodePath, Notify
+from panda3d.core import RescaleNormalAttrib, NodePath, Notify
 
 __builtins__['base'] = AIBase()
 __builtins__['ostream'] = Notify.out()

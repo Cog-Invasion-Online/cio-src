@@ -1,5 +1,12 @@
-# Filename: DistributedMLTreasureAI.py
-# Created by: blach (29Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedMLTreasureAI.py
+@author Brian Lach
+@date July 29, 2015
+
+"""
 
 import DistributedTreasureAI
 

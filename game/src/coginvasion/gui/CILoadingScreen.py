@@ -1,8 +1,11 @@
 """
-  
-  Filename: CILoadingScreen.py
-  Created by: blach (17June14)
-  
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file CILoadingScreen.py
+@author Brian Lach
+@date June 17, 2014
+
 """
 
 from direct.gui.DirectGui import OnscreenText

@@ -10,7 +10,7 @@ Copyright (c) Brian Lach. All rights reserved.
 
 """
 
-from pandac.PandaModules import Vec3, Mat3, Point3
+from panda3d.core import Vec3, Mat3, Point3
 
 from direct.showbase.InputStateGlobal import inputState
 

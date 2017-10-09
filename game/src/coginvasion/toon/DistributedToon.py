@@ -21,7 +21,7 @@ from direct.interval.SoundInterval import SoundInterval
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from direct.interval.IntervalGlobal import Parallel, LerpPosInterval, LerpQuatInterval, LerpHprInterval
 from direct.directnotify.DirectNotify import DirectNotify
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 import random
 import types
 

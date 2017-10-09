@@ -1,5 +1,12 @@
-# Filename: DDHoodAI.py
-# Created by:  blach (26Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DDHoodAI.py
+@author Brian Lach
+@date July 26, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

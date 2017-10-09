@@ -5,7 +5,7 @@
 
 """
 
-from pandac.PandaModules import TextNode
+from panda3d.core import TextNode
 
 from direct.gui.DirectGui import OnscreenImage, DirectLabel, DirectFrame
 from direct.interval.IntervalGlobal import Sequence, Wait, Func

@@ -1,5 +1,12 @@
-# Filename: DistributedGagShopInterior.py
-# Created by:  blach (06Nov15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedGagShopInterior.py
+@author Brian Lach
+@date November 6, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

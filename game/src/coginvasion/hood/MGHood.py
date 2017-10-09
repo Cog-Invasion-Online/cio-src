@@ -1,14 +1,17 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: MGHood.py
-  Created by: blach (05Jan15)
+@file MGHood.py
+@author Brian Lach
+@date January 05, 2015
 
 """
 
 from src.coginvasion.globals import CIGlobals
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.State import State
-from pandac.PandaModules import TransparencyAttrib
+from panda3d.core import TransparencyAttrib
 import ToonHood
 from playground import MGSafeZoneLoader
 

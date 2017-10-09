@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: HoodAI.py
-  Created by: blach (20Dec14)
+@file HoodAI.py
+@author Brian Lach
+@date December 20, 2014
 
 """
 

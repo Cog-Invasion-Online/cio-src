@@ -1,9 +1,14 @@
-########################################
-# Filename: SquirtingFlower.py
-# Created by: DecodedLogic (22Feb16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Vec3, Point3
+@file SquirtingFlower.py
+@author Maverick Liberty
+@date Februrary 22, 2016
+
+"""
+
+from panda3d.core import Vec3, Point3
 
 from src.coginvasion.gags.SquirtGag import SquirtGag
 from src.coginvasion.gags import GagGlobals

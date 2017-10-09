@@ -5,7 +5,7 @@
 
 """
 
-from pandac.PandaModules import LVecBase4f
+from panda3d.core import LVecBase4f
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

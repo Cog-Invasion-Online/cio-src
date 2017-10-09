@@ -1,5 +1,12 @@
-# Filename: CogOfficePursueToonBehaviorAI.py
-# Created by:  blach (07Mar16)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file CogOfficePursueToonBehaviorAI.py
+@author Brian Lach
+@date March 07, 2016
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

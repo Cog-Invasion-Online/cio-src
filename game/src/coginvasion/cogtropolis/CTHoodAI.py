@@ -1,5 +1,12 @@
-# Filename: CTHoodAI.py
-# Created by:  blach (14Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file CTHoodAI.py
+@author Brian Lach
+@date August 14, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

@@ -1,5 +1,12 @@
-# Filename: BRHood.py
-# Created by:  blach (01Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file BRHood.py
+@author Brian Lach
+@date July 01, 2015
+
+"""
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.holiday.HolidayManager import HolidayType

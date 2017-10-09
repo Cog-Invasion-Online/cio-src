@@ -1,4 +1,4 @@
-from pandac.PandaModules import VBase4, NodePath, DepthWriteAttrib, AntialiasAttrib, BitMask32
+from panda3d.core import VBase4, NodePath, DepthWriteAttrib, AntialiasAttrib, BitMask32
 
 from src.coginvasion.globals import CIGlobals
 

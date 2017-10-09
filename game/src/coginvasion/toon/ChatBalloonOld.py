@@ -5,7 +5,7 @@
   
 """
 
-from pandac.PandaModules import NodePath, TextNode, DepthWriteAttrib
+from panda3d.core import NodePath, TextNode, DepthWriteAttrib
 
 class ChatBalloon:
     TEXT_SHIFT = (0.225, -0.05, 1.25)

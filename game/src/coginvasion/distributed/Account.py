@@ -1,7 +1,12 @@
-########################################
-# Filename: Account.py
-# Created by: blach (10Dec14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Account.py
+@author Brian Lach
+@date December 10, 2014
+
+"""
 
 from direct.distributed.DistributedObject import DistributedObject
 

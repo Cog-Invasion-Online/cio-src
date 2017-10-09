@@ -9,7 +9,7 @@
 """
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from pandac.PandaModules import Point3, Vec3, NodePath, CompassEffect
+from panda3d.core import Point3, Vec3, NodePath, CompassEffect
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil

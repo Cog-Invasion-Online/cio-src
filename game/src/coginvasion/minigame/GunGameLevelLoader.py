@@ -5,7 +5,7 @@
 
 """
 
-from pandac.PandaModules import NodePath, Vec3, Point3, CompassEffect
+from panda3d.core import NodePath, Vec3, Point3, CompassEffect
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import OnscreenText
 

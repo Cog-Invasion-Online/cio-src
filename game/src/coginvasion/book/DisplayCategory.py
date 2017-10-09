@@ -4,11 +4,11 @@ Copyright (c) CIO Team. All rights reserved.
 
 @file DisplayCategory.py
 @author Brian Lach
-@date 2017-03-13
+@date March 13, 2017
 
 """
 
-from pandac.PandaModules import TextNode, WindowProperties, AntialiasAttrib
+from panda3d.core import TextNode, WindowProperties, AntialiasAttrib
 
 from direct.gui.DirectGui import DirectCheckButton, OnscreenText
 

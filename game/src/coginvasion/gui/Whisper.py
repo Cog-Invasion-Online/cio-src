@@ -1,11 +1,14 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Whisper.py
-  Created by: blach (??Aug14)
+@file Whisper.py
+@author Brian Lach
+@date August ??, 2014
 
 """
 
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 
 from direct.interval.SoundInterval import SoundInterval
 

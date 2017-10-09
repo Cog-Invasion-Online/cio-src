@@ -1,7 +1,12 @@
-########################################
-# Filename: CogInvasionClientRepository.py
-# Created by: blach (07Nov14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file CogInvasionClientRepository.py
+@author Brian Lach
+@date November 07, 2014
+
+"""
 
 from direct.distributed.AstronClientRepository import AstronClientRepository
 from direct.distributed.MsgTypes import CLIENT_OBJECT_LOCATION
@@ -17,8 +22,8 @@ from direct.fsm.State import State
 from direct.showbase.Audio3DManager import Audio3DManager
 from direct.task import Task
 
-from pandac.PandaModules import URLSpec, CollisionHandlerFloor, CollisionHandlerPusher
-from pandac.PandaModules import CollisionHandlerQueue, ModelPool, TexturePool
+from panda3d.core import URLSpec, CollisionHandlerFloor, CollisionHandlerPusher
+from panda3d.core import CollisionHandlerQueue, ModelPool, TexturePool
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gui.Dialog import GlobalDialog

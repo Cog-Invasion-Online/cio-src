@@ -23,9 +23,9 @@ from src.coginvasion.avatar import Avatar
 
 import AccessoryGlobals
 
-from pandac.PandaModules import VBase3, VBase4, Point3, Vec3, ConfigVariableBool
-from pandac.PandaModules import BitMask32, CollisionHandlerPusher
-from pandac.PandaModules import Material
+from panda3d.core import VBase3, VBase4, Point3, Vec3, ConfigVariableBool
+from panda3d.core import BitMask32, CollisionHandlerPusher
+from panda3d.core import Material
 import ToonDNA, random
 
 import types

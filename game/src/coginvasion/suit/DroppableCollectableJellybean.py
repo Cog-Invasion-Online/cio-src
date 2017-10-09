@@ -5,7 +5,7 @@
 
 """
 
-from pandac.PandaModules import VBase4, Vec3
+from panda3d.core import VBase4, Vec3
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from DroppableCollectableJellybeans import DroppableCollectableJellybeans
 from direct.interval.IntervalGlobal import LerpHprInterval

@@ -1,7 +1,12 @@
-########################################
-# Filename: BirthdayCake.py
-# Created by: DecodedLogic (07Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file BirthdayCake.py
+@author Maverick Liberty
+@date July 07, 2015
+
+"""
 
 from src.coginvasion.gags.ThrowGag import ThrowGag
 from src.coginvasion.gags import GagGlobals

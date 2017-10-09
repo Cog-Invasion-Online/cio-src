@@ -1,7 +1,12 @@
-########################################
-# Filename: SuitRandomStrollBehaviorAI.py
-# Created by: DecodedLogic (03Sep15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitRandomStrollBehaviorAI.py
+@author Maverick Liberty
+@date September 03, 2015
+
+"""
 
 from src.coginvasion.cog.SuitPathBehaviorAI import SuitPathBehaviorAI
 

@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Geyser.py
-  Created by: DecodedLogic (17Aug15)
+@file Geyser.py
+@author Maverick Liberty
+@date August 17, 2015
 
 """
 
@@ -12,7 +15,7 @@ from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpScaleInterval
 from direct.interval.IntervalGlobal import ActorInterval, LerpPosInterval, Parallel
 from direct.interval.IntervalGlobal import SoundInterval
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 
 class Geyser(SquirtGag, ChargeUpGag):
 

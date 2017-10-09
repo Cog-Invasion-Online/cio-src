@@ -1,5 +1,12 @@
-# Filename: DistributedTakeOverSuitAI.py
-# Created by:  blach (14Jun16)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedTakeOverSuitAI.py
+@author Brian Lach
+@date June 14, 2016
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.ClockDelta import globalClockDelta

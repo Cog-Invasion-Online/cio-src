@@ -1,7 +1,7 @@
 # Filename: DistributedDisneyChar.py
 # Created by:  blach (21Jun16)
 
-from pandac.PandaModules import ModelNode, CharacterJointEffect, Texture
+from panda3d.core import ModelNode, CharacterJointEffect, Texture
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM

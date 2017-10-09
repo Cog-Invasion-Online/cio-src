@@ -1,5 +1,12 @@
-# Filename: DistributedCogOfficeElevator.py
-# Created by:  blach (15Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedCogOfficeElevator.py
+@author Brian Lach
+@date December 15, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObject import DistributedObject

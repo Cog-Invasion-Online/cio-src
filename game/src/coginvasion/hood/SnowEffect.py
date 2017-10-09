@@ -1,6 +1,6 @@
 #
 
-from pandac.PandaModules import Fog
+from panda3d.core import Fog
 
 from direct.interval.IntervalGlobal import SoundInterval
 

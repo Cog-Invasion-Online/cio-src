@@ -5,8 +5,8 @@
   This is so you can use client objects in a stand-alone program easily.
   
 """
-from pandac.PandaModules import CollisionTraverser, AntialiasAttrib, loadPrcFile, loadPrcFileData
-from pandac.PandaModules import CullBinManager
+from panda3d.core import CollisionTraverser, AntialiasAttrib, loadPrcFile, loadPrcFileData
+from panda3d.core import CullBinManager
 import __builtin__
 
 loadPrcFile('config/config_client.prc')

@@ -11,7 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gui.Dialog import GlobalDialog, NoButtons
 from direct.gui.DirectGui import *
-from pandac.PandaModules import TextNode
+from panda3d.core import TextNode
 from direct.directnotify.DirectNotify import *
 import FileUtility
 from LoadUtility import LoadUtility

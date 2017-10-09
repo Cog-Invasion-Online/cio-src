@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: QuietZoneState.py
-  Created by: blach (30Nov14)
+@file QuietZoneState.py
+@author Brian Lach
+@date November 30, 2014
 
 """
 

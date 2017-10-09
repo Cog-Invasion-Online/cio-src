@@ -1,5 +1,12 @@
-# Filename: CTSuitData.py
-# Created by:  blach (15Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file CTSuitData.py
+@author Brian Lach
+@date August 15, 2015
+
+"""
 
 WALK_POINTS = {
     0: {

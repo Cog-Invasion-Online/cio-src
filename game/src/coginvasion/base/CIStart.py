@@ -10,9 +10,9 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import Multifile, Filename, VirtualFileSystem, PandaSystem
-from pandac.PandaModules import Thread, loadPrcFile, loadPrcFileData, CollisionTraverser, CullBinManager
-from pandac.PandaModules import ConfigVariableDouble, PStatClient, WindowProperties
+from panda3d.core import Multifile, Filename, VirtualFileSystem, PandaSystem
+from panda3d.core import Thread, loadPrcFile, loadPrcFileData, CollisionTraverser, CullBinManager
+from panda3d.core import ConfigVariableDouble, PStatClient, WindowProperties
 
 import Logger
 logger = Logger.Starter()
@@ -84,21 +84,11 @@ except:
 notify.info("Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype))
 notify.info("Phase dir: " + game.phasedir)
 
-from CIBase import CIBase
-base = CIBase()
-
 from src.coginvasion.manager.SettingsManager import SettingsManager
 jsonfile = "settings.json"
 notify.info("Reading settings file " + jsonfile)
 sm = SettingsManager()
 sm.loadFile(jsonfile)
-
-from CogInvasionLoader import CogInvasionLoader
-base.loader = CogInvasionLoader(base)
-__builtin__.loader = base.loader
-
-# Let's load up our multifiles
-base.loader.mountMultifiles()
 
 notify.info("Using Panda3D version {0}".format(PandaSystem.getVersionString()))
 notify.info("True threading: " + str(Thread.isTrueThreads()))
@@ -109,6 +99,16 @@ sm.maybeFixAA()
 #import ccoginvasion
 #shGen = ccoginvasion.CIShaderGenerator(base.win.getGsg(), base.win)
 #base.win.getGsg().setShaderGenerator(shGen)
+
+from CIBase import CIBase
+base = CIBase()
+
+from CogInvasionLoader import CogInvasionLoader
+base.loader = CogInvasionLoader(base)
+__builtin__.loader = base.loader
+
+# Let's load up our multifiles
+base.loader.mountMultifiles()
 
 base.cTrav = CollisionTraverser()
 
@@ -257,7 +257,7 @@ def doneInitLoad():
     from src.coginvasion.distributed import CogInvasionClientRepository
     base.cr = CogInvasionClientRepository.CogInvasionClientRepository(music, "ver-" + game.version)
 
-from pandac.PandaModules import LightRampAttrib
+from panda3d.core import LightRampAttrib
 
 if game.uselighting:
     render.show(CIGlobals.ShadowCameraBitmask)

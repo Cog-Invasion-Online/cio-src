@@ -1,7 +1,14 @@
-# Filename: SuitUtils.py
-# Created by:  blach (29Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Point3, Point2
+@file SuitUtils.py
+@author Brian Lach
+@date December 29, 2015
+
+"""
+
+from panda3d.core import Point3, Point2
 
 from direct.distributed.ClockDelta import globalClockDelta
 from direct.interval.IntervalGlobal import Sequence, Func

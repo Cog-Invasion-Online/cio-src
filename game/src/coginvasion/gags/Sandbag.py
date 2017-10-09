@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Sandbag.py
-  Created by: DecodedLogic (13Aug15)
+@file Sandbag.py
+@author Maverick Liberty
+@date August 13, 2015
 
 """
 

@@ -1,14 +1,17 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Playground.py
-  Created by: blach (14Dec14)
+@file Playground.py
+@author Brian Lach
+@date December 14, 2014
 
 """
 
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from pandac.PandaModules import Fog
+from panda3d.core import Fog
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import Place

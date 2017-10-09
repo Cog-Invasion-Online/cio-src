@@ -1,5 +1,12 @@
-# Filename: DistributedCityCartAI.py
-# Created by:  blach (13Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedCityCartAI.py
+@author Brian Lach
+@date August 13, 2015
+
+"""
 
 from direct.distributed.DistributedNodeAI import DistributedNodeAI
 from direct.directnotify.DirectNotifyGlobal import directNotify

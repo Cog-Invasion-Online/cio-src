@@ -1,13 +1,18 @@
-########################################
-# Filename: Aoogah.py
-# Created by: DecodedLogic (08Aug15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file Aoogah.py
+@author Maverick Liberty
+@date August 08, 2015
+
+"""
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.SoundGag import SoundGag
 from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, SoundInterval, ActorInterval
-from pandac.PandaModules import Vec3
+from panda3d.core import Vec3
 
 class Aoogah(SoundGag):
 

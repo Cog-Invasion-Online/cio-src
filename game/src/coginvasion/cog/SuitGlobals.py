@@ -1,11 +1,16 @@
-########################################
-# Filename: SuitGlobals.py
-# Created by: DecodedLogic (31Jul15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file SuitGlobals.py
+@author Maverick Liberty
+@date July 31, 2015
+
+"""
 
 from src.coginvasion.cog import Dept
 from src.coginvasion.cog.SuitType import SuitType
-from pandac.PandaModules import Vec4
+from panda3d.core import Vec4
 
 # The following are all the suit names
 

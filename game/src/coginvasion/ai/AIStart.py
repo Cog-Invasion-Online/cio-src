@@ -1,18 +1,23 @@
-########################################
-# Filename: AIStart.py
-# Created by: blach (14Dec14)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file AIStart.py
+@author Brian Lach
+@date December 14, 2014
+
+"""
 
 import __builtin__
 
 __builtin__.process = 'ai'
 
-__builtin__.__dict__.update(__import__('pandac.PandaModules', fromlist=['*']).__dict__)
+__builtin__.__dict__.update(__import__('panda3d.core', fromlist=['*']).__dict__)
 
 import sys
 sys.dont_write_bytecode = True
 
-from pandac.PandaModules import loadPrcFile, loadPrcFileData, VirtualFileSystem
+from panda3d.core import loadPrcFile, loadPrcFileData, VirtualFileSystem
 
 vfs = VirtualFileSystem.getGlobalPtr()
 vfs.mount(Filename("resources/phase_0.mf"), ".", VirtualFileSystem.MFReadOnly)

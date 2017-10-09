@@ -1,7 +1,7 @@
 # Filename: DodgeballFirstPerson.py
 # Created by:  blach (18Apr16)
 
-from pandac.PandaModules import Point3
+from panda3d.core import Point3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State

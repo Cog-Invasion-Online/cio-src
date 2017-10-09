@@ -1,7 +1,14 @@
-# Filename: DistributedElevator.py
-# Created by:  blach (14Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Point3, TextNode, VBase4, CollisionSphere, CollisionNode
+@file DistributedElevator.py
+@author Brian Lach
+@date December 14, 2015
+
+"""
+
+from panda3d.core import Point3, TextNode, VBase4, CollisionSphere, CollisionNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObject import DistributedObject

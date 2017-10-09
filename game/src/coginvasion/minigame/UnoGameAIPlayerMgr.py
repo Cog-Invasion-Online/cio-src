@@ -7,7 +7,7 @@
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.minigame.UnoGameAIPlayer import UnoGameAIPlayer
-from pandac.PandaModules import UniqueIdAllocator
+from panda3d.core import UniqueIdAllocator
 import random
 
 class UnoGameAIPlayerMgr:

@@ -1,7 +1,14 @@
-# Filename: ElevatorConstants.py
-# Created by:  blach (13Dec15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from pandac.PandaModules import Vec4, Point3
+@file ElevatorConstants.py
+@author Brian Lach
+@date December 13, 2015
+
+"""
+
+from panda3d.core import Vec4, Point3
 
 ELEVATOR_NORMAL = 0
 ELEVATOR_INT = 1
@@ -10,18 +17,18 @@ REJECT_SHUFFLE = 1
 REJECT_NOSEAT = 2
 MAX_GROUP_BOARDING_TIME = 6.0
 
-ElevatorData = {ELEVATOR_NORMAL: {'openTime': 2.0,
-    'closeTime': 2.0,
-    'width': 3.5,
-    'countdown': 15.0,
-    'sfxVolume': 1.0,
-    'collRadius': 5},
-    ELEVATOR_INT: {'openTime': 2.0,
-    'closeTime': 2.0,
-    'width': 3.5,
-    'countdown': 65.0,
-    'sfxVolume': 1.0,
-    'collRadius': 5}}
+ElevatorData = {ELEVATOR_NORMAL: {'openTime':   2.0,
+                                  'closeTime':  2.0,
+                                  'width':      3.5,
+                                  'countdown':  15.0,
+                                  'sfxVolume':  1.0,
+                                  'collRadius': 5},
+                ELEVATOR_INT:    {'openTime':   2.0,
+                                  'closeTime':  2.0,
+                                  'width':      3.5,
+                                  'countdown':  65.0,
+                                  'sfxVolume':  1.0,
+                                  'collRadius': 5}}
 
 TOON_BOARD_ELEVATOR_TIME = 1.0
 TOON_EXIT_ELEVATOR_TIME = 1.0
