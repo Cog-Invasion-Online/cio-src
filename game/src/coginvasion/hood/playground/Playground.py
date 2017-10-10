@@ -75,7 +75,11 @@ class Playground(Place.Place):
         self.loader.geom.reparentTo(hidden)
         #self.loader.hood.stopSky()
         if self.loader.music:
-            self.loader.music.stop()
+            # Workaround to try to fix the persistent humming from the DDL safezone music.
+            if self.loader.music == 'phase_8/audio/bgm/DL_nbrhood.mid':
+                base.playMusic(self.loader.music, looping = 0, volume = 0)
+            else:
+                self.loader.music.stop()
         if self.loader.bossBattleMusic:
             self.loader.bossBattleMusic.stop()
         if self.loader.battleMusic:

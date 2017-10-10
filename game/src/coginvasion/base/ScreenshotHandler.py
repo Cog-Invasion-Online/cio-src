@@ -14,7 +14,7 @@ Copyright (c) CIO Team. All rights reserved.
 from datetime import datetime
 from panda3d.core import Filename
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
-from direct.stdpy.threading2 import Thread
+from threading import Thread
 import os
 
 FILEPATH = 'screenshots/'
