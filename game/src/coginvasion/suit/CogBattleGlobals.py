@@ -1,8 +1,16 @@
-# Filename: CogBattleGlobals.py
-# Created by:  blach (28Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from src.coginvasion.globals.CIGlobals import *
-from src.coginvasion.globals import CIGlobals
+@file CogBattleGlobals.py
+@author Brian Lach
+@date July 28, 2015
+
+"""
+
+from src.coginvasion.globals.CIGlobals import ToontownCentral, TheBrrrgh, BattleTTC
+from src.coginvasion.globals.CIGlobals import DonaldsDock, MinniesMelodyland
+from src.coginvasion.globals.CIGlobals import DaisyGardens, DonaldsDreamland
 from src.coginvasion.hood import ZoneUtil
 
 MAX_TURRETS = 3

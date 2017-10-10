@@ -1,7 +1,22 @@
-from src.coginvasion.globals.CIGlobals import *
-from src.coginvasion.base.Lighting import OutdoorLightingConfig
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from panda3d.core import VBase4, Vec3
+@file ZoneUtil.py
+@author Brian Lach
+@date ???
+
+"""
+
+from src.coginvasion.globals.CIGlobals import ToontownCentral, DonaldsDock
+from src.coginvasion.globals.CIGlobals import MinniesMelodyland, DaisyGardens
+from src.coginvasion.globals.CIGlobals import MinigameArea, GoofySpeedway
+from src.coginvasion.globals.CIGlobals import TheBrrrgh, CogTropolis
+from src.coginvasion.globals.CIGlobals import DonaldsDreamland, BattleTTC
+from src.coginvasion.globals.CIGlobals import ToontownCentralId, GoofySpeedwayId
+from src.coginvasion.globals.CIGlobals import BranchZone2StreetName, DynamicZonesBegin
+from src.coginvasion.globals.CIGlobals import ZoneId2Hood, Hood2ZoneId
+from src.coginvasion.base.Lighting import OutdoorLightingConfig
 
 def isInInterior(zoneId):
     return int(str(zoneId)[1:]) >= 500 and int(str(zoneId)[1:]) <= 999

@@ -1,6 +1,19 @@
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file ToonInteriorColors.py
+@author Brian Lach
+@date ????
+
+"""
+
 from panda3d.core import Vec4
 
-from src.coginvasion.globals.CIGlobals import *
+from src.coginvasion.globals.CIGlobals import ToontownCentral, TheBrrrgh
+from src.coginvasion.globals.CIGlobals import DonaldsDock, MinniesMelodyland
+from src.coginvasion.globals.CIGlobals import DaisyGardens, GoofySpeedway
+from src.coginvasion.globals.CIGlobals import DonaldsDreamland
 
 wainscottingBase = [Vec4(0.8, 0.5, 0.3, 1.0), Vec4(0.699, 0.586, 0.473, 1.0), Vec4(0.473, 0.699, 0.488, 1.0)]
 wallpaperBase = [Vec4(1.0, 1.0, 0.7, 1.0),

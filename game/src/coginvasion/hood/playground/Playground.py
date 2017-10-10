@@ -11,7 +11,6 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from panda3d.core import Fog
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import Place
