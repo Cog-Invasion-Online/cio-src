@@ -12,7 +12,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.battle.DistributedBattleTrolleyAI import DistributedBattleTrolleyAI
-from src.coginvasion.suit import CogBattleGlobals
+from src.coginvasion.cog import CogBattleGlobals
 from src.coginvasion.npc.DistributedDisneyCharAI import DistributedDisneyCharAI
 from src.coginvasion.npc.DisneyCharGlobals import *
 

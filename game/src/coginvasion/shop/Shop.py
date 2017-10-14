@@ -13,7 +13,7 @@ from direct.task.Task import Task
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.shop.ItemType import ItemType
-from src.coginvasion.suit import CogBattleGlobals
+from src.coginvasion.cog import CogBattleGlobals
 from src.coginvasion.gags import GagGlobals
 
 from panda3d.core import Vec4, TransparencyAttrib

@@ -32,8 +32,6 @@ from src.coginvasion.friends.FriendsList import FriendsList
 from src.coginvasion.cog import SuitAttacks
 from src.coginvasion.quests.QuestManager import QuestManager
 
-from src.coginvasion.suit.PythonCTMusicMgr import PythonCTMusicManager as PCTMM
-
 from src.coginvasion.nametag import NametagGlobals
 
 import random
@@ -822,7 +820,6 @@ class LocalToon(DistributedToon):
             base.taskMgr.remove("LT.attackReactionDone")
             if (self.cr.playGame.hood.id != ZoneUtil.getHoodId(self.zoneId)):
                 self.cr.playGame.getPlace().fsm.request('died', [{}, self.diedStateDone])
-                messenger.send(PCTMM.getLocalAvDiedEvent())
             return task.done
         return task.cont
 

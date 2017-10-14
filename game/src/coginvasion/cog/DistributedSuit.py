@@ -23,8 +23,6 @@ from src.coginvasion.avatar.DistributedAvatar import DistributedAvatar
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.npc.NPCWalker import NPCWalkInterval
 
-from src.coginvasion.suit.PythonCTMusicMgr import PythonCTMusicManager as PCTMM
-
 from SuitState import SuitState
 from SuitBank import SuitPlan
 from Suit import Suit
@@ -76,12 +74,6 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         self.makeStateDict()
 
     def setChaseTarget(self, avId):
-        if avId != base.localAvatar.doId:
-            if self.chaseTarget == base.localAvatar.doId:
-                messenger.send(PCTMM.getCogLostTargetEvent())
-        else:
-            messenger.send(PCTMM.getCogChasingEvent())
-
         self.chaseTarget = avId
 
     def setWalkPath(self, path, timestamp):

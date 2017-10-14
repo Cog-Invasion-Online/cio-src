@@ -13,9 +13,6 @@ from direct.distributed.DistributedObjectAI import DistributedObjectAI
 from direct.distributed.ClockDelta import globalClockDelta
 from direct.fsm import ClassicFSM, State
 
-from src.coginvasion.suit import CogBattleGlobals
-from src.coginvasion.suit.DistributedCogBattleAI import DistributedCogBattleAI
-
 class DistributedBattleTrolleyAI(DistributedObjectAI):
     notify = directNotify.newCategory('DistributedBattleTrolleyAI')
 

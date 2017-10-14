@@ -17,7 +17,7 @@ from src.coginvasion.battle.DistributedBattleZoneAI import DistributedBattleZone
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cog import SuitBank, Variant
 from src.coginvasion.cog.SuitType import SuitType
-from src.coginvasion.suit import CogBattleGlobals
+from src.coginvasion.cog import CogBattleGlobals
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.battle.DistributedGagBarrelAI import DistributedGagBarrelAI

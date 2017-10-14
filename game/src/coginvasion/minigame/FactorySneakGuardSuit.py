@@ -10,7 +10,7 @@ from direct.interval.IntervalGlobal import LerpHprInterval
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.npc.NPCWalker import NPCLookInterval, NPCWalkInterval
 from src.coginvasion.cog.Suit import Suit
-from src.coginvasion.suit import SuitPathFinder
+#from src.coginvasion.suit import SuitPathFinder
 import CogGuardGlobals as CGG
 
 import random

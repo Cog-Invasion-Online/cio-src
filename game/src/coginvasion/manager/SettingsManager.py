@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import AntialiasAttrib, TextureStage
+from panda3d.core import AntialiasAttrib
 from panda3d.core import loadPrcFileData, WindowProperties
 from direct.directnotify.DirectNotify import DirectNotify
 
@@ -167,14 +167,14 @@ class SettingsManager:
     def getSettings(self):
         return self.jsonData["settings"]
 
-    def updateAndWriteSetting(self, setting, value, apply=0):
+    def updateAndWriteSetting(self, setting, value, applyChanges=0):
         self.jsonData["settings"][setting] = value
 
         jsonFile = open(self.jsonFilename, "w+")
         jsonFile.write(json.dumps(self.jsonData, indent = 4))
         jsonFile.close()
 
-        if apply:
+        if applyChanges:
             wp = WindowProperties()
             if setting == "resolution":
                 width, height = value

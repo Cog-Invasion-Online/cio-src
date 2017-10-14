@@ -11,9 +11,8 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.suit.DistributedDroppableCollectableBackpackAI import DistributedDroppableCollectableBackpackAI as DBackpackAI
-from src.coginvasion.suit.DistributedDroppableCollectableJellybeanAI import DistributedDroppableCollectableJellybeanAI as DJellybeanAI
-from src.coginvasion.suit.DistributedDroppableCollectableJellybeanJarAI import DistributedDroppableCollectableJellybeanJarAI as DJellybeanJarAI
+from src.coginvasion.cog.DistributedDroppableCollectableJellybeanAI import DistributedDroppableCollectableJellybeanAI as DJellybeanAI
+from src.coginvasion.cog.DistributedDroppableCollectableJellybeanJarAI import DistributedDroppableCollectableJellybeanJarAI as DJellybeanJarAI
 import random
 import SuitAttacks
 

@@ -10,9 +10,10 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from pandac.PandaModules import Multifile, Filename, VirtualFileSystem, PandaSystem
-from pandac.PandaModules import Thread, loadPrcFile, loadPrcFileData, CollisionTraverser, CullBinManager
-from pandac.PandaModules import ConfigVariableDouble, PStatClient, WindowProperties
+from panda3d.core import PandaSystem
+from panda3d.core import Thread, loadPrcFile, loadPrcFileData, CollisionTraverser, CullBinManager
+from panda3d.core import ConfigVariableDouble
+#from panda3d.core import PStatClient, WindowProperties
 
 import Logger
 logger = Logger.Starter()
@@ -146,7 +147,6 @@ from direct.gui import DirectGuiGlobals
 from src.coginvasion.base import ScreenshotHandler
 
 base.graphicsEngine.setDefaultLoader(base.loader.loader)
-from src.coginvasion.globals import CIGlobals
 cbm = CullBinManager.getGlobalPtr()
 cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
 if not game.userealshadows:
@@ -257,7 +257,7 @@ def doneInitLoad():
     from src.coginvasion.distributed import CogInvasionClientRepository
     base.cr = CogInvasionClientRepository.CogInvasionClientRepository(music, "ver-" + game.version)
 
-from pandac.PandaModules import LightRampAttrib
+from panda3d.core import LightRampAttrib
 
 if game.uselighting:
     render.show(CIGlobals.ShadowCameraBitmask)

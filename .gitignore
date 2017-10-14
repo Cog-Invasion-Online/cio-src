@@ -4,7 +4,6 @@
 *.mf
 
 # I hate .pyc!
-
 *.pyc
 *.yaml
 
@@ -15,7 +14,7 @@ game/renderpipelinenew
 demomaster-0.8
 
 !*.lib
-game/*.py
+/game/*.py
 game/resourcepack
 game/settings.json
 game/safe_test.py

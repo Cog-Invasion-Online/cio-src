@@ -13,7 +13,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.minigame.DistributedMinigameStationAI import DistributedMinigameStationAI
 from src.coginvasion.battle.DistributedBattleTrolleyAI import DistributedBattleTrolleyAI
-from src.coginvasion.suit import CogBattleGlobals
+from src.coginvasion.cog import CogBattleGlobals
 import ZoneUtil
 
 class MGHoodAI(HoodAI.HoodAI):

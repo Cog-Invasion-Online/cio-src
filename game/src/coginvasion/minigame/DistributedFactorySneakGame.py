@@ -42,13 +42,14 @@ class DistributedFactorySneakGame(DistributedToonFPSGame):
         self.avatarBody.node().addSolid(CollisionSphere(0, 0, 0, 1.2))
         self.avatarBody.node().setFromCollideMask(BitMask32.allOff())
         self.avatarBody.node().setIntoCollideMask(CGG.GuardBitmask)
+        """
         self.gameWorld = FactorySneakWorld(self)
         self.gameWorld.loadWorld()
         self.gameWorld.loadJellybeanBarrels()
-        self.gameWorld.makeGuards()
+        #self.gameWorld.makeGuards()
         self.gameWorld.showWorld()
         self.gameWorld.setupPlayer()
-
+        """
         self.load()
 
     def disable(self):

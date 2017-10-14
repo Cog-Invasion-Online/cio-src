@@ -11,7 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.suit import CogBattleGlobals
+from src.coginvasion.cog import CogBattleGlobals
 from src.coginvasion.cog import Dept, SuitBank, Variant
 from DistributedTakeOverSuitAI import DistributedTakeOverSuitAI
 import SuitBuildingGlobals

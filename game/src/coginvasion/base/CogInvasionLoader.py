@@ -48,7 +48,7 @@ class CogInvasionLoader(Loader.Loader):
         # This boolean flag is set false if pack.yaml is not found.
         allowResourcePackLoad = True
         
-        if os.path.exists(rsPackPath):
+        if rsPackPath and os.path.exists(rsPackPath):
             if not os.path.exists(rsPackPath + '/pack.yaml'):
                 self.notify.warning('You must have a \'pack.yaml\' configuration in the directory of your resource pack to use it.')
                 allowResourcePackLoad = False

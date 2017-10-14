@@ -15,7 +15,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from direct.task.Task import Task
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
-from src.coginvasion.suit import CogBattleGlobals
+from src.coginvasion.cog import CogBattleGlobals
 from src.coginvasion.cog.SuitItemDropperAI import SuitItemDropperAI
 
 from src.coginvasion.gags import GagGlobals
@@ -52,7 +52,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.suitMgr = None
         self.suitPlan = 0
         self.variant = Variant.NORMAL
-        self.itemDropper = SuitItemDropperAI(self)
+        self.itemDropper = None
         self.suitState = 0
         self.startPoint = -1
         self.endPoint = -1

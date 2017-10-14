@@ -18,12 +18,12 @@ from src.coginvasion.gags import GagGlobals, GagManager
 from src.coginvasion.globals import CIGlobals
 
 TrackZValueByName = {GagGlobals.ToonUp : 0.4,
-                     GagGlobals.Trap : 0.285,
-                     GagGlobals.Lure : 0.17,
-                     GagGlobals.Sound : 0.055,
-                     GagGlobals.Throw : -0.06,
-                     GagGlobals.Squirt : -0.175,
-                     GagGlobals.Drop : -0.29}
+                     GagGlobals.Trap : 0.29,
+                     GagGlobals.Lure : 0.18,
+                     GagGlobals.Sound : 0.07,
+                     GagGlobals.Throw : -0.04,
+                     GagGlobals.Squirt : -0.15,
+                     GagGlobals.Drop : -0.26}
 GagButtonXValues = [-0.38,
                     -0.2,
                     -0.02,
