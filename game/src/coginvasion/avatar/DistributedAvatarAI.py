@@ -26,6 +26,7 @@ class DistributedAvatarAI(DistributedNodeAI.DistributedNodeAI):
         self._name = ""
         self.place = 0
         self.hood = ""
+        self.battleZone = None
         return
 
     def setHood(self, hood):

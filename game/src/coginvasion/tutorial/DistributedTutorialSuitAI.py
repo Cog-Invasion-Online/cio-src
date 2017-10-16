@@ -94,6 +94,9 @@ class DistributedTutorialSuitAI(DistributedSuitAI):
     def monitorHealth(self, task):
         if self.health <= 0:
             self.tutorial.sendUpdateToAvatarId(self.avatarId, 'suitNoHealth', [self.tutPartIndex])
+            self.tutorial.suitsKilled += 1
+            if self.tutorial.suitsKilled == 1:
+                self.battleZone.battleComplete()
             if self.walkTrack:
                 self.ignore(self.walkTrack.getDoneEvent())
                 self.walkTrack.pause()
@@ -108,6 +111,7 @@ class DistributedTutorialSuitAI(DistributedSuitAI):
                 self.track.start()
             else:
                 self.killSuit()
+
             return Task.done
         return Task.cont
 

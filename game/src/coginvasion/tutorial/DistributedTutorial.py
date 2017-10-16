@@ -3,7 +3,6 @@
 
 from panda3d.core import NodePath, CompassEffect
 
-from direct.distributed.DistributedObject import DistributedObject
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State
 from direct.task import Task
@@ -13,12 +12,13 @@ from src.coginvasion.toon.Toon import Toon
 from src.coginvasion.toon.TPMouseMovement import TPMouseMovement
 from src.coginvasion.npc import NPCGlobals
 from libpandadna import *
+from src.coginvasion.battle.DistributedBattleZone import DistributedBattleZone
 from src.coginvasion.gui.WhisperPopup import WhisperPopup
 from src.coginvasion.globals import CIGlobals, ChatGlobals
 from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.hood import ZoneUtil
 
-class DistributedTutorial(DistributedObject):
+class DistributedTutorial(DistributedBattleZone):
     notify = directNotify.newCategory('DistributedTutorial')
 
     GUIDE_NPCID = 2020
@@ -63,7 +63,7 @@ class DistributedTutorial(DistributedObject):
     GUIDE_START_TRAINING = "Alright! Let's do this!"
 
     def __init__(self, cr):
-        DistributedObject.__init__(self, cr)
+        DistributedBattleZone.__init__(self, cr)
         self.fsm = ClassicFSM.ClassicFSM('TutorialFSM', [State.State('off', self.enterOff, self.exitOff),
          State.State('newPlayerEmerge', self.enterPlayerEmerge, self.exitPlayerEmerge, ['off', 'introSpeech']),
          State.State('introSpeech', self.enterGuideIntroSpeech, self.exitGuideIntroSpeech, ['off', 'introSpeech2Training']),
@@ -290,7 +290,10 @@ class DistributedTutorial(DistributedObject):
         elif self.fsm.getCurrentState().getName() == 'training2':
             self.fsm.request('training3info')
         elif self.fsm.getCurrentState().getName() == 'training3':
-            self.fsm.request('trainingDone')
+            pass
+        
+    def rewardPanelSequenceComplete(self):
+        self.fsm.request('trainingDone')
 
     def exitTrainingPT1(self):
         self.disableAvStuff()
@@ -361,7 +364,7 @@ class DistributedTutorial(DistributedObject):
         base.localAvatar.detachCamera()
 
     def announceGenerate(self):
-        DistributedObject.announceGenerate(self)
+        DistributedBattleZone.announceGenerate(self)
         base.transitions.fadeScreen(0.0)
         self.guide = Toon(base.cr)
         self.guide.autoClearChat = False
@@ -438,4 +441,4 @@ class DistributedTutorial(DistributedObject):
         self.dnaStore.reset_suit_points()
         self.dnaStore = None
         base.localAvatar.inTutorial = False
-        DistributedObject.disable(self)
+        DistributedBattleZone.disable(self)

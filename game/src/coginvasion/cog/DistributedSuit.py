@@ -309,7 +309,6 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
             self.setChaseTarget(0)
             base.taskMgr.remove(self.uniqueName('monitorLocalAvDistance'))
             if self.isInRange:
-                messenger.send(PCTMM.getCogOutOfRangeEvent())
                 self.isInRange = False
             self.interruptAttack()
 
@@ -467,13 +466,6 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
     def __monitorLocalAvDistance(self, task):
         if not hasattr(base, 'localAvatar'):
             return task.done
-
-        if self.getDistance(base.localAvatar) <= PCTMM.getCogInRangeDistance() and not self.isInRange:
-            self.isInRange = True
-            messenger.send(PCTMM.getCogInRangeEvent())
-        elif self.getDistance(base.localAvatar) > PCTMM.getCogInRangeDistance() and self.isInRange:
-            self.isInRange = False
-            messenger.send(PCTMM.getCogOutOfRangeEvent())
 
         return task.cont
 

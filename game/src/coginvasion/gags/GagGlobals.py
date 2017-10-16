@@ -11,6 +11,11 @@ Copyright (c) CIO Team. All rights reserved.
 from panda3d.core import VBase4, Point4, Point3
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags.GagType import GagType
+
+from direct.distributed.PyDatagram import PyDatagram
+from direct.distributed.PyDatagramIterator import PyDatagramIterator
+
+from collections import OrderedDict
 import types
 
 # These ids are sent on the wire to capture gags.
@@ -26,45 +31,53 @@ gagIds = {0 : CIGlobals.WholeCreamPie, 1 : CIGlobals.CreamPieSlice, 2 : CIGlobal
           35 : CIGlobals.SquirtFlower}
 gagIdByName = {v: k for k, v in gagIds.items()}
 
+Throw = "Throw"
+Squirt = "Squirt"
+Drop = "Drop"
+Sound = "Sound"
+Lure = "Lure"
+ToonUp = "Toon-Up"
+Trap = "Trap"
+
 # Data that should be able to be quickly picked up by the client and server.
 # Values: [default current supply, default max supply, default damage (or health), and, if necessary, toon-up amount.
 gagData = {
-    CIGlobals.BirthdayCake : {'health': 10, 'damage': 75, 'maxSupply': 3, 'supply': 3},
-    CIGlobals.TNT : {'damage': 180, 'maxSupply': 3, 'supply': 3},
-    CIGlobals.FireHose : {'health': 6, 'damage': 30, 'maxSupply': 5, 'supply': 5},
-    CIGlobals.Geyser : {'damage': 105, 'maxSupply': 1, 'supply': 1},
-    CIGlobals.BananaPeel : {'damage': 10, 'maxSupply': 10, 'supply': 10},
-    CIGlobals.Lipstick : {'healRange': (25, 30), 'maxSupply': 5, 'supply': 5},
-    CIGlobals.Anvil : {'damage': 30, 'maxSupply': 8, 'supply': 8},
-    CIGlobals.WaterGun : {'health': 2, 'damage': 12, 'maxSupply': 7, 'supply': 7},
-    CIGlobals.JugglingBalls : {'healRange': (90, 120), 'maxSupply': 3, 'supply': 3},
-    CIGlobals.Safe : {'damage': 60, 'maxSupply': 7, 'supply': 7},
-    CIGlobals.WholeCreamPie : {'health': 5, 'damage': 36, 'maxSupply': 7, 'supply': 7},
-    CIGlobals.WholeFruitPie : {'health': 3, 'damage': 28, 'maxSupply': 10, 'supply': 10},
-    CIGlobals.SquirtFlower : {'damage': 3, 'maxSupply': 15, 'supply': 15},
-    CIGlobals.BikeHorn : {'damage': 5, 'maxSupply': 15, 'supply': 15},
-    CIGlobals.TrapDoor : {'damage': 70, 'maxSupply': 7, 'supply': 7},
-    CIGlobals.FlowerPot : {'damage': 10, 'maxSupply': 12, 'supply': 12},
-    CIGlobals.Aoogah : {'damage': 16, 'maxSupply': 7, 'supply': 7},
-    CIGlobals.Megaphone : {'healRange': (10, 20), 'maxSupply': 7, 'supply': 7},
-    CIGlobals.Opera : {'damage': 90, 'maxSupply': 1, 'supply': 1},
-    CIGlobals.BambooCane : {'healRange': (40, 45), 'maxSupply': 4, 'supply': 4},
-    CIGlobals.Cupcake : {'health': 1, 'damage': 6, 'maxSupply': 15, 'supply': 15},
-    CIGlobals.Bugle : {'damage': 11, 'maxSupply': 10, 'supply': 10},
-    CIGlobals.Sandbag : {'damage': 18, 'maxSupply': 10, 'supply': 10},
-    CIGlobals.WaterGlass : {'health': 2, 'damage': 8, 'maxSupply': 10, 'supply': 10},
-    CIGlobals.SeltzerBottle : {'health': 5, 'damage': 21, 'maxSupply': 10, 'supply': 10},
-    CIGlobals.PixieDust : {'healRange': (50, 70), 'maxSupply': 5, 'supply': 5},
-    CIGlobals.Foghorn : {'damage': 50, 'maxSupply': 3, 'supply': 3},
-    CIGlobals.GrandPiano : {'damage': 170, 'maxSupply': 3, 'supply': 3},
-    CIGlobals.StormCloud : {'damage': 60, 'maxSupply': 3, 'supply': 3},
-    CIGlobals.WeddingCake : {'health': 25, 'damage': 120, 'maxSupply': 3, 'supply': 3},
-    CIGlobals.ElephantHorn : {'damage': 21, 'maxSupply': 5, 'supply': 5},
-    CIGlobals.Whistle : {'damage': 7, 'maxSupply': 10, 'supply': 10},
-    CIGlobals.FruitPieSlice : {'health': 1, 'damage': 10, 'maxSupply': 10, 'supply': 10},
-    CIGlobals.Quicksand : {'damage': 50, 'maxSupply': 7, 'supply': 7},
-    CIGlobals.CreamPieSlice : {'health': 2, 'damage': 17, 'maxSupply': 10, 'supply': 10},
-    CIGlobals.BigWeight : {'damage': 45, 'maxSupply': 7, 'supply': 7},
+    CIGlobals.BirthdayCake : {'health': 10, 'damage': 75, 'maxSupply': 3, 'supply': 3, 'track' : Throw},
+    CIGlobals.TNT : {'damage': 180, 'maxSupply': 3, 'supply': 3, 'track' : Trap},
+    CIGlobals.FireHose : {'health': 6, 'damage': 30, 'maxSupply': 5, 'supply': 5, 'track' : Squirt},
+    CIGlobals.Geyser : {'damage': 105, 'maxSupply': 1, 'supply': 1, 'track' : Squirt},
+    CIGlobals.BananaPeel : {'damage': 10, 'maxSupply': 10, 'supply': 10, 'track' : Trap},
+    CIGlobals.Lipstick : {'healRange': (25, 30), 'maxSupply': 5, 'supply': 5, 'track' : ToonUp},
+    CIGlobals.Anvil : {'damage': 30, 'maxSupply': 8, 'supply': 8, 'track' : Drop},
+    CIGlobals.WaterGun : {'health': 2, 'damage': 12, 'maxSupply': 7, 'supply': 7, 'track' : Squirt},
+    CIGlobals.JugglingBalls : {'healRange': (90, 120), 'maxSupply': 3, 'supply': 3, 'track' : ToonUp},
+    CIGlobals.Safe : {'damage': 60, 'maxSupply': 7, 'supply': 7, 'track' : Drop},
+    CIGlobals.WholeCreamPie : {'health': 5, 'damage': 36, 'maxSupply': 7, 'supply': 7, 'track' : Throw},
+    CIGlobals.WholeFruitPie : {'health': 3, 'damage': 28, 'maxSupply': 10, 'supply': 10, 'track' : Throw},
+    CIGlobals.SquirtFlower : {'damage': 3, 'maxSupply': 15, 'supply': 15, 'track' : Squirt},
+    CIGlobals.BikeHorn : {'damage': 5, 'maxSupply': 15, 'supply': 15, 'track' : Sound},
+    CIGlobals.TrapDoor : {'damage': 70, 'maxSupply': 7, 'supply': 7, 'track' : Trap},
+    CIGlobals.FlowerPot : {'damage': 10, 'maxSupply': 12, 'supply': 12, 'track' : Drop},
+    CIGlobals.Aoogah : {'damage': 16, 'maxSupply': 7, 'supply': 7, 'track' : Sound},
+    CIGlobals.Megaphone : {'healRange': (10, 20), 'maxSupply': 7, 'supply': 7, 'track' : ToonUp},
+    CIGlobals.Opera : {'damage': 90, 'maxSupply': 1, 'supply': 1, 'track' : Sound},
+    CIGlobals.BambooCane : {'healRange': (40, 45), 'maxSupply': 4, 'supply': 4, 'track' : ToonUp},
+    CIGlobals.Cupcake : {'health': 1, 'damage': 6, 'maxSupply': 15, 'supply': 15, 'track' : Throw},
+    CIGlobals.Bugle : {'damage': 11, 'maxSupply': 10, 'supply': 10, 'track' : Sound},
+    CIGlobals.Sandbag : {'damage': 18, 'maxSupply': 10, 'supply': 10, 'track' : Drop},
+    CIGlobals.WaterGlass : {'health': 2, 'damage': 8, 'maxSupply': 10, 'supply': 10, 'track' : Squirt},
+    CIGlobals.SeltzerBottle : {'health': 5, 'damage': 21, 'maxSupply': 10, 'supply': 10, 'track' : Squirt},
+    CIGlobals.PixieDust : {'healRange': (50, 70), 'maxSupply': 5, 'supply': 5, 'track' : ToonUp},
+    CIGlobals.Foghorn : {'damage': 50, 'maxSupply': 3, 'supply': 3, 'track' : Sound},
+    CIGlobals.GrandPiano : {'damage': 170, 'maxSupply': 3, 'supply': 3, 'track' : Drop},
+    CIGlobals.StormCloud : {'damage': 60, 'maxSupply': 3, 'supply': 3, 'track' : Squirt},
+    CIGlobals.WeddingCake : {'health': 25, 'damage': 120, 'maxSupply': 3, 'supply': 3, 'track' : Throw},
+    CIGlobals.ElephantHorn : {'damage': 21, 'maxSupply': 5, 'supply': 5, 'track' : Sound},
+    CIGlobals.Whistle : {'damage': 7, 'maxSupply': 10, 'supply': 10, 'track' : Sound},
+    CIGlobals.FruitPieSlice : {'health': 1, 'damage': 10, 'maxSupply': 10, 'supply': 10, 'track' : Throw},
+    CIGlobals.Quicksand : {'damage': 50, 'maxSupply': 7, 'supply': 7, 'track' : Trap},
+    CIGlobals.CreamPieSlice : {'health': 2, 'damage': 17, 'maxSupply': 10, 'supply': 10, 'track' : Throw},
+    CIGlobals.BigWeight : {'damage': 45, 'maxSupply': 7, 'supply': 7, 'track' : Drop},
 }
 
 InventoryIconByName = {CIGlobals.WholeCreamPie : '**/inventory_creampie',
@@ -104,13 +117,6 @@ InventoryIconByName = {CIGlobals.WholeCreamPie : '**/inventory_creampie',
  CIGlobals.FireHose : '**/inventory_firehose',
  CIGlobals.SquirtFlower : '**/inventory_squirt_flower'}
 
-Throw = "Throw"
-Squirt = "Squirt"
-Drop = "Drop"
-Sound = "Sound"
-Lure = "Lure"
-ToonUp = "Toon-Up"
-Trap = "Trap"
 TrackIdByName = {Throw : GagType.THROW,
                  Squirt : GagType.SQUIRT,
                  Drop : GagType.DROP,
@@ -126,7 +132,7 @@ TrackColorByName = {ToonUp : (211 / 255.0, 148 / 255.0, 255 / 255.0),
  Squirt : (255 / 255.0, 65 / 255.0, 199 / 255.0),
  Drop : (67 / 255.0, 243 / 255.0, 255 / 255.0)}
 Type2TrackName = {GagType.TOON_UP : 0, GagType.TRAP : 1, GagType.SOUND : 3, GagType.THROW : 4, GagType.SQUIRT : 5, GagType.DROP : 6}
-TrackNameById = {0 : ToonUp, 1 : Trap, 2 : Lure, 3 : Sound, 4 : Throw, 5 : Squirt, 6 : Drop}
+TrackNameById = OrderedDict({0 : ToonUp, 1 : Trap, 2 : Lure, 3 : Sound, 4 : Throw, 5 : Squirt, 6 : Drop})
 TrackGagNamesByTrackName = {Throw : [CIGlobals.Cupcake,
   CIGlobals.FruitPieSlice,
   CIGlobals.CreamPieSlice,
@@ -164,6 +170,16 @@ TrackGagNamesByTrackName = {Throw : [CIGlobals.Cupcake,
   CIGlobals.TrapDoor,
   CIGlobals.TNT],
  Lure : []}
+
+TrackExperienceAmounts = {
+    Throw : [10, 50, 400, 2000, 6000, 10000],
+    ToonUp: [20, 200, 800, 2000, 6000, 10000],
+    Sound : [40, 200, 1000, 2500, 7500, 10000],
+    Drop: [20, 100, 500, 2000, 6000, 10000],
+    Trap: [20, 800, 2000, 6000],#100, 800, 2000, 6000, 10000],
+    Squirt: [10, 50, 400, 2000, 6000, 10000],
+    Lure: [20, 100, 800, 2000, 6000, 10000]
+}
 
 # These are the splat scales
 splatSizes = {
@@ -281,6 +297,64 @@ def getIDByName(name):
 def getGagData(gagId):
     return gagData.get(getGagByID(gagId))
 
+# Expecting a dictionary like so:
+# TRACK_NAME : EXP
+# Returns a blob of the track data.
+def trackExperienceToNetString(tracks):
+    dg = PyDatagram()
+    
+    for track, exp in tracks.iteritems():
+        dg.addUint8(TrackNameById.values().index(track))
+        dg.addUint16(exp)
+    dgi = PyDatagramIterator(dg)
+    return dgi.getRemainingBytes()
+
+# Expects a TRACK_NAME : EXP dictionary and the backpack that should get updates.
+# The final argument is optional, if it's true, it will update an existing dictionary with track data.
+def processTrackData(trackData, backpack, updateData = None):
+    for track, exp in trackData.iteritems():
+        expAmounts = TrackExperienceAmounts.get(track)
+        gags = TrackGagNamesByTrackName.get(track)
+        
+        if updateData:
+            updateData[track] = exp
+        
+        for i in range(len(expAmounts)):
+            maxEXP = expAmounts[i]
+            if exp >= maxEXP:
+                gagAtLevel = gags[i]
+                
+                if not backpack.hasGag(gagAtLevel):
+                    maxSupply = gagData.get(gagAtLevel)['maxSupply']
+                    backpack.addGag(gagIdByName.get(gagAtLevel), 1, maxSupply)
+
+def getTrackExperienceFromNetString(netString):
+    dg = PyDatagram(netString)
+    dgi = PyDatagramIterator(dg)
+    
+    tracks = {}
+    
+    for track in TrackNameById.values():
+        tracks[track] = 0
+    
+    while dgi.getRemainingSize() > 0:
+        trackId = dgi.getUint8()
+        exp = dgi.getUint16()
+        
+        tracks[TrackNameById.get(trackId)] = exp
+    return tracks
+
+def getMaxExperienceValue(exp, track):
+    if exp < track.maxExp or track.maxExp == 0:
+        return track.maxExp
+    else:
+        levels = TrackExperienceAmounts[track.name]
+        index = levels.index(track.maxExp)
+        
+        if index + 1 < len(levels):
+            return levels[index + 1]
+        return -1
+
 def getTrackOfGag(arg, getId = False):
     if type(arg) == types.IntType:
 
@@ -309,6 +383,13 @@ def getTrackOfGag(arg, getId = False):
                 else:
                     # Return the int ID of the track
                     return TrackIdByName[trackName]
+
+DefaultTrackExperiences = {}
+for track in TrackNameById.values():
+    value = 0
+    if track == Throw or track == Squirt:
+        value = TrackExperienceAmounts.get(track)[0]
+    DefaultTrackExperiences[track] = 0
 
 def getDefaultBackpack(isAI = False):
     defaultBackpack = None

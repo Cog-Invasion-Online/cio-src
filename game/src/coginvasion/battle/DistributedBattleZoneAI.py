@@ -10,6 +10,10 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
+from direct.distributed.ClockDelta import globalClockDelta
+
+from src.coginvasion.battle.RPToonData import RPToonData
+from src.coginvasion.gags import GagGlobals
 
 class DistributedBattleZoneAI(DistributedObjectAI):
     notify = directNotify.newCategory('DistributedBattleZoneAI')
@@ -20,37 +24,38 @@ class DistributedBattleZoneAI(DistributedObjectAI):
 
         # Stores the Cogs each avatar kills.
         # Key (Avatar Id)
-        # Value (List of DeadCogData instances)
-        self.cogKills = {}
+        # Value:
+        # [{GAG_ID : USES}, [DeadCogData...]]
+        self.avatarData = {}
 
     def delete(self):
         self._ignoreAvatarDeleteEvents()
         self._resetStats()
 
         self.avIds = None
-        self.cogKills = None
+        self.avatarData = None
         DistributedObjectAI.delete(self)
 
-    def _resetStats(self):
+    def resetStats(self):
         self.avIds = []
-        self.cogKills = {}
+        self.avatarData = {}
 
-    def _ignoreAvatarDeleteEvents(self):
+    def ignoreAvatarDeleteEvents(self):
         for avId in self.avIds:
             toon = self.air.doId2do.get(avId)
             self.ignore(toon.getDeleteEvent())
             break
 
-    def _addAvatar(self, avId):
+    def addAvatar(self, avId):
         self.avIds.append(avId)
         self.b_setAvatars(self.avIds)
 
-    def _removeAvatar(self, avId):
+    def removeAvatar(self, avId):
         if avId in self.avIds:
             self.avIds.remove(avId)
 
-        if avId in self.cogKills.keys():
-            self.cogKills.pop(avId)
+        if avId in self.avatarData.keys():
+            self.avatarData.pop(avId)
         self.b_setAvatars(self.avIds)
 
     # Send the distributed message and
@@ -71,17 +76,94 @@ class DistributedBattleZoneAI(DistributedObjectAI):
     # Get the avatar ids.
     def getAvatars(self):
         return self.avIds
+    
+    def handleGagUse(self, gagId, user):
+        gagUses = {}
+        currentKills = []
+        uses = 0
+        
+        if user in self.avatarData.keys():
+            data = self.avatarData.get(user)
+            gagUses = data[0]
+            currentKills = data[1]
+        
+        if gagId in gagUses.keys():
+            uses = gagUses[gagId]
+        
+        gagUses.update({gagId : uses + 1})
 
-    def _handleCogDeath(self, cog, killerId):
-        cogData = DeadCogData(cog.getName(), cog.getDept(), cog.getLevel(), cog.getVariant())
+        self.avatarData.update({user : [gagUses, currentKills]})
+
+    def handleCogDeath(self, cog, killerId):
+        plan = cog.suitPlan
+        cogData = DeadCogData(plan.name, plan.dept, cog.level, cog.variant)
+        gagUses = {}
         currentKills = []
 
-        if killerId in self.cogKills.keys():
-            currentKills = self.cogKills.get(killerId)
+        if killerId in self.avatarData.keys():
+            data = self.avatarData.get(killerId)
+            gagUses = data[0]
+            currentKills = data[1]
         currentKills.append(cogData)
 
         # Add the Cog kill into the player's dictionary.
-        self.cogKills.update({killerId : currentKills})
+        self.avatarData.update({killerId : [gagUses, currentKills]})
+        
+    def setToonData(self, netStrings):
+        pass
+    
+    def d_setToonData(self):
+        data = self.parseToonData()
+        print data
+        self.sendUpdate('setToonData', [data])
+        
+    def getToonData(self):
+        return []
+    
+    def parseToonData(self):
+        blobs = []
+        for avId, data in self.avatarData.iteritems():
+            avatar = base.air.doId2do.get(avId, None)
+            favGagId = -1
+            favGagUses = 0
+            
+            if avatar:
+                rpData = RPToonData(avatar.name)
+                trackIncrements = {}
+                
+                for track in avatar.trackExperience.keys():
+                    trackIncrements[track] = 0
+                
+                for gagId, uses in data[0].iteritems():
+                    gagName = GagGlobals.gagIds[gagId]
+                    track = GagGlobals.gagData.get(gagName)['track']
+                    if uses > favGagUses:
+                        favGagId = gagId
+                        
+                    trackGags = GagGlobals.TrackGagNamesByTrackName.get(track)
+                    
+                    incr = trackGags.index(gagName) + 1
+                    if track in trackIncrements:
+                        incr = trackIncrements[track]
+                    trackIncrements[track] = incr
+                rpData.favoriteGag = GagGlobals.gagIds[favGagId]
+                
+                for track, exp in avatar.trackExperience.iteritems():
+                    rpDataTrack = rpData.getTrackByName(track)
+                    maxExp = GagGlobals.getMaxExperienceValue(exp, rpDataTrack)
+                    rpDataTrack.exp = exp
+                    rpDataTrack.maxExp = maxExp
+                    rpDataTrack.increment = trackIncrements[track]
+                blobs.append(rpData.toNetString(avId))
+        return blobs
+    
+    def battleComplete(self):
+        self.d_setToonData()
+        self.startRewardSeq()
+    
+    def startRewardSeq(self):
+        timestamp = globalClockDelta.getFrameNetworkTime()
+        self.sendUpdate('startRewardSeq', [timestamp])
 
 class DeadCogData:
 

@@ -1,22 +1,23 @@
 # Filename: DistributedTutorialAI.py
 # Created by:  blach (16Oct15)
 
-from direct.distributed.DistributedObjectAI import DistributedObjectAI
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.battle.DistributedBattleZoneAI import DistributedBattleZoneAI
 from src.coginvasion.cog import SuitBank, Variant
 import DistributedTutorialSuitAI
 
-class DistributedTutorialAI(DistributedObjectAI):
+class DistributedTutorialAI(DistributedBattleZoneAI):
     notify = directNotify.newCategory('DistributedTutorialAI')
     notify.setInfo(True)
 
     def __init__(self, air, avatarId):
-        DistributedObjectAI.__init__(self, air)
+        DistributedBattleZoneAI.__init__(self, air)
         self.avatarId = avatarId
         self.av = self.air.doId2do.get(self.avatarId)
         self.tutSuit = None
+        self.suitsKilled = 0
 
     def makeSuit(self, index):
         plan = SuitBank.Flunky
@@ -29,7 +30,9 @@ class DistributedTutorialAI(DistributedObjectAI):
         suit.b_setPlace(self.zoneId)
         suit.b_setName(plan.getName())
         suit.b_setParent(CIGlobals.SPHidden)
+        suit.battleZone = self
         self.tutSuit = suit
+        print self.suitsKilled
 
     def finishedTutorial(self):
         self.notify.info('Deleting tutorial: avatar finished')
@@ -44,7 +47,7 @@ class DistributedTutorialAI(DistributedObjectAI):
         return task.cont
 
     def announceGenerate(self):
-        DistributedObjectAI.announceGenerate(self)
+        DistributedBattleZoneAI.announceGenerate(self)
         base.taskMgr.add(self.__monitorAvatar, self.uniqueName('monitorAvatar'))
 
     def delete(self):
@@ -55,4 +58,4 @@ class DistributedTutorialAI(DistributedObjectAI):
             self.tutSuit.disable()
             self.tutSuit.requestDelete()
             self.tutSuit = None
-        DistributedObjectAI.delete(self)
+        DistributedBattleZoneAI.delete(self)

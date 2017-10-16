@@ -52,7 +52,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.suitMgr = None
         self.suitPlan = 0
         self.variant = Variant.NORMAL
-        self.itemDropper = None
+        self.itemDropper = SuitItemDropperAI(self)
         self.suitState = 0
         self.startPoint = -1
         self.endPoint = -1
@@ -85,6 +85,9 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.tacticalSeq = None
 
         self.allowHits = True
+        
+        # This variable stores what avatarIds have damaged us.
+        self.damagers = []
 
     def handleToonThreat(self, toon, hasBeenHit):
         if not hasattr(self, 'brain') or self.brain is None:
@@ -358,13 +361,20 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
 
     # The new method for handling gags.
     def hitByGag(self, gagId):
-        avatar = self.air.doId2do.get(self.air.getAvatarIdFromSender(), None)
+        avId = self.air.getAvatarIdFromSender()
+        avatar = self.air.doId2do.get(avId, None)
         gagName = GagGlobals.getGagByID(gagId)
         data = GagGlobals.getGagData(gagId)
         track = GagGlobals.getTrackOfGag(gagId, getId = True)
 
         if self.canGetHit():
             self.__handleTacticalAttacks(avatar.doId, gagName, data)
+            
+            if self.battleZone:
+                self.battleZone.handleGagUse(gagId, avId)
+            
+            if not avId in self.damagers:
+                self.damagers.append(avId)
 
             if self.isDead():
                 if track == GagType.THROW or gagName == CIGlobals.TNT:
@@ -380,7 +390,11 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
                         self.b_setAnimState('soak', 0)
                     else:
                         self.b_setAnimState('squirt-small', 0)
-                avatar.questManager.cogDefeated(self)
+                
+                # Let's give everyone credit who damaged me.
+                if self.battleZone:
+                    for damager in self.damagers:
+                        self.battleZone.handleCogDeath(self, damager)
             else:
                 # I've been hit! Take appropriate actions.
                 self.handleToonThreat(avatar, True)
@@ -575,6 +589,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.clearComboDataTime = None
         self.showComboDamageTime = None
         self.showWeaknessBonusDamageTime = None
+        self.damagers = []
 
     def delete(self):
         self.DELETED = True
@@ -605,6 +620,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         del self.showComboDamageTime
         del self.showWeaknessBonusDamageTime
         del self.tacticalSeq
+        del self.damagers
         DistributedAvatarAI.delete(self)
         DistributedSmoothNodeAI.delete(self)
 

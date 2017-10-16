@@ -11,6 +11,8 @@ Copyright (c) CIO Team. All rights reserved.
 from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
 
+from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval
+
 from src.coginvasion.cog import SuitGlobals
 
 WalkCutOff = 0.5
@@ -606,6 +608,12 @@ def makeDefaultScrolledListBtn(text = "", text_scale = 0.07, text_align = None, 
         extraArgs=extraArgs, text_pos = text_pos, parent = parent
     )
     return btn
+
+def makePulseEffectInterval(guiElement, defScale, minScale, maxScale, d1, d2):
+    seq = Sequence()
+    seq.append(LerpScaleInterval(guiElement, d1, maxScale, minScale, blendType = 'easeOut'))
+    seq.append(LerpScaleInterval(guiElement, d2, defScale, maxScale, blendType = 'easeInOut'))
+    return seq
 
 def makeDefaultScrolledList(listXorigin = -0.02, listFrameSizeX = 0.625, listZorigin = -0.96, listFrameSizeZ = 1.04, items = [],
                             arrowButtonScale = 1.3, itemFrameXorigin = -0.237, itemFrameZorigin = 0.365, buttonXstartOffset = 0.293,

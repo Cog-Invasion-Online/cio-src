@@ -84,6 +84,7 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         self.lastHood = 0
         self.defaultShard = 0
         self.numGagSlots = 0
+        self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
         return
         
     def reqSetWorldAccess(self, andTP):
@@ -467,6 +468,20 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         else:
             defaultBackpack = GagGlobals.getDefaultBackpack(isAI = True)
             return defaultBackpack.toNetString()
+        
+    def setTrackExperience(self, netString):
+        trackData = GagGlobals.getTrackExperienceFromNetString(netString)
+        GagGlobals.processTrackData(trackData, self.backpack, updateData = self.trackExperience)
+        
+    def d_setTrackExperience(self, netString):
+        self.sendUpdate('setTrackExperience', [netString])
+        
+    def b_setTrackExperience(self, netString):
+        self.setTrackExperience(netString)
+        self.d_setTrackExperience(netString)
+        
+    def getTrackExperience(self):
+        return GagGlobals.trackExperienceToNetString(self.trackExperience)
 
     def getInventory(self):
         return self.backpack.getGags().keys()

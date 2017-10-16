@@ -65,6 +65,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         self.dmgFadeIval = None
         self.tunnelTrack = None
         self.numGagSlots = 0
+        self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
         return
 
     def setNumGagSlots(self, num):
@@ -599,6 +600,13 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         if self.backpack:
             return self.backpack.toNetString()
         return GagGlobals.getDefaultBackpack().toNetString()
+    
+    def setTrackExperience(self, netString):
+        trackData = GagGlobals.getTrackExperienceFromNetString(netString)
+        GagGlobals.processTrackData(trackData, self.backpack, updateData = self.trackExperience)
+        
+    def getTrackExperience(self):
+        return GagGlobals.trackExperienceToNetString(self.trackExperience)
 
     def setGagAmmo(self, gagId, ammo):
         self.backpack.setSupply(gagId, ammo)
