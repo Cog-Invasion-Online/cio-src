@@ -35,6 +35,8 @@ base.localAvatar.prepareToSwitchControlType()
 base.localAvatar.controlManager.wantWASD = 0
 base.localAvatar.controlManager.enable()
 
+eatJBSound = base.loadSfx('phase_4/audio/sfx/MG_crash_eat.ogg')
+
 class Jellybean(NodePath, DirectObject):
     notify = directNotify.newCategory("Jellybean")
     
@@ -97,6 +99,7 @@ class Jellybean(NodePath, DirectObject):
         self.pickup()
 
     def pickup(self):
+        eatJBSound.play()
         self.gui.collectedBean()
         self.wrtReparentTo(camera)
         self.setDepthWrite(1)
@@ -281,7 +284,7 @@ class Crate(NodePath, DirectObject):
     def __init__(self, numBeans, pos):
         self.numBeans = numBeans
         NodePath.__init__(self, 'crashCrate')
-        self.setPos(pos)
+        self.setPos(*pos)
 
         self.lastHitBotT = 0.0
         self.lastHitTopT = 0.0
@@ -298,6 +301,7 @@ class Crate(NodePath, DirectObject):
         self.mdl = Actor('phase_4/models/minigames/cc_opt/crash_crate.egg', {'bounce': 'phase_4/models/minigames/cc_opt/crash_crate-bounce.egg'})
         self.mdl.setScale(1.5)
         self.mdl.reparentTo(self)
+        self.mdl.setPlayRate(2.0, 'bounce')
 
         self.shadow = loader.loadModel('phase_3/models/props/square_drop_shadow.bam')
         self.shadow.setScale(0.65)
@@ -307,6 +311,8 @@ class Crate(NodePath, DirectObject):
         #self.shadow.setBillboardAxis(2)
         
         self.sound = base.loadSfx("phase_4/audio/sfx/target_trampoline_2.ogg")
+        self.breakSound = base.loadSfx("phase_4/audio/sfx/MG_crash_whizz.ogg")
+        self.breakSound.setVolume(0.5)
         
         self.crateId = crateAlloc.allocate()
         
@@ -333,49 +339,66 @@ class Crate(NodePath, DirectObject):
         self.accept("exit_overhead_" + self.botName, self.__handleCrateNUnderAv)
         
         self.openSeq = Sequence(
+        Func(self.breakSound.play),
+        Func(self.shadow.hide),
         Parallel(
-            LerpHprInterval(
-                self.find("**/side_1"),
-                duration = 1,
-                hpr = (-90, 0, 0),
-                startHpr = (0, 0, 0),
-                blendType = "easeIn"
-            ),
-            LerpHprInterval(
-                self.find("**/side_2"),
-                duration = 1,
-                hpr = (90, 0, -90),
-                startHpr = (90, 0, 0),
-                blendType = "easeIn"
-            ),
-            LerpHprInterval(
-                self.find("**/side_3"),
-                duration = 1,
-                hpr = (0, 0, -90),
-                startHpr = (0, 0, 0),
-                blendType = "easeIn"
-            ),
-            LerpHprInterval(
-                self.find("**/side_4"),
-                duration = 1,
-                hpr = (0, 0, 90),
-                startHpr = (0, 0, 0),
-                blendType = "easeIn"
-            ),
-            LerpPosInterval(
-                self.find("**/top"),
-                duration = 0.5,
-                pos = (0, 0, 0),
-                startPos = lambda self = self: self.find("**/top").getPos(),
-                blendType = "easeIn"
-            )
+            LerpPosInterval(self.find("**/side_1"), duration = 0.3, pos = (0, 20, 0), startPos = (0, 0, 0)),
+            LerpScaleInterval(self.find("**/side_1"), duration = 0.3, scale = (0.001, 0.001, 0.001), startScale = (1, 1, 1)),
+            
+            LerpPosInterval(self.find("**/side_2"), duration = 0.3, pos = (0, -20, 0), startPos = (0, 0, 0)),
+            LerpScaleInterval(self.find("**/side_2"), duration = 0.3, scale = (0.001, 0.001, 0.001), startScale = (1, 1, 1)),
+            
+            LerpPosInterval(self.find("**/side_3"), duration = 0.3, pos = (-20, 0, 0), startPos = (0, 0, 0)),
+            LerpScaleInterval(self.find("**/side_3"), duration = 0.3, scale = (0.001, 0.001, 0.001), startScale = (1, 1, 1)),
+            
+            LerpPosInterval(self.find("**/side_4"), duration = 0.3, pos = (20, 0, 0), startPos = (0, 0, 0)),
+            LerpScaleInterval(self.find("**/side_4"), duration = 0.3, scale = (0.001, 0.001, 0.001), startScale = (1, 1, 1)),
+            
+            #LerpPosInterval(self.find("**/top"), duration = 0.5, pos = (0, 0, 20), startPos = (0, 0, 0)),
+            LerpScaleInterval(self.find("**/top"), duration = 0.0, scale = (0.001, 0.001, 0.001), startScale = (1, 1, 1)),
+            #LerpPosInterval(self.find("**/side_1"), duration = 0.5, pos = (0, 0, -20), startPos = (0, 0, 0)),
+            LerpScaleInterval(self.find("**/bottom"), duration = 0.0, scale = (0.001, 0.001, 0.001), startScale = (1, 1, 1)),
+            
         ),
-        Wait(2.5),
-        Func(self.setTransparency, 1),
-        LerpColorScaleInterval(self, duration = 1.0, colorScale = (1, 1, 1, 0), startColorScale = (1, 1, 1, 1)),
+        #Parallel(
+        #    LerpHprInterval(
+        #        self.find("**/side_1"),
+        #        duration = 1,
+        #        hpr = (-90, 0, 0),
+        #        startHpr = (0, 0, 0),
+        #        blendType = "easeIn"
+        #    ),
+        #    LerpHprInterval(
+        #        self.find("**/side_2"),
+        #        duration = 1,
+        #        hpr = (90, 0, -90),
+        #        startHpr = (90, 0, 0),
+        #        blendType = "easeIn"
+        #    ),
+        #    LerpHprInterval(
+        #        self.find("**/side_3"),
+        #        duration = 1,
+        #        hpr = (0, 0, -90),
+        #        startHpr = (0, 0, 0),
+        #        blendType = "easeIn"
+        #    ),
+        #    LerpHprInterval(
+        #        self.find("**/side_4"),
+        #        duration = 1,
+        #        hpr = (0, 0, 90),
+        #        startHpr = (0, 0, 0),
+        #        blendType = "easeIn"
+        #    ),
+        #    LerpPosInterval(
+        #        self.find("**/top"),
+        #        duration = 0.5,
+        #        pos = (0, 0, 0),
+        #        startPos = lambda self = self: self.find("**/top").getPos(),
+        #        blendType = "easeIn"
+        #    )
+        #),
+        #Wait(2.5),
         Func(self.cleanup))
-
-        self.ls()
         
         self.reparentTo(render)
 
@@ -406,8 +429,8 @@ class Crate(NodePath, DirectObject):
 
     def __watchUnderneathCrate(self, task):
         #print (base.localAvatar.getZ(self.botColl) + base.localAvatar.getHeight())
-        z = base.localAvatar.getZ(self.botColl) + base.localAvatar.getHeight()
-        if (z >= -0.1 and base.localAvatar.walkControls.isAirborne):
+        z = base.localAvatar.getZ(self.botColl) + base.localAvatar.getHeight() - 2.143
+        if (z <= 7.5 and base.localAvatar.walkControls.isAirborne):
             # We've hit the bottom of this crate with our head.
             if (globalClock.getFrameTime() - self.lastHitBotT >= 0.05):
                 self.lastHitBotT = globalClock.getFrameTime()
@@ -491,7 +514,11 @@ class BouncyCrate(Crate):
 
     def __init__(self, numBeans, pos):
         self.beansCollected = 0
-        Crate.__init__(self, numBeans, pos)
+        Crate.__init__(self, numBeans, (pos[0], pos[1], pos[2]))
+        
+        if (pos[3] != 0):
+            self.mdl.setZ(2.143)
+        self.mdl.setP(pos[3])
 
         self.accept(self.getHitBottomEvent(), self.__handleHitCrateBot)
         self.accept(self.getHitTopEvent(), self.__handleHitCrateTop)
@@ -540,7 +567,7 @@ class CrashGUI:
     notify = directNotify.newCategory('CrashGUI')
     
     def __init__(self):
-        self.pickupSound = base.loadSfx('phase_4/audio/sfx/MG_maze_pickup.ogg')
+        self.pickupSound = base.loadSfx('phase_4/audio/sfx/MG_crash_collect_treasure.ogg')#'phase_4/audio/sfx/MG_maze_pickup.ogg')
         
         jb = loader.loadModel('phase_4/models/props/jellybean4.bam')
         jb.setColor(VBase4(0.3, 0.3, 1.0, 1.0))
@@ -567,7 +594,8 @@ class CrashGUI:
 
         self.incrementSeq = Sequence(
             Func(self.__updateJbs),
-            SoundInterval(self.pickupSound, duration = self.pickupSound.length() / 2.0)
+            Func(self.pickupSound.play),
+            Wait(0.14)
         )
 
         taskMgr.add(self.__processIncrements, "processJBIncrements")
@@ -650,7 +678,7 @@ class LocalCrashToon:
         self.toon.setAnimState('off')
         self.jumpStSeq.start()
 
-        num = random.randint(0, 1)
+        num = random.randint(0, 0)
         if (num == 0):
             taskMgr.doMethodLater(0.25, self.__doFlip, 'doFlip')
 
@@ -910,7 +938,7 @@ class Game:
         regCrateTrans = ((-35, 30, 0), (-15, 10, 0),
         (-27, 45, 0), (-22, 45, 0), (-17, 45, 0),(-12, 45, 0))#, (25, 20, 0), (33, 10, 0), (33, 20, 0), (20, 16, 0))
 
-        bouCrateTrans = ((-5, 20, 0), (-5, 20, 13), (-20, 100, 0), (-20, 100, 13))
+        bouCrateTrans = ((-5, 20, 0, 0), (-5, 20, 13, 0), (-20, 100, 0, 0), (-20, 100, 13, 0))
         
         for trans in regCrateTrans:
             beans = random.randint(1, 4)
