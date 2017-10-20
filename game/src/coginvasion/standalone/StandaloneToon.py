@@ -28,6 +28,7 @@ class game:
     usepipeline = False
     uselighting = True
     phasedir = './resources/'
+    resourceEncryptionPwd = 'cio-03-06-16_lsphases'
 __builtin__.game = game
 
 vfs = VirtualFileSystem.getGlobalPtr()
@@ -61,6 +62,12 @@ sm.maybeFixAA()
 
 from src.coginvasion.base.CIBase import CIBase
 base = CIBase()
+
+from src.coginvasion.base.CogInvasionLoader import CogInvasionLoader
+base.loader = CogInvasionLoader(base)
+__builtin__.loader = base.loader
+base.loader.mountMultifiles(None)
+
 sm.applySettings()
 from src.coginvasion.globals import CIGlobals
 CIGlobals.SettingsMgr = sm
