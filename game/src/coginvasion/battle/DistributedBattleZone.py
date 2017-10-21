@@ -76,7 +76,7 @@ class DistributedBattleZone(DistributedObject):
         base.localAvatar.disableGags()
         base.localAvatar.stopTrackAnimToSpeed()
         base.localAvatar.hideGagButton()
-        if base.localAvatar.GTAControls:
+        if not place and base.localAvatar.GTAControls:
             walkData.mouseMov.disableMovement(allowReEnable = False)
         if place:
             place.fsm.request('stop')
@@ -94,7 +94,7 @@ class DistributedBattleZone(DistributedObject):
         if not base.localAvatar.walkControls.getCollisionsActive():
             base.localAvatar.walkControls.setCollisionsActive(1)
         base.localAvatar.enableAvatarControls()
-        if base.localAvatar.GTAControls:
+        if not place and base.localAvatar.GTAControls:
             walkData.mouseMov.enableMovement()
     
     def setToonData(self, netStrings):
@@ -125,3 +125,10 @@ class DistributedBattleZone(DistributedObject):
     def reset(self):
         self.avIds = []
         self.suits = {}
+        self.rewardPanelData = OrderedDict()
+        if self.rewardPanel:
+            self.rewardPanel.destroy()
+        self.rewardPanel = None
+        if self.rewardSeq:
+            self.rewardSeq.pause()
+        self.rewardSeq = Sequence()
