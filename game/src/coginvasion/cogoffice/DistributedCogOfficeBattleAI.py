@@ -108,7 +108,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         if self.avIds is None:
             return
 
-        DistributedBattleZoneAI._removeAvatar(self, avId)
+        DistributedBattleZoneAI.removeAvatar(self, avId)
 
         if avId in self.toonId2suitsTargeting.keys():
             del self.toonId2suitsTargeting[avId]
@@ -145,9 +145,13 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
     def exitOff(self):
         pass
+    
+    def rewardSequenceComplete(self, timestamp):
+        DistributedBattleZoneAI.rewardSequenceComplete(self, timestamp)
+        base.taskMgr.doMethodLater(0.1, self.victoryTask, self.uniqueName('victoryTask'))
 
     def enterVictory(self):
-        base.taskMgr.doMethodLater(VICTORY_TIME, self.victoryTask, self.uniqueName('victoryTask'))
+        DistributedBattleZoneAI.battleComplete(self)
         
         for avId in self.avIds:
             avatar = self.air.doId2do.get(avId)
@@ -257,6 +261,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
     def setAvatars(self, avatars):
         DistributedBattleZoneAI.setAvatars(self, avatars)
+        DistributedBattleZoneAI.d_setAvatars(self, avatars)
         self.toonId2suitsTargeting = {avId: [] for avId in self.avIds}
 
         for avId in self.avIds:
@@ -318,7 +323,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.elevators = []
 
     def resetEverything(self):
-        DistributedBattleZoneAI._resetStats(self)
+        DistributedBattleZoneAI.resetStats(self)
         self.currentFloor = 0
         self.toonId2suitsTargeting = {}
         self.spotTaken2suitId = {}
@@ -414,6 +419,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         suit.generateWithRequired(self.zoneId)
         suit.d_setHood(suit.hood)
         suit.b_setLevel(level)
+        suit.battleZone = self
         variant = Variant.NORMAL
         hood = self.hood
         if self.hood == CIGlobals.ToontownCentral:

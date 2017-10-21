@@ -27,10 +27,33 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         # Value:
         # [{GAG_ID : USES}, [DeadCogData...]]
         self.avatarData = {}
+        
+        # List of avatars that have acknowledged that they've completed the reward panel sequence.
+        self.avReadyToContinue = []
+        
+    def acknowledgeAvatarReady(self):
+        avId = self.air.getAvatarIdFromSender()
+        
+        if avId in self.avIds and avId not in self.avReadyToContinue:
+            self.avReadyToContinue.append(avId)
+        
+        if len(self.avReadyToContinue) == len(self.avIds):
+            self.b_rewardSequenceComplete()
+            
+    def b_rewardSequenceComplete(self):
+        timestamp = globalClockDelta.getFrameNetworkTime()
+        self.rewardSequenceComplete(timestamp)
+        self.d_rewardSequenceComplete(timestamp)
+        
+    def d_rewardSequenceComplete(self, timestamp):
+        self.sendUpdate('rewardSequenceComplete', [timestamp])
+        
+    def rewardSequenceComplete(self, timestamp):
+        pass
 
     def delete(self):
-        self._ignoreAvatarDeleteEvents()
-        self._resetStats()
+        self.ignoreAvatarDeleteEvents()
+        self.resetStats()
 
         self.avIds = None
         self.avatarData = None
@@ -48,11 +71,15 @@ class DistributedBattleZoneAI(DistributedObjectAI):
 
     def addAvatar(self, avId):
         self.avIds.append(avId)
+        self.avatarData.update({avId : [{}, []]})
         self.b_setAvatars(self.avIds)
 
     def removeAvatar(self, avId):
         if avId in self.avIds:
             self.avIds.remove(avId)
+            
+        if avId in self.avReadyToContinue:
+            self.avReadyToContinue.remove(avId)
 
         if avId in self.avatarData.keys():
             self.avatarData.pop(avId)
@@ -114,7 +141,6 @@ class DistributedBattleZoneAI(DistributedObjectAI):
     
     def d_setToonData(self):
         data = self.parseToonData()
-        print data
         self.sendUpdate('setToonData', [data])
         
     def getToonData(self):
@@ -128,7 +154,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
             favGagUses = 0
             
             if avatar:
-                rpData = RPToonData(avatar.name)
+                rpData = RPToonData(avatar)
                 trackIncrements = {}
                 
                 for track in avatar.trackExperience.keys():
@@ -142,18 +168,20 @@ class DistributedBattleZoneAI(DistributedObjectAI):
                         
                     trackGags = GagGlobals.TrackGagNamesByTrackName.get(track)
                     
-                    incr = trackGags.index(gagName) + 1
-                    if track in trackIncrements:
-                        incr = trackIncrements[track]
+                    incr = (trackGags.index(gagName) + 1) * uses
+                    if track in trackIncrements.keys():
+                        incr = incr + trackIncrements[track]
                     trackIncrements[track] = incr
                 rpData.favoriteGag = GagGlobals.gagIds[favGagId]
                 
                 for track, exp in avatar.trackExperience.iteritems():
                     rpDataTrack = rpData.getTrackByName(track)
-                    maxExp = GagGlobals.getMaxExperienceValue(exp, rpDataTrack)
+                    maxExp = GagGlobals.getMaxExperienceValue(exp, track)
                     rpDataTrack.exp = exp
                     rpDataTrack.maxExp = maxExp
-                    rpDataTrack.increment = trackIncrements[track]
+                    rpDataTrack.increment = trackIncrements.get(track)
+                    avatar.trackExperience[track] = (exp + rpDataTrack.increment)
+                avatar.b_setTrackExperience(GagGlobals.trackExperienceToNetString(avatar.trackExperience))
                 blobs.append(rpData.toNetString(avId))
         return blobs
     

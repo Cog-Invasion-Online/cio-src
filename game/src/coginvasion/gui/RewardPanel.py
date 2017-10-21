@@ -70,7 +70,6 @@ class RewardPanel(DirectFrame):
         
         self.playerInfo = DirectFrame(parent = self, relief = None, pos = (-0.5, 0, 0))
         self.playerInfo.setBin('gui-popup', 0)
-        self.playerInfo.hide()
         
         self.bonusText = OnscreenText(parent = self.playerInfo, text = '2X Cog Office Bonus!',
             font = CIGlobals.getToonFont(), pos = (0, 0.15, 0),
@@ -108,7 +107,6 @@ class RewardPanel(DirectFrame):
         ################################################################################
         
         self.gagExpFrame = DirectFrame(parent = self, relief = None, pos = (0.085, 0, 0.15))
-        self.gagExpFrame.hide()
         self.trackLabels = []
         self.trackIncLabels = []
         self.trackBars = []
@@ -135,16 +133,12 @@ class RewardPanel(DirectFrame):
             
         ################################################################################
         
-        #(-0.2, 0.1, -0.1)
-        #(0.2, 0.1, 0.1)
         self.congratsLeft = OnscreenText(parent = self.playerInfo, pos = (-0.1, 0.125, -0.1), text = '',
             scale = 0.06, align = TextNode.ARight)
         self.congratsLeft.setR(-30)
-        self.congratsLeft.hide()
         self.congratsRight = OnscreenText(parent = self.playerInfo, pos = (0.1, 0.125, 0.1), text = '',
             scale = 0.06, align = TextNode.ALeft)
         self.congratsRight.setR(30)
-        self.congratsRight.hide()
         
         glow.removeNode()
         invIcons.removeNode()
@@ -169,35 +163,34 @@ class RewardPanel(DirectFrame):
         self.panelData = panelData
         self.avatarText['text'] = self.panelData.avatarName
         self.avatarNamePanel.setScale(self.__getAvatarTextScale())
-        self.enterGags().start()
         
     def enterGags(self):
-        self.congratsLeft.hide()
-        self.congratsRight.hide()
-        self.panelContentsTitle.setText(GagPanelName)
-        self.setFavoriteGag(self.panelData.favoriteGag)
-        self.gagExpFrame.show()
-        self.playerInfo.show()
-        
+        avatar = self.panelData.avatar
         intervals = []
+
+        intervals.append(Func(base.camera.reparentTo, avatar))
+        intervals.append(Func(base.camera.setPosHpr, 0, 8, avatar.getHeight() * 0.66, 179, 15, 0))
+        intervals.append(Func(self.congratsLeft.hide))
+        intervals.append(Func(self.congratsRight.hide))
+        intervals.append(Func(self.panelContentsTitle.setText, GagPanelName))
+        intervals.append(Func(self.setFavoriteGag, self.panelData.favoriteGag))
+        intervals.append(Func(self.gagExpFrame.show))
+        intervals.append(Func(self.playerInfo.show))
+        intervals.append(Wait(1.0))
         
         for i in range(len(self.trackLabels)):
-            track = self.panelData.tracks.values()[i]
+            track = self.panelData.getTrackByName(GagGlobals.TrackNameById.values()[i])
             bar = self.trackBars[i]
             intervalList = self.getTrackIntervalList(track, i)
 
             bar['text'] = '%d/%d' % (track.exp, track.maxExp)
             # When the maximum experience of a track isn't 0, we know it isn't unlocked.
-            if track.maxExp == 0:
+            if track.maxExp == -1:
                 bar.hide()
             self.trackIncLabels[i].show()
             intervals.extend(intervalList)
         
-        sequence = Sequence(Wait(1.0))
-        
-        for e in intervals:
-            sequence.append(e)
-        return sequence
+        return intervals
     
     def exitGags(self):
         self.gagExpFrame.hide()
@@ -213,14 +206,13 @@ class RewardPanel(DirectFrame):
                 return levels[index + 1]
             return -1
     
-    def incrementExp(self, trackIndex, newValue):
+    def incrementExp(self, trackIndex, track, newValue):
         bar = self.trackBars[trackIndex]
-        track = self.panelData.tracks.values()[trackIndex]
-        nextExp = GagGlobals.getMaxExperienceValue(newValue, track)
+        nextExp = GagGlobals.getMaxExperienceValue(newValue, track.name)
         oldValue = bar['value']
-        color = GagGlobals.TrackColorByName.get(GagGlobals.TrackNameById.values()[trackIndex])
+        color = GagGlobals.TrackColorByName.get(track.name)
         
-        bar['text'] = '%d/%d' % (newValue, nextExp) if not nextExp == -1 else 'MAXXED'
+        bar['text'] = '%d/%d' % (newValue, nextExp)
         bar['range'] = nextExp if not nextExp == -1 else newValue
         bar['value'] = newValue
         bar['barColor'] = (color[0], color[1], color[2], 1)
@@ -229,23 +221,26 @@ class RewardPanel(DirectFrame):
         color = GagGlobals.TrackColorByName.get(GagGlobals.TrackNameById.values()[trackIndex])
         self.trackBars[trackIndex]['barColor'] = (color[0] * 0.8, color[1] * 0.8, color[2] * 0.8, 1)
     
-    def showTrackIncLabel(self, trackIndex, increment):
+    def showTrackIncLabel(self, trackIndex, track, increment):
         label = self.trackIncLabels[trackIndex]
-        label['text'] = '+%d' % increment
+
+        # Only show increments when that track is unlocked.
+        if track.exp != -1:
+            label['text'] = '+%d' % increment
         label.show()
     
     def getTrackIntervalList(self, track, trackIndex):
         tickDelay = 1.0 / 60
         intervalList = []
         
-        intervalList.append(Func(self.showTrackIncLabel, trackIndex, track.increment))
+        intervalList.append(Func(self.showTrackIncLabel, trackIndex, track, track.increment))
         
-        barTime = 1.0
+        barTime = 1.0 if track.exp > 0 else 0.5
         numTicks = int(math.ceil(barTime / tickDelay))
         for i in range(numTicks):
             t = (i + 1) / float(numTicks)
             newValue = int(track.exp + t * track.increment + 0.5)
-            intervalList.append(Func(self.incrementExp, trackIndex, newValue))
+            intervalList.append(Func(self.incrementExp, trackIndex, track, newValue))
             intervalList.append(Wait(tickDelay))
         
         intervalList.append(Func(self.resetBarColor, trackIndex))
@@ -333,33 +328,51 @@ class RewardPanel(DirectFrame):
         
     def destroy(self):
         if self.titlePanel:
-            self.titlePanel.cleanup()
+            self.titlePanel.destroy()
         if self.avatarText:
-            self.avatarText.cleanup()
-        if self.avatarText:
-            self.avatarText.cleanup()
+            self.avatarText.destroy()
+        if self.avatarNamePanel:
+            self.avatarNamePanel.destroy()
         if self.panelContentsTitle:
             self.panelContentsTitle.destroy()
         if self.favoriteGag:
-            self.favoriteGag.cleanup()
+            self.favoriteGag.destroy()
+        if self.favoriteGagGlow:
+            self.favoriteGagGlow.destroy()
         if self.favoriteGagName:
-            self.favoriteGagName.cleanup()
-        if self.avatarText:
-            self.avatarText.cleanup()
+            self.favoriteGagName.destroy()
         if self.playerInfo:
             self.playerInfo.destroy()
         if self.trackLabels:
             for label in self.trackLabels:
                 label.destroy()
-            del self.trackLabels
         if self.trackIncLabels:
             for label in self.trackIncLabels:
                 label.destroy()
-            del self.trackIncLabels
         if self.trackBars:
             for bar in self.trackBars:
                 bar.destroy()
-            del self.trackBars
+        if self.congratsLeft:
+            self.congratsLeft.destroy()
+        if self.congratsRight:
+            self.congratsRight.destroy()
         if self.gagExpFrame:
             self.gagExpFrame.destroy()
+        if self.panelData:
+            self.panelData = None
+        del self.titlePanel
+        del self.avatarText
+        del self.avatarNamePanel
+        del self.panelContentsTitle
+        del self.favoriteGag
+        del self.favoriteGagGlow
+        del self.favoriteGagName
+        del self.playerInfo
+        del self.trackLabels
+        del self.trackIncLabels
+        del self.trackBars
+        del self.gagExpFrame
+        del self.congratsLeft
+        del self.congratsRight
+        del self.panelData
         DirectFrame.destroy(self)

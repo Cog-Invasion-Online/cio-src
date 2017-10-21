@@ -771,8 +771,9 @@ class LocalToon(DistributedToon):
         self.gagThrowBtn.hide()
 
     def hideGagButton(self):
-        self.gagThrowBtn.removeNode()
-        self.gagThrowBtn = None
+        if self.gagThrowBtn:
+            self.gagThrowBtn.removeNode()
+            self.gagThrowBtn = None
 
     def showBookButton(self, inBook = 0):
         self.book_gui = loader.loadModel("phase_3.5/models/gui/sticker_open_close_gui.bam")

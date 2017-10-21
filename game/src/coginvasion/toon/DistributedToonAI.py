@@ -517,20 +517,6 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         if self.parentId != self.getDefaultShard():
             self.b_setDefaultShard(self.parentId)
 
-        if self.__class__.__name__ == "DistributedToonAI":
-            # TEMPORARY: Any new gags that we make have to be given to toons automatically.
-            newGags = GagGlobals.gagIds.keys()
-            currentGags = self.backpack.gags
-            needsToUpdate = False
-            for newGag in newGags:
-                if not newGag in currentGags.keys():
-                    print 'This player is missing {0}'.format(GagGlobals.getGagByID(newGag))
-                    self.backpack.addGag(newGag)
-                    if not needsToUpdate:
-                        needsToUpdate = True
-            if needsToUpdate:
-                self.backpack.updateNetAmmo()
-
     def delete(self):
         try:
             self.DistributedToonAI_deleted

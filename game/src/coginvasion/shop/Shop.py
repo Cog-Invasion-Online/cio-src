@@ -248,102 +248,105 @@ class ItemButton(DirectButton):
         self.hide()
     
     def setItem(self, item, values):
-        image = values.get('image')
-        price = values.get('price')
-        text = ''
-        
-        self.item = item
-        self.values = values
-        self['geom'] = image
-        
-        if values.get('type') == ItemType.GAG:
-            supply = base.localAvatar.getBackpack().getSupply(item)
-            maxSupply = base.localAvatar.getBackpack().getMaxSupply(item)
-            self.setScale(1.3)
-            self.label['text_scale'] = 0.05
-            self.label.setPos(0, 0, -0.11)
-            self.setTransparency(TransparencyAttrib.MNone)
-        elif values.get('type') == ItemType.UPGRADE:
-            upgradeID = values.get('upgradeID')
-            avID = base.localAvatar.getPUInventory()[1]
-            supply = 0
-            maxSupply = values.get('maxUpgrades')
-    
-            battle = base.localAvatar.getMyBattle()
-            if battle and battle.getTurretManager():
-                turret = battle.getTurretManager().getTurret()
-                if turret and turret.getGagID() == upgradeID:
-                    supply = 1
-    
-            if avID == upgradeID:
-                dataSupply = base.localAvatar.getPUInventory()[0]
-                if dataSupply > 0:
-                    supply = dataSupply
-
-            self.setScale(0.15)
-            self.label['text_scale'] = 0.3
-            self.label.setPos(0, 0, -1.2)
-            self.setTransparency(TransparencyAttrib.MNone)
-        elif values.get('type') == ItemType.HEAL:
-            text = '%s\n%s JBS' % (item, price) if 'showTitle' in values else item
-            self.setTransparency(TransparencyAttrib.MAlpha)
-            self.setScale(0.105)
-            self.label['text_scale'] = 0.55
-            self.label.setPos(0, 0, -1.6)
-        text = text if text else '%s/%s\n%s JBS' % (str(supply), str(maxSupply), str(price))
-        self.label['text'] = text
+        if values:
+            image = values.get('image')
+            price = values.get('price')
+            text = ''
             
-        self.label.initialiseoptions(DirectLabel)
-        self.initialiseoptions(ItemButton)
-        self.label.show()
-        self.show()
+            self.item = item
+            self.values = values
+            self['geom'] = image
+            
+            if values.get('type') == ItemType.GAG:
+                supply = base.localAvatar.getBackpack().getSupply(item)
+                maxSupply = base.localAvatar.getBackpack().getMaxSupply(item)
+                self.setScale(1.3)
+                self.label['text_scale'] = 0.05
+                self.label.setPos(0, 0, -0.11)
+                self.setTransparency(TransparencyAttrib.MNone)
+            elif values.get('type') == ItemType.UPGRADE:
+                upgradeID = values.get('upgradeID')
+                avID = base.localAvatar.getPUInventory()[1]
+                supply = 0
+                maxSupply = values.get('maxUpgrades')
+        
+                battle = base.localAvatar.getMyBattle()
+                if battle and battle.getTurretManager():
+                    turret = battle.getTurretManager().getTurret()
+                    if turret and turret.getGagID() == upgradeID:
+                        supply = 1
+        
+                if avID == upgradeID:
+                    dataSupply = base.localAvatar.getPUInventory()[0]
+                    if dataSupply > 0:
+                        supply = dataSupply
+    
+                self.setScale(0.15)
+                self.label['text_scale'] = 0.3
+                self.label.setPos(0, 0, -1.2)
+                self.setTransparency(TransparencyAttrib.MNone)
+            elif values.get('type') == ItemType.HEAL:
+                text = '%s\n%s JBS' % (item, price) if 'showTitle' in values else item
+                self.setTransparency(TransparencyAttrib.MAlpha)
+                self.setScale(0.105)
+                self.label['text_scale'] = 0.55
+                self.label.setPos(0, 0, -1.6)
+            text = text if text else '%s/%s\n%s JBS' % (str(supply), str(maxSupply), str(price))
+            self.label['text'] = text
+                
+            self.label.initialiseoptions(DirectLabel)
+            self.initialiseoptions(ItemButton)
+            
+            self.label.show()
+            self.show()
         
     def update(self):
         money = base.localAvatar.getMoney()
-        itemType = self.values.get('type')
-        price = self.values.get('price')
-        self.setColorScale(NORMAL_COLOR)
-        if price > money:
-            self.setColorScale(GRAYED_OUT_COLOR)
-        if itemType == ItemType.GAG:
-            backpack = base.localAvatar.getBackpack()
-            supply = backpack.getSupply(self.item)
-            maxSupply = backpack.getMaxSupply(self.item)
-            inBackpack = backpack.hasGag(GagGlobals.getIDByName(self.item))
-            if not inBackpack or inBackpack and supply >= maxSupply:
+        if self.values:
+            itemType = self.values.get('type')
+            price = self.values.get('price')
+            self.setColorScale(NORMAL_COLOR)
+            if price > money:
                 self.setColorScale(GRAYED_OUT_COLOR)
-            supply = base.localAvatar.getBackpack().getSupply(self.item)
-            maxSupply = base.localAvatar.getBackpack().getMaxSupply(self.item)
-            self.label['text'] = '%s/%s\n%s JBS' % (str(supply), str(maxSupply), str(price))
-        elif itemType == ItemType.UPGRADE:
-            maxSupply = self.values.get('maxUpgrades')
-            upgradeID = self.values.get('upgradeID')
-            avID = base.localAvatar.getPUInventory()[1]
-            supply = 0
-            turretCount = 0
-            hasTurret = False
-
-            battle = base.localAvatar.getMyBattle()
-            if battle and battle.getTurretManager():
-                turretCount = battle.getTurretCount()
-                turret = battle.getTurretManager().getTurret()
-                if turret:
-                    hasTurret = True
-                    if turret.getGagID() == upgradeID:
-                        supply = 1
-
-            if avID == upgradeID:
-                dataSupply = base.localAvatar.getPUInventory()[0]
-                if dataSupply > 0:
-                    supply = dataSupply
-
-            if supply > 0 or base.localAvatar.getPUInventory()[0] > 0 or hasTurret or turretCount == CogBattleGlobals.MAX_TURRETS:
-                self.setColorScale(GRAYED_OUT_COLOR)
-
-            self.label['text'] = '%s\n%s/%s\n%s JBS' % (self.item, str(supply), str(maxSupply), str(price))
-        elif itemType == ItemType.HEAL:
-            if base.localAvatar.getHealth() == base.localAvatar.getMaxHealth() or self.shop.hasCooldown(self.item):
-                self.setColorScale(GRAYED_OUT_COLOR)
+            if itemType == ItemType.GAG:
+                backpack = base.localAvatar.getBackpack()
+                supply = backpack.getSupply(self.item)
+                maxSupply = backpack.getMaxSupply(self.item)
+                inBackpack = backpack.hasGag(GagGlobals.getIDByName(self.item))
+                if not inBackpack or inBackpack and supply >= maxSupply:
+                    self.setColorScale(GRAYED_OUT_COLOR)
+                supply = base.localAvatar.getBackpack().getSupply(self.item)
+                maxSupply = base.localAvatar.getBackpack().getMaxSupply(self.item)
+                self.label['text'] = '%s/%s\n%s JBS' % (str(supply), str(maxSupply), str(price))
+            elif itemType == ItemType.UPGRADE:
+                maxSupply = self.values.get('maxUpgrades')
+                upgradeID = self.values.get('upgradeID')
+                avID = base.localAvatar.getPUInventory()[1]
+                supply = 0
+                turretCount = 0
+                hasTurret = False
+    
+                battle = base.localAvatar.getMyBattle()
+                if battle and battle.getTurretManager():
+                    turretCount = battle.getTurretCount()
+                    turret = battle.getTurretManager().getTurret()
+                    if turret:
+                        hasTurret = True
+                        if turret.getGagID() == upgradeID:
+                            supply = 1
+    
+                if avID == upgradeID:
+                    dataSupply = base.localAvatar.getPUInventory()[0]
+                    if dataSupply > 0:
+                        supply = dataSupply
+    
+                if supply > 0 or base.localAvatar.getPUInventory()[0] > 0 or hasTurret or turretCount == CogBattleGlobals.MAX_TURRETS:
+                    self.setColorScale(GRAYED_OUT_COLOR)
+    
+                self.label['text'] = '%s\n%s/%s\n%s JBS' % (self.item, str(supply), str(maxSupply), str(price))
+            elif itemType == ItemType.HEAL:
+                if base.localAvatar.getHealth() == base.localAvatar.getMaxHealth() or self.shop.hasCooldown(self.item):
+                    self.setColorScale(GRAYED_OUT_COLOR)
         
     def handleClick(self):
         if self.item:
@@ -454,7 +457,7 @@ class ShopWindow(DirectFrame):
         if self.shop.wantFullShop:
             crcGags = OrderedDict(newItems)
             for item, values in newItems.items():
-                if values.get('type') == ItemType.GAG:
+                if values and values.get('type') == ItemType.GAG:
                     gagId = GagGlobals.getIDByName(item)
                     hasGag = base.localAvatar.getBackpack().hasGag(gagId)
                     if gagId not in loadout or not hasGag:
@@ -468,7 +471,7 @@ class ShopWindow(DirectFrame):
             newItems = crcGags
         else:
             for item, values in newItems.items():
-                if values.get('type') == ItemType.GAG:
+                if values and values.get('type') == ItemType.GAG:
                     gagId = base.localAvatar.getBackpack().hasGag(gagId)
                     if gagId not in loadout or not base.localAvatar.getBackpack().hasGag(gagId):
                         del newItems[item]

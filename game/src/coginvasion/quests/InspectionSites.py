@@ -9,7 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from direct.gui.DirectFrame import DirectFrame
-from panda3d.core import TransparencyAttrib
+from panda3d.core import TransparencyAttrib, Point3
 
 class InspectionSite:
 
@@ -47,7 +47,7 @@ class InspectionSite:
         self.identifierIcon = None
         
     def _generateInspectIcon(self):
-        icon = loader.loadTexture('phase_3.5/maps/inspect_location.png')
+        icon = loader.loadTexture('phase_5/maps/inspect_location.png')
         inspectIcon = DirectFrame(parent = render, image = icon, frameColor = (0, 0, 0, 0))
         inspectIcon.setTransparency(TransparencyAttrib.MAlpha)
         inspectIcon.setTwoSided(1)
@@ -57,8 +57,8 @@ class InspectionSite:
 # Key: zoneId, Value: List of inspection sites.
 
 sites = {
-    2300 : [
-        #InspectionSite(0, )
+    2000 : [
+        InspectionSite(0, Point3(0.492697, 11.4054, 0.05), 2, 2000)
     ]
 }
 

@@ -281,7 +281,7 @@ class DistributedTutorial(DistributedBattleZone):
             self.guide.setChat("Pick up the jellybean that he dropped. You can use them to buy more gags for your Toon.")
         self.battleMusic.stop()
         base.playMusic(self.music, looping = 1, volume = 0.8)
-        if not doDrops:
+        if not doDrops and index != 2:
             self.pickedUpJellybean()
 
     def pickedUpJellybean(self):
@@ -292,13 +292,15 @@ class DistributedTutorial(DistributedBattleZone):
         elif self.fsm.getCurrentState().getName() == 'training3':
             pass
         
-    def rewardPanelSequenceComplete(self):
+    def rewardSequenceComplete(self, timestamp):
+        DistributedBattleZone.rewardSequenceComplete(self, timestamp)
         self.fsm.request('trainingDone')
 
     def exitTrainingPT1(self):
         self.disableAvStuff()
 
     def enterTraining2Info(self):
+        self.mouseMov.disableMovement(allowReEnable = False)
         base.camera.setPos(3.09, 37.16, 3.93)
         base.camera.setHpr(225, 0, 0)
 
@@ -306,6 +308,7 @@ class DistributedTutorial(DistributedBattleZone):
         self.__doTutChat(DistributedTutorial.GUIDE_PT2_INFO)
 
     def exitTraining2Info(self):
+        self.mouseMov.enableMovement()
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
 
     def enterTrainingPT2(self):
@@ -318,12 +321,14 @@ class DistributedTutorial(DistributedBattleZone):
         self.disableAvStuff()
 
     def enterTraining3Info(self):
+        self.mouseMov.disableMovement(allowReEnable = False)
         base.camera.setPos(3.09, 37.16, 3.93)
         base.camera.setHpr(225, 0, 0)
         self.__prepareTutChat()
         self.__doTutChat(DistributedTutorial.GUIDE_PT3_INFO)
 
     def exitTraining3Info(self):
+        self.mouseMov.enableMovement()
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
 
     def enterTrainingPT3(self):
@@ -334,8 +339,10 @@ class DistributedTutorial(DistributedBattleZone):
 
     def exitTrainingPT3(self):
         self.disableAvStuff()
+        self.mouseMov.enableMovement()
 
     def enterTrainingDone(self):
+        self.mouseMov.disableMovement(allowReEnable = False)
         base.camera.setPos(3.09, 37.16, 3.93)
         base.camera.setHpr(225, 0, 0)
         self.__prepareTutChat()
@@ -343,6 +350,7 @@ class DistributedTutorial(DistributedBattleZone):
 
     def exitTrainingDone(self):
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
+        self.mouseMov.enableMovement()
 
     def enterLeaveTutorial(self):
         base.localAvatar.attachCamera()

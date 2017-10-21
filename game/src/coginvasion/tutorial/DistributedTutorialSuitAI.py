@@ -95,7 +95,7 @@ class DistributedTutorialSuitAI(DistributedSuitAI):
         if self.health <= 0:
             self.tutorial.sendUpdateToAvatarId(self.avatarId, 'suitNoHealth', [self.tutPartIndex])
             self.tutorial.suitsKilled += 1
-            if self.tutorial.suitsKilled == 1:
+            if self.tutorial.suitsKilled == 3:
                 self.battleZone.battleComplete()
             if self.walkTrack:
                 self.ignore(self.walkTrack.getDoneEvent())

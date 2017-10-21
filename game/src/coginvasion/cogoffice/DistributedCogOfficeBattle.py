@@ -398,11 +398,13 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             sendLoadout.append(gag.getID())
 
         base.localAvatar.sendUpdate('requestSetLoadout', [sendLoadout])
+        
+    def rewardSequenceComplete(self, timestamp):
+        DistributedBattleZone.rewardSequenceComplete(self, timestamp)
+        base.taskMgr.doMethodLater(0.1, self.victoryTask, self.uniqueName('victoryTask'))
 
     def enterVictory(self, ts):
-        self.cr.playGame.getPlace().fsm.request('stop')
-        base.localAvatar.b_setAnimState('win')
-        base.taskMgr.doMethodLater(5.0, self.victoryTask, self.uniqueName('victoryTask'))
+        pass
         #self.elevators[1].setToZoneId(self.exteriorZoneId)
 
         # This would show the rewards panel eventually.

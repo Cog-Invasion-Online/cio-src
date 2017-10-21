@@ -30,28 +30,32 @@ class Track:
 
 class RPToonData:
     
-    def __init__(self, avatarName):
-        self.notify = directNotify.newCategory('RPToonData[%s]' % avatarName)
-        self.avatarName = avatarName
+    def __init__(self, avatar):
+        self.avatar = avatar
+        self.avatarName = None if not self.avatar else avatar.getName()
+        self.notify = directNotify.newCategory('RPToonData[%s]' % self.avatarName if self.avatarName else 'Undefined')
         self.favoriteGag = CIGlobals.Cupcake
 
         # All the gag tracks
         self.tracks = OrderedDict()
         
-        for track in GagGlobals.TrackNameById.values():
-            self.tracks[track] = Track(track, 0, 0, 0)
-            print track
+        if not self.avatar:
+            for track in GagGlobals.TrackNameById.values():
+                self.tracks[track] = Track(track, 0, 0, 0)
+        else:
+            for track, exp in self.avatar.trackExperience.iteritems():
+                self.tracks[track] = Track(track, exp, GagGlobals.getMaxExperienceValue(exp, track), 0)
     
     def toNetString(self, avDoId):
         dg = PyDatagram()
         dg.addUint32(avDoId)
         dg.addUint8(GagGlobals.gagIds.keys()[GagGlobals.gagIds.values().index(self.favoriteGag)])
         
-        for i in range(len(self.tracks)):
-            track = self.tracks.values()[i]
-            dg.addUint8(i)
-            dg.addUint16(track.exp)
-            dg.addUint16(track.maxExp)
+        for trackName in self.tracks.keys():
+            track = self.getTrackByName(trackName)
+            dg.addUint8(GagGlobals.TrackNameById.keys()[GagGlobals.TrackNameById.values().index(trackName)])
+            dg.addInt16(track.exp)
+            dg.addInt16(track.maxExp)
             dg.addUint16(track.increment)
         dgi = PyDatagramIterator(dg)
         return dgi.getRemainingBytes()
@@ -64,17 +68,17 @@ class RPToonData:
         avDoId = dgi.getUint32()
         favGagId = dgi.getUint8()
         
-        av = base.cr.doId2do.get(avDoId, None)
-        self.avatarName = None if not av else av.getName()
+        self.avatar = base.cr.doId2do.get(avDoId, None)
+        self.avatarName = None if not self.avatar else self.avatar.getName()
         
         self.favoriteGag = GagGlobals.gagIds.get(favGagId)
         
         while dgi.getRemainingSize() > 0:
-            track = GagGlobals.TrackNameById.values()[dgi.getUint8()]
-            exp = dgi.getUint16()
-            maxExp = dgi.getUint16()
-            increment = dgi.getUint16()
-            self.tracks[track] = Track(track, increment, exp, maxExp)
+            track = GagGlobals.TrackNameById.get(dgi.getUint8())
+            exp = dgi.getInt16()
+            maxExp = dgi.getInt16()
+            increment = dgi.getInt16()
+            self.tracks[track] = Track(track, exp, maxExp, increment)
         return avDoId
             
     def getTrackByName(self, name):

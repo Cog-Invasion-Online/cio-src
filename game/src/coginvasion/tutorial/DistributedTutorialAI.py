@@ -32,7 +32,6 @@ class DistributedTutorialAI(DistributedBattleZoneAI):
         suit.b_setParent(CIGlobals.SPHidden)
         suit.battleZone = self
         self.tutSuit = suit
-        print self.suitsKilled
 
     def finishedTutorial(self):
         self.notify.info('Deleting tutorial: avatar finished')
@@ -48,6 +47,8 @@ class DistributedTutorialAI(DistributedBattleZoneAI):
 
     def announceGenerate(self):
         DistributedBattleZoneAI.announceGenerate(self)
+        # Let's go ahead and add the avatar doing the tutorial to the battleZone's list and data dict.
+        self.addAvatar(self.avatarId);
         base.taskMgr.add(self.__monitorAvatar, self.uniqueName('monitorAvatar'))
 
     def delete(self):

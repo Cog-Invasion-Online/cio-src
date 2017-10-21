@@ -62,7 +62,7 @@ gagData = {
     CIGlobals.Megaphone : {'healRange': (10, 20), 'maxSupply': 7, 'supply': 7, 'track' : ToonUp},
     CIGlobals.Opera : {'damage': 90, 'maxSupply': 1, 'supply': 1, 'track' : Sound},
     CIGlobals.BambooCane : {'healRange': (40, 45), 'maxSupply': 4, 'supply': 4, 'track' : ToonUp},
-    CIGlobals.Cupcake : {'health': 1, 'damage': 6, 'maxSupply': 15, 'supply': 15, 'track' : Throw},
+    CIGlobals.Cupcake : {'health': 1, 'damage': 50, 'maxSupply': 30, 'supply': 30, 'track' : Throw},
     CIGlobals.Bugle : {'damage': 11, 'maxSupply': 10, 'supply': 10, 'track' : Sound},
     CIGlobals.Sandbag : {'damage': 18, 'maxSupply': 10, 'supply': 10, 'track' : Drop},
     CIGlobals.WaterGlass : {'health': 2, 'damage': 8, 'maxSupply': 10, 'supply': 10, 'track' : Squirt},
@@ -305,7 +305,7 @@ def trackExperienceToNetString(tracks):
     
     for track, exp in tracks.iteritems():
         dg.addUint8(TrackNameById.values().index(track))
-        dg.addUint16(exp)
+        dg.addInt16(exp)
     dgi = PyDatagramIterator(dg)
     return dgi.getRemainingBytes()
 
@@ -339,21 +339,19 @@ def getTrackExperienceFromNetString(netString):
     
     while dgi.getRemainingSize() > 0:
         trackId = dgi.getUint8()
-        exp = dgi.getUint16()
+        exp = dgi.getInt16()
         
         tracks[TrackNameById.get(trackId)] = exp
     return tracks
 
 def getMaxExperienceValue(exp, track):
-    if exp < track.maxExp or track.maxExp == 0:
-        return track.maxExp
-    else:
-        levels = TrackExperienceAmounts[track.name]
-        index = levels.index(track.maxExp)
-        
-        if index + 1 < len(levels):
-            return levels[index + 1]
-        return -1
+    levels = TrackExperienceAmounts[track]
+    
+    if exp > -1:
+        for i in range(len(levels)):
+            if exp < levels[i]:
+                return levels[i]
+    return -1
 
 def getTrackOfGag(arg, getId = False):
     if type(arg) == types.IntType:
@@ -384,12 +382,17 @@ def getTrackOfGag(arg, getId = False):
                     # Return the int ID of the track
                     return TrackIdByName[trackName]
 
-DefaultTrackExperiences = {}
-for track in TrackNameById.values():
-    value = 0
-    if track == Throw or track == Squirt:
-        value = TrackExperienceAmounts.get(track)[0]
-    DefaultTrackExperiences[track] = 0
+# The idea here is that tracks with a default exp of -1 aren't unlocked yet.
+# Throw and squirt fetch the first max exp amount defined in the TrackExperienceAmounts dict.
+DefaultTrackExperiences = {
+    ToonUp : -1,
+    Trap : -1,
+    Lure : -1,
+    Sound : -1,
+    Throw : 0,
+    Squirt : 0,
+    Drop : -1
+}
 
 def getDefaultBackpack(isAI = False):
     defaultBackpack = None
@@ -399,8 +402,8 @@ def getDefaultBackpack(isAI = False):
     else:
         from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
         defaultBackpack = BackpackAI(None)
-    for gagId in gagIds.keys():
-        data = getGagData(gagId)
-        maxSupply = data.get('maxSupply')
-        defaultBackpack.addGag(gagId, data.get('supply'), maxSupply)
+    cupcake = getGagData(13)
+    flower = getGagData(35)
+    defaultBackpack.addGag(13, cupcake.get('supply'), cupcake.get('maxSupply'))
+    defaultBackpack.addGag(35, flower.get('supply'), flower.get('maxSupply'))
     return defaultBackpack

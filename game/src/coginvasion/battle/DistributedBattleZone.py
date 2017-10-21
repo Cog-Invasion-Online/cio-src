@@ -9,12 +9,13 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from direct.distributed.DistributedObject import DistributedObject
+from direct.distributed.ClockDelta import globalClockDelta
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.battle.RPToonData import RPToonData
 from src.coginvasion.gui.RewardPanel import RewardPanel
 
-from direct.interval.IntervalGlobal import Sequence, Func
+from direct.interval.IntervalGlobal import Sequence, Func, Wait
 
 from collections import OrderedDict
 
@@ -57,22 +58,66 @@ class DistributedBattleZone(DistributedObject):
     def getAvatars(self):
         return self.avIds
     
-    def rewardPanelSequenceComplete(self):
+    def rewardSequenceComplete(self, timestamp):
         pass
     
     def startRewardSeq(self, timestamp):
-        base.localAvatar.b_setAnimState('win')
-        self.rewardSeq.append(Func(base.localAvatar.b_setAnimState, 'neutral'))
-        self.rewardSeq.append(Func(self.rewardPanelSequenceComplete))
+        timestamp = globalClockDelta.localElapsedTime(timestamp)
         self.rewardSeq.start(timestamp)
+        
+    def disableAvatarControls(self):
+        place = base.cr.playGame.getPlace()
+        walkData = place.walkStateData if place else self
+
+        base.localAvatar.disableAvatarControls()
+        base.localAvatar.detachCamera()
+        base.localAvatar.stopSmartCamera()
+        base.localAvatar.collisionsOff()
+        base.localAvatar.disableGags()
+        base.localAvatar.stopTrackAnimToSpeed()
+        base.localAvatar.hideGagButton()
+        if base.localAvatar.GTAControls:
+            walkData.mouseMov.disableMovement(allowReEnable = False)
+        if place:
+            place.fsm.request('stop')
+            
+    def enableAvatarControls(self):
+        place = base.cr.playGame.getPlace()
+        walkData = place.walkStateData if place else self
+        
+        base.localAvatar.attachCamera()
+        base.localAvatar.startSmartCamera()
+        base.localAvatar.collisionsOn()
+        base.localAvatar.enableGags()
+        base.localAvatar.startTrackAnimToSpeed()
+        base.localAvatar.showGagButton()
+        if not base.localAvatar.walkControls.getCollisionsActive():
+            base.localAvatar.walkControls.setCollisionsActive(1)
+        base.localAvatar.enableAvatarControls()
+        if base.localAvatar.GTAControls:
+            walkData.mouseMov.enableMovement()
     
     def setToonData(self, netStrings):
         self.rewardPanel = RewardPanel(None)
+        self.rewardSeq.append(Func(self.disableAvatarControls))
+        self.rewardSeq.append(Func(base.localAvatar.detachCamera))
+        self.rewardSeq.append(Func(base.localAvatar.b_setAnimState, 'win'))
+        self.rewardSeq.append(Func(base.localAvatar.loop, 'win'))
+        
         for netString in netStrings:
             data = RPToonData(None)
             avId = data.fromNetString(netString)
             self.rewardPanelData[avId] = data
+            self.rewardPanel.setPanelData(data)
+            intervalList = self.rewardPanel.enterGags()
+            
             self.rewardSeq.append(Func(self.rewardPanel.setPanelData, data))
+            self.rewardSeq.extend(intervalList)
+            self.rewardSeq.append(Wait(5.0))
+        self.rewardSeq.append(Func(self.rewardPanel.destroy))
+        self.rewardSeq.append(Func(self.enableAvatarControls))
+        self.rewardSeq.append(Func(base.localAvatar.b_setAnimState, 'neutral'))
+        self.rewardSeq.append(Func(self.sendUpdate, 'acknowledgeAvatarReady', []))
             
     def getToonData(self):
         return self.rewardPanelData

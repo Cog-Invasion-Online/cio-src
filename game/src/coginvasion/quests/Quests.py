@@ -61,6 +61,14 @@ Quests = {
         finishSpeech: ("Great job, young lad.\x07I see loads of potential in you.\x07One day you will be one of the best Cog busters around!\x07"),
         name: 'Schooled'},
           
+    2 : {objectives : [
+            {objType : CogObjective, args: [SuitGlobals.BottomFeeder, 8, CIGlobals.ToontownCentralId]}],
+         reward: (Health, 1),
+         tier: Tiers.TT,
+         assignSpeech: ("Those Bottom Feeders sure are running rampant around town recently.\x07Think you could do something about that?\x07"),
+         finishSpeech: ("Fantastic!\x07You helped clean the streets of Toontown!\x07This should help you out...\x07"),
+         name: "Bottoms Up!"},
+          
     3: {objectives: [
             {objType: MinigameObjective, args: [CIGlobals.UnoGame, 1]}
         ],
@@ -96,6 +104,16 @@ Quests = {
         ),
         finishSpeech: ("Great job, young lad.\x07I see loads of potential in you.\x07One day you will be one of the best Cog busters around!\x07"),
         name: 'Mingle Mangle'},
+
+    6: {objectives: [
+            {objType: RecoverItemObjective, args: [5, CIGlobals.DonaldsDockId, 'Pincher', QuestGlobals.getPackageIcon(), SuitGlobals.PennyPincher]}
+        ],
+        reward: (Access, 2000),
+        tier: Tiers.TT,
+        assignSpeech: ("Hey there this is a test quest.\x07"
+        ),
+        finishSpeech: ("Great job, young lad.\x07I see loads of potential in you.\x07One day you will be one of the best Cog busters around!\x07"),
+        name: 'Pinch this Pinch That'},
           
     20: {objectives: [
             {objType: CogBuildingObjective, args: [Any, Any, 1, CIGlobals.DaisyGardensId]}
