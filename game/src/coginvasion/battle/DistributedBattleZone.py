@@ -115,7 +115,9 @@ class DistributedBattleZone(DistributedObject):
             self.rewardSeq.extend(intervalList)
             self.rewardSeq.append(Wait(5.0))
         self.rewardSeq.append(Func(self.rewardPanel.destroy))
-        self.rewardSeq.append(Func(self.enableAvatarControls))
+        
+        if base.localAvatar.inTutorial:
+            self.rewardSeq.append(Func(self.enableAvatarControls))
         self.rewardSeq.append(Func(base.localAvatar.b_setAnimState, 'neutral'))
         self.rewardSeq.append(Func(self.sendUpdate, 'acknowledgeAvatarReady', []))
             

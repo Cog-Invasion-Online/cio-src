@@ -16,7 +16,6 @@ from DistributedToon import DistributedToon
 from SmartCamera import SmartCamera
 from src.coginvasion.gui.ChatInput import ChatInput
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
-from src.coginvasion.gui.MoneyGui import MoneyGui
 from src.coginvasion.gui.InventoryGui import InventoryGui
 from src.coginvasion.gags import GagGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval
@@ -53,7 +52,6 @@ class LocalToon(DistributedToon):
         self.avatarChoice = cr.localAvChoice
         self.smartCamera = SmartCamera()
         self.chatInput = ChatInput()
-        self.moneyGui = MoneyGui()
         self.laffMeter = LaffOMeter()
         self.positionExaminer = PositionExaminer()
         self.friendRequestManager = FriendRequestManager()
@@ -326,7 +324,6 @@ class LocalToon(DistributedToon):
 
     def setMoney(self, money):
         DistributedToon.setMoney(self, money)
-        self.moneyGui.update(money)
 
     def setupNameTag(self, tempName = None):
         DistributedToon.setupNameTag(self, tempName)
@@ -626,11 +623,13 @@ class LocalToon(DistributedToon):
 
     def setLoadout(self, gagIds):
         DistributedToon.setLoadout(self, gagIds)
-        if base.cr.playGame.getPlace() and base.cr.playGame.getPlace().fsm.getCurrentState().getName() == 'shtickerBook':
-            if hasattr(base.cr.playGame.getPlace(), 'shtickerBookStateData'):
-                if base.cr.playGame.getPlace().shtickerBookStateData.getCurrentPage() is not None:
-                    if base.cr.playGame.getPlace().shtickerBookStateData.getCurrentPage().title == 'Gags':
-                        base.cr.playGame.getPlace().shtickerBookStateData.getCurrentPage().gui.fsm.request('idle')
+        place = base.cr.playGame.getPlace()
+        if place and place.fsm.getCurrentState().getName() == 'shtickerBook':
+            if hasattr(place, 'shtickerBookStateData'):
+                stateData = place.shtickerBookStateData
+                if stateData.getCurrentPage() is not None:
+                    if stateData.getCurrentPage().title == 'Gags':
+                        stateData.getCurrentPage().gui.fsm.request('idle')
 
     def enableGags(self, andKeys = 0):
         if self.avatarMovementEnabled and andKeys:
@@ -674,17 +673,6 @@ class LocalToon(DistributedToon):
             self.disableGagKeys()
             self.enableGagKeys()
 
-    def createMoney(self):
-        self.moneyGui.createGui()
-        # Automatically update incase we missed the db field.
-        self.moneyGui.update(self.money)
-
-    def handleMoneyChanged(self):
-        self.moneyGui.update()
-
-    def disableMoney(self):
-        self.moneyGui.deleteGui()
-
     def resetHeadHpr(self):
         self.b_lookAtObject(0, 0, 0, blink = 0)
 
@@ -722,7 +710,7 @@ class LocalToon(DistributedToon):
             return
 
         if self.gagThrowBtn:
-             self.gagThrowBtn.unbind(DGG.B1RELEASE)
+            self.gagThrowBtn.unbind(DGG.B1RELEASE)
 
         self.ignore(CIGlobals.getSettingsMgr().getSetting("gagkey") + "-up")
 
@@ -858,14 +846,8 @@ class LocalToon(DistributedToon):
                         'how': 'teleportIn'}
             self.cr.playGame.getPlace().doneStatus = requestStatus
             messenger.send(self.cr.playGame.getPlace().doneEvent)
-
         else:
             return
-
-        ## Tell the ai we're dead so they can refill our hp.
-        #self.sendUpdate("died", [])
-        ## Then, log out and notify the client that they're dead.
-        # self.cr.gameFSM.request("closeShard", ['died'])
 
     def teleportToCT(self):
         toZone = CIGlobals.CogTropolisId
@@ -953,7 +935,7 @@ class LocalToon(DistributedToon):
         self.backpack.loadoutGUI = self.invGui
 
         # Unused developer methods.
-        self.accept('/', self.printAvPos)
+        self.accept('/', self.printPos)
         #self.accept('p', self.enterPictureMode)
         #self.accept('c', self.teleportToCT)
         #posBtn = DirectButton(text = "Get Pos", scale = 0.08, pos = (0.3, 0, 0), parent = base.a2dLeftCenter, command = self.printAvPos)
@@ -964,12 +946,8 @@ class LocalToon(DistributedToon):
         self.laffMeter.destroy()
         self.getGeomNode().hide()
         self.deleteNameTag()
-        self.moneyGui.deleteGui()
         self.invGui.disable()
         self.hideGagButton()
         self.hideFriendButton()
         self.hideBookButton()
         self.removeAdminToken()
-
-    def printAvPos(self):
-        print "Pos: %s, Hpr: %s" % (self.getPos(), self.getHpr())

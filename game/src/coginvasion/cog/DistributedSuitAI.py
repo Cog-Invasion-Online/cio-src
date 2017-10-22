@@ -371,7 +371,12 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             self.__handleTacticalAttacks(avatar.doId, gagName, data)
             
             if self.battleZone:
-                self.battleZone.handleGagUse(gagId, avId)
+                # We only want to award credit when Toons use gags that are less than or at the level of the Cog
+                # they're using them on.
+                gagLevel = GagGlobals.TrackGagNamesByTrackName.get(track).index(gagName)
+                
+                if gagLevel <= self.level:
+                    self.battleZone.handleGagUse(gagId, avId)
             
             if not avId in self.damagers:
                 self.damagers.append(avId)

@@ -22,13 +22,17 @@ class QuestManager(QuestManagerBase, DirectObject):
         assert self is base.localAvatar.questManager
         positions = [(-0.45, 0.75, 0.3), (0.45, 0.75, 0.3), (-0.45, 0.75, -0.3), (0.45, 0.75, -0.3)]
         if len(self.posters) != 0: return
-        for i, quest in enumerate(self.quests.values()):
+        for i in range(4):
+            quest = None
+            
+            if i < len(self.quests.values()):
+                quest = self.quests.values()[i]
             poster = QuestGlobals.generatePoster(quest, parent = aspect2d)
             poster.setPos(positions[i])
             poster.setScale(0.95)
             poster.show()
             self.posters.append(poster)
-        self.acceptOnce('q-up', self.hideQuests)
+        self.acceptOnce(base.inputStore.ViewQuests + '-up', self.hideQuests)
         
     def hideQuests(self):
         for poster in self.posters:

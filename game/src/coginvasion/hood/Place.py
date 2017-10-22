@@ -67,7 +67,6 @@ class Place(StateData):
         if base.localAvatar.invGui:
             base.localAvatar.invGui.disable()
         base.localAvatar.disableLaffMeter()
-        base.localAvatar.disableMoney()
         
 
     def enterStart(self):
@@ -268,7 +267,6 @@ class Place(StateData):
         base.localAvatar.attachCamera()
         base.localAvatar.startSmartCamera()
         base.localAvatar.createLaffMeter()
-        base.localAvatar.createMoney()
         #base.localAvatar.showBookButton()
         if base.localAvatar.inBattle:
             base.localAvatar.enableGags(andKeys = 0)
@@ -500,7 +498,6 @@ class Place(StateData):
         base.localAvatar.attachCamera()
         base.localAvatar.startSmartCamera()
         base.localAvatar.createLaffMeter()
-        base.localAvatar.createMoney()
 
         noAccess = "Watch out!\n\nThis neighborhood is too dangerous for your Toon. Complete Quests to unlock this neighborhood."
         self.dialog = GlobalDialog(noAccess, 'noAccessAck', Ok)
@@ -514,7 +511,6 @@ class Place(StateData):
         base.localAvatar.stopSmartCamera()
         base.localAvatar.detachCamera()
         base.localAvatar.disableLaffMeter()
-        base.localAvatar.disableMoney()
 
         if hasattr(self, 'dialog'):
             self.dialog.cleanup()

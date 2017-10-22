@@ -30,8 +30,6 @@ class PublicWalk(Walk.Walk):
 
         if base.localAvatar.inBattle or base.config.GetBool("want-playground-gags", False):
             base.localAvatar.enableGags(1)
-
-        base.localAvatar.createMoney()
         
         if not base.localAvatar.GTAControls:
             self.acceptOnce('escape-up', base.localAvatar.bookButtonClicked)
@@ -47,5 +45,3 @@ class PublicWalk(Walk.Walk):
 
         if base.localAvatar.inBattle or base.config.GetBool("want-playground-gags", False):
             base.localAvatar.disableGags()
-
-        base.localAvatar.disableMoney()

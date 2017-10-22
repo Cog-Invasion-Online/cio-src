@@ -45,7 +45,7 @@ class QuestPoster(DirectFrame):
         # The quest this poster is representing.
         self.quest = quest
         
-        isObjComplete = self.quest.currentObjective.isComplete()
+        isObjComplete = False if not quest else self.quest.currentObjective.isComplete()
         
         # Let's define our options for the DirectFrame.
         bookModel = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
@@ -61,8 +61,9 @@ class QuestPoster(DirectFrame):
         self.initialiseoptions(QuestPoster)
         
         # Let's declare and initialize our barebone GUI element variables.
+        questTitle = '' if not self.quest else self.quest.getName()
         self.titleLabel = DirectLabel(parent = self, relief = None,
-            text = self.quest.getName(),
+            text = questTitle,
             text_font = CIGlobals.getMinnieFont(),
             text_fg = QuestGlobals.TEXT_COLOR,
             text_scale = 0.05,
@@ -168,7 +169,8 @@ class QuestPoster(DirectFrame):
         pos = (-0.01, 0, -0.25))
         
         # Let's setup our reward frames.
-        self.lReward = QuestRewardFrame(self, self.quest.reward)
+        reward = None if not self.quest else self.quest.reward
+        self.lReward = QuestRewardFrame(self, reward)
         
         # The text displayed on the right side of the frame with additional information, if necessary.
         self.sideInfo = DirectLabel(parent = self,
@@ -192,39 +194,45 @@ class QuestPoster(DirectFrame):
         return
     
     def setup(self):
-        objective = self.quest.currentObjective
-        
-        self.objectiveInfo.show()
-        self.auxFrame.show()
-        
-        isShopLoc = QuestGlobals.isShopLocation(objective.area) if not objective.isComplete() else True
-        self.locationInfo['text'] = QuestGlobals.getLocationText(objective.area) if not objective.isComplete() else QuestGlobals.getLocationText(None, objective)
-        self.locationInfo['text_pos'] = (0, 0 if not isShopLoc else 0.025)
-        self.locationInfo.show()
-        
-        # Let's setup the quest progress bar
-        progress = objective.progress if hasattr(objective, 'amount') else None
-        
-        if progress and objective.goal > 0:
-            self.progressBar['range'] = objective.goal
-            self.progressBar['value'] = progress & pow(2, 16) - 1
-        
-        if objective.HasProgress and objective.goal > 1 and not objective.isComplete():
-            self.progressBar.show()
-        
-        self.auxText.show()
-        
-        # Let's handle the objectives.
-        if objective.__class__ == CogObjective:
-            self.handleCogObjective()
-        elif objective.__class__ == CogBuildingObjective:
-            self.handleCogBuildingObjective()
-        elif objective.__class__ == MinigameObjective:
-            self.handleMinigameObjective()
-        elif objective.__class__ == VisitNPCObjective:
-            self.handleNPCObjective()
+        if self.quest:
+            objective = self.quest.currentObjective
             
-        self.lReward.setup()
+            self.objectiveInfo.show()
+            self.auxFrame.show()
+            
+            isShopLoc = QuestGlobals.isShopLocation(objective.area) if not objective.isComplete() else True
+            self.locationInfo['text'] = QuestGlobals.getLocationText(objective.area) if not objective.isComplete() else QuestGlobals.getLocationText(None, objective)
+            self.locationInfo['text_pos'] = (0, 0 if not isShopLoc else 0.025)
+            self.locationInfo.show()
+            
+            # Let's setup the quest progress bar
+            progress = objective.progress if hasattr(objective, 'amount') else None
+            
+            if progress and objective.goal > 0:
+                self.progressBar['range'] = objective.goal
+                self.progressBar['value'] = progress & pow(2, 16) - 1
+            
+            if objective.HasProgress and objective.goal > 1 and not objective.isComplete():
+                self.progressBar.show()
+            
+            self.auxText.show()
+            
+            # Let's handle the objectives.
+            if objective.__class__ == CogObjective:
+                self.handleCogObjective()
+            elif objective.__class__ == CogBuildingObjective:
+                self.handleCogBuildingObjective()
+            elif objective.__class__ == MinigameObjective:
+                self.handleMinigameObjective()
+            elif objective.__class__ == VisitNPCObjective:
+                self.handleNPCObjective()
+                
+            self.lReward.setup()
+        else:
+            # We want to be able to show empty quest posters.
+            self.titleLabel.hide()
+            self.auxFrame.hide()
+            self.auxIcon.hide()
         
         self.titleLabel.initialiseoptions(DirectLabel)
         self.auxIcon.initialiseoptions(DirectFrame)

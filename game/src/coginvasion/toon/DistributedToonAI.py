@@ -459,6 +459,9 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
     
     def b_setBackpackAmmo(self, netString):
         self.setBackpackAmmo(netString)
+        self.d_setBackpackAmmo(netString)
+        
+    def d_setBackpackAmmo(self, netString):
         self.sendUpdate('setBackpackAmmo', [netString])
         
     def getBackpackAmmo(self):

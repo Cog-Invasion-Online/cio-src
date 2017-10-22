@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from src.coginvasion.quests.poster.QuestPoster import QuestPoster
 from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
-from src.coginvasion.quests import Objectives
+from src.coginvasion.quests import QuestGlobals
 from BookPage import BookPage
 
 class QuestPage(BookPage):
@@ -34,16 +34,13 @@ class QuestPage(BookPage):
         BookPage.enter(self)
         
         positions = [(-0.45, 0.75, 0.3), (0.45, 0.75, 0.3), (-0.45, 0.75, -0.3), (0.45, 0.75, -0.3)]
-
-        for i in xrange(len(base.localAvatar.questManager.quests.values())):
-            quest = base.localAvatar.questManager.quests.values()[i]
-            objective = quest.currentObjective
-            poster = None
-            if objective.__class__ in Objectives.DoubleFrameObjectives:
-                poster = DoubleFrameQuestPoster(quest, parent = self.book)
-            else:
-                poster = QuestPoster(quest, parent = self.book)
-            poster.setup()
+        quests = base.localAvatar.questManager.quests.values()
+        
+        for i in range(4):
+            quest = None
+            if i < len(quests):
+                quest = quests[i]
+            poster = QuestGlobals.generatePoster(quest, parent = self.book)
             poster.setPos(positions[i])
             poster.setScale(0.95)
             poster.show()

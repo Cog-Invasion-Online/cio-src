@@ -55,8 +55,8 @@ buildingInfo = {
 # The minimum and maximum number of cog buildings that can be present on each street.
 buildingMinMax = {
     CIGlobals.SillyStreet: (1, 3),
-    CIGlobals.PunchlinePlace: (0, 3),
-    CIGlobals.LoopyLane: (0, 3),
+    CIGlobals.PunchlinePlace: (1, 3),
+    CIGlobals.LoopyLane: (1, 3),
     CIGlobals.BarnacleBoulevard: (1, 5),
     CIGlobals.SeaweedStreet: (1, 5),
     CIGlobals.LighthouseLane: (1, 5),
@@ -74,10 +74,11 @@ buildingMinMax = {
 }
 
 # The chance a cog building will be spawned each interval.
+# Temporarily buffed TTC spawning rate from 2% to 20%
 buildingChances = {
-    CIGlobals.SillyStreet: 2.0,
-    CIGlobals.LoopyLane: 2.0,
-    CIGlobals.PunchlinePlace: 2.0,
+    CIGlobals.SillyStreet: 20.0,
+    CIGlobals.LoopyLane: 20.0,
+    CIGlobals.PunchlinePlace: 20.0,
     CIGlobals.BarnacleBoulevard: 75.0,
     CIGlobals.SeaweedStreet: 75.0,
     CIGlobals.LighthouseLane: 75.0,

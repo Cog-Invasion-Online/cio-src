@@ -34,10 +34,12 @@ class BackpackAI:
     # it will look up the defaults and use those.
     def addGag(self, gagId, curSupply = 0, maxSupply = 0):
         if not self.hasGag(gagId):
+            supply = curSupply
             if maxSupply == 0:
                 maxSupply = GagGlobals.getGagData(gagId).get('maxSupply')
-                curSupply = maxSupply
-            self.gags.update({gagId : [curSupply, maxSupply]})
+                supply = maxSupply if curSupply == 0 else curSupply
+
+            self.gags.update({gagId : [supply, maxSupply]})
             
     # Sets the maximum supply of a gag in the backpack.
     # Returns true or false if the maximum supply was set.

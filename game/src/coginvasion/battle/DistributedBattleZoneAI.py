@@ -152,6 +152,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
             avatar = base.air.doId2do.get(avId, None)
             favGagId = -1
             favGagUses = 0
+            gagUnlocked = False
             
             if avatar:
                 rpData = RPToonData(avatar)
@@ -176,13 +177,28 @@ class DistributedBattleZoneAI(DistributedObjectAI):
                 
                 for track, exp in avatar.trackExperience.iteritems():
                     rpDataTrack = rpData.getTrackByName(track)
+                    increment = trackIncrements.get(track)
                     maxExp = GagGlobals.getMaxExperienceValue(exp, track)
+                    incrMaxExp = GagGlobals.getMaxExperienceValue(exp + increment, track)
                     rpDataTrack.exp = exp
                     rpDataTrack.maxExp = maxExp
-                    rpDataTrack.increment = trackIncrements.get(track)
+                    rpDataTrack.increment = increment
                     avatar.trackExperience[track] = (exp + rpDataTrack.increment)
+                    
+                    if incrMaxExp != maxExp:
+                        # We've unlocked a gag.
+                        maxExpIndex = GagGlobals.TrackExperienceAmounts.get(track).index(incrMaxExp)
+                        newGagName = GagGlobals.TrackGagNamesByTrackName.get(track)[maxExpIndex]
+                        gagId = GagGlobals.gagIdByName.get(newGagName)
+                        avatar.backpack.addGag(gagId, 1)
+                        gagUnlocked = True
                 avatar.b_setTrackExperience(GagGlobals.trackExperienceToNetString(avatar.trackExperience))
+                
+                if gagUnlocked:
+                    netString = avatar.getBackpackAmmo()
+                    avatar.d_setBackpackAmmo(netString)
                 blobs.append(rpData.toNetString(avId))
+                
         return blobs
     
     def battleComplete(self):

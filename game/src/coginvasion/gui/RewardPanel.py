@@ -235,7 +235,7 @@ class RewardPanel(DirectFrame):
         
         intervalList.append(Func(self.showTrackIncLabel, trackIndex, track, track.increment))
         
-        barTime = 1.0 if track.exp > 0 else 0.5
+        barTime = 2.0 if track.exp > 0 else 0.25
         numTicks = int(math.ceil(barTime / tickDelay))
         for i in range(numTicks):
             t = (i + 1) / float(numTicks)

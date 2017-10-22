@@ -62,7 +62,7 @@ gagData = {
     CIGlobals.Megaphone : {'healRange': (10, 20), 'maxSupply': 7, 'supply': 7, 'track' : ToonUp},
     CIGlobals.Opera : {'damage': 90, 'maxSupply': 1, 'supply': 1, 'track' : Sound},
     CIGlobals.BambooCane : {'healRange': (40, 45), 'maxSupply': 4, 'supply': 4, 'track' : ToonUp},
-    CIGlobals.Cupcake : {'health': 1, 'damage': 50, 'maxSupply': 30, 'supply': 30, 'track' : Throw},
+    CIGlobals.Cupcake : {'health': 1, 'damage': 6, 'maxSupply': 30, 'supply': 30, 'track' : Throw},
     CIGlobals.Bugle : {'damage': 11, 'maxSupply': 10, 'supply': 10, 'track' : Sound},
     CIGlobals.Sandbag : {'damage': 18, 'maxSupply': 10, 'supply': 10, 'track' : Drop},
     CIGlobals.WaterGlass : {'health': 2, 'damage': 8, 'maxSupply': 10, 'supply': 10, 'track' : Squirt},
