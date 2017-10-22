@@ -36,10 +36,12 @@ class LightingConfig:
         self.ambientNP = CIGlobals.makeAmbientLight('config', self.ambient)
 
     def apply(self):
-        render.setLight(self.ambientNP)
+        if game.uselighting:
+            render.setLight(self.ambientNP)
 
     def unapply(self):
-        render.clearLight(self.ambientNP)
+        if game.uselighting:
+            render.clearLight(self.ambientNP)
 
     def remove(self):
         if self.ambientNP:
@@ -123,9 +125,11 @@ class OutdoorLightingConfig(LightingConfig):
 
     def apply(self):
         LightingConfig.apply(self)
-        render.setLight(self.sunNP)
-        if not self.winterOverride:
-            render.setFog(self.fogNode)
+        
+        if game.uselighting:
+            render.setLight(self.sunNP)
+            if not self.winterOverride:
+                render.setFog(self.fogNode)
 
         if self.skyType != OutdoorLightingConfig.STNone:
             self.skyNP.reparentTo(camera)
@@ -146,9 +150,10 @@ class OutdoorLightingConfig(LightingConfig):
 
     def unapply(self):
         LightingConfig.unapply(self)
-        render.clearLight(self.sunNP)
-        if not self.winterOverride:
-            render.clearFog()
+        if game.uselighting:
+            render.clearLight(self.sunNP)
+            if not self.winterOverride:
+                render.clearFog()
 
         if self.skyType != OutdoorLightingConfig.STNone:
             self.skyNP.reparentTo(hidden)
@@ -211,13 +216,15 @@ class IndoorLightingConfig(LightingConfig):
 
     def apply(self):
         LightingConfig.apply(self)
-        for light in self.lightNPs:
-            render.setLight(light)
+        if game.uselighting:
+            for light in self.lightNPs:
+                render.setLight(light)
 
     def unapply(self):
         LightingConfig.unapply(self)
-        for light in self.lightNPs:
-            render.clearLight(light)
+        if game.uselighting:
+            for light in self.lightNPs:
+                render.clearLight(light)
 
     def remove(self):
         LightingConfig.remove(self)
