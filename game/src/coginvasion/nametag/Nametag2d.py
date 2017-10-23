@@ -153,9 +153,9 @@ class Nametag2d(Nametag, Clickable2d, MarginVisible):
             return
 
         # Prefix the nametag text:
-        if self.avatar.avatarType == CIGlobals.Suit and len(self.getText().split('\n')) == 3:
+        if hasattr(self.avatar, 'avatarType') and self.avatar.avatarType == CIGlobals.Suit and len(self.getText().split('\n')) == 3:
             # Just show the cog's name
-            name, dept, level = self.getText().split('\n')
+            name, _, _ = self.getText().split('\n')
         else:
             name = self.getText()
         self.chatTextNode.setText(name + ': ' + self.actualChatText)

@@ -266,8 +266,9 @@ class NametagGroup:
     def setChatPageIndex(self, chatPageIndex):
         if chatPageIndex >= self.getNumChatPages():
             return
-
-        self.avatar.chatStompComplete(self.chatPages[chatPageIndex])
+        
+        if self.avatar and hasattr(self.avatar, 'chatStompComplete'):
+            self.avatar.chatStompComplete(self.chatPages[chatPageIndex])
 
         self.chatPageIndex = chatPageIndex
         for nametag in self.nametags:

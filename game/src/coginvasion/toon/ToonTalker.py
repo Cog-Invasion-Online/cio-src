@@ -68,7 +68,7 @@ class ToonTalker:
             if self.avatarType == CIGlobals.Suit:
                 self.chatBubble.setZ(CIGlobals.SuitNameTagPos[self.head])
 
-        if hasattr(self.avatar, 'getGhost'):
+        if self.avatar and hasattr(self.avatar, 'getGhost'):
             if not self.avatar.getGhost() or self.avatar.doId == base.localAvatar.doId:
                 self.chatBubble.reparentTo(self)
         else:
@@ -101,7 +101,7 @@ class ToonTalker:
             del self.chatBubble
         except:
             return
-        if hasattr(self.avatar, 'getGhost'):
+        if self.avatar and hasattr(self.avatar, 'getGhost'):
             if self.nameTag and not self.avatar.getGhost() or self.nameTag and self.avatar.doId == base.localAvatar.doId:
                 self.getNameTag().show()
         else:

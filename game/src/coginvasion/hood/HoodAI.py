@@ -20,7 +20,9 @@ from playground import DistributedTailorInteriorAI
 from playground import DistributedGagShopInteriorAI
 from playground import TreasureGlobals
 from street import DistributedCinemaInteriorAI
+from street import DistributedKnockKnockDoorAI
 from street import CinemaGlobals
+from street import KnockKnockGlobals
 
 import DistributedDoorAI
 import DistributedToonInteriorAI
@@ -122,6 +124,12 @@ class HoodAI:
                         building.generateWithRequired(exteriorZone)
                         building.setState('toon')
                         self.buildings[zoneId].append(building)
+                        
+                        if exteriorZone in KnockKnockGlobals.Zone2Block2Joke.keys():
+                            blocks = KnockKnockGlobals.Zone2Block2Joke.get(exteriorZone)
+                            if block in blocks.keys():
+                                kkDoor = DistributedKnockKnockDoorAI.DistributedKnockKnockDoorAI(self.air, exteriorZone, block, zoneId)
+                                kkDoor.generateWithRequired(exteriorZone)
             if not isSZ:
                 self.buildingPlanners[zoneId] = BuildingSuitPlannerAI(zoneId, CIGlobals.BranchZone2StreetName[zoneId], self)
 
