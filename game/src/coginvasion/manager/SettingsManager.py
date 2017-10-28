@@ -44,7 +44,7 @@ class SettingsManager:
         # Fullscreen toggle
         fs = settings.get("fullscreen", None)
         if fs == None:
-            fs = self.updateAndWriteSetting("fs", False)
+            fs = self.updateAndWriteSetting("fullscreen", False)
 
         # music toggle
         music = settings.get("music", None)
@@ -113,7 +113,7 @@ class SettingsManager:
         # Gag key
         gagkey = settings.get("gagkey", None)
         if gagkey == None:
-            gagkey = self.updateAndWriteSetting("gagkey", "alt")
+            gagkey = self.updateAndWriteSetting("gagkey", "mouse1")
 
         # Maintain aspect ratio
         maspr = settings.get("maspr", None)
