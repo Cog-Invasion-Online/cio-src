@@ -26,8 +26,12 @@ class SettingsManager:
 
     def loadFile(self, jsonfile):
         self.jsonFilename = jsonfile
-        self.jsonFile = open(self.jsonFilename)
-        self.jsonData = json.load(self.jsonFile)
+        try:
+            self.jsonFile = open(self.jsonFilename)
+            self.jsonData = json.load(self.jsonFile)
+        except:
+            self.jsonData = {}
+            self.jsonData["settings"] = {}
 
     def applySettings(self):
         settings = self.jsonData["settings"]
@@ -162,7 +166,7 @@ class SettingsManager:
             loadPrcFileData('', 'multisamples ' + str(self.getSetting("aa")))
 
     def getSetting(self, setting):
-        return self.jsonData["settings"][setting]
+        return self.jsonData["settings"].get(setting, None)
 
     def getSettings(self):
         return self.jsonData["settings"]

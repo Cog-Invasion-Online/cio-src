@@ -1,26 +1,25 @@
 {
     "settings": {
-        "aa": 16, 
-        "fullscreen": false, 
-        "musvol": 0.07898164540529251, 
+        "aa": 0, 
+        "shadows": 0, 
+        "fs": false, 
+        "musvol": 0.65, 
         "sfx": true, 
-        "af": 16, 
+        "af": 0, 
         "fpmgfov": 70.0, 
-        "maspr": true, 
+        "genfov": 52.0, 
         "cursor": "Toontown", 
-        "fpmgms": 0.30000001192092896, 
+        "fpmgms": 0.1, 
         "chs": true, 
         "music": true, 
-        "genfov": 51.990379333496094, 
+        "maspr": true, 
         "model-detail": "high", 
-        "shadows": 2, 
-        "texture-detail": "normal", 
+        "texture-detail": "high", 
         "resolution": [
             640, 
             480
         ], 
-        "gagkey": "f", 
-        "sfxvol": 0.0831693708896637,
-		"resourcepack" : "Nightlife"
+        "gagkey": "alt", 
+        "sfxvol": 1.0
     }
 }
