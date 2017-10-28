@@ -88,7 +88,7 @@ game/tools/nirai
 !game/start_uber_server.bat
 !game/start_ai_server.bat
 !game/Write_Hashes.bat
-!game/settings.json
+#!game/settings.json
 
 !game/astron/astrond.exe
 !game/astron/DistrictNames.txt
