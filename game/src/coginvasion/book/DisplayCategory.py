@@ -161,11 +161,8 @@ class DisplayCategory(OptionsCategory):
             self.af.goto(self.af.options.index("x" + str(self.afChoice)))
 
         self.maspr['indicatorValue'] = self.masprChoice
-        
-        if (self.shadowChoice == 0):
-            self.shadows.goto(0)
-        else:
-            self.shadows.goto(self.shadows.options.index("Low"))
+
+        self.shadows.goto(int(self.shadowChoice))
 
     def cleanup(self):
         if hasattr(self, 'reso'):
