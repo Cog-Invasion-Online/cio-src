@@ -20,7 +20,8 @@ Jokes = {
 # Joke Id : [Knocker Name, Punchline, (OPTIONAL) Punchline Hold Time]
     0 : ['Quest', "Shouldn't you be working on your Quest?!"],
     1 : ['Orange', "Orange you glad I didn't say Cog?!"],
-    2 : ['Boo', 'Stop crying!']
+    2 : ['Boo', 'Stop crying!'],
+    3 : ['Canoe', 'Canoe help me with my homework?'] # Add onto loopy lane
 }
 
 Laughter = ['Ha Ha Ha', 'Hee Hee', 'Tee Hee', 'Ha Ha']

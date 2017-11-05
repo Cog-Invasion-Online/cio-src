@@ -92,8 +92,6 @@ class DistributedKnockKnockDoor(DistributedObject, ToonTalker):
         # Let's setup our nametag
         self.nametag = NametagGroup()
         self.nametag.setAvatar(self.physDoor)
-        self.nametag3d = self.physDoor.attachNewNode('nametag3d')
-        self.nametag3d.setTag('cam', 'nametag')
         self.setupNametag()
         
     def setChat(self, chatString = None):
@@ -105,10 +103,7 @@ class DistributedKnockKnockDoor(DistributedObject, ToonTalker):
             
     def setupNametag(self):
         font = CIGlobals.getToonFont()
-        self.initializeNametag3d()
         
-        x, y, z = self.physDoor.getPos()
-        self.nametag3d.setPos(x + 10.0, y, z + 5.5)
         self.nametag.setFont(font)
         self.nametag.setChatFont(font)
         self.nametag.setNametagColor(NametagGlobals.NametagColors[NametagGlobals.CCNPC])
@@ -119,30 +114,10 @@ class DistributedKnockKnockDoor(DistributedObject, ToonTalker):
         
     def hideName(self):
         self.setChat('')
-        nametag3d = self.nametag.getNametag3d()
-        nametag3d.hideNametag()
-        nametag3d.showChat()
-        nametag3d.showThought()
-        nametag3d.update()
         self.nametag.unmanage(base.marginManager)
         
     def showName(self):
-        nametag3d = self.nametag.getNametag3d()
-        nametag3d.showNametag()
-        nametag3d.showChat()
-        nametag3d.showThought()
-        nametag3d.update()
         self.nametag.manage(base.marginManager)
-        
-    def initializeNametag3d(self):
-        self.deleteNametag3d()
-        nametagNode = self.nametag.getNametag3d()
-        self.nametagNodePath = self.nametag3d.attachNewNode(nametagNode)
-        
-    def deleteNametag3d(self):
-        if self.nametagNodePath:
-            self.nametagNodePath.removeNode()
-            self.nametagNodePath = None
         
     def __handleEnter(self, _):
         self.notify.warning('Welcome avatar!')

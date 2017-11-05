@@ -57,8 +57,10 @@ class DistributedKnockKnockDoorAI(DistributedObjectAI):
                 laughterList = KnockKnockGlobals.HealedLaughter
                 avatar.toonUp(heal)
                 self.sendUpdate('avatarEntertained', [avId])
-            msg = laughterList[random.randint(0, len(laughterList) - 1)] 
-            base.taskMgr.doMethodLater(0.5, self.__showChatMessage, self.uniqueName('showChatMsg'), 
+
+            msg = laughterList[random.randint(0, len(laughterList) - 1)]
+            laughAfterTime = random.uniform(1.0, 1.5)
+            base.taskMgr.doMethodLater(laughAfterTime, self.__showChatMessage, self.uniqueName('showChatMsg'), 
                 extraArgs = [avatar, msg])
             
     def __showChatMessage(self, avatar, msg):

@@ -28,7 +28,7 @@ class DistributedBattleZone(DistributedObject):
         self.suits = {}
         
         # Keys: avId
-        # Values: RPToonData object
+        # Values: RPToonData objects
         self.rewardPanelData = OrderedDict()
         self.rewardPanel = None
         self.rewardSeq = Sequence()
@@ -46,11 +46,11 @@ class DistributedBattleZone(DistributedObject):
             del self.suits[obj.doId]
         
     def disable(self):
-        DistributedObject.disable(self)
+        self.reset()
         self.ignore('suitCreate')
         self.ignore('suitDelete')
-        self.reset()
         base.localAvatar.inBattle = False
+        DistributedObject.disable(self)
         
     def setAvatars(self, avIds):
         self.avIds = avIds
@@ -66,7 +66,11 @@ class DistributedBattleZone(DistributedObject):
         self.rewardSeq.start(timestamp)
         
     def disableAvatarControls(self):
+        # place will be None if the avatar is in the tutorial.
         place = base.cr.playGame.getPlace()
+        
+        # This quirky walkData if-else is because the current tutorial isn't
+        # programmed in as a "Place"
         walkData = place.walkStateData if place else self
 
         base.localAvatar.disableAvatarControls()
@@ -82,7 +86,11 @@ class DistributedBattleZone(DistributedObject):
             place.fsm.request('stop')
             
     def enableAvatarControls(self):
+        # place will be None if the avatar is in the tutorial.
         place = base.cr.playGame.getPlace()
+        
+        # This quirky walkData if-else is because the current tutorial isn't
+        # programmed in as a "Place"
         walkData = place.walkStateData if place else self
         
         base.localAvatar.attachCamera()
@@ -109,7 +117,7 @@ class DistributedBattleZone(DistributedObject):
             avId = data.fromNetString(netString)
             self.rewardPanelData[avId] = data
             self.rewardPanel.setPanelData(data)
-            intervalList = self.rewardPanel.enterGags()
+            intervalList = self.rewardPanel.getGagExperienceInterval()
             
             self.rewardSeq.append(Func(self.rewardPanel.setPanelData, data))
             self.rewardSeq.extend(intervalList)

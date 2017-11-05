@@ -220,7 +220,7 @@ class TownLoader(StateData):
         gsg = base.win.getGsg()
         if gsg:
             self.geom.prepareScene(gsg)
-        #self.geom.flattenLight()
+        self.geom.flattenLight()
         self.geom.setName('town_top_level')
 
     def reparentLandmarkBlockNodes(self):
@@ -260,7 +260,7 @@ class TownLoader(StateData):
                 else:
                     groupName = '%s' % zoneId
                 groupNode.setName(groupName)
-            #groupNode.flattenMedium()
+            groupNode.flattenMedium()
             self.nodeDict[zoneId] = []
             self.nodeList.append(groupNode)
             self.zoneDict[zoneId] = groupNode

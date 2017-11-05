@@ -10,8 +10,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.gui.DirectGui import DirectFrame, DirectLabel, DirectWaitBar
 from direct.gui.DirectGui import OnscreenImage, OnscreenText, DGG
-from direct.fsm.ClassicFSM import ClassicFSM
-from direct.fsm.State import State
 from direct.interval.IntervalGlobal import Sequence, Func, Wait
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
@@ -28,7 +26,7 @@ FavoriteGagPos = (0, 0, -0.125)
 FavoriteGagTitlePos = (0, 0.075, 0)
 FavoriteGagNamePos = (0, -0.325, 0)
 GagGlowColor = (1.0, 1.0, 0.4, 1.0)
-NewGagCongratsMessages = ['Yeah!', 'Cream Gravy!', 'Wow!', 
+NewGagCongratsMessages = ['Yeah!', 'Wow!', 
     'Cool!', 'Congrats!', 'Awesome!',
     'Toon-tastic!']
 
@@ -44,13 +42,6 @@ class RewardPanel(DirectFrame):
         
         # The data for the reward panel inside of a RPToonData object.
         self.panelData = panelData
-        
-        self.fsm = ClassicFSM('rewardPanel', [
-            State('off', self.enterOff, self.exitOff),
-            State('gags', self.enterGags, self.exitGags),
-            State('quests', self.enterQuests, self.exitQuests),
-        ], 'off', 'quests')
-        self.fsm.enterInitialState()
         
         # Top wood panel saying Reward Panel
         gagShopNodes = loader.loadModel('phase_4/models/gui/gag_shop_purchase_gui.bam')
@@ -164,7 +155,7 @@ class RewardPanel(DirectFrame):
         self.avatarText['text'] = self.panelData.avatarName
         self.avatarNamePanel.setScale(self.__getAvatarTextScale())
         
-    def enterGags(self):
+    def getGagExperienceInterval(self):
         avatar = self.panelData.avatar
         intervals = []
 
@@ -191,9 +182,6 @@ class RewardPanel(DirectFrame):
             intervals.extend(intervalList)
         
         return intervals
-    
-    def exitGags(self):
-        self.gagExpFrame.hide()
     
     def getNextExpValue(self, newValue, track):
         if newValue < track.maxExp or track.maxExp == 0:
@@ -250,11 +238,11 @@ class RewardPanel(DirectFrame):
             gagIndex = GagGlobals.TrackExperienceAmounts.get(track.name).index(track.maxExp) + 1
             newGag = GagGlobals.TrackGagNamesByTrackName.get(track.name)[gagIndex]
             intervalList.append(Func(self.exitGags))
-            intervalList.append(self.showGagUnlocked(track.name, newGag))
+            intervalList.append(self.getShowGagUnlockedInterval(track.name, newGag))
         
         return intervalList
     
-    def showGagUnlocked(self, track, gagName):
+    def getShowGagUnlockedInterval(self, track, gagName):
         seq = Sequence(
             Func(self.gagExpFrame.hide),
             Func(self.panelContentsTitle.setText, 'Gag Unlocked!'),
@@ -268,12 +256,13 @@ class RewardPanel(DirectFrame):
         Func(self.playerInfo.initialiseoptions, DirectFrame))
         seq.append(self.getCongratsInterval())
         seq.append(Wait(1.0))
-        seq.append(self.hideGagUnlocked())
+        seq.append(self.getHideGagUnlockedInterval())
         seq.append(Func(self.gagExpFrame.show))
         seq.append(Wait(0.5))
         return seq
         
-    def hideGagUnlocked(self):
+    def getHideGagUnlockedInterval(self):
+
         def correctPositioning(guiElement, pos):
             guiElement['pos'] = pos
         
@@ -304,6 +293,7 @@ class RewardPanel(DirectFrame):
         self.congratsRight['text'] = msgs[1]
         
         sfx = loader.loadSfx('phase_3/audio/sfx/GUI_balloon_popup.ogg')
+        sfx.setLoop(False)
         
         def makeSequence(text):
             seq = Sequence(Wait(1.0), Func(text.show))
@@ -312,12 +302,6 @@ class RewardPanel(DirectFrame):
             return seq
         
         return Sequence(makeSequence(self.congratsLeft), makeSequence(self.congratsRight))
-    
-    def enterQuests(self):
-        pass
-    
-    def exitQuests(self):
-        pass
         
     def setFavoriteGag(self, gagName):
         invIcons = loader.loadModel('phase_3.5/models/gui/inventory_icons.bam')
