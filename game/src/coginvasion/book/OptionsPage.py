@@ -48,7 +48,7 @@ class OptionsPage(BookPage):
     def enter(self):
         BookPage.enter(self)
         self.tabScaleFrame = DirectFrame(parent = self.book)
-        self.tabScaleFrame.setZ(0.77)
+        self.tabScaleFrame.setZ(0.7683)
         self.tabsFrame = DirectFrame(parent = self.tabScaleFrame)
         
         tabWidth = 0.379136800766

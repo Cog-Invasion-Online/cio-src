@@ -58,8 +58,6 @@ class DistrictsPage(BookPage, DirectFrame):
         icons.detachNode()
 
         currDistrictName = base.cr.myDistrict.getDistrictName()
-        if not currDistrictName.isalpha():
-            currDistrictName = currDistrictName[:-1]
         self.infoLbl = OnscreenText(
             text = 'Each District is a copy of the Cog Invasion world.\n'
                 '\n\nYou are currently in the "%s" District' % currDistrictName,
