@@ -21,6 +21,7 @@ class TPMouseMovement(DirectObject):
         self.min_camerap = -45.0
         self.max_camerap = 45.0
         self.enabled = False
+        self.disabledByFocusLoss = False
         self.disabledByChat = False
         self.enableOnChatExit = False
 
@@ -31,6 +32,18 @@ class TPMouseMovement(DirectObject):
             self.player_node = None
 
         self.player_node = base.localAvatar.attachNewNode('PlayerNode')
+        
+    def __handleWindowEvent(self, window = None):
+        if window is not None:
+            wp = window.getProperties()
+            isInForeground = wp.getForeground()
+            
+            if not isInForeground and self.enabled:
+                self.disableMovement(allowReEnable = True, byChatInput = False)
+                self.disabledByFocusLoss = True
+            elif not self.enabled and self.disabledByFocusLoss:
+                self.enableMovement()
+                self.disabledByFocusLoss = False
 
     def enableMovement(self, startTask = True):
         if self.disabledByChat:
@@ -47,6 +60,7 @@ class TPMouseMovement(DirectObject):
         props.setMouseMode(WindowProperties.MConfined)
         base.win.requestProperties(props)
         self.acceptOnce(base.inputStore.ToggleGTAControls, self.disableMovement)
+        self.accept(base.win.getWindowEvent(), self.__handleWindowEvent)
         
         self.player_node.setHpr(0, 0, 0)
 
