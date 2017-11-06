@@ -12,6 +12,10 @@ aux-display pandagl
 # Logging...
 notify-level info
 notify-timestamp #f
+notify-level-pgraph warning
+notify-level-loader warning
+notify-level-gobj warning
+notify-level-linmath info
 default-directnotify-level info
 
 # Filenames...

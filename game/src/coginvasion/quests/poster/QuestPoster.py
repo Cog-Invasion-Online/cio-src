@@ -262,8 +262,7 @@ class QuestPoster(DirectFrame):
             headScale = data[1]
             icon.setScale(headScale)
             icon.setZ(icon.getZ() + zOffset)
-            
-            geom.setH(180)
+            icon.setH(180)
     
     def handleCogObjective(self, iconElement = auxIcon, auxText = QuestGlobals.DEFEAT, frameColor = QuestGlobals.BLUE):
         objective = self.quest.currentObjective

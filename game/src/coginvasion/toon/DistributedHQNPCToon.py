@@ -88,7 +88,6 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
             poster = QuestGlobals.generatePoster(quest, parent = aspect2d)
             poster.setScale(0.85)
             poster.setPos(0, 0, 0)
-            poster.setup()
             poster.progressBar.hide()
             self.questPosters.append(poster)
             
