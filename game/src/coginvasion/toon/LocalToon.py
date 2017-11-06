@@ -237,6 +237,7 @@ class LocalToon(DistributedToon):
 
     def setMyBattle(self, battle):
         self.myBattle = battle
+        self.inBattle = (not battle is None)
 
     def getMyBattle(self):
         return self.myBattle

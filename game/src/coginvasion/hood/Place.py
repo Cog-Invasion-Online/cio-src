@@ -11,13 +11,11 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Spotlight, VBase4, Vec3, Point3, NodePath
+from panda3d.core import VBase4
 
-from direct.fsm.ClassicFSM import ClassicFSM
-from direct.fsm.State import State
 from direct.fsm.StateData import StateData
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.interval.IntervalGlobal import Parallel, LerpHprInterval, Sequence, Wait, Func, LerpPosInterval, LerpQuatInterval
+from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from src.coginvasion.globals import CIGlobals
 from PublicWalk import PublicWalk
 from src.coginvasion.book.ShtickerBook import ShtickerBook
@@ -367,13 +365,11 @@ class Place(StateData):
         self.walkStateData.fsm.request('walking')
         self.watchTunnelSeq = Sequence(Wait(1.0), Func(LinkTunnel.globalAcceptCollisions))
         self.watchTunnelSeq.start()
-        base.localAvatar.setBusy(0)
-        base.localAvatar.enablePicking()
-        base.localAvatar.showFriendButton()
         NametagGlobals.setWantActiveNametags(True)
         NametagGlobals.makeTagsReady()
-        if self.useFirstPerson:
-            if base.localAvatar.getMyBattle():
+        
+        if base.localAvatar.getMyBattle():
+            if self.useFirstPerson:
                 base.localAvatar.stopSmartCamera()
                 camera.setPos(base.localAvatar.smartCamera.firstPersonCamPos)
                 self.firstPerson.start()
@@ -385,6 +381,12 @@ class Place(StateData):
                 base.localAvatar.find('**/torso-bot').hide()
                 base.localAvatar.getPart('head').hide()
                 base.localAvatar.chatInput.disableKeyboardShortcuts()
+            base.localAvatar.setBusy(1)
+        else:
+            base.localAvatar.setBusy(0)
+            base.localAvatar.enablePicking()
+            base.localAvatar.showFriendButton()
+            base.localAvatar.questManager.enableShowQuestsHotkey()
 
     def exitWalk(self):
         self.walkStateData.exit()
@@ -405,6 +407,8 @@ class Place(StateData):
             base.localAvatar.panel.fsm.requestFinalState()
         if base.localAvatar.invGui:
             base.localAvatar.invGui.disable()
+        if base.localAvatar.questManager:
+            base.localAvatar.questManager.disableShowQuestsHotkey()
         if self.useFirstPerson:
             if base.localAvatar.getMyBattle():
                 self.firstPerson.enableMouse()

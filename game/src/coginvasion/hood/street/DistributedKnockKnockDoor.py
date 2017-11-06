@@ -74,8 +74,6 @@ class DistributedKnockKnockDoor(DistributedObject, ToonTalker):
     def delete(self):
         if self.nametag:
             self.nametag.destroy()
-            self.deleteNametag3d()
-            self.nametag3d.removeNode()
         self.collisionNode = None
         self.physDoor = None
         self.realJokeNetworkTime = None

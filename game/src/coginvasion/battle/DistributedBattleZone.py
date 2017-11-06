@@ -36,7 +36,7 @@ class DistributedBattleZone(DistributedObject):
     def announceGenerate(self):
         self.accept('suitCreate', self.__handleSuitCreate)
         self.accept('suitDelete', self.__handleSuitDelete)
-        base.localAvatar.inBattle = True
+        base.localAvatar.setMyBattle(self)
 
     def __handleSuitCreate(self, obj):
         self.suits[obj.doId] = obj
