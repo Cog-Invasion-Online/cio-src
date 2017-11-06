@@ -49,7 +49,7 @@ class DistributedBattleZone(DistributedObject):
         self.reset()
         self.ignore('suitCreate')
         self.ignore('suitDelete')
-        base.localAvatar.inBattle = False
+        base.localAvatar.setMyBattle(None)
         DistributedObject.disable(self)
         
     def setAvatars(self, avIds):
