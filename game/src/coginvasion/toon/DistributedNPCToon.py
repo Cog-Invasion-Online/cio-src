@@ -3,13 +3,11 @@
 
 from panda3d.core import CollisionNode, CollisionSphere
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.interval.IntervalGlobal import Parallel, LerpPosInterval, LerpQuatInterval, Sequence, Wait, Func
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.quests import Quests
 from src.coginvasion.quests.QuestGlobals import NPCDialogue, getPossessive
-from src.coginvasion.quests import Rewards
 from src.coginvasion.nametag import NametagGlobals
 from DistributedToon import DistributedToon
 from src.coginvasion.quests.Objectives import VisitNPCObjective
@@ -102,7 +100,7 @@ class DistributedNPCToon(DistributedToon):
         shopName = CIGlobals.zone2TitleDict[npcZone][0]
         chat = random.choice(NPCDialogue.FindNPC)
         if "[p]" in chat:
-            chat.replace("[p]", getPossessive(name))
+            chat = chat.replace("[p]", getPossessive(name))
         chat = chat % (name, shopName)
         chat += "\x07"
         locationSpeech = NPCDialogue.WhichIs
@@ -114,7 +112,7 @@ class DistributedNPCToon(DistributedToon):
             locationSpeech = locationSpeech % "on this street."
         elif ZoneUtil.isAtSamePlaygroundButDifferentBranch(npcZone):
             # The NPC is in the same playground but in a different branch zone.
-            locationSpeech = (locationSpeech % "on %s in this playground." %
+            locationSpeech = (locationSpeech % "on %s." %
                 ZoneUtil.getStreetName(npcZone))
         else:
             # NPC is in a completely different playground from where we are.

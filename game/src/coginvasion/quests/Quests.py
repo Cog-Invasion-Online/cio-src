@@ -68,14 +68,6 @@ Quests = {
          assignSpeech: ("Those Bottom Feeders sure are running rampant around town recently.\x07Think you could do something about that?\x07"),
          finishSpeech: ("Fantastic!\x07You helped clean the streets of Toontown!\x07This should help you out...\x07"),
          name: "Bottoms Up!"},
-          
-    3: {objectives: [
-            {objType: MinigameObjective, args: [CIGlobals.UnoGame, 1]}
-        ],
-        reward: (Health, 1),
-        tier: Tiers.TT,
-        requiredQuests: [0],
-        name: 'Minigame Layout'},
 
     4: {objectives: [
             {objType: VisitNPCObjective, args: [2322]},
@@ -93,28 +85,6 @@ Quests = {
                        "There's this one about a clock that--\x07You know what, I should let you be on your way.\x07Here, take this as a reward for your awesome help...\x07"),
         name: 'Strange Occurrences'},
           
-    5: {objectives: [
-            {objType: RecoverItemObjective, args: [5, CIGlobals.ToontownCentralId, 'Lipgloss', QuestGlobals.getPackageIcon(), SuitGlobals.TheMingler]}
-        ],
-        reward: (Jellybeans, 350),
-        tier: Tiers.TT,
-        assignSpeech: (
-            "Nice work completing the tutorial!\x07You're probably already exhausted, but " + CIGlobals.NPCToonNames[2003] + " needs"
-            " you right away.\x07"
-        ),
-        finishSpeech: ("Great job, young lad.\x07I see loads of potential in you.\x07One day you will be one of the best Cog busters around!\x07"),
-        name: 'Mingle Mangle'},
-
-    6: {objectives: [
-            {objType: RecoverItemObjective, args: [5, CIGlobals.DonaldsDockId, 'Pincher', QuestGlobals.getPackageIcon(), SuitGlobals.PennyPincher]}
-        ],
-        reward: (Access, 2000),
-        tier: Tiers.TT,
-        assignSpeech: ("Hey there this is a test quest.\x07"
-        ),
-        finishSpeech: ("Great job, young lad.\x07I see loads of potential in you.\x07One day you will be one of the best Cog busters around!\x07"),
-        name: 'Pinch this Pinch That'},
-          
     20: {objectives: [
             {objType: CogBuildingObjective, args: [Any, Any, 1, CIGlobals.DaisyGardensId]}
         ],
@@ -122,6 +92,19 @@ Quests = {
         tier: Tiers.TT,
         requiredQuests: [0],
         name: 'Pick 1, Pick Anyone!'},
+          
+    3: {objectives: [
+            {objType: VisitNPCObjective, args: [5312]},
+            {objType: RecoverItemObjective, args: [7, CIGlobals.DaisyGardensId, 
+                'Green Beans', QuestGlobals.getPackageIcon(), SuitGlobals.BeanCounter],
+                assigner: 5312
+            }
+        ],
+        reward: (Health, 2),
+        tier: Tiers.DG,
+        name: 'Eugene and the Bean Stock',
+        finishSpeech: ("Thank you so much for returning my beans!\0x7Now, thanks to you, I can continue my business!\0x7Here have this!"),
+    }
 }
 
 QuestNPCDialogue = {
@@ -137,7 +120,8 @@ QuestNPCDialogue = {
         2: ("Whipped cream recipe, eh?\x07I haven't seen " + CIGlobals.NPCToonNames[2322] + " all day, and I never saw a whipped cream recipe anywhere.\x07Oh, wait! "
             "I remember " + CIGlobals.NPCToonNames[2322] + " emailed me that recipe!\x07It's truly the best whipped cream I've ever had. "
             "I love putting it on waffles.\x07Here, let me print out a copy of the recipe, and you can give it to " + CIGlobals.NPCToonNames[2322] + ".\x07"
-            "Okay... here you go!\x07Tell " + CIGlobals.NPCToonNames[2322] + " I said hi!")}
+            "Okay... here you go!\x07Tell " + CIGlobals.NPCToonNames[2322] + " I said hi!")},
+    3: {1: ("Thank goodness you are here!\x07A couple Bean Counters raided my shop last night and stole all the beans I had in storage!\x07Even worse, those Bean Counters plan on making a profit off my precious green beans!\x07Please, whatever you do, stop those Bean Counters!\x07")}
 }
 
 class Quest:

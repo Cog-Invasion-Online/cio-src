@@ -31,6 +31,7 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
 
         chat = self.currentQuest.assignSpeech
         if chat is None:
+            chat = ''
             if objective.type == Objectives.VisitNPC:
                 chat += self.getNPCLocationSpeech()
             else:
