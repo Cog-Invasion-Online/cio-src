@@ -31,5 +31,5 @@ class BackpackAI(BackpackBase):
     
     # Cleans up the backpack.
     def cleanup(self):
-        BackpackBase.cleanup(self)
         self.updateNetAmmo()
+        BackpackBase.cleanup(self)

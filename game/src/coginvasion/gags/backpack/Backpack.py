@@ -150,10 +150,10 @@ class Backpack(BackpackBase):
             gagId = dgi.getUint8()
             supply = dgi.getUint8()
             
-            if gagId in self.gags.keys():
+            if self.hasGag(gagId):
                 self.setSupply(gagId, supply)
             else:
-                self.addGag(gagId, supply, maxSupply = BackpackBase.getDefaultMaxSupply(self, gagId))
+                self.addGag(gagId, supply)
 
     # Cleans up all the variables that are no longer needed.
     def cleanup(self):

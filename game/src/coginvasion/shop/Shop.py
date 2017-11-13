@@ -1,7 +1,12 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Shop.py
-  Created by: DecodedLogic (13Jul15)
+@file Shop.py
+@author Maverick Liberty
+@date July 13, 2015
+
+@desc Base class for all shops.
 
 """
 
@@ -258,8 +263,9 @@ class ItemButton(DirectButton):
             self['geom'] = image
             
             if values.get('type') == ItemType.GAG:
-                supply = base.localAvatar.getBackpack().getSupply(item)
-                maxSupply = base.localAvatar.getBackpack().getMaxSupply(item)
+                gagId = GagGlobals.getIDByName(item)
+                supply = base.localAvatar.getBackpack().getSupply(gagId)
+                maxSupply = base.localAvatar.getBackpack().getMaxSupply(gagId)
                 self.setScale(1.3)
                 self.label['text_scale'] = 0.05
                 self.label.setPos(0, 0, -0.11)
@@ -310,13 +316,12 @@ class ItemButton(DirectButton):
                 self.setColorScale(GRAYED_OUT_COLOR)
             if itemType == ItemType.GAG:
                 backpack = base.localAvatar.getBackpack()
-                supply = backpack.getSupply(self.item)
-                maxSupply = backpack.getMaxSupply(self.item)
-                inBackpack = backpack.hasGag(GagGlobals.getIDByName(self.item))
+                gagId = GagGlobals.getIDByName(self.item)
+                supply = backpack.getSupply(gagId)
+                maxSupply = backpack.getMaxSupply(gagId)
+                inBackpack = backpack.hasGag(gagId)
                 if not inBackpack or inBackpack and supply >= maxSupply:
                     self.setColorScale(GRAYED_OUT_COLOR)
-                supply = base.localAvatar.getBackpack().getSupply(self.item)
-                maxSupply = base.localAvatar.getBackpack().getMaxSupply(self.item)
                 self.label['text'] = '%s/%s\n%s JBS' % (str(supply), str(maxSupply), str(price))
             elif itemType == ItemType.UPGRADE:
                 maxSupply = self.values.get('maxUpgrades')

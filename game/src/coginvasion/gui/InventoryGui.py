@@ -176,7 +176,7 @@ class Slot(DirectFrame):
                 
                 newGag = self.gui.backpack.getGagByID(gagId)
                 loadout[loadout.index(self.gag)] = newGag
-                self.gui.backpack.setLoadout(loadout, andResetGui = False)
+                self.gui.backpack.setLoadout(loadout)
                 
                 if self.gui.activeSlot == self and newGag.getState() == GagState.LOADED:
                     self.setGag(newGag)

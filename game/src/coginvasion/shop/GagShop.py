@@ -69,7 +69,7 @@ class GagShop(Shop):
         else:
             gagIds = self.originalSupply.keys()
             for gagId in gagIds:
-                ammoList.append(base.localAvatar.getBackpack().getSupply(GagGlobals.getGagByID(gagId)))
+                ammoList.append(base.localAvatar.getBackpack().getSupply(gagId))
         self.distShop.sendUpdate('confirmPurchase', [gagIds, ammoList, base.localAvatar.getMoney()])
         Shop.confirmPurchase(self)
 
