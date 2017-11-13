@@ -10,25 +10,17 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from src.coginvasion.gags.backpack.BackpackBase import BackpackBase
 from src.coginvasion.gags.GagManager import GagManager
 from src.coginvasion.gags.GagState import GagState
-from src.coginvasion.gags import GagGlobals
 
 from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
 
-import types
-
-class Backpack:
+class Backpack(BackpackBase):
 
     def __init__(self, avatar):
-        # Dictionary that stores the gags in the backpack.
-        # Setup like this:
-        # gagId : [gag instance, current ammo, max ammo]
-        self.gags = {}
-
-        # The gags in-use by the player.
-        self.loadout = []
+        BackpackBase.__init__(self, avatar)
 
         # The gag that's is active.
         # This returns either -1 or the gag id of the active gag.
@@ -46,9 +38,6 @@ class Backpack:
         # This is just used to create gag instances when
         # necessary.
         self.gagManager = GagManager()
-
-        # The owner of this backpack, who we will be playing gags on.
-        self.avatar = avatar
 
     # Sets the current gag that's being used.
     # Requires a gag id or -1 to remove a current gag.
@@ -84,22 +73,11 @@ class Backpack:
     def getActiveGag(self):
         return self.getGagByID(self.activeGag)
 
-    # Adds a gag to the backpack. This shouldn't be called
-    # just by the client, the AI should recommend it.
-    def addGag(self, gagId, curSupply = 0, maxSupply = 0):
-        if not gagId in self.gags.keys():
-            gagName = GagGlobals.getGagByID(gagId)
-            if not gagName is None:
-                gag = self.gagManager.getGagByName(gagName)
-                if self.avatar:
-                    gag.setAvatar(self.avatar)
-                self.gags.update({gagId : [gag, curSupply, maxSupply]})
-
     # Sets the loadout of the backpack.
     # Must receive a list of up to 4 gag ids or
     # an empty list.
-    def setLoadout(self, gagIds, andResetGui = True):
-        self.loadout = gagIds
+    def setLoadout(self, gagIds):
+        BackpackBase.setLoadout(self, gagIds)
 
         if self.avatar.doId == base.localAvatar.doId:
             # Let's reset the loadout to show the new one.
@@ -120,75 +98,37 @@ class Backpack:
             if self.loadoutGUI:
                 self.loadoutGUI.updateLoadout()
 
-    # Returns the current loadout of the backpack.
-    def getLoadout(self):
-        return self.loadout
-
-    def getLoadoutInIds(self):
-        ids = []
-        for gag in self.loadout:
-            ids.append(gag.getID())
-        return ids
-
     # Sets the max supply of a gag.
     # Returns either true or false depending on if the
     # max supply was updated.
     def setMaxSupply(self, gagId, maxSupply):
-        if self.hasGag(gagId) and 0 <= maxSupply <= 255:
-            values = self.gags.get(gagId)
-            gag = values[0]
-            supply = values[1]
-            self.gags.update({gagId : [gag, supply, maxSupply]})
-            if self.loadoutGUI:
-                self.loadoutGUI.update()
-            return True
-        return False
+        updatedMaxSupply = BackpackBase.setMaxSupply(self, gagId, maxSupply)
+        if updatedMaxSupply and self.loadoutGUI:
+            self.loadoutGUI.update()
+        return updatedMaxSupply
 
-    # Returns the max supply of a gag in the backpack or
-    # -1 if the gag isn't in the backpack.
-    def getMaxSupply(self, arg = -1):
-        if type(arg) == types.IntType and self.hasGag(arg):
-            return self.gags.get(arg)[2]
-        elif arg != -1:
-            for values in self.gags.values():
-                if values[0].getName() == arg:
-                    return values[2]
-        elif arg == -1:
-            if self.currentGag > -1:
-                return self.gags.get(self.currentGag)[2]
-        return -1
+    # When a gagId is specified, returns the max supply of a gag in the backpack or -1.
+    # When a gagId isn't specified, simply returns the max supply of the current gag.
+    def getMaxSupply(self, gagId = -1):
+        if gagId == -1 and self.currentGag > -1:
+            return BackpackBase.getMaxSupply(self, self.currentGag)
+        return BackpackBase.getMaxSupply(self, gagId)
 
     # Sets the supply of a gag.
     # Returns either true or false depending on if the
     # supply was updated.
     def setSupply(self, gagId, supply):
-        if self.hasGag(gagId) and 0 <= supply <= 255:
-            values = self.gags.get(gagId)
-            gag = values[0]
-            maxSupply = values[2]
-            self.gags.update({gagId : [gag, supply, maxSupply]})
-            if self.loadoutGUI:
-                self.loadoutGUI.update()
-            return True
-        return False
+        updatedSupply = BackpackBase.setSupply(self, gagId, supply)
+        if updatedSupply and self.loadoutGUI:
+            self.loadoutGUI.update()
+        return updatedSupply
 
-    # Returns the supply of a gag in the backpack or
-    # -1 if the gag isn't in the backpack.
-    def getSupply(self, arg = -1):
-        if type(arg) == types.IntType and self.hasGag(arg):
-            return self.gags.get(arg)[1]
-        elif arg != -1:
-            for values in self.gags.values():
-                if values[0].getName() == arg:
-                    return values[1]
-        elif arg == -1:
-            if self.currentGag > -1:
-                return self.gags.get(self.currentGag)[1]
-        return -1
-
-    # Returns a true/false flag if the gag is in the backpack.
-    def hasGag(self, gagId):
-        return gagId in self.gags.keys()
+    # When a gagId is specified, returns the supply of a gag in the backpack or -1.
+    # When a gagId isn't specified, simply returns the supply of the current gag.
+    def getSupply(self, gagId = -1):
+        if gagId == -1 and self.currentGag > -1:
+            return BackpackBase.getSupply(self, self.currentGag)
+        return BackpackBase.getSupply(self, gagId)
 
     # Returns the gag's class by gag id.
     def getGagByID(self, gagId):
@@ -199,34 +139,6 @@ class Backpack:
     # Returns the gag by index.
     def getGagByIndex(self, index):
         return self.gags.get(self.gags.keys()[index])[0]
-
-    # Returns the gags in the backpack.
-    def getGags(self):
-        return self.gags
-    
-    # Converts out backpack to a blob for storing.
-    # Returns a blob of bytes.
-    def toNetString(self):
-        dg = PyDatagram()
-        for gagId in self.gags.keys():
-            supply = self.gags[gagId][1]
-            dg.addUint8(gagId)
-            dg.addUint8(supply)
-        dgi = PyDatagramIterator(dg)
-        return dgi.getRemainingBytes()
-    
-    # Converts a net string blob back to data that we can handle.
-    # Returns a dictionary of {gagIds : supply}
-    def fromNetString(self, netString):
-        dg = PyDatagram(netString)
-        dgi = PyDatagramIterator(dg)
-        dictionary = {}
-        
-        while dgi.getRemainingSize() > 0:
-            gagId = dgi.getUint8()
-            supply = dgi.getUint8()
-            dictionary[gagId] = supply
-        return dictionary
     
     # Converts a net string blob back to useable data and then
     # updates supplies.
@@ -241,17 +153,15 @@ class Backpack:
             if gagId in self.gags.keys():
                 self.setSupply(gagId, supply)
             else:
-                self.addGag(gagId, supply, maxSupply = GagGlobals.getGagData(gagId).get('maxSupply'))
+                self.addGag(gagId, supply, maxSupply = BackpackBase.getDefaultMaxSupply(self, gagId))
 
     # Cleans up all the variables that are no longer needed.
     def cleanup(self):
         for _, data in self.gags.iteritems():
             gag = data[0]
             gag.delete()
-        del self.gags
-        del self.loadout
         del self.currentGag
         del self.activeGag
         del self.loadoutGUI
         del self.gagManager
-        del self.avatar
+        BackpackBase.cleanup(self)

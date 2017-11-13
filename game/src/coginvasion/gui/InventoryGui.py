@@ -124,7 +124,7 @@ class Slot(DirectFrame):
 
             for name in track:
                 gag = self.gui.backpack.getGagByID(GagGlobals.getIDByName(name))
-                if gag == self.gag or (not gag in self.gui.backpack.getLoadout()):
+                if gag == self.gag or (not gag in self.gui.backpack.loadout):
                     useTrack.append(name)
 
             index = useTrack.index(self.gag.getName())
@@ -152,7 +152,7 @@ class Slot(DirectFrame):
 
             for name in track:
                 gag = self.gui.backpack.getGagByID(GagGlobals.getIDByName(name))
-                if gag == self.gag or (not gag in self.gui.backpack.getLoadout()):
+                if gag == self.gag or (not gag in self.gui.backpack.loadout):
                     useTrack.append(name)
 
             index = useTrack.index(self.gag.getName())
@@ -167,7 +167,7 @@ class Slot(DirectFrame):
                 return
 
             gagId = GagGlobals.getIDByName(useTrack[nextGagIndex])
-            loadout = self.gui.backpack.getLoadout()
+            loadout = self.gui.backpack.loadout
             if self.gui.backpack.hasGag(gagId) and self.gag in loadout:
                 self.hideInfoText()
 
@@ -488,8 +488,8 @@ class InventoryGui(DirectObject):
         if self.activeSlot:
             self.activeSlot.updateLoadout(forward)
         
-    def __hasSupplyRemaining(self, gag):
-        return self.backpack.getSupply(gag) > 0
+    def __hasSupplyRemaining(self, gagId):
+        return self.backpack.getSupply(gagId) > 0
 
     def setWeapon(self, slot, playSound = True, showUpIfHidden = False):
         if self.activeSlot and slot != self.activeSlot:
@@ -709,7 +709,7 @@ class InventoryGui(DirectObject):
 
     def updateLoadout(self):
         if self.backpack:
-            loadout = self.backpack.getLoadout()
+            loadout = self.backpack.loadout
             if len(loadout) <= 3:
                 self.reseatSlots()
             elif len(loadout) == 4:

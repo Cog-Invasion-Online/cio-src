@@ -94,9 +94,9 @@ class Shop(StateData):
             self.window.showInfo("The maximum amount of turrets has been reached.", 1, 2)
 
     def __purchaseGagItem(self, gag, values):
-        supply = self.backpack.getSupply(gag)
-        maxSupply = self.backpack.getMaxSupply(gag)
         gagID = GagGlobals.getIDByName(gag)
+        supply = self.backpack.getSupply(gagID)
+        maxSupply = self.backpack.getMaxSupply(gagID)
         vowels = ['a', 'e', 'i', 'o', 'u']
         if supply < maxSupply:
             if not hasattr(self.originalSupply, 'keys'):
@@ -451,7 +451,7 @@ class ShopWindow(DirectFrame):
     
     def initializeShop(self, items):
         newItems = dict(items)
-        loadout = base.localAvatar.getBackpack().getLoadoutInIds()
+        loadout = base.localAvatar.backpack.loadout
         
         # Let's show the loadout gags first in a full shop.
         if self.shop.wantFullShop:

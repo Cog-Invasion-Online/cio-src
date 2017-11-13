@@ -392,7 +392,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         ival.start()
 
 
-        loadout = base.localAvatar.backpack.getLoadout()
+        loadout = base.localAvatar.backpack.loadout
         sendLoadout = []
         for gag in loadout:
             sendLoadout.append(gag.getID())

@@ -116,7 +116,7 @@ class BackpackGUI(DirectFrame):
 
     def enterEditGags(self):
         self.initialLoadout = []
-        for instance in base.localAvatar.backpack.getLoadout():
+        for instance in base.localAvatar.backpack.loadout:
             self.initialLoadout.append(instance.getID())
         self.newLoadout = list(self.initialLoadout)
         self.editButton['text'] = 'Stop Editing'
@@ -143,7 +143,7 @@ class BackpackGUI(DirectFrame):
         return gagId in self.newLoadout
 
     def isInLoadoutLive(self, gagName):
-        for instance in base.localAvatar.backpack.getLoadout():
+        for instance in base.localAvatar.backpack.loadout:
             if instance.getName() == gagName:
                 return True
         return False

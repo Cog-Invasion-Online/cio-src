@@ -48,7 +48,7 @@ class DistributedGagBarrelAI(DistributedRestockBarrelAI):
             # The strongest gags should be first.
             availableGags.reverse()
         else:
-            loadout = backpack.getLoadout()
+            loadout = backpack.loadout
             for gagId in loadout:
                 if GagGlobals.getTrackOfGag(gagId) == track:
                     availableGags.append(gagId)
