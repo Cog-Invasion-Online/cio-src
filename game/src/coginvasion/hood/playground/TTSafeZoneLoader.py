@@ -79,6 +79,8 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         
         water = self.geom.find("**/pond_water")
         base.waterReflectionMgr.addWaterNode(water, base.wakeWaterHeight)
+        
+        self.geom.setMaterialOff()
 
         self.geom.flattenMedium()
 
