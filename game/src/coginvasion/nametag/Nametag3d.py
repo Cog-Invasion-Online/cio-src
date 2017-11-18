@@ -147,6 +147,9 @@ class Nametag3d(Nametag, Clickable3d):
         self.chatBalloon.reparentTo(self.contents)
         
         self.cTag.set_chatballoon_size(self.chatBalloon.width, self.chatBalloon.height)
+        
+        if not base.config.GetBool('want-nametags', True):
+            self.contents.show()
 
     def drawNametag(self):
         if self.font is None:
@@ -187,3 +190,6 @@ class Nametag3d(Nametag, Clickable3d):
         self.panel.setScale(self.panelWidth, 1, self.panelHeight)
         
         self.cTag.set_panel_size(self.panelWidth, self.panelHeight)
+        
+        if not base.config.GetBool('want-nametags', True):
+            self.contents.hide()

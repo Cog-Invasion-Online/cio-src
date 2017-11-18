@@ -1,5 +1,5 @@
 from direct.task.Task import Task
-from panda3d.core import VBase4, PandaNode
+from panda3d.core import VBase4, PandaNode, ConfigVariableBool
 
 from src.coginvasion.margins.MarginVisible import MarginVisible
 import NametagGlobals
@@ -56,6 +56,7 @@ class NametagGroup:
 
         self.nametags = set()
         self.add(self.nametag2d)
+        
         self.add(self.nametag3d)
 
         # Add the tick task:
