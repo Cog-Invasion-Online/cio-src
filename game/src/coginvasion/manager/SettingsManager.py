@@ -120,12 +120,20 @@ class SettingsManager:
         if maspr == None:
             maspr = self.updateAndWriteSetting("maspr", True)
             
+        # Lighting
+        lighting = settings.get("lighting", None)
+        if lighting == None:
+            lighting = self.updateAndWriteSetting("lighting", True)
+        
+        # Mouse cursor
         cursor = settings.get("cursor", None)
         if cursor == None:
             cursor = self.updateAndWriteSetting("cursor", SettingsManager.MouseCursors.keys()[0])
 
         base.enableMusic(music)
         base.enableSoundEffects(sfx)
+        
+        game.uselighting = lighting
 
         base.musicManager.setVolume(musvol)
         base.sfxManagerList[0].setVolume(sfxvol)
