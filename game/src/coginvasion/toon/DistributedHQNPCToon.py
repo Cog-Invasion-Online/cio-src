@@ -1,5 +1,12 @@
-# Filename: DistributedHQNPCToon.py
-# Created by:  blach (2Aug15)
+"""
+
+Copyright (c) Cog Invasion Online. All rights reserved.
+
+@file DistributedHQNPCToon.py
+@author Brian Lach
+@date August 2, 2015
+
+"""
 
 from panda3d.core import Vec4
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -7,7 +14,8 @@ from direct.gui.DirectGui import DirectFrame, DirectButton, DGG
 
 import DistributedNPCToon
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.quests import Quests, Objectives
+from src.coginvasion.quests.Quest import Quest
+from src.coginvasion.quests import Objectives
 from src.coginvasion.quests.QuestGlobals import NPCDialogue
 from src.coginvasion.minigame.Timer import Timer
 
@@ -27,7 +35,7 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
         self.timer = None
 
     def __getHQOfficerQuestAssignChat(self):
-        objective = self.currentQuest.currentObjective
+        objective = self.currentQuest.accessibleObjectives[0]
 
         chat = self.currentQuest.assignSpeech
         if chat is None:
@@ -59,7 +67,9 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
         quests = []
 
         for questId in questList:
-            quests.append(Quests.Quest(questId, 0, 0, questList.index(questId), base.localAvatar.questManager))
+            quest = Quest(questId, base.localAvatar.questManager)
+            quest.setupCurrentObjectiveFromData(-1, 0, None)
+            quests.append(quest)
 
         positions = [(0, 0, 0.65), (0, 0, 0.1), (0, 0, -0.45)]
         
@@ -128,9 +138,9 @@ class DistributedHQNPCToon(DistributedNPCToon.DistributedNPCToon):
 
     def d_pickedQuest(self, quest):
         self.removePickableQuests()
-        self.sendUpdate('pickedQuest', [quest.questId])
+        self.sendUpdate('pickedQuest', [quest.id])
         self.currentQuest = quest
-        self.currentQuestId = quest.questId
+        self.currentQuestId = quest.id
         self.currentQuestObjective = 0
         self.currentChatIndex = 0
         self.b_setChat(self.__getHQOfficerQuestAssignChat())

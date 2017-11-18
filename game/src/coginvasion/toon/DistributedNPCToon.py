@@ -1,5 +1,12 @@
-# Filename: DistributedNPCToon.py
-# Created by:  blach (31Jul15)
+"""
+
+Copyright (c) Cog Invasion Online. All rights reserved.
+
+@file DistributedNPCToon.py
+@author Brian Lach
+@date July 31, 2015
+
+"""
 
 from panda3d.core import CollisionNode, CollisionSphere
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -7,6 +14,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.quests import Quests
+from src.coginvasion.quests.Quests import objType
 from src.coginvasion.quests.QuestGlobals import NPCDialogue, getPossessive
 from src.coginvasion.nametag import NametagGlobals
 from DistributedToon import DistributedToon
@@ -35,8 +43,8 @@ class DistributedNPCToon(DistributedToon):
         if av:
             self.headsUp(av)
 
-    def setNpcId(self, id):
-        self.npcId = id
+    def setNpcId(self, id_):
+        self.npcId = id_
 
     def getNpcId(self):
         return self.npcId
@@ -128,14 +136,17 @@ class DistributedNPCToon(DistributedToon):
         return chat
 
     def __getRewardChat(self):
-        reward = self.currentQuest.reward
-
-        if reward.CustomDialogueBase is not None:
-            rewardSpeech = reward.CustomDialogueBase
+        if len(self.currentQuests.rewards) < 2:
+            reward = self.currentQuest.rewards[0]
+    
+            if reward.CustomDialogueBase is not None:
+                rewardSpeech = reward.CustomDialogueBase
+            else:
+                rewardSpeech = random.choice(NPCDialogue.Reward)
+    
+            return rewardSpeech % reward.fillInDialogue()
         else:
-            rewardSpeech = random.choice(NPCDialogue.Reward)
-
-        return rewardSpeech % reward.fillInDialogue()
+            return random.choice(NPCDialogue.Rewards)
 
     def __getHQOfficerQuestCompletedChat(self):
         chat = ""
@@ -167,7 +178,7 @@ class DistributedNPCToon(DistributedToon):
 
     def __getNPCObjectiveChat(self):
         chat = self.currentQuest.getNextObjectiveDialogue()
-        objType = self.currentQuest.getNextObjectiveType()
+        objType = self.currentQuest.getNextObjectiveData()[objType]
         if chat.endswith("\x07"):
             if objType == VisitNPCObjective:
                 chat += self.getNPCLocationSpeech(True)

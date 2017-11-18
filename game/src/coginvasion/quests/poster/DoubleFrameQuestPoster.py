@@ -95,7 +95,7 @@ class DoubleFrameQuestPoster(QuestPoster):
         
     def setup(self):
         QuestPoster.setup(self)
-        objective = self.quest.currentObjective
+        objective = self.viewObjective
         
         if objective.__class__ == DeliverItemObjective:
             # It's kind of hard to return delivered stuff to somebody.
@@ -116,7 +116,7 @@ class DoubleFrameQuestPoster(QuestPoster):
         self.initialiseoptions(DoubleFrameQuestPoster)
         
     def handleCompletedCogBuildingObjective(self):
-        objective = self.quest.currentObjective
+        objective = self.viewObjective
         
         # Let's make sure we have a current objective that is
         # an instance of the CogBuildingObjective class and this poster isn't destroyed.
@@ -132,7 +132,7 @@ class DoubleFrameQuestPoster(QuestPoster):
             frameColor = QuestGlobals.BLUE)
         
     def handleCompletedCogObjective(self):
-        objective = self.quest.currentObjective
+        objective = self.viewObjective
         
         # Let's make sure we have a current objective that is
         # an instance of the CogObjective class and this poster isn't destroyed.
@@ -148,7 +148,7 @@ class DoubleFrameQuestPoster(QuestPoster):
             frameColor = QuestGlobals.BLUE)
         
     def handleCompletedMinigameObjective(self):
-        objective = self.quest.currentObjective
+        objective = self.viewObjective
         
         # Let's make sure we have a current objective that is
         # an instance of the MinigameObjective class and this poster isn't destroyed.
@@ -164,7 +164,7 @@ class DoubleFrameQuestPoster(QuestPoster):
             frameColor = QuestGlobals.BLUE)
         
     def handleRecoverItemObjective(self):
-        objective = self.quest.currentObjective
+        objective = self.viewObjective
 
         # Let's make sure we have a current objective that is
         # an instance of the RecoverItemObjective class and this poster isn't destroyed.
@@ -196,7 +196,7 @@ class DoubleFrameQuestPoster(QuestPoster):
             self.handleNPCObjective(self.goalIcon, auxText = QuestGlobals.RETURN, frameColor = QuestGlobals.BLUE)
         
     def handleDeliverItemObjective(self):
-        objective = self.quest.currentObjective
+        objective = self.viewObjective
 
         # Let's make sure we have a current objective that is
         # an instance of the DeliverItemObjective class and this poster isn't destroyed.

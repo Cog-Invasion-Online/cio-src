@@ -1,7 +1,10 @@
 """
 
-  Filename: DistributedToon.py
-  Created by: blach (17June14)
+Copyright (c) Cog Invasion Online. All rights reserved.
+
+@file DistributedToon.py
+@author Brian Lach
+@date June 17, 2014
 
 """
 
@@ -12,6 +15,7 @@ from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
 from src.coginvasion.globals import ChatGlobals
 from src.coginvasion.hood import LinkTunnel
+from src.coginvasion.cog import SuitAttacks
 
 from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
 from direct.distributed.ClockDelta import globalClockDelta
@@ -20,14 +24,12 @@ from direct.distributed import DelayDelete
 from direct.interval.SoundInterval import SoundInterval
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from direct.interval.IntervalGlobal import Parallel, LerpPosInterval, LerpQuatInterval, LerpHprInterval
-from direct.directnotify.DirectNotify import DirectNotify
+from direct.directnotify.DirectNotifyGlobal import directNotify
 from panda3d.core import Point3
 import random
 import types
 
-from src.coginvasion.cog import SuitAttacks
-
-notify = DirectNotify().newCategory("DistributedToon")
+notify = directNotify.newCategory("DistributedToon")
 
 class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, DelayDeletable):
 
@@ -52,7 +54,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         self.animId2animState = {v: k for k, v in self.animState2animId.items()}
         self.headMeter = None
         self.firstTimeChangingHP = True
-        self.quests = []
+        self.quests = ""
         self.tier = None
         self.questHistory = None
         self.busy = 1
@@ -254,23 +256,14 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
     def getTier(self):
         return self.tier
 
-    def incrementQuestObjective(self, questId):
-        base.localAvatar.questManager.incrementObjective(questId)
-
-    def setQuestObjective(self, questId, objId):
-        base.localAvatar.questManager.setCurrentObjective(questId, objId)
-
-    def getQuestObjective(self, questId):
-        return base.localAvatar.questManager.getQuestByID(questId).getCurrentObjective()
-
     def setQuestHistory(self, array):
         self.questHistory = array
 
     def getQuestHistrory(self):
         return self.questHistory
 
-    def setQuests(self, questIds, currentObjectives, currentObjectivesProgress):
-        self.quests = [questIds, currentObjectives, currentObjectivesProgress]
+    def setQuests(self, dataStr):
+        self.quests = dataStr
         base.localAvatar.questManager.makeQuestsFromData()
 
     def getQuests(self):

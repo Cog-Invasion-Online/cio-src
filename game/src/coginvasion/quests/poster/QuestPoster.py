@@ -44,8 +44,10 @@ class QuestPoster(DirectFrame):
     def __init__(self, quest, parent = aspect2d, **kw):
         # The quest this poster is representing.
         self.quest = quest
+        self.accessibleObjectives = quest.accessibleObjectives if quest else []
+        self.viewObjective = quest.accessibleObjectives[0] if quest else None
         
-        isObjComplete = False if not quest else self.quest.currentObjective.isComplete()
+        isObjComplete = False if not quest else self.viewObjective.isComplete()
         
         # Let's define our options for the DirectFrame.
         bookModel = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
@@ -61,7 +63,7 @@ class QuestPoster(DirectFrame):
         self.initialiseoptions(QuestPoster)
         
         # Let's declare and initialize our barebone GUI element variables.
-        questTitle = '' if not self.quest else self.quest.getName()
+        questTitle = '' if not self.quest else self.quest.name
         self.titleLabel = DirectLabel(parent = self, relief = None,
             text = questTitle,
             text_font = CIGlobals.getMinnieFont(),
@@ -169,7 +171,10 @@ class QuestPoster(DirectFrame):
         pos = (-0.01, 0, -0.25))
         
         # Let's setup our reward frames.
-        reward = None if not self.quest else self.quest.reward
+        reward = None
+        
+        if self.quest and len(self.quest.rewards) > 0:
+            reward = self.quest.rewards[0]
         self.lReward = QuestRewardFrame(self, reward)
         
         # The text displayed on the right side of the frame with additional information, if necessary.
@@ -195,7 +200,7 @@ class QuestPoster(DirectFrame):
     
     def setup(self):
         if self.quest:
-            objective = self.quest.currentObjective
+            objective = self.viewObjective
             
             self.objectiveInfo.show()
             self.auxFrame.show()
@@ -265,7 +270,7 @@ class QuestPoster(DirectFrame):
             icon.setH(180)
     
     def handleCogObjective(self, iconElement = auxIcon, auxText = QuestGlobals.DEFEAT, frameColor = QuestGlobals.BLUE):
-        objective = self.quest.currentObjective
+        objective = self.viewObjective
         infoText = objective.getTaskInfo()
         
         if objective.__class__ == RecoverItemObjective:
@@ -336,7 +341,7 @@ class QuestPoster(DirectFrame):
         frame['image_color'] = Vec4(*frameColor)
         
     def handleCogBuildingObjective(self, iconElement = auxIcon, auxText = QuestGlobals.DEFEAT, frameColor = QuestGlobals.BLUE):
-        objective = self.quest.currentObjective
+        objective = self.viewObjective
         infoText = objective.getTaskInfo()
         
         if not iconElement:
@@ -372,7 +377,7 @@ class QuestPoster(DirectFrame):
         self.auxFrame['image_color'] = Vec4(*frameColor)
         
     def handleMinigameObjective(self, iconElement = auxIcon, auxText = QuestGlobals.PLAY, frameColor = QuestGlobals.RED):
-        objective = self.quest.currentObjective
+        objective = self.viewObjective
         infoText = objective.getTaskInfo()
         
         if not iconElement:
@@ -395,7 +400,7 @@ class QuestPoster(DirectFrame):
         self.auxFrame['image_color'] = Vec4(*frameColor)
         
     def handleNPCObjective(self, iconElement = auxIcon, auxText = QuestGlobals.VISIT, frameColor = QuestGlobals.BROWN):
-        objective = self.quest.currentObjective
+        objective = self.viewObjective
         npcId = objective.npcId if hasattr(objective, 'npcId') else objective.assigner
 
         if npcId == 0:
@@ -474,5 +479,7 @@ class QuestPoster(DirectFrame):
             del self.rewardFrame
             del self.sideInfo
             del self.lReward
+            del self.accessibleObjectives
+            del self.viewObjective
             DirectFrame.destroy(self)
             self.notify.debug('Destroyed all elements.')

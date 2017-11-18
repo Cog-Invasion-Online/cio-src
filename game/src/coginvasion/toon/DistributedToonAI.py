@@ -1,12 +1,15 @@
 """
 
-  Filename: DistributedToonAI.py
-  Created by: blach (12Oct14)
+Copyright (c) Cog Invasion Online. All rights reserved.
+
+@file DistributedToonAI.py
+@author Brian Lach
+@date October 12, 2014
 
 """
 
 from direct.distributed.DistributedSmoothNodeAI import DistributedSmoothNodeAI
-from direct.directnotify.DirectNotify import DirectNotify
+from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
@@ -19,7 +22,7 @@ import ToonDNA
 import types
 
 class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.ToonDNA):
-    notify = DirectNotify().newCategory("DistributedToonAI")
+    notify = directNotify.newCategory("DistributedToonAI")
 
     def __init__(self, air):
         try:
@@ -74,7 +77,7 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         self.puInventory = []
         self.equippedPU = -1
         self.backpack = None
-        self.quests = [[], [], []]
+        self.quests = ""
         self.questHistory = []
         self.tier = -1
         self.friends = []
@@ -226,15 +229,6 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
     ##       Functions to send Quest updates      ##
     ################################################
 
-    def d_incrementQuestObjective(self, questId):
-        self.sendUpdate('incrementQuestObjective', [questId])
-
-    def d_setQuestObjective(self, questId, objId):
-        self.sendUpdate('setQuestObjective', [questId, objId])
-
-    def getQuestObjective(self, questId):
-        return self.questManager.getQuestByID(questId).getCurrentObjective()
-
     def setTier(self, tier):
         self.tier = tier
 
@@ -264,16 +258,16 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
     def d_setChat(self, chat):
         self.sendUpdate('setChat', [chat])
 
-    def setQuests(self, questIds, currentObjectives, currentObjectivesProgress):
-        self.quests = [questIds, currentObjectives, currentObjectivesProgress]
+    def setQuests(self, dataStr):
+        self.quests = dataStr
         self.questManager.makeQuestsFromData()
 
-    def d_setQuests(self, questIds, currentObjectives, currentObjectivesProgress):
-        self.sendUpdate('setQuests', [questIds, currentObjectives, currentObjectivesProgress])
+    def d_setQuests(self, dataStr):
+        self.sendUpdate('setQuests', [dataStr])
 
     def b_setQuests(self, questData):
-        self.d_setQuests(questData[0], questData[1], questData[2])
-        self.setQuests(questData[0], questData[1], questData[2])
+        self.d_setQuests(questData)
+        self.setQuests(questData)
 
     def getQuests(self):
         return self.quests

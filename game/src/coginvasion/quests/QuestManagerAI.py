@@ -1,13 +1,19 @@
-# Filename: QuestManagerAI.py
-# Created by:  blach (29Jul15)
+"""
 
-from src.coginvasion.hood import ZoneUtil
-from src.coginvasion.globals import CIGlobals
+Copyright (c) Cog Invasion Online. All rights reserved.
 
-from QuestManagerBase import QuestManagerBase
-from QuestGlobals import *
-import Quests
-from Objectives import *
+@file QuestManagerAI.py
+@author Brian Lach
+@date July 29, 2015
+
+"""
+
+from src.coginvasion.quests.QuestManagerBase import QuestManagerBase
+from src.coginvasion.quests.Quest import Quest
+from src.coginvasion.quests import Quests
+from src.coginvasion.quests import QuestData
+from src.coginvasion.quests.Objectives import *
+from src.coginvasion.quests.QuestGlobals import *
 
 import random
 
@@ -79,8 +85,9 @@ class QuestManagerAI(QuestManagerBase):
         """Gives out the reward for the quest provided and removes the quest from our list."""
 
         quest = self.quests.get(questId)
-        # Give the reward.
-        quest.giveReward(self.avatar)
+        
+        # Give the rewards associated with the quest.
+        quest.giveRewards(self.avatar)
 
         # Remove the quest.
         self.removeEntireQuest(questId)
@@ -92,13 +99,15 @@ class QuestManagerAI(QuestManagerBase):
 
         If checkCurrentCompleted is False, the method will only check if the last objective
         was to visit this npc.
+        
+        NOTE: This disregards visit objectives inside of ObjectiveCollections, the idea
+        behind this method is to check if the last objective before the collection was to visit the assigner.
         """
 
         for quest in self.quests.values():
             questId = quest.questId
 
-            currentObjectiveIndex = quest.currentObjectiveIndex
-            currentObjective = quest.getCurrentObjective()
+            accessibleObjectives = quest.accessibleObjectives
 
             lastObjectiveIndex = quest.currentObjectiveIndex - 1
             if lastObjectiveIndex < 0:
@@ -111,26 +120,14 @@ class QuestManagerAI(QuestManagerBase):
             if lastObjectiveType == VisitNPC:
                 # Check if the npcId for the last objective matches the npcId provided.
                 if lastObjectiveData[Quests.args][0] == npcId:
-                    if not checkCurrentCompleted:
-                        # We don't have to check if the current objective is complete. Just return True.
-                        return True
-                    else:
-                        # We have an npc match, now we just have to make sure the current objective is complete.
-                        if currentObjective.isComplete():
-                            # Yep, it is.
-                            return True
+                    return (not checkCurrentCompleted) or (checkCurrentCompleted 
+                        and accessibleObjectives.isComplete())
 
             elif lastObjectiveType == VisitHQOfficer:
                 # As long as the NPC is an HQ officer, we're good.
                 if CIGlobals.NPCToonDict[npcId][3] == CIGlobals.NPC_HQ:
-                    if not checkCurrentCompleted:
-                        # We don't have to check if the current objective is complete. Just return True.
-                        return True
-                    else:
-                        # We have an npc match, now we just have to make sure the current objective is complete.
-                        if currentObjective.isComplete():
-                            # Yep, it is.
-                            return True
+                    return (not checkCurrentCompleted) or (checkCurrentCompleted 
+                        and accessibleObjectives.isComplete())
 
         # We had no matches.
         return False
@@ -139,31 +136,23 @@ class QuestManagerAI(QuestManagerBase):
         """Returns whether or not we have an objective to visit the NPC provided."""
 
         for quest in self.quests.values():
-            currObjective = quest.getCurrentObjective()
+            objectives = quest.accessibleObjectives
 
             isHQ = CIGlobals.NPCToonDict[npcId][3] == CIGlobals.NPC_HQ
-
-            if currObjective.type == VisitNPC:
-                # Make sure the npcIds match.
-                if currObjective.npcId == npcId:
-                    # Make sure the zones match.
-                    if currObjective.npcZone == zoneId:
-                        return True
-
-            elif currObjective.type == VisitHQOfficer:
-                # When the objective is to visit an HQ officer, we can visit any HQ officer.
-                # Just make sure that the NPC is an HQ Officer.
-                if isHQ:
-                    return True
-
-            else:
-                if isHQ:
-                    print "current objective is complete, needs to visit HQ Officer"
-                    if (currObjective.isComplete() and currObjective.assigner == 0):
-                        return True
+            
+            for objective in objectives:
+                if objective.type == VisitNPC:
+                    # Make sure the npcIds match.
+                    if objective.npcId == npcId:
+                        # Make sure the zones match.
+                        return objective.npcZone == zoneId
+                elif objective.type == VisitHQOfficer:
+                    # When the objective is to visit an HQ officer, we can visit any HQ officer.
+                    # Just make sure that the NPC is an HQ Officer.
+                    return isHQ
                 else:
-                    if (currObjective.isComplete() and currObjective.assigner == npcId):
-                        return True
+                    return (objective.isComplete()) and ((isHQ and objective.assigner == 0) 
+                        or (objective.assigner == npcId))
 
         # I guess we have no objective to visit this npc.
         return False
@@ -171,13 +160,13 @@ class QuestManagerAI(QuestManagerBase):
 
     def checkIfObjectiveIsComplete(self, questId):
         """
-        Checks if the current objective on the questId is complete.
-        If it is compelete, it will increment the quest objective.
+        Checks if the current objective(s) on the questId is/are complete.
+        If they are complete, it will increment the quest objective.
         """
 
         quest = self.quests.get(questId)
 
-        if quest.currentObjective.isComplete():
+        if quest.accessibleObjectives.isComplete():
             # It is complete. Increment the objective on this quest.
             self.incrementQuestObjective(questId)
 
@@ -194,15 +183,15 @@ class QuestManagerAI(QuestManagerBase):
 
         for questId, quest in self.quests.items():
 
-            objective = quest.getCurrentObjective()
-
-            if objective is None:
-                print "this objective is None"
-                print questId
-                continue
-
-            if objective.type in types:
-                objective.handleProgress(*args)
+            objectives = quest.accessibleObjectives
+            
+            for objective in objectives:
+                if not objective:
+                    self.notify.info('Attempted to do __doProgress on a None object! Quest Id: %d.' % questId)
+                    continue
+                
+                if objective.type in types:
+                    objective.handleProgress(*args)
 
     def minigamePlayed(self, minigame):
         print "minigamePlayed: " + minigame
@@ -229,13 +218,12 @@ class QuestManagerAI(QuestManagerBase):
         """Add the specified quest to the avatar's quest history and current quests."""
 
         questHistory = list(self.avatar.getQuestHistory())
-
-        questData = list(self.avatar.getQuests())
-        questData[0].append(questId)
-        # A new quest starts on the first objective.
-        questData[1].append(0)
-        # A new objective starts with no progress.
-        questData[2].append(0)
+        quest = Quest(questId, self)
+        quest.setupCurrentObjectiveFromData(-1, 0, [0])
+        
+        quests = list(self.quests.values())
+        quests.append(quest)
+        questData = QuestData.toDataStump(quests, self.trackingId)
 
         # Add this questId to the quest history.
         questHistory.append(questId)
@@ -250,64 +238,100 @@ class QuestManagerAI(QuestManagerBase):
         This is mainly called when a quest is completed.
         """
 
-        quest = self.quests[questId]
-        questData = list(self.avatar.getQuests())
-
-        # Remove data for this quest from each questData array. (questId, objective, objective progress)
-        for array in questData:
-            del array[quest.index]
+        del self.quests[questId]
+        questData = QuestData.toDataStump(self.quests, self.trackingId)
 
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)
 
     def incrementQuestObjective(self, questId, increment = 1):
         """
-        Move the objective on the quest specified up by the increment specified.
+        Move to the next objective inside the quest.
         Mainly called when an objective is complete or when switching to the next objective.
         """
-
-        quest = self.quests[questId]
-        questData = list(self.avatar.getQuests())
-        # Bump the objective index.
-        questData[1][quest.index] += increment
-        # New objectives start at 0 progress.
-        questData[2][quest.index] = 0
+        
+        currentObjectives = []
+        
+        for quest in self.quests.values():
+            if quest.id != questId:
+                currentObjectives.append(quest.currentObjectiveIndex)
+            else:
+                currentObjectives.append(quest.currentObjectiveIndex + increment)
+        questData = QuestData.toDataStump(self.quests.values(), self.trackingId, currentObjectives)
 
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)
 
     def updateQuestObjective(self, questId, value):
         """Change the objective on the quest specified to the value specified."""
-
-        quest = self.quests[questId]
-        questData = list(self.avatar.getQuests())
-        # The current objective index becomes value.
-        questData[1][quest.index] = value
+        currentObjectives = []
+        
+        for quest in self.quests.values():
+            if quest.id != questId:
+                currentObjectives.append(quest.currentObjectiveIndex)
+            else:
+                currentObjectives.append(value)
+        questData = QuestData.toDataStump(self.quests.values(), self.trackingId, currentObjectives = currentObjectives)
 
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)
 
-    def incrementQuestObjectiveProgress(self, questId, increment = 1):
+    def incrementQuestObjectiveProgress(self, questId, objIndex, increment = 1):
         """Increment the progress on the current objective of the quest specified by the increment."""
 
-        quest = self.quests[questId]
-        questData = list(self.avatar.getQuests())
-        # Increment objective progress.
-        questData[2][quest.index] += increment
+        progresses = []
+        
+        for quest in self.quests.values():
+            if quest.id != questId:
+                progress = []
+                for objective in quest.accessibleObjectives:
+                    progress.append(objective.progress)
+                progresses.append(progress)
+            else:
+                progress = []
+                for i, objective in enumerate(quest.accessibleObjectives):
+                    if not i is objIndex:
+                        progress.append(objective.progress)
+                    else:
+                        progress.append(objective.progress + increment)
+                progresses.append(progress)
+        questData = QuestData.toDataStump(self.quests.values(), self.trackingId, objectiveProgresses = progresses)
 
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)
 
         # Let's see the if the objective is complete, now that we've updated the progress.
         #self.checkIfObjectiveIsComplete(questId)
-
-    def updateQuestObjectiveProgress(self, questId, value):
-        """Change the current objective progress on the quest specified to the value."""
-
+        
+    def getObjectiveIndex(self, questId, objective):
+        """ Fetches the relative index of an objective inside of accessible objectives. """
         quest = self.quests[questId]
-        questData = list(self.avatar.getQuests())
-        # Change the current objective to `value`
-        questData[2][quest.index] = value
+        
+        for i, obj in enumerate(quest.accessibleObjectives):
+            if obj == objective:
+                return i
+        return -1
+
+    def updateQuestObjectiveProgress(self, questId, objIndex, value):
+        """ Change the current objective progress on the quest specified to the value."""
+
+        progresses = []
+        
+        for quest in self.quests.values():
+            if quest.id != questId:
+                progress = []
+                for objective in quest.accessibleObjectives:
+                    progress.append(objective.progress)
+                progresses.append(progress)
+            else:
+                progress = []
+                for i, objective in enumerate(quest.accessibleObjectives):
+                    if not i is objIndex:
+                        progress.append(objective.progress)
+                    else:
+                        progress.append(value)
+                progresses.append(progress)
+        questData = QuestData.toDataStump(self.quests.values(), self.trackingId, objectiveProgresses = progresses)
 
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)

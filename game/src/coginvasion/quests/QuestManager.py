@@ -1,5 +1,12 @@
-# Filename: QuestManager.py
-# Created by:  blach (29Ju15)
+"""
+
+Copyright (c) Cog Invasion Online. All rights reserved.
+
+@file QuestManager.py
+@author Brian Lach
+@date July 29, 2015
+
+"""
 
 from direct.showbase.DirectObject import DirectObject
 

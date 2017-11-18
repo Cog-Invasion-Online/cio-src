@@ -1,5 +1,12 @@
-# Filename: DistributedHQNPCToonAI.py
-# Created by:  blach (2Aug15)
+"""
+
+Copyright (c) Cog Invasion Online. All rights reserved.
+
+@file DistributedHQNPCToonAI.py
+@author Brian Lach
+@date August 2, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
@@ -36,7 +43,7 @@ class DistributedHQNPCToonAI(DistributedNPCToonAI.DistributedNPCToonAI):
         av = self.air.doId2do.get(avId)
         if av:
             chat = None
-            if len(av.getQuests()[0]) >= 4 and not av.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId):
+            if len(av.questManager.quests.keys()) >= 4 and not av.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId):
                 array = list(CIGlobals.NPCEnter_Pointless_Dialogue)
                 array.remove(array[28])
                 chat = random.choice(array)

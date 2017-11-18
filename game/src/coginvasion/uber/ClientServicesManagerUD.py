@@ -74,7 +74,7 @@ class CreateToonProcess:
                 "setLoadout": ([13, 35],), # Start with cupcake and squirting flower.
                 "setTrackExperience": (GagGlobals.trackExperienceToNetString(GagGlobals.DefaultTrackExperiences),),
                 "setAdminToken": (CIGlobals.NoToken,),
-                "setQuests": ([], [], [],),
+                "setQuests": ("",),
                 "setQuestHistory": ([],),
                 "setTier": (13,),
                 "setFriendsList": ([],),

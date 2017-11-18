@@ -1,5 +1,12 @@
-# Filename: QuestGlobals.py
-# Created by:  blach (29Jul15)
+"""
+
+Copyright (c) Cog Invasion Online. All rights reserved.
+
+@file QuestGlobals.py
+@author Brian Lach
+@date July 29, 2015
+
+"""
 
 from panda3d.core import Vec4, Point3
 from src.coginvasion.globals import CIGlobals
@@ -83,7 +90,7 @@ Suit2PosterZNDScale = {
     'micromanager' : [-0.04, 0.25],
     'yesman' : [-0.045, 0.2],
     'pencilpusher' : [-0.05, IMAGE_SCALE_SMALL],
-    'flunky' : [-0.04, 0.3], # GLASSES AREN'T SCALING CORRECTLY
+    'flunky' : [-0.04, 0.3],
     'bigwig' : [-0.05, 0.25],
     'legaleagle' : [-0.04, 0.3],
     'telemarketer' : [-0.05, 0.18],
@@ -166,6 +173,7 @@ class NPCDialogue:
     WhichIs = "...which is %s"
 
     Reward = ["Enjoy having %s!", "You have earned %s.", "You now have %s."]
+    Rewards = ["These rewards should come in handy!", "You've earned these rewards!"]
 
     PickQuestTimeOut = "Need more time to think?"
     PickQuest = "Choose a ToonTask."
@@ -221,7 +229,11 @@ def getLocationText(location, objective = None):
         return 'Any Street\nAny Playground'
     
 def generatePoster(quest, parent, **kw):
-    objective = None if not quest else quest.currentObjective
+    objective = None
+    
+    if quest: 
+        objective = quest.accessibleObjectives[0]
+    
     import Objectives
     if (objective and objective.isComplete()) or objective.__class__ in Objectives.DoubleFrameObjectives:
         from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster

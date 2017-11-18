@@ -1,15 +1,29 @@
-# Filename: QuestManagerBase.py
-# Created by:  blach (30Jul15)
+"""
 
-import Objectives
-import Quests
+Copyright (c) Cog Invasion Online. All rights reserved.
+
+@file QuestManagerBase.py
+@author Brian Lach
+@date July 30, 2015
+
+"""
+
+from direct.directnotify.DirectNotifyGlobal import directNotify
+
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.quests.Quest import Quest
+from src.coginvasion.quests import QuestData
+from src.coginvasion.quests import Objectives
 
 class QuestManagerBase:
+    notify = directNotify.newCategory('QuestManagerBase')
 
     def __init__(self):
         # A dictionary of questId -> quest instance
         self.quests = {}
+        
+        # The id of the quest we're tracking.
+        self.trackingId = -1
 
     def cleanup(self):
         del self.quests
@@ -21,38 +35,48 @@ class QuestManagerBase:
         return quest.currentObjectiveIndex >= quest.numObjectives - 1
 
     def getVisitQuest(self, npcId):
-        """Returns the quest instance and the quest ID where the current objective of the quest is to visit the NPC specified."""
+        """Returns the quest instance and the quest ID where we have an objective to visit the NPC specified."""
         
-        print "getVisitQuest"
         for questId, quest in self.quests.items():
-            currObjective = quest.getCurrentObjective()
+            accObjs = quest.accessibleObjectives
 
             isHQ = CIGlobals.NPCToonDict[npcId][3] == CIGlobals.NPC_HQ
-
-            if currObjective.type == Objectives.VisitNPC:
-                # Check if the npcIds match.
-                if (currObjective.npcId == npcId):
-                    # Yep, return the questId and quest instance.
-                    return [questId, quest]
-
-            elif currObjective.type == Objectives.VisitHQOfficer:
-                # Check if the npc specified is an HQ Officer.
-                if isHQ:
-                    # Yep, return the questId and quest instance.
-                    return [questId, quest]
-
-            else:
-                # If it's not a visit objective, we have to visit the NPC who assigned us the objective.
-                if isHQ:
-                    if (currObjective.assigner == 0) and currObjective.isComplete():
-                        print "quest {0} is complete and we are visiting an HQ Officer".format(questId)
+            
+            for objective in accObjs:
+                if objective.type == Objectives.VisitNPC:
+                    # Check if the npcIds match.
+                    if (objective.npcId == npcId):
+                        # Yep, return the questId and quest instance.
                         return [questId, quest]
+    
+                elif objective.type == Objectives.VisitHQOfficer:
+                    # Check if the npc specified is an HQ Officer.
+                    if isHQ:
+                        # Yep, return the questId and quest instance.
+                        return [questId, quest]
+    
                 else:
-                    if (currObjective.assigner == npcId) and currObjective.isComplete():
-                        return [questId, quest]
+                    # If it's not a visit objective, we have to visit the NPC who assigned us the objective.
+                    if isHQ:
+                        if (objective.assigner == 0) and objective.isComplete():
+                            self.notify.info("quest {0} is complete and we are visiting an HQ Officer".format(questId))
+                            return [questId, quest]
+                    else:
+                        if (objective.assigner == npcId) and objective.isComplete():
+                            return [questId, quest]
 
-        # We have no quest where the current objective is to visit the NPC specified.
+        # We have no quest with an objective to visit the NPC specified.
         return None
+    
+    def makeQuestFromData(self, questDataStump):
+        id_ = questDataStump[0]
+        curObjIndex = questDataStump[1]
+        trackObjIndex = questDataStump[2]
+        objProgress = questDataStump[3]
+        
+        quest = Quest(id_, self)
+        quest.setupCurrentObjectiveFromData(trackObjIndex, curObjIndex, objProgress)
+        self.quests[id_] = quest
 
     def makeQuestsFromData(self, avatar):
         """Creates new quest instances based on the questData array from the avatar."""
@@ -63,17 +87,4 @@ class QuestManagerBase:
 
         self.quests = {}
 
-        questData = avatar.getQuests()
-
-        # Go through each quest in the quest data and create the quest instances.
-        for i in xrange(len(questData[0])):
-
-            questId = questData[0][i]
-            currentObjectiveIndex = questData[1][i]
-            currentObjectiveProg = questData[2][i]
-
-            # Create the quest instance.
-            quest = Quests.Quest(questId, currentObjectiveIndex, currentObjectiveProg, i, self)
-
-            # Add it to our quests dictionary with the questId as the key.
-            self.quests[questId] = quest
+        QuestData.extractDataAsIntegerLists(avatar.getQuests(), parseDataFunc = self.makeQuestFromData)
