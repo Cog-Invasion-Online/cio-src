@@ -32,7 +32,7 @@ class game:
     name = 'coginvasion'
     process = 'client'
     serverAddress = os.environ.get("GAME_SERVER")
-    resourceEncryptionPwd = os.environ.get("RESOURCE_ENCRYPTION")
+    resourceEncryptionPwd = "cio-03-06-16_lsphases"
     build = 0
     buildtype = "Dev"
     version = "0.0.0"
@@ -100,6 +100,8 @@ __builtin__.loader = base.loader
 
 # Let's load up our multifiles
 base.loader.mountMultifiles(sm.getSetting("resourcepack"))
+
+base.initStuff()
 
 notify.info("Using Panda3D version {0}".format(PandaSystem.getVersionString()))
 notify.info("True threading: " + str(Thread.isTrueThreads()))

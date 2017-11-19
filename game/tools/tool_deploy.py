@@ -21,7 +21,7 @@ host = "50.87.26.220"
 port = 22
 transport = paramiko.Transport((host, port))
 
-password = "CIO-6_17_14-justhost"
+password = ":o?i|v-F3t?B"
 username = "coginvas"
 transport.connect(username = username, password = password)
 
@@ -33,7 +33,7 @@ servData = {}
 
 print "Reading current server hash file..."
 
-srvFile = sftp.file("public_html/download/file_info.txt", "r")
+srvFile = sftp.file("public_html/download/coginvasion/file_info.txt", "r")
 
 for line in srvFile.readlines():
     if not "//" in line and len(line) > 0 and not line.isspace():
@@ -110,7 +110,7 @@ hashfw.flush()
 hashfw.close()
 
 hashfr = open('file_info.txt', 'r')
-sftp.putfo(hashfr, "public_html/download/file_info.txt")
+sftp.putfo(hashfr, "public_html/download/coginvasion/file_info.txt")
 hashfr.close()
 os.remove("file_info.txt")
 
@@ -119,7 +119,7 @@ print "Deploying {0} files...".format(len(filesToDeploy))
 for lclFile in filesToDeploy:
     print "Deploying {0}...".format(lclFile.fullfile)
     f = open(lclFile.fullfile, 'rb')
-    sftp.putfo(f, "public_html/download/" + lclFile.filename)
+    sftp.putfo(f, "public_html/download/coginvasion/" + lclFile.filename)
     f.close()
 
 sftp.close()

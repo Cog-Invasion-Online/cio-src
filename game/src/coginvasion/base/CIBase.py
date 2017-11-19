@@ -44,14 +44,15 @@ class CIBase(ShowBase):
         self.cubeMapMgr = cbm
         __builtin__.cubeMapMgr = cbm
 
-        wrm = WaterReflectionManager()
-        self.waterReflectionMgr = wrm
-        __builtin__.waterReflectionMgr = wrm
-
         self.credits2d = self.render2d.attachNewNode(PGTop("credits2d"))
         self.credits2d.setScale(1.0 / self.getAspectRatio(), 1.0, 1.0)
 
         self.wakeWaterHeight = -30.0
+        
+    def initStuff(self):
+        wrm = WaterReflectionManager()
+        self.waterReflectionMgr = wrm
+        __builtin__.waterReflectionMgr = wrm
 
     def saveCubeMap(self, namePrefix = 'cube_map_#.jpg', size = 1024):
         namePrefix = raw_input("Cube map file: ")
