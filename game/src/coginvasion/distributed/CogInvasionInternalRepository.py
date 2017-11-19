@@ -18,11 +18,12 @@ class CogInvasionInternalRepository(AstronInternalRepository):
 	dbId = 4003
 	
 	def readerPollUntilEmpty(self, task):
-		try:
-			return AstronInternalRepository.readerPollUntilEmpty(self, task)
+		#try:
+		return AstronInternalRepository.readerPollUntilEmpty(self, task)
+		"""
 		except Exception as e:
 			self.handleCrash(e)
-		return task.done
+		return task.done"""
 	
 	def handleCrash(self, e):
 		pass
