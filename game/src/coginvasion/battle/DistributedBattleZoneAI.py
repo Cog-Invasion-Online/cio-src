@@ -226,8 +226,9 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         return blobs
     
     def isCogOffice(self):
-        from src.coginvasion.cogoffice import DistributedCogOfficeBattleAI
-        return isinstance(super, DistributedCogOfficeBattleAI)
+        #from src.coginvasion.cogoffice import DistributedCogOfficeBattleAI
+        #return type(super) == DistributedCogOfficeBattleAI
+        return True
     
     def battleComplete(self):
         self.d_setToonData()
