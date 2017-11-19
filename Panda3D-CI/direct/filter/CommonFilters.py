@@ -184,9 +184,9 @@ class CommonFilters:
                 self.blur.append(self.manager.renderQuadInto(colortex=blur0,div=2))
                 self.blur.append(self.manager.renderQuadInto(colortex=blur1))
                 self.blur[0].setShaderInput("src", self.textures["color"])
-                self.blur[0].setShader(self.loadShader("filter-blurx.sha"))
+                self.blur[0].setShader(self.loadShader("phase_3/models/shaders/filter-blurx.sha"))
                 self.blur[1].setShaderInput("src", blur0)
-                self.blur[1].setShader(self.loadShader("filter-blury.sha"))
+                self.blur[1].setShader(self.loadShader("phase_3/models/shaders/filter-blury.sha"))
 
             if ("AmbientOcclusion" in configuration):
                 ssao0=self.textures["ssao0"]
@@ -200,9 +200,9 @@ class CommonFilters:
                 self.ssao[0].setShaderInput("random", loader.loadTexture("maps/random.rgb"))
                 self.ssao[0].setShader(Shader.make(SSAO_BODY % configuration["AmbientOcclusion"].numsamples, Shader.SL_Cg))
                 self.ssao[1].setShaderInput("src", ssao0)
-                self.ssao[1].setShader(self.loadShader("filter-blurx.sha"))
+                self.ssao[1].setShader(self.loadShader("phase_3/models/shaders/filter-blurx.sha"))
                 self.ssao[2].setShaderInput("src", ssao1)
-                self.ssao[2].setShader(self.loadShader("filter-blury.sha"))
+                self.ssao[2].setShader(self.loadShader("phase_3/models/shaders/filter-blury.sha"))
 
             if ("Bloom" in configuration):
                 bloomconf = configuration["Bloom"]
@@ -212,25 +212,25 @@ class CommonFilters:
                 bloom3=self.textures["bloom3"]
                 if (bloomconf.size == "large"):
                     scale=8
-                    downsampler="filter-down4.sha"
+                    downsampler="phase_3/models/shaders/filter-down4.sha"
                 elif (bloomconf.size == "medium"):
                     scale=4
-                    downsampler="filter-copy.sha"
+                    downsampler="phase_3/models/shaders/filter-copy.sha"
                 else:
                     scale=2
-                    downsampler="filter-copy.sha"
+                    downsampler="phase_3/models/shaders/ilter-copy.sha"
                 self.bloom.append(self.manager.renderQuadInto(colortex=bloom0, div=2,     align=scale))
                 self.bloom.append(self.manager.renderQuadInto(colortex=bloom1, div=scale, align=scale))
                 self.bloom.append(self.manager.renderQuadInto(colortex=bloom2, div=scale, align=scale))
                 self.bloom.append(self.manager.renderQuadInto(colortex=bloom3, div=scale, align=scale))
                 self.bloom[0].setShaderInput("src", self.textures["color"])
-                self.bloom[0].setShader(self.loadShader("filter-bloomi.sha"))
+                self.bloom[0].setShader(self.loadShader("phase_3/models/shaders/filter-bloomi.sha"))
                 self.bloom[1].setShaderInput("src", bloom0)
                 self.bloom[1].setShader(self.loadShader(downsampler))
                 self.bloom[2].setShaderInput("src", bloom1)
-                self.bloom[2].setShader(self.loadShader("filter-bloomx.sha"))
+                self.bloom[2].setShader(self.loadShader("phase_3/models/shaders/filter-bloomx.sha"))
                 self.bloom[3].setShaderInput("src", bloom2)
-                self.bloom[3].setShader(self.loadShader("filter-bloomy.sha"))
+                self.bloom[3].setShader(self.loadShader("phase_3/models/shaders/filter-bloomy.sha"))
 
             texcoords = {}
             texcoordPadding = {}
