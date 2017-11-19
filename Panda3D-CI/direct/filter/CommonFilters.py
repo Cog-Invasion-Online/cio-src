@@ -103,10 +103,7 @@ class CommonFilters:
         self.cleanup()
 
     def loadShader(self, name):
-        fn = os.path.join(os.path.abspath(os.path.dirname(__file__)), name)
-        fn = Filename.fromOsSpecific(fn)
-        fn.makeTrueCase()
-        return Shader.load(fn)
+        return Shader.load(name)
 
     def cleanup(self):
         self.manager.cleanup()
