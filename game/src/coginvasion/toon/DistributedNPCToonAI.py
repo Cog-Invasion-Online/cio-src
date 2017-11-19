@@ -84,7 +84,7 @@ class DistributedNPCToonAI(DistributedToonAI):
         av = self.air.doId2do.get(avId)
         if av:
             chatArray = None
-            if (len(av.getQuests()[0]) == 0 or
+            if (len(av.questManager.quests.values()) == 0 or
             not av.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId) and
             not av.questManager.wasLastObjectiveToVisit(self.npcId)):
                 # This avatar entered for no reason. They either have no quests or no objective to visit me.
