@@ -66,8 +66,8 @@ class DistributedBattleZoneAI(DistributedObjectAI):
     def ignoreAvatarDeleteEvents(self):
         for avId in self.avIds:
             toon = self.air.doId2do.get(avId)
-            self.ignore(toon.getDeleteEvent())
-            break
+            if toon:
+                self.ignore(toon.getDeleteEvent())
 
     def addAvatar(self, avId):
         self.avIds.append(avId)
