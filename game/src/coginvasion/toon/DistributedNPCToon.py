@@ -136,7 +136,7 @@ class DistributedNPCToon(DistributedToon):
         return chat
 
     def __getRewardChat(self):
-        if len(self.currentQuests.rewards) < 2:
+        if len(self.currentQuest.rewards) < 2:
             reward = self.currentQuest.rewards[0]
     
             if reward.CustomDialogueBase is not None:
@@ -178,9 +178,9 @@ class DistributedNPCToon(DistributedToon):
 
     def __getNPCObjectiveChat(self):
         chat = self.currentQuest.getNextObjectiveDialogue()
-        objType = self.currentQuest.getNextObjectiveData()[objType]
+        nextObjType = self.currentQuest.getNextObjectiveData()[objType]
         if chat.endswith("\x07"):
-            if objType == VisitNPCObjective:
+            if nextObjType == VisitNPCObjective:
                 chat += self.getNPCLocationSpeech(True)
                 chat += random.choice(NPCDialogue.Goodbyes)
             else:

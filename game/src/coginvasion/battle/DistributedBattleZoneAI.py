@@ -14,6 +14,7 @@ from direct.distributed.ClockDelta import globalClockDelta
 
 from src.coginvasion.battle.RPToonData import RPToonData
 from src.coginvasion.gags import GagGlobals
+from src.coginvasion.quests.Objectives import DefeatCog, DefeatCogBuilding
 
 class DistributedBattleZoneAI(DistributedObjectAI):
     notify = directNotify.newCategory('DistributedBattleZoneAI')
@@ -123,7 +124,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
 
     def handleCogDeath(self, cog, killerId):
         plan = cog.suitPlan
-        cogData = DeadCogData(plan.name, plan.dept, cog.level, cog.variant)
+        cogData = DeadCogData(plan.name, plan.dept, cog.level, cog.variant, cog.hood)
         gagUses = {}
         currentKills = []
 
@@ -150,6 +151,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         blobs = []
         for avId, data in self.avatarData.iteritems():
             avatar = base.air.doId2do.get(avId, None)
+            deadCogData = data[1]
             favGagId = -1
             favGagUses = 0
             gagUnlocked = False
@@ -197,9 +199,35 @@ class DistributedBattleZoneAI(DistributedObjectAI):
                 if gagUnlocked:
                     netString = avatar.getBackpackAmmo()
                     avatar.d_setBackpackAmmo(netString)
+                
+                # Let's update quest stuff for this avatar.
+                questManager = avatar.questManager
+                
+                objectiveProgresses = []
+                
+                for quest in questManager.quests.values():
+                    objectiveProgress = []
+                    for i, objective in enumerate(quest.accessibleObjectives):
+                        objectiveProgress.append(objective.progress)
+                        if objective.type == DefeatCog:
+                            howManyIncrements = 0
+                            for killData in deadCogData:
+                                if not objective.isComplete() and objective.isNeededCogFromDeadCogData(killData):
+                                    howManyIncrements += 1
+                                elif objective.isComplete(): break
+                            objectiveProgress[i] = howManyIncrements
+                        elif objective.type == DefeatCogBuilding and self.isCogOffice() and objective.isAcceptable():
+                            objectiveProgress[i] = objectiveProgress[i] + 1
+                    objectiveProgresses.append(objectiveProgress)
+                questManager.updateQuestData(objectiveProgresses = objectiveProgresses)
+                
                 blobs.append(rpData.toNetString(avId))
                 
         return blobs
+    
+    def isCogOffice(self):
+        from src.coginvasion.cogoffice import DistributedCogOfficeBattleAI
+        return isinstance(super, DistributedCogOfficeBattleAI)
     
     def battleComplete(self):
         self.d_setToonData()
@@ -211,11 +239,12 @@ class DistributedBattleZoneAI(DistributedObjectAI):
 
 class DeadCogData:
 
-    def __init__(self, name, dept, level, variant):
+    def __init__(self, name, dept, level, variant, location):
         self.name = name
         self.dept = dept
         self.level = level
         self.variant = variant
+        self.location = location
 
     def getName(self):
         return self.name

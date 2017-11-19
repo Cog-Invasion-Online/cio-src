@@ -481,7 +481,7 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         return GagGlobals.trackExperienceToNetString(self.trackExperience)
 
     def getInventory(self):
-        return self.backpack.getGags().keys()
+        return self.backpack.gags.keys()
 
     def died(self):
         self.b_setHealth(self.getMaxHealth())

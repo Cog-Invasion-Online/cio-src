@@ -105,7 +105,7 @@ class QuestManagerAI(QuestManagerBase):
         """
 
         for quest in self.quests.values():
-            questId = quest.questId
+            questId = quest.id
 
             accessibleObjectives = quest.accessibleObjectives
 
@@ -239,7 +239,7 @@ class QuestManagerAI(QuestManagerBase):
         """
 
         del self.quests[questId]
-        questData = QuestData.toDataStump(self.quests, self.trackingId)
+        questData = QuestData.toDataStump(self.quests.values(), self.trackingId)
 
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)
@@ -275,6 +275,10 @@ class QuestManagerAI(QuestManagerBase):
 
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)
+        
+    def updateQuestData(self, currentObjectives = [], objectiveProgresses = []):
+        questData, _, _ = QuestData.toDataStump(self.quests.values(), self.trackingId, currentObjectives, objectiveProgresses)
+        self.avatar.b_setQuests(questData)
 
     def incrementQuestObjectiveProgress(self, questId, objIndex, increment = 1):
         """Increment the progress on the current objective of the quest specified by the increment."""
@@ -295,10 +299,7 @@ class QuestManagerAI(QuestManagerBase):
                     else:
                         progress.append(objective.progress + increment)
                 progresses.append(progress)
-        questData = QuestData.toDataStump(self.quests.values(), self.trackingId, objectiveProgresses = progresses)
-
-        # Update the information on the network and database.
-        self.avatar.b_setQuests(questData)
+        return QuestData.toDataStump(self.quests.values(), self.trackingId, objectiveProgresses = progresses)
 
         # Let's see the if the objective is complete, now that we've updated the progress.
         #self.checkIfObjectiveIsComplete(questId)
@@ -313,7 +314,7 @@ class QuestManagerAI(QuestManagerBase):
         return -1
 
     def updateQuestObjectiveProgress(self, questId, objIndex, value):
-        """ Change the current objective progress on the quest specified to the value."""
+        """ Generates the quest data with the current objective progress on the quest specified to the value."""
 
         progresses = []
         
@@ -331,7 +332,4 @@ class QuestManagerAI(QuestManagerBase):
                     else:
                         progress.append(value)
                 progresses.append(progress)
-        questData = QuestData.toDataStump(self.quests.values(), self.trackingId, objectiveProgresses = progresses)
-
-        # Update the information on the network and database.
-        self.avatar.b_setQuests(questData)
+        return QuestData.toDataStump(self.quests.values(), self.trackingId, objectiveProgresses = progresses)

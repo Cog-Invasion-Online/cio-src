@@ -62,7 +62,7 @@ def toDataStump(quests, trackingId = -1, currentObjectives = [], objectiveProgre
         else:
             # Let's use the values given to us to use instead.
             for i, progress in enumerate(objectiveProgresses[index]):
-                objProgressStr += progress
+                objProgressStr += str(progress)
                 if i < len(quest.accessibleObjectives) - 1:
                     objProgressStr += ','
             objProgressStr += ']'
@@ -71,7 +71,7 @@ def toDataStump(quests, trackingId = -1, currentObjectives = [], objectiveProgre
         curObjIndex = quest.currentObjectiveIndex
         
         if len(currentObjectives) > 0 and 0 <= index <= len(currentObjectives):
-            curObjIndex = currentObjectives[i]
+            curObjIndex = currentObjectives[index]
         
         # This index is the position of the tracking objective relative to the accessible objectives collection.
         trackObjIndex = -1 if not quest.trackingObjective else quest.accessibleObjectives.index(quest.trackingObjective)
@@ -82,7 +82,7 @@ def toDataStump(quests, trackingId = -1, currentObjectives = [], objectiveProgre
         objProgressStr)
         
         dataString += sectionString
-    return dataString
+    return dataString, currentObjectives, objectiveProgresses
 
 def extractDataAsIntegerLists(dataStr, parseDataFunc = None):
     # If passed the parse data function, it will call that on the integer list

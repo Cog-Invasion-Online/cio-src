@@ -211,9 +211,9 @@ class QuestPoster(DirectFrame):
             self.locationInfo.show()
             
             # Let's setup the quest progress bar
-            progress = objective.progress if hasattr(objective, 'amount') else None
+            progress = objective.progress if hasattr(objective, 'progress') else None
             
-            if progress and objective.goal > 0:
+            if progress and objective.goal > 1:
                 self.progressBar['range'] = objective.goal
                 self.progressBar['value'] = progress & pow(2, 16) - 1
             
@@ -370,7 +370,7 @@ class QuestPoster(DirectFrame):
         # Let's set the progress bar text
         pgBarText = '%d of %d %s' % (objective.progress, objective.goal, 
             QuestGlobals.makePastTense(auxText))
-        self.progressBar['text'] = pgBarText    
+        self.progressBar['text'] = pgBarText
         
         self.objectiveInfo['text'] = infoText
         self.auxText['text'] = auxText
@@ -393,7 +393,7 @@ class QuestPoster(DirectFrame):
         # Let's set the progress bar text
         pgBarText = '%d of %d %s' % (objective.progress, objective.goal, 
             QuestGlobals.makePastTense(auxText))
-        self.progressBar['text'] = pgBarText    
+        self.progressBar['text'] = pgBarText
         
         self.objectiveInfo['text'] = infoText
         self.auxText['text'] = auxText

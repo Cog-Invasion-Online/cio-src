@@ -161,8 +161,31 @@ class CogObjective(DefeatObjective):
 
     def handleProgress(self, cog):
         if not self.isComplete() and self.isNeededCog(cog):
-            self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId, 
+            self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id, 
                 self.quest.questMgr.getObjectiveIndex(self))
+            
+    def handleProgressFromDeadCogData(self, deadCogData):
+        if not self.isComplete() and self.isNeededCogFromDeadCogData(deadCogData):
+            self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id,
+                self.quest.questMgr.getObjectiveIndex(self.quest.id, self))
+            
+    def isNeededCogFromDeadCogData(self, deadCogData):
+        if not self.isValidLocation(deadCogData.location):
+            return False
+        
+        if self.levelRange and not self.isInLevelRange(deadCogData.level):
+            return False
+        
+        if self.cog and not self.cog == QuestGlobals.Any and not deadCogData.name == self.cog:
+            return False
+        
+        if self.dept and not deadCogData.dept == self.dept:
+            return False
+        
+        if self.variant and not deadCogData.variant == self.variant:
+            return False
+        
+        return True
                     
     def isNeededCog(self, cog):
         if not self.isValidLocation(cog.getHood()):
@@ -242,7 +265,7 @@ class CogInvasionObjective(DefeatObjective):
         if not self.isComplete():
 
             if self.isValidLocation(hood):
-                self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId, 
+                self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id, 
                     self.quest.questMgr.getObjectiveIndex(self))
 
     def getTaskInfo(self, speech = False):
@@ -262,7 +285,7 @@ class CogTournamentObjective(DefeatObjective):
         if not self.isComplete():
 
             if self.isValidLocation(hood):
-                self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId, 
+                self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id, 
                     self.quest.questMgr.getObjectiveIndex(self))
 
     def getTaskInfo(self, speech = False):
@@ -289,8 +312,13 @@ class CogBuildingObjective(DefeatObjective):
             if self.isValidLocation(hood):
 
                 if (self.dept == QuestGlobals.Any or self.dept == dept) and (numFloors >= self.minFloors or self.minFloors == QuestGlobals.Any):
-                    self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId, 
-                        self.quest.questMgr.getObjectiveIndex(self))
+                    self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id, 
+                        self.quest.questMgr.getObjectiveIndex(self.quest.id, self))
+                    
+    def isAcceptable(self, hood, dept, numFloors):
+        if not self.isComplete() and self.isValidLocation(hood):
+            return (self.dept == QuestGlobals.Any or self.dept == dept) and (numFloors >= self.minFloors 
+                or self.minFloors == QuestGlobals.Any)
 
     def getTaskInfo(self, speech = False):
         taskInfo = 'A ' if self.goal == 1 else '%d ' % self.goal
@@ -330,7 +358,7 @@ class MinigameObjective(Objective):
         if not self.isComplete():
 
             if minigame == self.minigame:
-                self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.questId, 
+                self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id, 
                     self.quest.questMgr.getObjectiveIndex(self))
 
     def getTaskInfo(self, speech = False):

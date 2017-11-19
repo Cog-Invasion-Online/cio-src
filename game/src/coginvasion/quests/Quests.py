@@ -90,6 +90,14 @@ Quests = {
         tier: Tiers.DG,
         name: 'Eugene and the Bean Stock',
         finishSpeech: ("Thank you so much for returning my beans!\0x7Now, thanks to you, I can continue my business!\0x7Here have this!"),
+    },
+          
+    38: {objectives: [
+            {objType: CogBuildingObjective, args: [Any, Any, 1, CIGlobals.ToontownCentralId]},
+        ],
+        rewards: [(Jellybeans, 50)],
+        tier: Tiers.TT,
+        name: 'Office Crash',
     }
 }
 

@@ -237,7 +237,6 @@ class RewardPanel(DirectFrame):
         if track.maxExp > 0 and (track.exp + track.increment) >= track.maxExp:
             gagIndex = GagGlobals.TrackExperienceAmounts.get(track.name).index(track.maxExp) + 1
             newGag = GagGlobals.TrackGagNamesByTrackName.get(track.name)[gagIndex]
-            intervalList.append(Func(self.exitGags))
             intervalList.append(self.getShowGagUnlockedInterval(track.name, newGag))
         
         return intervalList
@@ -294,11 +293,13 @@ class RewardPanel(DirectFrame):
         
         sfx = loader.loadSfx('phase_3/audio/sfx/GUI_balloon_popup.ogg')
         sfx.setLoop(False)
+        sfx.setVolume(1.0)
         
         def makeSequence(text):
             seq = Sequence(Wait(1.0), Func(text.show))
-            seq.append(Func(base.playSfx, sfx, 1.0))
+            seq.append(Func(sfx.play))
             seq.append(CIGlobals.makePulseEffectInterval(text, 1.0, 0.01, 1.05, 0.5, 0.25))
+            seq.append(Func(sfx.stop))
             return seq
         
         return Sequence(makeSequence(self.congratsLeft), makeSequence(self.congratsRight))

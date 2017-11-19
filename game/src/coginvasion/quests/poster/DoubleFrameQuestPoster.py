@@ -192,6 +192,7 @@ class DoubleFrameQuestPoster(QuestPoster):
             pgBarText = '%d of %d %s' % (objective.progress, objective.goal, 
                 QuestGlobals.makePastTense(QuestGlobals.RECOVER))
             self.progressBar['text'] = pgBarText
+            self.progressBar['value'] = objective.progress & pow(2, 16) - 1
         else:
             self.handleNPCObjective(self.goalIcon, auxText = QuestGlobals.RETURN, frameColor = QuestGlobals.BLUE)
         
@@ -219,6 +220,7 @@ class DoubleFrameQuestPoster(QuestPoster):
         pgBarText = '%d of %d %s' % (objective.progress, objective.goal, 
             QuestGlobals.makePastTense(QuestGlobals.DELIVER))
         self.progressBar['text'] = pgBarText
+        self.progressBar['value'] = objective.progress & pow(2, 16) - 1
         
         self.handleNPCObjective(self.goalIcon, auxText = QuestGlobals.DELIVER, frameColor = QuestGlobals.RED)
         
