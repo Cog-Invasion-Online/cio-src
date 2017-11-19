@@ -216,7 +216,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
                                     howManyIncrements += 1
                                 elif objective.isComplete(): break
                             objectiveProgress[i] = howManyIncrements
-                        elif objective.type == DefeatCogBuilding and self.isCogOffice() and objective.isAcceptable():
+                        elif objective.type == DefeatCogBuilding and self.isCogOffice() and objective.isAcceptable(self.hood, self.dept, self.numFloors):
                             objectiveProgress[i] = objectiveProgress[i] + 1
                     objectiveProgresses.append(objectiveProgress)
                 questManager.updateQuestData(objectiveProgresses = objectiveProgresses)
