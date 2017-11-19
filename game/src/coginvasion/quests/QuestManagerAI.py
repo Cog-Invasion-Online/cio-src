@@ -223,7 +223,7 @@ class QuestManagerAI(QuestManagerBase):
         
         quests = list(self.quests.values())
         quests.append(quest)
-        questData = QuestData.toDataStump(quests, self.trackingId)
+        questData, _, _ = QuestData.toDataStump(quests, self.trackingId)
 
         # Add this questId to the quest history.
         questHistory.append(questId)
@@ -239,7 +239,7 @@ class QuestManagerAI(QuestManagerBase):
         """
 
         del self.quests[questId]
-        questData = QuestData.toDataStump(self.quests.values(), self.trackingId)
+        questData, _, _ = QuestData.toDataStump(self.quests.values(), self.trackingId)
 
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)
@@ -257,7 +257,7 @@ class QuestManagerAI(QuestManagerBase):
                 currentObjectives.append(quest.currentObjectiveIndex)
             else:
                 currentObjectives.append(quest.currentObjectiveIndex + increment)
-        questData = QuestData.toDataStump(self.quests.values(), self.trackingId, currentObjectives)
+        questData, _, _ = QuestData.toDataStump(self.quests.values(), self.trackingId, currentObjectives)
 
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)
@@ -271,7 +271,7 @@ class QuestManagerAI(QuestManagerBase):
                 currentObjectives.append(quest.currentObjectiveIndex)
             else:
                 currentObjectives.append(value)
-        questData = QuestData.toDataStump(self.quests.values(), self.trackingId, currentObjectives = currentObjectives)
+        questData, _, _ = QuestData.toDataStump(self.quests.values(), self.trackingId, currentObjectives = currentObjectives)
 
         # Update the information on the network and database.
         self.avatar.b_setQuests(questData)

@@ -38,12 +38,13 @@ class TPMouseMovement(DirectObject):
             wp = window.getProperties()
             isInForeground = wp.getForeground()
             
-            if not isInForeground and self.enabled:
-                self.disableMovement(allowReEnable = True, byChatInput = False)
-                self.disabledByFocusLoss = True
-            elif not self.enabled and self.disabledByFocusLoss:
-                self.enableMovement()
-                self.disabledByFocusLoss = False
+            if hasattr(self, 'enabled'):
+                if not isInForeground and self.enabled:
+                    self.disableMovement(allowReEnable = True, byChatInput = False)
+                    self.disabledByFocusLoss = True
+                elif not self.enabled and self.disabledByFocusLoss:
+                    self.enableMovement()
+                    self.disabledByFocusLoss = False
 
     def enableMovement(self, startTask = True):
         if self.disabledByChat:
