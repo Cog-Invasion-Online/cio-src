@@ -122,6 +122,10 @@ def getOutdoorLightingConfig(hoodId):
         olc.snow = True
         
     data = base.loader.envConfig.getHoodSection(hoodId)
+    if not data:
+        # No lighting config exists for this hood, just give the default.
+        return olc
+        
     olc.setSkyType(data.skyType)
     olc.ambient = data.outdoorAmbientColor
     olc.sun = data.sunColor
