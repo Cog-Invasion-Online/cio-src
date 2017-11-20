@@ -71,7 +71,6 @@ class DistributedNPCToon(DistributedToon):
 
     def handleEnterCollision(self, entry):
         self.cr.playGame.getPlace().fsm.request('stop')
-        base.localAvatar.stopSmartCamera()
         self.sendUpdate('requestEnter', [])
 
     def doCameraNPCInteraction(self, pickingQuest = False):
@@ -192,6 +191,7 @@ class DistributedNPCToon(DistributedToon):
         self.interacting = True
 
         self.stopLookAround()
+        base.localAvatar.stopSmartCamera()
         head = self.getPart("head")
         oldHpr = head.getHpr()
         head.lookAt(base.localAvatar.getPart("head"))

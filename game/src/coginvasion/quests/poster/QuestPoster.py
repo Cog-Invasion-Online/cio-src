@@ -25,6 +25,7 @@ from src.coginvasion.quests.Objectives import VisitNPCObjective
 from src.coginvasion.quests.Objectives import RecoverItemObjective
 from src.coginvasion.quests.Objectives import DeliverItemObjective
 from src.coginvasion.quests.Objectives import MinigameObjective
+from src.coginvasion.quests.Objectives import DefeatObjectives
 from src.coginvasion.cog import Dept, SuitGlobals, SuitBank
 from src.coginvasion.toon.ToonHead import ToonHead
 from src.coginvasion.toon.ToonDNA import ToonDNA
@@ -223,14 +224,23 @@ class QuestPoster(DirectFrame):
             self.auxText.show()
             
             # Let's handle the objectives.
-            if objective.__class__ == CogObjective:
-                self.handleCogObjective()
-            elif objective.__class__ == CogBuildingObjective:
-                self.handleCogBuildingObjective()
-            elif objective.__class__ == MinigameObjective:
-                self.handleMinigameObjective()
-            elif objective.__class__ == VisitNPCObjective:
-                self.handleNPCObjective()
+            if not objective.isComplete():
+                if objective.__class__ == CogObjective:
+                    self.handleCogObjective()
+                elif objective.__class__ == CogBuildingObjective:
+                    self.handleCogBuildingObjective()
+                elif objective.__class__ == MinigameObjective:
+                    self.handleMinigameObjective()
+                elif objective.__class__ == VisitNPCObjective:
+                    self.handleNPCObjective()
+            else:
+                bgColor = QuestGlobals.RED
+                
+                if objective.type in DefeatObjectives:
+                    bgColor = QuestGlobals.BLUE
+                
+                self.handleNPCObjective(auxText = QuestGlobals.RETURN + ' to', 
+                    frameColor = bgColor)
                 
             self.lReward.setup()
         else:
@@ -401,7 +411,12 @@ class QuestPoster(DirectFrame):
         
     def handleNPCObjective(self, iconElement = auxIcon, auxText = QuestGlobals.VISIT, frameColor = QuestGlobals.BROWN):
         objective = self.viewObjective
-        npcId = objective.npcId if hasattr(objective, 'npcId') else objective.assigner
+        npcId = 0
+        
+        if objective.isComplete() and not hasattr(objective, 'npcId'):
+            npcId = objective.assigner
+        elif hasattr(objective, 'npcId'):
+            npcId = objective.npcId
 
         if npcId == 0:
             infoText = 'A %s' % CIGlobals.lHQOfficerF
@@ -412,7 +427,7 @@ class QuestPoster(DirectFrame):
             iconElement = self.auxIcon
         
         # Let's generate the head.
-        if not objective.isComplete() and not CIGlobals.NPCToonNames[npcId] == CIGlobals.lHQOfficerF:
+        if not npcId == 0:
             dna = ToonDNA()
             dna.setDNAStrand(CIGlobals.NPCToonDict.get(npcId)[2])
             head = ToonHead(base.cr)

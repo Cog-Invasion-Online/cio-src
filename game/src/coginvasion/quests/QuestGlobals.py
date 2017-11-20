@@ -235,7 +235,7 @@ def generatePoster(quest, parent, **kw):
         objective = quest.accessibleObjectives[0]
     
     import Objectives
-    if (objective and objective.isComplete()) or objective.__class__ in Objectives.DoubleFrameObjectives:
+    if objective.__class__ in Objectives.DoubleFrameObjectives:
         from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
         poster = DoubleFrameQuestPoster(quest, parent = parent, **kw)
     else:

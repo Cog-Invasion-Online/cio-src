@@ -43,15 +43,18 @@ class DistributedHQNPCToonAI(DistributedNPCToonAI.DistributedNPCToonAI):
         av = self.air.doId2do.get(avId)
         if av:
             chat = None
-            if len(av.questManager.quests.keys()) >= 4 and not av.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId):
-                array = list(CIGlobals.NPCEnter_Pointless_Dialogue)
-                chat = random.choice(array)
-            elif (len(av.questManager.getPickableQuestList(self)) == 0 and
-            not av.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId)):
-                chat = CIGlobals.NPCEnter_HQ_FinishCurrentQuest
+            needToVisitMe = av.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId)
+            if not needToVisitMe:
+                pickableQuestList = av.questManager.getPickableQuestList(self)
+                # We don't need to visit this NPC and we're full on quests.
+                if len(av.questManager.quests.keys()) >= 4:
+                    array = list(CIGlobals.NPCEnter_Pointless_Dialogue)
+                    chat = random.choice(array)
+                elif len(pickableQuestList) == 0:
+                    # We don't need to visit this NPC and he doesn't have any quests to give us.
+                    chat = CIGlobals.NPCEnter_HQ_FinishCurrentQuest
             if chat:
                 if '%s' in chat:
                     chat = chat % av.getName()
                 self.d_setChat(chat)
-                return False
-            return True
+            return chat is None

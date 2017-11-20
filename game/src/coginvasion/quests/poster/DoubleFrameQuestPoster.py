@@ -103,65 +103,11 @@ class DoubleFrameQuestPoster(QuestPoster):
             self.handleDeliverItemObjective()
         elif objective.__class__ == RecoverItemObjective:
             self.handleRecoverItemObjective()
-        elif objective.__class__ == CogBuildingObjective:
-            self.handleCompletedCogBuildingObjective()
-        elif objective.__class__ == CogObjective:
-            self.handleCompletedCogObjective()
-        elif objective.__class__ == MinigameObjective:
-            self.handleCompletedMinigameObjective()
         
         self.goalInfo.show()
         self.fromToMiddleText.show()
         self.goalIcon.initialiseoptions(DirectFrame)
         self.initialiseoptions(DoubleFrameQuestPoster)
-        
-    def handleCompletedCogBuildingObjective(self):
-        objective = self.viewObjective
-        
-        # Let's make sure we have a current objective that is
-        # an instance of the CogBuildingObjective class and this poster isn't destroyed.
-        if not objective or not hasattr(self, 'titleLabel') or not isinstance(objective, CogBuildingObjective): return
-        
-        # Update the positions and information regarding the left side.
-        self.auxFrame.setPos(QuestGlobals.RECOVER_LEFT_PICTURE_POS)
-        self.objectiveInfo.setPos(QuestGlobals.RECOVER_INFO_POS)
-        self.fromToMiddleText['text'] = QuestGlobals.TO
-        self.goalInfo.setPos(QuestGlobals.RECOVER_INFO2_POS)
-        self.auxText.setPos(QuestGlobals.RECOVER_AUX_POS)
-        self.handleNPCObjective(self.goalIcon, auxText = QuestGlobals.RETURN, 
-            frameColor = QuestGlobals.BLUE)
-        
-    def handleCompletedCogObjective(self):
-        objective = self.viewObjective
-        
-        # Let's make sure we have a current objective that is
-        # an instance of the CogObjective class and this poster isn't destroyed.
-        if not objective or not hasattr(self, 'titleLabel') or not isinstance(objective, CogObjective): return
-        
-        # Update the positions and information regarding the left side.
-        self.auxFrame.setPos(QuestGlobals.RECOVER_LEFT_PICTURE_POS)
-        self.objectiveInfo.setPos(QuestGlobals.RECOVER_INFO_POS)
-        self.fromToMiddleText['text'] = QuestGlobals.TO
-        self.goalInfo.setPos(QuestGlobals.RECOVER_INFO2_POS)
-        self.auxText.setPos(QuestGlobals.RECOVER_AUX_POS)
-        self.handleNPCObjective(self.goalIcon, auxText = QuestGlobals.RETURN, 
-            frameColor = QuestGlobals.BLUE)
-        
-    def handleCompletedMinigameObjective(self):
-        objective = self.viewObjective
-        
-        # Let's make sure we have a current objective that is
-        # an instance of the MinigameObjective class and this poster isn't destroyed.
-        if not objective or not hasattr(self, 'titleLabel') or not isinstance(objective, MinigameObjective): return
-        
-        # Update the positions and information regarding the left side.
-        self.auxFrame.setPos(QuestGlobals.RECOVER_LEFT_PICTURE_POS)
-        self.objectiveInfo.setPos(QuestGlobals.RECOVER_INFO_POS)
-        self.fromToMiddleText['text'] = QuestGlobals.TO
-        self.goalInfo.setPos(QuestGlobals.RECOVER_INFO2_POS)
-        self.auxText.setPos(QuestGlobals.RECOVER_AUX_POS)
-        self.handleNPCObjective(self.goalIcon, auxText = QuestGlobals.RETURN, 
-            frameColor = QuestGlobals.BLUE)
         
     def handleRecoverItemObjective(self):
         objective = self.viewObjective
