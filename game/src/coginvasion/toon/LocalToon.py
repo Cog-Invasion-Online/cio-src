@@ -604,7 +604,8 @@ class LocalToon(DistributedToon):
             else:
                 self.resetHeadHpr()
                 self.stopLookAround()
-                self.startLookAround()
+                if state == 'Happy':
+                    self.startLookAround()
                 self.playMovementSfx(None)
         return task.cont
 
