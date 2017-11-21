@@ -39,6 +39,7 @@ class Snowball(NodePath, DirectObject):
     def load(self):
         self.model = loader.loadModel("phase_5/models/props/snowball.bam")
         self.model.reparentTo(self)
+        self.model.setMaterialOff()
 
         base.audio3d.attachSoundToObject(self.impactSound, self)
 
