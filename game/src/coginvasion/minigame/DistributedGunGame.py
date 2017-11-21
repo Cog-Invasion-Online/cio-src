@@ -335,7 +335,7 @@ class DistributedGunGame(DistributedToonFPSGame, TeamMinigame):
             self.fsm.request('announceGameOver')
             self.isTimeUp = True
 
-    def teamWon(self, team):
+    def teamWon(self, team, timeRanOut = 0):
         self.fsm.request('announceTeamWon', [team])
 
     def enterAnnounceTeamWon(self, team):
