@@ -10,6 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.fsm import ClassicFSM, State
 
+from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood.Place import Place
 
 class CogOfficeInterior(Place):
@@ -40,6 +41,11 @@ class CogOfficeInterior(Place):
     def enter(self, requestStatus):
         Place.enter(self)
         self.fsm.enterInitialState()
+        base.playSfx(CIGlobals.getIndoorSound(), looping = 1)
+        
+    def exit(self):
+        CIGlobals.getIndoorSound().stop()
+        Place.exit(self)
 
     def load(self):
         Place.load(self)

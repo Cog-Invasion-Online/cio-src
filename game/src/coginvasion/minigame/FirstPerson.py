@@ -92,8 +92,8 @@ class FirstPerson(DirectObject):
             
             dt = globalClock.getDt()
 
-            camera.setP(camera.getP() - (y - centerY) * (sens * 20) * dt)
-            base.localAvatar.setH(base.localAvatar.getH() - (x - centerX) * (sens * 20) * dt)
+            camera.setP(camera.getP() - (y - centerY) * sens)
+            base.localAvatar.setH(base.localAvatar.getH() - (x - centerX) * sens)
             
             if camera.getP() < self.min_camerap:
                 camera.setP(self.min_camerap)
