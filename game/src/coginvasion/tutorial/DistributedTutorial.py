@@ -103,7 +103,6 @@ class DistributedTutorial(DistributedBattleZone):
     def disableAvStuff(self):
         base.localAvatar.lastState = None
         base.localAvatar.disableAvatarControls()
-        base.localAvatar.detachCamera()
         base.localAvatar.stopSmartCamera()
         base.localAvatar.stopPosHprBroadcast()
         base.localAvatar.stopBlink()
@@ -114,7 +113,7 @@ class DistributedTutorial(DistributedBattleZone):
         base.localAvatar.hideGagButton()
         if base.localAvatar.GTAControls:
             self.mouseMov.disableMovement(False)
-            self.mouseMov.ignore(base.inputStore.ToggleGTAControls)
+        base.localAvatar.detachCamera()
 
     def enterOff(self):
         pass
@@ -300,7 +299,7 @@ class DistributedTutorial(DistributedBattleZone):
         self.disableAvStuff()
 
     def enterTraining2Info(self):
-        self.mouseMov.disableMovement(allowReEnable = False)
+        base.camera.reparentTo(render)
         base.camera.setPos(3.09, 37.16, 3.93)
         base.camera.setHpr(225, 0, 0)
 
@@ -308,7 +307,6 @@ class DistributedTutorial(DistributedBattleZone):
         self.__doTutChat(DistributedTutorial.GUIDE_PT2_INFO)
 
     def exitTraining2Info(self):
-        self.mouseMov.enableMovement()
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
 
     def enterTrainingPT2(self):
@@ -321,14 +319,13 @@ class DistributedTutorial(DistributedBattleZone):
         self.disableAvStuff()
 
     def enterTraining3Info(self):
-        self.mouseMov.disableMovement(allowReEnable = False)
+        base.camera.reparentTo(render)
         base.camera.setPos(3.09, 37.16, 3.93)
         base.camera.setHpr(225, 0, 0)
         self.__prepareTutChat()
         self.__doTutChat(DistributedTutorial.GUIDE_PT3_INFO)
 
     def exitTraining3Info(self):
-        self.mouseMov.enableMovement()
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
 
     def enterTrainingPT3(self):
@@ -339,10 +336,10 @@ class DistributedTutorial(DistributedBattleZone):
 
     def exitTrainingPT3(self):
         self.disableAvStuff()
-        self.mouseMov.enableMovement()
 
     def enterTrainingDone(self):
         self.mouseMov.disableMovement(allowReEnable = False)
+        base.camera.reparentTo(render)
         base.camera.setPos(3.09, 37.16, 3.93)
         base.camera.setHpr(225, 0, 0)
         self.__prepareTutChat()
@@ -350,7 +347,6 @@ class DistributedTutorial(DistributedBattleZone):
 
     def exitTrainingDone(self):
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
-        self.mouseMov.enableMovement()
 
     def enterLeaveTutorial(self):
         base.localAvatar.attachCamera()

@@ -48,10 +48,11 @@ class SuitPathBehaviorAI(SuitBehaviorBaseAI):
         x2, y2 = self.suit.getX(render), self.suit.getY(render)
         path = self.pathFinder.planPath((x2, y2), (x1, y1))
         if path is None:
-            return
+            return 0
         if len(path) < 2:
             path.insert(0, (x2, y2))
         self.startPath(path, z, durationFactor)
+        return 1
 
     def startPath(self, path, z, durationFactor):
         correctedPath = []

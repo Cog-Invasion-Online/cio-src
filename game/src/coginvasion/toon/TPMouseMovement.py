@@ -90,6 +90,8 @@ class TPMouseMovement(DirectObject):
         camera.wrtReparentTo(base.localAvatar)
         if allowReEnable:
             self.allowReEnable()
+        else:
+            self.ignore(base.inputStore.ToggleGTAControls)
         self.enabled = False
         
     def allowReEnable(self):

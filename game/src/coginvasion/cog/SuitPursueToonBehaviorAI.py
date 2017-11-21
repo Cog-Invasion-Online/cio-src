@@ -79,6 +79,10 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         self.targetId = avIds[0]
         self.target = self.air.doId2do.get(self.targetId)
         self.suit.sendUpdate('setChaseTarget', [self.targetId])
+        
+    def reset(self):
+        self.exit()
+        self.enter()
 
     def exit(self):
         self.fsm.request('off')
@@ -169,8 +173,16 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         # Make our initial path to the toon.
         if not self.isAvatarReachable(self.target):
             return
+            
         self.lastCheckedPos = self.target.getPos(render)
-        self.createPath(self.target)
+        
+        if not self.createPath(self.target):
+            # We couldn't figure out a good path to this target.
+            # Instead of just getting stuck, move to a new spot, then try again.
+            self.notify.warning("{0}: createPath({1}) failed, diverting".format(self.suit.doId, self.targetId))
+            self.fsm.request('divert')
+            return
+            
         taskMgr.add(self._pursueTask, self.suit.uniqueName('pursueToonTask'))
         taskMgr.add(self._scanTask, self.suit.uniqueName('scanTask'))
 

@@ -102,12 +102,12 @@ class OutdoorLightingConfig(LightingConfig):
         envConfig = base.loader.envConfig
 
         return OutdoorLightingConfig(envConfig.defaultOutdoorAmbientColor,
-            envConfig.defaultSunColor,
-            envConfig.defaultSunPosition,
-            envConfig.defaultFogColor,
-            envConfig.defaultFogDensity,
-            envConfig.defaultSkyType,
-        False)
+                                     envConfig.defaultSunColor,
+                                     envConfig.defaultSunPosition,
+                                     envConfig.defaultFogColor,
+                                     envConfig.defaultFogDensity,
+                                     envConfig.defaultSkyType,
+                                     False)
 
     def setup(self):
         LightingConfig.setup(self)
@@ -205,8 +205,8 @@ class IndoorLightingConfig(LightingConfig):
         envConfig = base.loader.envConfig
         
         return IndoorLightingConfig(envConfig.defaultIndoorAmbientColor,
-            envConfig.defaultInteriorLightColor,
-        [Point3(0, 10, 11.5)])
+                                    envConfig.defaultInteriorLightColor,
+                                    [Point3(0, 10, 11.5)])
 
     def setup(self):
         LightingConfig.setup(self)

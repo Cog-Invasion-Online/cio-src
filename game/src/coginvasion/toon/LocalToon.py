@@ -346,6 +346,7 @@ class LocalToon(DistributedToon):
         #self.notify.info("Attaching camera...")
         camera.reparentTo(self)
         camera.setPos(self.smartCamera.getIdealCameraPos())
+        camera.lookAt(self.smartCamera.getLookAtPoint())
 
     def startSmartCamera(self):
         #self.notify.info("Starting camera...")

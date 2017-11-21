@@ -33,6 +33,7 @@ class DistributedClerkNPCToon(DistributedNPCToon):
         return self.items
 
     def enterAccepted(self):
+        base.localAvatar.stopSmartCamera()
         self.doCameraNPCInteraction()
         self.cameraTrack.setDoneEvent(self.uniqueName('clerkInteractionCam'))
         self.acceptOnce(self.cameraTrack.getDoneEvent(), self.__showShop)
