@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import WindowProperties
+from panda3d.core import WindowProperties, LightRampAttrib
 
 from OptionsCategory import OptionsCategory
 from ChoiceWidget import ChoiceWidget
@@ -24,6 +24,9 @@ class GeneralCategory(OptionsCategory):
         self.cursor = ChoiceWidget(page, CIGlobals.getSettingsMgr().MouseCursors.keys(), (0, 0, 0.47),
                                    self.__chooseCursor, "Mouse Cursor", 0.05)
         self.lighting = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.3), self.__chooseLighting, "Lighting")
+        self.ppl = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.13), self.__choosePpl, "Per-Pixel Lighting")
+        self.hdr = ChoiceWidget(page, ["None", "Ver. 1", "Ver. 2", "Ver. 3"], (0, 0, -0.04),
+                                self.__chooseHdr, "HDR Tone Mapping")
                                    
         self.discardChanges()
         
@@ -33,6 +36,18 @@ class GeneralCategory(OptionsCategory):
         
         self.origLighting = CIGlobals.getSettingsMgr().getSetting("lighting")
         self.lightingChoice = self.origLighting
+        
+        self.origHdr = CIGlobals.getSettingsMgr().getSetting("hdr")
+        self.hdrChoice = self.origHdr
+        
+        self.origPpl = CIGlobals.getSettingsMgr().getSetting("ppl")
+        self.pplChoice = self.origPpl
+        
+    def __choosePpl(self, choice):
+        self.pplChoice = bool(choice)
+        
+    def __chooseHdr(self, choice):
+        self.hdrChoice = choice
                                    
     def __chooseCursor(self, choice):
         self.cursorChoice = self.cursor.options[choice]
@@ -53,6 +68,17 @@ class GeneralCategory(OptionsCategory):
             CIGlobals.getSettingsMgr().updateAndWriteSetting("lighting", self.lightingChoice)
             game.uselighting = self.lightingChoice
             
+        if (self.hdrChoice != self.origHdr):
+            CIGlobals.getSettingsMgr().updateAndWriteSetting("hdr", self.hdrChoice)
+            CIGlobals.getSettingsMgr().applyHdr(self.hdrChoice)
+            
+        if (self.pplChoice != self.origPpl):
+            CIGlobals.getSettingsMgr().updateAndWriteSetting("ppl", self.pplChoice)
+            if self.pplChoice:
+                render.setShaderAuto()
+            else:
+                render.setShaderOff()
+            
         self._setDefaults()
         self._hideApplying()
         
@@ -60,6 +86,8 @@ class GeneralCategory(OptionsCategory):
         self._setDefaults()
         self.cursor.goto(self.cursor.options.index(self.cursorChoice.title()))
         self.lighting.goto(int(self.lightingChoice))
+        self.hdr.goto(self.hdrChoice)
+        self.ppl.goto(int(self.pplChoice))
         
     def cleanup(self):
         if hasattr(self, 'cursor'):
@@ -70,10 +98,24 @@ class GeneralCategory(OptionsCategory):
             self.lighting.cleanup()
             del self.lighting
             
+        if hasattr(self, 'hdr'):
+            self.hdr.cleanup()
+            del self.hdr
+            
+        if hasattr(self, 'ppl'):
+            self.ppl.cleanup()
+            del self.ppl
+            
         del self.origCursor
         del self.cursorChoice
         
         del self.lightingChoice
         del self.origLighting
+        
+        del self.hdrChoice
+        del self.origHdr
+        
+        del self.pplChoice
+        del self.origPpl
         
         OptionsCategory.cleanup(self)

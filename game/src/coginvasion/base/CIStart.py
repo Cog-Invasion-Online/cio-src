@@ -259,13 +259,6 @@ def doneInitLoad():
     from src.coginvasion.distributed import CogInvasionClientRepository
     base.cr = CogInvasionClientRepository.CogInvasionClientRepository(music, "ver-" + game.version)
 
-from panda3d.core import LightRampAttrib
-
-if game.uselighting:
-    render.show(CIGlobals.ShadowCameraBitmask)
-    render.setAttrib(LightRampAttrib.makeHdr0())
-    render.setShaderAuto()
-
 notify.info("Starting initial game load...")
 from InitialLoad import InitialLoad
 il = InitialLoad(doneInitLoad)

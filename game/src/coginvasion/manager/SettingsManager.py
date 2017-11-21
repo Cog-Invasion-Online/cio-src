@@ -9,6 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import AntialiasAttrib
+from panda3d.core import LightRampAttrib
 from panda3d.core import loadPrcFileData, WindowProperties
 from direct.directnotify.DirectNotify import DirectNotify
 
@@ -129,14 +130,34 @@ class SettingsManager:
         cursor = settings.get("cursor", None)
         if cursor == None:
             cursor = self.updateAndWriteSetting("cursor", SettingsManager.MouseCursors.keys()[0])
+            
+        # Hdr
+        hdr = settings.get("hdr", None)
+        if hdr == None:
+            hdr = self.updateAndWriteSetting("hdr", 0)
+            
+        # Per pixel lighting
+        ppl = settings.get("ppl", None)
+        if ppl == None:
+            ppl = self.updateAndWriteSetting("ppl", True)
 
         base.enableMusic(music)
         base.enableSoundEffects(sfx)
         
+        from src.coginvasion.globals import CIGlobals
+        
         game.uselighting = lighting
+        if lighting:
+            render.show(CIGlobals.ShadowCameraBitmask)
+            if ppl:
+                render.setShaderAuto()
+            else:
+                render.setShaderOff()
 
         base.musicManager.setVolume(musvol)
         base.sfxManagerList[0].setVolume(sfxvol)
+        
+        self.applyHdr(hdr)
 
         if aa != 0:
             render.set_antialias(AntialiasAttrib.MMultisample)
@@ -153,8 +174,6 @@ class SettingsManager:
         elif tex_detail == "low":
             loadPrcFileData("", "compressed-textures 1")
 
-        from src.coginvasion.globals import CIGlobals
-
         CIGlobals.DefaultCameraFov = genfov
         CIGlobals.GunGameFov = fpmgfov
 
@@ -163,6 +182,16 @@ class SettingsManager:
         wp.setFullscreen(fs)
         wp.setCursorFilename(SettingsManager.MouseCursors[cursor])
         base.win.requestProperties(wp)
+        
+    def applyHdr(self, hdr):
+        if hdr == 1:
+            render.setAttrib(LightRampAttrib.makeHdr0())
+        elif hdr == 2:
+            render.setAttrib(LightRampAttrib.makeHdr1())
+        elif hdr == 3:
+            render.setAttrib(LightRampAttrib.makeHdr2())
+        else:
+            render.clearAttrib(LightRampAttrib.getClassType())
 
     def maybeFixAA(self):
         if self.getSetting("aa") == 0:
