@@ -117,7 +117,7 @@ class DistributedTreasure(DistributedObject):
                                                              startColorScale = VBase4(1, 1, 1, 1), blendType = 'easeIn'),
                                       LerpColorScaleInterval(self.nodePath, 0.2, colorScale = VBase4(1, 1, 1, 1),
                                                              startColorScale = VBase4(0, 0, 0, 0), blendType = 'easeOut',
-                                                             name = 'treasureFlyTrack'))
+                                                             name = self.uniqueName('treasureFlyTrack')))
         self.treasureTrack.start()
 
     def setGrab(self, avId):
@@ -138,12 +138,12 @@ class DistributedTreasure(DistributedObject):
         avatarGoneName = self.av.uniqueName('disable')
         self.accept(avatarGoneName, self.handleUnexpectedExit)
         flyTime = 1.0
-        track = Sequence(LerpPosInterval(self.nodePath, flyTime, pos = Point3(0, 0, 3), startPos = self.nodePath.getPos(self.av), blendType = 'easeInOut'),
+        track = Sequence(LerpPosInterval(self.nodePath, flyTime, pos = Point3(0, 0, self.av.nametag3d.getZ(self.av) + 0.3), startPos = self.nodePath.getPos(self.av), blendType = 'easeInOut'),
                          Func(self.nodePath.detachNode), Func(self.ignore, avatarGoneName))
         if self.shadow:
-            self.treasureTrack = Sequence(HideInterval(self.dropShadow), track, ShowInterval(self.dropShadow), name = 'treasureFlyTrack')
+            self.treasureTrack = Sequence(HideInterval(self.dropShadow), track, ShowInterval(self.dropShadow), name = self.uniqueName('treasureFlyTrack'))
         else:
-            self.treasureTrack = Sequence(track, name = 'treasureFlyTrack')
+            self.treasureTrack = Sequence(track, name = self.uniqueName('treasureFlyTrack'))
         self.nodePath.reparentTo(self.av)
         self.treasureTrack.start()
 
