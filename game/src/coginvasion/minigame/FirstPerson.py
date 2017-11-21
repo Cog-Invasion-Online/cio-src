@@ -21,10 +21,11 @@ class FirstPerson(DirectObject):
     def start(self):
         base.localAvatar.getGeomNode().hide()
         self.player_node = base.localAvatar.attachNewNode('PlayerNode')
-        base.localAvatar.controlManager.disable()
-        base.localAvatar.prepareToSwitchControlType()
-        base.localAvatar.controlManager.wantWASD = 1
-        base.localAvatar.controlManager.enable()
+        if not base.localAvatar.GTAControls:
+            base.localAvatar.controlManager.disable()
+            base.localAvatar.prepareToSwitchControlType()
+            base.localAvatar.controlManager.wantWASD = 1
+            base.localAvatar.controlManager.enable()
         camera.setPosHpr(0, 0, 0, 0, 0, 0)
         camera.reparentTo(self.player_node)
         camera.setZ(base.localAvatar.getHeight())
@@ -59,10 +60,11 @@ class FirstPerson(DirectObject):
         camera.reparentTo(render)
         camera.setZ(0.0)
         base.localAvatar.getGeomNode().show()
-        base.localAvatar.controlManager.disable()
-        base.localAvatar.prepareToSwitchControlType()
-        base.localAvatar.controlManager.wantWASD = 0
-        base.localAvatar.controlManager.enable()
+        if not base.localAvatar.GTAControls:
+            base.localAvatar.controlManager.disable()
+            base.localAvatar.prepareToSwitchControlType()
+            base.localAvatar.controlManager.wantWASD = 0
+            base.localAvatar.controlManager.enable()
         self.enableMouse()
         self.ignore("escape")
 
