@@ -212,7 +212,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
                         if objective.type == DefeatCog:
                             progress = objective.progress
                             for killData in deadCogData:
-                                if not (progress + 1) <= objective.goal and objective.isNeededCogFromDeadCogData(killData):
+                                if not (progress == objective.goal) and objective.isNeededCogFromDeadCogData(killData):
                                     progress += 1
                                 elif (progress == objective.goal): break
                             objectiveProgress[i] = progress
