@@ -137,21 +137,23 @@ class QuestManagerAI(QuestManagerBase):
 
         for quest in self.quests.values():
             objectives = quest.accessibleObjectives
+            complete = objectives.isComplete()
 
             isHQ = CIGlobals.NPCToonDict[npcId][3] == CIGlobals.NPC_HQ
             
             for objective in objectives:
+                mustVisitOfficer = objective.assigner is 0
                 if objective.type == VisitNPC:
                     # Make sure the npcIds match.
                     if objective.npcId == npcId:
                         # Make sure the zones match.
                         return objective.npcZone == zoneId
-                elif objective.type == VisitHQOfficer:
+                elif objective.type == VisitHQOfficer or (isHQ and complete and mustVisitOfficer):
                     # When the objective is to visit an HQ officer, we can visit any HQ officer.
                     # Just make sure that the NPC is an HQ Officer.
                     return isHQ
                 else:
-                    return (objective.isComplete()) and ((isHQ and objective.assigner == 0) 
+                    return (objectives.isComplete()) and ((isHQ and objective.assigner == 0) 
                         or (objective.assigner == npcId))
 
         # I guess we have no objective to visit this npc.

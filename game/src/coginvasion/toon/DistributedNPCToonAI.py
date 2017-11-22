@@ -56,8 +56,8 @@ class DistributedNPCToonAI(DistributedToonAI):
 
     def requestEnter(self):
         avId = self.air.getAvatarIdFromSender()
-        if (self.currentAvatar != None or
-        self.currentAvatar == None and not self.hasValidReasonToEnter(avId)):
+        noCurAvatar = self.currentAvatar is None
+        if (not noCurAvatar or noCurAvatar and self.hasValidReasonToEnter(avId)):
             self.sendUpdateToAvatarId(avId, 'rejectEnter', [])
         else:
             self.currentAvatar = avId
@@ -84,12 +84,12 @@ class DistributedNPCToonAI(DistributedToonAI):
         av = self.air.doId2do.get(avId)
         if av:
             chatArray = None
-            if (len(av.questManager.quests.values()) == 0 or
-            not av.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId) and
-            not av.questManager.wasLastObjectiveToVisit(self.npcId)):
+            needsToVisit = av.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId)
+            lastVisited = av.questManager.wasLastObjectiveToVisit(self.npcId)
+            if (len(av.questManager.quests.values()) == 0 or (not needsToVisit and not lastVisited)):
                 # This avatar entered for no reason. They either have no quests or no objective to visit me.
                 chatArray = CIGlobals.NPCEnter_Pointless_Dialogue
-            elif av.questManager.wasLastObjectiveToVisit(self.npcId):
+            elif lastVisited:
                 # This avatar entered, but still has to complete the objective I gave him/her.
                 chatArray = CIGlobals.NPCEnter_MFCO_Dialogue
 

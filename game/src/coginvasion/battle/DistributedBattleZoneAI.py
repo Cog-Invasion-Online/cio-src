@@ -210,12 +210,12 @@ class DistributedBattleZoneAI(DistributedObjectAI):
                     for i, objective in enumerate(quest.accessibleObjectives):
                         objectiveProgress.append(objective.progress)
                         if objective.type == DefeatCog:
-                            howManyIncrements = 0
+                            progress = objective.progress
                             for killData in deadCogData:
-                                if not objective.isComplete() and objective.isNeededCogFromDeadCogData(killData):
-                                    howManyIncrements += 1
-                                elif objective.isComplete(): break
-                            objectiveProgress[i] = howManyIncrements
+                                if not (progress + 1) <= objective.goal and objective.isNeededCogFromDeadCogData(killData):
+                                    progress += 1
+                                elif (progress == objective.goal): break
+                            objectiveProgress[i] = progress
                         elif objective.type == DefeatCogBuilding and self.isCogOffice() and objective.isAcceptable(self.hood, self.dept, self.numFloors):
                             objectiveProgress[i] = objectiveProgress[i] + 1
                     objectiveProgresses.append(objectiveProgress)

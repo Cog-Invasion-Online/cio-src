@@ -49,7 +49,7 @@ class QuestPoster(DirectFrame):
         self.accessibleObjectives = quest.accessibleObjectives if quest else []
         self.viewObjective = quest.accessibleObjectives.seek() if quest else None
         
-        isObjComplete = False if not quest else self.viewObjective.isComplete()
+        isObjComplete = False if not quest else self.accessibleObjectives.isComplete()
         
         # Let's define our options for the DirectFrame.
         bookModel = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
@@ -96,7 +96,7 @@ class QuestPoster(DirectFrame):
             text_wordwrap = 11.0,
         pos = QuestGlobals.DEFAULT_LEFT_PICTURE_POS)
         
-        if self.quest and len(self.quest.accessibleObjectives) > 1:
+        if self.quest and len(self.quest.accessibleObjectives) > 1 and not isObjComplete:
             # We can only use arrows when we have more than one objective available.
             arrowGui = loader.loadModel('phase_4/models/gui/QuestArrowGui.bam')
             self.prevObjArrow = DirectButton(parent = self.auxFrame,
@@ -248,6 +248,7 @@ class QuestPoster(DirectFrame):
     def setup(self):
         if self.quest:
             objective = self.viewObjective
+            complete = self.accessibleObjectives.isComplete()
             
             # Let's reset our positioning of elements.
             self.auxFrame.setPos(QuestGlobals.DEFAULT_LEFT_PICTURE_POS)
@@ -262,8 +263,8 @@ class QuestPoster(DirectFrame):
             self.objectiveInfo.show()
             self.auxFrame.show()
             
-            isShopLoc = QuestGlobals.isShopLocation(objective.area) if not objective.isComplete() else True
-            self.locationInfo['text'] = QuestGlobals.getLocationText(objective.area) if not objective.isComplete() else QuestGlobals.getLocationText(None, objective)
+            isShopLoc = QuestGlobals.isShopLocation(objective.area) if not complete else True
+            self.locationInfo['text'] = QuestGlobals.getLocationText(objective.area) if not complete else QuestGlobals.getLocationText(None, objective)
             self.locationInfo['text_pos'] = (0, 0 if not isShopLoc else 0.025)
             self.locationInfo.show()
             
@@ -274,13 +275,13 @@ class QuestPoster(DirectFrame):
                 self.progressBar['range'] = objective.goal
                 self.progressBar['value'] = progress & pow(2, 16) - 1
             
-            if objective.HasProgress and objective.goal > 1 and not objective.isComplete():
+            if objective.HasProgress and objective.goal > 1 and not complete:
                 self.progressBar.show()
             
             self.auxText.show()
             
             # Let's handle the objectives.
-            if not objective.isComplete():
+            if not complete:
                 if objective.__class__ == CogObjective:
                     self.handleCogObjective()
                 elif objective.__class__ == CogBuildingObjective:
@@ -488,7 +489,7 @@ class QuestPoster(DirectFrame):
         objective = self.viewObjective
         npcId = 0
         
-        if objective.isComplete() and not hasattr(objective, 'npcId'):
+        if self.accessibleObjectives.isComplete() and not hasattr(objective, 'npcId'):
             npcId = objective.assigner
         elif hasattr(objective, 'npcId'):
             npcId = objective.npcId

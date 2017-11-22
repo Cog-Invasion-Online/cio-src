@@ -235,11 +235,9 @@ def getLocationText(location, objective = None):
         return 'Any Street\nAny Playground'
     
 def generatePoster(quest, parent, **kw):
-    if quest: 
-        # We have to seek to the first objective if the seeker isn't on the first one yet.
-        if quest.accessibleObjectives.seeker == -1:
-            quest.accessibleObjectives.nextObjective()
-        quest.accessibleObjectives.seek()
+    # We have to seek to the first objective if the seeker isn't on the first one yet.
+    if quest and quest.accessibleObjectives.seeker == -1:
+        quest.accessibleObjectives.nextObjective()
             
     from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
     poster = DoubleFrameQuestPoster(quest, parent = parent, **kw)
