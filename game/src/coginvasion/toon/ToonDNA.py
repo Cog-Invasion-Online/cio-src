@@ -375,7 +375,8 @@ class ToonDNA:
          'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding4.jpg',
          'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding05.jpg',
          'phase_4/maps/tt_t_chr_avt_shirtSleeve_anniversary.jpg',
-         'phase_4/maps/tsasleeve.jpg']
+         'phase_4/maps/tsasleeve.jpg',
+         'phase_4/maps/tsasleeve_dev.jpg']
 
     maleTopDNA2maleTop = {
         "00": [
@@ -1490,6 +1491,13 @@ class ToonDNA:
             [
                 "27"
             ]
+        ],
+        "136": [
+            "phase_4/maps/tsashirt_dev.jpg",
+            136,
+            [
+                "27"
+            ]
         ]
     }
 
@@ -2049,6 +2057,13 @@ class ToonDNA:
         "135": [
             "phase_4/maps/tsashirt.jpg",
             135,
+            [
+                "27"
+            ]
+        ],
+        "136": [
+            "phase_4/maps/tsashirt_dev.jpg",
+            136,
             [
                 "27"
             ]
@@ -3061,6 +3076,12 @@ class ToonDNA:
             [
                 "27"
             ]
+        ],
+        "44": [
+            "phase_4/maps/tsaskirt_dev.jpg",
+            [
+                "27"
+            ]
         ]
     }
 
@@ -3537,6 +3558,12 @@ class ToonDNA:
         ],
         "57": [
             "phase_4/maps/tsashorts.jpg",
+            [
+                "27"
+            ]
+        ],
+        "58": [
+            "phase_4/maps/tsashorts_dev.jpg",
             [
                 "27"
             ]

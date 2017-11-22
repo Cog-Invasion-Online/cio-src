@@ -562,7 +562,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
     def generateMask(self):
         # No accessories yet.
 
-        if self.shirt == self.maleTopDNA2maleTop['135'][0]:
+        if self.shirt == self.maleTopDNA2maleTop['135'][0] or self.shirt == self.maleTopDNA2maleTop['136'][0]:
             # This toon is wearing the tsa suit, give them some sweet shades.
             name = 'tsaGlasses'
             glasses = loader.loadModel(AccessoryGlobals.AccessoryName2Model[name])

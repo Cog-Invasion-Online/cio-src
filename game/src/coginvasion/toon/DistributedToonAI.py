@@ -107,14 +107,25 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
             if requester.getAdminToken() > CIGlobals.NoToken:
                 if flag:
                     # Apply the TSA uniform to this toon.
-                    if self.gender == 'girl':
-                        self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][0]
-                        self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['43'][0]
-                        self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][1]]
+                    if self.getAdminToken() != CIGlobals.DevToken:
+                        if self.gender == 'girl':
+                            self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][0]
+                            self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['43'][0]
+                            self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][1]]
+                        else:
+                            self.shirt = ToonDNA.ToonDNA.maleTopDNA2maleTop['135'][0]
+                            self.shorts = ToonDNA.ToonDNA.maleBottomDNA2maleBottom['57'][0]
+                            self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.maleTopDNA2maleTop['135'][1]]
                     else:
-                        self.shirt = ToonDNA.ToonDNA.maleTopDNA2maleTop['135'][0]
-                        self.shorts = ToonDNA.ToonDNA.maleBottomDNA2maleBottom['57'][0]
-                        self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.maleTopDNA2maleTop['135'][1]]
+                        # Blue suit signifies developer.
+                        if self.gender == 'girl':
+                            self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['136'][0]
+                            self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['44'][0]
+                            self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.femaleTopDNA2femaleTop['136'][1]]
+                        else:
+                            self.shirt = ToonDNA.ToonDNA.maleTopDNA2maleTop['136'][0]
+                            self.shorts = ToonDNA.ToonDNA.maleBottomDNA2maleBottom['58'][0]
+                            self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.maleTopDNA2maleTop['136'][1]]
                 else:
                     # Apply the default white clothes.
                     if self.gender == 'girl':
