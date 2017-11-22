@@ -107,18 +107,26 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
             if requester.getAdminToken() > CIGlobals.NoToken:
                 if flag:
                     # Apply the TSA uniform to this toon.
-                    self.shirt  = ToonDNA.ToonDNA.shirtDNA2shirt['27']
-                    self.sleeve = ToonDNA.ToonDNA.sleeveDNA2sleeve['25']
-                    self.shorts = (ToonDNA.ToonDNA.shortDNA2short['27'] if self.gender == 'boy'
-                                   else ToonDNA.ToonDNA.shortDNA2short['28'])
+                    if self.gender == 'girl':
+                        self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][0]
+                        self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['43'][0]
+                        self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][1]]
+                    else:
+                        self.shirt = ToonDNA.ToonDNA.maleTopDNA2maleTop['135'][0]
+                        self.shorts = ToonDNA.ToonDNA.maleBottomDNA2maleBottom['57'][0]
+                        self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.maleTopDNA2maleTop['135'][1]]
                 else:
                     # Apply the default white clothes.
-                    self.shirt  = ToonDNA.ToonDNA.shirtDNA2shirt['00']
-                    self.sleeve = ToonDNA.ToonDNA.sleeveDNA2sleeve['00']
-                    self.shorts = (ToonDNA.ToonDNA.shortDNA2short['00'] if self.gender == 'boy'
-                                   else ToonDNA.ToonDNA.shortDNA2short['10'])
+                    if self.gender == 'girl':
+                        self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['00'][0]
+                        self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['00'][0]
+                        self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.femaleTopDNA2femaleTop['00'][1]]
+                    else:
+                        self.shirt = ToonDNA.ToonDNA.maleTopDNA2maleTop['00'][0]
+                        self.shorts = ToonDNA.ToonDNA.maleBottomDNA2maleBottom['00'][0]
+                        self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.maleTopDNA2maleTop['00'][1]]
                                    
-                self.shirtColor = self.sleeveColor = self.shortColor = ToonDNA.ToonDNA.colorName2DNAcolor['white']
+                self.shirtColor = self.sleeveColor = self.shortColor = ToonDNA.ToonDNA.clothesColorDNA2clothesColor['27']
                     
                 self.generateDNAStrandWithCurrentStyle()
                 self.d_setDNAStrand(self.getDNAStrand())
