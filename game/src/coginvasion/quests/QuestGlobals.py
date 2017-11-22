@@ -33,8 +33,9 @@ QPauxText = 0.04
 QPtextScale = 0.045
 QPtextWordwrap = 15.6
 
-IMAGE_SCALE_LARGE = 0.2
-IMAGE_SCALE_SMALL = 0.15
+SIMPLE_IMAGE_SCALE = 0.12
+IMAGE_SCALE_LARGE = 0.2 # 0.2
+IMAGE_SCALE_SMALL = 0.15 #0.15
 
 GAG_SLOT_ICON_SCALE = 0.035
 LEFT_GAG_SLOT_POS = Point3(-0.275, 0, -0.2425)
@@ -54,21 +55,26 @@ LEFT_TP_ACCESS_POS = Point3(-0.275, 0, -0.2)
 RIGHT_TP_ACCESS_POS = Point3(0.285, 0, -0.2)
 
 # Default positions for elements on posters.
-DEFAULT_INFO_POS = Point3(0, 0, -0.02)
-RECOVER_INFO_POS = Point3(-0.2, 0, -0.02)
+DEFAULT_INFO_POS = Point3(0, 0, -0.03) # -0.02
+RECOVER_INFO_POS = Point3(-0.2, 0, -0.03)
 
-DEFAULT_INFO2_POS = Point3(0, 0, -0.02)
-RECOVER_INFO2_POS = Point3(0.18, 0, -0.02)
+DEFAULT_INFO2_POS = Point3(0, 0, -0.03)
+RECOVER_INFO2_POS = Point3(0.18, 0, -0.03)
 
 DEFAULT_LEFT_PICTURE_POS = Point3(0, 0, 0.09)
 RECOVER_LEFT_PICTURE_POS = Point3(-0.2, 0, 0.09)
 DEFAULT_RIGHT_PICTURE_POS = Point3(0.18, 0, 0.09)
 
 # The text at the top that says something like Defeat, Recover, Take, etc
-DEFAULT_AUX_POS = Point3(0, 0, 0.18)
-RECOVER_AUX_POS = Point3(-0.2, 0, 0.18)
+DEFAULT_AUX_POS = Point3(0, 0, 0.185)
+RECOVER_AUX_POS = Point3(-0.2, 0, 0.185)
 
 DEFAULT_MIDDLE_POS = Point3(-0.01, 0, 0.0725)
+
+DEFAULT_LEFT_ARROW_POS = Point3(-0.15, 0, 0)
+DEFAULT_RIGHT_ARROW_POS = Point3(0.15, 0, 0)
+SECONDARY_LEFT_ARROW_POS = Point3(-0.13, 0, 0)
+SECONDARY_RIGHT_ARROW_POS = Point3(0.515, 0, 0)
 
 RED = Vec4(0.8, 0.45, 0.45, 1)
 BRIGHT_RED = Vec4(1.0, 0.16, 0.16, 1)
@@ -229,18 +235,14 @@ def getLocationText(location, objective = None):
         return 'Any Street\nAny Playground'
     
 def generatePoster(quest, parent, **kw):
-    objective = None
-    
     if quest: 
-        objective = quest.accessibleObjectives[0]
-    
-    import Objectives
-    if objective.__class__ in Objectives.DoubleFrameObjectives:
-        from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
-        poster = DoubleFrameQuestPoster(quest, parent = parent, **kw)
-    else:
-        from src.coginvasion.quests.poster.QuestPoster import QuestPoster
-        poster = QuestPoster(quest, parent = parent, **kw)
+        # We have to seek to the first objective if the seeker isn't on the first one yet.
+        if quest.accessibleObjectives.seeker == -1:
+            quest.accessibleObjectives.nextObjective()
+        quest.accessibleObjectives.seek()
+            
+    from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
+    poster = DoubleFrameQuestPoster(quest, parent = parent, **kw)
     poster.setup()
     return poster
     

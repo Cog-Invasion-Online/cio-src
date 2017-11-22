@@ -12,6 +12,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.gui.DirectGui import DirectFrame, DirectLabel, DGG
 from direct.gui.DirectWaitBar import DirectWaitBar
+from direct.gui.DirectButton import DirectButton
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from panda3d.core import TextNode, Point3, Vec4
@@ -46,7 +47,7 @@ class QuestPoster(DirectFrame):
         # The quest this poster is representing.
         self.quest = quest
         self.accessibleObjectives = quest.accessibleObjectives if quest else []
-        self.viewObjective = quest.accessibleObjectives[0] if quest else None
+        self.viewObjective = quest.accessibleObjectives.seek() if quest else None
         
         isObjComplete = False if not quest else self.viewObjective.isComplete()
         
@@ -81,10 +82,12 @@ class QuestPoster(DirectFrame):
         
         # The background frame where the objective image is displayed.
         # This is the colored background frame.
-        self.auxFrame = DirectFrame(parent = self, 
+        
+        circleGui = loader.loadModel('phase_4/models/gui/CircleIconBackgroundGui.bam')
+        self.auxFrame = DirectFrame(parent = self,
             relief = None,
-            image = bookModel.find('**/questPictureFrame'),
-            image_scale = QuestGlobals.IMAGE_SCALE_SMALL,
+            image = circleGui.find('**/circle_display_interior'),
+            image_scale = 0.18,
             text = '',
             text_pos = (0, -0.11),
             text_fg = QuestGlobals.TEXT_COLOR,
@@ -92,6 +95,31 @@ class QuestPoster(DirectFrame):
             text_align = TextNode.ACenter,
             text_wordwrap = 11.0,
         pos = QuestGlobals.DEFAULT_LEFT_PICTURE_POS)
+        
+        if self.quest and len(self.quest.accessibleObjectives) > 1:
+            # We can only use arrows when we have more than one objective available.
+            arrowGui = loader.loadModel('phase_4/models/gui/QuestArrowGui.bam')
+            self.prevObjArrow = DirectButton(parent = self.auxFrame,
+                relief = None,
+                geom = ((arrowGui.find('**/quest_arrow_enabled'),
+                    arrowGui.find('**/quest_arrow_click'),
+                    arrowGui.find('**/quest_arrow_mouseover'),
+                    arrowGui.find('**/quest_arrow_disabled'))),
+                scale = 0.08,
+                command = self.switchObjective,
+                extraArgs = [0],
+                hpr = (180, 0, 0),
+            pos = QuestGlobals.DEFAULT_LEFT_ARROW_POS)
+            
+            self.nextObjArrow = DirectButton(parent = self.auxFrame,
+                relief = None,
+                geom = ((arrowGui.find('**/quest_arrow_enabled'),
+                    arrowGui.find('**/quest_arrow_click'),
+                    arrowGui.find('**/quest_arrow_mouseover'),
+                    arrowGui.find('**/quest_arrow_disabled'))),
+                scale = 0.08,
+                command = self.switchObjective,
+            pos = QuestGlobals.DEFAULT_RIGHT_ARROW_POS)
         
         # The icon that goes on top of the aux frame.
         self.auxIcon = DirectFrame(parent = self.auxFrame,
@@ -105,6 +133,11 @@ class QuestPoster(DirectFrame):
             text_wordwrap = 13.0,
         textMayChange = 1)
         self.auxIcon.setColorOff(-1)
+        
+        self.auxOutline = DirectLabel(parent = self.auxFrame,
+            relief = None,
+            image = circleGui.find('**/circle_display_outline'),
+        image_scale = 0.18)
         
         # The aux text saying: DEFEAT, RECOVER, etc.
         self.auxText = DirectLabel(parent = self,
@@ -168,8 +201,8 @@ class QuestPoster(DirectFrame):
         self.rewardFrame = DirectFrame(parent = self, 
             relief = None,
             geom = rewardFrameGeom.find('**/Goofys_Sign'),
-            geom_scale = (0.615, 0, 0.4),
-        pos = (-0.01, 0, -0.25))
+            geom_scale = (0.62, 0, 0.4),
+        pos = (-0.015, 0, -0.25))
         
         # Let's setup our reward frames.
         reward = None
@@ -192,16 +225,39 @@ class QuestPoster(DirectFrame):
         self.sideInfo.hide()
         
         # Remove the nodes of the loaded models we no longer need.
+        circleGui.removeNode()
         bookModel.removeNode()
         rewardFrameGeom.removeNode()
+        
+        # We are only removing this node if we generated arrows.
+        if hasattr(self, 'arrowGui'):
+            arrowGui.removeNode()
         
         # Let's hide this until it is needed.
         self.hide()
         return
     
+    def switchObjective(self, forward = 1):
+        if forward:
+            self.accessibleObjectives.nextObjective()
+        else:
+            self.accessibleObjectives.lastObjective()
+        self.viewObjective = self.accessibleObjectives.seek()
+        self.setup()
+    
     def setup(self):
         if self.quest:
             objective = self.viewObjective
+            
+            # Let's reset our positioning of elements.
+            self.auxFrame.setPos(QuestGlobals.DEFAULT_LEFT_PICTURE_POS)
+            self.auxText.setPos(QuestGlobals.DEFAULT_AUX_POS)
+            self.objectiveInfo.setPos(QuestGlobals.DEFAULT_INFO_POS)
+            
+            # Let's reset our icon.
+            self.auxIcon.setScale(1, 1, 1)
+            self.auxIcon.setPos(0, 0, 0)
+            self.auxIcon.setHpr(0, 0, 0)
             
             self.objectiveInfo.show()
             self.auxFrame.show()
@@ -214,7 +270,7 @@ class QuestPoster(DirectFrame):
             # Let's setup the quest progress bar
             progress = objective.progress if hasattr(objective, 'progress') else None
             
-            if progress and objective.goal > 1:
+            if objective.goal > 1:
                 self.progressBar['range'] = objective.goal
                 self.progressBar['value'] = progress & pow(2, 16) - 1
             
@@ -257,6 +313,22 @@ class QuestPoster(DirectFrame):
         self.rewardFrame.initialiseoptions(DirectFrame)
         self.sideInfo.initialiseoptions(DirectLabel)
         self.lReward.initialiseoptions(DirectFrame)
+        
+        # Handle arrow stuff if necessary.
+        if hasattr(self, 'prevObjArrow'):
+            index = self.accessibleObjectives.seeker
+            self.prevObjArrow['state'] = DGG.NORMAL
+            self.nextObjArrow['state'] = DGG.NORMAL
+            self.prevObjArrow.setPos(QuestGlobals.DEFAULT_LEFT_ARROW_POS)
+            self.nextObjArrow.setPos(QuestGlobals.DEFAULT_RIGHT_ARROW_POS)
+            
+            if index == 0:
+                self.prevObjArrow['state'] = DGG.DISABLED
+            elif index == len(self.accessibleObjectives) - 1:
+                self.nextObjArrow['state'] = DGG.DISABLED
+            
+            self.prevObjArrow.initialiseoptions(DirectButton)
+            self.nextObjArrow.initialiseoptions(DirectButton)
     
     # Changes geometry and scale of an icon.
     def handleSimpleIcon(self, geom, scale, icon):
@@ -278,6 +350,8 @@ class QuestPoster(DirectFrame):
             icon.setScale(headScale)
             icon.setZ(icon.getZ() + zOffset)
             icon.setH(180)
+        else:
+            icon.setZ(icon.getZ() - 0.01)
     
     def handleCogObjective(self, iconElement = auxIcon, auxText = QuestGlobals.DEFEAT, frameColor = QuestGlobals.BLUE):
         objective = self.viewObjective
@@ -339,12 +413,13 @@ class QuestPoster(DirectFrame):
                 raise AttributeError('Attempted to setup DoubleFrame information for poster using default style.')
         else:
             self.objectiveInfo['text'] = infoText
-            self.auxText['text'] = auxText
             
         # Let's set the progress bar text
         pgBarText = '%d of %d %s' % (objective.progress, objective.goal, 
             QuestGlobals.makePastTense(auxText))
         self.progressBar['text'] = pgBarText
+        
+        self.auxText['text'] = auxText
         
         # Let's set the color of the poster.
         frame = self.auxFrame if iconElement is self.auxIcon else self.goalFrame
@@ -364,7 +439,7 @@ class QuestPoster(DirectFrame):
         # If we aren't looking for any specific department of building.
         if objective.dept == QuestGlobals.Any:
             # Let's just use the good ol' generic building icon.
-            self.handleSimpleIcon(QuestGlobals.getCogBuildingIcon(), 0.12, iconElement)
+            self.handleSimpleIcon(QuestGlobals.getCogBuildingIcon(), QuestGlobals.SIMPLE_IMAGE_SCALE, iconElement)
         else:
             # Ah geez, we're looking for a specific department.
             # Bossbot tie names are messed up, so we need this if statement.
@@ -398,7 +473,7 @@ class QuestPoster(DirectFrame):
         if not objective or not hasattr(self, 'titleLabel') or not isinstance(objective, MinigameObjective): return
         
         # Let's set the icon to the minigame icon.
-        self.handleSimpleIcon(QuestGlobals.getTrolleyIcon(), 0.12, iconElement)
+        self.handleSimpleIcon(QuestGlobals.getTrolleyIcon(), QuestGlobals.SIMPLE_IMAGE_SCALE, iconElement)
         
         # Let's set the progress bar text
         pgBarText = '%d of %d %s' % (objective.progress, objective.goal, 
@@ -433,9 +508,9 @@ class QuestPoster(DirectFrame):
             head = ToonHead(base.cr)
             head.generateHead(dna.getGender(), dna.getAnimal(), dna.getHead(), forGui = 1)
             head.setHeadColor(dna.getHeadColor())
-            self.handleComplexIcon(head, iconElement)
+            self.handleComplexIcon(head, iconElement, scale = QuestGlobals.IMAGE_SCALE_SMALL - 0.01)
         else:
-            self.handleSimpleIcon(QuestGlobals.getHQIcon(), 0.12, iconElement)
+            self.handleSimpleIcon(QuestGlobals.getHQIcon(), QuestGlobals.SIMPLE_IMAGE_SCALE, iconElement)
         
         self.auxText['text'] = auxText
         
@@ -477,6 +552,7 @@ class QuestPoster(DirectFrame):
             self.titleLabel.destroy()
             self.auxFrame.destroy()
             self.auxIcon.destroy()
+            self.auxOutline.destroy()
             self.auxText.destroy()
             self.objectiveInfo.destroy()
             self.locationInfo.destroy()
@@ -484,9 +560,18 @@ class QuestPoster(DirectFrame):
             self.rewardFrame.destroy()
             self.sideInfo.destroy()
             self.lReward.destroy()
+
+            # We need to cleanup our arrows if they were created.
+            if hasattr(self, 'prevObjArrow'):
+                self.prevObjArrow.destroy()
+                self.nextObjArrow.destroy()
+                del self.prevObjArrow
+                del self.nextObjArrow
+
             del self.titleLabel
             del self.auxFrame
             del self.auxIcon
+            del self.auxOutline
             del self.auxText
             del self.objectiveInfo
             del self.locationInfo

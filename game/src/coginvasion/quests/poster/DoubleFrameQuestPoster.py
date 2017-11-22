@@ -17,6 +17,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.quests.Objectives import RecoverItemObjective,\
     CogBuildingObjective, CogObjective, MinigameObjective
 from src.coginvasion.quests.Objectives import DeliverItemObjective
+from src.coginvasion.quests.Objectives import DoubleFrameObjectives
 
 from panda3d.core import TextNode
 
@@ -46,14 +47,14 @@ class DoubleFrameQuestPoster(QuestPoster):
         #           THE FOLLOWING ELEMENTS BELOW ARE GROUPED TOGETHER            #
         ##########################################################################
         # We need this again for certain geometry.
-        bookModel = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
+        circleGui = loader.loadModel('phase_4/models/gui/CircleIconBackgroundGui.bam')
         
         # The background frame where the objective image is displayed.
         # This is the colored background frame.
         self.goalFrame = DirectFrame(parent = self, 
             relief = None,
-            image = bookModel.find('**/questPictureFrame'),
-            image_scale = QuestGlobals.IMAGE_SCALE_SMALL,
+            image = circleGui.find('**/circle_display_interior'),
+            image_scale = 0.18,
             text = '',
             text_pos = (0, -0.11),
             text_fg = QuestGlobals.TEXT_COLOR,
@@ -61,6 +62,7 @@ class DoubleFrameQuestPoster(QuestPoster):
             text_align = TextNode.ACenter,
             text_wordwrap = 11.0,
         pos = QuestGlobals.DEFAULT_RIGHT_PICTURE_POS)
+        self.goalFrame.hide()
         
         # The icon that goes on top of the goal frame.
         self.goalIcon = DirectFrame(parent = self.goalFrame,
@@ -74,6 +76,13 @@ class DoubleFrameQuestPoster(QuestPoster):
             text_wordwrap = 13.0,
         textMayChange = 1)
         self.goalIcon.setColorOff(-1)
+        self.goalIcon.hide()
+        
+        self.goalOutline = DirectLabel(parent = self.goalFrame,
+            relief = None,
+            image = circleGui.find('**/circle_display_outline'),
+        image_scale = 0.18)
+        self.goalOutline.hide()
         
         # Information displayed about the additional goal.
         self.goalInfo = DirectLabel(parent = self,
@@ -88,7 +97,7 @@ class DoubleFrameQuestPoster(QuestPoster):
         pos = (QuestGlobals.DEFAULT_INFO2_POS))
         self.goalInfo.hide()
         
-        bookModel.removeNode()
+        circleGui.removeNode()
         return
         
         ##########################################################################
@@ -97,15 +106,34 @@ class DoubleFrameQuestPoster(QuestPoster):
         QuestPoster.setup(self)
         objective = self.viewObjective
         
-        if objective.__class__ == DeliverItemObjective:
-            # It's kind of hard to return delivered stuff to somebody.
-            # We're not handling complete objectives from here.
-            self.handleDeliverItemObjective()
-        elif objective.__class__ == RecoverItemObjective:
-            self.handleRecoverItemObjective()
+        # Let's reset our icon.
+        self.goalIcon.setScale(1, 1, 1)
+        self.goalIcon.setPos(0, 0, 0)
+        self.goalIcon.setHpr(0, 0, 0)
         
-        self.goalInfo.show()
-        self.fromToMiddleText.show()
+        if objective.__class__ in DoubleFrameObjectives:
+            if objective.__class__ == DeliverItemObjective:
+                # It's kind of hard to return delivered stuff to somebody.
+                # We're not handling complete objectives from here.
+                self.handleDeliverItemObjective()
+            elif objective.__class__ == RecoverItemObjective:
+                self.handleRecoverItemObjective()
+            
+            if len(self.quest.accessibleObjectives) > 1:
+                self.prevObjArrow.setPos(QuestGlobals.SECONDARY_LEFT_ARROW_POS)
+                self.nextObjArrow.setPos(QuestGlobals.SECONDARY_RIGHT_ARROW_POS)
+            
+            self.goalFrame.show()
+            self.goalIcon.show()
+            self.goalOutline.show()
+            self.goalInfo.show()
+            self.fromToMiddleText.show()
+        else:
+            self.goalFrame.hide()
+            self.goalIcon.hide()
+            self.goalOutline.hide()
+            self.goalInfo.hide()
+            self.fromToMiddleText.hide()
         self.goalIcon.initialiseoptions(DirectFrame)
         self.initialiseoptions(DoubleFrameQuestPoster)
         
@@ -132,7 +160,7 @@ class DoubleFrameQuestPoster(QuestPoster):
         self.fromToMiddleText['text'] = QuestGlobals.FROM if not objective.isComplete() else QuestGlobals.TO
         
         if not objective.isComplete():
-            self.handleCogObjective(self.goalIcon, frameColor = QuestGlobals.GREEN)
+            self.handleCogObjective(self.goalIcon, auxText = QuestGlobals.RECOVER, frameColor = QuestGlobals.GREEN)
             
             # Let's set the progress bar text
             pgBarText = '%d of %d %s' % (objective.progress, objective.goal, 
@@ -174,10 +202,12 @@ class DoubleFrameQuestPoster(QuestPoster):
         self.fromToMiddleText.destroy()
         self.goalFrame.destroy()
         self.goalIcon.destroy()
+        self.goalOutline.destroy()
         self.goalInfo.destroy()
         del self.fromToMiddleText
         del self.goalFrame
         del self.goalIcon
+        del self.goalOutline
         del self.goalInfo
         QuestPoster.destroy(self)
     

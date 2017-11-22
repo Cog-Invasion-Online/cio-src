@@ -56,8 +56,8 @@ class ObjectiveCollection:
         for objective in self.cache:
             yield objective
     
-    def next(self):
-        # Revolving door #next() function that returns the next objective in relation to where the seeker is.
+    def nextObjective(self):
+        # Revolving door #nextObjective() function that returns the next objective in relation to where the seeker is.
         # If the seeker is at the top of the list, the seeker will restart with the first element.
         # Returns the next objective in the collection in relation to the seeker.
         if self.seeker + 1 < len(self.cache):
@@ -72,8 +72,8 @@ class ObjectiveCollection:
             return self.cache[self.seeker]
         return None
     
-    def last(self):
-        # Revolving door #last() function that returns the objective in the position behind where the seeker is.
+    def lastObjective(self):
+        # Revolving door #lastObjective() function that returns the objective in the position behind where the seeker is.
         # If the seeker is at the bottom of the list, the seeker will move to the top of the list.
         # Returns the previous objective in the collection in relation to the seeker.
         if self.seeker - 1 >= 0:
