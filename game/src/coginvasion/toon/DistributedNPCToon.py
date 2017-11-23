@@ -10,15 +10,20 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 from panda3d.core import CollisionNode, CollisionSphere
 from direct.directnotify.DirectNotifyGlobal import directNotify
+from direct.gui.DirectGui import DirectFrame, OnscreenImage
+from direct.interval.IntervalGlobal import Sequence, LerpPosInterval
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.quests import Quests
 from src.coginvasion.quests.Quests import objType
-from src.coginvasion.quests.QuestGlobals import NPCDialogue, getPossessive
+from src.coginvasion.quests.QuestGlobals import NPCDialogue, getPossessive, QUEST_DATA_UPDATE_EVENT
 from src.coginvasion.nametag import NametagGlobals
+from src.coginvasion.gui import QuestEmblemGui
 from DistributedToon import DistributedToon
 from src.coginvasion.quests.Objectives import VisitNPCObjective
+
+from panda3d.core import TransparencyAttrib
 
 import random
 
@@ -34,6 +39,9 @@ class DistributedNPCToon(DistributedToon):
         self.currentChatIndex = 0
         self.chatArray = None
         self.interacting = False
+        
+        self.questEmblem = None
+        self.questEmblemSequence = Sequence()
 
     def setLoadout(self, foo):
         pass
@@ -317,6 +325,28 @@ class DistributedNPCToon(DistributedToon):
         self.nametag.setNametagColor(NametagGlobals.NametagColors[NametagGlobals.CCNPC])
         self.nametag.setActive(0)
         self.nametag.updateAll()
+        
+    def generateQuestEmblem(self):
+        self.questEmblem = QuestEmblemGui.QuestEmblemGui(parent = self)
+        self.questEmblem.setZ(self.height + 2.0)
+        self.questEmblem.start(self.height + 2.0)
+        self.__handleQuestDataUpdate()
+        
+    def __handleQuestDataUpdate(self):
+        needsToVisit = base.localAvatar.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId)
+        pickableQuestList = base.localAvatar.questManager.getPickableQuestList(self)
+        
+        if self.questEmblem.state == QuestEmblemGui.QUEST_AVAILABLE and needsToVisit:
+            print "OKAY, SCROLL TIME!"
+            self.questEmblem.stop()
+            self.questEmblem.setEmblem(questAvailable = 0)
+            self.questEmblem.start(self.height + 2.0)
+        elif not needsToVisit and self.questEmblem.state is QuestEmblemGui.QUEST_OBJECTIVE:
+            self.questEmblem.stop()
+            self.questEmblem.setEmblem()
+            self.questEmblem.start(self.height + 2.0)
+        elif not needsToVisit and len(pickableQuestList) == 0:
+            self.questEmblem.stop()
 
     def announceGenerate(self):
         DistributedToon.announceGenerate(self)
@@ -327,10 +357,14 @@ class DistributedNPCToon(DistributedToon):
             self.reparentTo(npcOrigin)
         else:
             self.startNPCOriginPoll()
+        self.generateQuestEmblem()
         self.acceptCollisions()
+        self.accept(QUEST_DATA_UPDATE_EVENT, self.__handleQuestDataUpdate)
 
     def disable(self):
         self.ignore('mouse1-up')
+        self.ignore(QUEST_DATA_UPDATE_EVENT)
+        self.questEmblem.destroy()
         self.stopLookAround()
         self.stopNPCOriginPoll()
         self.chatArray = None

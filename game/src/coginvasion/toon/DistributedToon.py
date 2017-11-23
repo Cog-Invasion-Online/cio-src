@@ -16,6 +16,7 @@ from src.coginvasion.gui.LaffOMeter import LaffOMeter
 from src.coginvasion.globals import ChatGlobals
 from src.coginvasion.hood import LinkTunnel
 from src.coginvasion.cog import SuitAttacks
+from src.coginvasion.quests.QuestGlobals import QUEST_DATA_UPDATE_EVENT
 
 from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
 from direct.distributed.ClockDelta import globalClockDelta
@@ -259,12 +260,15 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
     def setQuestHistory(self, array):
         self.questHistory = array
 
-    def getQuestHistrory(self):
+    def getQuestHistory(self):
         return self.questHistory
 
     def setQuests(self, dataStr):
         self.quests = dataStr
         base.localAvatar.questManager.makeQuestsFromData()
+        
+        # Let's send our quest data update event.
+        messenger.send(QUEST_DATA_UPDATE_EVENT, [])
 
     def getQuests(self):
         return self.quests

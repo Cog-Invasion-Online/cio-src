@@ -29,6 +29,9 @@ RETURN = 'Return'
 TO = 'to:'
 FROM = 'from:'
 
+# The event that is fired by the messenger when quest data is updated.
+QUEST_DATA_UPDATE_EVENT = 'questDataUpdate'
+
 QPauxText = 0.04
 QPtextScale = 0.045
 QPtextWordwrap = 15.6

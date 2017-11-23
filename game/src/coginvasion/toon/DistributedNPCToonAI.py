@@ -1,5 +1,12 @@
-# Filename: DistributedNPCToonAI.py
-# Created by:  blach (31Jul15)
+"""
+
+Copyright (c) Cog Invasion Online. All rights reserved.
+
+@file DistributedNPCToonAI.py
+@author Brian Lach
+@date July 31, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

@@ -57,6 +57,7 @@ class LocalToon(DistributedToon):
         self.friendRequestManager = FriendRequestManager()
         self.friendsList = FriendsList()
         self.questManager = QuestManager()
+        self.questManager.avatar = self
         self.panel = ToonPanel()
         self.firstTimeGenerating = True
         friendsgui = loader.loadModel('phase_3.5/models/gui/friendslist_gui.bam')
