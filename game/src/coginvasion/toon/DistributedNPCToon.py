@@ -207,11 +207,6 @@ class DistributedNPCToon(DistributedToon):
         head.setHpr(oldHpr)
         self.lookAtObject(newHpr[0], newHpr[1], newHpr[2])
 
-        #if len(base.localAvatar.questManager.getQuests()) > 0:
-        #    objective = base.localAvatar.questManager.getQuests()[0].getCurrentObjective()
-        #    self.currentChatIndex = 0
-        #    self.doNPCChat(objective.getAssignDialog())
-
         questData = base.localAvatar.questManager.getVisitQuest(self.npcId)
         if questData:
             quest = questData[1]
@@ -329,23 +324,24 @@ class DistributedNPCToon(DistributedToon):
     def generateQuestEmblem(self):
         self.questEmblem = QuestEmblemGui.QuestEmblemGui(parent = self)
         self.questEmblem.setZ(self.height + 2.0)
-        self.questEmblem.start(self.height + 2.0)
         self.__handleQuestDataUpdate()
         
     def __handleQuestDataUpdate(self):
         needsToVisit = base.localAvatar.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId)
-        pickableQuestList = base.localAvatar.questManager.getPickableQuestList(self)
+        pickableQuestList = []
         
-        if self.questEmblem.state == QuestEmblemGui.QUEST_AVAILABLE and needsToVisit:
-            print "OKAY, SCROLL TIME!"
+        if CIGlobals.NPCToonDict[self.npcId][3] == CIGlobals.NPC_HQ:
+            pickableQuestList = base.localAvatar.questManager.getPickableQuestList(self)
+
+        if needsToVisit:
             self.questEmblem.stop()
             self.questEmblem.setEmblem(questAvailable = 0)
             self.questEmblem.start(self.height + 2.0)
-        elif not needsToVisit and self.questEmblem.state is QuestEmblemGui.QUEST_OBJECTIVE:
+        elif len(pickableQuestList) > 0 and base.localAvatar.questManager.getNumQuests() < 4:
             self.questEmblem.stop()
             self.questEmblem.setEmblem()
             self.questEmblem.start(self.height + 2.0)
-        elif not needsToVisit and len(pickableQuestList) == 0:
+        elif not needsToVisit:
             self.questEmblem.stop()
 
     def announceGenerate(self):

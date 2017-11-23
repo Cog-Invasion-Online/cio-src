@@ -16,8 +16,8 @@ import QuestGlobals
 
 class QuestManager(QuestManagerBase, DirectObject):
     
-    def __init__(self):
-        QuestManagerBase.__init__(self)
+    def __init__(self, avatar):
+        QuestManagerBase.__init__(self, avatar)
         DirectObject.__init__(self)
         
         # The quest posters that are shown when hitting the hotkey.

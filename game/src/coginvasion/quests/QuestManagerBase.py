@@ -21,7 +21,10 @@ import random
 class QuestManagerBase:
     notify = directNotify.newCategory('QuestManagerBase')
 
-    def __init__(self):
+    def __init__(self, avatar):
+        # The avatar this quest manager is for.
+        self.avatar = avatar
+
         # A dictionary of questId -> quest instance
         self.quests = {}
         
@@ -212,3 +215,7 @@ class QuestManagerBase:
         self.quests = {}
 
         QuestData.extractDataAsIntegerLists(avatar.getQuests(), parseDataFunc = self.makeQuestFromData)
+        
+    def getNumQuests(self):
+        return len(self.quests.values())
+

@@ -63,8 +63,8 @@ class DistributedNPCToonAI(DistributedToonAI):
 
     def requestEnter(self):
         avId = self.air.getAvatarIdFromSender()
-        noCurAvatar = self.currentAvatar is None
-        if (not noCurAvatar or noCurAvatar and self.hasValidReasonToEnter(avId)):
+
+        if not self.hasValidReasonToEnter(avId):
             self.sendUpdateToAvatarId(avId, 'rejectEnter', [])
         else:
             self.currentAvatar = avId
@@ -111,8 +111,7 @@ class DistributedNPCToonAI(DistributedToonAI):
                     else:
                         chat = chat % av.getName()
                 self.d_setChat(chat)
-                return False
-            return True
+            return chatArray is None
 
     def requestExit(self, avId = None):
         if not avId:

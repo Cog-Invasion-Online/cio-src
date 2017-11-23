@@ -18,6 +18,7 @@ from panda3d.core import TransparencyAttrib
 QUEST_OBJECTIVE = 0
 QUEST_AVAILABLE = 1
 DISABLED = 2
+LOADED = 3
 
 class QuestEmblemGui(DirectFrame):
     notify = directNotify.newCategory('QuestEmblemGui')
@@ -40,7 +41,7 @@ class QuestEmblemGui(DirectFrame):
         glowMdl.removeNode()
         
         self.track = None
-        self.state = QUEST_AVAILABLE
+        self.state = LOADED
         
     def setEmblem(self, questAvailable = QUEST_AVAILABLE):
         # Sets the texture of the emblem.

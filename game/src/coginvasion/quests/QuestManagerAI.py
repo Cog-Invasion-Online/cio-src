@@ -10,7 +10,6 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 from src.coginvasion.quests.QuestManagerBase import QuestManagerBase
 from src.coginvasion.quests.Quest import Quest
-from src.coginvasion.quests import Quests
 from src.coginvasion.quests import QuestData
 from src.coginvasion.quests.Objectives import *
 from src.coginvasion.quests.QuestGlobals import *
@@ -18,9 +17,7 @@ from src.coginvasion.quests.QuestGlobals import *
 class QuestManagerAI(QuestManagerBase):
 
     def __init__(self, avatar):
-        QuestManagerBase.__init__(self)
-        # This is the DistributedToonAI we will be managing the quests of.
-        self.avatar = avatar
+        QuestManagerBase.__init__(self, avatar)
 
     def cleanup(self):
         QuestManagerBase.cleanup(self)
