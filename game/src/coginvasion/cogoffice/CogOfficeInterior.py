@@ -41,10 +41,8 @@ class CogOfficeInterior(Place):
     def enter(self, requestStatus):
         Place.enter(self)
         self.fsm.enterInitialState()
-        base.playSfx(CIGlobals.getIndoorSound(), looping = 1)
         
     def exit(self):
-        CIGlobals.getIndoorSound().stop()
         Place.exit(self)
 
     def load(self):
