@@ -64,7 +64,7 @@ basic-shaders-only #f
 framebuffer-multisample 1
 multisamples 16
 
-audio-dls-file resources/phase_3/audio/gm.dls
+audio-dls-file resources/gm.dls
 
 # Game content...
 game-name Cog Invasion
