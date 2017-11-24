@@ -20,6 +20,7 @@ resources/winter.mf
 resources/tournament_music.mf
 resources/icon.ico
 resources/toonmono.cur
+resources/gm.dls
 ../Panda3D-CI/bin/mssmp3.asi
 ../Panda3D-CI/bin/mssogg.asi
 ../Panda3D-CI/bin/mss32.dll
