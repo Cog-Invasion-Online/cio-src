@@ -124,6 +124,10 @@ class ChatInput(DirectObject, StateData.StateData):
             base.localAvatar.invGui.disableWeaponSwitch()
 
         if base.localAvatar.GTAControls:
+            if base.cr.playGame.getPlace() and base.cr.playGame.getPlace().fsm.getCurrentState().getName() == 'walk':
+                base.localAvatar.disableAvatarControls()
+            if hasattr(base.localAvatar, 'book_btn'):
+                base.localAvatar.book_btn.hide()
             key = ""
         
         if command == None:
@@ -166,6 +170,11 @@ class ChatInput(DirectObject, StateData.StateData):
     def exitInput(self):
         if base.localAvatar.invGui:
             base.localAvatar.invGui.enableWeaponSwitch()
+        if base.localAvatar.GTAControls:
+            if base.cr.playGame.getPlace() and base.cr.playGame.getPlace().fsm.getCurrentState().getName() == 'walk':
+                base.localAvatar.enableAvatarControls()
+            if hasattr(base.localAvatar, 'book_btn'):
+                base.localAvatar.book_btn.show()
         if self.chatBx:
             self.chatBx.hide()
         if self.chatBx_close:
