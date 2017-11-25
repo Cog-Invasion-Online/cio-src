@@ -8,6 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+import inspect
+
 class Control(object):
     
     def __init__(self, default, alternatives = []):
@@ -46,6 +48,10 @@ class UserInputStorage(object):
     LookDown = Control('page_down')
     Interact = Control('x')
     Chat = Control('t')
+    MoveForward = Control('w')
+    MoveBackward = Control('s')
+    StrafeLeft = Control('a')
+    StrafeRight = Control('d')
     
     # Returns the default control for an action.
     def getDefault(self, ctrl):
@@ -76,3 +82,8 @@ class UserInputStorage(object):
             if isinstance(obj, Control):
                 return obj.current
             return obj
+        
+    def getControls(self):
+        attributes = inspect.getmembers(UserInputStorage, lambda a:not(inspect.isroutine(a)))
+        controls = [a for a in attributes if not(a[0].startswith('__') and a[0].endswith('__'))]
+        return controls
