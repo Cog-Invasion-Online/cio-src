@@ -1,6 +1,6 @@
 """
-
-Copyright (c) Cog Invasion Online. All rights reserved.
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
 @file DistributedToon.py
 @author Brian Lach
