@@ -115,6 +115,14 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         if not hasattr(self, 'uniqueName'):
             print "Using hacky uniqueName function"
             self.uniqueName = types.MethodType(uniqueName, self)
+            
+    def resetTorsoRotation(self):
+        spine = self.find("**/def_spineB")
+        if (not spine.isEmpty()):
+            spine.setH(0)
+            spine.detachNode()
+            self.getPart("legs").setH(0)
+            self.releaseJoint("torso", "def_spineB")
 
     def showAvId(self):
         pass
@@ -165,12 +173,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         if self.standWalkRunReverse != None:
 
             if strafeSpeed == 0:
-                spine = self.find("**/def_spineB")
-                if (not spine.isEmpty()):
-                    spine.setH(0)
-                    spine.detachNode()
-                    self.getPart("legs").setH(0)
-                    self.releaseJoint("torso", "def_spineB")
+                self.resetTorsoRotation()
 
             if (forwardSpeed >= CIGlobals.RunCutOff and
                 strafeSpeed < CIGlobals.RunCutOff and

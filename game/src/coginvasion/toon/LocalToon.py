@@ -115,14 +115,6 @@ class LocalToon(DistributedToon):
         self.walkControls.speed = 0.0
         self.walkControls.rotationSpeed = 0.0
         self.walkControls.slideSpeed = 0.0
-        
-    def resetTorsoRotation(self):
-        spine = self.find("**/def_spineB")
-        if (not spine.isEmpty()):
-            spine.setH(0)
-            spine.detachNode()
-            self.getPart("legs").setH(0)
-            self.releaseJoint("torso", "def_spineB")
 
     def _handleWentInTunnel(self, requestStatus):
         self.cr.playGame.getPlace().doneStatus = requestStatus
