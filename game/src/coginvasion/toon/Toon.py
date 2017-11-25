@@ -117,12 +117,13 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.uniqueName = types.MethodType(uniqueName, self)
             
     def resetTorsoRotation(self):
-        spine = self.find("**/def_spineB")
-        if (not spine.isEmpty()):
-            spine.setH(0)
-            spine.detachNode()
-            self.getPart("legs").setH(0)
-            self.releaseJoint("torso", "def_spineB")
+        if not self.isEmpty():
+            spine = self.find("**/def_spineB")
+            if not spine.isEmpty():
+                spine.setH(0)
+                spine.detachNode()
+                self.getPart("legs").setH(0)
+                self.releaseJoint("torso", "def_spineB")
 
     def showAvId(self):
         pass

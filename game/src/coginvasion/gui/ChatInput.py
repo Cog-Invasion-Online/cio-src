@@ -14,7 +14,7 @@ from direct.fsm import ClassicFSM, State, StateData
 
 from src.coginvasion.globals import ChatGlobals
 
-import random
+import string
 
 class ChatInput(DirectObject, StateData.StateData):
 
@@ -23,17 +23,17 @@ class ChatInput(DirectObject, StateData.StateData):
         StateData.StateData.__init__(self, 'chatInputDone')
 
         # Keys that can be pressed to trigger the chat input box.
-        self.keyList = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
-                        "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x",
-                        "y", "z", ",", ".", "/", ";", ":", '"', "'", "{", "}", "[",
-                        "]", "-", "_", "+", "=", "<", ">", "?", "!", "`", "~", "@",
-                        "#", "$", "%", "^", "&", "*", "(", ")", "5", "6", "7",
-                        "8", "9", "0", "|"]
+        self.setKeyList()
+        
         self.keyToShiftKey = {"/": "?", "1": "!", "2": "@", "3": "#", "4": "$",
             "5": "%", "6": "^", "7": "&", "8": "*", "9": "(", "0": ")", "-": "_",
             "=": "+", "`": "~", "[": "{", "]": "}", "\\": "|", ";": ":", "'": "\"",
             ",": "<", ".": ">"}
-
+        
+        # Loads the sfx sound that plays when the input window is opened.
+        self.chatSfx = loader.loadSfx('phase_3.5/audio/sfx/GUI_quicktalker.ogg')
+        self.chatSfx.setVolume(0.5)
+        
         self.chat_btn_model = None
         self.chatBx = None
         self.chat_btn = None
@@ -48,6 +48,24 @@ class ChatInput(DirectObject, StateData.StateData):
         self.fsm.enterInitialState()
         self.entered = False
         return
+    
+    def setKeyList(self):
+        # Sets the key list. Should be called after controls are updated.
+        # Uses the extremely useful 'string' class.
+        # Refer to: https://docs.python.org/3.4/library/string.html
+        keys = list(string.printable[5:94])
+        
+        for control in base.inputStore.getControls():
+            # We don't want keys that are assigned to another control to
+            # open up the chat input GUI.
+            if not control is base.inputStore.Chat:
+                key = control[1].current
+                
+                if key in keys:
+                    # This will remove every control that isn't the open chat control.
+                    keys.remove(key)
+
+        self.keyList = keys
 
     def enterOff(self):
         pass
@@ -92,12 +110,11 @@ class ChatInput(DirectObject, StateData.StateData):
 
     def enableKeyboardShortcuts(self):
         # Enable the shortcuts to open the chat box.
-        if not base.localAvatar.GTAControls:
-            for key in self.keyList:
-                self.acceptOnce(key, self.openChatInput, [key])
-                self.acceptOnce("shift-" + key, self.openChatInput, ["shift-" + key.upper()])
-        else:
-            self.acceptOnce(base.inputStore.Chat, self.openChatInput, [""])
+        for key in self.keyList:
+            self.acceptOnce(key, self.openChatInput, [key])
+            self.acceptOnce("shift-" + key, self.openChatInput, ["shift-" + key.upper()])
+        self.acceptOnce(base.inputStore.Chat, self.openChatInput, [""])
+        base.localAvatar.enableGagKeys()
 
     def openChatInput(self, key):
         if "shift-" in key:
@@ -105,17 +122,17 @@ class ChatInput(DirectObject, StateData.StateData):
             key = self.keyToShiftKey.get(keyName, None)
             if not key:
                 key = keyName.upper()
+        
         self.fsm.request('input', [key])
+        self.chatSfx.play()
 
     def disableKeyboardShortcuts(self):
         # Disable the shortcuts to open the chat box.
         try: 
-            if not base.localAvatar.GTAControls:
-                for key in self.keyList:
-                    self.ignore(key)
-                    self.ignore("shift-" + key)
-            else:
-                self.ignore(base.inputStore.Chat)
+            for key in self.keyList:
+                self.ignore(key)
+                self.ignore("shift-" + key)
+            base.localAvatar.disableGagKeys()
         except AttributeError:
             pass
 
@@ -160,7 +177,7 @@ class ChatInput(DirectObject, StateData.StateData):
         self.chatBx_send.setBin('gui-popup', 60)
         self.chatInput.setBin('gui-popup', 60)
 
-    def sendChat(self, chat):
+    def sendChat(self, _):
         chat = self.chatInput.get()
         if hasattr(base, 'localAvatar'):
             if len(chat) > 0:
@@ -171,7 +188,8 @@ class ChatInput(DirectObject, StateData.StateData):
         if base.localAvatar.invGui:
             base.localAvatar.invGui.enableWeaponSwitch()
         if base.localAvatar.GTAControls:
-            if base.cr.playGame.getPlace() and base.cr.playGame.getPlace().fsm.getCurrentState().getName() == 'walk':
+            place = base.cr.playGame.getPlace()
+            if place and place.fsm.getCurrentState().getName() == 'walk':
                 base.localAvatar.enableAvatarControls()
             if hasattr(base.localAvatar, 'book_btn'):
                 base.localAvatar.book_btn.show()

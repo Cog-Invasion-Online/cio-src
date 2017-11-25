@@ -378,7 +378,6 @@ class Place(StateData):
                 base.localAvatar.find('**/torso-top').hide()
                 base.localAvatar.find('**/torso-bot').hide()
                 base.localAvatar.getPart('head').hide()
-                base.localAvatar.chatInput.disableKeyboardShortcuts()
             base.localAvatar.setBusy(1)
         else:
             base.localAvatar.setBusy(0)

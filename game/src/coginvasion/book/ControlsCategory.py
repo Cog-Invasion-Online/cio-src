@@ -60,10 +60,13 @@ class ControlsCategory(OptionsCategory):
 
     def applyChanges(self):
         self._showApplying()
+        
+        keysChanged = 0
 
         if (self.gagKeyChoice != self.origGagKey):
             # They changed the gag key!
             CIGlobals.getSettingsMgr().updateAndWriteSetting("gagkey", self.gagKeyChoice)
+            keysChanged += 1
 
         if (self.fpFov != self.origFPfov):
             # They changed the first person fov!
@@ -79,6 +82,10 @@ class ControlsCategory(OptionsCategory):
             base.camLens.setMinFov(self.genFov / (4. / 3.))
 
         self._setDefaults()
+        
+        # We need to let the chat input know when we updated keys.
+        if keysChanged > 0:
+            base.localAvatar.chatInput.setKeyList()
         
         self._hideApplying()
 
