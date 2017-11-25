@@ -15,7 +15,6 @@ from direct.task.Task import Task
 from panda3d.core import NodePath, CollisionSphere, CollisionNode, Point3, VBase4
 from panda3d.direct import HideInterval, ShowInterval
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.holiday.HolidayManager import HolidayType
 
 class DistributedTreasure(DistributedObject):
     notify = directNotify.newCategory('DistributedTreasure')

@@ -48,28 +48,16 @@ class QuestManagerBase:
 
             isHQ = CIGlobals.NPCToonDict[npcId][3] == CIGlobals.NPC_HQ
             
-            for objective in accObjs:
-                if objective.type == Objectives.VisitNPC:
-                    # Check if the npcIds match.
-                    if (objective.npcId == npcId):
-                        # Yep, return the questId and quest instance.
+            for objective in accObjs: 
+                if objective.type == Objectives.VisitNPC and objective.npcId == npcId:
+                    return [questId, quest]
+                elif objective.type == Objectives.VisitHQOfficer and isHQ:
+                    return [questId, quest]
+                elif objective.isComplete():
+                    if isHQ and objective.assigner == 0:
                         return [questId, quest]
-    
-                elif objective.type == Objectives.VisitHQOfficer:
-                    # Check if the npc specified is an HQ Officer.
-                    if isHQ:
-                        # Yep, return the questId and quest instance.
+                    elif objective.assigner == npcId:
                         return [questId, quest]
-    
-                else:
-                    # If it's not a visit objective, we have to visit the NPC who assigned us the objective.
-                    if isHQ:
-                        if (objective.assigner == 0) and objective.isComplete():
-                            self.notify.info("quest {0} is complete and we are visiting an HQ Officer".format(questId))
-                            return [questId, quest]
-                    else:
-                        if (objective.assigner == npcId) and objective.isComplete():
-                            return [questId, quest]
 
         # We have no quest with an objective to visit the NPC specified.
         return None
@@ -126,17 +114,13 @@ class QuestManagerBase:
             for objective in objectives:
                 mustVisitOfficer = objective.assigner is 0
                 if objective.type == Objectives.VisitNPC:
-                    # Make sure the npcIds match.
-                    if objective.npcId == npcId:
-                        # Make sure the zones match.
-                        return objective.npcZone == zoneId
+                    # Make sure the npcIds and zones match.
+                    return (objective.npcId == npcId) and (objective.npcZone == zoneId)
                 elif objective.type == Objectives.VisitHQOfficer or (isHQ and complete and mustVisitOfficer):
                     # When the objective is to visit an HQ officer, we can visit any HQ officer.
                     # Just make sure that the NPC is an HQ Officer.
                     return isHQ
-                elif objectives.isComplete() and (isHQ and mustVisitOfficer):
-                    return True
-                elif objectives.isComplete() and (objective.assigner is npcId):
+                elif objectives.isComplete() and (objective.assigner == npcId):
                     return True
 
         # I guess we have no objective to visit this npc.

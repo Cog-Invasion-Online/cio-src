@@ -73,7 +73,8 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         
     def stopSmooth(self):
         DistributedSmoothNode.stopSmooth(self)
-        if self.doId != base.localAvatar.doId:
+        localAvatarReachable = (hasattr(base, 'localAvatar') and base.localAvatar)
+        if localAvatarReachable and self.doId != base.localAvatar.doId:
             self.resetTorsoRotation()
 
     def setNumGagSlots(self, num):
