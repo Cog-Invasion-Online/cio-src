@@ -28,7 +28,7 @@ FavoriteGagNamePos = (0, -0.325, 0)
 GagGlowColor = (1.0, 1.0, 0.4, 1.0)
 NewGagCongratsMessages = ['Yeah!', 'Wow!', 
     'Cool!', 'Congrats!', 'Awesome!',
-    'Toon-tastic!']
+    'Toon-tastic!', 'Fantastic!']
 
 class RewardPanel(DirectFrame):
     notify = directNotify.newCategory('RewardPanel')
@@ -155,6 +155,19 @@ class RewardPanel(DirectFrame):
         self.avatarText['text'] = self.panelData.avatarName
         self.avatarNamePanel.setScale(self.__getAvatarTextScale())
         
+        # Let's set the data for our gag experience here.
+        for i in range(len(self.trackLabels)):
+            track = self.panelData.getTrackByName(GagGlobals.TrackNameById.values()[i])
+            bar = self.trackBars[i]
+            bar['text'] = '%d/%d' % (track.exp, track.maxExp)
+            
+            # When the maximum experience of a track isn't 0, we know it isn't unlocked.
+            if track.maxExp == -1:
+                bar.hide()
+
+            self.trackIncLabels[i]['text'] = ''
+            self.trackIncLabels[i].show()
+        
     def getGagExperienceInterval(self):
         avatar = self.panelData.avatar
         intervals = []
@@ -171,15 +184,7 @@ class RewardPanel(DirectFrame):
         
         for i in range(len(self.trackLabels)):
             track = self.panelData.getTrackByName(GagGlobals.TrackNameById.values()[i])
-            bar = self.trackBars[i]
-            intervalList = self.getTrackIntervalList(track, i)
-
-            bar['text'] = '%d/%d' % (track.exp, track.maxExp)
-            # When the maximum experience of a track isn't 0, we know it isn't unlocked.
-            if track.maxExp == -1:
-                bar.hide()
-            self.trackIncLabels[i].show()
-            intervals.extend(intervalList)
+            intervals.extend(self.getTrackIntervalList(track, i))
         
         return intervals
     
