@@ -110,6 +110,19 @@ class LocalToon(DistributedToon):
 
         # Modified by DistributedBattleZone.
         self.inBattle = False
+        
+    def resetSpeeds(self):
+        self.walkControls.speed = 0.0
+        self.walkControls.rotationSpeed = 0.0
+        self.walkControls.slideSpeed = 0.0
+        
+    def resetTorsoRotation(self):
+        spine = self.find("**/def_spineB")
+        if (not spine.isEmpty()):
+            spine.setH(0)
+            spine.detachNode()
+            self.getPart("legs").setH(0)
+            self.releaseJoint("torso", "def_spineB")
 
     def _handleWentInTunnel(self, requestStatus):
         self.cr.playGame.getPlace().doneStatus = requestStatus
@@ -460,6 +473,8 @@ class LocalToon(DistributedToon):
         self.playMovementSfx(None)
         for k, _ in self.movementKeymap.items():
             self.updateMovementKeymap(k, 0)
+        self.resetSpeeds()
+        self.resetTorsoRotation()
 
     def updateMovementKeymap(self, key, value):
         self.movementKeymap[key] = value
