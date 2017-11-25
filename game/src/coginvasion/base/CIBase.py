@@ -112,3 +112,7 @@ class CIBase(ShowBase):
 
     def unMuteSfx(self):
         self.sfxManagerList[0].setVolume(CIGlobals.SettingsMgr.getSetting("sfxvol"))
+        
+    def localAvatarReachable(self):
+        # This verifies that the localAvatar hasn't been deleted and isn't none.
+        return hasattr(self, 'localAvatar') and self.localAvatar

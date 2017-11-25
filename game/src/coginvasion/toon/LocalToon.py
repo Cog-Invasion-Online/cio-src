@@ -646,7 +646,8 @@ class LocalToon(DistributedToon):
             self.enableGagKeys()
         self.invGui.enable()
         if self.backpack.getCurrentGag():
-            self.invGui.setWeapon(self.backpack.getCurrentGag().getID(), playSound = False)
+            slot = self.invGui.getSlotOfGag(self.backpack.getCurrentGag())
+            self.invGui.setWeapon(slot, playSound = False)
 
     def enableGagKeys(self):
         if self.gagThrowBtn:

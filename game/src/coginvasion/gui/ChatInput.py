@@ -16,6 +16,10 @@ from src.coginvasion.globals import ChatGlobals
 
 import string
 
+# Messenger events
+CHAT_WINDOW_OPENED_EVENT = 'chatWindowOpened'
+CHAT_WINDOW_CLOSED_EVENT = 'chatWindowClosed'
+
 class ChatInput(DirectObject, StateData.StateData):
 
     def __init__(self):
@@ -110,8 +114,7 @@ class ChatInput(DirectObject, StateData.StateData):
 
     def enableKeyboardShortcuts(self):
         # Enable the shortcuts to open the chat box.
-        localAvatarReachable = (hasattr(base, 'localAvatar') and base.localAvatar)
-        if localAvatarReachable:
+        if base.localAvatarReachable():
             if not base.localAvatar.GTAControls:
                 for key in self.keyList:
                     self.acceptOnce(key, self.openChatInput, [key])
@@ -132,8 +135,7 @@ class ChatInput(DirectObject, StateData.StateData):
 
     def disableKeyboardShortcuts(self):
         # Disable the shortcuts to open the chat box.
-        localAvatarReachable = (hasattr(base, 'localAvatar') and base.localAvatar)
-        if localAvatarReachable:
+        if base.localAvatarReachable():
             if not base.localAvatar.GTAControls:
                 for key in self.keyList:
                     self.ignore(key)
@@ -143,12 +145,10 @@ class ChatInput(DirectObject, StateData.StateData):
             base.localAvatar.disableGagKeys()
 
     def enterInput(self, key, command = None, extraArgs = []):
-        if base.localAvatar.invGui:
-            base.localAvatar.invGui.disableWeaponSwitch()
+        # Let's send our open chat window event.
+        messenger.send(CHAT_WINDOW_OPENED_EVENT, [])
 
-        if base.localAvatar.GTAControls:
-            if base.cr.playGame.getPlace() and base.cr.playGame.getPlace().fsm.getCurrentState().getName() == 'walk':
-                base.localAvatar.disableAvatarControls()
+        if base.localAvatarReachable() and base.localAvatar.GTAControls:
             if hasattr(base.localAvatar, 'book_btn'):
                 base.localAvatar.book_btn.hide()
             key = ""
@@ -191,14 +191,8 @@ class ChatInput(DirectObject, StateData.StateData):
         self.fsm.request('idle')
 
     def exitInput(self):
-        if base.localAvatar.invGui:
-            base.localAvatar.invGui.enableWeaponSwitch()
-        if base.localAvatar.GTAControls:
-            place = base.cr.playGame.getPlace()
-            if place and place.fsm.getCurrentState().getName() == 'walk':
-                base.localAvatar.enableAvatarControls()
-            if hasattr(base.localAvatar, 'book_btn'):
-                base.localAvatar.book_btn.show()
+        if base.localAvatarReachable() and base.localAvatar.GTAControls and hasattr(base.localAvatar, 'book_btn'):
+            base.localAvatar.book_btn.show()
         if self.chatBx:
             self.chatBx.hide()
         if self.chatBx_close:
@@ -210,6 +204,9 @@ class ChatInput(DirectObject, StateData.StateData):
         if self.chatInput:
             self.chatInput.destroy()
             self.chatInput = None
+            
+        # Let's send our close chat window event.
+        messenger.send(CHAT_WINDOW_CLOSED_EVENT, [])
 
     def enterIdle(self):
         if self.chat_btn:

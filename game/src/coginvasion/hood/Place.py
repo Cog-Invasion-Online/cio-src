@@ -20,6 +20,7 @@ from src.coginvasion.globals import CIGlobals
 from PublicWalk import PublicWalk
 from src.coginvasion.book.ShtickerBook import ShtickerBook
 from src.coginvasion.gui.Dialog import GlobalDialog, Ok
+from src.coginvasion.gui.ChatInput import CHAT_WINDOW_OPENED_EVENT, CHAT_WINDOW_CLOSED_EVENT
 from src.coginvasion.minigame.FirstPerson import FirstPerson
 from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.holiday.HolidayManager import HolidayType
@@ -43,6 +44,24 @@ class Place(StateData):
         self.lampLights = []
         self.lampLightColor = VBase4(255 / 255.0, 255 / 255.0, 218 / 255.0, 1.0)
         return
+    
+    def __handleChatInputOpened(self):
+        if base.localAvatarReachable():
+            if self.fsm.getCurrentState().getName() == 'walk' and base.localAvatar.GTAControls:
+                base.localAvatar.disableAvatarControls()
+            
+    def __handleChatInputClosed(self):
+        if base.localAvatarReachable():
+            if self.fsm.getCurrentState().getName() == 'walk' and base.localAvatar.GTAControls:
+                base.localAvatar.enableAvatarControls()
+    
+    def __acceptEvents(self):
+        self.accept(CHAT_WINDOW_OPENED_EVENT, self.__handleChatInputOpened)
+        self.accept(CHAT_WINDOW_CLOSED_EVENT, self.__handleChatInputClosed)
+        
+    def __ignoreEvents(self):
+        self.ignore(CHAT_WINDOW_OPENED_EVENT)
+        self.ignore(CHAT_WINDOW_CLOSED_EVENT)
 
     def maybeUpdateAdminPage(self):
         if self.fsm:
@@ -60,8 +79,6 @@ class Place(StateData):
     
     # Used to disable all GUI interaction.   
     def __disableInteraction(self):
-        base.localAvatar.disableChatInput()
-        
         if base.localAvatar.invGui:
             base.localAvatar.invGui.disable()
         base.localAvatar.disableLaffMeter()
@@ -283,6 +300,7 @@ class Place(StateData):
         if not self.interior and (base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS
                                   or base.cr.playGame.getCurrentWorldName() == 'BRHood'):
             self.snowEffect.load()
+        self.__acceptEvents()
 
     def unload(self):
         StateData.unload(self)
@@ -294,6 +312,8 @@ class Place(StateData):
         del self.walkStateData
         del self.loader
         del self.snowEffect
+        
+        self.__ignoreEvents()
 
     def enterTeleportIn(self, requestStatus):
         base.transitions.irisIn()

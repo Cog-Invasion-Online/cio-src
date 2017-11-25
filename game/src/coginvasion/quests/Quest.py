@@ -105,7 +105,7 @@ class Quest:
         # Returns the next objective's index or -1 if we're on the last objective.
         curObjIndex = self.currentObjectiveIndex
         
-        if curObjIndex + 1 < self.numObjectives - 1:
+        if curObjIndex + 1 < self.numObjectives:
             return curObjIndex + 1
         return -1
     

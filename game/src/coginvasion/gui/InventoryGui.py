@@ -21,6 +21,8 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags import GagGlobals
 
+from src.coginvasion.gui.ChatInput import CHAT_WINDOW_OPENED_EVENT, CHAT_WINDOW_CLOSED_EVENT
+
 from panda3d.core import TransparencyAttrib, TextNode
 
 import types
@@ -490,6 +492,13 @@ class InventoryGui(DirectObject):
         
     def __hasSupplyRemaining(self, gagId):
         return self.backpack.getSupply(gagId) > 0
+    
+    def getSlotOfGag(self, gagInstance):
+        # Fetches the slot that holds the corresponding gag instance.
+        for slot in self.slots:
+            if slot.gag == gagInstance:
+                return slot
+        return None
 
     def setWeapon(self, slot, playSound = True, showUpIfHidden = False):
         if self.activeSlot and slot != self.activeSlot:
@@ -563,6 +572,9 @@ class InventoryGui(DirectObject):
         self.enableWeaponSwitch()
         self.resetScroll()
         self.updateLoadout()
+        
+        self.accept(CHAT_WINDOW_OPENED_EVENT, self.disableWeaponSwitch)
+        self.accept(CHAT_WINDOW_CLOSED_EVENT, self.enableWeaponSwitch)
 
     def deleteGui(self):
         self.disable(quietly = True)

@@ -11,6 +11,7 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 from direct.showbase.DirectObject import DirectObject
 
 from src.coginvasion.hood import ZoneUtil
+from src.coginvasion.gui.ChatInput import CHAT_WINDOW_OPENED_EVENT, CHAT_WINDOW_CLOSED_EVENT
 from QuestManagerBase import QuestManagerBase
 import QuestGlobals
 
@@ -23,8 +24,13 @@ class QuestManager(QuestManagerBase, DirectObject):
         # The quest posters that are shown when hitting the hotkey.
         self.posters = []
         
+        self.accept(CHAT_WINDOW_OPENED_EVENT, self.disableShowQuestsHotkey)
+        self.accept(CHAT_WINDOW_CLOSED_EVENT, self.enableShowQuestsHotkey)
+        
     def enableShowQuestsHotkey(self):
-        self.acceptOnce(base.inputStore.ViewQuests, self.showQuests)
+        place = base.cr.playGame.getPlace()
+        if place and place.fsm.getCurrentState().getName() == 'walk':
+            self.acceptOnce(base.inputStore.ViewQuests, self.showQuests)
         
     def disableShowQuestsHotkey(self):
         self.ignore(base.inputStore.ViewQuests)
@@ -32,7 +38,9 @@ class QuestManager(QuestManagerBase, DirectObject):
     def showQuests(self):
         assert self is base.localAvatar.questManager
         positions = [(-0.45, 0.75, 0.3), (0.45, 0.75, 0.3), (-0.45, 0.75, -0.3), (0.45, 0.75, -0.3)]
-        if len(self.posters) != 0: return
+        if len(self.posters) != 0:
+            self.hideQuests(False)
+
         for i in range(4):
             quest = None
             
@@ -45,11 +53,13 @@ class QuestManager(QuestManagerBase, DirectObject):
             self.posters.append(poster)
         self.acceptOnce(base.inputStore.ViewQuests + '-up', self.hideQuests)
         
-    def hideQuests(self):
+    def hideQuests(self, andReEnableKey = True):
         for poster in self.posters:
             poster.destroy()
         self.posters = []
-        self.enableShowQuestsHotkey()
+        
+        if andReEnableKey:
+            self.enableShowQuestsHotkey()
 
     def makeQuestsFromData(self):
         QuestManagerBase.makeQuestsFromData(self, base.localAvatar)
@@ -57,7 +67,7 @@ class QuestManager(QuestManagerBase, DirectObject):
         
     def cleanup(self):
         QuestManagerBase.cleanup(self)
-        self.hideQuests()
+        self.hideQuests(andReEnableKey = False)
         self.ignoreAll()
 
     def getTaskInfo(self, objective, speech = False):
