@@ -49,7 +49,7 @@ class QuestPoster(DirectFrame):
         self.accessibleObjectives = quest.accessibleObjectives if quest else []
         self.viewObjective = quest.accessibleObjectives.seek() if quest else None
         
-        isObjComplete = False if not quest else self.accessibleObjectives.isComplete()
+        isObjComplete = False if not quest else (self.accessibleObjectives.isComplete() or quest.isComplete())
         
         # Let's define our options for the DirectFrame.
         bookModel = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')

@@ -381,6 +381,9 @@ class InspectLocation(Objective):
 # The objectives listed below require the double frame poster style.
 DoubleFrameObjectives = [RecoverItemObjective, DeliverItemObjective]
 
+# Objectives that are okay to end a quest on.
+SafeEndObjectives = [VisitNPCObjective, DeliverItemObjective, RecoverItemObjective]
+
 ObjectiveType2ObjectiveClass = {
     DefeatCog:           CogObjective,
     RecoverItem:      RecoverItemObjective,

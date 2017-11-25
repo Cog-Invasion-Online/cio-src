@@ -1,6 +1,6 @@
 """
 
-Copyright (c) Cog Invasion Online. All rights reserved.
+Copyright (c) CIO Team. All rights reserved.
 
 @file DistributedNPCToon.py
 @author Brian Lach
@@ -10,8 +10,7 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 from panda3d.core import CollisionNode, CollisionSphere
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.gui.DirectGui import DirectFrame, OnscreenImage
-from direct.interval.IntervalGlobal import Sequence, LerpPosInterval
+from direct.interval.IntervalGlobal import Sequence
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
@@ -22,8 +21,6 @@ from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.gui import QuestEmblemGui
 from DistributedToon import DistributedToon
 from src.coginvasion.quests.Objectives import VisitNPCObjective
-
-from panda3d.core import TransparencyAttrib
 
 import random
 
@@ -185,7 +182,9 @@ class DistributedNPCToon(DistributedToon):
 
     def __getNPCObjectiveChat(self):
         chat = self.currentQuest.getNextObjectiveDialogue()
-        nextObjType = self.currentQuest.getNextObjectiveData()[objType]
+        objective = self.currentQuest.getNextObjectiveData()
+        
+        nextObjType = objective[objType]
         if chat.endswith("\x07"):
             if nextObjType == VisitNPCObjective:
                 chat += self.getNPCLocationSpeech(True)

@@ -16,6 +16,7 @@ from src.coginvasion.quests.Quests import Quests, RewardType2RewardClass
 from src.coginvasion.quests.Quests import name, tier, finalInTier, rewards, collection
 from src.coginvasion.quests.Quests import reward, assignSpeech, finishSpeech, objectives
 from src.coginvasion.quests.Quests import objType, args, assigner, QuestNPCDialogue
+from src.coginvasion.quests.Objectives import SafeEndObjectives
 from src.coginvasion.quests.ObjectiveCollection import ObjectiveCollection
 
 class Quest:
@@ -104,25 +105,38 @@ class Quest:
         # Returns the next objective's index or -1 if we're on the last objective.
         curObjIndex = self.currentObjectiveIndex
         
-        if curObjIndex + 1 < self.numObjectives:
+        if curObjIndex + 1 < self.numObjectives - 1:
             return curObjIndex + 1
         return -1
     
     def getNextObjectiveData(self):
-        return self.data.get(objectives)[self.currentObjectiveIndex + 1]
+        objData = self.data.get(objectives)
+        index = self.currentObjectiveIndex + 1
+        
+        if 0 <= index < len(objData):
+            return objData[index]
+        return None
     
     def getCurrObjectiveData(self):
-        return self.data.get(objectives)[self.currentObjectiveIndex]
+        objData = self.data.get(objectives)
+        
+        if 0 <= self.currentObjectiveIndex < len(objData):
+            return objData[self.currentObjectiveIndex]
+        return None
     
     def getNextObjectiveDialogue(self):
-        return QuestNPCDialogue.get(self.id).get(self.currentObjectiveIndex + 1)
+        dialogueData = QuestNPCDialogue.get(self.id)
+        return dialogueData.get(self.currentObjectiveIndex + 1, None)
 
     def getObjectiveDialogue(self):
         return QuestNPCDialogue.get(self.id).get(self.currentObjectiveIndex)
         
     def isComplete(self):
-        # Returns if all accessible objectives are done and we don't have a next objective.
-        return self.accessibleObjectives.isComplete() and self.getNextObjectiveIndex() == -1
+        # Returns if all accessible objectives are done and we don't have a next objective or
+        # checks if we're on the very last objective of the quest and it's a "safe end" objective.
+        isSafeEndObjective = self.getCurrObjectiveData()[objType] in SafeEndObjectives
+        return (self.accessibleObjectives.isComplete() and self.getNextObjectiveIndex() == -1) \
+            or (self.getNextObjectiveIndex() == -1 and len(self.accessibleObjectives) == 1 and isSafeEndObjective)
     
     def giveRewards(self, avatar):
         for reward in self.rewards:
