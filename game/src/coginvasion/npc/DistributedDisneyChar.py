@@ -310,16 +310,18 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.nametag.updateAll()
 
     def __monitorRange(self, task):
-        if base.localAvatar.getDistance(self) <= MAX_RANGE:
-            if self.isInRange is False:
-                self.sendUpdate('avatarEnter')
-                self.isInRange = True
-        else:
-            if self.isInRange is True:
-                self.sendUpdate('avatarExit')
-                self.isInRange = False
-
-        return task.cont
+        if not self.isEmpty():
+            if base.localAvatar.getDistance(self) <= MAX_RANGE:
+                if self.isInRange is False:
+                    self.sendUpdate('avatarEnter')
+                    self.isInRange = True
+            else:
+                if self.isInRange is True:
+                    self.sendUpdate('avatarExit')
+                    self.isInRange = False
+    
+            return task.cont
+        return task.done
 
     def __blinkOpenEyes(self, task):
         self.openEyes()
