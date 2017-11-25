@@ -70,6 +70,11 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         self.numGagSlots = 0
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
         return
+        
+    def stopSmooth(self):
+        DistributedSmoothNode.stopSmooth(self)
+        if self.doId != base.localAvatar.doId:
+            self.resetTorsoRotation()
 
     def setNumGagSlots(self, num):
         self.numGagSlots = num
