@@ -8,8 +8,11 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from direct.gui.DirectFrame import DirectFrame
-from panda3d.core import TransparencyAttrib, Point3
+from panda3d.core import Point3
+
+class SiteType:
+    INSPECT = 'inspect'
+    DIG = 'dig'
 
 class InspectionSite:
 
@@ -21,13 +24,14 @@ class InspectionSite:
     # OPTIONAL: mustHitHotKey - Does the user have to hit the inspection 
     # hotkey to complete this?
     def __init__(self, siteId, inspectionLoc, sphereScale, zoneId, 
-            mustHitHotKey = True, buildMethod = None):
+            _type = SiteType.INSPECT, mustHitHotKey = True, buildMethod = None):
         self.siteId = siteId
         self.inspectionLoc = inspectionLoc
         self.sphereScale = sphereScale
         self.zoneId = zoneId
         self.mustHitHotKey = mustHitHotKey
         self.buildMethod = buildMethod
+        self.type = _type
         
         # The ground icon below the prop (if there is a prop)
         self.groundIcon = None
@@ -42,30 +46,20 @@ class InspectionSite:
         
         # When to start showing the billboard icon. (number)
         self.identifyRange = 0
-        
-        # The actual DirectFrame with the icon
-        self.identifierIcon = None
-        
-    def _generateInspectIcon(self):
-        icon = loader.loadTexture('phase_5/maps/inspect_location.png')
-        inspectIcon = DirectFrame(parent = render, image = icon, frameColor = (0, 0, 0, 0))
-        inspectIcon.setTransparency(TransparencyAttrib.MAlpha)
-        inspectIcon.setTwoSided(1)
-        return inspectIcon
 
 # Inspection site dictionary.
 # Key: zoneId, Value: List of inspection sites.
 
 sites = {
     2000 : [
-        InspectionSite(0, Point3(0.492697, 11.4054, 0.05), 2, 2000)
+        InspectionSite(0, Point3(-3, 12, 0.01), 16, 2000, SiteType.DIG)
     ]
 }
 
 # Fetches a site in a specified zone by its id.
 def getSiteById(zoneId, siteId):
-    if zoneId in sites:
-        for site in sites[zoneId]:
+    if zoneId in sites.keys():
+        for site in sites.get(zoneId):
             if site.siteId == siteId:
                 return site
     

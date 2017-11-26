@@ -297,7 +297,7 @@ class DistributedBattleTrolley(DistributedObject):
 
     def __handleTrolleyTrigger(self, entry):
         # workaround for a bug that i don't understand why it happens
-        if not hasattr(self, 'cr'):
+        if not hasattr(self, 'cr') or not self.cr:
             self.cr = base.cr
             
         self.cr.playGame.getPlace().fsm.request('stop')

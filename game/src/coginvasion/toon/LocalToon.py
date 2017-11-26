@@ -111,6 +111,9 @@ class LocalToon(DistributedToon):
         # Modified by DistributedBattleZone.
         self.inBattle = False
         
+        # This is used by CutsceneGUI
+        self.allowA2dToggle = True
+        
     def resetSpeeds(self):
         self.walkControls.speed = 0.0
         self.walkControls.rotationSpeed = 0.0
@@ -888,10 +891,11 @@ class LocalToon(DistributedToon):
         self.controlManager.collisionsOff()
 
     def toggleAspect2d(self):
-        if base.aspect2d.isHidden():
-            base.aspect2d.show()
-        else:
-            base.aspect2d.hide()
+        if self.allowA2dToggle:
+            if base.aspect2d.isHidden():
+                base.aspect2d.show()
+            else:
+                base.aspect2d.hide()
 
     def generate(self):
         DistributedToon.generate(self)

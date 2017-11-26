@@ -102,18 +102,20 @@ class CogTV(NodePath):
         NodePath.__init__(self, 'cogtv')
         self.mdl = loader.loadModel(PROPS['tv_on_wall'])
         self.mdl.reparentTo(self)
+        """
         ts = TextureStage('tvts')
         self.videoTex = loader.loadTexture('phase_7/videos/cogtv.mp4')
         self.find('**/tv_screen').setTexture(ts, self.videoTex)
         self.find('**/tv_screen').setTexRotate(ts, 90)
         self.videoTex.setLoop(1)
-        self.videoTex.play()
+        self.videoTex.play()"""
 
     def removeNode(self):
         self.mdl.removeNode()
         del self.mdl
+        """
         self.videoTex.stop()
-        del self.videoTex
+        del self.videoTex"""
         NodePath.removeNode(self)
 
 class DistributedCogOfficeBattle(DistributedBattleZone):

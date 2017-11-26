@@ -310,7 +310,7 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.nametag.updateAll()
 
     def __monitorRange(self, task):
-        if not self.isEmpty():
+        if not self.isEmpty() and base.localAvatarReachable() and not base.localAvatar.isEmpty():
             if base.localAvatar.getDistance(self) <= MAX_RANGE:
                 if self.isInRange is False:
                     self.sendUpdate('avatarEnter')

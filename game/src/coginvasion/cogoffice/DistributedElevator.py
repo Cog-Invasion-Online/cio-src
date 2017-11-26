@@ -46,6 +46,12 @@ class DistributedElevator(DistributedObject):
          State.State('closing', self.enterClosing, self.exitClosing),
          State.State('closed', self.enterClosed, self.exitClosed)], 'off', 'off')
         self.fsm.enterInitialState()
+        
+    # The following is a workaround to fix the issue where self.cr is apparently not set.
+    def sendUpdate(self, fieldName, args=[], sendToId=None):
+        if hasattr(self, 'cr') and not self.cr:
+            self.cr = base.cr
+        DistributedObject.sendUpdate(self, fieldName, args=args, sendToId=sendToId)
 
     def setElevatorType(self, etype):
         self.type = etype
