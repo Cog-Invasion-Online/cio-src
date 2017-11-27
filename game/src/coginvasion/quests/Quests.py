@@ -48,7 +48,8 @@ Quests = {
         name: 'Schooled'},
           
     2 : {objectives : [
-            {objType : CogObjective, args: [SuitGlobals.BottomFeeder, 8, CIGlobals.ToontownCentralId]}],
+            {objType : CogObjective, args: [SuitGlobals.BottomFeeder, 8, CIGlobals.ToontownCentralId]},
+            ],
          rewards: [(Health, 1)],
          tier: Tiers.TT,
          assignSpeech: ("Those Bottom Feeders sure are running rampant around town recently.\x07Think you could do something about that?\x07"),
@@ -98,6 +99,19 @@ Quests = {
         rewards: [(Jellybeans, 50)],
         tier: Tiers.TT,
         name: 'Office Crash',
+    },
+          
+    15 : {objectives : [
+            {collection : [
+                {objType : CogBuildingObjective, args: [Any, 2, 12, Anywhere]},
+                {objType : CogObjective, args: [Any, 32, Anywhere, None, None, None, Dept.BOSS]},
+                {objType : CogObjective, args: [SuitGlobals.TheMingler, 2, Anywhere]}]
+            }],
+         rewards: [(Jellybeans, 5000)],
+         tier: Tiers.TT,
+         assignSpeech: ("Hey there! It would be great if you could test those Cog offices.\x07This quest will reward you handsomely.\x07"),
+         finishSpeech: ("Thank you for testing Cog Invasion Online!\x07"),
+         name: "Grind Invasion Online"
     }
 }
 
