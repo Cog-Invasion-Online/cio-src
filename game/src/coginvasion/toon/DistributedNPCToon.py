@@ -183,8 +183,11 @@ class DistributedNPCToon(DistributedToon):
     def __getNPCObjectiveChat(self):
         chat = self.currentQuest.getNextObjectiveDialogue()
         objective = self.currentQuest.getNextObjectiveData()
+        nextObjType = None
         
-        nextObjType = objective[objType]
+        if not Quests.collection in objective.keys():
+            nextObjType = objective[objType]
+        
         if chat.endswith("\x07"):
             if nextObjType == VisitNPCObjective:
                 chat += self.getNPCLocationSpeech(True)
