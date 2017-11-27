@@ -59,6 +59,8 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.rpupil = None
         self.eyesOpen = None
         self.eyesClosed = None
+        
+        self.santaHat = None
 
     def setCharId(self, charId):
         self.charId = charId
@@ -211,6 +213,11 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         #smiley.reparentTo(self.headNode)
 
         self.ears = []
+        
+        if self.cr.isChristmas():
+            self.santaHat = loader.loadModel("phase_4/models/accessories/tt_m_chr_avt_acc_hat_elfhat.bam")
+            tex = loader.loadTexture("phase_4/maps/tt_t_chr_avt_acc_hat_elfhat8.jpg")
+            self.santaHat.setTexture(tex, 1)
 
         if self.charId in [MINNIE, MICKEY]:
             for bundle in self.getPartBundleDict().values():
@@ -241,6 +248,14 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
                 ears.flattenMedium()
                 self.ears.append(ears)
                 ears.setBillboardAxis()
+                if self.cr.isChristmas():
+                    ears.hide()
+                    self.santaHat.reparentTo(earRoot)
+                    self.santaHat.setScale(self, 1.5)
+                    self.santaHat.setPos(0, -0.15 * 1000, 0.35 * 1000)
+                    self.santaHat.setHpr(0, 10, 0)
+                    if self.charId == MINNIE:
+                        self.santaHat.setZ(0.25 * 1000)
 
             self.eyesOpen = loader.loadTexture('phase_3/maps/eyes1.jpg', 'phase_3/maps/eyes1_a.rgb')
             self.eyesClosed = loader.loadTexture('phase_3/maps/mickey_eyes_closed.jpg', 'phase_3/maps/mickey_eyes_closed_a.rgb')
@@ -418,6 +433,10 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.talkEnabled = None
         self.speechSound = None
         self.chatsSinceLastNoise = None
+        
+        if self.santaHat:
+            self.santaHat.removeNode()
+            self.santaHat = None
 
         if self.headNode:
             self.headNode.removeNode()
