@@ -122,6 +122,10 @@ CHAR_GREETINGS = 3
 CHAR_COMMENTS = 4
 CHAR_GOODBYES = 5
 
+WINTER_GREETINGS = 6
+WINTER_COMMENTS = 7
+WINTER_GOODBYES = 8
+
 CHATTER = {
     # Shared stuff
     SHARED_GREETINGS: ['Hi, %s!',
@@ -164,7 +168,16 @@ CHATTER = {
         "I'm going to join a group and stop some Cogs.",
         'It was nice to see you today, %s.',
         "I have a lot to do today. I'd better get busy."],
-
+        
+    WINTER_GREETINGS: ['Happy winter holidays, %s!',
+        "Ho, ho, ho!",
+        "Merry Christmas, %s!",
+        "Happy holidays, %s!"],
+    WINTER_COMMENTS: ["I just love this weather!",
+        "Don't you just love this weather, %s?",
+        "Brrrrrgh!"],
+    WINTER_GOODBYES: ["I'd better get to work on writing my Christmas list."],
+    
     # Individual phrases
     CHAR_GREETINGS: {
         MICKEY: ['Welcome to Toontown Central.', "Hi, my name is Mickey. What's yours?"],
