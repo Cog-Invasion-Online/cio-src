@@ -79,7 +79,7 @@ class Quest:
             # When we aren't passed data for the progress of each objective,
             # let's default to 0.
             
-            if not objectiveProgress or len(objectiveProgress) == 0:
+            if len(objectiveProgress) < len(objTemplate.get(collection)):
                 objectiveProgress = []
                 
                 for _ in range(len(objTemplate.get(collection))):
