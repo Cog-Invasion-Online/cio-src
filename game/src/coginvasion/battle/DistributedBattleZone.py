@@ -121,7 +121,7 @@ class DistributedBattleZone(DistributedObject):
             
             self.rewardSeq.append(Func(self.rewardPanel.setPanelData, data))
             self.rewardSeq.extend(intervalList)
-            self.rewardSeq.append(Wait(5.0))
+            self.rewardSeq.append(Wait(1.0))
         self.rewardSeq.append(Func(self.rewardPanel.destroy))
         
         if base.localAvatar.inTutorial:

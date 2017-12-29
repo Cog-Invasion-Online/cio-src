@@ -16,9 +16,11 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cogoffice.BuildingSuitPlannerAI import BuildingSuitPlannerAI
 
 from playground.SZTreasurePlannerAI import SZTreasurePlannerAI
+from playground.DistributedButterflyAI import DistributedButterflyAI
 from playground import DistributedTailorInteriorAI
 from playground import DistributedGagShopInteriorAI
 from playground import TreasureGlobals
+from playground import ButterflyGlobals
 from street import DistributedCinemaInteriorAI
 from street import DistributedKnockKnockDoorAI
 from street import CinemaGlobals
@@ -29,6 +31,7 @@ import DistributedToonInteriorAI
 import DistributedToonHQInteriorAI
 import DistributedBuildingAI
 import ZoneUtil
+import random
 
 class HoodAI:
     notify = directNotify.newCategory("HoodAI")
@@ -45,6 +48,7 @@ class HoodAI:
         self.exteriorDoors = []
         self.buildings = {}
         self.buildingPlanners = {}
+        self.butterflies = []
 
     def startup(self):
         self.createTreasurePlanner()
@@ -132,6 +136,15 @@ class HoodAI:
                                 kkDoor.generateWithRequired(exteriorZone)
             if not isSZ:
                 self.buildingPlanners[zoneId] = BuildingSuitPlannerAI(zoneId, CIGlobals.BranchZone2StreetName[zoneId], self)
+
+        butterflies = ButterflyGlobals.Spots.get(self.zoneId) is not None
+        if butterflies:
+            numFlies = 5
+            for i in xrange(numFlies):
+                bf = DistributedButterflyAI(self.air, self.zoneId, random.randint(1, 6))
+                print "Made butterfly in {0} (wings: {1})".format(self.zoneId, bf.wingType)
+                bf.generateWithRequired(self.zoneId)
+                self.butterflies.append(bf)
 
         del self.dnaFiles
 

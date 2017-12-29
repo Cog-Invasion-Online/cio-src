@@ -173,7 +173,7 @@ class RewardPanel(DirectFrame):
         intervals = []
 
         intervals.append(Func(base.camera.reparentTo, avatar))
-        intervals.append(Func(base.camera.setPosHpr, 0, 8, avatar.getHeight() * 0.66, 179, 15, 0))
+        intervals.append(Func(base.camera.setPosHpr, 10, 0, 10, 115, -30, 0))
         intervals.append(Func(self.congratsLeft.hide))
         intervals.append(Func(self.congratsRight.hide))
         intervals.append(Func(self.panelContentsTitle.setText, GagPanelName))
