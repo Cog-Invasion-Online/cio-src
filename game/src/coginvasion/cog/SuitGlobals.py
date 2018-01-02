@@ -110,11 +110,14 @@ animations = [
     Anim(5, 'finger-wag', name = 'fingerwag'),
     Anim(5, 'speak'),
     Anim(5, 'lured'),
-    Anim(5, 'magic1', suitTypes = [SuitType.A]),
+    Anim(5, 'magic1'),
+    Anim(5, 'magic2'),
+    Anim(5, 'magic3', suitTypes = [SuitType.A, SuitType.B]),
     Anim(12, 'sit'),
     Anim(12, 'tray-neutral'),
     Anim(12, 'tray-walk'),
-    Anim(12, 'sit')
+    Anim(5, 'golf-club-swing', name = 'golf', suitTypes = [SuitType.A]),
+    Anim(5, 'watercooler', suitTypes = [SuitType.C])
 ]
 
 def getAnimById(animId):

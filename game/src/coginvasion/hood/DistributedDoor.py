@@ -330,6 +330,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
                 LerpPosInterval(
                     av,
                     duration = 0.5,
+                    blendType = 'easeInOut',
                     pos = self.enterDoorWalkBackNode.getPos(render),
                     startPos = av.getPos(render)
                 ),
@@ -350,6 +351,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
             LerpPosInterval(
                 av,
                 duration = 1.0,
+                blendType = 'easeInOut',
                 pos = self.enterDoorWalkInNode.getPos(render),
                 startPos = self.enterDoorWalkBackNode.getPos(render)
             )
@@ -380,6 +382,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
             LerpPosInterval(
                 av,
                 duration = 1.2,
+                blendType = 'easeInOut',
                 pos = self.exitDoorWalkToNode.getPos(render),
                 startPos = av.getPos(render)
             )

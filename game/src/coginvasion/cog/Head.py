@@ -35,7 +35,7 @@ class Head:
             heads = loader.loadModel('phase_%s/models/char/suit%s-heads.bam' % (str(phase), self.suit))
             self.headMdl = heads.find('**/%s' % (self.head))
             
-            if self.head == 'flunky':
+            if self.head == 'flunky' and self.headTex is None:
                 glasses = heads.find('**/glasses')
                 glasses.reparentTo(self.headMdl)
                 glasses.setTwoSided(True)

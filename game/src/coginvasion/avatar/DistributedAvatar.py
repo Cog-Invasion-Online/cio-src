@@ -54,7 +54,7 @@ class DistributedAvatar(DistributedActor, Avatar):
         self.healthLabel.setBillboardPointEye()
         self.healthLabel.stash()
 
-    def showAndMoveHealthLabel(self, zoffset = 0.5):
+    def showAndMoveHealthLabel(self, zoffset = 0.5, stashWaitTime = 1.0):
         self.unstashHpLabel()
         self.stopMovingHealthLabel()
         x = self.nametag3d.getX()
@@ -65,7 +65,7 @@ class DistributedAvatar(DistributedActor, Avatar):
                                 pos = (x, y, z + zoffset),
                                 startPos = (x, y, z - 2),
                                 blendType = 'easeOut')
-        self.healthLabelTrack = Sequence(moveTrack, Wait(1.0), Func(self.stashHpLabel))
+        self.healthLabelTrack = Sequence(moveTrack, Wait(stashWaitTime), Func(self.stashHpLabel))
         self.healthLabelTrack.start()
 
     def stopMovingHealthLabel(self):

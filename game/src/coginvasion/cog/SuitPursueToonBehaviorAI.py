@@ -125,6 +125,11 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
             self.fsm.request('pursue')
             return task.done
 
+        if self.target.isDead():
+            # They've died, stop attacking
+            self.reset()
+            return task.done
+
         attack = SuitUtils.attack(self.suit, self.target)
         timeout = SuitAttacks.SuitAttackLengths[attack]
 

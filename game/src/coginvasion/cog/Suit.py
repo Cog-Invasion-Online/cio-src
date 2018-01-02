@@ -134,6 +134,8 @@ class Suit(Avatar):
     def enterAttack(self, attack, target, ts = 0):
         self.show()
 
+        self.headsUp(target)
+
         if hasattr(self, 'uniqueName'):
             doneEvent = self.uniqueName('suitAttackDone')
         else:
@@ -141,7 +143,11 @@ class Suit(Avatar):
         self.suitAttackState = SuitAttacks(doneEvent, self, target)
         self.suitAttackState.load(attack)
         self.suitAttackState.enter(ts)
-        self.headsUp(target)
+        
+        self.healthLabel['text_fg'] = CIGlobals.NegativeTextColor
+        self.healthLabel['text'] = self.suitAttackState.currentAttack.attackName + "!"
+        self.showAndMoveHealthLabel(2.0, 1.5)
+
         self.acceptOnce(doneEvent, self.handleSuitAttackDone)
 
     def handleSuitAttackDone(self):

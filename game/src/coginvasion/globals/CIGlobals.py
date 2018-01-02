@@ -319,9 +319,9 @@ safeZoneLSRanges = {ToontownCentral: 6,
     RecoverArea: 8}
 ToonStandableGround = 0.707
 if (ConfigVariableBool('want-gta-controls', False)):
-    ToonSpeedFactor = 1.0
+    ToonSpeedFactor = 1.25
 else:
-    ToonSpeedFactor = 1.0
+    ToonSpeedFactor = 1.25
 ToonForwardSpeed = 16.0 * ToonSpeedFactor
 ToonJumpForce = 24.0
 ToonReverseSpeed = 8.0 * ToonSpeedFactor
@@ -1401,7 +1401,45 @@ SuitAttackTaunts = {'canned': ['Do you like it out of the can?',
              "I'll make sure you stick around.",
              'Let me keep you busy.',
              'Just try to unravel this.',
-             'I want this meeting to stick with you.']}
+             'I want this meeting to stick with you.'],
+        'teeoff': ["You're not up to par.",
+                   "Fore!",
+                   "I'm getting teed off.",
+                   "Caddie, I'll need my driver!",
+                   "Just try and avoid this hazard.",
+                   "Swing!",
+                   "This is a sure hole in one.",
+                   "You're in my fairway.",
+                   "Notice my grip.",
+                   "Watch the birdie!",
+                   "Keep your eye on the ball!",
+                   "Mind if I play through?"],
+        'hotair': ["We're having a heated discussion.",
+                   "You're experiencing a heat wave",
+                   "I've reached my boiling point.",
+                   "This should cause some wind burn."],
+        'evileye': ["I'm giving you the evil eye.",
+                    "Could you eye-ball this for me?",
+                    "Wait. I've got something in my eye.",
+                    "I've got my eye on you!",
+                    "Could you keep an eye on this for me?",
+                    "I've got a real eye for evil.",
+                    "I'll poke you in the eye!",
+                    "\"Eye\" am as evil as they come!",
+                    "I'll put you in the eye of the storm!",
+                    "I'm rolling my eye at you."],
+        'watercooler': ['This ought to cool you off.',
+                        "Isn't this refreshing?",
+                        "I deliver.",
+                        "Straight from the tap - into your lap.",
+                        "What's the matter, it's just spring water.",
+                        "Don't worry, it's purified.",
+                        "Ah, another satisfied customer.",
+                        "It's time for your daily delivery.",
+                        "Hope your colors don't run.",
+                        "Care for a drink?",
+                        "It all comes out in the wash.",
+                        "The drink's on you."]}
 SuitTimeUntilToss = {"canned": {"A": 3,
                             "B": 3,
                             "C": 2.2},
