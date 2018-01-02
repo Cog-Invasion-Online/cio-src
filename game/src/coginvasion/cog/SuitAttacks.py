@@ -1198,10 +1198,6 @@ class RazzleDazzleAttack(ParticleAttack):
 
     def releaseAttack(self):
         ParticleAttack.releaseAttack(self, self.handObj.find('**/scale_joint_sign'), onlyMoveColl = False, blendType = 'easeIn')
-        
-    def handleCollision(self, entry):
-        ParticleAttack.handleCollision(self, entry)
-        base.playSfx(self.hitSound, node = self.target)
 
     def playParticleSound(self):
         self.particleSound = base.audio3d.loadSfx('phase_5/audio/sfx/SA_razzle_dazzle.ogg')
