@@ -140,6 +140,9 @@ def createStunInterval(suit, before, after):
     from direct.actor.Actor import Actor
     from panda3d.core import Point3
     from direct.interval.IntervalGlobal import Sequence, Wait, Func
+    
+    if not suit or suit.isEmpty() or not suit.headModel or suit.headModel.isEmpty():
+        return Sequence(Wait(1.0))
 
     p1 = Point3(0)
     p2 = Point3(0)
