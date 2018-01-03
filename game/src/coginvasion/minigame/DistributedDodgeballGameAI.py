@@ -31,13 +31,16 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
             State.State('roundIntermission', self.enterRoundIntermission, self.exitRoundIntermission)], 'off', 'off')
         self.fsm.enterInitialState()
         self.playersReadyToStart = 0
-        self.numFrozenByTeam = {RED: 0, BLUE: 0}
+        self.resetNumFrozen()
         self.availableSpawnsByTeam = {
             BLUE: [0, 1, 2, 3],
             RED: [0, 1, 2, 3]}
         self.announcedWinner = False
         self.winnerPrize = 200
         self.loserPrize = 0
+
+    def resetNumFrozen(self):
+        self.numFrozenByTeam = {RED: 0, BLUE: 0}
 
     def enterRoundIntermission(self):
         pass
@@ -48,13 +51,16 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
     def __gameOver_time(self):
         self.__gameOver(1)
 
-    def __gameOver(self, timeRanOut = 0):
-        self.timeRanOutLastRound = timeRanOut
+    def __decideWinner(self):
         teams = [BLUE, RED]
         teams.sort(key = lambda team: self.scoreByTeam[team], reverse = True)
+        self.winnerTeam = teams[0]
+
+    def __gameOver(self, timeRanOut = 0):
+        self.timeRanOutLastRound = timeRanOut
         self.fsm.request('off')
         if self.round == MaxRounds:
-            self.winnerTeam = teams[0]
+            self.__decideWinner()
             self.sendUpdate('teamWon', [self.winnerTeam, timeRanOut])
         else:
             self.sendUpdate('roundOver', [timeRanOut])
@@ -67,11 +73,11 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
         if self.numFrozenByTeam[myTeam] >= len(self.playerListByTeam[myTeam]) and not self.announcedWinner:
             # All of the players on this team are frozen! The enemy team wins!
             self.announcedWinner = True
-            self.winnerTeam = enemyTeam
             self.timeRanOutLastRound = 0
             self.fsm.request('off')
+            self.resetNumFrozen()
             if self.round == MaxRounds:
-                self.winnerTeam = enemyTeam
+                self.__decideWinner()
                 self.sendUpdate('teamWon', [self.winnerTeam, 0])
                 taskMgr.doMethodLater(self.GameOverTime, self.__gameOverTask, self.uniqueName("gameOverTask"))
             else:
