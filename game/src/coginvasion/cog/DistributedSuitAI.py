@@ -85,6 +85,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.tacticalSeq = None
 
         self.allowHits = True
+        self.firstTimeDead = True
         
         # This variable stores what avatarIds have damaged us.
         self.damagers = []
@@ -385,7 +386,8 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
                 self.damagers.append(avId)
 
             if self.isDead():
-                self.sendUpdate('doStunEffect')
+                if self.firstTimeDead:
+                    self.sendUpdate('doStunEffect')
 
                 if track == GagType.THROW or gagName == CIGlobals.TNT:
                     self.b_setAnimState('pie', 0)
@@ -405,6 +407,8 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
                 if self.battleZone:
                     for damager in self.damagers:
                         self.battleZone.handleCogDeath(self, damager)
+                        
+                self.firstTimeDead = False
             else:
                 # I've been hit! Take appropriate actions.
                 self.handleToonThreat(avatar, True)
@@ -596,6 +600,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.deathAnim = None
         self.deathTimeLeft = None
         self.comboData = None
+        self.firstTimeDead = None
         self.clearComboDataTime = None
         self.showComboDamageTime = None
         self.showWeaknessBonusDamageTime = None
