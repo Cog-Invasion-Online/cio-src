@@ -137,6 +137,10 @@ class Attack(DirectObject):
             base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
             
     def lockOnToonTask(self, task):
+        if (not self.suit or self.suit.isEmpty() or
+            not self.target or self.target.isEmpty()):
+            return task.done
+            
         self.suit.headsUp(self.target)
         return task.cont
         
