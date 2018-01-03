@@ -16,8 +16,12 @@ from src.coginvasion.battle.RPToonData import RPToonData
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.quests.Objectives import DefeatCog, DefeatCogBuilding
 
+import BattleGlobals
+
 class DistributedBattleZoneAI(DistributedObjectAI):
     notify = directNotify.newCategory('DistributedBattleZoneAI')
+
+    battleType = BattleGlobals.BTBattle
 
     def __init__(self, air):
         DistributedObjectAI.__init__(self, air)
@@ -28,9 +32,35 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         # Value:
         # [{GAG_ID : USES}, [DeadCogData...]]
         self.avatarData = {}
+
+        self.avId2suitsTargeting = {}
         
         # List of avatars that have acknowledged that they've completed the reward panel sequence.
         self.avReadyToContinue = []
+
+    def getBattleType(self):
+        return self.battleType
+
+    def toonAvailableForTargeting(self, avId):
+        #return len(self.avId2suitsTargeting.get(avId, [])) < 2
+        return True
+
+    def clearTargets(self, suitId):
+        # Remove the current target of this suit.
+        for avId in self.avId2suitsTargeting.keys():
+            if suitId in self.avId2suitsTargeting[avId]:
+                self.avId2suitsTargeting[avId].remove(suitId)
+
+    def newTarget(self, suitId, targetId):
+        self.clearTargets(suitId)
+
+        self.avId2suitsTargeting[targetId].append(suitId)
+
+    def getSuitsTargetingAvId(self, avId):
+        return self.avId2suitsTargeting.get(avId, [])
+
+    def getNumSuitsTargeting(self, avId):
+        return len(self.getSuitsTargetingAvId(avId))
         
     def acknowledgeAvatarReady(self):
         avId = self.air.getAvatarIdFromSender()
@@ -56,6 +86,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         self.ignoreAvatarDeleteEvents()
         self.resetStats()
 
+        self.avId2suitsTargeting = None
         self.avIds = None
         self.avatarData = None
         DistributedObjectAI.delete(self)
@@ -63,6 +94,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
     def resetStats(self):
         self.avIds = []
         self.avatarData = {}
+        self.avId2suitsTargeting = {}
 
     def ignoreAvatarDeleteEvents(self):
         for avId in self.avIds:
@@ -72,8 +104,12 @@ class DistributedBattleZoneAI(DistributedObjectAI):
 
     def addAvatar(self, avId):
         self.avIds.append(avId)
-        self.avatarData.update({avId : [{}, []]})
+        self.setupAvatarData(avId)
         self.b_setAvatars(self.avIds)
+
+    def setupAvatarData(self, avId):
+        self.avatarData.update({avId : [{}, []]})
+        self.avId2suitsTargeting[avId] = []
 
     def removeAvatar(self, avId):
         if avId in self.avIds:
@@ -81,6 +117,9 @@ class DistributedBattleZoneAI(DistributedObjectAI):
             
         if avId in self.avReadyToContinue:
             self.avReadyToContinue.remove(avId)
+
+        if avId in self.avId2suitsTargeting.keys():
+            del self.avId2suitsTargeting[avId]
 
         if avId in self.avatarData.keys():
             self.avatarData.pop(avId)
@@ -100,6 +139,8 @@ class DistributedBattleZoneAI(DistributedObjectAI):
     # avatar ids.
     def setAvatars(self, avIds):
         self.avIds = avIds
+        for avId in avIds:
+            self.setupAvatarData(avId)
 
     # Get the avatar ids.
     def getAvatars(self):
@@ -226,9 +267,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         return blobs
     
     def isCogOffice(self):
-        #from src.coginvasion.cogoffice import DistributedCogOfficeBattleAI
-        #return type(super) == DistributedCogOfficeBattleAI
-        return True
+        return self.battleType == BattleGlobals.BTOffice
     
     def battleComplete(self):
         self.d_setToonData()

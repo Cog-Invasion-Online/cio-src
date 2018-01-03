@@ -89,64 +89,75 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         self.numGagSlots = 0
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
         return
-        
-    def reqSetWorldAccess(self, andTP):
+
+    def __requesterAuthorized(self, notDev = False):
         requester = self.air.doId2do.get(self.air.getAvatarIdFromSender())
         if requester:
-            if requester.getAdminToken() > CIGlobals.NoToken:
-                self.b_setHoodsDiscovered(CIGlobals.Hood2ZoneId.values())
-                if andTP:
-                    self.b_setTeleportAccess(CIGlobals.Hood2ZoneId.values())
+            if ((not notDev and requester.getAdminToken() > CIGlobals.NoToken) or
+                (notDev and requester.getAdminToken() > CIGlobals.NoToken and self.getAdminToken() != CIGlobals.DevToken)):
+                return True
+        return False
+
+    def reqUnlockAllGags(self):
+        if self.__requesterAuthorized():
+            self.b_setTrackExperience(GagGlobals.trackExperienceToNetString(GagGlobals.MaxedTrackExperiences))
+            self.backpack.refillSupply()
+
+    def reqAllGagSlots(self):
+        if self.__requesterAuthorized():
+            self.b_setNumGagSlots(GagGlobals.MaxGagSlots)
+        
+    def reqSetWorldAccess(self, andTP):
+        if self.__requesterAuthorized():
+            self.b_setHoodsDiscovered(CIGlobals.Hood2ZoneId.values())
+            if andTP:
+                self.b_setTeleportAccess(CIGlobals.Hood2ZoneId.values())
         
     def d_setDNAStrand(self, strand):
         self.sendUpdate('setDNAStrand', [strand])
         
     def reqSetTSAUni(self, flag):
-        requester = self.air.doId2do.get(self.air.getAvatarIdFromSender())
-        if requester:
-            if requester.getAdminToken() > CIGlobals.NoToken:
-                if flag:
-                    # Apply the TSA uniform to this toon.
-                    if self.getAdminToken() != CIGlobals.DevToken:
-                        if self.gender == 'girl':
-                            self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][0]
-                            self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['43'][0]
-                            self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][1]]
-                        else:
-                            self.shirt = ToonDNA.ToonDNA.maleTopDNA2maleTop['135'][0]
-                            self.shorts = ToonDNA.ToonDNA.maleBottomDNA2maleBottom['57'][0]
-                            self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.maleTopDNA2maleTop['135'][1]]
-                    else:
-                        # Blue suit signifies developer.
-                        if self.gender == 'girl':
-                            self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['136'][0]
-                            self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['44'][0]
-                            self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.femaleTopDNA2femaleTop['136'][1]]
-                        else:
-                            self.shirt = ToonDNA.ToonDNA.maleTopDNA2maleTop['136'][0]
-                            self.shorts = ToonDNA.ToonDNA.maleBottomDNA2maleBottom['58'][0]
-                            self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.maleTopDNA2maleTop['136'][1]]
-                else:
-                    # Apply the default white clothes.
+        if self.__requesterAuthorized():
+            if flag:
+                # Apply the TSA uniform to this toon.
+                if self.getAdminToken() != CIGlobals.DevToken:
                     if self.gender == 'girl':
-                        self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['00'][0]
-                        self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['00'][0]
-                        self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.femaleTopDNA2femaleTop['00'][1]]
+                        self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][0]
+                        self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['43'][0]
+                        self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][1]]
                     else:
-                        self.shirt = ToonDNA.ToonDNA.maleTopDNA2maleTop['00'][0]
-                        self.shorts = ToonDNA.ToonDNA.maleBottomDNA2maleBottom['00'][0]
-                        self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.maleTopDNA2maleTop['00'][1]]
+                        self.shirt = ToonDNA.ToonDNA.maleTopDNA2maleTop['135'][0]
+                        self.shorts = ToonDNA.ToonDNA.maleBottomDNA2maleBottom['57'][0]
+                        self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.maleTopDNA2maleTop['135'][1]]
+                else:
+                    # Blue suit signifies developer.
+                    if self.gender == 'girl':
+                        self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['136'][0]
+                        self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['44'][0]
+                        self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.femaleTopDNA2femaleTop['136'][1]]
+                    else:
+                        self.shirt = ToonDNA.ToonDNA.maleTopDNA2maleTop['136'][0]
+                        self.shorts = ToonDNA.ToonDNA.maleBottomDNA2maleBottom['58'][0]
+                        self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.maleTopDNA2maleTop['136'][1]]
+            else:
+                # Apply the default white clothes.
+                if self.gender == 'girl':
+                    self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['00'][0]
+                    self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['00'][0]
+                    self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.femaleTopDNA2femaleTop['00'][1]]
+                else:
+                    self.shirt = ToonDNA.ToonDNA.maleTopDNA2maleTop['00'][0]
+                    self.shorts = ToonDNA.ToonDNA.maleBottomDNA2maleBottom['00'][0]
+                    self.sleeve = ToonDNA.ToonDNA.Sleeves[ToonDNA.ToonDNA.maleTopDNA2maleTop['00'][1]]
                                    
-                self.shirtColor = self.sleeveColor = self.shortColor = ToonDNA.ToonDNA.clothesColorDNA2clothesColor['27']
+            self.shirtColor = self.sleeveColor = self.shortColor = ToonDNA.ToonDNA.clothesColorDNA2clothesColor['27']
                     
-                self.generateDNAStrandWithCurrentStyle()
-                self.d_setDNAStrand(self.getDNAStrand())
+            self.generateDNAStrandWithCurrentStyle()
+            self.d_setDNAStrand(self.getDNAStrand())
         
     def reqSetAdminToken(self, token):
-        requester = self.air.doId2do.get(self.air.getAvatarIdFromSender())
-        if requester:
-            if requester.getAdminToken() > CIGlobals.NoToken and self.getAdminToken() != CIGlobals.DevToken:
-                self.b_setAdminToken(token)
+        if self.__requesterAuthorized(True):
+            self.b_setAdminToken(token)
 
     def setNumGagSlots(self, num):
         self.numGagSlots = num

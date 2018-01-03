@@ -170,10 +170,21 @@ class Attack(DirectObject):
         self.attacksClass = None
         self.attackName2attackId = None
 
+from SuitType import SuitType
+
 class ThrowAttack(Attack):
     notify = directNotify.newCategory("ThrowAttack")
     attack = 'throw'
     attackName = 'Throw Attack'
+
+    # The frame of the throw animation at which the projectile is released.
+    suitType2releaseFrame = {
+        SuitType.C: {'throw-paper': 57, 'throw-object': 56},
+        SuitType.A: {'throw-paper': 73, 'throw-object': 73},
+        SuitType.B: {'throw-paper': 73, 'throw-object': 75}
+    }
+
+    speed = 1.5
 
     def __init__(self, attacksClass, suit):
         Attack.__init__(self, attacksClass, suit)
@@ -194,7 +205,7 @@ class ThrowAttack(Attack):
         if self.suit:
             self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
             base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
-            self.suit.b_handleWeaponTouch()
+            #self.suit.b_handleWeaponTouch()
 
     def doAttack(self, weapon_path, weapon_scale, track_name,
                 animation_name, collsphere_radius, weapon_coll_id,
@@ -220,42 +231,22 @@ class ThrowAttack(Attack):
         self.targetY = self.attacksClass.target.getY(render)
         self.targetZ = self.attacksClass.target.getZ(render)
 
-        if not self.attack in ['glowerpower']:
-            actorIval = ActorInterval(self.suit, animation_name, playRate = 3.0, duration = 0.7)
-            actorIval2 = ActorInterval(self.suit, animation_name, playRate = 2.0, startTime = 1.0)
-        else:
-            actorIval = ActorInterval(self.suit, animation_name)
+        releaseFrame = self.suitType2releaseFrame[self.suit.suitPlan.getSuitType()][animation_name]
 
-        seq = Sequence()
+        actorIval = ActorInterval(self.suit, animation_name, endFrame = releaseFrame, playRate = self.speed)
+        actorIval2 = ActorInterval(self.suit, animation_name, startFrame = releaseFrame, playRate = self.speed)
 
-        if not self.attack in ['glowerpower']:
-            self.suitTrack = Parallel(Sequence(actorIval, actorIval2), name = track_name)
-            self.weapon.reparentTo(self.suit.find('**/joint_Rhold'))
-            waitTime = 0.9
-            if self.suit.suitPlan.getSuitType() == "C":
-                waitTime -= 0.05
-            seq.append(Wait(waitTime))
-            if self.suit.suitPlan.getSuitType() != "C":
-                seq.append(Wait(0.3))
-            seq.append(Func(self.throwObject))
-            seq.append(Wait(1.0))
-            seq.append(Func(self.delWeapon))
-        else:
-            self.suitTrack = Parallel(actorIval, name = track_name)
-            seq.append(Wait(1))
-            seq.append(Func(self.throwObject))
-            seq.append(Wait(0.5))
-            seq.append(Func(self.delWeapon))
-        self.suitTrack.append(seq)
+        self.suitTrack = Parallel(Sequence(actorIval, actorIval2),
+                                  Sequence(Wait(actorIval.getDuration()), Func(self.throwObject), Wait(1.0), Func(self.delWeapon)),
+                                  name = track_name)
+
+        self.weapon.reparentTo(self.suit.find('**/joint_Rhold'))
 
         wsnode = CollisionNode(weapon_coll_id)
         wsnode.addSolid(self.wss)
         wsnode.setCollideMask(CIGlobals.WeaponBitmask)
         self.wsnp = self.weapon.attachNewNode(wsnode)
-        self.suitTrack.setDoneEvent(self.suitTrack.getName())
-        self.acceptOnce(self.suitTrack.getDoneEvent(), self.finishedAttack)
-        self.suitTrack.delayDelete = DelayDelete.DelayDelete(self.suit, track_name)
-        self.suitTrack.start(ts)
+        self.startSuitTrack(ts)
 
     def playWeaponSound(self):
         if self.weapon and self.weaponSfx:
@@ -466,7 +457,8 @@ class GlowerPowerAttack(Attack):
 
         collName = self.suit.uniqueName("glowerPowerColl")
         self.collNP = self.knifeRoot.attachNewNode(makeCollision(1.0, collName))
-        collTrack = Sequence(Wait(1.1), Func(self.acceptOnce, 'enter' + collName, self.announceHit),
+        collTrack = Sequence(Func(self.startToonLockOn), Wait(0.9), Func(self.stopToonLockOn), Wait(0.2),
+                             Func(self.acceptOnce, 'enter' + collName, self.announceHit),
                              LerpPosInterval(self.collNP, 1.0, (0, 50, 0), (0, 0, 0)),
                              Func(self.ignore, 'enter' + collName))
         
@@ -609,10 +601,12 @@ class FountainPenAttack(Attack):
                 Func(self.startToonLockOn),
                 Wait(0.8),
                 Func(self.stopToonLockOn),
+                Func(self.attachSpray),
+                Func(self.spray.hide),
                 Wait(0.4),
                 Func(self.acceptOnce, "enter" + self.wsnp.node().getName(), self.handleSprayCollision),
                 Func(self.playWeaponSound),
-                Func(self.attachSpray),
+                Func(self.spray.show),
                 Func(self.sprayParticle.start, self.pen.find('**/joint_toSpray'), self.pen.find('**/joint_toSpray')),
                 self.sprayScaleIval,
                 Wait(0.5),
@@ -1031,7 +1025,6 @@ class EvictionNoticeAttack(ThrowAttack):
         ThrowAttack.doAttack(self, "phase_3.5/models/props/shredder-paper-mod.bam", 1, 'doEvictionNoticeAttack',
                             'throw-paper', 1, 'evictionNoticeWeaponSphere', weapon_y = -0.15, weapon_z = -0.5,
                             weapon_x = -1.4, weapon_r = 90, weapon_h = 30, ts = ts)
-        self.wsnp.setZ(1.5)
 
     def throwObject(self):
         ThrowAttack.throwObject(self, False)
@@ -1156,15 +1149,18 @@ class ParticleAttack(Attack):
             base.audio3d.attachSoundToObject(self.particleSound, self.suit)
             base.playSfx(self.particleSound, node = self.suit)
 
+    def stopParticles(self):
+        if self.particles:
+            for particle in self.particles:
+                particle.cleanup()
+        self.particles = None
+
     def cleanup(self):
         Attack.cleanup(self)
         self.targetX = None
         self.targetY = None
         self.targetZ = None
-        if self.particles:
-            for particle in self.particles:
-                particle.cleanup()
-        self.particles = None
+        self.stopParticles()
         if self.handObj:
             self.handObj.removeNode()
             self.handObj = None

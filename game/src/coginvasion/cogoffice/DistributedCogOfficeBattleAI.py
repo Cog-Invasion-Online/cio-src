@@ -21,6 +21,7 @@ from src.coginvasion.cog import CogBattleGlobals
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.battle.DistributedGagBarrelAI import DistributedGagBarrelAI
+from src.coginvasion.battle import BattleGlobals
 from DistributedCogOfficeElevatorAI import DistributedCogOfficeElevatorAI
 from DistributedCogOfficeSuitAI import DistributedCogOfficeSuitAI
 from CogOfficeConstants import *
@@ -36,6 +37,8 @@ VICTORY_TIME = 5.0
 class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
     notify = directNotify.newCategory('DistributedCogOfficeBattleAI')
     UNIQUE_FLOORS = []
+
+    battleType = BattleGlobals.BTOffice
 
     def __init__(self, air, numFloors, dept, hood, bldg, exteriorZoneId):
         DistributedBattleZoneAI.__init__(self, air)

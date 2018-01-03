@@ -293,6 +293,26 @@ class AdminPage(BookPage):
             command = self.book.finishedResume,
             extraArgs = [WorldAccessDialog, []]
         )
+        self.allGagsBtn = DirectButton(
+            geom = geom,
+            text_scale = 0.04,
+            relief = None,
+            scale = 1.0,
+            text = "Unlock All Gags",
+            pos = (0.45, 0.15, -0.3),
+            text_pos = (0, -0.01),
+            command = SEND_REQ_UNLOCK_GAGS
+        )
+        self.allSlotsBtn = DirectButton(
+            geom = geom,
+            text_scale = 0.0375,
+            relief = None,
+            scale = 1.0,
+            text = "Unlock All Gag Slots",
+            pos = (0.45, 0.15, -0.4),
+            text_pos = (0, -0.01),
+            command = SEND_REQ_GAG_SLOTS
+        )
         base.cr.playGame.getPlace().maybeUpdateAdminPage()
         del geom
 
@@ -341,3 +361,7 @@ class AdminPage(BookPage):
         del self.tokenBtn
         self.worldBtn.destroy()
         del self.worldBtn
+        self.allGagsBtn.destroy()
+        del self.allGagsBtn
+        self.allSlotsBtn.destroy()
+        del self.allSlotsBtn

@@ -64,6 +64,22 @@ def SEND_SUIT_CMD(commandName):
 
 __builtin__.SEND_SUIT_CMD = SEND_SUIT_CMD
 
+def SEND_REQ_UNLOCK_GAGS():
+    if not precommandChecks():
+        return
+
+    base.localAvatar.sendUpdate('reqUnlockAllGags')
+
+__builtin__.SEND_REQ_UNLOCK_GAGS = SEND_REQ_UNLOCK_GAGS
+
+def SEND_REQ_GAG_SLOTS():
+    if not precommandChecks():
+        return
+
+    base.localAvatar.sendUpdate('reqAllGagSlots')
+
+__builtin__.SEND_REQ_GAG_SLOTS = SEND_REQ_GAG_SLOTS
+
 def TOGGLE_GHOST():
     if not precommandChecks():
         return

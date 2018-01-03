@@ -14,6 +14,8 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.battle.RPToonData import RPToonData
 from src.coginvasion.gui.RewardPanel import RewardPanel
+from src.coginvasion.globals import CIGlobals
+import BattleGlobals
 
 from direct.interval.IntervalGlobal import Sequence, Func, Wait
 
@@ -73,17 +75,18 @@ class DistributedBattleZone(DistributedObject):
         # programmed in as a "Place"
         walkData = place.walkStateData if place else self
 
-        base.localAvatar.disableAvatarControls()
-        base.localAvatar.detachCamera()
-        base.localAvatar.stopSmartCamera()
-        base.localAvatar.collisionsOff()
-        base.localAvatar.disableGags()
-        base.localAvatar.stopTrackAnimToSpeed()
-        base.localAvatar.hideGagButton()
         if not place and base.localAvatar.GTAControls:
             walkData.mouseMov.disableMovement(allowReEnable = False)
         if place:
             place.fsm.request('stop')
+
+        base.localAvatar.disableAvatarControls()
+        base.localAvatar.stopSmartCamera()
+        base.camera.wrtReparentTo(render)
+        base.localAvatar.collisionsOff()
+        base.localAvatar.disableGags()
+        base.localAvatar.stopTrackAnimToSpeed()
+        base.localAvatar.hideGagButton()
             
     def enableAvatarControls(self):
         # place will be None if the avatar is in the tutorial.
@@ -104,10 +107,13 @@ class DistributedBattleZone(DistributedObject):
         base.localAvatar.enableAvatarControls()
         if not place and base.localAvatar.GTAControls:
             walkData.mouseMov.enableMovement()
+
+        base.localAvatar.setBusy(1)
     
     def setToonData(self, netStrings):
         self.rewardPanel = RewardPanel(None)
         self.rewardSeq.append(Func(self.disableAvatarControls))
+        self.rewardSeq.append(Func(base.camLens.setMinFov, BattleGlobals.VictoryCamFov / (4. / 3.)))
         self.rewardSeq.append(Func(base.localAvatar.detachCamera))
         self.rewardSeq.append(Func(base.localAvatar.b_setAnimState, 'win'))
         self.rewardSeq.append(Func(base.localAvatar.loop, 'win'))
@@ -127,6 +133,7 @@ class DistributedBattleZone(DistributedObject):
         if base.localAvatar.inTutorial:
             self.rewardSeq.append(Func(self.enableAvatarControls))
         self.rewardSeq.append(Func(base.localAvatar.b_setAnimState, 'neutral'))
+        self.rewardSeq.append(Func(base.camLens.setMinFov, CIGlobals.DefaultCameraFov / (4. / 3.)))
         self.rewardSeq.append(Func(self.sendUpdate, 'acknowledgeAvatarReady', []))
             
     def getToonData(self):

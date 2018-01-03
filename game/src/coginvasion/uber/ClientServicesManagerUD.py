@@ -71,7 +71,7 @@ class CreateToonProcess:
                 "setMaxHealth": (100,),
                 "setMoney": (5000,),
                 "setBackpackAmmo": (GagGlobals.getDefaultBackpack().toNetString(),),
-                "setLoadout": ([13, 35],), # Start with cupcake and squirting flower.
+                "setLoadout": (GagGlobals.InitLoadout,), # Start with cupcake and squirting flower.
                 "setTrackExperience": (GagGlobals.trackExperienceToNetString(GagGlobals.DefaultTrackExperiences),),
                 "setAdminToken": (CIGlobals.NoToken,),
                 "setQuests": ("",),
@@ -83,7 +83,7 @@ class CreateToonProcess:
                 "setTeleportAccess": ([],),
                 "setLastHood": (CIGlobals.ToontownCentralId,),
                 "setDefaultShard": (0,),
-                "setNumGagSlots": (2,)} # Start with 2 gag slots
+                "setNumGagSlots": (GagGlobals.InitGagSlots,)}
         self.notify.info("Creating new toon!")
         self.avList = self.accFields["AVATAR_IDS"]
         self.avList = self.avList[:6]

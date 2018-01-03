@@ -167,13 +167,21 @@ class RewardPanel(DirectFrame):
 
             self.trackIncLabels[i]['text'] = ''
             self.trackIncLabels[i].show()
+
+    def __chooseRewardShot(self, av):
+        shotChoices = [(0, 8, av.getHeight() * 0.66, 179, 15, 0),
+                       (5.2, 5.45, av.getHeight() * 0.66, 131.5, 3.6, 0)]
+        shot = random.choice(shotChoices)
+        return shot
         
     def getGagExperienceInterval(self):
         avatar = self.panelData.avatar
         intervals = []
 
+        shot = self.__chooseRewardShot(avatar)
+
         intervals.append(Func(base.camera.reparentTo, avatar))
-        intervals.append(Func(base.camera.setPosHpr, 10, 0, 10, 115, -30, 0))
+        intervals.append(Func(base.camera.setPosHpr, *shot))
         intervals.append(Func(self.congratsLeft.hide))
         intervals.append(Func(self.congratsRight.hide))
         intervals.append(Func(self.panelContentsTitle.setText, GagPanelName))

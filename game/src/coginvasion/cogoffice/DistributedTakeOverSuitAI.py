@@ -52,9 +52,6 @@ class DistributedTakeOverSuitAI(DistributedSuitAI):
     def getDoorDoId(self):
         return self.doorDoId
 
-    def closeSuit(self):
-        DistributedSuitAI.closeSuit(self, False)
-
     def monitorHealth(self, task):
         if self.isDead():
             # No! I'm dead! I lost my building!

@@ -173,13 +173,17 @@ TrackGagNamesByTrackName = {Throw : [CIGlobals.Cupcake,
 
 TrackExperienceAmounts = {
     Throw : [10, 50, 400, 2000, 6000, 10000],
-    ToonUp: [20, 200, 800, 2000, 6000, 10000],
+    ToonUp: [20, 200, 800, 2000, 6000], # 10000
     Sound : [40, 200, 1000, 2500, 7500, 10000],
     Drop: [20, 100, 500, 2000, 6000, 10000],
     Trap: [20, 800, 2000, 6000],#100, 800, 2000, 6000, 10000],
     Squirt: [10, 50, 400, 2000, 6000, 10000],
     Lure: [20, 100, 800, 2000, 6000, 10000]
 }
+
+def getTrackHighestExperience(track):
+    exps = TrackExperienceAmounts[track]
+    return exps[len(exps) - 1]
 
 # These are the splat scales
 splatSizes = {
@@ -393,6 +397,22 @@ DefaultTrackExperiences = {
     Squirt : 0,
     Drop : -1
 }
+
+MaxedTrackExperiences = {
+    ToonUp : getTrackHighestExperience(ToonUp),
+    Trap   : getTrackHighestExperience(Trap),
+    Lure   : -1,
+    Sound  : getTrackHighestExperience(Sound),
+    Throw  : getTrackHighestExperience(Throw),
+    Squirt : getTrackHighestExperience(Squirt),
+    Drop   : getTrackHighestExperience(Drop)
+}
+
+MaxGagSlots = 4
+InitGagSlots = 2
+
+# Cupcake, squirt flower
+InitLoadout = [13, 35]
 
 def getDefaultBackpack(isAI = False):
     defaultBackpack = None

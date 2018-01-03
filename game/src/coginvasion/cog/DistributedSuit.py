@@ -22,6 +22,7 @@ from direct.fsm.State import State
 from src.coginvasion.avatar.DistributedAvatar import DistributedAvatar
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.npc.NPCWalker import NPCWalkInterval
+from src.coginvasion.battle import BattleGlobals
 
 from SuitState import SuitState
 from SuitBank import SuitPlan
@@ -442,10 +443,9 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         attackName = SuitAttacks.SuitAttackLengths.keys()[attackId]
         attackTaunt = CIGlobals.SuitAttackTaunts[attackName][random.randint(0, len(CIGlobals.SuitAttackTaunts[attackName]) - 1)]
         avatar = self.cr.doId2do.get(avId)
-        shouldChat = 0
-        if self.suitPlan in [SuitBank.VicePresident, SuitBank.LucyCrossbill]:
-            shouldChat = random.randint(0, 2)
-        if shouldChat == 0:
+
+        shouldChat = random.randint(*BattleGlobals.AttackTauntChance) == BattleGlobals.AttackTauntChance[0]
+        if shouldChat:
             self.setChat(attackTaunt)
 
         self.animFSM.request('attack', [attackName, avatar, 0.0])

@@ -136,6 +136,22 @@ def getAnimByName(animName):
 def getAnimations():
     return animations
 
+def createStunInterval(suit, before, after):
+    from direct.actor.Actor import Actor
+    from panda3d.core import Point3
+    from direct.interval.IntervalGlobal import Sequence, Wait, Func
+
+    p1 = Point3(0)
+    p2 = Point3(0)
+    stars = Actor("phase_3.5/models/props/stun-mod.bam",
+                  {"chan": "phase_3.5/models/props/stun-chan.bam"})
+    stars.setColor(1, 1, 1, 1)
+    stars.adjustAllPriorities(100)
+    head = suit.headModel
+    head.calcTightBounds(p1, p2)
+    return Sequence(Wait(before), Func(stars.reparentTo, head), Func(stars.setZ, max(0.0, p2[2] - 1.0)),
+                    Func(stars.loop, 'chan'), Wait(after), Func(stars.cleanup))
+
 propellerNeutSfx = 'phase_4/audio/sfx/TB_propeller.ogg'
 propellerInSfx = 'phase_5/audio/sfx/ENC_propeller_in.ogg'
 propellerOutSfx = 'phase_5/audio/sfx/ENC_propeller_out.ogg'

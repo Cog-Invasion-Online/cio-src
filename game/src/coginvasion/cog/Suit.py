@@ -492,6 +492,9 @@ class Suit(Avatar):
         fadeIn = Sequence(Func(self.setTransparency, 1), self.colorScaleInterval(0.6, colorScale=Vec4(1,1,1,1), startColorScale=Vec4(1,1,1,0)), Func(self.clearColorScale), Func(self.clearTransparency), Func(self.reparentTo, render))
         fadeIn.start()
 
+    def doStunEffect(self):
+        SuitGlobals.createStunInterval(self, 0, 2).start()
+
     def generateCog(self, isLose = 0):
         self.cleanup()
         if not isLose:

@@ -25,6 +25,9 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
     RemakePathDistance = 20.0
     DivertDistance = 5.0
     MaxNonSafeDistance = 40.0
+    MaxAttackersPerTarget = 2
+    AttackCooldownFactor = 6.0
+    PickTargetRetryTime = 1.0
 
     def __init__(self, suit, pathFinder):
         SuitPathBehaviorAI.__init__(self, suit, False)
@@ -48,11 +51,14 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
 
     def enter(self):
         SuitPathBehaviorAI.enter(self)
-        self.pickTarget()
-        # Choose a distance that is good enough to attack this target.
-        self.attackSafeDistance = random.uniform(5.0, 19.0)
-        # Now, chase them down!
-        self.fsm.request('pursue')
+        self.__tryPickAndPursue()
+
+    def __tryPickAndPursue(self):
+        if self.pickTarget():
+            # Choose a distance that is good enough to attack this target.
+            self.attackSafeDistance = random.uniform(5.0, 19.0)
+            # Now, chase them down!
+            self.fsm.request('pursue')
 
     def setTarget(self, toon):
         self.targetId = toon.doId
@@ -60,25 +66,40 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         self.suit.sendUpdate('setChaseTarget', [self.targetId])
 
     def pickTarget(self):
-        # Choose the toon that is the closest to this suit as the target.
+        # Choose the toon with the least amount of attackers to target (a maximum of two attackers per target).
         avIds = list(self.battle.avIds)
+        avIds.sort(key = lambda avId: self.battle.getNumSuitsTargeting(avId))
 
-        # Temporary fix for district resets. TODO: Actually correct this.
-        for avId in avIds:
-            if self.air.doId2do.get(avId) is None:
+        leastAmt = self.battle.getNumSuitsTargeting(avIds[0])
+        for avId in self.battle.avIds:
+            if self.battle.getNumSuitsTargeting(avId) != leastAmt and avId in avIds:
                 avIds.remove(avId)
 
-        avIds.sort(key = lambda avId: self.air.doId2do.get(avId).getDistance(self.suit))
+        #for avId in self.battle.avIds:
+        #    numAttackers = len(self.suit.battle.getSuitsTargetingAvId(avId))
+        #    if numAttackers  >= self.MaxAttackersPerTarget:
+        #        # This toon has too many attackers already.
+        #        print str(self.suit.doId) + ": Toon " + str(avId) + " already has " + str(numAttackers) + " attackers."
+        #        avIds.remove(avId)
+
+        # Temporary fix for district resets. TODO: Actually correct this.
+        for avId in self.battle.avIds:
+            if self.air.doId2do.get(avId) is None and avId in avIds:
+                avIds.remove(avId)
 
         # Make sure we found some avatars to pursue.
         if len(avIds) == 0:
-            self.suit.getBrain().exitCurrentBehavior()
-            self.fsm.enterInitialState()
-            return
+            taskMgr.doMethodLater(self.PickTargetRetryTime, self.__pickTargetRetryTask, self.suit.uniqueName("PickTargetRetryTask"))
+            return 0
 
-        self.targetId = avIds[0]
+        # At this point the avIds are only toons with the least amount of attackers.
+        # For example, there may be two toons with no attackers, so randomly pick between those two toons.
+        self.targetId = random.choice(avIds)
+
         self.target = self.air.doId2do.get(self.targetId)
         self.suit.sendUpdate('setChaseTarget', [self.targetId])
+        self.suit.battle.newTarget(self.suit.doId, self.targetId)
+        return 1
         
     def reset(self):
         self.exit()
@@ -88,8 +109,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         self.fsm.request('off')
         self.target = None
         self.targetId = None
-        self.suitList = None
-        self.suitDict = None
+        self.suit.battle.clearTargets(self.suit.doId)
         self.suit.sendUpdate('setChaseTarget', [0])
         SuitPathBehaviorAI.exit(self)
 
@@ -98,6 +118,8 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         self.battle = None
         self.target = None
         self.targetId = None
+        self.suitList = None
+        self.suitDict = None
         self.air = None
         SuitPathBehaviorAI.unload(self)
 
@@ -106,6 +128,10 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
 
     def exitOff(self):
         pass
+
+    def __pickTargetRetryTask(self, task):
+        self.__tryPickAndPursue()
+        return task.done
 
     def enterAttack(self, useSafeDistance = True):
         taskMgr.add(self._attackTask, self.suit.uniqueName('attackToonTask'),
@@ -133,7 +159,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         attack = SuitUtils.attack(self.suit, self.target)
         timeout = SuitAttacks.SuitAttackLengths[attack]
 
-        task.delayTime = timeout
+        task.delayTime = timeout + (self.suit.getLevel() / self.AttackCooldownFactor)
         return task.again
 
     def exitAttack(self):

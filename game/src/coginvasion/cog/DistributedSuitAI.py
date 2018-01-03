@@ -106,7 +106,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
 
                 if behav.fsm.getCurrentState().getName() == "pursue":
 
-                    if self.getDistance(toon) < 40:
+                    if self.getDistance(toon) < 40 and self.battleZone.toonAvailableForTargeting(toon.doId):
 
                         if toon != behav.target:
 
@@ -116,6 +116,9 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
 
                         # Attack
                         behav.fsm.request("attack", [False])
+                    #else:
+                    #    # We can't attack them, run away?
+                    #    behav.fsm.request("divert")
 
 
 
@@ -382,6 +385,8 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
                 self.damagers.append(avId)
 
             if self.isDead():
+                self.sendUpdate('doStunEffect')
+
                 if track == GagType.THROW or gagName == CIGlobals.TNT:
                     self.b_setAnimState('pie', 0)
                 elif track == GagType.DROP:

@@ -275,7 +275,7 @@ class DistributedElevator(DistributedObject):
             track.append(Func(toon.animFSM.request, 'run'))
             track.append(LerpPosInterval(toon, duration = 0.5, pos = point,
                          startPos = toon.getPos(self.getElevatorModel())))
-            track.append(LerpHprInterval(toon, duration = 0.1, hpr = (180, 0, 0),
+            track.append(LerpHprInterval(toon, duration = 0.3, hpr = (180, 0, 0),
                          startHpr = toon.getHpr(self.getElevatorModel())))
             track.append(Func(toon.animFSM.request, 'neutral'))
 
@@ -333,9 +333,6 @@ class DistributedElevator(DistributedObject):
 
     def getTheBldg(self):
         self.thebldg = self.cr.doId2do.get(self.bldgDoId)
-        
-        print self.thebldg.__class__
-        print 'Has Elevators: %s' % hasattr(self.thebldg, 'elevators')
 
     def getElevatorModel(self):
         return self.thebldg.getElevatorModel()
