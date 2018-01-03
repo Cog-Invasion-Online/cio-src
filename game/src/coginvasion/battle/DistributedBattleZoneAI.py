@@ -193,7 +193,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         for avId, data in self.avatarData.iteritems():
             avatar = base.air.doId2do.get(avId, None)
             deadCogData = data[1]
-            favGagId = -1
+            favGagId = 0 # Make it whole cream pie by default
             favGagUses = 0
             gagUnlocked = False
             
