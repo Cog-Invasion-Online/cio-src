@@ -77,7 +77,7 @@ class DistributedGunGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
         self.scoreByTeam[team] += 1
         self.sendUpdate('incrementTeamScore', [team])
         if self.scoreByTeam[team] >= GGG.CTF_SCORE_CAP:
-            self.sendUpdate('teamWon', [team])
+            self.sendUpdate('teamWon', [team, 0])
             Sequence(Wait(10.0), Func(self.d_gameOver)).start()
 
     def exitWaitForChoseTeam(self):
