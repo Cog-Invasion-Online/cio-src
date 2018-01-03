@@ -206,7 +206,10 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         )
         self.track.start()
 
+        base.localAvatar.collisionsOff()
+
     def exitDisplayWinners(self):
+        base.localAvatar.collisionsOn()
         base.transitions.noTransitions()
         self.danceSound.stop()
         if hasattr(self, 'track'):

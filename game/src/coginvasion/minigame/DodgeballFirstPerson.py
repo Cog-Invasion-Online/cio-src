@@ -53,12 +53,21 @@ class DodgeballFirstPerson(FirstPerson):
         FirstPerson.__init__(self)
 
     def enterCamOff(self):
-        pass
+        self.releaseSnowball()
 
     def exitCamOff(self):
         pass
 
+    def releaseSnowball(self):
+        if self.hasSnowball:
+            if self.mySnowball and not self.mySnowball.isAirborne:
+                self.hasSnowball = False
+                self.mySnowball.resetSnowball()
+                self.mySnowball = None
+
     def enterFrozen(self):
+        self.releaseSnowball()
+
         self.vModel.hide()
         base.localAvatar.getGeomNode().show()
         camera.wrtReparentTo(self.camPivotNode)

@@ -138,6 +138,10 @@ class Snowball(NodePath, DirectObject):
         self.isAirborne = False
         self.owner = None
 
+    def resetSnowball(self):
+        self.mg.sendUpdate('snowballHitWall', [self.index])
+        self.handleHitWallOrPlayer()
+
     def __handleSnowballCollision(self, entry):
         intoNP = entry.getIntoNodePath()
         avNP = intoNP.getParent()
@@ -158,8 +162,7 @@ class Snowball(NodePath, DirectObject):
         base.playSfx(self.impactSound, node = self, volume = 1.5)
         if 'wall' in name or 'fence' in name:
             # We hit a wall. Go back to our center position.
-            self.mg.sendUpdate('snowballHitWall', [self.index])
-            self.handleHitWallOrPlayer()
+            self.resetSnowball()
         elif 'floor' in name or 'ground' in name or name == 'team_divider':
             # We hit the floor. Stay on the ground.
             self.mg.sendUpdate('snowballHitGround', [self.index])
