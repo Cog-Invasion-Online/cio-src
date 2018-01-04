@@ -139,7 +139,7 @@ class SettingsManager:
         # Per pixel lighting
         ppl = settings.get("ppl", None)
         if ppl == None:
-            ppl = self.updateAndWriteSetting("ppl", True)
+            ppl = self.updateAndWriteSetting("ppl", False)
 
         base.enableMusic(music)
         base.enableSoundEffects(sfx)
