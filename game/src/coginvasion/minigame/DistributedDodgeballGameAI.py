@@ -38,6 +38,7 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
         self.announcedWinner = False
         self.winnerPrize = 200
         self.loserPrize = 0
+        self.gameInAction = False
 
     def resetNumFrozen(self):
         self.numFrozenByTeam = {RED: 0, BLUE: 0}
@@ -67,6 +68,9 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
             self.fsm.request('play')
 
     def enemyFrozeMe(self, myTeam, enemyTeam):
+        if not self.gameInAction:
+            return
+
         self.scoreByTeam[enemyTeam] += 1
         self.numFrozenByTeam[myTeam] += 1
         self.sendUpdate('incrementTeamScore', [enemyTeam])
@@ -75,7 +79,6 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
             self.announcedWinner = True
             self.timeRanOutLastRound = 0
             self.fsm.request('off')
-            self.resetNumFrozen()
             if self.round == MaxRounds:
                 self.__decideWinner()
                 self.sendUpdate('teamWon', [self.winnerTeam, 0])
@@ -108,6 +111,7 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
 
     def enterPlay(self):
         self.announcedWinner = False
+        self.gameInAction = False
         self.setRound(self.getRound() + 1)
         if self.getRound() == 1:
             self.d_startGame()
@@ -121,11 +125,13 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
         base.taskMgr.doMethodLater(time, self.__actuallyStarted, self.uniqueName('actuallyStarted'))
 
     def __actuallyStarted(self, task):
+        self.gameInAction = True
         self.setInitialTime(self.GameTime)
         self.startTiming()
         return task.done
 
     def exitPlay(self):
+        self.gameInAction = False
         self.stopTiming()
         base.taskMgr.remove(self.uniqueName('actuallyStarted'))
 
