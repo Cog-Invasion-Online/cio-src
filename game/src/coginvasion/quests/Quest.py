@@ -126,6 +126,8 @@ class Quest:
     
     def getNextObjectiveDialogue(self):
         dialogueData = QuestNPCDialogue.get(self.id)
+        if not dialogueData:
+            return None
         return dialogueData.get(self.currentObjectiveIndex + 1, None)
 
     def getObjectiveDialogue(self):

@@ -88,6 +88,10 @@ ChatGarblerBear = ['growl', 'grrr']
 ChatGarblerPig = ['oink', 'oik', 'snort']
 ChatGarblerDefault = ['blah']
 
+# Makes sure that this NodePath is okay (not None and not empty).
+def isNodePathOk(np):
+    return (np is not None and not np.isEmpty())
+
 def makeDropShadow(scale):
     sh = loader.loadModel("phase_3/models/props/drop_shadow.bam")
     sh.setScale(scale)

@@ -157,6 +157,11 @@ class LocalToon(DistributedToon):
         self.hideFriendButton()
         self.friendsList.fsm.request('onlineFriendsList')
 
+    def destroyFriendButton(self):
+        if CIGlobals.isNodePathOk(self.friendButton):
+            self.friendButton.destroy()
+            self.friendButton = None
+
     def hideFriendButton(self):
         self.friendButton.hide()
 
@@ -906,32 +911,65 @@ class LocalToon(DistributedToon):
         return
 
     def disable(self):
+        self.stopTrackAnimToSpeed()
         base.camLens.setMinFov(CIGlobals.OriginalCameraFov / (4./3.))
         if self.jumpHardLandIval:
             self.ignore('LT::zend-done')
             self.jumpHardLandIval.finish()
             self.jumpHardLandIval = None
-        self.friendsList.destroy()
-        self.friendsList = None
-        self.panel.cleanup()
-        self.panel = None
-        self.positionExaminer.delete()
-        self.positionExaminer = None
+        if self.friendsList:
+            self.friendsList.destroy()
+            self.friendsList = None
+        if self.panel:
+            self.panel.cleanup()
+            self.panel = None
+        if self.positionExaminer:
+            self.positionExaminer.delete()
+            self.positionExaminer = None
         self.disablePicking()
+        self.destroyFriendButton()
         self.stopMonitoringHP()
         taskMgr.remove("resetHeadColorAfterFountainPen")
         taskMgr.remove("LT.attackReactionDone")
         self.stopLookAround()
-        DistributedToon.disable(self)
         self.disableAvatarControls()
+        self.destroyControls()
+        if self.controlManager:
+            self.controlManager.delete()
+            self.controlManager = None
+        DistributedToon.disable(self)
+        if self.smartCamera:
+            self.smartCamera.deleteSmartCameraCollisions()
+            self.smartCamera = None
+        if self.questManager:
+            self.questManager.cleanup()
+            self.questManager = None
+        if self.friendRequestManager:
+            self.friendRequestManager.cleanup()
+            self.friendRequestManager = None
+        if self.invGui:
+            self.invGui.deleteGui()
+            self.invGui = None
         self.disableLaffMeter()
         self.disableGags()
         self.disableChatInput()
+        self.stopMonitoringHP()
+        self.hideBookButton()
+        self.hideGagButton()
         self.weaponType = None
         self.myBattle = None
+        self.runSfx = None
+        self.walkSfx = None
+        self.offset = None
+        self.movementKeymap = None
+        self.inBattle = None
+        self.minigame = None
+        self.inTutorial = None
+        self.avatarChoice = None
         self.ignore("gotLookSpot")
         self.ignore("clickedWhisper")
-        self.ignore('f2')
+        self.ignore('/')
+        self.ignore(base.inputStore.ToggleAspect2D)
         return
 
     def announceGenerate(self):

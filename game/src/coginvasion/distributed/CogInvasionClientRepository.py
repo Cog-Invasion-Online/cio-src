@@ -13,6 +13,7 @@ from direct.distributed.MsgTypes import CLIENT_OBJECT_LOCATION
 from direct.distributed.MsgTypes import CLIENT_ENTER_OBJECT_REQUIRED_OTHER_OWNER
 from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import DatagramIterator
+from direct.distributed.DistributedObjectGlobal import DistributedObjectGlobal
 from direct.distributed import DistributedSmoothNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -386,7 +387,7 @@ class CogInvasionClientRepository(AstronClientRepository):
             obj = self.doId2do[doId]
             if hasattr(base, 'localAvatar'):
                 if doId != base.localAvatar.doId:
-                    if not obj.__class__.__name__ in ['ClientServicesManager', 'DistributedDistrict', 'FriendsManager', 'HolidayManager', 'NameServicesManager']:
+                    if not isinstance(obj, DistributedObjectGlobal) and not hasattr(obj, 'isDistrict'):
                         self.deleteObject(doId)
             else:
                 self.deleteObject(doId)

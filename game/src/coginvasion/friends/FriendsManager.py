@@ -53,6 +53,9 @@ class FriendsManager(DistributedObjectGlobal):
         self.d_requestFriendsList()
 
     def toonOnline(self, avatarId, name):
+        if not hasattr(base, 'localAvatar'):
+            return
+
         if avatarId in base.localAvatar.friends:
             whisper = WhisperPopup(self.ComingOnlineMessage % name, CIGlobals.getToonFont(), ChatGlobals.WTSystem)
             whisper.setClickable(name, avatarId, isPlayer = 1)
@@ -60,9 +63,10 @@ class FriendsManager(DistributedObjectGlobal):
             self.d_requestFriendsList()
 
     def toonOffline(self, avatarId, name):
-        print "toon offline"
+        if not hasattr(base, 'localAvatar'):
+            return
+
         if avatarId in base.localAvatar.friends:
-            print "they are in my friends list"
             whisper = WhisperPopup(self.GoingOfflineMessage % name, CIGlobals.getToonFont(), ChatGlobals.WTSystem)
             whisper.manage(base.marginManager)
             self.d_requestFriendsList()

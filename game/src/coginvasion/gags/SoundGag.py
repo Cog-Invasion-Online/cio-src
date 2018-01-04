@@ -106,8 +106,9 @@ class SoundGag(Gag):
     def cleanupGag(self):
         if self.state == GagState.LOADED or self.state == GagState.RECHARGING:
             Gag.cleanupGag(self)
-            if self.megaphone:
-                copies = self.avatar.findAllMatches('**/%s' % self.megaphone.getName())
-                for copy in copies:
-                    copy.removeNode()
+            if CIGlobals.isNodePathOk(self.megaphone):
+                if CIGlobals.isNodePathOk(self.avatar):
+                    copies = self.avatar.findAllMatches('**/%s' % self.megaphone.getName())
+                    for copy in copies:
+                        copy.removeNode()
             self.megaphone = None

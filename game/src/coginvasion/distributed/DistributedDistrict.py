@@ -13,6 +13,7 @@ from src.coginvasion.gui.WhisperPopup import WhisperPopup
 from src.coginvasion.globals import CIGlobals, ChatGlobals
 
 class DistributedDistrict(DistributedObject):
+    isDistrict = True
 
     def __init__(self, cr):
         try:

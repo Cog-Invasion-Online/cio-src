@@ -86,6 +86,9 @@ class Snowball(NodePath, DirectObject):
         self.mg.sendUpdate('throw', [self.index, p])
 
     def throw(self, p):
+        if not self.owner or not CIGlobals.isNodePathOk(self.owner.avatar):
+            return
+
         self.isAirborne = True
         self.owner.avatar.play('pie', partName = 'torso', fromFrame = 62)
         base.playSfx(self.owner.throwSound, node = self.owner.avatar)

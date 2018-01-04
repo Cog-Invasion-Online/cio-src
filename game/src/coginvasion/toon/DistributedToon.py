@@ -706,44 +706,27 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         if self.dmgFadeIval:
             self.dmgFadeIval.finish()
             self.dmgFadeIval = None
-        if self.token:
-            self.token = None
-        if self.ghost:
-            self.ghost = None
-        if self.puInventory:
-            self.puInventory = None
-        if self.equippedPU:
-            self.equippedPU = None
+        self.token = None
+        self.ghost = None
+        self.puInventory = None
+        self.equippedPU = None
         if self.backpack:
+            self.backpack.cleanup()
             self.backpack = None
-        if self.animState2animId:
-            self.animState2animId = None
-        if self.animId2animState:
-            self.animId2animState = None
-        if self.firstTimeChangingHP:
-            self.firstTimeChangingHP = None
-        if self.quests:
-            self.quests = None
-        if self.tier:
-            self.tier = None
-        if self.questHistory:
-            self.questHistory = None
-        if self.busy:
-            self.busy = None
-        if self.friends:
-            self.friends = None
-        if self.tutDone:
-            self.tutDone = None
-        if self.hoodsDiscovered:
-            self.hoodsDiscovered = None
-        if self.teleportAccess:
-            self.teleportAccess = None
-        if self.lastHood:
-            self.lastHood = None
-        if self.defaultShard:
-            self.defaultShard = None
-        if self.numGagSlots:
-            self.numGagSlots = None
+        self.animState2animId = None
+        self.animId2animState = None
+        self.firstTimeChangingHP = None
+        self.quests = None
+        self.tier = None
+        self.questHistory = None
+        self.busy = None
+        self.friends = None
+        self.tutDone = None
+        self.hoodsDiscovered = None
+        self.teleportAccess = None
+        self.lastHood = None
+        self.defaultShard = None
+        self.numGagSlots = None
         self.__removeHeadMeter()
         self.destroyBattleMeter()
 

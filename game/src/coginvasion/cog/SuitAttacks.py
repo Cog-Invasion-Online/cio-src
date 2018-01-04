@@ -137,8 +137,8 @@ class Attack(DirectObject):
             base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
             
     def lockOnToonTask(self, task):
-        if (not self.suit or self.suit.isEmpty() or
-            not self.target or self.target.isEmpty()):
+        if (not CIGlobals.isNodePathOk(self.suit) or
+            not CIGlobals.isNodePathOk(self.target)):
             return task.done
             
         self.suit.headsUp(self.target)
@@ -199,9 +199,6 @@ class ThrowAttack(Attack):
         self.suitTrack = None
         self.weaponSfx = None
         self.throwTrajectory = None
-        self.targetX = None
-        self.targetY = None
-        self.targetZ = None
         self.startNP = None
         self.theActorIval = None
 
@@ -231,10 +228,6 @@ class ThrowAttack(Attack):
         
         self.startToonLockOn()
 
-        self.targetX = self.attacksClass.target.getX(render)
-        self.targetY = self.attacksClass.target.getY(render)
-        self.targetZ = self.attacksClass.target.getZ(render)
-
         releaseFrame = self.suitType2releaseFrame[self.suit.suitPlan.getSuitType()][animation_name]
 
         actorIval = ActorInterval(self.suit, animation_name, endFrame = releaseFrame, playRate = self.speed)
@@ -258,7 +251,7 @@ class ThrowAttack(Attack):
             base.playSfx(self.weaponSfx, node = self.suit)
 
     def throwObject(self, projectile = True):
-        if not self.weapon:
+        if not CIGlobals.isNodePathOk(self.weapon) or not CIGlobals.isNodePathOk(self.target):
             return
             
         self.stopToonLockOn()
@@ -317,9 +310,6 @@ class ThrowAttack(Attack):
 
     def cleanup(self):
         Attack.cleanup(self)
-        self.targetX = None
-        self.targetY = None
-        self.targetZ = None
         self.weapon_state = None
         if self.weaponSfx:
             self.weaponSfx.stop()
@@ -1110,7 +1100,7 @@ class ParticleAttack(Attack):
     def releaseAttack(self, releaseFromJoint, onlyMoveColl = True, blendType = 'noBlend'):
         startNP = releaseFromJoint.attachNewNode('startNP')
         self.stopToonLockOn()
-        if None not in [self.targetX, self.targetY, self.targetZ]:
+        if CIGlobals.isNodePathOk(self.target):
             startNP.lookAt(self.target.find("**/def_head"))
             pathNP = NodePath('path')
             pathNP.reparentTo(startNP)

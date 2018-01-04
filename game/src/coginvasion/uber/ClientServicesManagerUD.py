@@ -43,8 +43,7 @@ class CreateToonProcess:
         del self.csm
 
     def avatarCreateDone(self):
-        self.notify.info("DONE!")
-        print self.newToonId
+        self.notify.info("Avatar creation done.")
         self.csm.sendUpdateToAccountId(self.accountId, 'toonCreated', [self.newToonId])
         self.cleanup()
 
@@ -97,7 +96,6 @@ class CreateToonProcess:
 
     def storeToonDone(self, fields):
         if fields:
-            print "Bad fields"
             self.cleanup()
             return
         self.avatarCreateDone()

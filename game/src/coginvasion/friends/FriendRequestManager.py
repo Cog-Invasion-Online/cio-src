@@ -23,6 +23,7 @@ class FriendRequestManager(DirectObject):
         self.friendRequests = {}
 
     def cleanup(self):
+        self.stopWatching()
         self.friendRequests = None
 
     def iAcceptedRequest(self, requestId):
@@ -36,6 +37,10 @@ class FriendRequestManager(DirectObject):
     def watch(self):
         self.accept('newFriendRequest', self.__newFriendRequest)
         self.accept('friendRequestCancelled', self.cleanupRequest)
+
+    def stopWatching(self):
+        self.ignore('newFriendRequest')
+        self.ignore('friendRequestCancelled')
 
     def __newFriendRequest(self, requester, name, dna):
         request = GlobalDialog(message = self.MessageFriendRequest % (name, name), style = 1,

@@ -495,13 +495,13 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         self.fsm.request('play')
 
     def exitCountdown(self):
-        if hasattr(self, 'countdownText'):
-            self.countdownText.destroy()
-            del self.countdownText
         if hasattr(self, 'countdownIval'):
             self.ignore(self.countdownIval.getDoneEvent())
             self.countdownIval.finish()
             del self.countdownIval
+        if hasattr(self, 'countdownText'):
+            self.countdownText.destroy()
+            del self.countdownText
 
     def enterScrollBy(self):
         BLUE_START_POS = Point3(-20, 0, 4)
