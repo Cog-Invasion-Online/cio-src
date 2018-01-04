@@ -17,6 +17,7 @@ from direct.gui.DirectGui import OnscreenImage, OnscreenText
 
 from src.coginvasion.book.Credits import Credits
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.gui.Dialog import GlobalDialog, YesCancel
 
 class AboutCategory(OptionsCategory, DirectObject):
     Name = "About"
@@ -36,6 +37,8 @@ class AboutCategory(OptionsCategory, DirectObject):
         self.logoImg.setTransparency(True)
         self.creditsScreen = None
 
+        self.exitConfirmDlg = None
+
         self.gVersionText = OnscreenText(text = "Version {0} (Build {1} : {2})".format(game.version,
                                                                                       game.build, 
                                                                                       game.buildtype),
@@ -46,10 +49,27 @@ class AboutCategory(OptionsCategory, DirectObject):
         self.eBuildDate = OnscreenText(text = PandaSystem.getBuildDate(), parent = self.page.book, pos = (0, -0.115), scale = 0.06)
 
         self.exitToontown = CIGlobals.makeDefaultBtn("Exit Toontown", pos = (-0.62, -0.62, -0.62), parent = self.page.book, scale = 1.2,
-                                                     command = self.page.book.finished, extraArgs = ["exit"], geom_scale = (0.8, 0.8, 0.8))
+                                                     command = self.showConfirmDlg, geom_scale = (0.8, 0.8, 0.8))
         
         self.credits = CIGlobals.makeDefaultBtn("Credits", pos = (0.0, 0.5, -0.62), parent = self.page.book, scale = 1.2,
                                                      command = self.rollCredits, geom_scale = (0.8, 0.8, 0.8))
+
+    def showConfirmDlg(self):
+        self.hideConfirmDlg()
+        self.acceptOnce('exitToontownChoice', self.__handleExitToontownChoice)
+        self.exitConfirmDlg = GlobalDialog('Exit Toontown?', doneEvent = 'exitToontownChoice', style = YesCancel)
+        self.exitConfirmDlg.show()
+
+    def hideConfirmDlg(self):
+        self.ignore('exitToontownChoice')
+        if self.exitConfirmDlg:
+            self.exitConfirmDlg.cleanup()
+            self.exitConfirmDlg = None
+    
+    def __handleExitToontownChoice(self):
+        if self.exitConfirmDlg.getValue():
+            self.page.book.finished("exit")
+        self.hideConfirmDlg()
         
     def rollCredits(self):
         base.muteMusic()
@@ -71,6 +91,7 @@ class AboutCategory(OptionsCategory, DirectObject):
         base.localAvatar.toggleAspect2d()
 
     def cleanup(self):
+        self.hideConfirmDlg()
         if hasattr(self, 'gVersionText'):
             self.gVersionText.destroy()
             del self.gVersionText

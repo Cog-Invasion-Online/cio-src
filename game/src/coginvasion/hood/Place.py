@@ -215,9 +215,11 @@ class Place(StateData):
         self.shtickerBookStateData.enter(self.lastBookPage)
         base.localAvatar.showBookButton(1)
         base.localAvatar.b_setAnimState('readBook')
+        base.localAvatar.showFriendButton()
         self.acceptOnce('escape-up', base.localAvatar.bookButtonClicked, [0])
 
     def __shtickerBookDone(self):
+        self.hideFriendsStuff()
         self.ignore('escape-up')
         doneStatus = self.shtickerBookStateData.getDoneStatus()
         base.localAvatar.hideBookButton()
@@ -405,6 +407,13 @@ class Place(StateData):
             base.localAvatar.showFriendButton()
             base.localAvatar.questManager.enableShowQuestsHotkey()
 
+    def hideFriendsStuff(self):
+        base.localAvatar.hideFriendButton()
+        if base.localAvatar.friendsList:
+            base.localAvatar.friendsList.fsm.requestFinalState()
+        if base.localAvatar.panel:
+            base.localAvatar.panel.fsm.requestFinalState()
+
     def exitWalk(self):
         self.walkStateData.exit()
         self.ignore(self.walkDoneEvent)
@@ -417,11 +426,7 @@ class Place(StateData):
         NametagGlobals.makeTagsInactive()
         base.localAvatar.setBusy(1)
         base.localAvatar.disablePicking()
-        base.localAvatar.hideFriendButton()
-        if base.localAvatar.friendsList:
-            base.localAvatar.friendsList.fsm.requestFinalState()
-        if base.localAvatar.panel:
-            base.localAvatar.panel.fsm.requestFinalState()
+        self.hideFriendsStuff()
         if base.localAvatar.invGui:
             base.localAvatar.invGui.disable()
         if base.localAvatar.questManager:

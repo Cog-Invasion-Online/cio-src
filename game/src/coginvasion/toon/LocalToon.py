@@ -63,9 +63,9 @@ class LocalToon(DistributedToon):
         self.friendButton = DirectButton(geom = (friendsgui.find('**/FriendsBox_Closed'),
             friendsgui.find('**/FriendsBox_Rollover'), friendsgui.find('**/FriendsBox_Rollover')),
             text = ("", "Friends", "Friends", ""),
-            text_fg = (1, 1, 1, 1), text_shadow = (0, 0, 0, 1), text_scale = 0.065,
-            text_pos = (0, -0.2), relief = None, parent = base.a2dTopRight,
-            pos = (-0.18, 0.0, -0.17), command = self.friendsButtonClicked, scale = 0.75)
+            text_fg = (1, 1, 1, 1), text_shadow = (0, 0, 0, 1), text_scale = 0.09,
+            text_pos = (0, -0.18), relief = None, parent = base.a2dTopRight,
+            pos = (-0.141, 0, -0.125), command = self.friendsButtonClicked, scale = 0.8)
         friendsgui.removeNode()
         del friendsgui
         self.hideFriendButton()
@@ -783,22 +783,22 @@ class LocalToon(DistributedToon):
             self.gagThrowBtn = None
 
     def showBookButton(self, inBook = 0):
-        self.book_gui = loader.loadModel("phase_3.5/models/gui/sticker_open_close_gui.bam")
+        self.book_gui = loader.loadModel("phase_3.5/models/gui/stickerbook_gui.bam")
         self.book_btn = DirectButton(
-            geom=(
+            image=(
                 self.book_gui.find('**/BookIcon_CLSD'),
                 self.book_gui.find('**/BookIcon_OPEN'),
                 self.book_gui.find('**/BookIcon_RLVR')
             ),
             relief=None,
-            pos=(-0.175, 0, 0.163),
+            pos=(-0.158, 0, 0.17),
             command=self.bookButtonClicked,
-            scale=(0.7, 0.8, 0.8),
+            scale=0.305,
             parent=base.a2dBottomRight
         )
         self.book_btn.setBin('gui-popup', 60)
         if inBook:
-            self.book_btn["geom"] = (
+            self.book_btn["image"] = (
                 self.book_gui.find('**/BookIcon_OPEN'),
                 self.book_gui.find('**/BookIcon_CLSD'),
                 self.book_gui.find('**/BookIcon_RLVR2')

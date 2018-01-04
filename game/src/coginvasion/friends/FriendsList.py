@@ -22,7 +22,7 @@ class FriendsList(DirectFrame):
     notify = DirectNotifyGlobal.directNotify.newCategory("FriendsList")
 
     def __init__(self):
-        DirectFrame.__init__(self, parent = base.a2dTopRight, pos = (-0.25, 0.0, -0.46))
+        DirectFrame.__init__(self, parent = base.a2dTopRight, pos = (-0.2235, 0.0, -0.457))
         gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui.bam')
         self['image'] = gui.find('**/FriendsBox_Open')
 
@@ -149,8 +149,12 @@ class FriendsList(DirectFrame):
         )
 
     def friendClicked(self, avatarId):
-        self.fsm.request('off')
         base.localAvatar.panel.makePanel(avatarId)
+
+    def maybeShowList(self):
+        if self.isHidden() and self.fsm.getCurrentState().getName() != 'off':
+            base.localAvatar.hideFriendButton()
+            self.show()
 
     def resetAll(self):
         self.headingText.setText("")
@@ -162,7 +166,7 @@ class FriendsList(DirectFrame):
         self.frameForNames.refresh()
 
     def enterAllFriendsList(self):
-        self.headingText.setText("All\nFriends")
+        self.headingText.setText("ALL\nFRIENDS")
         for friendId, data in self.friends.items():
             name = data[0]
             adminToken = data[1]
@@ -174,7 +178,7 @@ class FriendsList(DirectFrame):
         self.resetAll()
 
     def enterOnlineFriendsList(self):
-        self.headingText.setText("Online\nFriends")
+        self.headingText.setText("ONLINE\nFRIENDS")
         for friendId, data in self.onlineFriends.items():
             name = data[0]
             adminToken = data[1]

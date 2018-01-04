@@ -44,9 +44,12 @@ class LaffOMeter(DirectFrame):
         headmodel = gui.find('**/' + animal + 'head')
         self.container['image'] = headmodel
         self.container['image_color'] = self.color
-        self.setPos(0.16, 0, 0.155)
+        if animal == 'monkey':
+            self.setPos(0.153, 0.0, 0.13)
+        else:
+            self.setPos(0.133, 0, 0.13)
         self.resetFrameSize()
-        self.setScale(0.08)
+        self.setScale(0.075)
         self.frown = DirectFrame(parent=self.container, relief=None, image=gui.find('**/frown'))
         self.smile = DirectFrame(parent=self.container, relief=None, image=gui.find('**/smile'))
         self.eyes = DirectFrame(parent=self.container, relief=None, image=gui.find('**/eyes'))

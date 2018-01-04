@@ -366,6 +366,7 @@ class ToonPanel(DirectFrame):
         self.cleanup()
 
         base.localAvatar.hideFriendButton()
+        base.localAvatar.friendsList.hide()
 
         self.show()
         self.avatarInfo = []
@@ -375,6 +376,7 @@ class ToonPanel(DirectFrame):
     def exitClicked(self):
         self.cleanup()
         base.localAvatar.showFriendButton()
+        base.localAvatar.friendsList.maybeShowList()
 
     def cleanup(self):
         self.actionFSM.requestFinalState()

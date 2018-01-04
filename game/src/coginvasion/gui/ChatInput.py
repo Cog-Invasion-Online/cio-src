@@ -8,6 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.core import TextNode
+
 from direct.gui.DirectGui import *
 from direct.showbase.DirectObject import *
 from direct.fsm import ClassicFSM, State, StateData
@@ -37,9 +39,10 @@ class ChatInput(DirectObject, StateData.StateData):
         # Loads the sfx sound that plays when the input window is opened.
         self.chatSfx = loader.loadSfx('phase_3.5/audio/sfx/GUI_quicktalker.ogg')
         self.chatSfx.setVolume(0.5)
+
+        self.chatFrame = None
         
         self.chat_btn_model = None
-        self.chatBx = None
         self.chat_btn = None
         self.chatInput = None
         self.chatBx_send = None
@@ -83,16 +86,18 @@ class ChatInput(DirectObject, StateData.StateData):
         StateData.StateData.enter(self)
         # Create the gui for chat input.
         self.chat_btn_model = loader.loadModel("phase_3.5/models/gui/chat_input_gui.bam")
-        self.chatBx = self.chat_btn_model.find('**/Chat_Bx_FNL')
-        self.chatBx.reparentTo(base.a2dTopLeft)
-        self.chatBx.hide()
-        self.chatBx.setBin('gui-popup', 60)
+        gui = self.chat_btn_model
+        self.chatFrame = DirectFrame(parent = base.a2dTopLeft, image = gui.find("**/Chat_Bx_FNL"),
+                                     relief = None, pos = (0.24, 0, -0.194), state = DGG.NORMAL,
+                                     sortOrder = DGG.FOREGROUND_SORT_INDEX)
+        self.chatFrame.hide()
         self.chat_btn = DirectButton(text=("", "Chat", "Chat", ""), text_shadow=(0, 0, 0, 1),
                                     geom=(self.chat_btn_model.find('**/ChtBx_ChtBtn_UP'),
                                     self.chat_btn_model.find('**/ChtBx_ChtBtn_DN'),
                                     self.chat_btn_model.find('**/ChtBx_ChtBtn_RLVR')), relief=None,
-                                    text_scale=0.0525, text_pos=(0, -0.08), text_fg=(1,1,1,1),
-                                    command=self.openChatInput, pos=(0.085, 0, -0.075), scale=1.25,
+                                    text_scale=0.06, text_pos=(-0.0525, -0.09), text_fg=(1,1,1,1),
+                                    command=self.openChatInput, pos=(0.0683, 0, -0.072), scale=1.179,
+                                    text_align = TextNode.ALeft, sortOrder=DGG.FOREGROUND_SORT_INDEX,
                                     parent=base.a2dTopLeft, extraArgs=[""])
         self.chat_btn.setBin('gui-popup', 60)
         self.fsm.request('idle')
@@ -103,9 +108,9 @@ class ChatInput(DirectObject, StateData.StateData):
         if self.chat_btn_model:
             self.chat_btn_model.removeNode()
             self.chat_btn_model = None
-        if self.chatBx:
-            self.chatBx.removeNode()
-            self.chatBx = None
+        if self.chatFrame:
+            self.chatFrame.removeNode()
+            self.chatFrame = None
         if self.chat_btn:
             self.chat_btn.destroy()
             self.chat_btn = None
@@ -155,30 +160,29 @@ class ChatInput(DirectObject, StateData.StateData):
         
         if command == None:
             command = self.sendChat
-        if not self.chatBx:
+        if not self.chatFrame:
             base.localAvatar.disableChatInput()
             base.localAvatar.createChatInput()
             self.fsm.request('idle', [])
             return
-        self.chatBx.show()
-        self.chatBx.setScale(1.20)
-        self.chatBx.setPos(0.30, 0, -0.245)
+        self.chatFrame.show()
         self.chatBx_close = DirectButton(text=("", "Cancel", "Cancel", ""), text_shadow=(0, 0, 0, 1),
                                                 geom=(self.chat_btn_model.find('**/CloseBtn_UP'),
                                                 self.chat_btn_model.find('**/CloseBtn_DN'),
                                                 self.chat_btn_model.find('**/CloseBtn_Rllvr')), relief=None,
-                                                text_scale=0.0525, text_pos=(0, -0.08), text_fg=(1,1,1,1), parent=self.chatBx,
-                                                pos=(-0.15, 0, -0.0875), scale=1.05, command=self.fsm.request, extraArgs = ['idle'])
+                                                text_scale=0.06, text_pos=(0, -0.09), text_fg=(1,1,1,1), parent=self.chatFrame,
+                                                pos=(-0.151, 0, -0.088), scale=1, command=self.fsm.request, extraArgs = ['idle'])
         self.chatInput = DirectEntry(focus=1, cursorKeys=0, relief=None, geom=None, numLines=3,
-                                parent=self.chatBx, pos=(-0.2, 0, 0.11), scale=0.05, command=command,
+                                parent=self.chatFrame, pos=(-0.2, 0, 0.11), scale=0.05, command=command,
                                 width=8.6, initialText=key, backgroundFocus = 0, extraArgs = extraArgs)
+        self.chatInput.bind(DGG.OVERFLOW, command, extraArgs)
         self.chatBx_send = DirectButton(text=("", "Say It", "Say It", ""), text_shadow=(0, 0, 0, 1),
                                     geom=(self.chat_btn_model.find('**/ChtBx_ChtBtn_UP'),
                                     self.chat_btn_model.find('**/ChtBx_ChtBtn_DN'),
                                     self.chat_btn_model.find('**/ChtBx_ChtBtn_RLVR')), relief=None,
-                                    text_scale=0.0525, text_pos=(0, -0.08), text_fg=(1,1,1,1),
-                                    parent=self.chatBx, scale=1.05, command=command,
-                                    pos=(0.18, 0, -0.0875), extraArgs=[self.chatInput.get()] + extraArgs)
+                                    text_scale=0.06, text_pos=(0, -0.09), text_fg=(1,1,1,1),
+                                    parent=self.chatFrame, scale=1, command=command,
+                                    pos=(0.182, 0, -0.088), extraArgs=[self.chatInput.get()] + extraArgs)
         self.chatBx_close.setBin('gui-popup', 60)
         self.chatBx_send.setBin('gui-popup', 60)
         self.chatInput.setBin('gui-popup', 60)
@@ -193,8 +197,8 @@ class ChatInput(DirectObject, StateData.StateData):
     def exitInput(self):
         if base.localAvatarReachable() and base.localAvatar.GTAControls and hasattr(base.localAvatar, 'book_btn'):
             base.localAvatar.book_btn.show()
-        if self.chatBx:
-            self.chatBx.hide()
+        if self.chatFrame:
+            self.chatFrame.hide()
         if self.chatBx_close:
             self.chatBx_close.destroy()
             self.chatBx_close = None
