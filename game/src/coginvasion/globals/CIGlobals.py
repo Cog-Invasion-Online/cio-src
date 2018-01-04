@@ -88,6 +88,26 @@ ChatGarblerBear = ['growl', 'grrr']
 ChatGarblerPig = ['oink', 'oik', 'snort']
 ChatGarblerDefault = ['blah']
 
+def makeDropShadow(scale):
+    sh = loader.loadModel("phase_3/models/props/drop_shadow.bam")
+    sh.setScale(scale)
+    sh.setColor(0, 0, 0, 0.5, 1)
+    sh.setBillboardAxis(2)
+    sh.flattenMedium()
+    return sh
+
+def makeSplat(pos, color, scale):
+    from direct.actor.Actor import Actor
+    from direct.interval.IntervalGlobal import ActorInterval
+    splat = Actor("phase_3.5/models/props/splat-mod.bam", {"chan": "phase_3.5/models/props/splat-chan.bam"})
+    splat.setBillboardPointEye()
+    splat.setScale(scale)
+    splat.setColor(color)
+    splat.reparentTo(render)
+    splat.setPos(pos)
+    seq = Sequence(ActorInterval(splat, "chan"), Func(splat.cleanup))
+    seq.start()
+
 def getShinyMaterial(shininess = 250.0):
     mat = Material()
     mat.setSpecular((1, 1, 1, 1))

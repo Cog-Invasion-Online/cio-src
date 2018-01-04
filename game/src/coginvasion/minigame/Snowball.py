@@ -24,6 +24,8 @@ class Snowball(NodePath, DirectObject):
         self.model = None
         self.collNP = None
 
+        self.shadow = None
+
         # Has the snowball been thrown and is it currently in the air?
         self.isAirborne = False
 
@@ -39,7 +41,9 @@ class Snowball(NodePath, DirectObject):
     def load(self):
         self.model = loader.loadModel("phase_5/models/props/snowball.bam")
         self.model.reparentTo(self)
-        self.model.setMaterialOff()
+
+        self.shadow = CIGlobals.makeDropShadow(0.1)
+        self.shadow.reparentTo(self)
 
         base.audio3d.attachSoundToObject(self.impactSound, self)
 
@@ -124,9 +128,11 @@ class Snowball(NodePath, DirectObject):
 
     def handleHitWallOrPlayer(self):
         self.pauseThrowIval()
+        CIGlobals.makeSplat(self.getPos(render), (1, 1, 1, 1), 0.25)
         self.reparentTo(render)
         self.setPos(self.mg.SnowballData[self.index])
         self.setHpr(0, 0, 0)
+        self.shadow.show()
         self.isAirborne = False
         self.owner = None
         
@@ -135,6 +141,7 @@ class Snowball(NodePath, DirectObject):
         self.reparentTo(render)
         self.setZ(0)
         self.setHpr(0, 0, 0)
+        self.shadow.show()
         self.isAirborne = False
         self.owner = None
 
@@ -191,6 +198,7 @@ class Snowball(NodePath, DirectObject):
         self.reparentTo(remoteAv.avatar.find('**/def_joint_right_hold'))
         self.owner = remoteAv
         self.isAirborne = False
+        self.shadow.hide()
 
     def removeNode(self):
         self.pauseThrowIval()
@@ -200,6 +208,9 @@ class Snowball(NodePath, DirectObject):
         if self.collNP:
             self.collNP.removeNode()
             self.collNP = None
+        if self.shadow:
+            self.shadow.removeNode()
+            self.shadow = None
         self.isAirborne = None
         self.owner = None
         self.mg = None

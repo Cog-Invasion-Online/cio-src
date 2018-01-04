@@ -64,6 +64,7 @@ class DodgeballFirstPerson(FirstPerson):
                 self.hasSnowball = False
                 self.mySnowball.resetSnowball()
                 self.mySnowball = None
+                self.fsm.request('off')
 
     def enterFrozen(self):
         self.releaseSnowball()
