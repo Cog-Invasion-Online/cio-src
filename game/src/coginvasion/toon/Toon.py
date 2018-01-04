@@ -724,7 +724,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.sfx = base.audio3d.loadSfx("phase_3.5/audio/sfx/ENC_Win.ogg")
         self.sfx.setLoop(True)
         base.audio3d.attachSoundToObject(self.sfx, self)
-        base.playSfx(self.sfx, node = self)
+        base.playSfx(self.sfx, node = self, looping = 1)
         self.loop("win")
 
     def exitWin(self):
