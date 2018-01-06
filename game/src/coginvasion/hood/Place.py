@@ -104,6 +104,8 @@ class Place(StateData):
     def exit(self):
         self.__disableInteraction()
         del self.lastBookPage
+        
+        base.localAvatar.disableChatInput()
 
         StateData.exit(self)
         
@@ -216,10 +218,14 @@ class Place(StateData):
         base.localAvatar.showBookButton(1)
         base.localAvatar.b_setAnimState('readBook')
         base.localAvatar.showFriendButton()
+        NametagGlobals.setWantActiveNametags(True)
+        NametagGlobals.makeTagsReady()
         self.acceptOnce('escape-up', base.localAvatar.bookButtonClicked, [0])
 
     def __shtickerBookDone(self):
         self.hideFriendsStuff()
+        NametagGlobals.setWantActiveNametags(False)
+        NametagGlobals.makeTagsInactive()
         self.ignore('escape-up')
         doneStatus = self.shtickerBookStateData.getDoneStatus()
         base.localAvatar.hideBookButton()
@@ -274,6 +280,9 @@ class Place(StateData):
         self.shtickerBookStateData.unload()
         del self.shtickerBookStateData
         base.localAvatar.hideBookButton()
+        self.hideFriendsStuff()
+        NametagGlobals.setWantActiveNametags(False)
+        NametagGlobals.makeTagsInactive()
         self.ignore('escape-up')
 
     def enterStop(self, doNeutral = 1):

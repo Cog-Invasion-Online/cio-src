@@ -99,7 +99,6 @@ class ChatInput(DirectObject, StateData.StateData):
                                     command=self.openChatInput, pos=(0.0683, 0, -0.072), scale=1.179,
                                     text_align = TextNode.ALeft, sortOrder=DGG.FOREGROUND_SORT_INDEX,
                                     parent=base.a2dTopLeft, extraArgs=[""])
-        self.chat_btn.setBin('gui-popup', 60)
         self.fsm.request('idle')
         self.entered = True
 

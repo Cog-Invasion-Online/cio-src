@@ -46,9 +46,11 @@ class MGHood(ToonHood.ToonHood):
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.d_broadcastPositionNow()
         base.localAvatar.b_setAnimState('neutral')
+        base.localAvatar.createChatInput()
 
     def exitMinigame(self):
         if self.mgWantsLaffMeter:
             base.localAvatar.disableLaffMeter()
             self.mgWantsLaffMeter = None
         base.localAvatar.stopPosHprBroadcast()
+        base.localAvatar.disableChatInput()

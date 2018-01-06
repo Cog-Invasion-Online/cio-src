@@ -49,6 +49,7 @@ class LocalToon(DistributedToon):
         except:
             self.LocalToon_initialized = 1
         DistributedToon.__init__(self, cr)
+        self.chatInputState = False
         self.avatarChoice = cr.localAvChoice
         self.smartCamera = SmartCamera()
         self.chatInput = ChatInput()
@@ -882,12 +883,16 @@ class LocalToon(DistributedToon):
         self.cr.playGame.getPlace().fsm.request('teleportOut', [requestStatus])
 
     def createChatInput(self):
-        self.chatInput.load()
-        self.chatInput.enter()
+        if not self.chatInputState:
+            self.chatInput.load()
+            self.chatInput.enter()
+            self.chatInputState = True
 
     def disableChatInput(self):
-        self.chatInput.exit()
-        self.chatInput.unload()
+        if self.chatInputState:
+            self.chatInput.exit()
+            self.chatInput.unload()
+            self.chatInputState = False
 
     def collisionsOn(self):
         self.controlManager.collisionsOn()
@@ -966,6 +971,7 @@ class LocalToon(DistributedToon):
         self.minigame = None
         self.inTutorial = None
         self.avatarChoice = None
+        self.chatInputState = None
         self.ignore("gotLookSpot")
         self.ignore("clickedWhisper")
         self.ignore('/')

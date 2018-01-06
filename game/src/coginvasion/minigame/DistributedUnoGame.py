@@ -260,12 +260,10 @@ class DistributedUnoGame(DistributedMinigame.DistributedMinigame):
         self.load()
 
     def generate(self):
-        base.localAvatar.disableChatInput()
         DistributedMinigame.DistributedMinigame.generate(self)
 
     def disable(self):
         DistributedMinigame.DistributedMinigame.disable(self)
-        base.localAvatar.createChatInput()
         self.deleteWorld()
         self.deleteGui()
         self.deleteNewColorGui()

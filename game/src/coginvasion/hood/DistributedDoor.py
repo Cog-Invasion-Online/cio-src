@@ -14,7 +14,7 @@ from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.interval.IntervalGlobal import Parallel, ParallelEndTogether, Sequence
 from direct.interval.IntervalGlobal import Wait, Func, LerpQuatInterval, SoundInterval
-from direct.interval.IntervalGlobal import LerpPosInterval
+from direct.interval.IntervalGlobal import LerpPosInterval, LerpPosHprInterval
 
 class DistributedDoor(DistributedObject.DistributedObject):
     notify = directNotify.newCategory("DistributedDoor")
@@ -357,6 +357,9 @@ class DistributedDoor(DistributedObject.DistributedObject):
             )
         )
         if base.localAvatar.doId == av.doId:
+            parallel.append(LerpPosHprInterval(nodePath = camera, other = av, duration = 1.0,
+                                               pos = (0, -8, av.getHeight()), hpr = (0, 0, 0),
+                                               blendType = 'easeInOut'))
             parallel.append(Sequence(Wait(0.5), Func(self.sendGoingIn), Wait(1.0)))
         track.append(parallel)
         if base.localAvatar.doId == av.doId:
