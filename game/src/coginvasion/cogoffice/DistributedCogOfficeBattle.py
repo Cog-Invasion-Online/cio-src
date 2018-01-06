@@ -67,10 +67,8 @@ class Elevator:
             self.activeElev.reparentTo(hidden)
 
         if index == Elevator.BLDG:
-            print "setting active elev to BLDG"
             self.activeElev = self.elevatorMdl
         elif index == Elevator.COGDO:
-            print "setting active elev to COGDO"
             self.activeElev = self.cogdoElev
 
         self.activeElev.reparentTo(render)
@@ -102,20 +100,18 @@ class CogTV(NodePath):
         NodePath.__init__(self, 'cogtv')
         self.mdl = loader.loadModel(PROPS['tv_on_wall'])
         self.mdl.reparentTo(self)
-        """
-        ts = TextureStage('tvts')
-        self.videoTex = loader.loadTexture('phase_7/videos/cogtv.mp4')
-        self.find('**/tv_screen').setTexture(ts, self.videoTex)
-        self.find('**/tv_screen').setTexRotate(ts, 90)
-        self.videoTex.setLoop(1)
-        self.videoTex.play()"""
+        self.mdl.find("**/tv_screen").removeNode()
+        self.video = loader.loadModel("phase_7/videos/cogtv/cogtv.bam")
+        self.video.reparentTo(self.mdl)
+        self.video.setHpr(-0.234, 26.325, 0)
+        self.video.setPos(0.12, -5.89, -2.37)
+        self.video.setScale(6, 1, 3.05)
 
     def removeNode(self):
+        self.video.removeNode()
+        del self.video
         self.mdl.removeNode()
         del self.mdl
-        """
-        self.videoTex.stop()
-        del self.videoTex"""
         NodePath.removeNode(self)
 
 class DistributedCogOfficeBattle(DistributedBattleZone):
