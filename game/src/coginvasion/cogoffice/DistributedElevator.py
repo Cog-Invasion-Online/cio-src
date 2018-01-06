@@ -341,6 +341,9 @@ class DistributedElevator(DistributedObject):
         self.cr.playGame.getPlace().fsm.request('walk')
 
     def showHopOffButton(self):
+        if self.fsm.getCurrentState().getName() not in ['waitEmpty', 'waitCountdown']:
+            return
+            
         gui = loader.loadModel('phase_3.5/models/gui/inventory_gui.bam')
         upButton = gui.find('**/InventoryButtonUp')
         downButton = gui.find('**/InventoryButtonDown')
