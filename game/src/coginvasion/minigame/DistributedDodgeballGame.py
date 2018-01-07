@@ -136,6 +136,9 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         self.trees = []
         self.snowballs = []
 
+    def snowballPickupResp(self, flag, idx):
+        self.firstPerson.snowballPickupResp(flag, idx)
+
     def roundOver(self, time = 0):
         teams = [BLUE, RED]
         teams.sort(key = lambda team: self.scoreByTeam[team], reverse = True)

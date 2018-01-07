@@ -32,6 +32,7 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
         self.fsm.enterInitialState()
         self.playersReadyToStart = 0
         self.resetNumFrozen()
+        self.__resetSnowballOwners()
         self.availableSpawnsByTeam = {
             BLUE: [0, 1, 2, 3],
             RED: [0, 1, 2, 3]}
@@ -39,6 +40,36 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
         self.winnerPrize = 200
         self.loserPrize = 0
         self.gameInAction = False
+
+    def __resetSnowballOwners(self):
+        self.doId2snowballIndex = {}
+
+    def reqPickupSnowball(self, idx):
+        sender = self.air.getAvatarIdFromSender()
+        if (idx not in self.doId2snowballIndex.values() and
+            sender not in self.doId2snowballIndex.keys() and
+            self.gameInAction):
+            self.doId2snowballIndex[sender] = idx
+            self.sendUpdateToAvatarId(sender, 'snowballPickupResp', [1, idx])
+        else:
+            self.sendUpdateToAvatarId(sender, 'snowballPickupResp', [0, idx])
+
+    def __clearSnowballOwner(self, idx):
+        sender = self.air.getAvatarIdFromSender()
+        if self.doId2snowballIndex.has_key(sender):
+            if self.doId2snowballIndex[sender] == idx:
+                del self.doId2snowballIndex[sender]
+            else:
+                self.notify.warning("Player {0} does not own snowball {1}".format(sender, idx))
+
+    def snowballHitWall(self, snowballIndex):
+        self.__clearSnowballOwner(snowballIndex)
+
+    def snowballHitGround(self, snowballIndex):
+        self.__clearSnowballOwner(snowballIndex)
+
+    def snowballHitPlayer(self, damagedPlayer, throwerTeam, snowballIndex):
+        self.__clearSnowballOwner(snowballIndex)
 
     def resetNumFrozen(self):
         self.numFrozenByTeam = {RED: 0, BLUE: 0}
@@ -60,6 +91,9 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
     def __gameOver(self, timeRanOut = 0):
         self.timeRanOutLastRound = timeRanOut
         self.fsm.request('off')
+        self.resetNumFrozen()
+        self.__resetSnowballOwners()
+        self.gameInAction = False
         if self.round == MaxRounds:
             self.__decideWinner()
             self.sendUpdate('teamWon', [self.winnerTeam, timeRanOut])
@@ -79,6 +113,9 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
             self.announcedWinner = True
             self.timeRanOutLastRound = 0
             self.fsm.request('off')
+            self.resetNumFrozen()
+            self.__resetSnowballOwners()
+            self.gameInAction = False
             if self.round == MaxRounds:
                 self.__decideWinner()
                 self.sendUpdate('teamWon', [self.winnerTeam, 0])
@@ -162,5 +199,6 @@ class DistributedDodgeballGameAI(DistributedToonFPSGameAI, TeamMinigameAI):
         del self.fsm
         del self.playersReadyToStart
         del self.availableSpawnsByTeam
+        del self.doId2snowballIndex
         TeamMinigameAI.cleanup(self)
         DistributedToonFPSGameAI.delete(self)

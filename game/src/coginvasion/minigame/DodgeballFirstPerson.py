@@ -35,6 +35,7 @@ class DodgeballFirstPerson(FirstPerson):
         self.fakeSnowball = loader.loadModel("phase_5/models/props/snowball.bam")
         self.hasSnowball = False
         self.mySnowball = None
+        self.waitingOnPickupResp = False
         self.camPivotNode = base.localAvatar.attachNewNode('cameraPivotNode')
         self.camFSM = ClassicFSM.ClassicFSM("DFPCamera",
                                             [State.State('off', self.enterCamOff, self.exitCamOff),
@@ -142,10 +143,20 @@ class DodgeballFirstPerson(FirstPerson):
     def enterOff(self):
         if self.vModel:
             self.vModel.hide()
+        if self.waitingOnPickupResp:
+            taskMgr.add(self.__waitForPickupRespTask, "waitForPickupRespTask")
+
+    def __waitForPickupRespTask(self, task):
+        if not self.waitingOnPickupResp:
+            if self.hasSnowball:
+                self.fsm.request('hold')
+            return task.done
+        return task.cont
 
     def exitOff(self):
         if self.vModel:
             self.vModel.show()
+        taskMgr.remove("waitForPickupRespTask")
 
     def enterHold(self):
         self.ival = Sequence(
@@ -190,13 +201,20 @@ class DodgeballFirstPerson(FirstPerson):
             snowball = snowballs[i]
             if (not snowball.hasOwner() and not snowball.isAirborne and
                 snowball.getDistance(base.localAvatar) <= DodgeballFirstPerson.MaxPickupDistance):
-                snowball.b_pickup()
-                self.mySnowball = snowball
-                self.fakeSnowball.setPosHpr(0, 0.73, 0, 0, 0, 0)
-                self.fakeSnowball.reparentTo(self.vModel.exposeJoint(None, "modelRoot", "Bone.011"))
-                base.playSfx(self.soundPickup)
-                self.hasSnowball = True
+                self.waitingOnPickupResp = True
+                self.mg.sendUpdate('reqPickupSnowball', [snowball.index])
                 break
+
+    def snowballPickupResp(self, flag, idx):
+        if flag:
+            snowball = self.mg.snowballs[idx]
+            snowball.b_pickup()
+            self.mySnowball = snowball
+            self.fakeSnowball.setPosHpr(0, 0.73, 0, 0, 0, 0)
+            self.fakeSnowball.reparentTo(self.vModel.exposeJoint(None, "modelRoot", "Bone.011"))
+            base.playSfx(self.soundPickup)
+            self.hasSnowball = True
+        self.waitingOnPickupResp = False
 
     def exitCatch(self):
         self.vModel.stop()
