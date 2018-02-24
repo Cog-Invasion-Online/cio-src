@@ -15,7 +15,7 @@ class DNABulkLoader:
 
     def loadDNAFiles(self):
         for dnaFile in self.dnaFiles:
-            self.notify.info('Reading DNA file...', dnaFile)
+            self.notify.debug('Reading DNA file... {0}'.format(dnaFile))
             loadDNABulk(self.dnaStorage, dnaFile)
         del self.dnaStorage
         del self.dnaFiles
@@ -25,7 +25,7 @@ def loadDNABulk(dnaStorage, dnaFile):
     dnaLoader.loadDNAFile(dnaStorage, dnaFile)
 
 def loadDNAFile(dnaStorage, dnaFile):
-    DNANotify.info('Reading DNA file...', dnaFile)
+    DNANotify.debug('Reading DNA file... {0}'.format(dnaFile))
     dnaLoader = DNALoader()
     node = dnaLoader.loadDNAFile(dnaStorage, dnaFile)
     if not node.isEmpty():
