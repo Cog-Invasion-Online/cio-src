@@ -409,7 +409,7 @@ class CogInvasionClientRepository(AstronClientRepository):
         base.cr.nameServicesManager = self.generateGlobalObject(DO_ID_NAME_SERVICES_MANAGER, 'NameServicesManager')
         self.loginFSM.request('waitForShardList')
 
-    def handleConnectFail(self, foo1, foo2):
+    def handleConnectFail(self, _, __):
         self.notify.info("Could not connect to gameserver, notifying user.")
         self.connectingDialog.cleanup()
         self.connectingDialog = GlobalDialog(message = CIGlobals.NoConnectionMsg % self.serverAddress + " " + CIGlobals.TryAgain,
