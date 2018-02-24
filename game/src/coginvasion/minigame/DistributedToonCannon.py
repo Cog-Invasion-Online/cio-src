@@ -16,7 +16,6 @@ class DistributedToonCannon(DistributedNode):
         self.owner = None
         
     def setOwner(self, avId):
-        print "DToonCannon: setOwner: " + str(avId)
         self.owner = avId
         
     def getOwner(self):
@@ -78,7 +77,6 @@ class DistributedToonCannon(DistributedNode):
         else:
             base.minigame.cannons.append(self)
             messenger.send('ToonCannon::ready')
-        print "DToonCannon: owner: " + str(self.getOwner())
 
     def disable(self):
         taskMgr.remove(self.uniqueName("pollMG"))

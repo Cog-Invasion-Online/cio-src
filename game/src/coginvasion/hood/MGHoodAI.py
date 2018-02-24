@@ -47,7 +47,6 @@ class MGHoodAI(HoodAI.HoodAI):
             hood = self.air.hoods.get(zoneId)
             if hood:
                 if hood.cogStation:
-                    print "found other trolley (zoneId {0})".format(hood.cogStation.zoneId)
                     hood.cogStation.otherTrolley = trolley
                     trolley.otherTrolley = hood.cogStation
                     

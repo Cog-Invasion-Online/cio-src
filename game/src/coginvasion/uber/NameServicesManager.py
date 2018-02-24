@@ -19,10 +19,8 @@ class NameServicesManager(DistributedObjectGlobal):
 
     def d_requestNameData(self):
         self.sendUpdate('requestNameData', [])
-        print 'Requesting Data...'
 
     def nameDataRequest(self, names, avatarIds, accIds, dates, statuses):
-        print 'Got a reply.'
         for i in xrange(len(names)):
             request = {}
             request['name'] = str(names[i])

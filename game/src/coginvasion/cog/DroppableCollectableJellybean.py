@@ -44,7 +44,6 @@ class DroppableCollectableJellybean(DroppableCollectableJellybeans):
 			self.bean = None
 
 	def load(self):
-		print "loading droppableCollectableJellybean"
 		self.collectSfx = base.loadSfx("phase_3.5/audio/sfx/ci_s_money_smallBucks.ogg")
 		DroppableCollectableJellybeans.load(self)
 

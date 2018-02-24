@@ -72,7 +72,6 @@ class DistributedToonFPSGame(DistributedMinigame):
     def exitFinalScores(self):
         if self.gameMode == GGG.GameModes.KOTH:
             self.finalScoreUI.destroy()
-            print "I should've destroyed"
         else:
             DistributedMinigame.exitFinalScores(self)
 

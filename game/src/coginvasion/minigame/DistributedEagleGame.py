@@ -376,7 +376,6 @@ class DistributedEagleGame(DistributedMinigame):
         # Remove all collision nodepaths from the other world.
         for np in self.world2.findAllMatches('**'):
             if np.node().isOfType(CollisionNode):
-                print "Removing " + np.getName()
                 np.removeNode()
                 
         for i in range(len(self.platformPositions.keys())):
@@ -405,7 +404,6 @@ class DistributedEagleGame(DistributedMinigame):
         
     def __handleCannonReady(self):
         if len(self.cannons) >= 4 and self.fsm.getCurrentState().getName() == 'waitForOthers':
-            print "All cannons ready!"
             self.d_ready()
             return True
         return False
@@ -417,7 +415,6 @@ class DistributedEagleGame(DistributedMinigame):
     def enterPreGameMovie(self, ts):
         
         def parentToCannon():
-            print self.cannonId
             camera.wrtReparentTo(self.cannon)
         
         def getToonsFlydownTrack():
@@ -429,10 +426,8 @@ class DistributedEagleGame(DistributedMinigame):
                     continue
                 tCannon = None
                 for cannon in self.cannons:
-                    print cannon.getOwner()
                     if cannon.getOwner() == toon.doId:
                         if toon.doId == base.localAvatar.doId:
-                            print "Got local cannon id"
                             self.cannonId = cannon.doId
                             self.cannon = cannon
                         tCannon = cannon

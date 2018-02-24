@@ -31,7 +31,6 @@ class SZTreasurePlannerAI(RegenTreasurePlannerAI):
                 xyz[2] = 1.0
                 spawnPoint = tuple(xyz)
                 self.spawnPoints[index] = spawnPoint
-                print self.spawnPoints[index]
                 
         
         RegenTreasurePlannerAI.__init__(self, zoneId, treasureType, 'SZTreasurePlanner-%d' % zoneId, spawnRate, maxTreasures)

@@ -120,15 +120,15 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
             allSuits = self.guardSuits + self.chairSuits
             for suit in allSuits:
                 if suit.isActivated():
-                    if not suit.brain is None and not suit.brain.currentBehavior is None and suit.brain.currentBehavior.targetId == avId:
+                    if not suit.brain is None and not suit.brain.currentBehavior is None \
+                        and suit.brain.currentBehavior.targetId == avId:
                         # Uh oh, this cog was targeting this toon.
                         # We have to make them pick a new target.
                         suit.brain.currentBehavior.pickTarget()
-
-        if died:
-            toon = self.air.doId2do.get(avId)
-            if toon:
-                self.ignore(toon.getDeleteEvent())
+        
+        toon = self.air.doId2do.get(avId)
+        if died and toon:
+            self.ignore(toon.getDeleteEvent())
 
         if len(self.avIds) == 0:
             self.resetEverything()
@@ -231,21 +231,21 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
             newFloor = floors[self.currentFloor + 1]
             if newFloor == RANDOM_FLOOR:
                 # Let's choose a random middle floor to go to!
-                print "Choosing random floor"
+                self.notify.info("Choosing random floor")
                 choices = []
                 for floor in middleFloors:
                     if not floor in self.roomsVisited:
-                        print "Added floor to choices: " + floor
+                        self.notify.info("Added floor to choices: " + floor)
                         choices.append(floor)
                     else:
-                        print "Room {0} already visited.".format(floor)
+                        self.notify.info("Room {0} already visited.".format(floor))
                 if len(choices) == 0:
-                    print "No choices, choosing randomly from middleFloors."
+                    self.notify.info("No choices, choosing randomly from middleFloors.")
                     # We haven't finished making all of the floors yet, go to one we have already been to.
                     newFloor = random.choice(middleFloors)
                 else:
                     newFloor = random.choice(choices)
-            print 'Chose floor: ' + newFloor
+            self.notify.info('Chose floor: ' + newFloor)
             self.startFloor(self.currentFloor + 1, newFloor)
 
     def exitFloorIntermission(self):
@@ -458,11 +458,9 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.currentRoom = room
         if room not in self.roomsVisited:
             self.roomsVisited.append(room)
-        wantBoss = False
-        if self.currentFloor == self.numFloors - 1:
-            wantBoss = True
-        # Make the Cogs for this floor.
 
+        # Make the Cogs for this floor.
+        wantBoss = (self.currentFloor == (self.numFloors - 1))
         sectionRange = SuitBuildingGlobals.buildingInfo[self.hood][SuitBuildingGlobals.GUARDS_PER_SECTION]
 
         guardSection2NumInSection = {}
@@ -509,6 +507,13 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                 suit = self.makeSuit([chairPoints.index(point), point], -1, 1)
                 self.chairSuits.append(suit)
                 chairSection2NumInSection[section] += 1
+                
+        # Pick the suit that gives the taunt
+        guards = list(self.getGuardsBySection(0))
+        guards.sort(key = lambda guard: guard.getLevel(), reverse = True)
+        guard = guards[0]
+
+        self.b_setTauntSuitId(guard.doId)
 
         # Let's make the barrels.
         barrelPoints = self.getPoints('barrels')
@@ -546,13 +551,6 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                 barrel.generateWithRequired(self.zoneId)
                 barrel.b_setPosHpr(position[0], position[1], position[2], hpr[0], hpr[1], hpr[2])
                 self.barrels.append(barrel)
-
-        # Pick the suit that gives the taunt
-        guards = list(self.getGuardsBySection(0))
-        guards.sort(key = lambda guard: guard.getLevel(), reverse = True)
-        guard = guards[0]
-
-        self.b_setTauntSuitId(guard.doId)
 
         # We need to wait for a response from all players telling us that they finished loading the floor.
         # Once they all finish loading the floor, we ride the elevator.

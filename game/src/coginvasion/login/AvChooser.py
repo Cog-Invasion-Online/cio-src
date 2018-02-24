@@ -38,7 +38,6 @@ class AvChooser(StateData):
 
     def enter(self, newToonSlot = None):
         StateData.enter(self)
-        print "enter av chooser"
         base.transitions.noTransitions()
         self.newToonSlot = newToonSlot
         self.avChooseFSM.request('getToonData')

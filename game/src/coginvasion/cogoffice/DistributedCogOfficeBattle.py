@@ -763,7 +763,6 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                 propMdl = loader.loadModel(PROPS[name][0])
             else:
                 if name == 'tv_on_wall':
-                    print "TVONWALL"
                     # This is a tv with a movie texture.
                     propMdl = CogTV()
                 else:

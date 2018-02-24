@@ -142,7 +142,7 @@ class HoodAI:
             numFlies = 5
             for i in xrange(numFlies):
                 bf = DistributedButterflyAI(self.air, self.zoneId, random.randint(1, 6))
-                print "Made butterfly in {0} (wings: {1})".format(self.zoneId, bf.wingType)
+                self.notify.info("Made butterfly in {0} (wings: {1})".format(self.zoneId, bf.wingType))
                 bf.generateWithRequired(self.zoneId)
                 self.butterflies.append(bf)
 

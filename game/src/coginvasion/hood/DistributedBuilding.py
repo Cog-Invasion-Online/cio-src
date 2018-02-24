@@ -124,7 +124,6 @@ class DistributedBuilding(DistributedObject):
         pass
 
     def enterWaitForVictors(self, ts):
-        print 'wait for victors'
         if self.mode != 'suit':
             self.setToSuit()
         victorCount = self.victorList.count(base.localAvatar.doId)

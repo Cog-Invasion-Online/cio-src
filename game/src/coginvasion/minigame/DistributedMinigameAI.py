@@ -132,7 +132,6 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
 
         for avatar in self.avatars:
             # Let this avatar's quest manager know that they have played a minigame.
-            print "Letting questManager know"
             avatar.questManager.minigamePlayed(self.gameName)
 
         self.sendUpdate('gameOver', [winner, winnerDoId, 0])

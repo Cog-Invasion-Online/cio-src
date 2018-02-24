@@ -66,7 +66,7 @@ class CIBase(ShowBase):
                 if isinstance(do, NodePath):
                     do.hide()
 
-        print "Cube map position:", camera.getPos(render)
+        self.notify.info("Cube map position:", camera.getPos(render))
 
         ShowBase.saveCubeMap(self, namePrefix, size = size)
 

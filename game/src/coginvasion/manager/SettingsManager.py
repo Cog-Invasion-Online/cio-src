@@ -15,10 +15,9 @@ from direct.directnotify.DirectNotify import DirectNotify
 
 import json
 
-notify = DirectNotify().newCategory("SettingsManager")
-
 class SettingsManager:
     MouseCursors = {"None": "", "Toontown": game.phasedir + "toonmono.cur"}
+    notify = directNotify.newCategory('SettingsManager')
 
     def __init__(self):
         self.jsonData = None
@@ -166,7 +165,7 @@ class SettingsManager:
             render.clear_antialias()
             aspect2d.clear_antialias()
 
-        print "Anisotropic degree of {0}".format(af)
+        self.notify.info("Anisotropic degree of {0}".format(af))
         loadPrcFileData("", "texture-anisotropic-degree {0}".format(af))
 
         if tex_detail == "high":
@@ -195,7 +194,7 @@ class SettingsManager:
 
     def maybeFixAA(self):
         if self.getSetting("aa") == 0:
-            print "Fixing anti-aliasing..."
+            self.notify.info("Fixing anti-aliasing...")
             loadPrcFileData('', 'framebuffer-multisample 0')
             loadPrcFileData('', 'multisamples 0')
         else:

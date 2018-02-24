@@ -84,7 +84,6 @@ class DisplayCategory(OptionsCategory):
         else:
             op = self.aa.options[choice]
             degree = int(op.strip("x"))
-            print "chose aa degree", degree
 
         self.aaChoice = degree
 
@@ -94,7 +93,6 @@ class DisplayCategory(OptionsCategory):
         else:
             op = self.af.options[choice]
             degree = int(op.strip("x"))
-            print "chose af degree", degree
 
         self.afChoice = degree
         

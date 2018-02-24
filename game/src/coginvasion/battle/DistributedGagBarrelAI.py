@@ -67,7 +67,7 @@ class DistributedGagBarrelAI(DistributedRestockBarrelAI):
                     giveAmount = restockLeft
                 restockGags[gagId] = supply + giveAmount
                 restockLeft -= giveAmount
-                print 'Requesting to give %s %ss.' % (str(restockGags[gagId]), GagGlobals.getGagByID(gagId))
+                self.notify.info('Requesting to give %s %ss.' % (str(restockGags[gagId]), GagGlobals.getGagByID(gagId)))
                 
         for gagId in restockGags.keys():
             avatar.b_setGagAmmo(gagId, restockGags.get(gagId))
