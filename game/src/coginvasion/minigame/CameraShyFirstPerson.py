@@ -12,8 +12,14 @@ from FirstPerson import FirstPerson
 from src.coginvasion.globals import CIGlobals
 
 class CameraShyFirstPerson(FirstPerson):
-    toonInFocusColor = VBase4(0.25, 1.0, 0.25, 1.0)
-    toonOutOfFocusColor = VBase4(1.0, 1.0, 1.0, 1.0)
+    defaultColor = VBase4(1.0, 1.0, 1.0, 1.0)
+    toonInFocusColor = VBase4(0.0, 0.7, 0.0, 1.0)
+    toonOutOfFocusColor = VBase4(0.25, 1.0, 0.25, 1.0)
+    redColor = VBase4(0.8, 0.0, 0.0, 1.0)
+    batteryLevelTwoColor = VBase4(0.9, 0.36, 0.0, 1.0)
+    batteryLevelThreeColor = VBase4(0.9, 0.9, 0.0, 1.0)
+    batteryLevelFourColor = VBase4(0.7, 0.7, 0.7, 1.0)
+    batteryLevelFiveColor = VBase4(0.0, 0.7, 0.0, 1.0)
     fullyChargedState = 5
 
     def __init__(self, mg):
@@ -64,6 +70,7 @@ class CameraShyFirstPerson(FirstPerson):
         self.cameraFlashSeq.start()
         self.mg.sendUpdate('remoteAvatarTakePicture', [base.localAvatar.doId])
         self.mg.myRemoteAvatar.takePicture()
+        self.cameraFocus.setColorScale(self.toonOutOfFocusColor)
         if self.hasToonInFocus and self.toonToTakePicOf:
             self.mg.sendUpdate('tookPictureOfToon', [self.toonToTakePicOf.doId])
         self.camFSM.request('recharge')
@@ -81,6 +88,18 @@ class CameraShyFirstPerson(FirstPerson):
         self.cameraRechargeState += 1
         if self.cameraRechargeState > 0:
             base.playSfx(self.rechargeSound)
+            
+            if self.cameraRechargeState <= 1:
+                self.batteryBar.setColorScale(self.redColor)
+            elif self.cameraRechargeState == 2:
+                self.batteryBar.setColorScale(self.batteryLevelTwoColor)
+            elif self.cameraRechargeState == 3:
+                self.batteryBar.setColorScale(self.batteryLevelThreeColor)
+            elif self.cameraRechargeState == 4:
+                self.batteryBar.setColorScale(self.batteryLevelFourColor)
+            else:
+                self.batteryBar.setColorScale(self.batteryLevelFiveColor)
+            
         self.batteryBar.update(self.cameraRechargeState)
         if self.cameraRechargeState == self.fullyChargedState:
             base.playSfx(self.fullyChargedSound)
@@ -133,13 +152,14 @@ class CameraShyFirstPerson(FirstPerson):
             self.cameraFocus.setColorScale(self.toonInFocusColor)
 
     def start(self):
-        self.fullyChargedSound = base.loadSfx('phase_4/audio/sfx/MG_pairing_match.ogg')
+        self.fullyChargedSound = base.loadSfx('phase_4/audio/sfx/ring_get.ogg')
         self.rechargeSound = base.loadSfx('phase_4/audio/sfx/MG_sfx_travel_game_blue_arrow.ogg')
         self.batteryFrame = DirectFrame(parent = base.a2dBottomRight, pos = (-0.2, 0, 0.1), scale = (0.8, 0, 1))
         self.batteryBg = OnscreenImage(image = 'phase_4/maps/battery_charge_frame.png', parent = self.batteryFrame)
         self.batteryBg.setTransparency(1)
         self.batteryBg.setX(0.03)
         self.batteryBg.setScale(0.17, 0, 0.05)
+        self.batteryBg.setColorScale(0, 0, 0, 1)
         self.batteryBar = DirectWaitBar(value = 0, range = 5, barColor = (1, 1, 1, 1), relief = None, scale = (0.12, 0.0, 0.3), parent = self.batteryFrame)
         self.cameraFocus = loader.loadModel("phase_4/models/minigames/photo_game_viewfinder.bam")
         self.cameraFocus.reparentTo(base.aspect2d)
