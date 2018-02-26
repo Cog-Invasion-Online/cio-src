@@ -13,11 +13,12 @@ vfs = VirtualFileSystem.getGlobalPtr()
 
 def handleFileList(models, fileList):
 	for fileName in fileList:
-		if fileName.get_filename().get_fullpath().endswith(('.bam', 'egg', '.pz')):
-			if not fileName.get_filename().get_fullpath() in models:
-				models.append(fileName.get_filename().get_fullpath())
+		fullPath = fileName.get_filename().get_fullpath()
+		if fullPath.endswith(('.bam', 'egg', '.pz')):
+			if not fullPath in models:
+				models.append(fullPath)
 		else:
-			handleFileList(models, vfs.scanDirectory(Filename(fileName.get_filename().get_fullpath())))
+			handleFileList(models, vfs.scanDirectory(Filename(fullPath)))
 
 def findAllModelFilesInVFS(phase_array):
 	models = []
