@@ -77,7 +77,6 @@ class DistributedDeliveryGame(DistributedMinigame):
     def giveBarrelToSuit(self, suitId):
         suit = self.cr.doId2do.get(suitId)
         if suit:
-            suit.ls()
             barrel = loader.loadModel('phase_4/models/cogHQ/gagTank.bam')
             barrel.reparentTo(suit.find('**/joint_Rhold'))
             barrel.setP(180)

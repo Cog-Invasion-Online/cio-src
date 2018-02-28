@@ -68,6 +68,9 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         self.thoughtInProg = False
         return
 
+    def isDistributed(self):
+        return hasattr(self, 'doId')
+
     def chatStompComplete(self, text):
         pass
 

@@ -84,7 +84,6 @@ class FactorySneakWorld(DirectObject):
 
     def __handleGuardShot(self, guard, dmg):
         guard.setHealth(guard.getHealth() - dmg)
-        guard.updateHealthBar(guard.getHealth())
         if guard.getHealth() < 1:
             guard.dead()
         else:

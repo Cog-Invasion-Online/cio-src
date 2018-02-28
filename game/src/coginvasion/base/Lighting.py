@@ -36,11 +36,11 @@ class LightingConfig:
         self.ambientNP = CIGlobals.makeAmbientLight('config', self.ambient)
 
     def apply(self):
-        if game.uselighting:
+        if game.uselighting and not game.usepipeline:
             render.setLight(self.ambientNP)
 
     def unapply(self):
-        if game.uselighting:
+        if game.uselighting and not game.usepipeline:
             render.clearLight(self.ambientNP)
 
     def remove(self):
@@ -124,6 +124,8 @@ class OutdoorLightingConfig(LightingConfig):
             self.snowEffect.load()
 
     def apply(self):
+        if game.usepipeline:
+            return
         LightingConfig.apply(self)
         
         if game.uselighting:
@@ -149,6 +151,8 @@ class OutdoorLightingConfig(LightingConfig):
             self.snowEffect.start()
 
     def unapply(self):
+        if game.usepipeline:
+            return
         LightingConfig.unapply(self)
         if game.uselighting:
             render.clearLight(self.sunNP)
@@ -215,12 +219,16 @@ class IndoorLightingConfig(LightingConfig):
             self.lightNPs.append(light)
 
     def apply(self):
+        if game.usepipeline:
+            return
         LightingConfig.apply(self)
         if game.uselighting:
             for light in self.lightNPs:
                 render.setLight(light)
 
     def unapply(self):
+        if game.usepipeline:
+            return
         LightingConfig.unapply(self)
         if game.uselighting:
             for light in self.lightNPs:

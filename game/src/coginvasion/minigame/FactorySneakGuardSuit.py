@@ -10,6 +10,7 @@ from direct.interval.IntervalGlobal import LerpHprInterval
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.npc.NPCWalker import NPCLookInterval, NPCWalkInterval
 from src.coginvasion.cog.Suit import Suit
+from src.coginvasion.cog import SuitBank, Variant
 #from src.coginvasion.suit import SuitPathFinder
 import CogGuardGlobals as CGG
 
@@ -18,11 +19,11 @@ import random
 class FactorySneakGuardSuit(Suit, FSM):
     notify = directNotify.newCategory("FactorySneakGuardSuit")
 
-    SUIT = "mrhollywood"
+    SUIT = SuitBank.MrHollywood
+    VARIANT = Variant.NORMAL
     VIEW_DISTANCE_TASK_NAME = "ViewDistanceTask"
     MAX_VIEW_DISTANCE = 100.0
     GUARD_DIED_DELAY = 6.0
-    MAX_HP = 200
     PROWLER_DISTANCE = 40.0
 
     IN_VIEW = "somethingInSight"
@@ -37,7 +38,7 @@ class FactorySneakGuardSuit(Suit, FSM):
         self.viewDistanceTaskName = self.VIEW_DISTANCE_TASK_NAME + "-" + str(id(self))
         self.diedTaskName = "GuardDied-" + str(id(self))
         self.health = 0
-        self.maxHealth = self.MAX_HP
+        self.maxHealth = 0
         self.eyeLight = None
         self.eyeLens = None
         self.eyeNode = None
@@ -158,7 +159,7 @@ class FactorySneakGuardSuit(Suit, FSM):
     def enterPursue(self):
         self.numTries = 0
         self.maxTries = 3
-        self.runToClosestPoint()
+        #self.runToClosestPoint()
         self.setPlayRate(1.5, 'walk')
         self.loop('walk')
         messenger.send('guardPursue')
@@ -246,12 +247,6 @@ class FactorySneakGuardSuit(Suit, FSM):
     def taskName(self, name):
         return name + "-" + str(id(self))
 
-    def setHealth(self, hp):
-        self.health = hp
-
-    def getHealth(self):
-        return self.health
-
     def shot(self):
         dialogue = random.choice(CGG.GuardDialog['shot'])
         self.setChat(dialogue)
@@ -265,11 +260,20 @@ class FactorySneakGuardSuit(Suit, FSM):
         self.gameWorld.deleteGuard(self)
         return task.done
 
+    def setHealth(self, hp):
+        self.health = hp
+        self.updateHealthBar(hp)
+
+    def getHealth(self):
+        return self.health
+
     def generate(self):
-        data = CIGlobals.SuitBodyData[self.SUIT]
-        type = data[0]
-        team = data[1]
-        self.generateSuit(type, self.SUIT, team, self.MAX_HP, 0, False)
+        self.level = 12
+        self.maxHealth = 200
+        self.health = 200
+        Suit.generate(self, FactorySneakGuardSuit.SUIT, FactorySneakGuardSuit.VARIANT, hideFirst = False)
+        self.setName(self.suitPlan.getName(), None)
+        self.cleanupPropeller()
         base.taskMgr.add(self.__viewDistance, self.viewDistanceTaskName)
         self.setPythonTag('guard', self)
         self.eyeLight = Spotlight('eyes')

@@ -315,7 +315,8 @@ class Suit(Avatar):
                 Func(self.suitExplode), Wait(1.0), Func(self.disableBodyCollisions), Func(self.__cleanupExplosion)), gearTrack, Sequence(ActorInterval(self, 'lose', duration = 6), Func(self.getGeomNode().hide)), name = trackName)
         self.suitTrack.setDoneEvent(self.suitTrack.getName())
         self.acceptOnce(self.suitTrack.getName(), self.exitDie)
-        self.suitTrack.delayDelete = DelayDelete.DelayDelete(self, trackName)
+        if self.isDistributed():
+            self.suitTrack.delayDelete = DelayDelete.DelayDelete(self, trackName)
         self.suitTrack.start(ts)
         del deathSound
 
@@ -350,7 +351,8 @@ class Suit(Avatar):
         if self.suitTrack != None:
             self.ignore(self.suitTrack.getName())
             self.suitTrack.finish()
-            DelayDelete.cleanupDelayDeletes(self.suitTrack)
+            if self.isDistributed():
+                DelayDelete.cleanupDelayDeletes(self.suitTrack)
             self.suitTrack = None
         if hasattr(self, 'singleGear'):
             self.singleGear.cleanup()

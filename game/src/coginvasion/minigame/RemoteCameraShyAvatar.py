@@ -24,6 +24,7 @@ class RemoteCameraShyAvatar(RemoteAvatar):
     def retrieveAvatar(self):
         RemoteAvatar.retrieveAvatar(self)
         if self.avatar:
+            self.avatar.setForcedTorsoAnim('catchneutral')
             base.audio3d.attachSoundToObject(self.shutter, self.avatar)
             self.attachCamera()
 
@@ -52,26 +53,6 @@ class RemoteCameraShyAvatar(RemoteAvatar):
             self.cameraFlash.removeNode()
             self.cameraFlash = None
 
-    def run(self):
-        if self.avatar:
-            self.avatar.loop('catchrun', partName = 'legs')
-            self.avatar.pose('catchrun', 1, partName = 'torso')
-
-    def strafe(self, playRate):
-        if self.avatar:
-            self.avatar.setPlayRate(playRate, 'strafe')
-            self.avatar.loop('strafe', partName = 'legs')
-            self.avatar.pose('catchrun', 1, partName = 'torso')
-
-    def stand(self):
-        if self.avatar:
-            self.avatar.loop('catchneutral', partName = 'legs')
-            self.avatar.pose('catchneutral', 1, partName = 'torso')
-
-    def jump(self):
-        if self.avatar:
-            self.avatar.loop('jump')
-
     def takePicture(self, ts = 0.0):
         self.pictureTrack = Sequence(
             Func(base.playSfx, self.shutter),
@@ -91,6 +72,7 @@ class RemoteCameraShyAvatar(RemoteAvatar):
         self.pictureTrack.start(ts)
 
     def doWinDance(self):
+        self.avatar.clearForcedTorsoAnim()
         self.avatar.play('hdance')
         sfx = base.loadSfx("phase_5/audio/sfx/AA_heal_happydance.ogg")
         SoundInterval(sfx).start()

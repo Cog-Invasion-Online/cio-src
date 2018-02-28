@@ -65,6 +65,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.tokenIcon = None
         self.tokenIconIval = None
         self.forcedTorsoAnim = None
+        self.lastForcedTorsoAnim = None
         self.fallSfx = base.audio3d.loadSfx("phase_4/audio/sfx/MG_cannon_hit_dirt.ogg")
         base.audio3d.attachSoundToObject(self.fallSfx, self)
         self.eyes = loader.loadTexture("phase_3/maps/eyes.jpg", "phase_3/maps/eyes_a.rgb")
@@ -113,8 +114,19 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.animFSM.enterInitialState()
         
         if not hasattr(self, 'uniqueName'):
-            print "Using hacky uniqueName function"
             self.uniqueName = types.MethodType(uniqueName, self)
+
+    def setForcedTorsoAnim(self, anim):
+        self.forcedTorsoAnim = anim
+
+    def hasForcedTorsoAnim(self):
+        return self.forcedTorsoAnim is not None
+
+    def getForcedTorsoAnim(self):
+        return self.forcedTorsoAnim
+
+    def clearForcedTorsoAnim(self):
+        self.forcedTorsoAnim = None
             
     def resetTorsoRotation(self):
         if not self.isEmpty():
@@ -224,9 +236,10 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                 action = CIGlobals.STAND_INDEX
 
             anim, rate = self.standWalkRunReverse[action]
-            if anim != self.playingAnim or rate != self.playingRate:
+            if anim != self.playingAnim or rate != self.playingRate or self.forcedTorsoAnim != self.lastForcedTorsoAnim:
                 self.playingAnim = anim
                 self.playingRate = rate
+                self.lastForcedTorsoAnim = self.forcedTorsoAnim
 
                 doingGagAnim = False
                 if self.backpack:
@@ -426,6 +439,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.currentAnim = None
             self.toon_head = None
             self.forcedTorsoAnim = None
+            self.lastForcedTorsoAnim = None
             self.toon_torso = None
             self.toon_legs = None
             self.gender = None
@@ -703,14 +717,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.findAllMatches('**/arms').setColor(torsocolor)
         self.findAllMatches('**/neck').setColor(torsocolor)
         self.findAllMatches('**/hands').setColor(1,1,1,1)
-
-    def setForcedTorsoAnim(self, string):
-        self.forcedTorsoAnim = string
-        self.loop(string, partName = "torso")
-
-    def clearForcedTorsoAnim(self):
-        self.forcedTorsoAnim = None
-        self.animFSM.request(self.animFSM.getCurrentState().getName())
 
     def enterOff(self, ts = 0, callback = None, extraArgs = []):
         self.currentAnim = None
