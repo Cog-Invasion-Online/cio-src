@@ -70,7 +70,6 @@ class QuestManagerAI(QuestManagerBase):
                     objective.handleProgress(*args)
 
     def minigamePlayed(self, minigame):
-        print "minigamePlayed: " + minigame
         self.__doProgress([PlayMinigame], [minigame])
 
     def cogDefeated(self, cog):

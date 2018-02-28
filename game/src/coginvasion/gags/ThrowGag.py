@@ -92,7 +92,6 @@ class ThrowGag(Gag):
             self.stopPowerBar()
             self.power += 50
             self.power = 250 - self.power
-            print self.power
             # Make other toons set the throw power on my gag.
             base.localAvatar.sendUpdate('setThrowPower', [self.id, self.power])
             self.startTimeout()

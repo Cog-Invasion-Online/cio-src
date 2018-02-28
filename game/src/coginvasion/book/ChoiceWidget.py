@@ -15,6 +15,8 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.globals import CIGlobals
 
+DISABLED_COLOR = (0.45, 0.45, 0.45, 1)
+
 class ChoiceWidget(DirectFrame):
     notify = directNotify.newCategory("ChoiceWidget")
 
@@ -73,10 +75,14 @@ class ChoiceWidget(DirectFrame):
     def updateDirectionalBtns(self):
         self.fwdBtn['state'] = DGG.NORMAL
         self.bckBtn['state'] = DGG.NORMAL
+        self.fwdBtn.setColorScale(1, 1, 1, 1)
+        self.bckBtn.setColorScale(1, 1, 1, 1)
         if self.currentChoiceIndex == 0:
             self.bckBtn['state'] = DGG.DISABLED
+            self.bckBtn.setColorScale(DISABLED_COLOR)
         elif self.currentChoiceIndex == len(self.options) - 1:
             self.fwdBtn['state'] = DGG.DISABLED
+            self.fwdBtn.setColorScale(DISABLED_COLOR)
 
     def __goFwd(self):
         if self.currentChoiceIndex < len(self.options) - 1:

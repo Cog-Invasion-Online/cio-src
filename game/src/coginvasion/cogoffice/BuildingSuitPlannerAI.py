@@ -49,12 +49,12 @@ class BuildingSuitPlannerAI:
             suitLevel = random.choice(CogBattleGlobals.HoodIndex2LevelRange[CogBattleGlobals.HoodId2HoodIndex[hoodName]])
         numFloors = self.chooseNumFloors(suitLevel)
 
-        print "SuitBuildingPlannerAI.takeOverBuilding: hood - {0} | street - {1} | numFloors - {2} | dept - {3}".format(
-            self.hoodClass.hood,
-            self.streetName,
+        self.notify.info("{0} Floor {1} Building on {2}, {3}".format(
             numFloors,
-            dept.getName()
-        )
+            dept.getName(),
+            self.streetName,
+            self.hoodClass.hood
+        ))
 
         if bldg.fsm.getCurrentState().getName() == 'toon':
             bldg.suitTakeOver(dept, 0, numFloors)

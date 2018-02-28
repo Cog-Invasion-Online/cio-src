@@ -8,7 +8,6 @@
 from direct.showbase.DirectObject import DirectObject
 from direct.interval.IntervalGlobal import *
 from direct.gui.DirectGui import *
-from direct.task import Task
 from src.coginvasion.globals import CIGlobals
 from direct.fsm.State import State
 from direct.fsm.ClassicFSM import ClassicFSM
@@ -250,7 +249,7 @@ class RaceGameMovement(DirectObject):
             if self.power < self.MINIMUM_POWER:
                 self.power = self.MINIMUM_POWER
         task.delayTime = 0.5
-        return Task.again
+        return task.again
 
     def move(self, task):
         """ Move the avatar forward on the Y axis with the current amount of power. """
@@ -261,12 +260,11 @@ class RaceGameMovement(DirectObject):
         self.avatar.setControlEffect('run', runEffect)
         self.avatar.setControlEffect('neutral', neutralEffect)
         if runEffectRaw > self.RUN_MAX:
-            print runEffectRaw
             self.avatar.setPlayRate(runEffectRaw * self.RUN_PR_FACTOR, 'run')
         else:
             self.avatar.setPlayRate(1.0, 'run')
         self.avatar.setY(self.avatar.getY() + self.power * dt)
-        return Task.cont
+        return task.cont
 
     def cleanup(self):
         self.fsm.requestFinalState()

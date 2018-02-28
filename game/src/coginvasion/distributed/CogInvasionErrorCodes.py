@@ -16,7 +16,9 @@ EC_OCCUPIED_SLOT_CREATION_ATTEMPT = 114
 EC_EJECT_VERSION = 124
 EC_EJECT_DC = 125
 
-UnknownErrorMsg = "An unexpected problem has occured. (Error code %s) Your connection has been lost, but you should be able to connect again and go right back into the game."
+UnknownErrorMsg = "An unexpected problem has occured. (Error code %s) Your connection has been lost," \
+	+ " but you should be able to connect again and go right back into the game. " \
+	+ "If the problem persists please contact support at support@coginvasion.online."
 
 ErrorCode2ErrorMsg = {
 	EC_MULTIPLE_LOGINS: "You have been disconnected because someone has logged into your account on another computer.",
@@ -24,6 +26,8 @@ ErrorCode2ErrorMsg = {
 	EC_INVALID_ACCOUNT: "You have been disconnected because your account is invalid.",
 	EC_NON_EXISTENT_AV: "You have been disconnected because you tried to do something to a non-existent Toon.",
 	EC_OCCUPIED_SLOT_CREATION_ATTEMPT: "You have been disconnected because you tried to create a Toon on an occupied slot.",
-    EC_EJECT_VERSION: "You have been disconnected because your game files are out of date. Please run the game from the launcher to download the latest files.",
-    EC_EJECT_DC: "You have been disconnected because your game files are out of date. Please run the game from the launcher to download the latest files."
+    EC_EJECT_VERSION: "You have been disconnected because your game files are out of date. " \
+    	+ "Please run the game from the launcher to download the latest files.",
+    EC_EJECT_DC: "You have been disconnected because your game files are out of date. " \
+    	+ "Please run the game from the launcher to download the latest files."
 }

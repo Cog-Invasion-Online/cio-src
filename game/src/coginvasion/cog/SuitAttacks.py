@@ -891,8 +891,6 @@ class BounceCheckAttack(ThrowAttack):
         pathNP.setPos(0, 30, -100)
         pathNP.setHpr(90, -90, 90)
 
-        print pathNP.getPos(base.render)
-
         if self.throwTrajectory:
             self.throwTrajectory.pause()
             self.throwTrajectory = None

@@ -37,15 +37,16 @@ class BackpackBase:
     # When a max supply isn't specified, the default is located and assigned from GagGlobals.
     # The current supply is assigned to the max supply if both the max supply and current supply is 0.
     # Returns true/false depending on if the gag was successfully added to the backpack or not.
-    def addGag(self, gagId, curSupply = 0, maxSupply = 0):
+    def addGag(self, gagId, curSupply = None, maxSupply = None):
         if not self.hasGag(gagId):
-            if not maxSupply:
+            if maxSupply is None:
                 # Sets the max supply if one is not specified.
                 maxSupply = self.getDefaultMaxSupply(gagId)
                 
-                # Sets the current supply to the max supply if current supply isn't
-                # specified.
-                curSupply = maxSupply if not curSupply else curSupply
+            # Sets the current supply to the max supply if current supply isn't
+            # specified.
+            if curSupply is None:
+                curSupply = maxSupply
             
             if game.process == 'server':
                 self.gags.update({gagId: [curSupply, maxSupply]})

@@ -12,7 +12,6 @@ from direct.distributed.DistributedSmoothNodeAI import DistributedSmoothNodeAI
 from direct.distributed.ClockDelta import globalClockDelta
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
-from direct.task.Task import Task
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from src.coginvasion.cog import CogBattleGlobals
@@ -274,17 +273,17 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
                     taskMgr.doMethodLater(1, self.__handleDeath, name = self.deathTaskName)
             else:
                 self.killSuit()
-            return Task.done
-        return Task.cont
+            return task.done
+        return task.cont
 
     def clearComboData(self, task):
         self.comboData = {}
 
         if not hasattr(self, 'clearComboDataTime'):
-            return Task.done
+            return task.done
 
         task.delayTime = self.clearComboDataTime
-        return Task.again
+        return task.again
             
     def __handleTacticalAttacks(self, avId, gagName, gagData):
         # Factor in any weaknesses / immunities to the damage this gag does.
@@ -420,10 +419,10 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             # Let's handle when we run out of time.
             if self.deathTimeLeft <= 0:
                 self.killSuit()
-                return Task.done
-            return Task.again
+                return task.done
+            return task.again
         else:
-            return Task.done
+            return task.done
 
     def handleAvatarDefeat(self, av):
         if av.isDead() and hasattr(self, 'brain') and self.brain != None:
@@ -640,8 +639,8 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         DistributedSmoothNodeAI.delete(self)
 
     def printPos(self, task):
-        print '%s\n%s' % (self.getPos(render), self.getHpr(render))
-        return Task.cont
+        self.notify.info('%s\n%s' % (self.getPos(render), self.getHpr(render)))
+        return task.cont
 
     def getBrain(self):
         return self.brain

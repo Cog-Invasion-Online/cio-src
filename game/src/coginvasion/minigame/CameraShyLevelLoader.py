@@ -27,6 +27,7 @@ class CameraShyLevelLoader:
             'models' : {
                 'phase_4/models/minigames/maze_1player.bam' : {'name' : 'maze'},
                 'phase_4/models/minigames/maze_1player_collisions.egg' : {'name' : 'maze_collisions'},
+                'phase_4/models/minigames/tag_arena.bam' : {'name' : "tag_arena_bg", 'pos' : Point3(0, 0, -0.5)}
             },
             'spawnPoints' : [
                 [Point3(0, 0, 0), Vec3(0, 0, 0)],
@@ -168,13 +169,17 @@ class CameraShyLevelLoader:
         if self.level == 'TT_maze':
             for model in self.models:
                 if model.getName() == 'maze':
-                    model.find('**/maze_walls').setSz(1.5)
+                    model.setScale(1.5)
+                    model.find('**/maze_walls').setSz(2.0)
                 elif model.getName() == 'maze_collisions':
                     model.hide()
+                    model.setScale(1.5)
                     model.setTransparency(1)
                     model.setColorScale(1, 1, 1, 0)
                     for node in model.findAllMatches('**'):
-                        node.setSz(1.5)
+                        node.setSz(2.0)
+                elif model.getName() == 'tag_arena_bg':
+                    model.find('**/g1').removeNode()
 
     def getSpawnPoints(self):
         if self.level:

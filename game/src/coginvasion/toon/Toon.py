@@ -250,7 +250,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                             
                             torsoAnim = self.getCurrentAnim('torso')
                             torsoAnimFrame = self.getCurrentFrame(torsoAnim, partName = 'torso')
-                            #print torsoAnim, torsoAnimFrame
                             self.play(torsoAnim, partName = "torso-top", fromFrame = torsoAnimFrame)
                             
                             self.loop(anim, partName = "legs")

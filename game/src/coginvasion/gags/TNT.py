@@ -47,10 +47,8 @@ class TNT(TossTrapGag):
     def onCollision(self, entry):
         TossTrapGag.onCollision(self, entry)
         base.localAvatar.b_gagCollision(self.getID())
-        print "Hey, there was a collision."
 
     def doCollision(self):
-        print "HEY! I SHOULD BE DOING THIS BY NOW!"
         if not self.entity:
             self.build()
             self.entity = self.gag

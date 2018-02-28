@@ -115,8 +115,6 @@ def isAtSamePlaygroundButDifferentBranch(zoneId):
 
 def getOutdoorLightingConfig(hoodId):
     olc = OutdoorLightingConfig.makeDefault()
-    
-    print "getOutdoorLightingConfig:", hoodId
 
     if hoodId == TheBrrrgh:
         olc.snow = True

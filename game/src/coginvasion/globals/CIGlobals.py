@@ -235,7 +235,6 @@ def areFacingEachOther(obj1, obj2):
 def fixGrayscaleTextures(np):
     for tex in np.findAllTextures():
         if (tex.getFormat() == Texture.F_luminance):
-            print "Upgrading {0} from 1 component to 3.".format(tex.getName())
             img = PNMImage()
             tex.store(img)
             img.makeRgb()
