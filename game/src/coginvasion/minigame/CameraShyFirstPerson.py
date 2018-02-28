@@ -18,7 +18,7 @@ class CameraShyFirstPerson(FirstPerson):
     redColor = VBase4(0.8, 0.0, 0.0, 1.0)
     batteryLevelTwoColor = VBase4(0.9, 0.36, 0.0, 1.0)
     batteryLevelThreeColor = VBase4(0.9, 0.9, 0.0, 1.0)
-    batteryLevelFourColor = VBase4(0.7, 0.7, 0.7, 1.0)
+    batteryLevelFourColor = VBase4(0.7, 0.7, 0.0, 1.0)
     batteryLevelFiveColor = VBase4(0.0, 0.7, 0.0, 1.0)
     fullyChargedState = 5
 
@@ -70,7 +70,7 @@ class CameraShyFirstPerson(FirstPerson):
         self.cameraFlashSeq.start()
         self.mg.sendUpdate('remoteAvatarTakePicture', [base.localAvatar.doId])
         self.mg.myRemoteAvatar.takePicture()
-        self.cameraFocus.setColorScale(self.toonOutOfFocusColor)
+        self.cameraFocus.setColorScale(self.defaultColor)
         if self.hasToonInFocus and self.toonToTakePicOf:
             self.mg.sendUpdate('tookPictureOfToon', [self.toonToTakePicOf.doId])
         self.camFSM.request('recharge')

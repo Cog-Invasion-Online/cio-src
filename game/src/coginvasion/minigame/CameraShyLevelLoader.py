@@ -9,7 +9,7 @@
 """
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from panda3d.core import Point3, Vec3, NodePath, CompassEffect
+from panda3d.core import Point3, Vec3, NodePath, Material
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
@@ -25,9 +25,9 @@ class CameraShyLevelLoader:
         'TT_maze' : {
             'name' : CIGlobals.ToontownCentral,
             'models' : {
-                'phase_4/models/minigames/maze_1player.bam' : {'name' : 'maze'},
-                'phase_4/models/minigames/maze_1player_collisions.egg' : {'name' : 'maze_collisions'},
-                'phase_4/models/minigames/tag_arena.bam' : {'name' : "tag_arena_bg", 'pos' : Point3(0, 0, -0.5)}
+                'phase_4/models/minigames/maze_1player.bam' : {'name' : 'maze', 'scale' : Point3(3.0, 3.0, 3.0)},
+                'phase_4/models/minigames/maze_1player_collisions.egg' : {'name' : 'maze_collisions', 'scale' : Point3(3.0, 3.0, 3.0)},
+                'phase_4/models/minigames/tag_arena.bam' : {'name' : "tag_arena_bg", 'pos' : Point3(0, 0, -0.5), 'scale' : Point3(2.0, 2.0, 2.0)}
             },
             'spawnPoints' : [
                 [Point3(0, 0, 0), Vec3(0, 0, 0)],
@@ -169,15 +169,25 @@ class CameraShyLevelLoader:
         if self.level == 'TT_maze':
             for model in self.models:
                 if model.getName() == 'maze':
-                    model.setScale(1.5)
-                    model.find('**/maze_walls').setSz(2.0)
+                    brightenMat = Material()
+                    brightenMat.setShininess(2.0)
+                    brightenMat.setEmission((0, 0.25, 0.16, 1))
+
+                    walls = model.find('**/maze_walls') 
+                    walls.setSz(1.5)
+                    walls.setTexture(loader.loadTexture('phase_4/maps/DGhedge.jpg'), 1)
+                    walls.setMaterial(brightenMat)
+                    
+                    floor = model.find('**/maze_floor')
+                    floor.setTexture(loader.loadTexture('phase_4/maps/grass.jpg'), 1)
+                    model.setShaderAuto()
+                    
                 elif model.getName() == 'maze_collisions':
                     model.hide()
-                    model.setScale(1.5)
                     model.setTransparency(1)
                     model.setColorScale(1, 1, 1, 0)
                     for node in model.findAllMatches('**'):
-                        node.setSz(2.0)
+                        node.setSz(1.5)
                 elif model.getName() == 'tag_arena_bg':
                     model.find('**/g1').removeNode()
 
