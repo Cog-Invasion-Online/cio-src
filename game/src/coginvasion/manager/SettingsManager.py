@@ -11,7 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 from panda3d.core import AntialiasAttrib
 from panda3d.core import LightRampAttrib
 from panda3d.core import loadPrcFileData, WindowProperties
-from direct.directnotify.DirectNotify import DirectNotify
+from direct.directnotify.DirectNotifyGlobal import directNotify
 
 import json
 

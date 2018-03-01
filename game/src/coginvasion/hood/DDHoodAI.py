@@ -31,7 +31,7 @@ class DDHoodAI(ToonHoodAI):
         self.boat.generateWithRequired(self.zoneId)
 
     def shutdown(self):
-        self.notify.info("Shutting down donald's dock")
+        self.notify.info("Shutting down Donald's Dock")
         if self.boat:
             self.boat.requestDelete()
             self.boat = None

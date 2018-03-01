@@ -9,7 +9,6 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.holiday.HolidayManager import HolidayType
 
 from playground import BRSafeZoneLoader
 from street import BRTownLoader
