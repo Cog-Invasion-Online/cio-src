@@ -10,10 +10,12 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import WindowProperties, Point3
 from direct.showbase.DirectObject import DirectObject
+from direct.interval.IntervalGlobal import LerpHprInterval, Sequence, Func
 
 from src.coginvasion.globals import CIGlobals
 
 class TPMouseMovement(DirectObject):
+    GeomNodeTurnSpeed = 950.0
 
     def __init__(self):
         DirectObject.__init__(self)
@@ -24,6 +26,10 @@ class TPMouseMovement(DirectObject):
         self.disabledByFocusLoss = False
         self.disabledByChat = False
         self.enableOnChatExit = False
+        
+        self.firstTimeMoving = True
+        self.geomNodeRenderYaw = 0.0
+        self.geomNodeTurnIval = None
 
     def initialize(self):
         if self.player_node:
@@ -130,10 +136,26 @@ class TPMouseMovement(DirectObject):
             # Do some mouse movement
             goalH = self.player_node.getH() - (x - centerX) * sens
             self.player_node.setH(goalH)
+            self.geomNodeRenderYaw = base.localAvatar.getGeomNode().getH(render)
 
             if base.localAvatar.isMoving():
                 # We can turn our character with the mouse while moving.
                 base.localAvatar.setH(render, self.player_node.getH(render))
                 self.player_node.setH(0)
+                if self.firstTimeMoving:
+                    self.firstTimeMoving = False
+                    base.localAvatar.getGeomNode().setH(render, self.geomNodeRenderYaw)
+                    if self.geomNodeTurnIval:
+                        self.geomNodeTurnIval.finish()
+                        self.geomNodeTurnIval = None
+                    distance = (base.localAvatar.getGeomNode().getH() % 360)
+                    if distance > 180:
+                        distance = 360 - distance
+                    self.geomNodeTurnIval = Sequence(Func(base.localAvatar.setForceRunSpeed, True), LerpHprInterval(
+                        base.localAvatar.getGeomNode(), duration = distance / self.GeomNodeTurnSpeed,
+                        hpr = (0, 0, 0), startHpr = base.localAvatar.getGeomNode().getHpr()), Func(base.localAvatar.setForceRunSpeed, False))
+                    self.geomNodeTurnIval.start()
+            else:
+                self.firstTimeMoving = True
                 
         return task.cont

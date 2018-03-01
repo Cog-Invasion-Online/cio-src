@@ -76,6 +76,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.accessories = []
         self.chatSoundDict = {}
         self.backpack = None
+        self.forceRunSpeed = False
         self.animFSM = ClassicFSM('Toon', [State('off', self.enterOff, self.exitOff),
             State('neutral', self.enterNeutral, self.exitNeutral),
             State('swim', self.enterSwim, self.exitSwim),
@@ -115,6 +116,9 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         
         if not hasattr(self, 'uniqueName'):
             self.uniqueName = types.MethodType(uniqueName, self)
+            
+    def setForceRunSpeed(self, flag):
+        self.forceRunSpeed = flag
 
     def setForcedTorsoAnim(self, anim):
         self.forcedTorsoAnim = anim
@@ -179,6 +183,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         #            self.controlManager.enableAvatarJump()
 
     def setSpeed(self, forwardSpeed, rotateSpeed, strafeSpeed = 0.0):
+        if self.forceRunSpeed:
+            forwardSpeed = CIGlobals.RunCutOff
         self.forwardSpeed = forwardSpeed
         self.rotateSpeed = rotateSpeed
         self.strafeSpeed = strafeSpeed
@@ -628,7 +634,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.loop('neutral')
 
         bodyMat = CIGlobals.getShinyMaterial(20.0)
-        bodyMat.setSpecular((0.2, 0.2, 0.2, 1.0))
+        bodyMat.setSpecular((0.0, 0.0, 0.0, 1.0))
         self.getPart("head").setMaterial(bodyMat)
         self.find("**/arms").setMaterial(bodyMat)
         self.find("**/feet").setMaterial(bodyMat)
