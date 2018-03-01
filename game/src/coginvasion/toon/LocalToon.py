@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 from panda3d.core import Point3, ConfigVariableBool
 from src.coginvasion.globals import CIGlobals
 from direct.controls import ControlManager
-from direct.controls.GravityWalker import GravityWalker
+from src.coginvasion.toon.CIGravityWalker import GravityWalker
 from direct.task import Task
 from DistributedToon import DistributedToon
 from SmartCamera import SmartCamera
@@ -30,6 +30,7 @@ from src.coginvasion.base.PositionExaminer import PositionExaminer
 from src.coginvasion.friends.FriendsList import FriendsList
 from src.coginvasion.cog import SuitAttacks
 from src.coginvasion.quests.QuestManager import QuestManager
+from src.coginvasion.gui.Crosshair import Crosshair
 
 from src.coginvasion.nametag import NametagGlobals
 
@@ -91,6 +92,9 @@ class LocalToon(DistributedToon):
         self.gagsTimedOut = False
         self.needsToSwitchToGag = None
         self.gagsEnabled = False
+        
+        self.crosshair = Crosshair()
+        self.crosshair.hide()
 
         self.pickerTrav = None
         self.pickerRay = None
@@ -114,6 +118,12 @@ class LocalToon(DistributedToon):
         
         # This is used by CutsceneGUI
         self.allowA2dToggle = True
+        
+    def showCrosshair(self):
+        self.crosshair.show()
+        
+    def hideCrosshair(self):
+        self.crosshair.hide()
         
     def resetSpeeds(self):
         self.walkControls.speed = 0.0
@@ -429,6 +439,8 @@ class LocalToon(DistributedToon):
         self.accept('jumpHardLand', self.__handleJumpHardLand)
         self.avatarMovementEnabled = True
         self.playMovementSfx(None)
+        if self.smartCamera.isOverTheShoulder():
+            self.crosshair.show()
 
     def __handleJumpLand(self):
         if self.jumpHardLandIval:
@@ -476,6 +488,7 @@ class LocalToon(DistributedToon):
             self.updateMovementKeymap(k, 0)
         self.resetSpeeds()
         self.resetTorsoRotation()
+        self.crosshair.hide()
 
     def updateMovementKeymap(self, key, value):
         self.movementKeymap[key] = value
@@ -620,7 +633,7 @@ class LocalToon(DistributedToon):
             else:
                 self.resetHeadHpr()
                 self.stopLookAround()
-                if state == 'Happy':
+                if state == 'Happy' and not self.smartCamera.isOverTheShoulder():
                     self.startLookAround()
                 self.playMovementSfx(None)
         return task.cont
@@ -955,6 +968,9 @@ class LocalToon(DistributedToon):
         if self.invGui:
             self.invGui.deleteGui()
             self.invGui = None
+        if self.crosshair:
+            self.crosshair.destroy()
+            self.crosshair = None
         self.disableLaffMeter()
         self.disableGags()
         self.disableChatInput()

@@ -25,7 +25,7 @@ import AccessoryGlobals
 
 from panda3d.core import VBase3, VBase4, Point3, Vec3, ConfigVariableBool
 from panda3d.core import BitMask32, CollisionHandlerPusher
-from panda3d.core import Material
+from panda3d.core import Material, NodePath
 import ToonDNA, random
 
 import types
@@ -61,6 +61,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.portal1 = None
         self.portal2 = None
         self.gunAttached = False
+        self.spineA = NodePath()
         self.gun = None
         self.tokenIcon = None
         self.tokenIconIval = None
@@ -159,12 +160,11 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
     def enterHappy(self, ts = 0, callback = None, extraArgs = []):
         self.playingAnim = None
-        self.standWalkRunReverse = (('neutral', 1.0), ('walk', 1.0), ('run', 1.0), ('run', -1.0),
+        self.standWalkRunReverse = (('neutral', 1.0), ('run', 1.0), ('run', 1.0), ('run', -1.0),
                                     ('strafe', 1.0), ('strafe', -1.0))
         self.setSpeed(self.forwardSpeed, self.rotateSpeed)
 
     def exitHappy(self):
-        self.disableBlend()
         self.standWalkRunReverse = None
         self.stop()
 
@@ -174,7 +174,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.setSpeed(0, 0)
 
     def exitSad(self):
-        self.disableBlend()
         self.standWalkRunReverse = None
         self.stop()
         #if hasattr(self, 'doId'):
@@ -190,7 +189,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.strafeSpeed = strafeSpeed
         action = None
         if self.standWalkRunReverse != None:
-
+        
             if strafeSpeed == 0:
                 self.resetTorsoRotation()
 
@@ -236,7 +235,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                 action = CIGlobals.WALK_INDEX
             elif forwardSpeed < -CIGlobals.WalkCutOff:
                 action = CIGlobals.REVERSE_INDEX
-            elif rotateSpeed != 0.0:
+            elif abs(rotateSpeed) > CIGlobals.WalkCutOff:
                 action = CIGlobals.WALK_INDEX
             else:
                 action = CIGlobals.STAND_INDEX
@@ -1156,3 +1155,4 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
     def exitConked(self):
         self.exitGeneral()
+

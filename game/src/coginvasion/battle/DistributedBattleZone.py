@@ -34,11 +34,16 @@ class DistributedBattleZone(DistributedObject):
         self.rewardPanelData = OrderedDict()
         self.rewardPanel = None
         self.rewardSeq = Sequence()
+        
+        self.lastCameraIndex = 0
 
     def announceGenerate(self):
         self.accept('suitCreate', self.__handleSuitCreate)
         self.accept('suitDelete', self.__handleSuitDelete)
         base.localAvatar.setMyBattle(self)
+        self.lastCameraIndex = base.localAvatar.smartCamera.cameraIndex
+        # Change to over the shoulder mode
+        base.localAvatar.smartCamera.setCameraPositionByIndex(base.localAvatar.smartCamera.OTSIndex)
 
     def __handleSuitCreate(self, obj):
         self.suits[obj.doId] = obj
@@ -52,6 +57,8 @@ class DistributedBattleZone(DistributedObject):
         self.ignore('suitCreate')
         self.ignore('suitDelete')
         base.localAvatar.setMyBattle(None)
+        base.localAvatar.smartCamera.setCameraPositionByIndex(self.lastCameraIndex)
+        self.lastCameraIndex = None
         DistributedObject.disable(self)
         
     def setAvatars(self, avIds):
