@@ -20,6 +20,7 @@ import math
 class SmartCamera:
     UPDATE_TASK_NAME = "update_smartcamera"
     notify = directNotify.newCategory("SmartCamera")
+    OTSIndex = 0
 
     def __init__(self):
         self.cTrav = CollisionTraverser('cam_traverser')
@@ -97,6 +98,13 @@ class SmartCamera:
                                            Point3(0.0, 1.0, camHeight * 4.0),
                                            Point3(0.0, 1.0, camHeight * -1.0),
                                            0))
+        else:
+            # Insert an over the shoulder camera angle.
+            self.cameraPositions.insert(self.OTSIndex, (Point3(1.0, -8.5 * heightScaleFactor, camHeight),
+                                            Point3(1.0, 1.5, camHeight),
+                                            Point3(0.0, camHeight, camHeight * 4.0),
+                                            Point3(0.0, camHeight, camHeight * -1.0),
+                                            0))
 
     def pageUp(self):
         if not base.localAvatar.avatarMovementEnabled:
@@ -143,9 +151,24 @@ class SmartCamera:
 
     def setCameraPositionByIndex(self, index):
         self.notify.debug('switching to camera position %s' % index)
+        self.cameraIndex = index
         self.setCameraSettings(self.cameraPositions[index])
+        
+    def isOverTheShoulder(self):
+        return self.cameraIndex == self.OTSIndex
 
     def setCameraSettings(self, camSettings):
+        if self.isOverTheShoulder() and base.localAvatar.avatarMovementEnabled:
+            base.localAvatar.showCrosshair()
+            #spine = base.localAvatar.find("**/def_cageA")
+            #if spine.isEmpty():
+            #    base.localAvatar.controlJoint(None, "torso", "def_cageA")
+        else:
+            base.localAvatar.hideCrosshair()
+            #spine = base.localAvatar.find("**/def_spineA")
+            #if not spine.isEmpty():
+            #    spine.detachNode()
+            #    base.localAvatar.releaseJoint("torso", "def_cageA")
         self.setIdealCameraPos(camSettings[0])
         if self.isPageUp and self.isPageDown or not self.isPageUp and not self.isPageDown:
             self.__cameraHasBeenMoved = 1
