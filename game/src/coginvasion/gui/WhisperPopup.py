@@ -211,18 +211,18 @@ class WhisperPopup(Clickable2d, MarginVisible):
         self.chatBalloon.setPos(self.chatBalloon, -center)
 
         # Draw the quit button:
-        #self.quitButton = WhisperQuitButton(self)
-        #quitButtonNodePath = self.contents.attachNewNode(self.quitButton)
+        self.quitButton = WhisperQuitButton(self)
+        quitButtonNodePath = self.contents.attachNewNode(self.quitButton)
 
         # Move the quit button to the top right of the TextNode:
-        #quitButtonNodePath.setPos(self.contents.getRelativePoint(
-        #    self.chatBalloon.textNodePath, (right, 0, top)))
+        quitButtonNodePath.setPos(self.contents.getRelativePoint(
+            self.chatBalloon.textNodePath, (right, 0, top)))
 
         # Apply the quit button shift:
-        #quitButtonNodePath.setPos(quitButtonNodePath, self.QUIT_BUTTON_SHIFT)
+        quitButtonNodePath.setPos(quitButtonNodePath, self.QUIT_BUTTON_SHIFT)
 
         # Allow the quit button to close this whisper:
-        #self.quitButton.setClickEvent(self.quitEvent)
+        self.quitButton.setClickEvent(self.quitEvent)
 
     def manage(self, marginManager):
         MarginVisible.manage(self, marginManager)
@@ -256,12 +256,12 @@ class WhisperPopup(Clickable2d, MarginVisible):
         else:
             self.applyClickState(PGButton.SInactive)
 
-        #if self.isHovering() or self.quitButton.isHovering():
-        #    self.quitButton.contents.show()
-        #elif self.quitButton.getClickState() == PGButton.SDepressed:
-        #    self.quitButton.contents.show()
-        #else:
-        #    self.quitButton.contents.hide()
+        if self.isHovering() or self.quitButton.isHovering():
+            self.quitButton.contents.show()
+        elif self.quitButton.getClickState() == PGButton.SDepressed:
+            self.quitButton.contents.show()
+        else:
+            self.quitButton.contents.hide()
 
         Clickable2d.setClickState(self, clickState)
 
