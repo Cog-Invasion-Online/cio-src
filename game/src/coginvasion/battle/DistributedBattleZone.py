@@ -70,7 +70,7 @@ class DistributedBattleZone(DistributedObject):
                 debris.removeNode()
             self.removeDebris(debris, silently)
         
-        self.debris = []
+        self.debris = {}
 
     def announceGenerate(self):
         self.accept('suitCreate', self.__handleSuitCreate)
