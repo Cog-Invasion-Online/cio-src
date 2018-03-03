@@ -55,6 +55,11 @@ class DistributedBRPondAI(DistributedObjectAI):
         else:
             # We don't need to keep tracking the avatar's last state once they reach the final one.
             del self.lastStates[avId]
+            
+    def __getLastStateId(self, avId):
+        if avId in self.lastStates.keys():
+            return self.lastStates[avId][0]
+        return 5
     
     def __getLastStateData(self, avId):
         if avId in self.lastStates.keys():
