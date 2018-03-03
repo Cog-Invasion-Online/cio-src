@@ -8,11 +8,11 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Point3, Vec3, NodePath, TextureStage
+from panda3d.core import Vec3, NodePath
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.ClockDelta import globalClockDelta
-from direct.interval.IntervalGlobal import LerpPosInterval, LerpHprInterval, Sequence, Wait, Func, LerpQuatInterval, Parallel
+from direct.interval.IntervalGlobal import LerpQuatInterval
 from direct.fsm import ClassicFSM, State
 
 from src.coginvasion.battle.DistributedBattleZone import DistributedBattleZone
@@ -20,7 +20,7 @@ from src.coginvasion.minigame import DistributedMinigame
 from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.npc.NPCWalker import NPCWalkInterval
-from src.coginvasion.cog import Dept, SuitBank
+from src.coginvasion.cog import SuitGlobals
 from src.coginvasion.base.Lighting import IndoorLightingConfig
 from ElevatorUtils import *
 from ElevatorConstants import *
@@ -486,7 +486,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             volume = 0.9
         else:
             song = self.bottomFloorsMusic
-            taunt = CIGlobals.SuitFaceoffTaunts[tauntSuit.suitPlan.getName()][tauntIndex]
+            taunt = SuitGlobals.FaceoffTaunts[tauntSuit.suitPlan.getName()][tauntIndex]
             volume = 0.7
 
         base.playMusic(song, looping = 1, volume = 0.7)

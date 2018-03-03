@@ -1,9 +1,15 @@
-########################################
-# Filename: ToonGlobals.py
-# Created by: DecodedLogic (14Feb16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file ToonGlobals.py
+@author Maverick Liberty
+@date February 14, 2016
+
+"""
 
 from src.coginvasion.globals import CIGlobals
+from panda3d.core import Point3
 
 # First argument is phase, next is type, body part, pant type, and finally model detail.
 # Pant type is either: shorts or skirt.
@@ -70,6 +76,56 @@ ANIMATIONS = {
     "bored" :   [4, "bored"],
     "start-dig" : [5.5, "into_dig"],
     "loop-dig" : [5.5, "loop_dig"]
+}
+
+HeadScales = {
+    'mouse': Point3(1.0),
+    'cat': Point3(1.0),
+    'duck': Point3(1.0),
+    'rabbit': Point3(1.0),
+    'horse': Point3(1.0),
+    'dog': Point3(1.0),
+    'monkey': Point3(1.0),
+    'bear': Point3(1.0),
+    'pig': Point3(1.0)
+}
+
+BodyScales = {
+    'mouse': 0.6,
+    'cat': 0.73,
+    'duck': 0.66,
+    'rabbit': 0.74,
+    'horse': 0.85,
+    'dog': 0.85,
+    'monkey': 0.68,
+    'bear': 0.85,
+    'pig': 0.77
+}
+
+HeadHeightDict = {
+    '1' : 0.5,
+    '2' : 0.5,
+    '3' : 0.75,
+    '4' : 0.75,
+    'dgs_shorts': 0.5,
+    'dgl_shorts': 0.75,
+    'dgm_shorts': 0.75,
+    'dgm_skirt': 0.5
+}
+
+TorsoHeightDict = {
+    'dgs_shorts': 1.5,
+    'dgm_shorts': 1.75,
+    'dgl_shorts': 2.25,
+    'dgs_skirt': 1.5,
+    'dgm_skirt': 1.75,
+    'dgl_skirt': 2.25
+}
+
+LegHeightDict = {
+    'dgs': 1.5,
+    'dgm': 2.0,
+    'dgl': 2.75
 }
 
 # These are the admin tokens

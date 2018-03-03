@@ -85,10 +85,8 @@ def TOGGLE_GHOST():
         return
     
     if base.localAvatar.getGhost():
-        print "Ghost off"
         base.localAvatar.setGhost(0)
     else:
-        print "Ghost on"
         base.localAvatar.setGhost(1)
 
 __builtin__.TOGGLE_GHOST = TOGGLE_GHOST

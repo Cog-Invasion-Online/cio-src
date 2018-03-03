@@ -145,7 +145,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
     def setSuit(self, plan, variant = 0, tutorial = None):
         self.suitPlan = plan
         self.variant = Variant.getVariantById(variant)
-        self.maxHealth = CIGlobals.getSuitHP(self.level)
+        self.maxHealth = SuitGlobals.calculateHP(self.level)
         self.health = self.maxHealth
         self.itemDropper.calculate(tutorial)
 

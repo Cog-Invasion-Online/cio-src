@@ -135,15 +135,16 @@ class DistributedTutorialSuitAI(DistributedSuitAI):
         self.b_setAnimState('neutral')
         self.headsUp(target)
         # Choose a random attack and start it.
+        taunts = SuitGlobals.AttackTaunts
         attack = random.choice(self.suitPlan.getAttacks())
         attackIndex = SuitAttacks.SuitAttackLengths.keys().index(attack)
-        attackTaunt = random.randint(0, len(CIGlobals.SuitAttackTaunts[attack]) - 1)
+        attackTaunt = random.randint(0, len(taunts[attack]) - 1)
         timestamp = globalClockDelta.getFrameNetworkTime()
         if self.isDead():
             self.stopAttacks()
             return task.done
         self.sendUpdate('doAttack', [attackIndex, target.doId, timestamp])
-        self.d_setChat(CIGlobals.SuitAttackTaunts[attack][attackTaunt])
+        self.d_setChat(taunts[attack][attackTaunt])
         attackLength = SuitAttacks.SuitAttackLengths[attack]
         base.taskMgr.doMethodLater(attackLength, self.__suitContinueWalkAfterAttack, self.uniqueName('scwaa'))
 

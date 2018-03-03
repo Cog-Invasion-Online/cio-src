@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: ToonTalker.py
-  Created by: blach (??July14)
+@file ToonTalker.py
+@author Brian Lach
+@date July ??, 2014
 
 """
 
@@ -66,7 +69,8 @@ class ToonTalker:
             self.chatBubble.setZ(self.getNameTag().getZ())
         else:
             if self.avatarType == CIGlobals.Suit:
-                self.chatBubble.setZ(CIGlobals.SuitNameTagPos[self.head])
+                nametagZ = self.suitPlan.getNametagZ()
+                self.chatBubble.setZ(nametagZ)
 
         if self.avatar and hasattr(self.avatar, 'getGhost'):
             if not self.avatar.getGhost() or self.avatar.doId == base.localAvatar.doId:

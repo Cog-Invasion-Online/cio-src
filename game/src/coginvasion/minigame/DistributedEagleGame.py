@@ -1,5 +1,12 @@
-# Filename: DistributedEagleGame.py
-# Created by:  blach (04Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedEagleGame.py
+@author Brian Lach
+@date July 04, 2015
+
+"""
 
 from panda3d.core import Fog, NodePath, Point3, Vec3, CollisionNode, VBase4
 
@@ -15,6 +22,7 @@ from direct.actor.Actor import Actor
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.base.Lighting import OutdoorLightingConfig
+from src.coginvasion.toon import ToonGlobals
 from FlightProjectileInterval import FlightProjectileInterval
 from DistributedMinigame import DistributedMinigame
 import EagleGameGlobals as EGG
@@ -438,8 +446,8 @@ class DistributedEagleGame(DistributedMinigame):
                     torso = toon.getPart("torso")
                     bp = torso.attachNewNode('backpackInstance')
                     animal = toon.getAnimal()
-                    bodyScale = CIGlobals.toonBodyScales[animal]
-                    bpHeight = CIGlobals.torsoHeightDict[toon.getTorso()]* bodyScale - 0.5
+                    bodyScale = ToonGlobals.BodyScales[animal]
+                    bpHeight = ToonGlobals.TorsoHeightDict[toon.getTorso()]* bodyScale - 0.5
                     bp.setPos(0, -0.325, bpHeight)
 
                     pInst = bp.attachNewNode("propellerInstance")

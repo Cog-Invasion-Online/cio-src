@@ -440,8 +440,10 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
             ts = 0.0
         else:
             ts = globalClockDelta.localElapsedTime(timestamp)
+        
+        taunts = SuitGlobals.AttackTaunts
         attackName = SuitAttacks.SuitAttackLengths.keys()[attackId]
-        attackTaunt = CIGlobals.SuitAttackTaunts[attackName][random.randint(0, len(CIGlobals.SuitAttackTaunts[attackName]) - 1)]
+        attackTaunt = taunts[attackName][random.randint(0, len(taunts[attackName]) - 1)]
         avatar = self.cr.doId2do.get(avId)
 
         shouldChat = random.randint(*BattleGlobals.AttackTauntChance) == BattleGlobals.AttackTauntChance[0]
