@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: RemoteCameraShyAvatar.py
-  Created by: blach (28Apr15)
+@file RemoteCameraShyAvatar.py
+@author Brian Lach
+@date April 28, 2015
 
 """
 

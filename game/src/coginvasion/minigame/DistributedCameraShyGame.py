@@ -166,7 +166,6 @@ class DistributedCameraShyGame(DistributedMinigame):
             self.remoteAvatars.append(self.myRemoteAvatar)
         else:
             av = RemoteCameraShyAvatar(self, self.cr, avId)
-            av.stand()
             self.remoteAvatars.append(av)
 
     def getRemoteAvatar(self, avId):
