@@ -10,7 +10,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import CollisionNode, CollisionRay, CollisionHandlerQueue
 from src.coginvasion.globals import CIGlobals
-from direct.task.Task import Task
 
 class LocationSeeker:
     
@@ -35,7 +34,7 @@ class LocationSeeker:
         self.moveShadowEventName = 'LocationSeeker-MoveShadow'
         
     def startSeeking(self):
-        if not self.avatar: return
+        if not hasattr(self, 'avatar') or (hasattr(self, 'avatar') and not self.avatar): return
         self.cleanupShadow()
         self.buildShadow()
         
@@ -93,7 +92,7 @@ class LocationSeeker:
             else:
                 if self.collHdlFl.getNumEntries() > 0:
                     self.dropShadow.setZ(self.collHdlFl.getEntry(0).getSurfacePoint(render).getZ() + 0.5)
-        return Task.cont
+        return task.cont
         
     def locationChosen(self):
         base.taskMgr.remove(self.moveShadowTaskName)
@@ -137,7 +136,7 @@ class LocationSeeker:
         return self.moveShadowEventName
     
     def cleanupShadow(self):
-        if self.dropShadow:
+        if hasattr(self, 'dropShadow') and self.dropShadow:
             self.dropShadow.removeNode()
             self.dropShadow = None
             if self.cameraNode:
@@ -150,7 +149,7 @@ class LocationSeeker:
                 self.shadowNP = None
             
     def cleanup(self):
-        if self.avatar:
+        if hasattr(self, 'avatar') and self.avatar:
             base.taskMgr.remove(self.moveShadowTaskName)
             self.avatar.ignore('mouse1')
             self.cleanupShadow()

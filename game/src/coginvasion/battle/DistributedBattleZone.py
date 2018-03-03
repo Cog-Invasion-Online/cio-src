@@ -28,6 +28,7 @@ class DistributedBattleZone(DistributedObject):
         DistributedObject.__init__(self, cr)
         self.avIds = []
         self.suits = {}
+        self.debris = {}
         
         # Keys: avId
         # Values: RPToonData objects
@@ -36,6 +37,40 @@ class DistributedBattleZone(DistributedObject):
         self.rewardSeq = Sequence()
         
         self.lastCameraIndex = 0
+        
+    def addDebris(self, debris, creatorDoId):
+        if debris and not debris.isEmpty():
+            self.debris.update({debris : creatorDoId})
+        
+    def removeDebris(self, debris, silently = 1):
+        if not debris or debris.isEmpty():
+            return
+        
+        if not silently:
+            clearTasks = base.taskMgr.getTasksNamed('{0}-Clear'.format(debris.getName()))
+            usedTaskClear = False
+            
+            for clearTask in clearTasks:
+                if not silently and not usedTaskClear:
+                    clearTask.step()
+                    usedTaskClear = True
+                base.taskMgr.removeTask(clearTask)
+
+        del self.debris[debris]
+        
+    def clearAvatarDebris(self, avId):
+        if avId in self.debris.values():
+            for debris, creatorId in self.debris.iteritems():
+                if creatorId == avId:
+                    self.removeDebris(debris, silently = 0)
+        
+    def __clearAllDebris(self, silently = 1):
+        for debris in self.debris.keys():
+            if not debris.isEmpty:
+                debris.removeNode()
+            self.removeDebris(debris, silently)
+        
+        self.debris = []
 
     def announceGenerate(self):
         self.accept('suitCreate', self.__handleSuitCreate)
@@ -149,6 +184,7 @@ class DistributedBattleZone(DistributedObject):
     def reset(self):
         self.avIds = []
         self.suits = {}
+        self.__clearAllDebris()
         self.rewardPanelData = OrderedDict()
         if self.rewardPanel:
             self.rewardPanel.destroy()

@@ -22,7 +22,6 @@ class Quicksand(ActivateTrapGag):
         self.setImage('phase_3.5/maps/quicksand.png')
         
     def onActivate(self, entity, suit):
-        ActivateTrapGag.onActivate(self, entity, suit)
         x, y, z = entity.getPos(render)
         sinkPos01 = Point3(x, y, z - 3.1)
         sinkPos02 = Point3(x, y, z - 9.1)
@@ -47,3 +46,4 @@ class Quicksand(ActivateTrapGag):
         animTrack = Sequence(ActorInterval(suit, 'flail'), ActorInterval(suit, 'flail', startTime=1.1), Wait(0.7), ActorInterval(suit, 'slip-forward', duration=2.1))
         soundTrack = Sequence(Wait(0.7), SoundInterval(self.hitSfx, node = suit), Wait(0.1), SoundInterval(self.activateSfx, node = suit))
         Parallel(entTrack, suitTrack, animTrack, soundTrack).start()
+        ActivateTrapGag.onActivate(self, entity, suit)

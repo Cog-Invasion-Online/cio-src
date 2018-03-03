@@ -114,6 +114,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
     def removeAvatar(self, avId):
         if avId in self.avIds:
             self.avIds.remove(avId)
+            self.sendUpdate('clearAvatarDebris', [avId])
             
         if avId in self.avReadyToContinue:
             self.avReadyToContinue.remove(avId)
@@ -123,6 +124,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
 
         if avId in self.avatarData.keys():
             self.avatarData.pop(avId)
+            
         self.b_setAvatars(self.avIds)
 
     # Send the distributed message and

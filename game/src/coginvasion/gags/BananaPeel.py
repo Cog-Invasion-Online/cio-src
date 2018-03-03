@@ -28,7 +28,6 @@ class BananaPeel(ActivateTrapGag):
             self.slipSfx = base.audio3d.loadSfx(GagGlobals.PIE_WOOSH_SFX)
 
     def onActivate(self, entity, suit):
-        ActivateTrapGag.onActivate(self, entity, suit)
         slidePos = entity.getPos(render)
         slidePos.setY(slidePos.getY() - 5.1)
         moveTrack = Sequence(Wait(0.1), LerpPosInterval(self.gag, 0.1, slidePos))
@@ -37,6 +36,7 @@ class BananaPeel(ActivateTrapGag):
         suitTrack = ActorInterval(suit, 'slip-backward')
         soundTrack = Sequence(SoundInterval(self.slipSfx, duration=0.55, node=suit), SoundInterval(self.activateSfx, node=suit))
         Parallel(moveTrack, animTrack, suitTrack, soundTrack).start()
+        ActivateTrapGag.onActivate(self, entity, suit)
 
     def equip(self):
         ActivateTrapGag.equip(self)

@@ -11,6 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 from src.coginvasion.gags.Gag import Gag
 from src.coginvasion.gags.GagType import GagType
 import abc
+import datetime
 
 class TrapGag(Gag):
 
@@ -24,6 +25,10 @@ class TrapGag(Gag):
 
     def build(self):
         super(TrapGag, self).build()
+        
+        now = datetime.datetime.now()
+        debrisName = 'TrapDebris-{0}'.format(now.strftime("%H:%M"))
+        self.gag.setName(debrisName)
 
     @abc.abstractmethod
     def buildCollisions(self):
