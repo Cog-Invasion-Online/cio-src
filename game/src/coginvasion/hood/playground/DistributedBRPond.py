@@ -12,10 +12,12 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.distributed.DistributedObject import DistributedObject
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.ClockDelta import globalClockDelta
-from direct.interval.IntervalGlobal import Sequence, Func, LerpColorScaleInterval, Parallel, Wait
+from direct.interval.IntervalGlobal import Sequence, Func, Parallel, Wait
 from direct.gui.DirectGui import DirectFrame, DirectWaitBar, OnscreenText
 
-from panda3d.core import VBase4, WindowProperties
+from src.coginvasion.toon import ToonEffects
+
+from panda3d.core import WindowProperties
 from random import choice
 import itertools
 
@@ -44,9 +46,6 @@ class DistributedBRPond(DistributedObject):
         # Fancy code that will iterate through both lists and set their volume to 12.
         for sfx in itertools.chain(self.frozenSfxArray, self.coolSfxArray):
             sfx.setVolume(12)
-
-        self.iceFormSfx = base.loadSfx("phase_4/audio/sfx/ice_cube_form.ogg")
-        self.iceBreakSfx = base.loadSfx("phase_4/audio/sfx/ice_cube_break.ogg")
         
         # A dictionary of avIds that point to a list of useful data.
         # Example: 0 : [iceCubeNode, interval]
@@ -61,22 +60,6 @@ class DistributedBRPond(DistributedObject):
     def attachSoundToAvatar(self, avatar, sound):
         """ This is expecting a valid avatar object, either fetched from base.cr.doId2do#get() or passed directly """
         base.playSfx(sound, node=avatar)
-    
-    def loadIceCube(self, avatar):
-        """ This is expecting a valid avatar object, either fetched from base.cr.doId2do#get() or passed directly """
-        iceCube = loader.loadModel('phase_8/models/props/icecube.bam')
-        iceCube.setName('BRPond-Ice')
-
-        for node in itertools.chain(iceCube.findAllMatches('**/billboard*'), \
-                                    iceCube.findAllMatches('**/drop_shadow*'), \
-                                    iceCube.findAllMatches('**/prop_mailboxcollisions*')):
-            node.removeNode()
-
-        iceCube.reparentTo(avatar)
-        iceCube.setScale(1.2, 1.0, avatar.getHeight() / 1.7)
-        iceCube.setTransparency(1)
-        iceCube.setColorScale(0.76, 0.76, 1.0, 0.0)
-        return iceCube
             
     def __resetAvatarIvalAndUnloadIceCube(self, avatar):
         """ This is expecting a valid avatar object, either fetched from base.cr.doId2do#get() or passed directly 
@@ -155,13 +138,7 @@ class DistributedBRPond(DistributedObject):
         length = 1.0
         ival = Sequence(
             Func(self.attachSoundToAvatar, avatar, self.freezeUpSfx),
-            LerpColorScaleInterval(
-                avatar.getGeomNode(),
-                duration = length,
-                colorScale = VBase4(0.5, 0.5, 1.0, 1.0),
-                startColorScale = avatar.getGeomNode().getColorScale(),
-                blendType = 'easeOut'
-            ),
+            ToonEffects.getToonFreezeInterval(avatar, duration = length),
             Func(shouldFreeze),
             name = 'FreezeUp'
         )
@@ -177,7 +154,7 @@ class DistributedBRPond(DistributedObject):
     
     def enterFrozen(self, avatar, ts):
         """ This is expecting a valid avatar object, either fetched from base.cr.doId2do#get() or passed directly """
-        iceCube = self.loadIceCube(avatar)
+        iceCube = ToonEffects.generateIceCube(avatar)
         
         if avatar == base.localAvatar:
             base.cr.playGame.getPlace().fsm.request('stop', [0])
@@ -206,15 +183,8 @@ class DistributedBRPond(DistributedObject):
             avatar.stop()
 
         ival = Sequence(
-            Func(self.attachSoundToAvatar, avatar, self.iceFormSfx),
             Func(self.attachSoundToAvatar, avatar, choice(self.frozenSfxArray)),
-            LerpColorScaleInterval(
-                iceCube,
-                duration = 0.5,
-                colorScale = VBase4(0.76, 0.76, 1.0, 1.0),
-                startColorScale = iceCube.getColorScale(),
-                blendType = 'easeInOut'
-            )
+            ToonEffects.getIceCubeFormInterval(iceCube)
         )
 
         self.__setAvatarIntervalAndIceCube(avatar, iceCube, ival, ts)
@@ -257,28 +227,14 @@ class DistributedBRPond(DistributedObject):
                 self.d_requestState(4)
         
         if fromFrozen:
-            iceCube = self.loadIceCube(avatar)
-            iceCube.setColorScale(0.76, 0.76, 1.0, 1.0)
-            ival.append(Sequence(
-                Func(self.attachSoundToAvatar, avatar, self.iceBreakSfx),
-                LerpColorScaleInterval(iceCube,
-                    duration = 0.5,
-                    colorScale = VBase4(0.76, 0.76, 1.0, 0.0),
-                    startColorScale = iceCube.getColorScale(),
-                    blendType = 'easeInOut'
-                )
-            ))
+            iceCube = ToonEffects.generateIceCube(avatar)
+            iceCube.setColorScale(ToonEffects.ICE_CUBE_SOLID_COLOR)
+            ival.append(ToonEffects.getIceCubeThawInterval(iceCube))
         
         # Let's do the color scale interval on the avatar.
         ival.append(Sequence(
             Func(self.attachSoundToAvatar, avatar, choice(self.coolSfxArray)),
-            LerpColorScaleInterval(
-                avatar.getGeomNode(),
-                duration = 1.0,
-                colorScale = VBase4(1.0, 1.0, 1.0, 1.0),
-                startColorScale = avatar.getGeomNode().getColorScale(),
-                blendType = 'easeOut'
-            ),
+            ToonEffects.getToonThawInterval(avatar, duration = 1.0),
             Wait(4.0),
             Func(handleComplete)
         ))
@@ -352,8 +308,6 @@ class DistributedBRPond(DistributedObject):
         self.freezeUpSfx = None
         self.frozenSfxArray = None
         self.coolSfxArray = None
-        self.iceFormSfx = None
-        self.iceBreakSfx = None
         self.avId2Data = None
         
         if self.frame:
@@ -370,8 +324,6 @@ class DistributedBRPond(DistributedObject):
         del self.freezeUpSfx
         del self.frozenSfxArray
         del self.coolSfxArray
-        del self.iceFormSfx
-        del self.iceBreakSfx
         del self.avId2Data
         del self.label
         del self.powerBar

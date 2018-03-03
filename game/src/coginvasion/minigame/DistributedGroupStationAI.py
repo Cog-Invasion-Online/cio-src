@@ -1,5 +1,12 @@
-# Filename: DistributedGroupStationAI.py
-# Created by:  blach (11Jun15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedGroupStationAI.py
+@author Brain Lach
+@date June 11, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
@@ -77,10 +84,14 @@ class DistributedGroupStationAI(DistributedObjectAI):
 					self.avatars.append(obj)
 		
 	def clearAvatar(self, doId):
-		for avatar in self.avatars:
+		for i, avatar in enumerate(self.avatars):
 			if avatar.doId == doId:
 				self.avatars.remove(avatar)
+				
+				# Let's make the slot this avatar took up available.
+				self.slotsAvailable.insert(0, i+1)
 				self.availableSlots += 1
+
 				if len(self.avatars) == 0:
 					self.stopTimer()
 					self.resetAvailableSlots()
