@@ -96,7 +96,8 @@ class SquirtGag(Gag):
         base.playSfx(self.hitSfx, node = self.sprayNP)
         intoNP = entry.getIntoNodePath()
         avNP = intoNP.getParent()
-        if self.avatar.doId == base.localAvatar.doId:
+        
+        if base.localAvatarReachable() and self.isLocal():
             for key in base.cr.doId2do.keys():
                 obj = base.cr.doId2do[key]
                 if obj.__class__.__name__ in CIGlobals.SuitClasses:
@@ -106,7 +107,7 @@ class SquirtGag(Gag):
                     if obj.getKey() == avNP.getKey():
                         if obj.getHealth() < obj.getMaxHealth():
                             self.avatar.sendUpdate('toonHitByPie', [obj.doId, self.getID()])
-        if base.localAvatar == self.avatar:
+
             self.splatPos = self.sprayNP.getPos(render)
             gagPos = self.sprayNP.getPos(render)
             self.handleSplat()

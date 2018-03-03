@@ -29,7 +29,8 @@ class QuestManager(QuestManagerBase, DirectObject):
         
     def enableShowQuestsHotkey(self):
         place = base.cr.playGame.getPlace()
-        if place and place.fsm.getCurrentState().getName() == 'walk':
+        if place and (hasattr(place, 'fsm') and not place.fsm.getCurrentState() is None) \
+                and place.fsm.getCurrentState().getName() == 'walk':
             self.acceptOnce(base.inputStore.ViewQuests, self.showQuests)
         
     def disableShowQuestsHotkey(self):
