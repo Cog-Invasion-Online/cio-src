@@ -53,6 +53,8 @@ class DDSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
 
         water = self.geom.find("**/top_surface")
         water.setTwoSided(True)
+        water.setTransparency(True)
+        water.setAlphaScale(0.9)
         self.geom.find("**/bottom_surface").stash()
         base.waterReflectionMgr.addWaterNode(water, base.wakeWaterHeight)
 
