@@ -49,7 +49,6 @@ class Starter:
         logErr = Logger(sys.stderr, log)
         sys.stdout = logOut
         sys.stderr = logErr
-        
 
     def startNotifyLogging(self):
         
