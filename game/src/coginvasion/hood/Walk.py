@@ -48,20 +48,22 @@ class Walk(StateData):
             self.mouseMov.enableMovement()
 
     def exit(self):
-        base.localAvatar.lastState = None
-        self.fsm.request('off')
-        if base.localAvatar.walkControls.getCollisionsActive():
-            base.localAvatar.walkControls.setCollisionsActive(0)
-        base.localAvatar.disableAvatarControls()
-        base.localAvatar.detachCamera()
-        base.localAvatar.stopSmartCamera()
-        base.localAvatar.stopPosHprBroadcast()
-        base.localAvatar.stopBlink()
-        base.localAvatar.collisionsOff()
-        base.localAvatar.controlManager.placeOnFloor()
-        if base.localAvatar.GTAControls:
-            self.mouseMov.disableMovement()
-            self.mouseMov.ignore(base.inputStore.ToggleGTAControls)
+        if base.localAvatarReachable():
+            base.localAvatar.lastState = None
+            self.fsm.request('off')
+            if hasattr(base.localAvatar, 'walkControls') and (not base.localAvatar.walkControls is None) \
+                    and base.localAvatar.walkControls.getCollisionsActive():
+                base.localAvatar.walkControls.setCollisionsActive(0)
+            base.localAvatar.disableAvatarControls()
+            base.localAvatar.detachCamera()
+            base.localAvatar.stopSmartCamera()
+            base.localAvatar.stopPosHprBroadcast()
+            base.localAvatar.stopBlink()
+            base.localAvatar.collisionsOff()
+            base.localAvatar.controlManager.placeOnFloor()
+            if base.localAvatar.GTAControls:
+                self.mouseMov.disableMovement()
+                self.mouseMov.ignore(base.inputStore.ToggleGTAControls)
         
 
     def enterOff(self):
