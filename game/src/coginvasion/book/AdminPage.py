@@ -92,7 +92,7 @@ class AdminPage(BookPage):
             extraArgs = ['basePage']
         )
 
-    def sendSystemMessageCommand(self, foo = None):
+    def sendSystemMessageCommand(self, _):
         msg = self.msgEntry.get()
         DISTRICT_WIDE_MSG(msg)
         self.fsm.request('basePage')
@@ -156,68 +156,13 @@ class AdminPage(BookPage):
 
     def enterBasePage(self):
         geom = CIGlobals.getDefaultBtnGeom()
-        self.suitSpawnerBtn = DirectButton(
-            geom = geom,
-            text_scale = 0.04,
-            relief = None,
-            scale = 1.0,
-            text = "",
-            pos=(-0.45, 0.15, 0.5),
-            text_pos = (0, -0.01),
-            command = SEND_SUIT_CMD,
-            extraArgs = ['suitSpawner']
-        )
-        self.killCogsBtn = DirectButton(
-            geom = geom,
-            text_scale = 0.04,
-            relief = None,
-            scale = 1.0,
-            text = "Kill All Cogs",
-            pos=(-0.45, 0.15, 0.40),
-            text_pos = (0, -0.01),
-            command = SEND_SUIT_CMD,
-            extraArgs = ['killCogs']
-        )
-        self.makeTournamentBtn = DirectButton(
-            geom = geom,
-            text_scale = 0.04,
-            relief = None,
-            scale = 1.0,
-            text = "Make Cog Tournament",
-            pos=(-0.45, 0.15, 0.3),
-            text_pos = (0, -0.01),
-            command = SEND_SUIT_CMD,
-            extraArgs = ['tournament']
-        )
-        self.makeInvasionBtn = DirectButton(
-            geom = geom,
-            text_scale = 0.04,
-            relief = None,
-            scale = 1.0,
-            text = "Make Cog Invasion",
-            pos=(-0.45, 0.15, 0.2),
-            text_pos = (0, -0.01),
-            command = SEND_SUIT_CMD,
-            extraArgs = ['invasion']
-        )
-        self.makeCogBtn = DirectButton(
-            geom = geom,
-            text_scale = 0.04,
-            relief = None,
-            scale = 1.0,
-            text = "Make Cog",
-            pos=(-0.45, 0.15, 0.1),
-            text_pos = (0, -0.01),
-            command = SEND_SUIT_CMD,
-            extraArgs = ['suit']
-        )
         self.ghostBtn = DirectButton(
             geom = geom,
             text_scale = 0.04,
             relief = None,
             scale = 1.0,
             text = "Toggle Ghost",
-            pos = (0.45, 0.15, 0.5),
+            pos = (-0.45, 0.15, 0.5),
             text_pos = (0, -0.01),
             command = TOGGLE_GHOST
         )
@@ -227,7 +172,7 @@ class AdminPage(BookPage):
             relief = None,
             scale = 1.0,
             text = "Toggle Background",
-            pos = (0.45, 0.15, 0.4),
+            pos = (-0.45, 0.15, 0.40),
             text_pos = (0, -0.01),
             command = self.toggleBackground
         )
@@ -237,7 +182,7 @@ class AdminPage(BookPage):
             relief = None,
             scale = 1.0,
             text = "Toggle Player Ids",
-            pos = (0.45, 0.15, 0.3),
+            pos = (-0.45, 0.15, 0.3),
             text_pos = (0, -0.01),
             command = TOGGLE_PLAYER_IDS
         )
@@ -246,8 +191,8 @@ class AdminPage(BookPage):
             text_scale = 0.04,
             relief = None,
             scale = 1.0,
-            text = "Kick Player",
-            pos = (0.45, 0.15, 0.2),
+            text = "Kick/Ban Player",
+            pos = (0.45, 0.15, 0.5),
             text_pos = (0, -0.01),
             command = self.openKickPage
         )
@@ -257,7 +202,7 @@ class AdminPage(BookPage):
             relief = None,
             scale = 1.0,
             text = "System Message",
-            pos = (0.45, 0.15, 0.1),
+            pos = (-0.45, 0.15, 0.1),
             text_pos = (0, -0.01),
             command = self.openSysMsgPage
         )
@@ -267,7 +212,7 @@ class AdminPage(BookPage):
 			relief = None,
 			scale = 1.0,
 			text = "Toggle OOBE",
-			pos = (0.45, 0.15, 0),
+			pos = (-0.45, 0.15, 0.2),
 			text_pos = (0, -0.01),
 			command = base.oobe
         )
@@ -277,7 +222,7 @@ class AdminPage(BookPage):
 			relief = None,
 			scale = 1.0,
 			text = "Modify Admin Token",
-			pos = (0.45, 0.15, -0.1),
+			pos = (0.45, 0.15, 0.4),
 			text_pos = (0, -0.01),
 			command = self.book.finishedResume,
             extraArgs = [AdminTokenDialog, []]
@@ -288,7 +233,7 @@ class AdminPage(BookPage):
             relief = None,
             scale = 1.0,
             text = "Give World Access",
-            pos = (0.45, 0.15, -0.2),
+            pos = (0.45, 0.15, 0.3),
             text_pos = (0, -0.01),
             command = self.book.finishedResume,
             extraArgs = [WorldAccessDialog, []]
@@ -299,7 +244,7 @@ class AdminPage(BookPage):
             relief = None,
             scale = 1.0,
             text = "Unlock All Gags",
-            pos = (0.45, 0.15, -0.3),
+            pos = (0.45, 0.15, 0.2),
             text_pos = (0, -0.01),
             command = SEND_REQ_UNLOCK_GAGS
         )
@@ -309,7 +254,7 @@ class AdminPage(BookPage):
             relief = None,
             scale = 1.0,
             text = "Unlock All Gag Slots",
-            pos = (0.45, 0.15, -0.4),
+            pos = (0.45, 0.15, 0.1),
             text_pos = (0, -0.01),
             command = SEND_REQ_GAG_SLOTS
         )
@@ -345,16 +290,6 @@ class AdminPage(BookPage):
         del self.bgBtn
         self.ghostBtn.destroy()
         del self.ghostBtn
-        self.suitSpawnerBtn.destroy()
-        del self.suitSpawnerBtn
-        self.killCogsBtn.destroy()
-        del self.killCogsBtn
-        self.makeTournamentBtn.destroy()
-        del self.makeTournamentBtn
-        self.makeInvasionBtn.destroy()
-        del self.makeInvasionBtn
-        self.makeCogBtn.destroy()
-        del self.makeCogBtn
         self.oobeBtn.destroy()
         del self.oobeBtn
         self.tokenBtn.destroy()
