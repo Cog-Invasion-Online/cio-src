@@ -147,6 +147,11 @@ class DistributedBRPond(DistributedObject):
     
     def enterFreezeUp(self, avatar, ts):
         """ This is expecting a valid avatar object, either fetched from base.cr.doId2do#get() or passed directly """
+        
+        def shouldFreeze():
+            if avatar == base.localAvatar:
+                self.d_requestState(1)
+        
         length = 1.0
         ival = Sequence(
             Func(self.attachSoundToAvatar, avatar, self.freezeUpSfx),
@@ -157,11 +162,11 @@ class DistributedBRPond(DistributedObject):
                 startColorScale = avatar.getGeomNode().getColorScale(),
                 blendType = 'easeOut'
             ),
+            Func(shouldFreeze),
             name = 'FreezeUp'
         )
 
-        if avatar == base.localAvatar: 
-            ival.append(Func(self.d_requestState, 1))
+        if avatar == base.localAvatar:
             self.__startWaterWatch(0)
         self.__setAvatarIntervalAndIceCube(avatar, None, ival, ts)
         
@@ -250,7 +255,6 @@ class DistributedBRPond(DistributedObject):
         def handleComplete():
             if avatar == base.localAvatar:
                 self.d_requestState(4)
-            print 'Done!'
         
         if fromFrozen:
             iceCube = self.loadIceCube(avatar)
