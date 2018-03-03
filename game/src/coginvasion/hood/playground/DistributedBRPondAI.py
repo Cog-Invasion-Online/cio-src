@@ -31,7 +31,7 @@ class DistributedBRPondAI(DistributedObjectAI):
         if avId not in self.lastStates.keys():
             avatar = self.air.doId2do.get(avId, None)
             if avatar:
-                self.acceptOnce(avatar.getDeleteEvent(), self.__forgetStateData)
+                self.acceptOnce(avatar.getDeleteEvent(), self.__forgetStateData, [avId])
         
         # Let's set the last state id to the new one.
         self.__setLastStateId(avId, stateId)
