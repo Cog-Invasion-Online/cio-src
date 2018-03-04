@@ -72,10 +72,10 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         doorTrigger = bank.find('**/door_trigger*')
         doorTrigger.setY(doorTrigger.getY() - 1.0)
 
-        self.telescope = Actor(self.geom.find('**/*animated_prop_HQTelescopeAnimatedProp*'),
-                            {'chan': 'phase_3.5/models/props/HQ_telescope-chan.bam'}, copy=0)
-        self.telescope.reparentTo(self.geom.find('**/tb20:toon_landmark_hqTT_DNARoot'))
-        self.telescope.setPos(1, 0.46, 0)
+        #self.telescope = Actor(self.geom.find('**/*animated_prop_HQTelescopeAnimatedProp*'), copy = 0)
+                            #{'chan': 'phase_3.5/models/props/HQ_telescope-chan.bam'}, copy=0)
+        #self.telescope.reparentTo(self.geom.find('**/tb20:toon_landmark_hqTT_DNARoot'))
+        #self.telescope.setPos(1, 0.46, 0)
         
         water = self.geom.find("**/pond_water")
         base.waterReflectionMgr.addWaterNode(water, base.wakeWaterHeight)

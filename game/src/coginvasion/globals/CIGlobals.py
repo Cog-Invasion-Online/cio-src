@@ -119,6 +119,14 @@ def getShinyMaterial(shininess = 250.0):
 
     return mat
 
+def getCharacterMaterial(shininess = 250, rimColor = (1, 1, 1, 1), rimWidth = 0.3, specular = (1, 1, 1, 1)):
+    mat = Material()
+    mat.setRimColor(rimColor)
+    mat.setRimWidth(rimWidth)
+    mat.setSpecular(specular)
+    mat.setShininess(shininess)
+    return mat
+
 SettingsMgr = None
 
 def getSettingsMgr():

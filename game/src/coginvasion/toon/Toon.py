@@ -632,14 +632,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.setBlend(frameBlend = True)
         self.loop('neutral')
 
-        bodyMat = CIGlobals.getShinyMaterial(20.0)
-        bodyMat.setSpecular((0.0, 0.0, 0.0, 1.0))
-        self.getPart("head").setMaterial(bodyMat)
-        self.find("**/arms").setMaterial(bodyMat)
-        self.find("**/feet").setMaterial(bodyMat)
-        self.find("**/neck").setMaterial(bodyMat)
-        self.find("**/legs").setMaterial(bodyMat)
-        #self.setMaterial(toonMat)
+        bodyMat = CIGlobals.getCharacterMaterial(specular = (0, 0, 0, 1))
+        self.setMaterial(bodyMat)
 
     def attachTNT(self):
         self.pies.attachTNT()

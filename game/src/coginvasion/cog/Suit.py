@@ -385,14 +385,10 @@ class Suit(Avatar):
         self.variant = variant
         self.setVoice(voice)
         self.generateCog()
-		
-        mat = CIGlobals.getShinyMaterial()
+
+        mat = CIGlobals.getCharacterMaterial()
         self.setMaterial(mat)
 
-        # render cube map reflections on the cog
-        #base.cubeMapMgr.addNode(self.getPart("body"))
-        #base.cubeMapMgr.addNode(self.headModel)
-		
         if hideFirst:
             self.hide()
 
