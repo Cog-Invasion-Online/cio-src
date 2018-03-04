@@ -17,8 +17,7 @@ from src.coginvasion.battle.DistributedBattleZoneAI import DistributedBattleZone
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cog import SuitBank, Variant
 from src.coginvasion.cog.SuitType import SuitType
-from src.coginvasion.cog import CogBattleGlobals
-from src.coginvasion.hood import ZoneUtil
+from src.coginvasion.cog import CogBattleGlobals, SuitGlobals
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.battle.DistributedGagBarrelAI import DistributedGagBarrelAI
 from src.coginvasion.battle import BattleGlobals
@@ -191,7 +190,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
     def rideElevatorTask(self, task):
         suit = self.air.doId2do.get(self.tauntSuitId)
-        taunts = CIGlobals.SuitFaceoffTaunts[suit.suitPlan.getName()]
+        taunts = SuitGlobals.FaceoffTaunts[suit.suitPlan.getName()]
         tauntIndex = taunts.index(random.choice(taunts))
 
         self.sendUpdate('doFaceoff', [tauntIndex, globalClockDelta.getRealNetworkTime()])

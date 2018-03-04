@@ -12,8 +12,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from src.coginvasion.cog.SuitPathBehaviorAI import SuitPathBehaviorAI
 from src.coginvasion.cog.SuitHabitualBehaviorAI import SuitHabitualBehaviorAI
-from src.coginvasion.cog import SuitAttacks
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.cog import SuitAttacks, SuitGlobals
 from SuitFlyToRandomSpotBehaviorAI import SuitFlyToRandomSpotBehaviorAI
 from SuitAttackBehaviorAI import SuitAttackBehaviorAI
 import SuitPathDataAI
@@ -146,7 +145,7 @@ class SuitFollowBossBehaviorAI(SuitPathBehaviorAI, SuitHabitualBehaviorAI):
         timeUntilRelease = 1.0
 
         # Let's send the heal taunt message and set the heal amount.
-        self.suit.d_setChat(CIGlobals.SuitHealTaunt)
+        self.suit.d_setChat(SuitGlobals.HealTaunt)
         hp = int(self.suit.maxHealth / SuitAttacks.SuitAttackDamageFactors[attackName])
         if hp == 0:
             hp = 1

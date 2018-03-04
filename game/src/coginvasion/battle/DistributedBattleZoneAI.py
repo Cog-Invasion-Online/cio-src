@@ -114,6 +114,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
     def removeAvatar(self, avId):
         if avId in self.avIds:
             self.avIds.remove(avId)
+            self.sendUpdate('clearAvatarDebris', [avId])
             
         if avId in self.avReadyToContinue:
             self.avReadyToContinue.remove(avId)
@@ -123,6 +124,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
 
         if avId in self.avatarData.keys():
             self.avatarData.pop(avId)
+            
         self.b_setAvatars(self.avIds)
 
     # Send the distributed message and
@@ -206,7 +208,8 @@ class DistributedBattleZoneAI(DistributedObjectAI):
                 
                 for gagId, uses in data[0].iteritems():
                     gagName = GagGlobals.gagIds[gagId]
-                    track = GagGlobals.gagData.get(gagName)['track']
+                    gagData = GagGlobals.gagData.get(gagName)
+                    track = gagData['track']
                     if uses > favGagUses:
                         favGagId = gagId
                         
@@ -216,6 +219,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
                     if track in trackIncrements.keys():
                         incr = incr + trackIncrements[track]
                     trackIncrements[track] = incr
+                    
                 rpData.favoriteGag = GagGlobals.gagIds[favGagId]
                 
                 for track, exp in avatar.trackExperience.iteritems():

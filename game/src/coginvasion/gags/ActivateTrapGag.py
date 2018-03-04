@@ -10,8 +10,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import Point3, CollisionSphere, BitMask32, CollisionNode, CollisionHandlerEvent, NodePath
 
-from direct.interval.IntervalGlobal import Sequence, SoundInterval, Wait, Func, LerpScaleInterval, ActorInterval, ProjectileInterval
-from direct.task.Task import Task
+from direct.interval.IntervalGlobal import Sequence, SoundInterval, Wait, Func, \
+    LerpScaleInterval, ActorInterval, ProjectileInterval
 from direct.actor.Actor import Actor
 
 from src.coginvasion.gags.TrapGag import TrapGag
@@ -52,7 +52,7 @@ class ActivateTrapGag(TrapGag, LocationGag):
     def __clearEntity(self, entity, task):
         if entity:
             self.__doDustClear(entity)
-        return Task.done
+        return task.done
 
     def __doDustClear(self, entity):
         dustTrack = Sequence()
@@ -136,6 +136,7 @@ class ActivateTrapGag(TrapGag, LocationGag):
             cloudName = '**/cloud' + str(cloudNum)
             cloud = dust.find(cloudName)
             cloud.setBin('fixed', objBin)
+            cloud.setShaderOff()
             objBin -= 10
         return dust
 
@@ -173,6 +174,15 @@ class ActivateTrapGag(TrapGag, LocationGag):
             self.gag.setPos(x, y, z - 0.45)
         if not self.gag:
             self.build()
+        
+        # Let's let DistributedBattleZone know about this, if we can.
+        lifeTime = self.lifeTime
+        clearTaskName = self.gag.getName() + '-Clear'
+        if base.localAvatarReachable() and hasattr(base.localAvatar, 'myBattle') and base.localAvatar.myBattle != None:
+            base.localAvatar.myBattle.addDebris(self.gag, self.avatar.doId)
+        else:
+            lifeTime = 1.0
+            
         self.gag.setScale(GagGlobals.PNT3NEAR0)
         self.gag.reparentTo(render)
         LerpScaleInterval(self.gag, 1.2, Point3(1.7, 1.7, 1.7)).start()
@@ -191,7 +201,7 @@ class ActivateTrapGag(TrapGag, LocationGag):
                 self.onActivate(self.gag, nearestCog)
             else:
                 track.append(SoundInterval(self.hitSfx, duration = 0.5, node = self.gag))
-                base.taskMgr.doMethodLater(self.lifeTime, self.__clearEntity, 'Clear Entity', extraArgs = [self.gag], appendTask = True)
+                base.taskMgr.doMethodLater(lifeTime, self.__clearEntity, clearTaskName, extraArgs = [self.gag], appendTask = True)
                 self.gag = None
         else:
             # We're too close to another trap, let's clear them out.
@@ -281,6 +291,10 @@ class ActivateTrapGag(TrapGag, LocationGag):
     def removeEntity(self, entity):
         if entity in self.entities:
             self.entities.remove(entity)
+            
+            if base.localAvatarReachable() and hasattr(base.localAvatar, 'myBattle') \
+                    and base.localAvatar.myBattle != None:
+                base.localAvatar.myBattle.removeDebris(entity)
 
     def getEntities(self):
         return self.entities

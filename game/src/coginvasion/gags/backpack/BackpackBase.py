@@ -41,7 +41,9 @@ class BackpackBase:
         if not self.hasGag(gagId):
             if maxSupply is None:
                 # Sets the max supply if one is not specified.
-                maxSupply = self.getDefaultMaxSupply(gagId)
+                maxSupply = GagGlobals.calculateMaxSupply(self.avatar,
+                    GagGlobals.gagIds.get(gagId), 
+                GagGlobals.getGagData(gagId))
                 
             # Sets the current supply to the max supply if current supply isn't
             # specified.
@@ -96,7 +98,12 @@ class BackpackBase:
     
     # Returns the default max supply of a gag.
     def getDefaultMaxSupply(self, gagId):
-        return GagGlobals.getGagData(gagId).get('maxSupply')
+        data = GagGlobals.getGagData(gagId)
+        
+        if 'minMaxSupply' in data.keys():
+            return data.get('minMaxSupply')
+        else:
+            return data.get('maxSupply')
 
     # Sets the supply of a gag.
     # Returns either true or false depending on if the

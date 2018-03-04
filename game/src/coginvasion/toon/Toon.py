@@ -657,11 +657,11 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
     def rescaleToon(self):
         animal = self.getAnimal()
-        bodyScale = CIGlobals.toonBodyScales[animal]
-        headScale = CIGlobals.toonHeadScales[animal][2]
-        shoulderHeight = CIGlobals.legHeightDict[self.legs] * bodyScale + CIGlobals.torsoHeightDict[self.torso] * bodyScale
-        height = shoulderHeight + CIGlobals.headHeightDict[self.head] * headScale
-        bodyScale = CIGlobals.toonBodyScales[animal]
+        bodyScale = ToonGlobals.BodyScales[animal]
+        headScale = ToonGlobals.HeadScales[animal][2]
+        shoulderHeight = ToonGlobals.LegHeightDict[self.legs] * bodyScale + ToonGlobals.TorsoHeightDict[self.torso] * bodyScale
+        height = shoulderHeight + ToonGlobals.HeadHeightDict[self.head] * headScale
+        bodyScale = ToonGlobals.BodyScales[animal]
         self.setAvatarScale(bodyScale)
         self.getPart('head').setScale(headScale)
         self.setHeight(height)

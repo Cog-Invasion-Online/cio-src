@@ -81,21 +81,21 @@ def getGarble(animal):
     global garbleData
     if garbleData is None:
         garbleData = {
-            'dog' : CIGlobals.ChatGarblerDog,
-            'rabbit' : CIGlobals.ChatGarblerRabbit,
-            'cat' : CIGlobals.ChatGarblerCat,
-            'mouse' : CIGlobals.ChatGarblerMouse,
-            'monkey' : CIGlobals.ChatGarblerMonkey,
-            'duck' : CIGlobals.ChatGarblerDuck,
-            'bear' : CIGlobals.ChatGarblerBear,
-            'horse' : CIGlobals.ChatGarblerHorse,
-            'pig' : CIGlobals.ChatGarblerPig
+            'dog' : ['woof', 'arf', 'rruff'],
+            'rabbit' : ['eek', 'eepr', 'eepy', 'eeky'],
+            'cat' : ['meow', 'mew'],
+            'mouse' : ['squeak', 'squeaky', 'squeakity'],
+            'monkey' : ['ooh', 'ooo', 'ahh'],
+            'duck' : ['quack', 'quackity', 'quacky'],
+            'bear' : ['growl', 'grrr'],
+            'horse' : ['neigh', 'brrr'],
+            'pig' : ['oink', 'oik', 'snort']
         }
     
     garble = garbleData[animal]
     if garble:
         return garble
-    return CIGlobals.ChatGarblerDefault
+    return ['blah']
 
 def filterChat(chat, animal):
     if 0:

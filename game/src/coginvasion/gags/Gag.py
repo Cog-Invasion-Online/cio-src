@@ -8,7 +8,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from direct.task.Task import Task
 from direct.actor.Actor import Actor
 from direct.interval.IntervalGlobal import Parallel, Sequence, LerpScaleInterval, SoundInterval, Wait
 from src.coginvasion.gags.GagState import GagState
@@ -81,8 +80,8 @@ class Gag(object):
 
         if self.rechargeElapsedTime >= self.rechargeTime:
             self.state = GagState.LOADED
-            return Task.done
-        return Task.again
+            return task.done
+        return task.again
 
     def startTimeout(self):
         base.localAvatar.gagsTimedOut = True
@@ -326,7 +325,7 @@ class Gag(object):
 
     def delSplat(self, task):
         self.cleanupSplat()
-        return Task.done
+        return task.done
 
     def getAudio3D(self):
         return base.audio3d

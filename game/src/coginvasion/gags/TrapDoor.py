@@ -22,7 +22,6 @@ class TrapDoor(ActivateTrapGag):
         self.setImage('phase_3.5/maps/trap-door.png')
         
     def onActivate(self, entity, suit):
-        ActivateTrapGag.onActivate(self, entity, suit)
         x, y, z = entity.getPos(render)
         sinkPos = Point3(x, y, z - 9.1)
         dropPos = Point3(x, y, z + 15)
@@ -46,3 +45,4 @@ class TrapDoor(ActivateTrapGag):
         )
         soundTrack = Sequence(SoundInterval(self.hitSfx, node = suit), Wait(0.8))
         Parallel(entTrack, suitTrack, soundTrack).start()
+        ActivateTrapGag.onActivate(self, entity, suit)
