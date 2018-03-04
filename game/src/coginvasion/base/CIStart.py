@@ -92,7 +92,12 @@ from src.coginvasion.manager.SettingsManager import SettingsManager
 jsonfile = "settings.json"
 notify.info("Reading settings file " + jsonfile)
 sm = SettingsManager()
+from src.coginvasion.globals import CIGlobals
+CIGlobals.SettingsMgr = sm
 sm.loadFile(jsonfile)
+
+notify.info("Setting display preferences...")
+sm.applySettings()
 
 from CogInvasionLoader import CogInvasionLoader
 base.loader = CogInvasionLoader(base)
@@ -117,9 +122,6 @@ base.cTrav = CollisionTraverser()
 
 #import AnisotropicFiltering
 #AnisotropicFiltering.startApplying()
-
-from src.coginvasion.globals import CIGlobals
-CIGlobals.SettingsMgr = sm
 
 display = base.config.GetString('load-display')
 audio = base.config.GetString('audio-library-name').replace('p3', '').replace('_audio', '')
@@ -163,8 +165,6 @@ base.transitions.IrisModelName = "phase_3/models/misc/iris.bam"
 base.transitions.FadeModelName = "phase_3/models/misc/fade.bam"
 base.accept(base.inputStore.TakeScreenshot, ScreenshotHandler.__takeScreenshot)
 
-notify.info("Setting display preferences...")
-sm.applySettings()
 if base.win == None:
     notify.warning("Unable to open window; aborting.")
     sys.exit()

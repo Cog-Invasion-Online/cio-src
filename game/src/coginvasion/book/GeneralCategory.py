@@ -27,6 +27,8 @@ class GeneralCategory(OptionsCategory):
         self.ppl = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.13), self.__choosePpl, "Per-Pixel Lighting")
         self.hdr = ChoiceWidget(page, ["None", "Ver. 1", "Ver. 2", "Ver. 3"], (0, 0, -0.04),
                                 self.__chooseHdr, "HDR Tone Mapping")
+        self.refl = ChoiceWidget(page, CIGlobals.getSettingsMgr().ReflectionQuality.keys(), (0, 0, -0.21),
+                                 self.__chooseRefl, "Reflection Quality")
                                    
         self.discardChanges()
         
@@ -42,6 +44,9 @@ class GeneralCategory(OptionsCategory):
         
         self.origPpl = CIGlobals.getSettingsMgr().getSetting("ppl")
         self.pplChoice = self.origPpl
+
+        self.origRefl = CIGlobals.getSettingsMgr().getSetting("refl")
+        self.reflChoice = self.origRefl
         
     def __choosePpl(self, choice):
         self.pplChoice = bool(choice)
@@ -54,6 +59,9 @@ class GeneralCategory(OptionsCategory):
         
     def __chooseLighting(self, choice):
         self.lightingChoice = bool(choice)
+
+    def __chooseRefl(self, choice):
+        self.reflChoice = self.refl.options[choice]
         
     def applyChanges(self):
         self._showApplying()
@@ -78,6 +86,9 @@ class GeneralCategory(OptionsCategory):
                 render.setShaderAuto()
             else:
                 render.setShaderOff()
+
+        if (self.reflChoice != self.origRefl):
+            CIGlobals.getSettingsMgr().updateAndWriteSetting("refl", self.reflChoice)
             
         self._setDefaults()
         self._hideApplying()
@@ -88,6 +99,7 @@ class GeneralCategory(OptionsCategory):
         self.lighting.goto(int(self.lightingChoice))
         self.hdr.goto(self.hdrChoice)
         self.ppl.goto(int(self.pplChoice))
+        self.refl.goto(self.refl.options.index(self.reflChoice))
         
     def cleanup(self):
         if hasattr(self, 'cursor'):
@@ -105,6 +117,10 @@ class GeneralCategory(OptionsCategory):
         if hasattr(self, 'ppl'):
             self.ppl.cleanup()
             del self.ppl
+
+        if hasattr(self, "refl"):
+            self.refl.cleanup()
+            del self.refl
             
         del self.origCursor
         del self.cursorChoice
@@ -117,5 +133,8 @@ class GeneralCategory(OptionsCategory):
         
         del self.pplChoice
         del self.origPpl
+
+        del self.reflChoice
+        del self.origRefl
         
         OptionsCategory.cleanup(self)

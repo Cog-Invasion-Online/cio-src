@@ -17,6 +17,7 @@ import json
 
 class SettingsManager:
     MouseCursors = {"None": "", "Toontown": game.phasedir + "toonmono.cur"}
+    ReflectionQuality = {"Off": 0, "Low": 256, "Medium": 512, "High": 1024, "Ultra": 2048}
     notify = directNotify.newCategory('SettingsManager')
 
     def __init__(self):
@@ -139,6 +140,11 @@ class SettingsManager:
         ppl = settings.get("ppl", None)
         if ppl == None:
             ppl = self.updateAndWriteSetting("ppl", False)
+            
+        # Reflection quality
+        refl = settings.get("refl", None)
+        if refl == None:
+            refl = self.updateAndWriteSetting("refl", "Medium")
 
         base.enableMusic(music)
         base.enableSoundEffects(sfx)

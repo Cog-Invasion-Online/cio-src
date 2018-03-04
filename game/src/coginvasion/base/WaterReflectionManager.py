@@ -14,14 +14,24 @@ from panda3d.core import (BitMask32, Plane, NodePath, CullFaceAttrib, Texture,
 
 from direct.filter.FilterManager import FilterManager
 
+from src.coginvasion.globals import CIGlobals
+
 REFL_CAM_BITMASK = BitMask32.bit(10)
 
 class WaterReflectionManager:
 
     def __init__(self):
+        self.enabled = True
+        
+        sMgr = CIGlobals.getSettingsMgr()
+        reso = sMgr.ReflectionQuality[sMgr.getSetting("refl")]
+        if reso == 0:
+            self.enabled = False
+            return
+
         self.waterNodes = []
-       
-        wbuffer = base.win.makeTextureBuffer("water", 512, 512)
+
+        wbuffer = base.win.makeTextureBuffer("water", reso, reso)
         wbuffer.setClearColorActive(True)
         wbuffer.setClearColor(base.win.getClearColor())
         
@@ -89,6 +99,8 @@ class WaterReflectionManager:
         taskMgr.add(self.update, "waterRefl-update-" + str(id(self)))
 
     def clearPlane(self):
+        if not self.enabled:
+            return
         if self.wplanenp:
             self.wplanenp.removeNode()
             self.wplanenp = None
@@ -96,6 +108,8 @@ class WaterReflectionManager:
         self.planeNode = None
 
     def makePlane(self, height):
+        if not self.enabled:
+            return
         self.clearPlane()
 
         self.wplane = Plane(Vec3(0, 0, 1), Point3(0, 0, height))
@@ -108,6 +122,8 @@ class WaterReflectionManager:
         self.wcamera.node().setInitialState(tmpnp.getState())
     
     def addWaterNode(self, node, height):
+        if not self.enabled:
+            return
         self.waterNodes.append(node)
         node.hide(REFL_CAM_BITMASK)
         node.projectTexture(self.ts, self.finalTex, self.wcamera)
@@ -115,12 +131,16 @@ class WaterReflectionManager:
         self.makePlane(height)
 
     def clearWaterNodes(self):
+        if not self.enabled:
+            return
         for node in self.waterNodes:
             if not node.isEmpty():
                 node.clearProjectTexture(self.ts)
         self.clearPlane()
 
     def cleanup(self):
+        if not self.enabled:
+            return
         taskMgr.remove("waterRefl-update-" + str(id(self)))
         self.clearWaterNodes()
         self.wplane = None
@@ -142,6 +162,8 @@ class WaterReflectionManager:
         self.filterMgr = None
 
     def update(self, task):
+        if not self.enabled:
+            return task.done
         if not self.wplane or not self.wcamera:
             return task.cont
         
