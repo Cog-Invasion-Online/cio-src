@@ -288,7 +288,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
     def __handleTacticalAttacks(self, avId, gagName, gagData):
         # Factor in any weaknesses / immunities to the damage this gag does.
         weaknessFactor = self.suitPlan.getGagWeaknesses().get(gagName, 1.0)
-        baseDmg = float(gagData.get('damage', 0.0))
+        baseDmg = GagGlobals.calculateDamage(avId, gagName, gagData)#float(gagData.get('damage', 0.0))
         dmgOffset = int(math.ceil(baseDmg * weaknessFactor)) - baseDmg
 
         self.tacticalSeq = Sequence()

@@ -17,9 +17,9 @@ __builtin__.__dict__.update(__import__('panda3d.core', fromlist=['*']).__dict__)
 import sys
 sys.dont_write_bytecode = True
 
-from src.coginvasion.base import Logger
-logger = Logger.Starter(log_prefix = 'ai-', path = 'astron/district_logs')
-logger.startNotifyLogging()
+#from src.coginvasion.base import Logger
+#logger = Logger.Starter(log_prefix = 'ai-', path = 'astron/district_logs')
+#logger.startNotifyLogging()
 
 from panda3d.core import loadPrcFile, loadPrcFileData, VirtualFileSystem
 

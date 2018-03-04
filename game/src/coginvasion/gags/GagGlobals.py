@@ -17,6 +17,7 @@ from direct.distributed.PyDatagramIterator import PyDatagramIterator
 
 from collections import OrderedDict
 import types
+import math
 
 # These ids are sent on the wire to capture gags.
 gagIds = {0 : CIGlobals.WholeCreamPie, 1 : CIGlobals.CreamPieSlice, 2 : CIGlobals.BirthdayCake, 3 : CIGlobals.TNT,
@@ -42,42 +43,212 @@ Trap = "Trap"
 # Data that should be able to be quickly picked up by the client and server.
 # Values: [default current supply, default max supply, default damage (or health), and, if necessary, toon-up amount.
 gagData = {
-    CIGlobals.BirthdayCake : {'health': 10, 'damage': 75, 'maxSupply': 3, 'supply': 3, 'track' : Throw},
-    CIGlobals.TNT : {'damage': 180, 'maxSupply': 3, 'supply': 3, 'track' : Trap},
-    CIGlobals.FireHose : {'health': 6, 'damage': 30, 'maxSupply': 5, 'supply': 5, 'track' : Squirt},
-    CIGlobals.Geyser : {'damage': 105, 'maxSupply': 1, 'supply': 1, 'track' : Squirt},
-    CIGlobals.BananaPeel : {'damage': 10, 'maxSupply': 10, 'supply': 10, 'track' : Trap},
-    CIGlobals.Lipstick : {'healRange': (25, 30), 'maxSupply': 5, 'supply': 5, 'track' : ToonUp},
-    CIGlobals.Anvil : {'damage': 30, 'maxSupply': 8, 'supply': 8, 'track' : Drop},
-    CIGlobals.WaterGun : {'health': 2, 'damage': 12, 'maxSupply': 7, 'supply': 7, 'track' : Squirt},
-    CIGlobals.JugglingBalls : {'healRange': (90, 120), 'maxSupply': 3, 'supply': 3, 'track' : ToonUp},
-    CIGlobals.Safe : {'damage': 60, 'maxSupply': 7, 'supply': 7, 'track' : Drop},
-    CIGlobals.WholeCreamPie : {'health': 5, 'damage': 36, 'maxSupply': 7, 'supply': 7, 'track' : Throw},
-    CIGlobals.WholeFruitPie : {'health': 3, 'damage': 28, 'maxSupply': 10, 'supply': 10, 'track' : Throw},
-    CIGlobals.SquirtFlower : {'damage': 3, 'maxSupply': 15, 'supply': 15, 'track' : Squirt},
-    CIGlobals.BikeHorn : {'damage': 5, 'maxSupply': 15, 'supply': 15, 'track' : Sound},
-    CIGlobals.TrapDoor : {'damage': 70, 'maxSupply': 7, 'supply': 7, 'track' : Trap},
-    CIGlobals.FlowerPot : {'damage': 10, 'maxSupply': 12, 'supply': 12, 'track' : Drop},
-    CIGlobals.Aoogah : {'damage': 16, 'maxSupply': 7, 'supply': 7, 'track' : Sound},
-    CIGlobals.Megaphone : {'healRange': (10, 20), 'maxSupply': 7, 'supply': 7, 'track' : ToonUp},
-    CIGlobals.Opera : {'damage': 90, 'maxSupply': 1, 'supply': 1, 'track' : Sound},
-    CIGlobals.BambooCane : {'healRange': (40, 45), 'maxSupply': 4, 'supply': 4, 'track' : ToonUp},
-    CIGlobals.Cupcake : {'health': 1, 'damage': 6, 'maxSupply': 30, 'supply': 30, 'track' : Throw},
-    CIGlobals.Bugle : {'damage': 11, 'maxSupply': 10, 'supply': 10, 'track' : Sound},
-    CIGlobals.Sandbag : {'damage': 18, 'maxSupply': 10, 'supply': 10, 'track' : Drop},
-    CIGlobals.WaterGlass : {'health': 2, 'damage': 8, 'maxSupply': 10, 'supply': 10, 'track' : Squirt},
-    CIGlobals.SeltzerBottle : {'health': 5, 'damage': 21, 'maxSupply': 10, 'supply': 10, 'track' : Squirt},
-    CIGlobals.PixieDust : {'healRange': (50, 70), 'maxSupply': 5, 'supply': 5, 'track' : ToonUp},
-    CIGlobals.Foghorn : {'damage': 50, 'maxSupply': 3, 'supply': 3, 'track' : Sound},
-    CIGlobals.GrandPiano : {'damage': 170, 'maxSupply': 3, 'supply': 3, 'track' : Drop},
-    CIGlobals.StormCloud : {'damage': 60, 'maxSupply': 3, 'supply': 3, 'track' : Squirt},
-    CIGlobals.WeddingCake : {'health': 25, 'damage': 120, 'maxSupply': 3, 'supply': 3, 'track' : Throw},
-    CIGlobals.ElephantHorn : {'damage': 21, 'maxSupply': 5, 'supply': 5, 'track' : Sound},
-    CIGlobals.Whistle : {'damage': 7, 'maxSupply': 10, 'supply': 10, 'track' : Sound},
-    CIGlobals.FruitPieSlice : {'health': 1, 'damage': 10, 'maxSupply': 10, 'supply': 10, 'track' : Throw},
-    CIGlobals.Quicksand : {'damage': 50, 'maxSupply': 7, 'supply': 7, 'track' : Trap},
-    CIGlobals.CreamPieSlice : {'health': 2, 'damage': 17, 'maxSupply': 10, 'supply': 10, 'track' : Throw},
-    CIGlobals.BigWeight : {'damage': 45, 'maxSupply': 7, 'supply': 7, 'track' : Drop},
+    CIGlobals.BirthdayCake : {'health': 10,
+        'minDamage' : 48, 
+        'maxDamage': 100,
+        'minMaxSupply' : 3,
+        'maxSupply': 3, 
+        'supply': 3, 
+    'track' : Throw},
+    CIGlobals.TNT : {'minDamge' : 90, 
+        'maxDamage': 180, 
+        'maxSupply': 2, 
+        'supply': 2, 
+    'track' : Trap},
+    CIGlobals.FireHose : {'health': 6,
+        'minDamage' : 27,
+        'maxDamage' : 30,
+        'minMaxSupply' : 3,
+        'maxSupply' : 7,
+        'supply' : 3,
+    'track' : Squirt},
+    CIGlobals.Geyser : {'damage': 105, 
+        'maxSupply': 1, 
+        'supply': 1, 
+    'track' : Squirt},
+    CIGlobals.BananaPeel : {'minDamage': 10,
+        'maxDamage' : 12,
+        'minMaxSupply' : 5, 
+        'maxSupply': 20, 
+        'supply': 5, 
+    'track' : Trap},
+    CIGlobals.Lipstick : {'healRange': (25, 30),
+        'minMaxSupply' : 5, 
+        'maxSupply': 20, 
+        'supply': 5, 
+    'track' : ToonUp},
+    CIGlobals.Anvil : {'damage': 30,
+        'minMaxSupply' : 5,
+        'maxSupply': 20, 
+        'supply': 5, 
+    'track' : Drop},
+    CIGlobals.WaterGun : {'health': 2,
+        'minDamage' : 10,
+        'maxDamage': 12, 
+        'minMaxSupply': 5,
+        'maxSupply' : 20, 
+        'supply': 5, 
+    'track' : Squirt},
+    CIGlobals.JugglingBalls : {'healRange': (90, 120),
+        'maxSupply': 3, 
+        'supply': 3, 
+    'track' : ToonUp},
+    CIGlobals.Safe : {'damage': 60,
+        'minMaxSupply' : 3,
+        'maxSupply': 7, 
+        'supply': 3, 
+    'track' : Drop},
+    CIGlobals.WholeCreamPie : {'health': 5, 
+        'minDamage': 36,
+        'maxDamage' : 40, 
+        'minMaxSupply': 3,
+        'maxSupply' : 7, 
+        'supply': 3, 
+    'track' : Throw},
+    CIGlobals.WholeFruitPie : {'health': 3,
+        'minDamage' : 24,
+        'damage': 27, 
+        'minMaxSupply' : 5,
+        'maxSupply': 15, 
+        'supply': 5,
+    'track' : Throw},
+    CIGlobals.SquirtFlower : {'minDamage': 3, 
+        'maxDamage' : 4,
+        'minMaxSupply' : 10,
+        'maxSupply' : 30,
+        'supply': 10, 
+    'track' : Squirt},
+    CIGlobals.BikeHorn : {'minDamage': 3,
+        'maxDamage' : 4,
+        'minMaxSupply' : 10, 
+        'maxSupply': 30, 
+        'supply': 10, 
+    'track' : Sound},
+    CIGlobals.TrapDoor : {'minDamage' : 60,
+        'maxDamage': 70, 
+        'minMaxSupply' : 3,
+        'maxSupply': 5, 
+        'supply': 3, 
+    'track' : Trap},
+    CIGlobals.FlowerPot : {'damage' : 10,
+        'minMaxSupply' : 10,
+        'maxSupply': 30, 
+        'supply': 10, 
+    'track' : Drop},
+    CIGlobals.Aoogah : {'minDamage': 14,
+        'maxDamage' : 16,
+        'minMaxSupply' : 5, 
+        'maxSupply': 15, 
+        'supply': 5, 
+    'track' : Sound},
+    CIGlobals.Megaphone : {'healRange': (10, 20),
+        'minMaxSupply' : 5,
+        'maxSupply': 25, 
+        'supply': 5, 
+    'track' : ToonUp},
+    CIGlobals.Opera : {'damage': 90, 
+        'maxSupply': 1, 
+        'supply': 1, 
+    'track' : Sound},
+    CIGlobals.BambooCane : {'healRange': (40, 45),
+        'minMaxSupply' : 5,
+        'maxSupply' : 15,
+        'supply': 5, 
+    'track' : ToonUp},
+    CIGlobals.Cupcake : {'health': 1, 
+        'minDamage' : 4, 
+        'maxDamage': 6,
+        'minMaxSupply' : 10,
+        'maxSupply': 30, 
+        'supply': 10, 
+    'track' : Throw},
+    CIGlobals.Bugle : {'minDamage': 9,
+        'maxDamage' : 11,
+        'minMaxSupply' : 5, 
+        'maxSupply': 20,
+        'supply': 5, 
+    'track' : Sound},
+    CIGlobals.Sandbag : {'damage': 18,
+        'minMaxSupply' : 5, 
+        'maxSupply': 25, 
+        'supply': 5, 
+    'track' : Drop},
+    CIGlobals.WaterGlass : {'health': 2, 
+        'minDamage': 6, 
+        'maxDamage' : 8,
+        'minMaxSupply': 5, 
+        'maxSupply': 25, 
+        'supply' : 5,
+    'track' : Squirt},
+    CIGlobals.SeltzerBottle : {'health': 5,
+        'minDamage' : 18,
+        'maxDamage' : 21,
+        'minMaxSupply' : 5,
+        'maxSupply' : 15,
+        'supply' : 10, 
+    'track' : Squirt},
+    CIGlobals.PixieDust : {'healRange': (50, 70),
+        'minMaxSupply' : 3,
+        'maxSupply': 7, 
+        'supply': 3, 
+    'track' : ToonUp},
+    CIGlobals.Foghorn : {'minDamage': 25,
+        'maxDamage' : 50, 
+        'maxSupply': 3, 
+        'supply': 3, 
+    'track' : Sound},
+    CIGlobals.GrandPiano : {'minDamage': 85,
+        'maxDamage' : 170,
+        'maxSupply' : 3,
+        'supply' : 3, 
+    'track' : Drop},
+    CIGlobals.StormCloud : {'minDamage': 36,
+        'maxDamage' : 80, 
+        'maxSupply': 3, 
+        'supply': 3,
+    'track' : Squirt},
+    CIGlobals.WeddingCake : {'health': 25, 
+        'damage': 120, 
+        'maxSupply': 3, 
+        'supply': 3, 
+    'track' : Throw},
+    CIGlobals.ElephantHorn : {'minDamage': 19,
+        'maxDamage' : 21, 
+        'minMaxSupply': 3,
+        'maxSupply' : 7, 
+        'supply': 3, 
+    'track' : Sound},
+    CIGlobals.Whistle : {'minDamage': 5,
+        'maxDamage' : 7,
+        'minMaxSupply' : 5,
+        'maxSupply' : 25, 
+        'supply': 5, 
+    'track' : Sound},
+    CIGlobals.FruitPieSlice : {'health': 1, 
+        'minDamage' : 8, 
+        'maxDamage': 10,
+        'minMaxSupply' : 5, 
+        'maxSupply': 25, 
+        'supply': 5, 
+    'track' : Throw},
+    CIGlobals.Quicksand : {'minDamage': 45, 
+        'maxDamage' : 50,
+        'minMaxSupply': 3, 
+        'maxSupply': 10, 
+        'supply' : 3,
+    'track' : Trap},
+    CIGlobals.CreamPieSlice : {'health': 2,
+        'minDamage' : 14,
+        'maxDamage': 17,
+        'minMaxSupply' : 5, 
+        'maxSupply': 20, 
+        'supply': 5, 
+    'track' : Throw},
+    CIGlobals.BigWeight : {'damage': 45,
+        'minMaxSupply' : 5,
+        'maxSupply' : 15, 
+        'supply': 5, 
+    'track' : Drop},
 }
 
 InventoryIconByName = {CIGlobals.WholeCreamPie : '**/inventory_creampie',
@@ -184,6 +355,75 @@ TrackExperienceAmounts = {
 def getTrackHighestExperience(track):
     exps = TrackExperienceAmounts[track]
     return exps[len(exps) - 1]
+
+def calculateMaxSupply(avatar, name, data):
+    """ This calculates the max supply an avatar can hold with their experience """
+    maxSupply = data.get('maxSupply')
+    minMaxSupply = maxSupply
+    
+    if 'minMaxSupply' in data.keys():
+        minMaxSupply = data.get('minMaxSupply')
+    
+    if not avatar is None and minMaxSupply != maxSupply:
+        track = data.get('track')
+        trackExp = avatar.trackExperience.get(track)
+        
+        if trackExp == 0:
+            return int(minMaxSupply)
+        
+        trackExperiences = TrackExperienceAmounts.get(track)
+        gagIndex = TrackGagNamesByTrackName.get(track).index(name)
+        unlockAtExp = float(trackExperiences[gagIndex])
+        
+        increaseEvery = float(unlockAtExp / maxSupply)
+        increaseAmt = (float(trackExp - unlockAtExp) / increaseEvery)
+        
+        #print '{0} Experience: {1}, Gag Name: {2}, Unlock At Exp: {3}, Max Supply: {4}, Increase Every: {5}, Increase Amount: {6}'.format(
+        #    str(track), str(trackExp), name, str(unlockAtExp), str(maxSupply), str(increaseEvery), str(increaseAmt))
+        
+        if (minMaxSupply + increaseAmt) > maxSupply:
+            #print 'Final Value: ' + str(int(maxSupply))
+            return int(maxSupply)
+        else:
+            #print 'Final Value: ' + str(int(minMaxSupply + increaseAmt))
+            return int(minMaxSupply + increaseAmt)
+    elif minMaxSupply == maxSupply:
+        return int(maxSupply)
+    else:
+        return int(minMaxSupply)
+
+def calculateDamage(avId, name, data):
+    """ This calculates the damage a gag will do on a Cog (This is an AI-side method) """
+    avatar = base.air.doId2do.get(avId, None)
+    
+    if 'damage' in data.keys():
+        return float(data.get('damage'))
+    elif 'minDamage' in data.keys():
+        track = data.get('track')
+        trackExp = avatar.trackExperience.get(track)
+        
+        minDamage = float(data.get('minDamage'))
+        maxDamage = float(data.get('maxDamage'))
+        gagIndex = TrackGagNamesByTrackName.get(track).index(name)
+        unlockAtExp = float(TrackExperienceAmounts.get(track)[gagIndex])
+        nextGagUnlockExp = unlockAtExp
+        
+        if (gagIndex + 1) < len(TrackExperienceAmounts.get(track)):
+            nextGagUnlockExp = float(TrackExperienceAmounts.get(track)[gagIndex + 1])
+        
+        scaleDmgEvery = float((nextGagUnlockExp - unlockAtExp) / (maxDamage - minDamage))
+        earnedExpSinceUnlock = float(trackExp - unlockAtExp)
+        
+        if scaleDmgEvery == 0:
+            return maxDamage
+        else:
+            dmgAdditions = math.ceil(earnedExpSinceUnlock / scaleDmgEvery)
+            
+            if (minDamage + dmgAdditions) > maxDamage:
+                return maxDamage
+            else:
+                return float(minDamage + dmgAdditions)
+    return 0.0
 
 # These are the splat scales
 splatSizes = {
@@ -327,10 +567,15 @@ def processTrackData(trackData, backpack, updateData = None):
             maxEXP = expAmounts[i]
             if exp >= maxEXP:
                 gagAtLevel = gags[i]
+                gagId = gagIdByName.get(gagAtLevel)
                 
                 if not backpack.hasGag(gagAtLevel):
-                    maxSupply = gagData.get(gagAtLevel)['maxSupply']
-                    backpack.addGag(gagIdByName.get(gagAtLevel), 1, maxSupply)
+                    backpack.addGag(gagId, 1, None)
+                
+    for gagId in backpack.gags.keys():
+        gagName = gagIds.get(gagId)
+        maxSupply = calculateMaxSupply(backpack.avatar, gagName, gagData.get(gagName))
+        backpack.setMaxSupply(gagId, maxSupply)
 
 def getTrackExperienceFromNetString(netString):
     dg = PyDatagram(netString)

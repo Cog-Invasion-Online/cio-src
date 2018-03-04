@@ -208,7 +208,8 @@ class DistributedBattleZoneAI(DistributedObjectAI):
                 
                 for gagId, uses in data[0].iteritems():
                     gagName = GagGlobals.gagIds[gagId]
-                    track = GagGlobals.gagData.get(gagName)['track']
+                    gagData = GagGlobals.gagData.get(gagName)
+                    track = gagData['track']
                     if uses > favGagUses:
                         favGagId = gagId
                         
@@ -218,6 +219,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
                     if track in trackIncrements.keys():
                         incr = incr + trackIncrements[track]
                     trackIncrements[track] = incr
+                    
                 rpData.favoriteGag = GagGlobals.gagIds[favGagId]
                 
                 for track, exp in avatar.trackExperience.iteritems():

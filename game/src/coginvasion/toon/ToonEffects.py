@@ -91,7 +91,7 @@ def getIceCubeFormInterval(iceCube, duration = 0.5, blendType = 'easeInOut'):
         )
     )
 
-def getIceCubeThawInterval(iceCube, duration, blendType = 'easeInOut'):
+def getIceCubeThawInterval(iceCube, duration = 0.5, blendType = 'easeInOut'):
     """ Creates the ice cube formation animation on the specified ice cube """
     
     if iceCube is None or iceCube.isEmpty():
