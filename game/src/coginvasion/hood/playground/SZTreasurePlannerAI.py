@@ -42,4 +42,4 @@ class SZTreasurePlannerAI(RegenTreasurePlannerAI):
         if av.getHealth() < av.getMaxHealth() or av.getHealth() == 0 and self.canHealSad:
             av.toonUp(self.healAmount, sound = 0)
             return True
-        else: return False
+        return False

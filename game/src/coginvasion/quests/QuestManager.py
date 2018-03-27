@@ -11,7 +11,6 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 from direct.showbase.DirectObject import DirectObject
 
 from src.coginvasion.hood import ZoneUtil
-from src.coginvasion.gui.ChatInput import CHAT_WINDOW_OPENED_EVENT, CHAT_WINDOW_CLOSED_EVENT
 from QuestManagerBase import QuestManagerBase
 import QuestGlobals
 
@@ -23,9 +22,6 @@ class QuestManager(QuestManagerBase, DirectObject):
         
         # The quest posters that are shown when hitting the hotkey.
         self.posters = []
-        
-        self.accept(CHAT_WINDOW_OPENED_EVENT, self.disableShowQuestsHotkey)
-        self.accept(CHAT_WINDOW_CLOSED_EVENT, self.enableShowQuestsHotkey)
         
     def enableShowQuestsHotkey(self):
         place = base.cr.playGame.getPlace()

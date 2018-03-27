@@ -20,6 +20,7 @@ from src.coginvasion.cog.SuitType import SuitType
 from src.coginvasion.cog import CogBattleGlobals, SuitGlobals
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.battle.DistributedGagBarrelAI import DistributedGagBarrelAI
+from src.coginvasion.battle.DistributedHPBarrelAI import DistributedHPBarrelAI
 from src.coginvasion.battle import BattleGlobals
 from DistributedCogOfficeElevatorAI import DistributedCogOfficeElevatorAI
 from DistributedCogOfficeSuitAI import DistributedCogOfficeSuitAI
@@ -527,6 +528,9 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                 GagType.SQUIRT : [[31, 4], 38],
                 GagType.DROP : [[8, 30], 25]
             }
+            
+            healBarrelChance = SuitBuildingGlobals.buildingInfo[self.hood][SuitBuildingGlobals.HEAL_BARREL_CHANCE]
+
             maxBarrels = 3
 
             for _ in xrange(maxBarrels):
@@ -535,18 +539,23 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
                 position = locationData[0]
                 hpr = locationData[1]
-
-                gagIcon = random.choice([0, 2])
-                track = GagType.THROW
-
-                for track, data in trackGags.iteritems():
-                    if random.randrange(0, 100) <= data[1]:
-                        gagIcon = random.choice(data[0])
-                        track = track
-                        break
-                del trackGags[track]
-
-                barrel = DistributedGagBarrelAI(gagIcon, self.air, loadoutOnly = True)
+                
+                if random.randrange(0, 100) < healBarrelChance:
+                    # Let's generate an HP restock barrel!
+                    barrel = DistributedHPBarrelAI(CIGlobals.Hood2ZoneId.get(self.hood), self.air)
+                else:
+                    # Let's generate a gag restock barrel!
+                    gagIcon = random.choice([0, 2])
+                    track = GagType.THROW
+    
+                    for track, data in trackGags.iteritems():
+                        if random.randrange(0, 100) <= data[1]:
+                            gagIcon = random.choice(data[0])
+                            track = track
+                            break
+                    del trackGags[track]
+    
+                    barrel = DistributedGagBarrelAI(gagIcon, self.air)
                 barrel.generateWithRequired(self.zoneId)
                 barrel.b_setPosHpr(position[0], position[1], position[2], hpr[0], hpr[1], hpr[2])
                 self.barrels.append(barrel)
