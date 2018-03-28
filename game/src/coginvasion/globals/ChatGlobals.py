@@ -1,6 +1,14 @@
-from panda3d.core import VirtualFileSystem
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-from src.coginvasion.globals import CIGlobals
+@file ChatGlobals.py
+@author Brian Lach
+@date ????????
+
+"""
+
+from panda3d.core import VirtualFileSystem
 
 import random
 

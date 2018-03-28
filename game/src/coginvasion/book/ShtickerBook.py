@@ -11,7 +11,7 @@ HAPPY BIRTHDAY COG INVASION ONLINE!!!
 
 """
 
-from panda3d.core import TextNode, Vec3
+from panda3d.core import TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.StateData import StateData
@@ -222,7 +222,6 @@ class ShtickerBook(DirectFrame, StateData):
         self['image_scale'] = (2, 1, 1.5)
         self['scale'] = (2, 1, 1.5)
         self.resetFrameSize()
-        
 
         # Let's register our pages.
         self.registerPage(OptionsPage(self))
