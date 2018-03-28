@@ -397,7 +397,7 @@ class ToonHead(Actor.Actor):
         return 1
 
     def setHeadColor(self, color = None):
-        if color == None:
+        if color is None:
             color = self.headcolor
         self.findAllMatches('**/head*').setColor(color)
         if (self.animal == "rabbit" or self.animal == "cat" or

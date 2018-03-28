@@ -397,7 +397,7 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
                 def toonResponse(dclass, fields, avId=avId):
                     if dclass != self.air.dclassesByName['DistributedToonUD']:
                         return
-                    if fields.get('ACCOUNT', None) == None:
+                    if fields.get('ACCOUNT', None) is None:
                         print "No field ACCOUNT in this toon, I'll add it for you."
                         self.air.dbInterface.updateObject(
                             self.air.dbId,
@@ -427,7 +427,7 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
                 return
             if fields.get("BANNED") == 1:
                 self.air.eject(sender, 0, 'You are banned.')
-            elif fields.get("BANNED", None) == None:
+            elif fields.get("BANNED", None) is None:
                 self.air.dbInterface.updateObject(
                     self.air.dbId,
                     accId,

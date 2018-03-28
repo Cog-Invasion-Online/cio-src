@@ -123,7 +123,7 @@ class DistributedEagleGame(DistributedMinigame):
         self.fsm.request('finalScores')
 
     def roundOver(self):
-        if self.cannonId == None:
+        if self.cannonId is None:
             self.__handleMissedEagle()
         self.fsm.request('roundOver')
 

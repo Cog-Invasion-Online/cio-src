@@ -28,7 +28,7 @@ class DistributedClerkNPCToonAI(DistributedNPCToonAI):
     def requestEnter(self):
         avId = self.air.getAvatarIdFromSender()
         if (self.currentAvatar != None or
-        self.currentAvatar == None and not self.hasValidReasonToEnter(avId)):
+        self.currentAvatar is None and not self.hasValidReasonToEnter(avId)):
             self.sendUpdateToAvatarId(avId, 'rejectEnter', [])
         else:
             self.currentAvatar = avId
@@ -40,5 +40,5 @@ class DistributedClerkNPCToonAI(DistributedNPCToonAI):
 
     def requestExit(self):
         DistributedNPCToonAI.requestExit(self)
-        if self.currentAvatar == None:
+        if self.currentAvatar is None:
             self.d_setChat(CIGlobals.ShopGoodbye)

@@ -243,7 +243,7 @@ class CogInvasionClientRepository(AstronClientRepository):
         op, args, event = self.setZoneQueue.top()
         if op == self.SetInterest:
             parentId, interestZones, name = args
-            if self.old_setzone_interest_handle == None:
+            if self.old_setzone_interest_handle is None:
                 self.old_setzone_interest_handle = self.addInterest(parentId, interestZones, name, self.SetZoneDoneEvent)
             else:
                 self.alterInterest(self.old_setzone_interest_handle, parentId, interestZones, name, self.SetZoneDoneEvent)
@@ -684,7 +684,7 @@ class CogInvasionClientRepository(AstronClientRepository):
 
     def uberZoneInterestComplete(self, status):
         self.__gotTimeSync = 0
-        if self.timeManager == None:
+        if self.timeManager is None:
             print "No time manager"
             DistributedSmoothNode.globalActivateSmoothing(0, 0)
             self.gotTimeSync(status)
@@ -782,7 +782,7 @@ class CogInvasionClientRepository(AstronClientRepository):
             self.music.stop()
             self.music = None
         base.transitions.noFade()
-        if self.localAvChoice == None:
+        if self.localAvChoice is None:
             self.notify.error("called enterPlayGame() without self.localAvChoice being set!")
             return
         if localAvatar.getTutorialCompleted() == 1:
@@ -871,7 +871,7 @@ class CogInvasionClientRepository(AstronClientRepository):
             #di.getDatagram().dumpHex(ostream)
         msgType = self.getMsgType()
         self.currentSenderId = None
-        if self.handler == None:
+        if self.handler is None:
             self.astronHandle(di)
         else:
             self.handler(msgType, di)

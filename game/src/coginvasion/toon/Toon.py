@@ -261,7 +261,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                             self.loop(anim, partName = "torso-pants")
                             self.loop(anim, partName = "head")
                 if not doingGagAnim:
-                    if self.forcedTorsoAnim == None:
+                    if self.forcedTorsoAnim is None:
                         self.loop(anim)
                     else:
                         self.loop(self.forcedTorsoAnim, partName = 'head')

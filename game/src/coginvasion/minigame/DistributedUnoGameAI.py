@@ -149,7 +149,7 @@ class DistributedUnoGameAI(DistributedMinigameAI.DistributedMinigameAI):
 
 
     def takeNewCardColor(self, origId, id, doId = None):
-        if doId == None:
+        if doId is None:
             doId = self.air.getAvatarIdFromSender()
         self.newColor = id
         self.d_setNewCardColor(id)
@@ -169,7 +169,7 @@ class DistributedUnoGameAI(DistributedMinigameAI.DistributedMinigameAI):
 
     def requestPlaceCard(self, id, doId = None):
         if self.gameStarted:
-            if doId == None:
+            if doId is None:
                 doId = self.air.getAvatarIdFromSender()
             if (self.isAvatarPresent(doId) and self.turnOrder[self.currentTurn] == doId and not self.winnerAnnounced):
                 self.currentCard = id
@@ -232,10 +232,10 @@ class DistributedUnoGameAI(DistributedMinigameAI.DistributedMinigameAI):
         self.sendUpdateToAvatarId(doId, "requestNewCardColor", [])
 
     def doNextPlayerTurn(self, skip=0, draw=0, reversedNow=0):
-        if self.turnOrder == None:
+        if self.turnOrder is None:
             return
         turns = 1
-        if self.currentTurn == None:
+        if self.currentTurn is None:
             self.currentTurn = 0
         else:
             if skip:

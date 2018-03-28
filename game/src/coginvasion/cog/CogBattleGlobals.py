@@ -25,7 +25,7 @@ HoodId2HoodIndex = {
 }
 HoodIndex2HoodName = {v: k for k, v in HoodId2HoodIndex.items()}
 HoodIndex2HoodId = None
-if HoodIndex2HoodId == None:
+if HoodIndex2HoodId is None:
     HoodIndex2HoodId = {}
     for hoodName in HoodId2HoodIndex.keys():
         index = HoodId2HoodIndex[hoodName]

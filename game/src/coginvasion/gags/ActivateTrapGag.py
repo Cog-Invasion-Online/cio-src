@@ -126,7 +126,7 @@ class ActivateTrapGag(TrapGag, LocationGag):
                     if obj.getKey() == avNP.getKey():
                         if obj.getHealth() > 0:
                             index = self.getEntityIndex(entry.getFromNodePath().getParent())
-                            if not index == None:
+                            if not index is None:
                                 self.avatar.b_trapActivate(self.getID(), self.avatar.doId, index, obj.doId)
 
     def buildDust(self):

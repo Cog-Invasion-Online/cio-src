@@ -161,7 +161,7 @@ class Hood(StateData):
         pass
 
     def isSameHood(self, status):
-        return status['hoodId'] == self.hoodId and status['shardId'] == None
+        return status['hoodId'] == self.hoodId and status['shardId'] is None
 
     def enterQuietZone(self, requestStatus):
         base.transitions.noTransitions()

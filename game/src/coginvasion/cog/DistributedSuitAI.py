@@ -189,7 +189,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
     def b_setAnimState(self, anim, loop = 1):
         if type(anim) == types.StringType:
             animId = SuitGlobals.getAnimId(SuitGlobals.getAnimByName(anim))
-            if animId == None and anim != 'flyNeutral':
+            if animId is None and anim != 'flyNeutral':
                 animId = 44
             elif anim == 'flyNeutral':
                 animId = 45

@@ -13,13 +13,13 @@ from direct.showbase.DirectObject import DirectObject
 class SuitBehaviorBaseAI(DirectObject):
     
     def __init__(self, suit, doneEvent = None):
-        if doneEvent == None:
+        if doneEvent is None:
             doneEvent = 'suit%s-behaviorDone' % (suit.doId)
         self.doneEvent = doneEvent
         self.suit = suit
         
     def isAvatarReachable(self, var, exitFSM = False):
-        if var == None or var.isEmpty():
+        if var is None or var.isEmpty():
             if hasattr(self, 'fsm') and exitFSM:
                 self.fsm.enterInitialState()
                 self.suit.getBrain().exitCurrentBehavior()

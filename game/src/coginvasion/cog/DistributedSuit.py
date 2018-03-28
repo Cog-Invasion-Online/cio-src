@@ -410,7 +410,7 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         prevAnim = self.anim
         self.anim = anim
 
-        if timestamp == None:
+        if timestamp is None:
             ts = 0.0
         else:
             ts = globalClockDelta.localElapsedTime(timestamp)
@@ -436,7 +436,7 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         messenger.send(SuitGlobals.animStateChangeEvent % (self.uniqueName), [anim, prevAnim])
 
     def doAttack(self, attackId, avId, timestamp = None):
-        if timestamp == None:
+        if timestamp is None:
             ts = 0.0
         else:
             ts = globalClockDelta.localElapsedTime(timestamp)

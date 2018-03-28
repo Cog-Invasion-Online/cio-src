@@ -75,7 +75,7 @@ class DistributedToonInterior(DistributedObject.DistributedObject):
         self.dnaStore = self.cr.playGame.dnaStore
         self.generator = random.Random()
         self.generator.seed(self.zoneId)
-        if roomIndex == None:
+        if roomIndex is None:
             interior = self.randomDNAItem('TI_room', self.dnaStore.findNode)
         else:
             interior = self.dnaStore.findNode(self.dnaStore.getCatalogCode('TI_room', roomIndex))

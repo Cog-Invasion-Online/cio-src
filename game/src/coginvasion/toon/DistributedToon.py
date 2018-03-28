@@ -633,7 +633,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
 
     def setAnimState(self, anim, timestamp = None, callback = None, extraArgs = []):
         self.anim = anim
-        if timestamp == None:
+        if timestamp is None:
             ts = 0.0
         else:
             ts = globalClockDelta.localElapsedTime(timestamp)

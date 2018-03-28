@@ -83,7 +83,7 @@ class CameraShyFirstPerson(FirstPerson):
         taskMgr.add(self.__rechargeNextState, "rechargeCamera")
 
     def __rechargeNextState(self, task):
-        if self.cameraRechargeState == None:
+        if self.cameraRechargeState is None:
             self.cameraRechargeState = -1
         self.cameraRechargeState += 1
         if self.cameraRechargeState > 0:

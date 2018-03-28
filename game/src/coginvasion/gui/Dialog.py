@@ -22,7 +22,7 @@ Cancel = 4
 class Dialog(DirectDialog):
 
     def __init__(self, parent = None, style = NoButtons, **kw):
-        if parent == None:
+        if parent is None:
             parent = aspect2d
         self.style = style
         if self.style == YesNo or self.style == YesCancel:
@@ -83,7 +83,7 @@ class GlobalDialog(Dialog):
             cancelButtonText = CIGlobals.DialogCancel, extraArgs = [], **kw):
         self.extraArgs = extraArgs
         self.doneStatus = None
-        if doneEvent == None and style != NoButtons:
+        if doneEvent is None and style != NoButtons:
             self.notify.error("You must specify a doneEvent on a dialog with buttons.")
         self.__doneEvent = doneEvent
         if style == YesNo:

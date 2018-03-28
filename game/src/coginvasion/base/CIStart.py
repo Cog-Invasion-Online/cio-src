@@ -167,7 +167,7 @@ base.transitions.IrisModelName = "phase_3/models/misc/iris.bam"
 base.transitions.FadeModelName = "phase_3/models/misc/fade.bam"
 base.accept(base.inputStore.TakeScreenshot, ScreenshotHandler.__takeScreenshot)
 
-if base.win == None:
+if base.win is None:
     notify.warning("Unable to open window; aborting.")
     sys.exit()
 else:

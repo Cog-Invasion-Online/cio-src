@@ -23,7 +23,7 @@ class DistributedHQNPCToonAI(DistributedNPCToonAI.DistributedNPCToonAI):
         DistributedNPCToonAI.DistributedNPCToonAI.doQuestStuffWithThisAvatar(self)
         av = self.air.doId2do.get(self.currentAvatar)
         if av:
-            if self.currentAvatarQuestOfMe == None:
+            if self.currentAvatarQuestOfMe is None:
                 self.d_setChat(NPCDialogue.PickQuest)
                 questList = av.questManager.getPickableQuestList(self)
                 self.sendUpdateToAvatarId(self.currentAvatar, 'makePickableQuests', [questList])

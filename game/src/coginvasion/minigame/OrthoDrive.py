@@ -40,7 +40,7 @@ class OrthoDrive:
         return
 
     def __placeToonHOG(self, pos, h = None):
-        if h == None:
+        if h is None:
             h = self.lt.getH()
         self.lt.setPos(pos)
         self.lt.setH(h)

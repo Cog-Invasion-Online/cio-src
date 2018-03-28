@@ -124,7 +124,7 @@ class TownLoader(StateData):
         status = self.place.doneStatus
         if (status['loader'] == 'townLoader' and
         ZoneUtil.getBranchZone(status['zoneId']) == self.branchZone and
-        status['shardId'] == None or
+        status['shardId'] is None or
         status['how'] == 'doorOut' or status['where'] == 'suitInterior'):
             self.fsm.request('quietZone', [status])
         else:
@@ -165,7 +165,7 @@ class TownLoader(StateData):
         status = self.place.doneStatus
         if (status['loader'] == 'townLoader' and
         ZoneUtil.getBranchZone(status['zoneId']) == self.branchZone and
-        status['shardId'] == None or
+        status['shardId'] is None or
         status['how'] == 'doorOut'):
             self.fsm.request('quietZone', [status])
         else:

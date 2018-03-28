@@ -234,14 +234,14 @@ class DistributedBuilding(DistributedObject):
         self.normalizeElevator()
 
     def loadAnimToSuitSfx(self):
-        if self.cogDropSound == None:
+        if self.cogDropSound is None:
             self.cogDropSound = base.loadSfx(self.TAKEOVER_SFX_PREFIX + 'cogbldg_drop.ogg')
             self.cogLandSound = base.loadSfx(self.TAKEOVER_SFX_PREFIX + 'cogbldg_land.ogg')
             self.cogSettleSound = base.loadSfx(self.TAKEOVER_SFX_PREFIX + 'cogbldg_settle.ogg')
             self.openSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_open.ogg')
 
     def loadAnimToToonSfx(self):
-        if self.cogWeakenSound == None:
+        if self.cogWeakenSound is None:
             self.cogWeakenSound = base.loadSfx(self.TAKEOVER_SFX_PREFIX + 'cogbldg_weaken.ogg')
             self.toonGrowSound = base.loadSfx(self.TAKEOVER_SFX_PREFIX + 'toonbldg_grow.ogg')
             self.toonSettleSound = base.loadSfx(self.TAKEOVER_SFX_PREFIX + 'toonbldg_settle.ogg')

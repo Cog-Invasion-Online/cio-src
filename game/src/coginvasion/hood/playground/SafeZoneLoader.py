@@ -237,7 +237,7 @@ class SafeZoneLoader(StateData):
         status = self.place.doneStatus
         if (status['loader'] == 'safeZoneLoader' and
         self.hood.isSameHood(status) and
-        status['shardId'] == None or
+        status['shardId'] is None or
         status['how'] == 'doorOut'):
             self.fsm.request('quietZone', [status])
         else:

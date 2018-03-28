@@ -213,7 +213,7 @@ def getLocationText(location, objective = None):
     if location == 0 or not location and objective:
         # Let's figure out where the assigner is at, fam.
         if location == 0 or objective.assigner == 0:
-            return 'Toon HQ\nAny Street\nAny Neighborhood'
+            return 'Any Street\nAny Neighborhood'
         else:
             return getLocationText(CIGlobals.NPCToonDict[objective.assigner][0])
     

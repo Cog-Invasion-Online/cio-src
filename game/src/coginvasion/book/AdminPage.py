@@ -92,7 +92,7 @@ class AdminPage(BookPage):
             extraArgs = ['basePage']
         )
 
-    def sendSystemMessageCommand(self, _):
+    def sendSystemMessageCommand(self):
         msg = self.msgEntry.get()
         DISTRICT_WIDE_MSG(msg)
         self.fsm.request('basePage')

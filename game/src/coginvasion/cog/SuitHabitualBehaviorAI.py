@@ -13,7 +13,7 @@ from src.coginvasion.cog.SuitBehaviorBaseAI import SuitBehaviorBaseAI
 class SuitHabitualBehaviorAI(SuitBehaviorBaseAI):
     
     def __init__(self, suit, doneEvent = None):
-        if doneEvent == None:
+        if doneEvent is None:
             doneEvent = 'suit%s-behaviorDone' % (suit.doId)
         SuitBehaviorBaseAI.__init__(self, suit, doneEvent)
         self.isEntered = 0

@@ -54,8 +54,11 @@ class CIBase(ShowBase):
         tpRed.setTextColor(1, 0, 0, 1)
         tpSlant = TextProperties()
         tpSlant.setSlant(0.3)
+        tpHQClockFlicker = TextProperties()
+        tpHQClockFlicker.setTextColor(0.0, 0.0, 0.0, 0.0)#0.78, 0.78, 0.78, 0.7
         tpMgr.setProperties('red', tpRed)
         tpMgr.setProperties('slant', tpSlant)
+        tpMgr.setProperties('hqFlicker', tpHQClockFlicker)
         
     def initStuff(self):
         wrm = WaterReflectionManager()
