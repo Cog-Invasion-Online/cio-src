@@ -113,6 +113,7 @@ notify.info("Using Panda3D version {0}".format(PandaSystem.getVersionString()))
 notify.info("True threading: " + str(Thread.isTrueThreads()))
 
 sm.maybeFixAA()
+base.setFrameRateMeter(sm.getSetting("fps"))
 
 # Use our shader generator extension
 #import ccoginvasion
