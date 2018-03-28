@@ -36,9 +36,13 @@ class ChatInput(DirectObject, StateData.StateData):
             "=": "+", "`": "~", "[": "{", "]": "}", "\\": "|", ";": ":", "'": "\"",
             ",": "<", ".": ">"}
         
-        # Loads the sfx sound that plays when the input window is opened.
+        # Loads the sfx that plays when the input window is opened.
         self.chatSfx = loader.loadSfx('phase_3.5/audio/sfx/GUI_quicktalker.ogg')
         self.chatSfx.setVolume(0.5)
+        
+        # Loads the sfx that plays when the user tries to input text with non-ASCII characters.
+        self.badInputSfx = loader.loadSfx('phase_4/audio/sfx/ring_miss.ogg')
+        self.badInputSfx.setVolume(0.5)
 
         self.chatFrame = None
         
@@ -54,6 +58,7 @@ class ChatInput(DirectObject, StateData.StateData):
                     'off', 'off')
         self.fsm.enterInitialState()
         self.entered = False
+        self.badInputPresent = False
         return
     
     def setKeyList(self):
@@ -148,7 +153,7 @@ class ChatInput(DirectObject, StateData.StateData):
                 self.ignore(base.inputStore.Chat)
             base.localAvatar.disableGagKeys()
 
-    def enterInput(self, key, command = None, extraArgs = []):
+    def enterInput(self, key, recipient = None):
         # Let's send our open chat window event.
         messenger.send(CHAT_WINDOW_OPENED_EVENT, [])
 
@@ -156,9 +161,7 @@ class ChatInput(DirectObject, StateData.StateData):
             if hasattr(base.localAvatar, 'book_btn'):
                 base.localAvatar.book_btn.hide()
             key = ""
-        
-        if command == None:
-            command = self.sendChat
+
         if not self.chatFrame:
             base.localAvatar.disableChatInput()
             base.localAvatar.createChatInput()
@@ -172,26 +175,63 @@ class ChatInput(DirectObject, StateData.StateData):
                                                 text_scale=0.06, text_pos=(0, -0.09), text_fg=(1,1,1,1), parent=self.chatFrame,
                                                 pos=(-0.151, 0, -0.088), scale=1, command=self.fsm.request, extraArgs = ['idle'])
         self.chatInput = DirectEntry(focus=1, cursorKeys=0, relief=None, geom=None, numLines=3,
-                                parent=self.chatFrame, pos=(-0.2, 0, 0.11), scale=0.05, command=command,
-                                width=8.6, initialText=key, backgroundFocus = 0, extraArgs = extraArgs)
-        self.chatInput.bind(DGG.OVERFLOW, command, extraArgs)
+                                parent=self.chatFrame, pos=(-0.2, 0, 0.11), scale=0.05, command=self.sendChat,
+                                width=8.6, initialText=key, backgroundFocus = 0, extraArgs = [recipient])
+        self.chatInput.bind(DGG.OVERFLOW, self.sendChat, extraArgs = [recipient])
+        self.chatInput.bind(DGG.TYPE, self.onTextChangeEvent, extraArgs = [])
+        self.chatInput.bind(DGG.ERASE, self.onTextChangeEvent, extraArgs = [])
         self.chatBx_send = DirectButton(text=("", "Say It", "Say It", ""), text_shadow=(0, 0, 0, 1),
                                     geom=(self.chat_btn_model.find('**/ChtBx_ChtBtn_UP'),
                                     self.chat_btn_model.find('**/ChtBx_ChtBtn_DN'),
                                     self.chat_btn_model.find('**/ChtBx_ChtBtn_RLVR')), relief=None,
                                     text_scale=0.06, text_pos=(0, -0.09), text_fg=(1,1,1,1),
-                                    parent=self.chatFrame, scale=1, command=command,
-                                    pos=(0.182, 0, -0.088), extraArgs=[self.chatInput.get()] + extraArgs)
+                                    parent=self.chatFrame, scale=1, command=self.sendChat,
+                                    pos=(0.182, 0, -0.088), extraArgs=[recipient])
         self.chatBx_close.setBin('gui-popup', 60)
         self.chatBx_send.setBin('gui-popup', 60)
         self.chatInput.setBin('gui-popup', 60)
+        
+    def onTextChangeEvent(self, _):
+        if self.chatInput:
+            chat = self.chatInput.guiItem.getText()
+            chat = chat.replace('\1red\1', '')
+            chat = chat.replace('\2', '')
+            newInput = list(chat)
+            
+            try:
+                chat.decode('ascii')
+            except UnicodeDecodeError:
+                # Non-ASCII characters were entered.
+                newText = ""
+                validKeys = list(string.printable[5:94])
+                for char in newInput:
+                    if not len(char) == 0:
+                        if not char in validKeys:
+                            newText += '\1red\1' + char + '\2'
+                            continue
+                    newText += char
+                self.chatInput.guiItem.setText(newText)
+                self.badInputPresent = True
+            else:
+                self.badInputPresent = False
 
-    def sendChat(self, _):
+    def sendChat(self, _, recipient):
         chat = self.chatInput.get()
         if hasattr(base, 'localAvatar'):
-            if len(chat) > 0:
-                base.localAvatar.b_setChat(chat)
-        self.fsm.request('idle')
+            if len(chat) > 0 and not self.badInputPresent:
+                # Using an underscore as a prefix will slant the text.
+                if chat[0] == '_':
+                    chat = '\1slant\1' + chat[1:]
+                if recipient:
+                    base.cr.friendsManager.d_sendWhisper(recipient, chat)
+                    self.enableKeyboardShortcuts()
+                else:
+                    base.localAvatar.b_setChat(chat)
+            elif self.badInputPresent:
+                base.playSfx(self.badInputSfx)
+                
+        if not self.badInputPresent:
+            self.fsm.request('idle')
 
     def exitInput(self):
         if base.localAvatarReachable() and base.localAvatar.GTAControls and hasattr(base.localAvatar, 'book_btn'):
@@ -207,6 +247,9 @@ class ChatInput(DirectObject, StateData.StateData):
         if self.chatInput:
             self.chatInput.destroy()
             self.chatInput = None
+        
+        # This is for preventing the sending of non-ASCII characters.
+        self.badInputPresent = False
             
         # Let's send our close chat window event.
         messenger.send(CHAT_WINDOW_CLOSED_EVENT, [])

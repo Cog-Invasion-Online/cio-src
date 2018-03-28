@@ -87,6 +87,7 @@ notify.info("Phase dir: " + game.phasedir)
 
 from CIBase import CIBase
 base = CIBase()
+base.loader.destroy()
 
 from src.coginvasion.manager.SettingsManager import SettingsManager
 jsonfile = "settings.json"

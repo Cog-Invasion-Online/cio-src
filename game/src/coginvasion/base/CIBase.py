@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import loadPrcFile, NodePath, PGTop
+from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties
 
 from direct.showbase.ShowBase import ShowBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -48,6 +48,14 @@ class CIBase(ShowBase):
         self.credits2d.setScale(1.0 / self.getAspectRatio(), 1.0, 1.0)
 
         self.wakeWaterHeight = -30.0
+        
+        tpMgr = TextPropertiesManager.getGlobalPtr()
+        tpRed = TextProperties()
+        tpRed.setTextColor(1, 0, 0, 1)
+        tpSlant = TextProperties()
+        tpSlant.setSlant(0.3)
+        tpMgr.setProperties('red', tpRed)
+        tpMgr.setProperties('slant', tpSlant)
         
     def initStuff(self):
         wrm = WaterReflectionManager()
