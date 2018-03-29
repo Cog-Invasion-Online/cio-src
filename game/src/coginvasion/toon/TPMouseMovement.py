@@ -78,7 +78,7 @@ class TPMouseMovement(DirectObject):
         camera.reparentTo(self.player_node)
         
         if startTask:
-            taskMgr.add(self.cameraMovement, "TPMM.enableMovement")
+            taskMgr.add(self.cameraMovement, "TPMM.enableMovement", sort = -40)
         
         self.enabled = True
 
@@ -126,8 +126,7 @@ class TPMouseMovement(DirectObject):
             centerX = base.win.getXSize() / 2
             centerY = base.win.getYSize() / 2
 
-            if abs(x - centerX) > 0 or abs(y - centerY) > 0:
-                base.win.movePointer(0, centerX, centerY)
+            base.win.movePointer(0, centerX, centerY)
 
             # Get the mouse sensitivity
             sens = CIGlobals.getSettingsMgr().getSetting("fpmgms")

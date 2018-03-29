@@ -153,12 +153,26 @@ class MakeAToon:
         self.spotlight.setScale(0.6, 0.8, 0.8)
         self.spotlight.setColor(1,1,1,0.3)
         self.spotlight_img = OnscreenImage(image=self.spotlight)
+        self.spotlight_img.hide()
         self.toonGen = ToonGenerator(self)
+        #self.toonGen.toon.setDepthOffset(1)
         self.ilc = IndoorLightingConfig.makeDefault()
-        self.ilc.lights = [Point3(0, 0, 10)]
+        self.ilc.ambient = (0.4, 0.4, 0.4, 1.0)
+        self.ilc.lights = []
         self.ilc.setupAndApply()
+        self.spLight = CIGlobals.makeSpotlight("makeatoon", (1, 1, 1, 1), (0, 0, 0), (0, 0, 0))
+        self.spLight.reparentTo(self.toonGen.toon)
+        self.spLight.setPos(0, 25, 5)
+        self.spLight.lookAt(0, -15, 0)
+        #if not game.userealshadows:
+        #    self.spLight.node().setShadowCaster(True, 4096, 4096)
+            #self.spLight.node().showFrustum()
+        render.setLight(self.spLight)
         self.music = base.loadMusic("phase_3/audio/bgm/create_a_toon.mid")
         base.playMusic(self.music, volume=0.7, looping=1)
+
+        render.setDepthOffset(1)
+       # base.oobe()
 
     def setSlot(self, slot):
         self.slot = slot
@@ -1170,6 +1184,8 @@ class MakeAToon:
         del self.spotlight_img
         del self.spotlight
         del self.nameGui
+        self.spLight.removeNode()
+        del self.spLight
         self.toonName = None
         self.toonMade = 0
         self.music.stop()

@@ -127,7 +127,7 @@ def getOutdoorLightingConfig(hoodId):
     olc.setSkyType(data.skyType)
     olc.ambient = data.outdoorAmbientColor
     olc.sun = data.sunColor
-    olc.sunPos = data.sunPosition
+    olc.sunAngle = data.sunAngle
     olc.fog = data.fogColor
     olc.fogDensity = data.fogDensity
 

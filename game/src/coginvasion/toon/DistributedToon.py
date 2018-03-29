@@ -69,6 +69,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         self.tunnelTrack = None
         self.numGagSlots = 0
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
+
         return
         
     def stopSmooth(self):

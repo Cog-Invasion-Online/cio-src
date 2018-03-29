@@ -24,6 +24,7 @@ class Nametag3d(Nametag, Clickable3d):
         self.contents.setMaterialOff()
         self.contents.setShaderOff()
         self.contents.hide(CIGlobals.ShadowCameraBitmask)
+        CIGlobals.applyNoGlow(self.contents)
         
         self.cTag = CNametag3d()
 

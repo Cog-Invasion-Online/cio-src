@@ -13,12 +13,14 @@ from panda3d.core import Point3
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood.SkyUtil import SkyUtil
 from src.coginvasion.hood.SnowEffect import SnowEffect
+from src.coginvasion.base.ShadowCaster import ShadowCaster
 
 class LightingConfig:
 
     def __init__(self, ambient):
         self.ambient = ambient
         self.ambientNP = None
+        self.shadows = None
 
     @staticmethod
     def makeDefault():
@@ -38,15 +40,20 @@ class LightingConfig:
     def apply(self):
         if game.uselighting and not game.usepipeline:
             render.setLight(self.ambientNP)
+            #if self.shadows:
+            #    self.shadows.enable()
 
     def unapply(self):
         if game.uselighting and not game.usepipeline:
             render.clearLight(self.ambientNP)
+            #if self.shadows:
+            #    self.shadows.disable()
 
     def remove(self):
         if self.ambientNP:
             self.ambientNP.removeNode()
             self.ambientNP = None
+        self.shadows = None
 
     def cleanup(self):
         self.unapply()
@@ -69,10 +76,10 @@ class OutdoorLightingConfig(LightingConfig):
                STNight:     ["phase_8/models/props/DL_sky.bam",     False],
                STCog:       ["phase_9/models/cogHQ/cog_sky.bam",    False]}
 
-    def __init__(self, ambient, sun, sunPos, fog, fogDensity, skyType, snow):
+    def __init__(self, ambient, sun, sunAngle, fog, fogDensity, skyType, snow):
         LightingConfig.__init__(self, ambient)
         self.sun = sun
-        self.sunPos = sunPos
+        self.sunAngle = sunAngle
         self.fog = fog
         self.fogDensity = fogDensity
         self.setSkyType(skyType)
@@ -103,7 +110,7 @@ class OutdoorLightingConfig(LightingConfig):
 
         return OutdoorLightingConfig(envConfig.defaultOutdoorAmbientColor,
                                      envConfig.defaultSunColor,
-                                     envConfig.defaultSunPosition,
+                                     envConfig.defaultSunAngle,
                                      envConfig.defaultFogColor,
                                      envConfig.defaultFogDensity,
                                      envConfig.defaultSkyType,
@@ -111,7 +118,9 @@ class OutdoorLightingConfig(LightingConfig):
 
     def setup(self):
         LightingConfig.setup(self)
-        self.sunNP = CIGlobals.makeDirectionalLight('config', self.sun, self.sunPos)
+        self.sunNP = CIGlobals.makeDirectionalLight('config', self.sun, self.sunAngle)
+        
+        #self.shadows = ShadowCaster(self.sunNP)
         if not self.winterOverride:
             self.fogNode = CIGlobals.makeFog('config', self.fog, self.fogDensity)
 
@@ -130,6 +139,7 @@ class OutdoorLightingConfig(LightingConfig):
         
         if game.uselighting:
             render.setLight(self.sunNP)
+            #base.filters.setVolumetricLighting(self.sunNP)
             if not self.winterOverride:
                 render.setFog(self.fogNode)
 
@@ -153,6 +163,7 @@ class OutdoorLightingConfig(LightingConfig):
     def unapply(self):
         if game.usepipeline:
             return
+        #base.filters.delVolumetricLighting()
         LightingConfig.unapply(self)
         if game.uselighting:
             render.clearLight(self.sunNP)
@@ -187,7 +198,7 @@ class OutdoorLightingConfig(LightingConfig):
     def cleanup(self):
         LightingConfig.cleanup(self)
         self.sun = None
-        self.sunPos = None
+        self.sunAngle = None
         self.fog = None
         self.fogDensity = None
         self.fogNode = None
@@ -203,6 +214,7 @@ class IndoorLightingConfig(LightingConfig):
         self.light = light
         self.lights = lights
         self.lightNPs = []
+        self.visLights = False
 
     @staticmethod
     def makeDefault():
@@ -215,8 +227,11 @@ class IndoorLightingConfig(LightingConfig):
     def setup(self):
         LightingConfig.setup(self)
         for lightPos in self.lights:
-            light = CIGlobals.makePointLight('config', self.light, lightPos)
+            light = CIGlobals.makePointLight('config', self.light / float(len(self.lights)), lightPos)
             self.lightNPs.append(light)
+            if self.visLights:
+                vis = loader.loadModel("models/smiley.egg.pz")
+                vis.reparentTo(light)
 
     def apply(self):
         if game.usepipeline:

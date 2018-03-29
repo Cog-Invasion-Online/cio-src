@@ -26,6 +26,8 @@ class ChatBalloon(NodePath):
                  foreground=VBase4(0, 0, 0, 1), background=VBase4(1, 1, 1, 1),
                  reversed=False, button=None, is2d = False):
         NodePath.__init__(self, 'chatBalloon')
+        # We don't want chat bubbles to glow from the bloom filter, it looks terrible.
+        CIGlobals.applyNoGlow(self)
 
         self.setLightOff()
         self.setShaderOff()

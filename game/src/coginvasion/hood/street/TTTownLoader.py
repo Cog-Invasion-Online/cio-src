@@ -8,6 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.core import TextureStage
+
 import TownLoader
 import TTStreet
 
@@ -27,6 +29,13 @@ class TTTownLoader(TownLoader.TownLoader):
         zone4File = str(self.branchZone)
         dnaFile = 'phase_5/dna/toontown_central_' + zone4File + '.pdna'
         self.createHood(dnaFile)
+
+        #streetNormal = TextureStage('TTStreetNormal')
+        #streetNormal.setMode(TextureStage.MNormal)
+        #normalTex = loader.loadTexture("phase_3.5/maps/cobblestone_normal.jpg")
+        #for street in self.geom.findAllMatches("**/*street_*_street*"):
+        #    print "Applying normal texture to", street.getName()
+        #    street.setTexture(streetNormal, normalTex)
 
     def unload(self):
         TownLoader.TownLoader.unload(self)

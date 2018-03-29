@@ -27,6 +27,7 @@ class game:
     process = 'client'
     usepipeline = False
     uselighting = True
+    userealshadows = False
     phasedir = './resources/'
     resourceEncryptionPwd = 'cio-03-06-16_lsphases'
 __builtin__.game = game
@@ -186,5 +187,5 @@ base.enableParticles()
 render.setAntialias(AntialiasAttrib.MMultisample)
 
 if game.uselighting:
-    render.setAttrib(LightRampAttrib.makeHdr0())
+    #render.setAttrib(LightRampAttrib.makeHdr0())
     render.setShaderAuto()

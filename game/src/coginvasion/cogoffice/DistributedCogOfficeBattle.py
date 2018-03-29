@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Vec3, NodePath
+from panda3d.core import Vec3, NodePath, Point3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.ClockDelta import globalClockDelta
@@ -47,7 +47,8 @@ PROPS = {'photo_frame':     'phase_7/models/props/photo_frame.egg',
         'square_shadow':    'phase_3/models/props/square_drop_shadow.bam',
         'shadow':           'phase_3/models/props/drop_shadow.bam',
         'BR_sky':           'phase_3.5/models/props/BR_sky.bam',
-        'tv_on_wall':       'phase_7/models/props/cogtv.egg'}
+        'tv_on_wall':       'phase_7/models/props/cogtv.egg',
+        'light_panel':      'phase_7/models/props/ceiling_light_panel.egg'}
 
 class Elevator:
 
@@ -98,6 +99,7 @@ class CogTV(NodePath):
 
     def __init__(self):
         NodePath.__init__(self, 'cogtv')
+        self.setMaterialOff()
         self.mdl = loader.loadModel(PROPS['tv_on_wall'])
         self.mdl.reparentTo(self)
         self.mdl.find("**/tv_screen").removeNode()
@@ -146,15 +148,33 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                         ['coffee_cup', -1.66, 15.88, 3.01, 0, 0, 0, 1],
                         ['phone', 3.17, 13.35, 2.97, 171.47, 0, 0, 1],
                         ['fax_paper', -3.32, 17.81, 3.01, 127.2, 0, 0, 1],
-                        ['fax_paper', -3.32, 17.81, 3.005, 147.53, 0, 0, 1]
+                        ['fax_paper', -3.32, 17.81, 3.005, 147.53, 0, 0, 1],
+                        ['light_panel', -15, 10, 15, 0, 0, 0, 1],
+                        #['light_panel', -23.5, 47.5, 28.5, 0, 0, 0, 1],
+                        #['light_panel', -20, 0, 15, 0, 0, 0, 1],
+                        #['light_panel', -30, 0, 15, 0, 0, 0, 1],
+                        #['light_panel', 0, 20, 15, 0, 0, 0, 1],
+                        #['light_panel', -10, 20, 15, 0, 0, 0, 1],
+                        #['light_panel', -20, 20, 15, 0, 0, 0, 1],
+                        #['light_panel', -30, 20, 15, 0, 0, 0, 1],
                     ],
                     'elevators': [
                         [0.74202, -9.50081, 0, 180, 0, 0],
                         [-39.49848, 20.74907, 0, 90, 0, 0]
                     ],
+                    'lights': [
+                        Point3(-15, 10, 13),
+                        #Point3(-23.5, 47.5, 26.5),
+                        #Point3(-20, 0, 13),
+                        #Point3(-30, 0, 13),
+                        #Point3(0, 20, 13),
+                        #Point3(-10, 20, 13),
+                        #Point3(-20, 20, 13),
+                        #Point3(-30, 20, 13),
+                    ],
                     # No need to provide any room sections when it's a single-sectioned room
                     'room_sections': [],
-                    'room_mdl': 'phase_7/models/modules/cog_bldg_reception_flr.bam',
+                    'room_mdl': 'phase_7/models/modules/cog_bldg_reception_flr.egg',
                     'grounds': ['**/floor'],
                     'cubemaps': [['phase_7/cubemaps/rf_#.jpg', 0.0, 0.0, 0.0]]
                 },
@@ -171,6 +191,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                         ['clock', -23.238, 9.498, 9.774, 0, 0, -90, 1],
                         ['plant', -27.48, 17.63, 0, 132.71, 0, 0, 12],
                         ['photo_frame', -40.64, -22.54, 7.99, 90, 0, 90, 1],
+                        ['light_panel', -50, 0, 15, 0, 0, 0, 1],
 
                         # Large room:
                         ['rug', -0.154, 97.92, 0, -90, 0, 0, 1],
@@ -205,14 +226,19 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                         ['fax_paper', 17.91, -7.17, 3.42, 0, 0, 0, 1],
                         ['fax_paper', 13.67, -2.82, 3.389, 280.499, 0, 0, 1],
                         ['fax_paper', 13.67, 5.33, 3.412, 270, 0, 0, 1],
-                        ['fax_paper', 17.681, 10.56, 3.424, 180, 0, 0, 1]
+                        ['fax_paper', 17.681, 10.56, 3.424, 180, 0, 0, 1],
+                        ['light_panel', 0, 45, 15, 0, 0, 0, 1]
                     ],
                     'elevators': [
                         [-73.22, 11.08, 0, 90, 0, 0],
                         [0.22, 105.86, 0, 0, 0, 0],
                     ],
+                    'lights': [
+                        Point3(-50, 0, 13),
+                        Point3(0, 45, 13)
+                    ],
                     'room_sections': ['short_floor_coll', 'long_floor_coll_part1', 'long_floor_coll_part2'],
-                    'room_mdl': 'phase_7/models/modules/cog_bldg_executive_flr.bam',
+                    'room_mdl': 'phase_7/models/modules/cog_bldg_executive_flr.egg',
                     'grounds': ['**/short_floor', '**/long_floor'],
                     'cubemaps': []
                 },
@@ -240,15 +266,19 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                         ['fax_paper', -16.71, 1.57, 3.4, 270, 0, 0, 1],
                         ['fax_paper', -16.71, 10.23, 3.4, 270, 0, 0, 1],
                         ['fax_paper', -13.44, 14.8, 3.41, 180, 0, 0, 1],
-                        ['fax_paper', -13.44, 14.8, 3.4, 150, 0, 0, 1]
+                        ['fax_paper', -13.44, 14.8, 3.4, 150, 0, 0, 1],
+                        ['light_panel', 0, 25, 15, 0, 0, 0, 1]
                     ],
                     'elevators': [
                         [0.23007, 60.47556, 0, 0, 0, 0],
                         [0.74202, -9.50081, 0, 180, 0, 0]
                     ],
+                    'lights': [
+                        Point3(0, 25, 13)
+                    ],
                     # No need to provide any room sections when it's a single-sectioned room
                     'room_sections': [],
-                    'room_mdl': 'phase_7/models/modules/cog_bldg_conference_flr.bam',
+                    'room_mdl': 'phase_7/models/modules/cog_bldg_conference_flr.egg',
                     'grounds': ['**/floor', '**/floor1'],
                     'cubemaps': [['phase_7/cubemaps/cf_#.jpg', 0.0, 0.0, 0.0]]
                 },
@@ -307,12 +337,16 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                         ['couch_2person', 32.78, 22.83, 0, 270, 0, 0, 1.5],
                         ['bookshelfA', 34.7, 34.43, 0, 270, 0, 0, 1.5],
                         ['BR_sky', 0, 0, -50, 0, 0, 0, 1],
-                        ['square_shadow', -30.64, 26.16, 0.01, 0, 0, 0, Vec3(1.09, 3.69, 1)]
+                        ['square_shadow', -30.64, 26.16, 0.01, 0, 0, 0, Vec3(1.09, 3.69, 1)],
+                        ['light_panel', 0, 40, 15, 0, 0, 0, 1]
                     ],
                     'gagdoor': [66.50544, 78.29003, 0, 90, 0, 0],
                     'elevators': [
                         [0, 0.5, 0, 180, 0, 0],
                         [-33.75, 63.0, 0, 90, 0, 0]
+                    ],
+                    'lights': [
+                        Point3(0, 40, 13)
                     ],
                     'room_sections': [],
                     'room_mdl': 'phase_7/models/modules/cog_bldg_lounge_flr.egg',
@@ -331,7 +365,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.exteriorZoneId = None
         self.bldgDoId = None
         self.gagDoor = None
-        self.ilc = IndoorLightingConfig.makeDefault()
+        self.ilc = None
         # Use the same text from eagle summit
         self.floorNameText = DistributedMinigame.getAlertText((0.75, 0.75, 0.75, 1.0), 0.15)
         self.props = []
@@ -642,15 +676,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         #self.cr.playGame.hood.setNoFog()
         self.loadElevators()
 
-        self.ilc.setup()
-        self.ilc.apply()
-
     def disable(self):
-        if self.ilc:
-            self.ilc.unapply()
-            self.ilc.cleanup()
-            self.ilc = None
-
         taskMgr.remove(self.uniqueName('diedTask'))
         taskMgr.remove(self.uniqueName('monitorHP'))
         self.fsm.requestFinalState()
@@ -707,6 +733,10 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.d_loadedFloor()
 
     def cleanupFloor(self):
+        if self.ilc:
+            self.ilc.unapply()
+            self.ilc.cleanup()
+            self.ilc = None
         for prop in self.props:
             prop.removeNode()
         self.props = []
@@ -744,6 +774,12 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             baseFile = cubemap[0]
             x, y, z = cubemap[1], cubemap[2], cubemap[3]
             base.cubeMapMgr.addCubeMap(baseFile, Point3(x, y, z))
+        
+        lights = self.getRoomData('lights')
+        self.ilc = IndoorLightingConfig.makeDefault()
+        self.ilc.lights = lights
+        self.ilc.setup()
+        self.ilc.apply()
 
     def loadProps(self):
         dataList = self.getRoomData('props')

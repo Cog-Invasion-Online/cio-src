@@ -2,6 +2,7 @@ from panda3d.core import *
 
 from direct.task import Task
 from direct.showbase.DirectObject import DirectObject
+from direct.gui.DirectGui import OnscreenImage
 
 from src.coginvasion.globals import CIGlobals
 
@@ -19,9 +20,10 @@ class ShadowCaster(DirectObject):
         self.clearColor = VBase4(1, 1, 1, 1)
         self.setupTask = None
         self.shadowsHidden = False
+        self.shadowImage = None
         
     
-    def enable(self, fMoreShadows = False):
+    def enable(self, fMoreShadows = True):
         self.fMoreShadows = fMoreShadows
         self.disable()
         self.shadowsEnabled = 1
@@ -33,10 +35,13 @@ class ShadowCaster(DirectObject):
         else:
             self.shadowLens.setFilmSize(60, 60)
         camNode.setLens(self.shadowLens)
+        smiley = loader.loadModel("models/smiley.egg.pz")
         self.shadowCamArm = base.camera.attachNewNode('shadowCamArm')
+        smiley.reparentTo(self.shadowCamArm)
         self.shadowCam = self.shadowCamArm.attachNewNode(camNode)
         self.shadowCamArm.setPos(0, 40, 0)
         self.shadowCam.setPos(0, -40, 0)
+        smiley.copyTo(self.shadowCam)
         taskName = 'shadowCamCompass'
         taskMgr.remove(taskName)
         
@@ -45,11 +50,15 @@ class ShadowCaster(DirectObject):
             self.shadowCamArm.setScale(1)
             return Task.cont
 
-        taskMgr.add(applyCompassEffect, taskName, priority = 46)
+        taskMgr.add(applyCompassEffect, taskName)
         self.shadowTex = Texture('shadow')
         self.shadowTex.setBorderColor(self.clearColor)
         self.shadowTex.setWrapU(Texture.WMBorderColor)
         self.shadowTex.setWrapV(Texture.WMBorderColor)
+        if self.shadowImage:
+            self.shadowImage.destroy()
+            self.shadowImage = None
+        self.shadowImage = OnscreenImage(image = self.shadowTex, scale = 0.3, pos = (0, 0, 0.7))
         self.casterState = NodePath('temp')
         self.casterState.setColorScaleOff(10)
         self.casterState.setColor(self.shadowColor, self.shadowColor, self.shadowColor, 1, 10)
@@ -57,11 +66,14 @@ class ShadowCaster(DirectObject):
         self.casterState.setLightOff(10)
         self.casterState.setFogOff(10)
         camNode.setInitialState(self.casterState.getState())
-        #render.hide(CIGlobals.ShadowCameraBitmask)
+        render.hide(CIGlobals.ShadowCameraBitmask)
         #render.show(CIGlobals.ShadowCameraBitmask)
         self.shadowStage = TextureStage('shadow')
         self.shadowStage.setSort(1000)
+        CIGlobals.setShadowTexStage(self.shadowStage)
         self.turnOnShadows()
+        
+        #base.oobe()
 
     
     def hideShadows(self):
@@ -85,7 +97,7 @@ class ShadowCaster(DirectObject):
             return None
         
         self.turnOffShadows()
-        render.setTexProjector(self.shadowStage, NodePath(), self.shadowCam)
+        render.projectTexture(self.shadowStage, self.shadowTex, self.shadowCam)
         self.__createBuffer()
         self.accept('close_main_window', self.__destroyBuffer)
         self.accept('open_main_window', self.__createBuffer)
@@ -93,7 +105,7 @@ class ShadowCaster(DirectObject):
 
     
     def turnOffShadows(self):
-        render.clearTexProjector(self.shadowStage)
+        render.clearProjectTexture(self.shadowStage)
         self.__destroyBuffer()
         self.ignore('close_main_window')
         self.ignore('open_main_window')
@@ -103,13 +115,19 @@ class ShadowCaster(DirectObject):
     def disable(self):
         if not self.shadowsEnabled:
             return None
+            
+        if self.shadowImage:
+            self.shadowImage.destroy()
+            self.shadowImage = None
+            
+        #base.oobe()
         
         self.shadowsEnabled = 0
         taskName = 'shadowCamCompass'
         taskMgr.remove(taskName)
         self.shadowCamArm.removeNode()
         self.shadowCam.removeNode()
-        #base.camNode.clearTagState('caster')
+        base.camNode.clearTagState('caster')
         self.turnOffShadows()
         self.shadowTex = None
         self.shadowStage = None
@@ -177,19 +195,21 @@ class ShadowCaster(DirectObject):
             self.shadowBuffer = base.win.makeTextureBuffer('shadow', 1024 * 4, 1024 * 4, tex = self.shadowTex)
         else:
             self.shadowBuffer = base.win.makeTextureBuffer('shadow', 1024, 1024, tex = self.shadowTex)
-        self.shadowBuffer.setSort(30)
+        #self.shadowBuffer.setSort(30)
         self.shadowBuffer.setClearColor(self.clearColor)
         dr = self.shadowBuffer.makeDisplayRegion()
         dr.setCamera(self.shadowCam)
-        self.setupTask = taskMgr.doMethodLater(0, self.__setupCamera, 'setupCamera')
+        #self.setupTask = taskMgr.doMethodLater(0, self.__setupCamera, 'setupCamera')
 
     
     def __setupCamera(self, task):
         groundState = NodePath('temp')
-        groundState.setTexture(self.shadowStage, self.shadowTex)
-        groundState.setTexGen(self.shadowStage, TexGenAttrib.MWorldPosition)
-        #base.camNode.setTagStateKey('cam')
-        #base.camNode.setTagState('shground', groundState.getState())
+        #groundState.projectTexture(self.shadowStage, self.shadowTex, self.shadowCamArm)
+        #groundState.setTexGen(self.shadowStage, TexGenAttrib.MWorldPosition)
+        base.camNode.setTagStateKey('cam')
+        base.camNode.setTagState('shground', groundState.getState())
+        
+        
             
         self.setupTask = None
         return task.done

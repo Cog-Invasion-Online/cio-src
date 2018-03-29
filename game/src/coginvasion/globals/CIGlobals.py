@@ -10,6 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
+from panda3d.core import TextureStage
 
 from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval
 
@@ -73,6 +74,50 @@ EagleGame = "Eagle Summit"
 DeliveryGame = "Delivery!"
 DodgeballGame = "Winter Dodgeball"
 
+NoGlowTS = None
+NoGlowTex = None
+def applyNoGlow(np):
+    global NoGlowTS
+    global NoGlowTex
+    if not NoGlowTS:
+        NoGlowTS = TextureStage('noglow')
+        NoGlowTS.setMode(TextureStage.MGlow)
+    if not NoGlowTex:
+        NoGlowTex = loader.loadTexture("phase_3/maps/black.png")
+    np.setTexture(NoGlowTS, NoGlowTex)
+
+def applyGlow(np, glowTex):
+    ts = TextureStage("glow")
+    ts.setMode(TextureStage.MGlow)
+    np.setTexture(ts, glowTex)
+
+ShadowTexStage = None
+ShadowCasters = []
+def setShadowTexStage(stage):
+    global ShadowTexStage
+    global ShadowCasters
+    ShadowTexStage = stage
+    staleNodes = []
+    for node in ShadowCasters:
+        if not node.isEmpty():
+            node.setTextureOff(stage)
+        else:
+            staleNodes.append(node)
+    for sn in staleNodes:
+        ShadowCasters.remove(sn)
+
+def castShadows(node):
+    global ShadowCasters
+    node.showThrough(ShadowCameraBitmask)
+    if ShadowTexStage:
+        node.setTextureOff(ShadowTexStage)
+    ShadowCasters.append(node)
+    
+def uncastShadows(node):
+    global ShadowCasters
+    node.hide(ShadowCameraBitmask)
+    ShadowCasters.remove(node)
+
 # Makes sure that this NodePath is okay (not None and not empty).
 def isNodePathOk(np):
     return (np is not None and not np.isEmpty())
@@ -104,12 +149,15 @@ def getShinyMaterial(shininess = 250.0):
 
     return mat
 
-def getCharacterMaterial(shininess = 250, rimColor = (1, 1, 1, 1), rimWidth = 0.3, specular = (1, 1, 1, 1)):
-    mat = Material()
+def getCharacterMaterial(name = "charMat", shininess = 250, rimColor = (1, 1, 1, 1), rimWidth = 0.3,
+                         specular = (1, 1, 1, 1), lightwarp = "phase_3/maps/toon_lightwarp_3.jpg"):
+    mat = Material(name)
     mat.setRimColor(rimColor)
     mat.setRimWidth(rimWidth)
     mat.setSpecular(specular)
     mat.setShininess(shininess)
+    if lightwarp:
+        mat.setLightwarpTexture(loader.loadTexture(lightwarp))
     return mat
 
 SettingsMgr = None
@@ -123,13 +171,17 @@ def makeAmbientLight(name, color):
     ambient = render.attachNewNode(amb)
     return ambient
 
-def makeDirectionalLight(name, color, pos):
+def makeDirectionalLight(name, color, angle):
     dir = DirectionalLight(name + "-directional")
     dir.setColor(color)
     directional = camera.attachNewNode(dir)
     directional.setCompass()
-    directional.setPos(pos)
-    directional.lookAt(render, 0, 0, 0)
+    directional.setHpr(angle)
+    if game.userealshadows:
+        dir.setShadowCaster(True, 1024 * 4, 1024 * 4)
+        dir.getLens().setFilmSize(60, 60)
+        dir.getLens().setNearFar(0.1, 10000)
+        
     return directional
 
 def makePointLight(name, color, pos):
@@ -144,6 +196,16 @@ def makeFog(name, color, expDensity):
     fog.setColor(color)
     fog.setExpDensity(expDensity)
     return fog
+
+def makeSpotlight(name, color, pos, hpr):
+    spot = Spotlight(name + "-spotlight")
+    spot.setColor(color)
+    if game.userealshadows:
+        spot.setShadowCaster(True, 512, 512)
+    snp = render.attachNewNode(spot)
+    snp.setHpr(hpr)
+    snp.setPos(pos)
+    return snp
 
 NoToken = -1
 DevToken = 0

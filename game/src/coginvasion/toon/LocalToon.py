@@ -38,6 +38,10 @@ import random
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.minigame import GunGameGlobals
 
+lightwarps = ["phase_3/maps/toon_lightwarp.jpg", "phase_3/maps/toon_lightwarp_2.jpg", "test_lightwarp.png",
+              "phase_3/maps/toon_lightwarp_cartoon.jpg", "phase_3/maps/toon_lightwarp_dramatic.jpg",
+              "phase_3/maps/toon_lightwarp_bright.jpg"]
+
 class LocalToon(DistributedToon):
     neverDisable = 1
 

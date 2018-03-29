@@ -7,24 +7,27 @@ from direct.fsm.State import State
 from direct.gui.DirectGui import OnscreenText, DirectFrame, DirectWaitBar, OnscreenImage
 from direct.showbase.InputStateGlobal import inputState
 from direct.interval.IntervalGlobal import Sequence, Func, Wait
+from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from FirstPerson import FirstPerson
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.gui.Viewfinder import Viewfinder
 
 class CameraShyFirstPerson(FirstPerson):
+    notify = directNotify.newCategory("CameraShyFirstPerson")
+
     defaultColor = VBase4(1.0, 1.0, 1.0, 1.0)
     toonInFocusColor = VBase4(0.0, 0.7, 0.0, 1.0)
     toonOutOfFocusColor = VBase4(0.25, 1.0, 0.25, 1.0)
     redColor = VBase4(0.8, 0.0, 0.0, 1.0)
     batteryLevelTwoColor = VBase4(0.9, 0.36, 0.0, 1.0)
     batteryLevelThreeColor = VBase4(0.9, 0.9, 0.0, 1.0)
-    batteryLevelFourColor = VBase4(0.7, 0.7, 0.0, 1.0)
-    batteryLevelFiveColor = VBase4(0.0, 0.7, 0.0, 1.0)
+    batteryLevelFourColor = VBase4(1.0, 1.0, 0.0, 1.0)
+    batteryLevelFiveColor = VBase4(0.0, 1.0, 0.0, 1.0)
     fullyChargedState = 5
 
     def __init__(self, mg):
         self.mg = mg
-        self.cameraFocus = None
         self.batteryFrame = None
         self.batteryBg = None
         self.batteryBar = None
@@ -37,6 +40,8 @@ class CameraShyFirstPerson(FirstPerson):
         self.cameraRechargeState = None
         self.cameraRechargingLabel = None
         self.cameraFlashSeq = None
+
+        self.viewfinder = None
 
         self.camFSM = ClassicFSM('CameraFSM',
               [State('off', self.enterOff, self.exitOff),
@@ -70,7 +75,8 @@ class CameraShyFirstPerson(FirstPerson):
         self.cameraFlashSeq.start()
         self.mg.sendUpdate('remoteAvatarTakePicture', [base.localAvatar.doId])
         self.mg.myRemoteAvatar.takePicture()
-        self.cameraFocus.setColorScale(self.defaultColor)
+        self.viewfinder['image'].setColorScale(self.defaultColor)
+        picData = self.viewfinder.takePictureRaw()
         if self.hasToonInFocus and self.toonToTakePicOf:
             self.mg.sendUpdate('tookPictureOfToon', [self.toonToTakePicOf.doId])
         self.camFSM.request('recharge')
@@ -116,32 +122,29 @@ class CameraShyFirstPerson(FirstPerson):
         if not base.mouseWatcherNode.hasMouse():
             return task.cont
 
-        mpos = base.mouseWatcherNode.getMouse()
-        self.focusRay.setFromLens(base.camNode, mpos.getX(), mpos.getY())
+        toonInFoc = False
+        avatar = None
 
-        self.focusTrav.traverse(render)
+        for av in self.mg.remoteAvatars:
+            if av.avId != base.localAvatar.doId:
+                if self.viewfinder.isInView(av):
+                    self.notify.info("{0} is in our view finder".format(av.avId))
+                    avatar = self.mg.cr.doId2do.get(av.avId)
+                    break
+        if avatar:
+            remoteAvatar = self.mg.getRemoteAvatar(avatar.doId)
+            if remoteAvatar:
+                toonInFoc = True
+                self.notify.info("We've got an avatar in focus ({0})".format(avatar.doId))
+                self.__handleToonInFocus(avatar)
 
-        if self.focusHandler.getNumEntries() > 0:
-
-            self.focusHandler.sortEntries()
-
-            firstObj = self.focusHandler.getEntry(0).getIntoNodePath()
-            avId = firstObj.getParent().getPythonTag('player')
-            avatar = self.mg.cr.doId2do.get(avId)
-
-            toonInFoc = False
-
-            if avatar:
-                remoteAvatar = self.mg.getRemoteAvatar(avatar.doId)
-                if remoteAvatar:
-                    toonInFoc = True
-                    self.__handleToonInFocus(avatar)
-
-            if not toonInFoc:
-                self.toonToTakePicOf = None
-                self.hasToonInFocus = False
-                if self.cameraFocus.getColorScale() == self.toonInFocusColor:
-                    self.cameraFocus.setColorScale(self.toonOutOfFocusColor)
+        if not toonInFoc:
+            self.toonToTakePicOf = None
+            self.hasToonInFocus = False
+            self.notify.info("No avatar in focus")
+            if self.viewfinder['image'].getColorScale() == self.toonInFocusColor:
+                self.viewfinder['image'].setColorScale(self.toonOutOfFocusColor)
+                                
 
         return task.cont
 
@@ -149,7 +152,7 @@ class CameraShyFirstPerson(FirstPerson):
         if not self.hasToonInFocus or self.toonToTakePicOf is not None or self.toonToTakePicOf.doId != toon.doId:
             self.toonToTakePicOf = toon
             self.hasToonInFocus = True
-            self.cameraFocus.setColorScale(self.toonInFocusColor)
+            self.viewfinder['image'].setColorScale(self.toonInFocusColor)
 
     def start(self):
         self.fullyChargedSound = base.loadSfx('phase_4/audio/sfx/ring_get.ogg')
@@ -161,19 +164,8 @@ class CameraShyFirstPerson(FirstPerson):
         self.batteryBg.setScale(0.17, 0, 0.05)
         self.batteryBg.setColorScale(0, 0, 0, 1)
         self.batteryBar = DirectWaitBar(value = 0, range = 5, barColor = (1, 1, 1, 1), relief = None, scale = (0.12, 0.0, 0.3), parent = self.batteryFrame)
-        self.cameraFocus = loader.loadModel("phase_4/models/minigames/photo_game_viewfinder.bam")
-        self.cameraFocus.reparentTo(base.aspect2d)
 
-        self.focusTrav = CollisionTraverser('CSFP.focusTrav')
-        ray = CollisionRay()
-        rayNode = CollisionNode('CSFP.rayNode')
-        rayNode.addSolid(ray)
-        rayNode.setCollideMask(BitMask32(0))
-        rayNode.setFromCollideMask(CIGlobals.WallBitmask)
-        self.focusRay = ray
-        self.focusRayNode = base.camera.attachNewNode(rayNode)
-        self.focusHandler = CollisionHandlerQueue()
-        self.focusTrav.addCollider(self.focusRayNode, self.focusHandler)
+        self.viewfinder = Viewfinder(1.0)
 
         base.localAvatar.walkControls.setWalkSpeed(CIGlobals.ToonForwardSpeed, 0.0,
                                                    CIGlobals.ToonReverseSpeed, CIGlobals.ToonRotateSpeed)
@@ -199,17 +191,12 @@ class CameraShyFirstPerson(FirstPerson):
         self.batteryBg = None
         self.batteryFrame.destroy()
         self.batteryFrame = None
-        self.cameraFocus.removeNode()
-        self.cameraFocus = None
-        self.focusHandler = None
-        self.focusRay = None
-        self.focusRayNode.removeNode()
-        self.focusRayNode = None
-        self.focusTrav = None
         self.hasToonInFocus = None
         self.toonToTakePicOf = None
         self.fullyChargedSound = None
         self.rechargeSound = None
+        self.viewfinder.cleanup()
+        self.viewfinder = None
         self.stopCameraFlash()
         FirstPerson.reallyEnd(self)
         base.localAvatar.walkControls.setWalkSpeed(CIGlobals.ToonForwardSpeed, CIGlobals.ToonJumpForce,

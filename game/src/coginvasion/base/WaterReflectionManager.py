@@ -32,6 +32,7 @@ class WaterReflectionManager:
         self.waterNodes = []
 
         wbuffer = base.win.makeTextureBuffer("water", reso, reso)
+        wbuffer.setSort(-1)
         wbuffer.setClearColorActive(True)
         wbuffer.setClearColor(base.win.getClearColor())
         
@@ -60,7 +61,7 @@ class WaterReflectionManager:
         self.filterMgr = FilterManager(wbuffer, self.wcamera)
 
         self.ts = TextureStage("reflection")
-        self.ts.setMode(TextureStage.MModulate)
+        self.ts.setMode(TextureStage.MAdd)
         
         self.blur = []
         
@@ -96,7 +97,7 @@ class WaterReflectionManager:
         self.waveQuad.setShaderInput("time", 0.0)
         self.waveQuad.setShader(loader.loadShader("phase_3/models/shaders/waves.sha"))
 
-        taskMgr.add(self.update, "waterRefl-update-" + str(id(self)))
+        taskMgr.add(self.update, "waterRefl-update-" + str(id(self)), priority = 46)
 
     def clearPlane(self):
         if not self.enabled:

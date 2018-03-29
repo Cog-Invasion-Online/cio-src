@@ -92,7 +92,7 @@ class HoodData(object):
         self.fogColor = None
         self.fogDensity = None
         self.sunColor = None
-        self.sunPosition = None
+        self.sunAngle = None
         self.interiorLightColor = None
         self.skyType = None
         self.modifiers = {
@@ -101,7 +101,7 @@ class HoodData(object):
             'fog-color' : [Modifier(color), 'fogColor'],
             'fog-density' : [Modifier(numberValue), 'fogDensity'],
             'sun-color' : [Modifier(color), 'sunColor'],
-            'sun-position' : [Modifier(position), 'sunPosition'],
+            'sun-angle' : [Modifier(position), 'sunAngle'],
             'interior-light-color' : [Modifier(color), 'interiorLightColor'],
             'sky-type' : [Modifier(numberValue), 'skyType']
         }
@@ -125,10 +125,10 @@ class HoodData(object):
                 
     def __str__(self):
         return 'Outside Ambient Color: %s, Indoor Ambient Color: %s, \
-        Fog Color: %s, Fog Density: %d, Sun Color: %s, Sun Position: %s,\
+        Fog Color: %s, Fog Density: %d, Sun Color: %s, Sun Angle: %s,\
         Interior Light Color: %s, Sky Type: %d' % (self.outdoorAmbientColor, 
             self.indoorAmbientColor, self.fogColor, self.fogDensity, self.sunColor,
-            self.sunPosition, self.interiorLightColor, self.skyType)
+            self.sunAngle, self.interiorLightColor, self.skyType)
 
 class EnvironmentConfiguration:
     notify = directNotify.newCategory('EnvironmentConfiguration')
@@ -145,7 +145,7 @@ class EnvironmentConfiguration:
         self.defaultOutdoorAmbientColor = None
         self.defaultIndoorAmbientColor = None
         self.defaultSunColor = None
-        self.defaultSunPosition = None
+        self.defaultSunAngle = None
         self.defaultFogColor = None
         self.defaultFogDensity = None
         self.defaultInteriorLightColor = None
@@ -155,7 +155,7 @@ class EnvironmentConfiguration:
            'default-outdoor-ambient-color' : [Modifier(color), 'defaultOutdoorAmbientColor'],
            'default-indoor-ambient-color' : [Modifier(color), 'defaultIndoorAmbientColor'],
            'default-sun-color' : [Modifier(color), 'defaultSunColor'],
-           'default-sun-position' : [Modifier(position), 'defaultSunPosition'],
+           'default-sun-angle' : [Modifier(position), 'defaultSunAngle'],
            'default-fog-color' : [Modifier(color), 'defaultFogColor'],
            'default-fog-density' : [Modifier(numberValue), 'defaultFogDensity'],
            'default-interior-light-color' : [Modifier(color), 'defaultInteriorLightColor'],
