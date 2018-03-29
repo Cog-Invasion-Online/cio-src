@@ -61,6 +61,7 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         self.height = 0
 
         self.thoughtInProg = False
+        
         return
 
     def isDistributed(self):
@@ -369,9 +370,6 @@ class Avatar(ToonTalker.ToonTalker, Actor):
     def loopTask(self, animName, restart, partName, task):
         self.loop(animName, restart, partName)
         return task.done
-
-    def loop(self, animName, restart = 1, partName = None, fromFrame = None, toFrame = None):
-        return Actor.loop(self, animName, restart, partName, fromFrame, toFrame)
 
     def getGhost(self):
         return 0

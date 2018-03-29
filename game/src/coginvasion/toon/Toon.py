@@ -131,6 +131,15 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         return self.forcedTorsoAnim
 
     def clearForcedTorsoAnim(self):
+        if not self.forcedTorsoAnim is None:
+            # Let's switch our current torso and head animation to the
+            # animation the legs are running.
+            legs = self.__getLowerHalfPartNames()[0]
+            legAnimation = self.getCurrentAnim(partName = legs)
+            frame = self.getCurrentFrame(partName = legs, animName = legAnimation)
+            for part in self.__getUpperHalfPartNames():
+                self.stop(partName = part)
+                self.play(animName = legAnimation, partName = part, fromFrame = frame)
         self.forcedTorsoAnim = None
             
     def resetTorsoRotation(self):
@@ -180,6 +189,35 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         #    if hasattr(base, 'localAvatar'):
         #        if base.localAvatar.doId == self.doId:
         #            self.controlManager.enableAvatarJump()
+        
+    def play(self, animName, partName=None, fromFrame=None, toFrame=None):
+        lowerHalfNames = self.__getLowerHalfPartNames()
+        if self.forcedTorsoAnim is None or (not (partName in lowerHalfNames)):
+            Actor.play(self, animName, partName=partName, fromFrame=fromFrame, toFrame=toFrame)
+        else:
+            # The torso and the head must stay in its current animation.
+            # Let's only update the pants and the legs animation.
+            for part in lowerHalfNames:
+                Actor.play(self, animName, partName=part, fromFrame=fromFrame, toFrame=toFrame)
+            
+    def loop(self, animName, restart=1, partName=None, fromFrame=None, toFrame=None):
+        lowerHalfNames = self.__getLowerHalfPartNames()
+        if self.forcedTorsoAnim is None or (not (partName in lowerHalfNames)):
+            return Actor.loop(self, animName, restart=restart, partName=partName, fromFrame=fromFrame, toFrame=toFrame)
+        else:
+            # The torso and the head must stay in its current animation.
+            # Let's only update the pants and the legs animation.
+            for index, part in enumerate(lowerHalfNames):
+                if index == (len(lowerHalfNames) - 1):
+                    return Actor.loop(self, animName, restart=restart, partName=part, fromFrame=fromFrame, toFrame=toFrame)
+                else:
+                    Actor.loop(self, animName, restart=restart, partName=part, fromFrame=fromFrame, toFrame=toFrame)
+                    
+    def __getUpperHalfPartNames(self):
+        return ['head', 'torso-top']
+            
+    def __getLowerHalfPartNames(self):
+        return ['torso-pants', 'legs']
 
     def setSpeed(self, forwardSpeed, rotateSpeed, strafeSpeed = 0.0):
         if self.forceRunSpeed:
@@ -239,13 +277,14 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                 action = CIGlobals.WALK_INDEX
             else:
                 action = CIGlobals.STAND_INDEX
-
+            
             anim, rate = self.standWalkRunReverse[action]
             if anim != self.playingAnim or rate != self.playingRate or self.forcedTorsoAnim != self.lastForcedTorsoAnim:
                 self.playingAnim = anim
                 self.playingRate = rate
                 self.lastForcedTorsoAnim = self.forcedTorsoAnim
-
+                
+                """
                 doingGagAnim = False
                 if self.backpack:
                     if self.backpack.getCurrentGag():
@@ -260,16 +299,17 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                             self.loop(anim, partName = "legs")
                             self.loop(anim, partName = "torso-pants")
                             self.loop(anim, partName = "head")
-                if not doingGagAnim:
-                    if self.forcedTorsoAnim is None:
-                        self.loop(anim)
-                    else:
-                        self.loop(self.forcedTorsoAnim, partName = 'head')
-                        self.loop(self.forcedTorsoAnim, partName = 'torso-top')
+                """
+                #if not doingGagAnim:
+                if self.forcedTorsoAnim is None:
+                    self.loop(anim)
+                else:
+                    #self.loop(self.forcedTorsoAnim, partName = 'head')
+                    #self.loop(self.forcedTorsoAnim, partName = 'torso-top')
 
-                        # Whatever happens to the legs should also happen on the pants.
-                        self.loop(anim, partName = 'torso-pants')
-                        self.loop(anim, partName = 'legs')
+                    # Whatever happens to the legs should also happen on the pants.
+                    self.loop(anim, partName = 'torso-pants')
+                    self.loop(anim, partName = 'legs')
                 self.setPlayRate(rate, anim)
         return action
 
@@ -419,6 +459,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.Toon_disabled
         except:
             self.Toon_disabled = 1
+            self.ignoreAll()
             self.backpack = None
             self.collsSetup = False
             self.stopAnimations()
@@ -520,7 +561,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             del self._Actor__commonBundleHandles['torso']
         if 'legs' in self._Actor__commonBundleHandles:
             del self._Actor__commonBundleHandles['legs']
-            
+        
         self.deleteShadow()
         self.removePart('head')
         self.removePart('torso')

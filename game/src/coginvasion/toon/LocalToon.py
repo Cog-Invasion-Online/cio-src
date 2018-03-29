@@ -19,7 +19,7 @@ from src.coginvasion.gui.LaffOMeter import LaffOMeter
 from src.coginvasion.gui.InventoryGui import InventoryGui
 from src.coginvasion.gags import GagGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval
-from direct.gui.DirectButton import DirectButton
+from direct.gui.DirectGui import DirectButton, OnscreenText
 from direct.showbase.InputStateGlobal import inputState
 from direct.gui.DirectGui import DGG
 from src.coginvasion.hood import ZoneUtil
@@ -122,6 +122,9 @@ class LocalToon(DistributedToon):
         
         # This is used by CutsceneGUI
         self.allowA2dToggle = True
+        
+        # This is used by the animation traverser.
+        self.__traverseGUI = None
         
     def showCrosshair(self):
         self.crosshair.show()
@@ -920,6 +923,46 @@ class LocalToon(DistributedToon):
                 base.aspect2d.show()
             else:
                 base.aspect2d.hide()
+                
+    def startTraverseAnimationControls(self, animName):
+        if not self.__traverseGUI:
+            if not self.getNumFrames(animName) is None:
+                frame = self.getCurrentFrame(animName)
+                
+                if frame is None:
+                    frame = 0
+                    self.pose(animName, 0)
+                
+                self.accept('h', self.__traverseAnimation, extraArgs = [animName, -1])
+                self.accept('j', self.__traverseAnimation, extraArgs = [animName, 1])
+                
+                self.__traverseGUI = OnscreenText(text = 'Current Frame: {0}\n\'H\' Decrease Frame, \'J\' Increase Frame'.format(str(frame)),
+                    pos = (0, -0.75), font = CIGlobals.getToonFont(), fg = (1, 1, 1, 1),
+                    shadow = (0, 0, 0, 1))
+            else:
+                self.notify.info('Tried to traverse unknown animation: {0}'.format(animName))
+            
+    def __traverseAnimation(self, animName, delta):
+        frame = self.getCurrentFrame(animName)
+        if frame is None: 
+            frame = 0
+
+        if (frame + delta) < 0:
+            frame = self.getNumFrames(animName) - 1
+        elif (frame + delta) > (self.getNumFrames(animName) - 1):
+            frame = self.getNumFrames(animName) - 1
+        else:
+            frame += delta
+        self.pose(animName, frame)
+        self.__traverseGUI.setText('Current Frame: {0}\n\'H\' Decrease Frame, \'J\' Increase Frame'.format(str(frame)))
+            
+    def endTraverseAnimationControls(self):
+        self.ignore('h')
+        self.ignore('j')
+        
+        if self.__traverseGUI:
+            self.__traverseGUI.destroy()
+            self.__traverseGUI = None
 
     def generate(self):
         DistributedToon.generate(self)
@@ -989,6 +1032,7 @@ class LocalToon(DistributedToon):
         self.inTutorial = None
         self.avatarChoice = None
         self.chatInputState = None
+        self.endTraverseAnimationControls()
         self.ignore("gotLookSpot")
         self.ignore("clickedWhisper")
         self.ignore('/')
