@@ -27,7 +27,6 @@ class CIBase(ShowBase):
     notify = directNotify.newCategory("CIBase")
 
     def __init__(self):
-
         if game.usepipeline:
             self.pipeline = RenderPipeline()
             self.pipeline.create(self)
@@ -39,7 +38,7 @@ class CIBase(ShowBase):
         self.userInputStorage = uis
         __builtin__.inputStore = uis
         __builtin__.userInputStorage = uis
-
+        
         cbm = CubeMapManager()
         self.cubeMapMgr = cbm
         __builtin__.cubeMapMgr = cbm
@@ -48,17 +47,25 @@ class CIBase(ShowBase):
         self.credits2d.setScale(1.0 / self.getAspectRatio(), 1.0, 1.0)
 
         self.wakeWaterHeight = -30.0
-        
+
+        """
+        print 'TPM START'
         tpMgr = TextPropertiesManager.getGlobalPtr()
+        print 'PROPERTIES GET'
         tpRed = TextProperties()
         tpRed.setTextColor(1, 0, 0, 1)
         tpSlant = TextProperties()
         tpSlant.setSlant(0.3)
-        tpHQClockFlicker = TextProperties()
-        tpHQClockFlicker.setTextColor(0.0, 0.0, 0.0, 0.0)#0.78, 0.78, 0.78, 0.7
+        print 'RED AND SLANT GENERATED'
         tpMgr.setProperties('red', tpRed)
-        tpMgr.setProperties('slant', tpSlant)
-        tpMgr.setProperties('hqFlicker', tpHQClockFlicker)
+        print 'RED SET'
+        try:
+            tpMgr.setProperties('slant', tpSlant)
+        except Exception:
+            print 'AN EXCEPTION OCCURRED'
+        print 'SLANT SET'
+        print 'TPM END'
+        """
         
     def initStuff(self):
         wrm = WaterReflectionManager()

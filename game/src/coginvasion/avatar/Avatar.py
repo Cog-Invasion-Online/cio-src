@@ -124,7 +124,7 @@ class Avatar(ToonTalker.ToonTalker, Actor):
             self.nametag.setChatBalloonType(NametagGlobals.CHAT_BALLOON)
         self.nametag.setChatText(chatString, timeout = shouldClear)
 
-    def setName(self, nameString = None, avatarType = None, charName = None, createNow = 0):
+    def setName(self, nameString = None, charName = None, createNow = 0):
         if not nameString:
             return
         self._name = nameString

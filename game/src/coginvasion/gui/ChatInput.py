@@ -207,11 +207,14 @@ class ChatInput(DirectObject, StateData.StateData):
                 for char in newInput:
                     if not len(char) == 0:
                         if not char in validKeys:
-                            newText += '\1red\1' + char + '\2'
+                            # Because TextProperties are broken, let's replace the char with a
+                            # question mark.
+                            newText += '?'
+                            #newText += '\1red\1' + char + '\2'
                             continue
                     newText += char
                 self.chatInput.guiItem.setText(newText)
-                self.badInputPresent = True
+                #self.badInputPresent = True
             else:
                 self.badInputPresent = False
 
@@ -221,7 +224,9 @@ class ChatInput(DirectObject, StateData.StateData):
             if len(chat) > 0 and not self.badInputPresent:
                 # Using an underscore as a prefix will slant the text.
                 if chat[0] == '_':
-                    chat = '\1slant\1' + chat[1:]
+                    # Because TextProperties are broken, let's disable this.
+                    # chat = '\1slant\1' + chat[1:]
+                    chat = chat[1:]
                 if recipient:
                     base.cr.friendsManager.d_sendWhisper(recipient, chat)
                     self.enableKeyboardShortcuts()

@@ -33,6 +33,7 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         self.inFlicker = False
         self.currentBuild = None
         self.buildDate = None
+        self.crashedPiano = None
 
     def makeInterior(self):
         self.dnaStore = self.cr.playGame.dnaStore
@@ -50,25 +51,41 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         color = self.generator.choice(self.colors['TI_door'])
         doorOrigins = render.findAllMatches('**/door_origin*')
         numDoorOrigins = doorOrigins.getNumPaths()
+        print numDoorOrigins
         for npIndex in xrange(numDoorOrigins):
-            doorOrigin = doorOrigins[npIndex]
-            doorOriginNPName = doorOrigin.getName()
-            doorOriginIndexStr = doorOriginNPName[len('door_origin_'):]
-            newNode = ModelNode('door_' + doorOriginIndexStr)
-            newNodePath = NodePath(newNode)
-            newNodePath.reparentTo(self.interior)
-            doorNP = door.copyTo(newNodePath)
-            doorOrigin.setScale(0.8, 0.8, 0.8)
-            doorOrigin.setPos(doorOrigin, 0, -0.025, 0)
-            doorColor = self.generator.choice(self.colors['TI_door'])
-            triggerId = str(self.block) + '0' + doorOriginIndexStr
-            triggerId = int(triggerId)
-            DNADoor.setupDoor(doorNP, newNodePath, doorOrigin, self.dnaStore, triggerId, doorColor)
-            doorFrame = doorNP.find('door_*_flat')
-            doorFrame.setColor(doorColor)
+            # Let's not generate the secondary door for the TTC playground interior.
+            if npIndex == 0 and not self.zoneId == 2520:
+                doorOrigin = doorOrigins[npIndex]
+                doorOriginNPName = doorOrigin.getName()
+                doorOriginIndexStr = doorOriginNPName[len('door_origin_'):]
+                newNode = ModelNode('door_' + doorOriginIndexStr)
+                newNodePath = NodePath(newNode)
+                newNodePath.reparentTo(self.interior)
+                doorNP = door.copyTo(newNodePath)
+                doorOrigin.setScale(0.8, 0.8, 0.8)
+                doorOrigin.setPos(doorOrigin, 0, -0.025, 0)
+                doorColor = self.generator.choice(self.colors['TI_door'])
+                triggerId = str(self.block) + '0' + doorOriginIndexStr
+                triggerId = int(triggerId)
+                DNADoor.setupDoor(doorNP, newNodePath, doorOrigin, self.dnaStore, triggerId, doorColor)
+                doorFrame = doorNP.find('door_*_flat')
+                doorFrame.setColor(doorColor)
         del self.dnaStore
         del self.colors
         del self.generator
+        
+        if self.zoneId == 2520:
+            # The interior of the TTC playground HQ needs to be populated with this so it doesn't
+            # look so bland. 
+            self.crashedPiano = loader.loadModel('phase_6/models/props/piano.bam')
+            self.crashedPiano.reparentTo(self.interior)
+            self.crashedPiano.setPosHpr(1.62019231, 66.6371124268, 0.0250000003725, -46.400062561, 0.0, 0.0)
+            
+            # This is the ceiling crack above the crashed piano.
+            crack = self.crashedPiano.find('**/shadow_crack').__copy__()
+            crack.reparentTo(self.crashedPiano)
+            crack.setZ(21.425)
+            crack.setTwoSided(1)
         
         self.generateBuildDataBoard(self.interior.find('**/empty_board').getChild(0))
         self.interior.flattenMedium()
@@ -129,7 +146,7 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         now = int(round(time.time() * 1000))
 
         if self.inFlicker:
-            curTime = curTime[:curTime.index(':')] + '\1hqFlicker\1' + ':' + '\2' + curTime[curTime.index(':')+1:]
+            curTime = curTime[:curTime.index(':')] + ' ' + curTime[curTime.index(':')+1:]
             self.ttTimePath.node().setText('Toontown Time: ' + curTime)
         else:
             self.ttTimePath.node().setText('Toontown Time: ' + curTime)
@@ -148,27 +165,28 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         
         if self.clockTaskName:
             base.taskMgr.remove(self.clockTaskName)
-            del self.clockTaskName
             
         if self.ttTimePath:
             self.ttTimePath.removeNode()
-            del self.ttTimePath
-            
-        if self.lastFlickerMsTime:
-            del self.lastFlickerMsTime
-            
-        if self.inFlicker:
-            del self.inFlicker
             
         if self.currentBuild:
             self.currentBuild.removeNode()
-            del self.currentBuild
             
         if self.buildDate:
             self.buildDate.removeNode()
-            del self.buildDate
         
         if self.buildData:
             self.buildData.removeNode()
-            del self.buildData
+            
+        if self.crashedPiano:
+            self.crashedPiano.removeNode()
+            
+        del self.clockTaskName
+        del self.ttTimePath
+        del self.lastFlickerMsTime
+        del self.inFlicker
+        del self.currentBuild
+        del self.buildDate
+        del self.buildData
+        del self.crashedPiano
         

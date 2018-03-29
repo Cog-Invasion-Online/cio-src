@@ -574,7 +574,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.playChatSfx(chatString)
 
     def setName(self, nameString):
-        Avatar.Avatar.setName(self, nameString, avatarType = self.avatarType)
+        Avatar.Avatar.setName(self, nameString)
 
     def setDNAStrand(self, dnaStrand, makeTag = 1):
         ToonDNA.ToonDNA.setDNAStrand(self, dnaStrand)
