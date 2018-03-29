@@ -349,7 +349,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
                 totalGags = len(damageIndices)
                 for i in damageIndices:
                     if i < len(damageIndices) and i >= 0:
-                        if not damageIndices[i] is None:
+                        if not damageIndices[i] is None and not damages[damageIndices[i]] is None:
                             totalDamage += damages[damageIndices[i]]
                 isCombo = True
                 break
