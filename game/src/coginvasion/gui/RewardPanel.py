@@ -247,7 +247,8 @@ class RewardPanel(DirectFrame):
         intervalList.append(Func(self.resetBarColor, trackIndex))
         intervalList.append(Wait(0.2))
         
-        if track.maxExp > 0 and (track.exp + track.increment) >= track.maxExp:
+        if track.maxExp > 0 and (track.maxExp != GagGlobals.MaxedTrackExperiences.get(track.name) \
+                    and (track.exp + track.increment) >= track.maxExp):
             gagIndex = GagGlobals.TrackExperienceAmounts.get(track.name).index(track.maxExp) + 1
             newGag = GagGlobals.TrackGagNamesByTrackName.get(track.name)[gagIndex]
             intervalList.append(self.getShowGagUnlockedInterval(track.name, newGag))

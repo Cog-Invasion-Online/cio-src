@@ -156,7 +156,7 @@ def getCharacterMaterial(name = "charMat", shininess = 250, rimColor = (1, 1, 1,
     mat.setRimWidth(rimWidth)
     mat.setSpecular(specular)
     mat.setShininess(shininess)
-    if lightwarp:
+    if lightwarp and hasattr(mat, 'setLightwarpTexture'):
         mat.setLightwarpTexture(loader.loadTexture(lightwarp))
     return mat
 

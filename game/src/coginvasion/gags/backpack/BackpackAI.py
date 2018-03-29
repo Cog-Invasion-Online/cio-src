@@ -20,7 +20,7 @@ class BackpackAI(BackpackBase):
     # Sets the supply on each gag in this backpack to the default max.
     def refillSupply(self):
         for gagId in self.gags.keys():
-            self.setSupply(gagId, self.getDefaultMaxSupply(gagId))
+            self.setSupply(gagId, self.getMaxSupply(gagId))
     
     # Sets the supply of a gag in the backpack.
     # Returns true or false if the supply was set.

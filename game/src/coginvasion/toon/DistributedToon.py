@@ -47,7 +47,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         self.ghost = 0
         self.puInventory = []
         self.equippedPU = -1
-        self.backpack = None
+        self.backpack = Backpack(self)
         self.animState2animId = {}
         self.battleMeter = None
         for index in range(len(self.animFSM.getStates())):
@@ -596,8 +596,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
             self.backpack.setLoadout(loadout)
     
     def setBackpackAmmo(self, netString):
-        if not self.backpack:
-            self.backpack = Backpack(self)
         self.backpack.updateSuppliesFromNetString(netString)
     
     def getBackpackAmmo(self):
@@ -606,8 +604,8 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         return GagGlobals.getDefaultBackpack().toNetString()
     
     def setTrackExperience(self, netString):
-        trackData = GagGlobals.getTrackExperienceFromNetString(netString)
-        GagGlobals.processTrackData(trackData, self.backpack, updateData = self.trackExperience)
+        self.trackExperience = GagGlobals.getTrackExperienceFromNetString(netString)
+        GagGlobals.processTrackData(self.trackExperience, self.backpack)
         
     def getTrackExperience(self):
         return GagGlobals.trackExperienceToNetString(self.trackExperience)

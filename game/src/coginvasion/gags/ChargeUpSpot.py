@@ -37,6 +37,7 @@ class ChargeUpSpot(LocationSeeker):
         self.maxCogs = maxCogs
         self.selectedCogs = []
         self.cleanedUp = False
+        self.dropShadow = None
 
         if game.process == 'client':
             self.chargingSfx = base.audio3d.loadSfx(self.chargingSfxPath)
@@ -53,6 +54,7 @@ class ChargeUpSpot(LocationSeeker):
     def startSeeking(self):
         LocationSeeker.startSeeking(self)
         if not self.dropShadow:
+            self.cleanup()
             return
 
         # Let's actually ignore LEFT mouse clicks.
