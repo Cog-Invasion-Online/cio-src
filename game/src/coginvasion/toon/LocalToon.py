@@ -143,21 +143,18 @@ class LocalToon(DistributedToon):
         self.cr.playGame.getPlace().fsm.request(self.cr.playGame.getPlace().nextState)
 
     def handleClickedWhisper(self, senderName, fromId, isPlayer, openPanel = False):
-        if self.cr.playGame.getPlace() == None or not hasattr(self.cr.playGame.getPlace(), 'fsm') or self.cr.playGame.getPlace().fsm == None:
+        place = self.cr.playGame.getPlace()
+        if place is None or not hasattr(place, 'fsm') or place.fsm is None:
             return
-        if openPanel and self.cr.playGame.getPlace().fsm.getCurrentState().getName() in ['walk', 'shtickerBook']:
+
+        if openPanel and place.fsm.getCurrentState().getName() in ['walk', 'shtickerBook']:
             self.panel.makePanel(fromId)
+
         self.chatInput.disableKeyboardShortcuts()
-        self.chatInput.fsm.request('input', ["", self.sendWhisper, [fromId]])
+        self.chatInput.fsm.request('input', ["", fromId])
 
     def handleClickedSentWhisper(self, senderName, fromId, isPlayer):
         self.handleClickedWhisper(senderName, fromId, isPlayer, True)
-
-    def sendWhisper(self, message, target):
-        message = self.chatInput.chatInput.get()
-        self.cr.friendsManager.d_sendWhisper(target, message)
-        self.chatInput.fsm.request('idle')
-        self.chatInput.enableKeyboardShortcuts()
 
     def hasDiscoveredHood(self, zoneId):
         return zoneId in self.hoodsDiscovered

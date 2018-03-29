@@ -87,6 +87,7 @@ notify.info("Phase dir: " + game.phasedir)
 
 from CIBase import CIBase
 base = CIBase()
+base.loader.destroy()
 
 from src.coginvasion.manager.SettingsManager import SettingsManager
 jsonfile = "settings.json"
@@ -112,6 +113,7 @@ notify.info("Using Panda3D version {0}".format(PandaSystem.getVersionString()))
 notify.info("True threading: " + str(Thread.isTrueThreads()))
 
 sm.maybeFixAA()
+base.setFrameRateMeter(sm.getSetting("fps"))
 
 # Use our shader generator extension
 #import ccoginvasion
@@ -165,7 +167,7 @@ base.transitions.IrisModelName = "phase_3/models/misc/iris.bam"
 base.transitions.FadeModelName = "phase_3/models/misc/fade.bam"
 base.accept(base.inputStore.TakeScreenshot, ScreenshotHandler.__takeScreenshot)
 
-if base.win == None:
+if base.win is None:
     notify.warning("Unable to open window; aborting.")
     sys.exit()
 else:

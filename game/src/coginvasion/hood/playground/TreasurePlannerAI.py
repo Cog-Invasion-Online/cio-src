@@ -73,7 +73,7 @@ class TreasurePlannerAI(DirectObject):
 
     def grabAttempt(self, avId, treasureId):
         index = self.findIndexOfTreasureId(treasureId)
-        if index == None:
+        if index is None:
             self.notify.warning('Suspicious: Avatar attempted to pick up non-existent treasure.')
             return
         av = self.air.doId2do.get(avId)

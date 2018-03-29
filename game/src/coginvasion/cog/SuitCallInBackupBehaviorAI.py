@@ -88,7 +88,7 @@ class SuitCallInBackupBehaviorAI(SuitBehaviorBaseAI):
         if not hasattr(self, 'suit') or hasattr(self.suit, 'DELETED'):
             return Task.done
         mgr = self.suit.getManager()
-        if mgr.isFullInvasion() or mgr.suits == None:
+        if mgr.isFullInvasion() or mgr.suits is None:
             return Task.done
         requestSize = random.randint(2, 7)
         for _ in range(requestSize):

@@ -13,7 +13,7 @@ from panda3d.core import *
 class NURBSMopath:
 
     def __init__(self, curve, name = None):
-        if (name == None):
+        if (name is None):
             name = 'nurbsmopath'
         self.name = name
         self.duration = 1.0

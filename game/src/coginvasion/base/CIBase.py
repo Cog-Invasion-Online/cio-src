@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import loadPrcFile, NodePath, PGTop
+from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties
 
 from direct.showbase.ShowBase import ShowBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -27,7 +27,6 @@ class CIBase(ShowBase):
     notify = directNotify.newCategory("CIBase")
 
     def __init__(self):
-
         if game.usepipeline:
             self.pipeline = RenderPipeline()
             self.pipeline.create(self)
@@ -39,7 +38,7 @@ class CIBase(ShowBase):
         self.userInputStorage = uis
         __builtin__.inputStore = uis
         __builtin__.userInputStorage = uis
-
+        
         cbm = CubeMapManager()
         self.cubeMapMgr = cbm
         __builtin__.cubeMapMgr = cbm
@@ -48,6 +47,25 @@ class CIBase(ShowBase):
         self.credits2d.setScale(1.0 / self.getAspectRatio(), 1.0, 1.0)
 
         self.wakeWaterHeight = -30.0
+
+        """
+        print 'TPM START'
+        tpMgr = TextPropertiesManager.getGlobalPtr()
+        print 'PROPERTIES GET'
+        tpRed = TextProperties()
+        tpRed.setTextColor(1, 0, 0, 1)
+        tpSlant = TextProperties()
+        tpSlant.setSlant(0.3)
+        print 'RED AND SLANT GENERATED'
+        tpMgr.setProperties('red', tpRed)
+        print 'RED SET'
+        try:
+            tpMgr.setProperties('slant', tpSlant)
+        except Exception:
+            print 'AN EXCEPTION OCCURRED'
+        print 'SLANT SET'
+        print 'TPM END'
+        """
         
     def initStuff(self):
         wrm = WaterReflectionManager()

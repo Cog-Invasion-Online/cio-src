@@ -372,7 +372,7 @@ class Place(StateData):
         base.localAvatar.detachCamera()
 
     def enterDied(self, requestStatus, callback = None):
-        if callback == None:
+        if callback is None:
             callback = self.__diedDone
         base.localAvatar.createLaffMeter()
         base.localAvatar.attachCamera()

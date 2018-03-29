@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import WindowProperties, LightRampAttrib
+from panda3d.core import WindowProperties
 
 from OptionsCategory import OptionsCategory
 from ChoiceWidget import ChoiceWidget
@@ -28,8 +28,9 @@ class GeneralCategory(OptionsCategory):
         self.hdr = ChoiceWidget(page, ["None", "Ver. 1", "Ver. 2", "Ver. 3"], (0, 0, -0.04),
                                 self.__chooseHdr, "HDR Tone Mapping")
         self.refl = ChoiceWidget(page, CIGlobals.getSettingsMgr().ReflectionQuality.keys(), (0, 0, -0.21),
-                                 self.__chooseRefl, "Reflection Quality")
-                                   
+                                 self.__chooseRefl, "Reflection Quality", 0.06)
+        self.fps = ChoiceWidget(page, ["Off", "On"], (0, 0, -0.38), self.__chooseFPSMeter, 'FPS Meter')
+        
         self.discardChanges()
         
     def _setDefaults(self):
@@ -48,6 +49,9 @@ class GeneralCategory(OptionsCategory):
         self.origRefl = CIGlobals.getSettingsMgr().getSetting("refl")
         self.reflChoice = self.origRefl
         
+        self.origFPS = CIGlobals.getSettingsMgr().getSetting("fps")
+        self.fpsChoice = self.origFPS
+        
     def __choosePpl(self, choice):
         self.pplChoice = bool(choice)
         
@@ -62,6 +66,9 @@ class GeneralCategory(OptionsCategory):
 
     def __chooseRefl(self, choice):
         self.reflChoice = self.refl.options[choice]
+        
+    def __chooseFPSMeter(self, choice):
+        self.fpsChoice = bool(choice)
         
     def applyChanges(self):
         self._showApplying()
@@ -90,6 +97,10 @@ class GeneralCategory(OptionsCategory):
         if (self.reflChoice != self.origRefl):
             CIGlobals.getSettingsMgr().updateAndWriteSetting("refl", self.reflChoice)
             
+        if (self.fpsChoice != self.origFPS):
+            CIGlobals.getSettingsMgr().updateAndWriteSetting("fps", self.fpsChoice)
+            base.setFrameRateMeter(self.fpsChoice)
+            
         self._setDefaults()
         self._hideApplying()
         
@@ -100,6 +111,7 @@ class GeneralCategory(OptionsCategory):
         self.hdr.goto(self.hdrChoice)
         self.ppl.goto(int(self.pplChoice))
         self.refl.goto(self.refl.options.index(self.reflChoice))
+        self.fps.goto(int(self.fpsChoice))
         
     def cleanup(self):
         if hasattr(self, 'cursor'):
@@ -118,9 +130,13 @@ class GeneralCategory(OptionsCategory):
             self.ppl.cleanup()
             del self.ppl
 
-        if hasattr(self, "refl"):
+        if hasattr(self, 'refl'):
             self.refl.cleanup()
             del self.refl
+            
+        if hasattr(self, 'fps'):
+            self.fps.cleanup()
+            del self.fps
             
         del self.origCursor
         del self.cursorChoice
@@ -136,5 +152,8 @@ class GeneralCategory(OptionsCategory):
 
         del self.reflChoice
         del self.origRefl
+        
+        del self.fpsChoice
+        del self.origFPS
         
         OptionsCategory.cleanup(self)

@@ -8,26 +8,21 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import CollisionNode, CollisionTube, BitMask32, CollisionSphere, \
-                                CollisionHandlerPusher, CollisionHandlerEvent, CollisionRay, \
-                                ConfigVariableBool, Material
-
 from direct.actor.Actor import Actor
-from direct.directnotify.DirectNotify import DirectNotify
+from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.controls.ControlManager import CollisionHandlerRayStart
+
+from panda3d.core import CollisionNode, CollisionTube, BitMask32, \
+            CollisionSphere, CollisionRay, ConfigVariableBool
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.npc import DisneyCharGlobals as DCG
-from src.coginvasion.cog import SuitBank
 from src.coginvasion.toon import ToonTalker
-from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.nametag.NametagGroup import NametagGroup
 from src.coginvasion.base.ShadowPlacer import ShadowPlacer
 
-import random
-
-notify = DirectNotify().newCategory("Avatar")
+notify = directNotify.newCategory("Avatar")
 
 class Avatar(ToonTalker.ToonTalker, Actor):
     RealShadows = ConfigVariableBool('want-real-shadows', False)
@@ -129,7 +124,7 @@ class Avatar(ToonTalker.ToonTalker, Actor):
             self.nametag.setChatBalloonType(NametagGlobals.CHAT_BALLOON)
         self.nametag.setChatText(chatString, timeout = shouldClear)
 
-    def setName(self, nameString = None, avatarType = None, charName = None, createNow = 0):
+    def setName(self, nameString = None, charName = None, createNow = 0):
         if not nameString:
             return
         self._name = nameString
@@ -149,6 +144,7 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         else:
             name = self._name
         offset = 0.0
+        z = 0.0
         if self.avatarType:
             if self.avatarType in [CIGlobals.Suit]:
                 offset = 1.0
@@ -156,13 +152,9 @@ class Avatar(ToonTalker.ToonTalker, Actor):
             elif self.avatarType == CIGlobals.CChar:
                 if self.charId in [DCG.MICKEY, DCG.PLUTO, DCG.MINNIE]:
                     offset = 1.0
-                else:
-                    offset = 0.0
                 z = self.getHeight()
             elif self.avatarType == CIGlobals.Toon:
                 offset = 0.5
-            else:
-                z = 0
 
         self.deleteNametag3d()
         self.initializeNametag3d()
@@ -253,7 +245,7 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         #self.collNodePath.setCollideMask(BitMask32(0))
         #self.collNodePath.node().setFromCollideMask(CIGlobals.WallBitmask)
 
-       # pusher = CollisionHandlerPusher()
+        #pusher = CollisionHandlerPusher()
         #pusher.setInPattern("%in")
         #pusher.addCollider(self.collNodePath, self)
 
@@ -445,7 +437,7 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         self.deleteNametag3d()
         nametagNode = self.nametag.getNametag3d()
         self.nametagNodePath = self.nametag3d.attachNewNode(nametagNode)
-        iconNodePath = self.nametag.getIcon()
+
         for cJoint in self.getNametagJoints():
             cJoint.clearNetTransforms()
             cJoint.addNetTransform(nametagNode)
@@ -458,9 +450,9 @@ class Avatar(ToonTalker.ToonTalker, Actor):
     def getNameVisible(self):
         return self.__nameVisible
 
-    def setNameVisible(self, bool):
-        self.__nameVisible = bool
-        if bool:
+    def setNameVisible(self, visible):
+        self.__nameVisible = visible
+        if visible:
             self.showName()
-        if not bool:
+        else:
             self.hideName()

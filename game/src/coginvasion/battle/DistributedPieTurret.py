@@ -152,7 +152,7 @@ class DistributedPieTurret(DistributedAvatar, DistributedSmoothNode):
         self.fsm.request('shoot', [suitId])
 
     def scan(self, timestamp = None, afterShooting = 0):
-        if timestamp == None:
+        if timestamp is None:
             ts = 0.0
         else:
             ts = globalClockDelta.localElapsedTime(timestamp)

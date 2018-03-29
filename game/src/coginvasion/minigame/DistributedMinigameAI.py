@@ -71,7 +71,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
 
     def clearAvatar(self, avatar=None, doId=None):
         if (avatar != None and doId != None or
-            avatar == None and doId == None):
+            avatar is None and doId is None):
             return
         if avatar != None:
             self.avatars.remove(avatar)
@@ -106,7 +106,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI, TimerAI.Tim
         return None
 
     def ready(self):
-        if self.readyAvatars == None:
+        if self.readyAvatars is None:
             return
         self.readyAvatars += 1
         if self.areAllAvatarsReady():

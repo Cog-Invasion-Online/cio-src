@@ -90,7 +90,7 @@ class DistributedEagleSuitAI(DistributedSuitAI):
         if self.currentFlyPoint == point:
             self.createFlyPath()
             return
-        if self.currentFlyPoint == None:
+        if self.currentFlyPoint is None:
             point_list = list(EGG.EAGLE_FLY_POINTS)
             point_list.remove(point)
             startIndex = point_list.index(random.choice(point_list))

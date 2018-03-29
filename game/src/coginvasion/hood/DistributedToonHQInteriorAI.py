@@ -10,6 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 import DistributedToonInteriorAI
 import DistributedDoorAI
+from src.coginvasion.globals import CIGlobals
 
 class DistributedToonHQInteriorAI(DistributedToonInteriorAI.DistributedToonInteriorAI):
 
@@ -19,8 +20,11 @@ class DistributedToonHQInteriorAI(DistributedToonInteriorAI.DistributedToonInter
 
     def announceGenerate(self):
         DistributedToonInteriorAI.DistributedToonInteriorAI.announceGenerate(self, doorType = 2)
-        self.door2 = DistributedDoorAI.DistributedDoorAI(self.air, self.block, self.doorToZone, 2, 1)
-        self.door2.generateWithRequired(self.zoneId)
+        
+        # Toontown Central's playground HQ only has one accessible front door.
+        if not self.doorToZone == 2520:
+            self.door2 = DistributedDoorAI.DistributedDoorAI(self.air, self.block, self.doorToZone, 2, 1)
+            self.door2.generateWithRequired(self.zoneId)
 
     def delete(self):
         if self.door2:

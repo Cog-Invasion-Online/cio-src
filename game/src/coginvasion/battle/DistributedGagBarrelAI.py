@@ -30,7 +30,7 @@ class DistributedGagBarrelAI(DistributedRestockBarrelAI):
         del self.loadoutOnly
         
     def d_setGrab(self, avId):
-        self.sendUpdate('setGrab', [avId])
+        DistributedRestockBarrelAI.d_setGrab(self, avId)
         avatar = self.air.doId2do.get(avId)
         backpack = avatar.backpack
         track = GagGlobals.getTrackOfGag(self.gagId)
@@ -38,9 +38,9 @@ class DistributedGagBarrelAI(DistributedRestockBarrelAI):
         restockGags = {}
         
         if not self.loadoutOnly:
-            trackGags = GagGlobals.TrackGagNamesByTrackName.get(GagGlobals.TrackNameById.get(GagGlobals.Type2TrackName.get(track)))
+            trackGags = GagGlobals.TrackGagNamesByTrackName.get(track)
             
-            # Get the gagids of gags in this gag track.
+            # Gets the gag ids of gags in this gag track.
             for trackGag in trackGags:
                 gagId = GagGlobals.getIDByName(trackGag)
                 if backpack.hasGag(gagId):

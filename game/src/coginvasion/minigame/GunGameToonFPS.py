@@ -144,7 +144,7 @@ class GunGameToonFPS(ToonFPS.ToonFPS):
             if avatar:
                 remoteAvatar = self.mg.getRemoteAvatar(avatar.doId)
                 if remoteAvatar:
-                    if remoteAvatar.getTeam() == None or remoteAvatar.getTeam() != self.mg.team:
+                    if remoteAvatar.getTeam() is None or remoteAvatar.getTeam() != self.mg.team:
                         # Good, this player isn't on my team. I can damage them.
                         damage = self.calcDamage(avatar)
                         if damage <= 0:

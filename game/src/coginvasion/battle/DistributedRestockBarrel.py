@@ -98,7 +98,7 @@ class DistributedRestockBarrel(DistributedNode):
             self.gagModel.setScale(3.0)
             self.gagModel.setPos(0, -0.1, 0)
             purchaseModels.removeNode()
-        else:
+        elif labelId < 1000:
             gagId = labelId - 2
             iconName = GagGlobals.InventoryIconByName.get(GagGlobals.getGagByID(gagId))
             invModel = loader.loadModel('phase_3.5/models/gui/inventory_icons.bam').find('**/%s' % iconName)
@@ -109,6 +109,28 @@ class DistributedRestockBarrel(DistributedNode):
                 self.gagModel.setPos(0, -0.1, 0)
             else:
                 self.notify.warning('Failed to find gag label %s.' % (str(labelId)))
+        else:
+            # Provided a hood id, the restock barrel will select the model of the
+            # treasure for that playground and use it as the label.
+            hoodName = CIGlobals.ZoneId2Hood.get(labelId)
+            modelPath = 'phase_4/models/props/icecream.bam'
+            
+            if hoodName is CIGlobals.DonaldsDreamland:
+                modelPath = 'phase_8/models/props/zzz_treasure.bam'
+            elif hoodName is CIGlobals.TheBrrrgh:
+                modelPath = 'phase_8/models/props/snowflake_treasure.bam'
+            elif hoodName is CIGlobals.MinniesMelodyland:
+                modelPath = 'phase_6/models/props/music_treasure.bam'
+            elif hoodName is CIGlobals.DaisyGardens:
+                modelPath = 'phase_8/models/props/flower_treasure.bam'
+            elif hoodName is CIGlobals.DonaldsDock:
+                modelPath = 'phase_6/models/props/starfish_treasure.bam'
+            
+            self.gagModel = loader.loadModel(modelPath)
+            self.gagModel.reparentTo(self.gagNode)
+            self.gagModel.find('**/p1_2').clearBillboard()
+            self.gagModel.setScale(0.6)
+            self.gagModel.setPos(0, -0.1, -0.1 - 0.6)
         
     def __handleCollision(self, entry = None):
         self.sendUpdate('requestGrab', [])
@@ -123,7 +145,11 @@ class DistributedRestockBarrel(DistributedNode):
         if self.animTrack:
             self.animTrack.finish()
             self.animTrack = None
-        self.animTrack = Sequence(LerpScaleInterval(self.barrel, 0.2, 1.1 * self.barrelScale, blendType='easeInOut'), LerpScaleInterval(self.barrel, 0.2, self.barrelScale, blendType='easeInOut'), Func(self.reset), name=self.uniqueName('animTrack'))
+        self.animTrack = Sequence(
+            LerpScaleInterval(self.barrel, 0.2, 1.1 * self.barrelScale, blendType='easeInOut'), 
+            LerpScaleInterval(self.barrel, 0.2, self.barrelScale, blendType='easeInOut'), 
+            Func(self.reset), 
+        name=self.uniqueName('animTrack'))
         self.animTrack.start()
         
     def setReject(self):

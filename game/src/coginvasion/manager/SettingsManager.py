@@ -39,112 +39,117 @@ class SettingsManager:
 
         # Game screen resolution
         res = settings.get("resolution", None)
-        if res == None:
+        if res is None:
             res = self.updateAndWriteSetting("resolution", (640, 480))
 
         # Fullscreen toggle
         fs = settings.get("fullscreen", None)
-        if fs == None:
+        if fs is None:
             fs = self.updateAndWriteSetting("fullscreen", False)
 
         # music toggle
         music = settings.get("music", None)
-        if music == None:
+        if music is None:
             music = self.updateAndWriteSetting("music", True)
 
         # music volume
         musvol = settings.get("musvol", None)
-        if musvol == None:
+        if musvol is None:
             musvol = self.updateAndWriteSetting("musvol", 0.65)
 
         # sfx toggle
         sfx = settings.get("sfx", None)
-        if sfx == None:
+        if sfx is None:
             sfx = self.updateAndWriteSetting("sfx", True)
 
         # sfx volume
         sfxvol = settings.get("sfxvol", None)
-        if sfxvol == None:
+        if sfxvol is None:
             sfxvol = self.updateAndWriteSetting("sfxvol", 1.0)
 
         # texture quality
         tex_detail = settings.get("texture-detail", None)
-        if tex_detail == None:
+        if tex_detail is None:
             tex_detail = self.updateAndWriteSetting("texture-detail", "high")
 
         # model quality
         model_detail = settings.get('model-detail', None)
-        if model_detail == None:
+        if model_detail is None:
             model_detail = self.updateAndWriteSetting('model-detail', "high")
 
         # Antialiasing
         aa = settings.get("aa", None)
-        if aa == None:
+        if aa is None:
             aa = self.updateAndWriteSetting("aa", 0)
 
         # Anisotropic filtering/degree
         af = settings.get("af", None)
-        if af == None:
+        if af is None:
             af = self.updateAndWriteSetting("af", 0)
             
         shadows = settings.get("shadows", None)
-        if shadows == None:
+        if shadows is None:
             shadows = self.updateAndWriteSetting("shadows", 0)
 
         # Chat sounds
         chs = settings.get("chs", None)
-        if chs == None:
+        if chs is None:
             chs = self.updateAndWriteSetting("chs", True)
 
         # General gameplay FOV
         genfov = settings.get("genfov", None)
-        if genfov == None:
+        if genfov is None:
             genfov = self.updateAndWriteSetting("genfov", 52.0)
 
         # First person minigame FOV
         fpmgfov = settings.get("fpmgfov", None)
-        if fpmgfov == None:
+        if fpmgfov is None:
             fpmgfov = self.updateAndWriteSetting("fpmgfov", 70.0)
 
         # First person minigame mouse sensitivity
         fpmgms = settings.get("fpmgms", None)
-        if fpmgms == None:
+        if fpmgms is None:
             fpmgms = self.updateAndWriteSetting("fpmgms", 0.1)
 
         # Gag key
         gagkey = settings.get("gagkey", None)
-        if gagkey == None:
+        if gagkey is None:
             gagkey = self.updateAndWriteSetting("gagkey", "mouse1")
 
         # Maintain aspect ratio
         maspr = settings.get("maspr", None)
-        if maspr == None:
+        if maspr is None:
             maspr = self.updateAndWriteSetting("maspr", True)
             
         # Lighting
         lighting = settings.get("lighting", None)
-        if lighting == None:
+        if lighting is None:
             lighting = self.updateAndWriteSetting("lighting", True)
         
         # Mouse cursor
         cursor = settings.get("cursor", None)
-        if cursor == None:
+        if cursor is None:
             cursor = self.updateAndWriteSetting("cursor", SettingsManager.MouseCursors.keys()[0])
             
         # Hdr
         hdr = settings.get("hdr", None)
-        if hdr == None:
+        if hdr is None:
             hdr = self.updateAndWriteSetting("hdr", 0)
             
         # Per pixel lighting
         ppl = settings.get("ppl", None)
-        if ppl == None:
+        if ppl is None:
             ppl = self.updateAndWriteSetting("ppl", False)
             
         # Reflection quality
         refl = settings.get("refl", None)
-        if refl == None:
+        if refl is None:
             refl = self.updateAndWriteSetting("refl", "Medium")
+            
+        # FPS Meter
+        fps = settings.get("fps", None)
+        if fps is None:
+            fps = self.updateAndWriteSetting("fps", False)
 
         base.enableMusic(music)
         base.enableSoundEffects(sfx)

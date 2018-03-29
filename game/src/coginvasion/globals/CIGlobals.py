@@ -3029,7 +3029,7 @@ NPCEnter_HQ_FinishCurrentQuest = "Sorry, but you need to finish your current Que
 
 zone2NpcDict = None
 
-if zone2NpcDict == None:
+if zone2NpcDict is None:
     zone2NpcDict = {}
     for zId, npcData in NPCToonDict.items():
         zoneId = npcData[0]

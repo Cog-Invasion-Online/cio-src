@@ -261,7 +261,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                             self.loop(anim, partName = "torso-pants")
                             self.loop(anim, partName = "head")
                 if not doingGagAnim:
-                    if self.forcedTorsoAnim == None:
+                    if self.forcedTorsoAnim is None:
                         self.loop(anim)
                     else:
                         self.loop(self.forcedTorsoAnim, partName = 'head')
@@ -574,7 +574,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.playChatSfx(chatString)
 
     def setName(self, nameString):
-        Avatar.Avatar.setName(self, nameString, avatarType = self.avatarType)
+        Avatar.Avatar.setName(self, nameString)
 
     def setDNAStrand(self, dnaStrand, makeTag = 1):
         ToonDNA.ToonDNA.setDNAStrand(self, dnaStrand)

@@ -205,7 +205,7 @@ class PlayGame(StateData):
 
     def handleHoodDone(self):
         doneStatus = self.hood.getDoneStatus()
-        if doneStatus['zoneId'] == None:
+        if doneStatus['zoneId'] is None:
             self.doneStatus = doneStatus
             messenger.send(self.doneEvent)
         else:

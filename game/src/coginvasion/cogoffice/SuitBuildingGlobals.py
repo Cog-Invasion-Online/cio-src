@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from ElevatorConstants import *
+from ElevatorConstants import ElevatorData, ELEVATOR_NORMAL, TOON_VICTORY_EXIT_TIME
 from src.coginvasion.globals import CIGlobals
 
 VICTORY_RUN_TIME = ElevatorData[ELEVATOR_NORMAL]['openTime'] + TOON_VICTORY_EXIT_TIME
@@ -25,31 +25,39 @@ GUARDS_PER_SECTION = 0
 LEVEL_RANGE = 1
 # Cog level range on the top floor.
 BOSS_LEVEL_RANGE = 2
+# The chance (in percent) of a heal barrel spawning.
+HEAL_BARREL_CHANCE = 3
 
 buildingInfo = {
     CIGlobals.ToontownCentral:   {GUARDS_PER_SECTION: (0, 2),
                                   LEVEL_RANGE:        (1, 4),
-                                  BOSS_LEVEL_RANGE:   (2, 4)},
+                                  BOSS_LEVEL_RANGE:   (2, 4),
+                                  HEAL_BARREL_CHANCE:  10},
 
     CIGlobals.DonaldsDock:       {GUARDS_PER_SECTION: (1, 3),
                                   LEVEL_RANGE:        (2, 6),
-                                  BOSS_LEVEL_RANGE:   (3, 6)},
+                                  BOSS_LEVEL_RANGE:   (3, 6),
+                                  HEAL_BARREL_CHANCE:  15},
 
     CIGlobals.DaisyGardens:      {GUARDS_PER_SECTION: (2, 3),
                                   LEVEL_RANGE:        (2, 6),
-                                  BOSS_LEVEL_RANGE:   (4, 6)},
+                                  BOSS_LEVEL_RANGE:   (4, 6),
+                                  HEAL_BARREL_CHANCE:  20},
 
     CIGlobals.MinniesMelodyland: {GUARDS_PER_SECTION: (2, 4),
                                   LEVEL_RANGE:        (3, 6),
-                                  BOSS_LEVEL_RANGE:   (4, 6)},
+                                  BOSS_LEVEL_RANGE:   (4, 6),
+                                  HEAL_BARREL_CHANCE:  25},
 
     CIGlobals.TheBrrrgh:         {GUARDS_PER_SECTION: (3, 4),
                                   LEVEL_RANGE:        (6, 11),
-                                  BOSS_LEVEL_RANGE:   (8, 11)},
+                                  BOSS_LEVEL_RANGE:   (8, 11),
+                                  HEAL_BARREL_CHANCE:  30},
 
     CIGlobals.DonaldsDreamland:  {GUARDS_PER_SECTION: (3, 4),
                                   LEVEL_RANGE:        (8, 11),
-                                  BOSS_LEVEL_RANGE:   (8, 12)}
+                                  BOSS_LEVEL_RANGE:   (8, 12),
+                                  HEAL_BARREL_CHANCE:  35}
 }
 
 # The minimum and maximum number of cog buildings that can be present on each street.

@@ -118,7 +118,7 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
         )
 
     def requestFriendsList(self, sender = None):
-        if sender == None:
+        if sender is None:
             sender = self.air.getAvatarIdFromSender()
         RequestFriendsListProcess(self, self.air, sender)
         

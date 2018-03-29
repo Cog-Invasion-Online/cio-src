@@ -56,7 +56,7 @@ class DistributedTreasure(DistributedObject):
     def loadModel(self, mdlPath, childString = None):
         self.grabSound = base.loadSfx(self.grabSoundPath)
         self.rejectSound = base.loadSfx(self.rejectSoundPath)
-        if self.nodePath == None:
+        if self.nodePath is None:
             self.makeNodePath()
         else:
             self.treasure.getChildren().detach()

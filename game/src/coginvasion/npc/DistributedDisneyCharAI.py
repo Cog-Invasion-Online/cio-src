@@ -223,7 +223,7 @@ class DistributedDisneyCharAI(DistributedAvatarAI, DistributedSmoothNodeAI):
                 self.avatars.append(avId)
 
     def avatarExit(self, avId = None, foo = None, foo2 = None):
-        if avId == None:
+        if avId is None:
             avId = self.air.getAvatarIdFromSender()
         if avId in self.avatars:
             toon = self.air.doId2do.get(avId)

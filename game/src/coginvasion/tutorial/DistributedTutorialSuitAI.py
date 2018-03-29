@@ -66,7 +66,7 @@ class DistributedTutorialSuitAI(DistributedSuitAI):
         durationFactor = 0.2
         if not hasattr(self, 'currentPath'):
             self.currentPath = None
-        if self.currentPath == None:
+        if self.currentPath is None:
             path = random.choice(TutorialGlobals.SUIT_POINTS)
             self.currentPath = TutorialGlobals.SUIT_POINTS.index(path)
             startIndex = -1

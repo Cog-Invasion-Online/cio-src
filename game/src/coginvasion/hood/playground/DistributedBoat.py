@@ -150,7 +150,7 @@ class DistributedBoat(DistributedObject):
         self.sendUpdate('requestCurrentStateAndTimestamp', [])
 
     def setState(self, state, timestamp = None):
-        if timestamp == None:
+        if timestamp is None:
             ts = 0.0
         else:
             ts = globalClockDelta.localElapsedTime(timestamp)

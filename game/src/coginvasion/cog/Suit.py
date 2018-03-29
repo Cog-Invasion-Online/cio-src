@@ -600,7 +600,7 @@ class Suit(Avatar):
             self.find('**/hands').setColor(self.handColor)
 
     def setName(self, nameString, charName):
-        Avatar.setName(self, nameString, avatarType = self.avatarType, charName = charName, createNow = 1)
+        Avatar.setName(self, nameString, charName = charName, createNow = 1)
 
     def setupNameTag(self, tempName = None):
         Avatar.setupNameTag(self, tempName = tempName)
