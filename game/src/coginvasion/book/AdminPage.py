@@ -91,8 +91,9 @@ class AdminPage(BookPage):
             command = self.fsm.request,
             extraArgs = ['basePage']
         )
-
-    def sendSystemMessageCommand(self):
+    
+    # Occasionally, extra arguments are sent and this extra variable must be here to capture them.
+    def sendSystemMessageCommand(self, _ = None):
         msg = self.msgEntry.get()
         DISTRICT_WIDE_MSG(msg)
         self.fsm.request('basePage')

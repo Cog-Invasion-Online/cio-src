@@ -167,6 +167,7 @@ class ChatInput(DirectObject, StateData.StateData):
             base.localAvatar.createChatInput()
             self.fsm.request('idle', [])
             return
+        
         self.chatFrame.show()
         self.chatBx_close = DirectButton(text=("", "Cancel", "Cancel", ""), text_shadow=(0, 0, 0, 1),
                                                 geom=(self.chat_btn_model.find('**/CloseBtn_UP'),
@@ -175,18 +176,19 @@ class ChatInput(DirectObject, StateData.StateData):
                                                 text_scale=0.06, text_pos=(0, -0.09), text_fg=(1,1,1,1), parent=self.chatFrame,
                                                 pos=(-0.151, 0, -0.088), scale=1, command=self.fsm.request, extraArgs = ['idle'])
         self.chatInput = DirectEntry(focus=1, cursorKeys=0, relief=None, geom=None, numLines=3,
-                                parent=self.chatFrame, pos=(-0.2, 0, 0.11), scale=0.05, command=self.sendChat,
-                                width=8.6, initialText=key, backgroundFocus = 0, extraArgs = [recipient])
-        self.chatInput.bind(DGG.OVERFLOW, self.sendChat, extraArgs = [recipient])
-        self.chatInput.bind(DGG.TYPE, self.onTextChangeEvent, extraArgs = [])
-        self.chatInput.bind(DGG.ERASE, self.onTextChangeEvent, extraArgs = [])
+                                parent=self.chatFrame, pos=(-0.2, 0, 0.11), scale=0.05, 
+                                command = lambda _: self.sendChat(recipient), width=8.6, 
+                                initialText=key, backgroundFocus = 0)
+        self.chatInput.bind(DGG.OVERFLOW, command = lambda _: self.sendChat(recipient))
+        self.chatInput.bind(DGG.TYPE, self.onTextChangeEvent)
+        self.chatInput.bind(DGG.ERASE, self.onTextChangeEvent)
         self.chatBx_send = DirectButton(text=("", "Say It", "Say It", ""), text_shadow=(0, 0, 0, 1),
                                     geom=(self.chat_btn_model.find('**/ChtBx_ChtBtn_UP'),
                                     self.chat_btn_model.find('**/ChtBx_ChtBtn_DN'),
                                     self.chat_btn_model.find('**/ChtBx_ChtBtn_RLVR')), relief=None,
                                     text_scale=0.06, text_pos=(0, -0.09), text_fg=(1,1,1,1),
-                                    parent=self.chatFrame, scale=1, command=self.sendChat,
-                                    pos=(0.182, 0, -0.088), extraArgs=[recipient])
+                                    parent=self.chatFrame, scale=1, command = self.sendChat,
+                                    pos=(0.182, 0, -0.088), extraArgs = [recipient])
         self.chatBx_close.setBin('gui-popup', 60)
         self.chatBx_send.setBin('gui-popup', 60)
         self.chatInput.setBin('gui-popup', 60)
@@ -218,7 +220,7 @@ class ChatInput(DirectObject, StateData.StateData):
             else:
                 self.badInputPresent = False
 
-    def sendChat(self, _, recipient):
+    def sendChat(self, recipient):
         chat = self.chatInput.get()
         if hasattr(base, 'localAvatar'):
             if len(chat) > 0 and not self.badInputPresent:
