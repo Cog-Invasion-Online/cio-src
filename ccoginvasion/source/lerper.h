@@ -15,28 +15,29 @@
 
 #include "config_ccoginvasion.h"
 
-class Lerper {
+class Lerper
+{
 PUBLISHED:
-	Lerper(PN_stdfloat initial_val, PN_stdfloat lerp_ratio);
-	Lerper(LPoint3f &initial_p3, PN_stdfloat lerp_ratio);
+        Lerper( PN_stdfloat initial_val, PN_stdfloat lerp_ratio );
+        Lerper( LPoint3f &initial_p3, PN_stdfloat lerp_ratio );
 
-	PN_stdfloat lerp_to_float(PN_stdfloat goal);
-	LPoint3f &lerp_to_p3(LPoint3f &goal);
+        PN_stdfloat lerp_to_float( PN_stdfloat goal );
+        LPoint3f &lerp_to_p3( LPoint3f &goal );
 
-	void set_last_float(PN_stdfloat val);
-	void set_last_p3(LPoint3f &val);
+        void set_last_float( PN_stdfloat val );
+        void set_last_p3( LPoint3f &val );
 
-	const LPoint3f &get_last_p3() const;
-	PN_stdfloat get_last_float() const;
+        const LPoint3f &get_last_p3() const;
+        PN_stdfloat get_last_float() const;
 
-	void set_lerp_ratio(PN_stdfloat lerp_ratio);
-	PN_stdfloat get_lerp_ratio() const;
+        void set_lerp_ratio( PN_stdfloat lerp_ratio );
+        PN_stdfloat get_lerp_ratio() const;
 
 private:
-	PN_stdfloat _lerp_ratio;
+        PN_stdfloat _lerp_ratio;
 
-	PN_stdfloat _last_float;
-	LPoint3f _last_p3;
+        PN_stdfloat _last_float;
+        LPoint3f _last_p3;
 };
 
 #endif // LERPER_H

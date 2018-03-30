@@ -2,34 +2,37 @@
  * COG INVASION ONLINE
  * Copyright (c) CIO Team. All rights reserved.
  *
- * @file cNametag.h
+ * @file cnametag.h
  * @author Brian Lach
  * @date 2016-07-04
  */
 
-#ifndef C_NAMETAG_H
-#define C_NAMETAG_H
+#ifndef CNAMETAG_H
+#define CNAMETAG_H
 
-#include "Python.h"
+#include <pandabase.h>
 
-#include "textNode.h"
+#include <Python.h>
 
-class CNametag {
+class TextNode;
+
+class CNametag
+{
 PUBLISHED:
-	CNametag();
+        CNametag();
 
-	void set_chatballoon_size(double width, double height);
-	void set_panel_size(double width, double height);
+        void set_chatballoon_size( double width, double height );
+        void set_panel_size( double width, double height );
 
-	void get_panel_region(TextNode &tn, PyObject *list);
-	void get_chatballoon_region(PyObject *list);
+        void get_panel_region( TextNode *tn, PyObject *list );
+        void get_chatballoon_region( PyObject *list );
 
 protected:
-	double _cb_width;
-	double _cb_height;
-	double _panel_width;
-	double _panel_height;
+        double _cb_width;
+        double _cb_height;
+        double _panel_width;
+        double _panel_height;
 
 };
 
-#endif // C_NAMETAG_H
+#endif // CNAMETAG_H

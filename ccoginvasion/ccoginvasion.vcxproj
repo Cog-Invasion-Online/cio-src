@@ -32,7 +32,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>Windows7.1SDK</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -78,8 +78,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>D:\OTHER\lachb\Documents\cio\ccoginvasion\source;D:\OTHER\lachb\Documents\cio\Panda3D-CI\python\include;D:\OTHER\lachb\Documents\cio\Panda3D-CI\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\OTHER\lachb\Documents\cio\Panda3D-CI\python\libs;D:\OTHER\lachb\Documents\cio\Panda3D-CI\lib;$(LibraryPath)</LibraryPath>
-    <TargetExt>.pyd</TargetExt>
+    <LibraryPath>D:\OTHER\lachb\Documents\cio\cio-panda3d\built_static\python\libs;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_static\lib;$(LibraryPath)</LibraryPath>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -122,7 +122,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WITHIN_PANDA;WIN32;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\base;C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\suit;C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\components;C:\Users\brian\Documents\cog-invasion-online\Panda3D-CI\include;C:\Panda3D-1.9.2\python\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\base;C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\suit;C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\components;C:\Users\brian\Documents\cog-invasion-online\Panda3D-CI\include;D:\OTHER\lachb\Documents\cio\Panda3D-CI\python\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -158,27 +158,27 @@ interrogate.bat</Command>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\audioClip.h" />
+    <ClInclude Include="source\audioclip.h" />
+    <ClInclude Include="source\cnametag.h" />
+    <ClInclude Include="source\cnametag3d.h" />
     <ClInclude Include="source\config_ccoginvasion.h" />
-    <ClInclude Include="source\ctMusicData.h" />
-    <ClInclude Include="source\ctMusicMgr.h" />
-    <ClInclude Include="source\cNametag.h" />
-    <ClInclude Include="source\cNametag3d.h" />
+    <ClInclude Include="source\ct_musicdata.h" />
+    <ClInclude Include="source\ct_musicmgr.h" />
     <ClInclude Include="source\lerper.h" />
-    <ClInclude Include="source\suitPathFinderAI.h" />
+    <ClInclude Include="source\suitpathfinder_ai.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ccoginvasion_igate.cxx" />
     <ClCompile Include="ccoginvasion_module.cxx" />
-    <ClCompile Include="source\audioClip.cxx" />
-    <ClCompile Include="source\config_ccoginvasion.cxx" />
-    <ClCompile Include="source\ctMusicData.cxx" />
-    <ClCompile Include="source\ctMusicMgr.cxx" />
-    <ClCompile Include="source\cNametag.cxx" />
-    <ClCompile Include="source\cNametag3d.cxx" />
-    <ClCompile Include="source\lerper.cxx" />
-    <ClCompile Include="source\suitPathFinderAI.cxx" />
-    <ClCompile Include="source\tools.cxx" />
+    <ClCompile Include="source\audioclip.cpp" />
+    <ClCompile Include="source\cnametag.cpp" />
+    <ClCompile Include="source\cnametag3d.cpp" />
+    <ClCompile Include="source\config_ccoginvasion.cpp" />
+    <ClCompile Include="source\ct_musicdata.cpp" />
+    <ClCompile Include="source\ct_musicmgr.cpp" />
+    <ClCompile Include="source\lerper.cpp" />
+    <ClCompile Include="source\suitpathfinder_ai.cpp" />
+    <ClCompile Include="source\tools.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
