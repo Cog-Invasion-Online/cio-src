@@ -3699,7 +3699,7 @@ class ToonDNA:
         return self.dnaStrand
 
     def isCoach(self):
-        return self.getDNAStrand() == NPC_DNA['Coach']
+        return self.getDNAStrand() == "00/06/02/15/00/15/00/15/97/41/27/27/00"
 
     def getToonAnimalNoise(self, noise):
         if self.isCoach():

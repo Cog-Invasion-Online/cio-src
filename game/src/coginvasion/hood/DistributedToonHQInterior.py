@@ -16,9 +16,10 @@ import DistributedToonInterior
 import ToonInteriorColors
 from libpandadna import *
 
+"""
 from datetime import datetime
 from pytz import timezone
-import time
+import time"""
 import random
 
 class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior):
@@ -51,10 +52,10 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         color = self.generator.choice(self.colors['TI_door'])
         doorOrigins = render.findAllMatches('**/door_origin*')
         numDoorOrigins = doorOrigins.getNumPaths()
-        print numDoorOrigins
+
         for npIndex in xrange(numDoorOrigins):
             # Let's not generate the secondary door for the TTC playground interior.
-            if npIndex == 0 and not self.zoneId == 2520:
+            if npIndex == 0 or (npIndex == 1 and not self.zoneId == 2520):
                 doorOrigin = doorOrigins[npIndex]
                 doorOriginNPName = doorOrigin.getName()
                 doorOriginIndexStr = doorOriginNPName[len('door_origin_'):]
@@ -105,7 +106,7 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         
         # Let's generate the Toontown Time textnode.
         _, self.ttTimePath = self.__generateTextNodeAndNodePath('toontownTimeText', 
-            'Toontown Time: N/A')
+            'Toontown Time: Disabled')
         self.ttTimePath.reparentTo(self.buildData)
         self.ttTimePath.setScale(0.85)
         self.ttTimePath.setZ(-8.0)
@@ -126,9 +127,11 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         self.buildData.reparentTo(parent)
         
         # Let's begin our clock task.
+        """
         self.clockTaskName = self.uniqueName('ESTClock')
         self.lastFlickerMsTime = int(round(time.time() * 1000))
         base.taskMgr.doMethodLater(0.25, self.__updateTime, self.clockTaskName)
+        """
         
     def __generateTextNodeAndNodePath(self, nodeName, text):
         """ Constructs a TextNode and a NodePath pair """
@@ -140,7 +143,8 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         
         nodepath = hidden.attachNewNode(node)
         return node, nodepath
-        
+    
+    """
     def __updateTime(self, task):
         curTime = self.getToontownTime()
         now = int(round(time.time() * 1000))
@@ -159,6 +163,7 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
     def getToontownTime(self):
         eastern = timezone('US/Eastern')
         return datetime.now(eastern).strftime('%I:%M %p')
+    """
     
     def disable(self):
         DistributedToonInterior.DistributedToonInterior.disable(self)

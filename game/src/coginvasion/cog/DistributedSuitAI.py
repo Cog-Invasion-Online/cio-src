@@ -286,15 +286,13 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         return task.again
             
     def __handleTacticalAttacks(self, avId, gagName, gagData):
-        # Factor in any weaknesses / immunities to the damage this gag does.
-        weaknessFactor = self.suitPlan.getGagWeaknesses().get(gagName, 1.0)
-        baseDmg = GagGlobals.calculateDamage(avId, gagName, gagData)#float(gagData.get('damage', 0.0))
-        dmgOffset = int(math.ceil(baseDmg * weaknessFactor)) - baseDmg
+        # Gets the damage and the damage offset.
+        baseDmg, dmgOffset = self.__getGagEffectOnMe(avId, gagName, gagData)
 
         self.tacticalSeq = Sequence()
         
         # Let's handle combos.
-        isCombo, comboDamage = self.__handleCombos(avId, gagName)
+        isCombo, comboDamage = self.__handleCombos(avId, (baseDmg + dmgOffset), gagData.get('track'))
 
         finalDmg = baseDmg + dmgOffset + comboDamage
 
@@ -318,11 +316,16 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             self.tacticalSeq.append(Func(self.d_announceHealth, 2, -comboDamage, 1))
         
         self.tacticalSeq.start()
+        
+    def __getGagEffectOnMe(self, avId, gagName, gagData):
+        """ Returns the base damage and the damage offset a specified gag name used by "avId" has on this Cog """
+        weaknessFactor = self.suitPlan.getGagWeaknesses().get(gagName, 1.0)
+        baseDmg = GagGlobals.calculateDamage(avId, gagName, gagData)
+        dmgOffset = int(math.ceil(baseDmg * weaknessFactor)) - baseDmg
+        return baseDmg, dmgOffset
 
-    def __handleCombos(self, avId, gagName):
-        track = GagGlobals.getTrackOfGag(gagName)
-        damage = GagGlobals.getGagData(GagGlobals.getIDByName(gagName)).get('damage')
-        self.comboData.update({avId : {track : damage}})
+    def __handleCombos(self, avId, effectiveGagDmg, gagTrack):
+        self.comboData.update({avId : {gagTrack : effectiveGagDmg}})
 
         data = self.comboData.values()
         tracks = []
@@ -349,8 +352,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
                 totalGags = len(damageIndices)
                 for i in damageIndices:
                     if i < len(damageIndices) and i >= 0:
-                        if not damageIndices[i] is None:
-                            totalDamage += damages[damageIndices[i]]
+                        totalDamage += damages[damageIndices[i]]
                 isCombo = True
                 break
             continue

@@ -20,9 +20,9 @@ class DistributedToonHQInteriorAI(DistributedToonInteriorAI.DistributedToonInter
 
     def announceGenerate(self):
         DistributedToonInteriorAI.DistributedToonInteriorAI.announceGenerate(self, doorType = 2)
-        
+
         # Toontown Central's playground HQ only has one accessible front door.
-        if not self.doorToZone == 2520:
+        if not self.doorToZone == CIGlobals.ToontownCentralId:
             self.door2 = DistributedDoorAI.DistributedDoorAI(self.air, self.block, self.doorToZone, 2, 1)
             self.door2.generateWithRequired(self.zoneId)
 

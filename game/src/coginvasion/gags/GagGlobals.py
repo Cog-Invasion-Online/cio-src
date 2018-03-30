@@ -50,7 +50,7 @@ gagData = {
         'maxSupply': 3, 
         'supply': 3, 
     'track' : Throw},
-    CIGlobals.TNT : {'minDamge' : 90, 
+    CIGlobals.TNT : {'minDamage' : 90, 
         'maxDamage': 180, 
         'maxSupply': 2, 
         'supply': 2, 
@@ -554,14 +554,10 @@ def trackExperienceToNetString(tracks):
     return dgi.getRemainingBytes()
 
 # Expects a TRACK_NAME : EXP dictionary and the backpack that should get updates.
-# The final argument is optional, if it's true, it will update an existing dictionary with track data.
-def processTrackData(trackData, backpack, updateData = None):
+def processTrackData(trackData, backpack):
     for track, exp in trackData.iteritems():
         expAmounts = TrackExperienceAmounts.get(track)
         gags = TrackGagNamesByTrackName.get(track)
-        
-        if updateData:
-            updateData[track] = exp
         
         for i in range(len(expAmounts)):
             maxEXP = expAmounts[i]
@@ -598,7 +594,7 @@ def getMaxExperienceValue(exp, track):
     
     if exp > -1:
         for i in range(len(levels)):
-            if exp < levels[i]:
+            if exp < levels[i] or (i == (len(levels) - 1) and exp >= levels[i]):
                 return levels[i]
     return -1
 

@@ -76,7 +76,7 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         self.attackers = []
         self.puInventory = []
         self.equippedPU = -1
-        self.backpack = None
+        self.backpack = BackpackAI(self)
         self.quests = ""
         self.questHistory = []
         self.tier = -1
@@ -472,8 +472,6 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         self.backpack.setSupply(gagId, ammo)
     
     def setBackpackAmmo(self, netString):
-        if not self.backpack:
-            self.backpack = BackpackAI(self)
         data = self.backpack.fromNetString(netString)
         
         for gagId in data.keys():
@@ -497,8 +495,8 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
             return defaultBackpack.toNetString()
         
     def setTrackExperience(self, netString):
-        trackData = GagGlobals.getTrackExperienceFromNetString(netString)
-        GagGlobals.processTrackData(trackData, self.backpack, updateData = self.trackExperience)
+        self.trackExperience = GagGlobals.getTrackExperienceFromNetString(netString)
+        GagGlobals.processTrackData(self.trackExperience, self.backpack)
         
     def d_setTrackExperience(self, netString):
         self.sendUpdate('setTrackExperience', [netString])

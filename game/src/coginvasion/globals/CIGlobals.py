@@ -156,7 +156,7 @@ def getCharacterMaterial(name = "charMat", shininess = 250, rimColor = (1, 1, 1,
     mat.setRimWidth(rimWidth)
     mat.setSpecular(specular)
     mat.setShininess(shininess)
-    if lightwarp:
+    if lightwarp and hasattr(mat, 'setLightwarpTexture'):
         mat.setLightwarpTexture(loader.loadTexture(lightwarp))
     return mat
 
@@ -1328,6 +1328,7 @@ NPCToonNames = {20000: 'Tutorial Tom',
  2223: 'Sasha Sidesplitter',
  2224: 'Smokey Joe',
  2225: 'Fisherman Droopy',
+ 2226: 'Coach',
  2301: 'Dr. Pulyurleg',
  2302: 'Professor Wiggle',
  2303: 'Nurse Nancy',
@@ -2582,6 +2583,7 @@ NPCToonDict = {
   2222: (2735, NPCToonNames[2222], "00/07/01/10/02/10/01/10/01/00/00/01/00", 0),
   2224: (2740, NPCToonNames[2224], "00/05/00/17/00/17/01/17/01/00/01/16/00", 0),
   2225: (2236, NPCToonNames[2225], "00/00/02/09/02/09/01/09/01/00/01/13/00", 5),
+  2226: (2743, NPCToonNames[2226], "00/06/02/15/00/15/00/15/97/41/27/27/00", 0),
   1202: (1713, NPCToonNames[1202], "00/00/01/04/00/04/00/04/00/01/00/14/00", 0),
   1204: (1712, NPCToonNames[1204], "00/01/04/12/01/12/00/12/01/01/01/06/00", 0),
   1205: (1729, NPCToonNames[1205], "00/08/02/04/00/04/00/04/01/01/01/01/00", 3),

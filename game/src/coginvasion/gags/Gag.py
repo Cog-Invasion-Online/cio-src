@@ -10,9 +10,11 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.actor.Actor import Actor
 from direct.interval.IntervalGlobal import Parallel, Sequence, LerpScaleInterval, SoundInterval, Wait
+
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags import GagGlobals
+
 from panda3d.core import Point3
 from abc import ABCMeta
 import abc

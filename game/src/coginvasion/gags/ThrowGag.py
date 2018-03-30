@@ -9,7 +9,8 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import CollisionSphere, BitMask32, CollisionNode, NodePath, CollisionHandlerEvent
-from direct.interval.ProjectileInterval import ProjectileInterval
+from direct.interval.IntervalGlobal import Sequence, Func, Wait, Parallel, \
+    ParallelEndTogether, ActorInterval, ProjectileInterval
 from direct.gui.DirectGui import DirectWaitBar, DGG
 
 from src.coginvasion.gags.Gag import Gag
@@ -21,9 +22,17 @@ import GagGlobals
 import math
 
 class ThrowGag(Gag):
+    
+    ReleaseSpeed = 1.0
+    ReleasePlayRateMultiplier = 1.0
+    BobStartFrame = 27
+    BobEndFrame = 40
+    BobPlayRateMultiplier = 0.25
+    ThrowObjectFrame = 61
+    FinalThrowFrame = 90
 
     def __init__(self, name, model, damage, hitSfx, splatColor, anim = None, scale = 1):
-        Gag.__init__(self, name, model, damage, GagType.THROW, hitSfx, anim = anim, scale = scale)
+        Gag.__init__(self, name, model, damage, GagType.THROW, hitSfx, anim = anim, scale = scale, autoRelease = True)
         self.splatScale = GagGlobals.splatSizes[self.name]
         self.splatColor = splatColor
         self.entities = []
@@ -33,6 +42,7 @@ class ThrowGag(Gag):
         self.tossPieStart = 0
         self.pieSpeed = 0.2
         self.pieExponent = 0.75
+        self.animTrack = None
 
     def setAvatar(self, avatar):
         Gag.setAvatar(self, avatar)
@@ -63,8 +73,66 @@ class ThrowGag(Gag):
     def start(self):
         super(ThrowGag, self).start()
         self.build()
-        self.avatar.setPlayRate(self.playRate, 'pie')
-        self.avatar.play('pie', fromFrame = 0, toFrame = 45)
+        self.clearAnimTrack()
+        
+        bob = Sequence(
+            ParallelEndTogether(
+                ActorInterval(self.avatar, 
+                    'pie', 
+                    startFrame = self.BobStartFrame, 
+                    endFrame = self.BobEndFrame,
+                    partName = 'head',
+                playRate = (self.playRate * self.BobPlayRateMultiplier)),
+                ActorInterval(self.avatar, 
+                    'pie', 
+                    startFrame = self.BobStartFrame, 
+                    endFrame = self.BobEndFrame,
+                    partName = 'torso-top',
+                playRate = (self.playRate * self.BobPlayRateMultiplier))
+            ),
+            ParallelEndTogether(
+                ActorInterval(self.avatar, 
+                    'pie', 
+                    startFrame = self.BobStartFrame, 
+                    endFrame = self.BobEndFrame,
+                    partName = 'head',
+                playRate = (-1 * (self.playRate * self.BobPlayRateMultiplier))),
+                ActorInterval(self.avatar, 
+                    'pie', 
+                    startFrame = self.BobStartFrame, 
+                    endFrame = self.BobEndFrame,
+                    partName = 'torso-top',
+                playRate = (-1 * (self.playRate * self.BobPlayRateMultiplier)))
+            )
+        )
+        
+        def doBob():
+            self.clearAnimTrack()
+            self.animTrack = bob
+            bob.loop()
+        
+        self.animTrack = Sequence(
+            Func(self.avatar.setForcedTorsoAnim, 'pie'),
+            Func(self.avatar.setPlayRate, self.playRate, 'pie'),
+            ParallelEndTogether(
+                ActorInterval(self.avatar, 
+                    'pie', 
+                    startFrame = 0, 
+                    endFrame = self.BobStartFrame,
+                    partName = 'head',
+                playRate = self.playRate),
+                ActorInterval(self.avatar, 
+                    'pie', 
+                    startFrame = 0, 
+                    endFrame = self.BobStartFrame,
+                    partName = 'torso-top',
+                playRate = self.playRate)
+            ),
+            Func(doBob)
+        )
+        
+        self.animTrack.start()
+        
         if self.isLocal():
             taskMgr.remove("hidePowerBarTask" + str(hash(self)))
             self.powerBar.show()
@@ -86,6 +154,11 @@ class ThrowGag(Gag):
 
     def __hidePowerBarTask(self, task):
         self.powerBar.hide()
+        
+    def clearAnimTrack(self):
+        if self.animTrack:
+            self.animTrack.pause()
+            self.animTrack = None
 
     def throw(self):
         if self.isLocal():
@@ -96,9 +169,47 @@ class ThrowGag(Gag):
             base.localAvatar.sendUpdate('setThrowPower', [self.id, self.power])
             self.startTimeout()
             taskMgr.doMethodLater(1.5, self.__hidePowerBarTask, "hidePowerBarTask" + str(hash(self)))
-        self.avatar.play('pie', fromFrame = 45, toFrame = 90)
+        self.clearAnimTrack()
+        
         if not self.gag:
             self.build()
+            
+        def shouldCallRelease():
+            if self.isLocal():
+                base.localAvatar.releaseGag()
+                
+        def finalize():
+            self.clearAnimTrack()
+            self.avatar.clearForcedTorsoAnim()
+        
+        fromFrame = self.avatar.getCurrentFrame('pie', partName = 'torso-top')
+        timeUntilRelease = self.avatar.getDuration('pie', fromFrame = fromFrame, toFrame = self.ThrowObjectFrame)
+        
+        self.animTrack = Parallel(
+            Sequence(
+                ParallelEndTogether(
+                    ActorInterval(self.avatar, 
+                        'pie', 
+                        startFrame = fromFrame, 
+                        endFrame = self.FinalThrowFrame,
+                        partName = 'head',
+                    playRate = (self.playRate * self.ReleasePlayRateMultiplier)),
+                    ActorInterval(self.avatar, 
+                        'pie', 
+                        startFrame = fromFrame, 
+                        endFrame = self.FinalThrowFrame,
+                        partName = 'torso-top',
+                    playRate = (self.playRate * self.ReleasePlayRateMultiplier)),
+                ),
+                Func(finalize),
+            ),
+            Sequence(
+                Wait(timeUntilRelease / self.ReleaseSpeed),
+                Func(shouldCallRelease)
+            )
+        )
+        
+        self.animTrack.start()
 
     def setPower(self, power):
         self.power = power
@@ -238,4 +349,5 @@ class ThrowGag(Gag):
         if self.powerBar:
             self.powerBar.destroy()
             self.powerBar = None
+        self.clearAnimTrack()
         Gag.delete(self)
