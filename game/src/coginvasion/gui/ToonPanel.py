@@ -17,6 +17,7 @@ from direct.fsm import ClassicFSM, State
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
 from src.coginvasion.toon import ToonHead, ToonDNA
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.distributed import AdminCommands
 from src.coginvasion.hood import ZoneUtil
 
 class ToonPanel(DirectFrame):
@@ -385,7 +386,7 @@ class ToonPanel(DirectFrame):
 
     def enterPanel(self):
         adminToken = self.avatarInfo[8]
-        text_color = CIGlobals.TextColorByAdminToken[adminToken]
+        text_color = AdminCommands.TextColorByAdminToken[adminToken]
         self.nameText = OnscreenText(text = self.avatarInfo[1], parent = self,
             pos = (0, 0.2), scale = 0.035, wordwrap = 8, fg = text_color)
         self.nameText.setBin('gui-popup', 60)

@@ -12,6 +12,7 @@ from direct.distributed.PyDatagram import PyDatagram
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.gags import GagGlobals
+from src.coginvasion.distributed import AdminCommands
 from panda3d.core import NetDatagram
 import anydbm
 import os
@@ -72,7 +73,7 @@ class CreateToonProcess:
                 "setBackpackAmmo": (GagGlobals.getDefaultBackpack().toNetString(),),
                 "setLoadout": (GagGlobals.InitLoadout,), # Start with cupcake and squirting flower.
                 "setTrackExperience": (GagGlobals.trackExperienceToNetString(GagGlobals.DefaultTrackExperiences),),
-                "setAdminToken": (CIGlobals.NoToken,),
+                "setAdminToken": (AdminCommands.NoToken,),
                 "setQuests": ("",),
                 "setQuestHistory": ([],),
                 "setTier": (13,),
@@ -491,7 +492,7 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
 
         self.queryAccount(accountId, accountResp)
 
-    def requestNewAvatar(self, dna, slot, name, skipTutorial = 0):
+    def requestNewAvatar(self, dna, slot, name, skipTutorial = 1):
         choice = [dna, slot, name, skipTutorial]
         accountId = self.air.getAccountIdFromSender()
         sender = self.air.getMsgSender()

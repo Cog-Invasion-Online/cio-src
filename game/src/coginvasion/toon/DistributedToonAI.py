@@ -17,6 +17,7 @@ from src.coginvasion.quests.QuestManagerAI import QuestManagerAI
 from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.distributed import AdminCommands
 from src.coginvasion.tutorial.DistributedTutorialAI import DistributedTutorialAI
 import ToonDNA
 import types
@@ -93,8 +94,9 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
     def __requesterAuthorized(self, notDev = False):
         requester = self.air.doId2do.get(self.air.getAvatarIdFromSender())
         if requester:
-            if ((not notDev and requester.getAdminToken() > CIGlobals.NoToken) or
-                (notDev and requester.getAdminToken() > CIGlobals.NoToken and self.getAdminToken() != CIGlobals.DevToken)):
+            hasToken = requester.getAdminToken() > AdminCommands.NoToken
+            if ((not notDev and hasToken) or
+                (notDev and hasToken and self.getAdminToken() != AdminCommands.DevToken)):
                 return True
         return False
 
@@ -120,7 +122,7 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         if self.__requesterAuthorized():
             if flag:
                 # Apply the TSA uniform to this toon.
-                if self.getAdminToken() != CIGlobals.DevToken:
+                if self.getAdminToken() != AdminCommands.DevToken:
                     if self.gender == 'girl':
                         self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][0]
                         self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['43'][0]
@@ -374,7 +376,7 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
                 {"BANNED": 1}
             )
 
-        if self.getAdminToken() > CIGlobals.NoToken:
+        if self.getAdminToken() > AdminCommands.NoToken:
             if andBan:
                 self.air.dbInterface.queryObject(
                     self.air.dbId,
@@ -388,7 +390,7 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
             self.ejectSelf("This player did not have administrator rights, but was trying to eject someone.")
 
     def setGhost(self, value):
-        if not self.getAdminToken() > CIGlobals.NoToken and value > 0:
+        if not self.getAdminToken() > AdminCommands.NoToken and value > 0:
             self.ejectSelf("This player did not have administrator rights, but was trying to set ghost.")
             return
         self.ghost = value

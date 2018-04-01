@@ -19,6 +19,7 @@ from direct.gui.DirectGui import DirectButton
 from direct.gui.DirectGui import DGG, DirectFrame
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.distributed import AdminCommands
 from src.coginvasion.book.MapPage import MapPage
 from src.coginvasion.book.OptionsPage import OptionsPage
 from src.coginvasion.book.DistrictsPage import DistrictsPage
@@ -230,7 +231,7 @@ class ShtickerBook(DirectFrame, StateData):
         self.registerPage(GagsPage(self))
         self.registerPage(QuestPage(self))
 
-        if base.localAvatar.getAdminToken() != CIGlobals.NoToken:
+        if base.localAvatar.getAdminToken() != AdminCommands.NoToken:
             self.registerPage(AdminPage(self))
 
     def unload(self):

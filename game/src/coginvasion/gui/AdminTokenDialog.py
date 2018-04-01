@@ -17,6 +17,7 @@ from direct.gui.DirectGui import DirectButton, DGG, DirectScrolledList
 
 from src.coginvasion.gui import Dialog
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.distributed import AdminCommands
 
 class AdminTokenDialog(Dialog.GlobalDialog):
     notify = directNotify.newCategory("AdminTokenDialog")
@@ -66,9 +67,9 @@ class AdminTokenDialog(Dialog.GlobalDialog):
         if not toon:
             return
         
-        if toon.getAdminToken() == CIGlobals.DevToken:
+        if toon.getAdminToken() == AdminCommands.DevToken:
             self.choiceDialog = Dialog.GlobalDialog("You cannot set the Admin Token of a {0}.".format(
-                                                    CIGlobals.TextByAdminToken[CIGlobals.DevToken]), "invalidToonAck",
+                                                    AdminCommands.TextByAdminToken[AdminCommands.DevToken]), "invalidToonAck",
                                                     Dialog.Ok)
             self.choiceDialog.show()
             self.acceptOnce("invalidToonAck", self.__handleInvalidToonAck)
@@ -90,7 +91,7 @@ class AdminTokenDialog(Dialog.GlobalDialog):
 
         self.tokBtns = []
 
-        for tId, tName in CIGlobals.TextByAdminToken.items():
+        for tId, tName in AdminCommands.TextByAdminToken.items():
             btn = DirectButton(
                         relief=None, text = tName, text_scale=0.06,
                         text_align=TextNode.ALeft, text1_bg=textDownColor, text2_bg=textRolloverColor,
@@ -134,7 +135,7 @@ class AdminTokenDialog(Dialog.GlobalDialog):
     def __handleClickToken(self, avId, token):
         REQ_SET_ADMIN_TOKEN(avId, token)
         pref = "Give"
-        if token == CIGlobals.NoToken:
+        if token == AdminCommands.NoToken:
             pref = "Remove"
         self.choiceDialog.cleanup()
         self.choiceDialog = Dialog.GlobalDialog(pref + " TSA uniform?", "tsaChoice", Dialog.YesNo)
@@ -144,10 +145,10 @@ class AdminTokenDialog(Dialog.GlobalDialog):
     def __handleTSAChoice(self, avId, token):
         toon = base.cr.doId2do.get(avId)
         val = self.choiceDialog.getValue()
-        if token > CIGlobals.NoToken:
+        if token > AdminCommands.NoToken:
             if val:
                 REQ_SET_TSA_UNI(avId, 1)
-        elif token == CIGlobals.NoToken:
+        elif token == AdminCommands.NoToken:
             if val and toon.hasTSASuit():
                 REQ_SET_TSA_UNI(avId, 0)
         self.__handleCancel()

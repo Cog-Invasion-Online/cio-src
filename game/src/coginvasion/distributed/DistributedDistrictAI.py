@@ -12,7 +12,7 @@ from direct.distributed.DistributedObjectAI import DistributedObjectAI
 from direct.directnotify.DirectNotifyGlobal import directNotify
 import time
 
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.distributed.AdminCommands import STAFF_TOKENS
 
 class DistributedDistrictAI(DistributedObjectAI):
     notify = directNotify.newCategory('DistributedDistrictAI')
@@ -99,7 +99,7 @@ class DistributedDistrictAI(DistributedObjectAI):
 
     def systemMessageCommand(self, adminToken, message):
         avId = self.air.getAvatarIdFromSender()
-        tokens = [CIGlobals.ModToken, CIGlobals.DevToken, CIGlobals.UndercoverToken]
+        tokens = STAFF_TOKENS.keys()
         av = self.air.doId2do.get(avId, None)
         if av:
             if (adminToken in tokens and

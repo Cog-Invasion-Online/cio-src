@@ -370,6 +370,8 @@ def calculateMaxSupply(avatar, name, data):
         
         if trackExp == 0:
             return int(minMaxSupply)
+        elif trackExp == MaxedTrackExperiences[track]:
+            return int(maxSupply)
         
         trackExperiences = TrackExperienceAmounts.get(track)
         gagIndex = TrackGagNamesByTrackName.get(track).index(name)

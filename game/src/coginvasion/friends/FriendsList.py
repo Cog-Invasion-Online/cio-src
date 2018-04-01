@@ -14,6 +14,7 @@ from direct.gui.DirectGui import DirectButton, OnscreenText, DirectFrame, Direct
 from direct.fsm import ClassicFSM, State
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.distributed import AdminCommands
 
 textRolloverColor = Vec4(1, 1, 0, 1)
 textDownColor = Vec4(0.5, 0.9, 1, 1)
@@ -133,7 +134,7 @@ class FriendsList(DirectFrame):
         self.show()
 
     def addFriend(self, name, avatarId, adminToken):
-        text_fg = CIGlobals.TextColorByAdminToken[adminToken]
+        text_fg = AdminCommands.TextColorByAdminToken[adminToken]
         self.frameForNames.addItem(
             DirectButton(
                 text = name,

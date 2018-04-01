@@ -128,10 +128,6 @@ LegHeightDict = {
     'dgl': 2.75
 }
 
-# These are the admin tokens
-# Key is token id, value is the actual model id.
-STAFF_TOKENS = {CIGlobals.DevToken : 500, CIGlobals.ModToken : 300}
-
 def generateBodyPart(toon, bodyPart, partType, partPhase, pantType):
     partAnimations = {}
 

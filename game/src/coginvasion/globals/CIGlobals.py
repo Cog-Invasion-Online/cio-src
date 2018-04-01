@@ -207,20 +207,6 @@ def makeSpotlight(name, color, pos, hpr):
     snp.setPos(pos)
     return snp
 
-NoToken = -1
-DevToken = 0
-UndercoverToken = 1
-ModToken = 2
-
-TextByAdminToken = {NoToken:         "Nothing",
-                    UndercoverToken: "Undercover",
-                    DevToken:        "Developer",
-                    ModToken:        "Moderator"}
-TextColorByAdminToken = {NoToken : (0, 0, 0, 1),
-                         UndercoverToken : (0, 0, 0, 1),
-                         DevToken : (255.0 / 255, 154.0 / 255, 0.0 / 255, 1),
-                         ModToken : (0.0 / 255, 85.0 / 255, 255.0 / 255, 1)}
-
 def isToon(toon):
     from src.coginvasion.toon.DistributedToon import DistributedToon
     return isinstance(toon, DistributedToon)
