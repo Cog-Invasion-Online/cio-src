@@ -27,10 +27,13 @@ class QuestManager(QuestManagerBase, DirectObject):
         place = base.cr.playGame.getPlace()
         if place and (hasattr(place, 'fsm') and not place.fsm.getCurrentState() is None) \
                 and place.fsm.getCurrentState().getName() == 'walk':
-            self.acceptOnce(base.inputStore.ViewQuests, self.showQuests)
+            self.accept(base.inputStore.ViewQuests, self.showQuests)
         
     def disableShowQuestsHotkey(self):
         self.ignore(base.inputStore.ViewQuests)
+        
+        if len(self.posters) > 0:
+            self.hideQuests(andReEnableKey=False)
         
     def showQuests(self):
         assert self is base.localAvatar.questManager
@@ -48,7 +51,7 @@ class QuestManager(QuestManagerBase, DirectObject):
             poster.setScale(0.95)
             poster.show()
             self.posters.append(poster)
-        self.acceptOnce(base.inputStore.ViewQuests + '-up', self.hideQuests)
+        self.accept(base.inputStore.ViewQuests + '-up', self.hideQuests)
         
     def hideQuests(self, andReEnableKey = True):
         for poster in self.posters:

@@ -128,9 +128,9 @@ def TOGGLE_GHOST():
         return
     
     if base.localAvatar.getGhost():
-        base.localAvatar.setGhost(0)
+        base.localAvatar.b_setGhost(0)
     else:
-        base.localAvatar.setGhost(1)
+        base.localAvatar.b_setGhost(1)
 
 __builtin__.TOGGLE_GHOST = TOGGLE_GHOST
 

@@ -181,7 +181,7 @@ class ThrowGag(Gag):
         def finalize():
             self.clearAnimTrack()
             self.avatar.clearForcedTorsoAnim()
-        
+
         fromFrame = self.avatar.getCurrentFrame('pie', partName = 'torso-top')
         timeUntilRelease = self.avatar.getDuration('pie', fromFrame = fromFrame, toFrame = self.ThrowObjectFrame)
         

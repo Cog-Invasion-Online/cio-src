@@ -209,10 +209,12 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             # The torso and the head must stay in its current animation.
             # Let's only update the pants and the legs animation.
             for index, part in enumerate(lowerHalfNames):
+                output = Actor.loop(self, animName, restart=restart, partName=part, fromFrame=fromFrame, toFrame=toFrame)
+                
+                # Let's print out the output when we update the last part.
                 if index == (len(lowerHalfNames) - 1):
-                    return Actor.loop(self, animName, restart=restart, partName=part, fromFrame=fromFrame, toFrame=toFrame)
-                else:
-                    Actor.loop(self, animName, restart=restart, partName=part, fromFrame=fromFrame, toFrame=toFrame)
+                    return output
+                
                     
     def __getUpperHalfPartNames(self):
         return ['head', 'torso-top']
@@ -378,22 +380,37 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         base.audio3d.attachSoundToObject(self.chatSoundDict['medium'], self.getPart('head'))
         base.audio3d.attachSoundToObject(self.chatSoundDict['long'], self.getPart('head'))
         base.audio3d.attachSoundToObject(self.chatSoundDict['howl'], self.getPart('head'))
-
-    def ghostOn(self):
-        self.getGeomNode().hide()
+        
+    def __actAsGone(self):
         self.nametag3d.hide()
         self.getShadow().hide()
         if self.tokenIcon:
             self.tokenIcon.hide()
         self.stashBodyCollisions()
-
-    def ghostOff(self):
-        self.unstashBodyCollisions()
+        
+    def __restoreHide(self):
         if self.tokenIcon:
             self.tokenIcon.show()
         self.getShadow().show()
         self.nametag3d.show()
         self.getGeomNode().show()
+        self.unstashBodyCollisions()
+        
+    def handleGhost(self, flag):
+        alpha = 1.0 if not flag else 0.25
+        if flag:
+            if self.getAdminToken() >= base.localAvatar.getAdminToken():
+                # Other staff members at this access level or higher should
+                # be able to see this avatar still.
+                alpha = 0.25
+                self.stashBodyCollisions()
+            elif not self == base.localAvatar:
+                self.getGeomNode().hide()
+                self.__actAsGone()
+        else:
+            self.__restoreHide()
+        self.getGeomNode().setTransparency(flag)
+        self.getGeomNode().setColorScale(1.0, 1.0, 1.0, alpha)
 
     def attachGun(self, gunName):
         self.detachGun()
@@ -974,8 +991,16 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             name = self.uniqueName('enterTeleportOut')
         else:
             name = 'enterTeleportOut'
-        self.track = Sequence(Wait(0.4), Func(self.teleportOutSfx), Wait(1.3),
-                    Func(self.throwPortal), Wait(1.1), Func(self.shadow.hide), Wait(1.5), name = name)
+            
+        self.track = Sequence(Wait(0.4), 
+            Func(self.teleportOutSfx), 
+            Wait(1.3),
+            Func(self.throwPortal), 
+            Wait(1.1), 
+            Func(self.__actAsGone), 
+            Wait(1.5),
+        name = name)
+
         self.track.delayDelete = DelayDelete.DelayDelete(self, name)
         self.track.setDoneEvent(self.track.getName())
         self.acceptOnce(self.track.getName(), self.teleportOutDone, [callback, extraArgs])
@@ -1037,9 +1062,10 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
         holeTrack.append(Func(restorePortal, portal))
         toonTrack = Sequence(
-            Wait(0.3), Func(self.getGeomNode().show), Func(self.nametag3d.show),
-            ActorInterval(self, 'happy', startTime = 0.45)
-        )
+            Wait(0.3), 
+            Func(self.__restoreHide),
+        ActorInterval(self, 'happy', startTime = 0.45))
+
         if hasattr(self, 'uniqueName'):
             trackName = self.uniqueName('teleportIn')
         else:
@@ -1126,11 +1152,27 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.playingAnim = 'neutral'
 
     def enterDied(self, ts = 0, callback = None, extraArgs = []):
+        
+        def shouldDisableGags():
+            if hasattr(self, 'disableGags'):
+                self.disableGags()
+            if hasattr(self, 'b_unEquip'):
+                self.b_unEquip()
+        
         self.playingAnim = 'lose'
         self.isdying = True
         self.play("lose")
-        self.track = Sequence(Wait(2.2), Func(self.dieSfx), Wait(2.8), self.getGeomNode().scaleInterval(2, Point3(0.01), startScale=(self.getGeomNode().getScale())), Func(self.delToon),
-                name = self.uniqueName('enterDied'))
+        self.track = Sequence(
+            Func(self.clearForcedTorsoAnim),
+            Func(shouldDisableGags),
+            Wait(2.2), 
+            Func(self.dieSfx), 
+            Wait(2.8), 
+            self.getGeomNode().scaleInterval(2, 
+                Point3(0.01), 
+            startScale=(self.getGeomNode().getScale())), 
+            Func(self.delToon),
+        name = self.uniqueName('enterDied'))
         self.track.setDoneEvent(self.track.getName())
         self.acceptOnce(self.track.getDoneEvent(), self.diedDone, [callback, extraArgs])
         self.track.delayDelete = DelayDelete.DelayDelete(self, 'enterTeleportOut')
@@ -1161,6 +1203,9 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.track.finish()
             DelayDelete.cleanupDelayDeletes(self.track)
             self.track = None
+        if hasattr(self, 'enableGags'):
+            self.enableGags()
+
         self.rescaleToon()
         self.playingAnim = 'neutral'
 

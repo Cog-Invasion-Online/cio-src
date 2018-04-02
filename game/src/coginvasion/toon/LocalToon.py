@@ -270,14 +270,6 @@ class LocalToon(DistributedToon):
     def getMyBattle(self):
         return self.myBattle
 
-    def ghostOn(self):
-        self.getGeomNode().setTransparency(1)
-        self.getGeomNode().setColorScale(1, 1, 1, 0.25)
-
-    def ghostOff(self):
-        self.getGeomNode().setColorScale(1, 1, 1, 1)
-        self.getGeomNode().setTransparency(0)
-
     def enterReadBook(self, ts = 0, callback = None, extraArgs = []):
         self.stopLookAround()
         self.b_lookAtObject(0, -45, 0)

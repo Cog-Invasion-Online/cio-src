@@ -60,7 +60,7 @@ class GravityWalker(DirectObject.DirectObject):
         self.priorParent=Vec3(0)
         self.__oldPosDelta=Vec3(0)
         self.__oldDt=0
-
+        
         self.moving=0
         self.speed=0.0
         self.rotationSpeed=0.0
@@ -414,7 +414,7 @@ class GravityWalker(DirectObject.DirectObject):
 
     def placeOnFloor(self):
         """
-        Make a reasonable effor to place the avatar on the ground.
+        Make a reasonable effort to place the avatar on the ground.
         For example, this is useful when switching away from the
         current walker.
         """

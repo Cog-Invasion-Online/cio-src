@@ -372,10 +372,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
 
     def setGhost(self, value):
         self.ghost = value
-        if value:
-            self.ghostOn()
-        else:
-            self.ghostOff()
+        self.handleGhost(value)
 
     def d_setGhost(self, value):
         self.sendUpdate("setGhost", [value])
