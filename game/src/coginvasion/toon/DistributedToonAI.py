@@ -477,9 +477,7 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         data = self.backpack.fromNetString(netString)
         
         for gagId in data.keys():
-            supply = data[gagId]
-            maxSupply = GagGlobals.getGagData(gagId).get('maxSupply')
-            self.backpack.addGag(gagId, supply, maxSupply)
+            self.backpack.addGag(gagId, curSupply=data[gagId])
     
     def b_setBackpackAmmo(self, netString):
         self.setBackpackAmmo(netString)
