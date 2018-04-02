@@ -9,8 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import CollisionSphere, BitMask32, CollisionNode, NodePath, CollisionHandlerEvent
-from direct.interval.IntervalGlobal import Sequence, Func, Wait, Parallel, \
-    ParallelEndTogether, ActorInterval, ProjectileInterval
+from direct.interval.IntervalGlobal import Sequence, Func, Wait, Parallel, ProjectileInterval
 from direct.gui.DirectGui import DirectWaitBar, DGG
 
 from src.coginvasion.gags.Gag import Gag
@@ -42,7 +41,6 @@ class ThrowGag(Gag):
         self.tossPieStart = 0
         self.pieSpeed = 0.2
         self.pieExponent = 0.75
-        self.animTrack = None
 
     def setAvatar(self, avatar):
         Gag.setAvatar(self, avatar)
@@ -75,61 +73,21 @@ class ThrowGag(Gag):
         self.build()
         self.clearAnimTrack()
         
-        bob = Sequence(
-            ParallelEndTogether(
-                ActorInterval(self.avatar, 
-                    'pie', 
-                    startFrame = self.BobStartFrame, 
-                    endFrame = self.BobEndFrame,
-                    partName = 'head',
-                playRate = (self.playRate * self.BobPlayRateMultiplier)),
-                ActorInterval(self.avatar, 
-                    'pie', 
-                    startFrame = self.BobStartFrame, 
-                    endFrame = self.BobEndFrame,
-                    partName = 'torso-top',
-                playRate = (self.playRate * self.BobPlayRateMultiplier))
-            ),
-            ParallelEndTogether(
-                ActorInterval(self.avatar, 
-                    'pie', 
-                    startFrame = self.BobStartFrame, 
-                    endFrame = self.BobEndFrame,
-                    partName = 'head',
-                playRate = (-1 * (self.playRate * self.BobPlayRateMultiplier))),
-                ActorInterval(self.avatar, 
-                    'pie', 
-                    startFrame = self.BobStartFrame, 
-                    endFrame = self.BobEndFrame,
-                    partName = 'torso-top',
-                playRate = (-1 * (self.playRate * self.BobPlayRateMultiplier)))
-            )
-        )
-        
         def doBob():
             self.clearAnimTrack()
-            self.animTrack = bob
-            bob.loop()
+            self.animTrack = self.getBobSequence('pie', self.BobStartFrame, 
+                self.BobEndFrame, 
+            (self.playRate * self.BobPlayRateMultiplier))
+            self.animTrack.loop()
         
-        self.animTrack = Sequence(
+        self.setAnimTrack(Sequence(
             Func(self.avatar.setForcedTorsoAnim, 'pie'),
             Func(self.avatar.setPlayRate, self.playRate, 'pie'),
-            ParallelEndTogether(
-                ActorInterval(self.avatar, 
-                    'pie', 
-                    startFrame = 0, 
-                    endFrame = self.BobStartFrame,
-                    partName = 'head',
-                playRate = self.playRate),
-                ActorInterval(self.avatar, 
-                    'pie', 
-                    startFrame = 0, 
-                    endFrame = self.BobStartFrame,
-                    partName = 'torso-top',
-                playRate = self.playRate)
-            ),
+            self.getAnimationTrack('pie', startFrame=0, 
+                endFrame=self.BobStartFrame, 
+            playRate=self.playRate),
             Func(doBob)
-        )
+        ))
         
         self.animTrack.start()
         
@@ -152,13 +110,8 @@ class ThrowGag(Gag):
         taskMgr.remove("powerBarUpdate" + str(hash(self)))
         self.power = self.powerBar['value']
 
-    def __hidePowerBarTask(self, task):
+    def __hidePowerBarTask(self, _):
         self.powerBar.hide()
-        
-    def clearAnimTrack(self):
-        if self.animTrack:
-            self.animTrack.pause()
-            self.animTrack = None
 
     def throw(self):
         if self.isLocal():
@@ -185,29 +138,18 @@ class ThrowGag(Gag):
         fromFrame = self.avatar.getCurrentFrame('pie', partName = 'torso-top')
         timeUntilRelease = self.avatar.getDuration('pie', fromFrame = fromFrame, toFrame = self.ThrowObjectFrame)
         
-        self.animTrack = Parallel(
+        self.setAnimTrack(Parallel(
             Sequence(
-                ParallelEndTogether(
-                    ActorInterval(self.avatar, 
-                        'pie', 
-                        startFrame = fromFrame, 
-                        endFrame = self.FinalThrowFrame,
-                        partName = 'head',
-                    playRate = (self.playRate * self.ReleasePlayRateMultiplier)),
-                    ActorInterval(self.avatar, 
-                        'pie', 
-                        startFrame = fromFrame, 
-                        endFrame = self.FinalThrowFrame,
-                        partName = 'torso-top',
-                    playRate = (self.playRate * self.ReleasePlayRateMultiplier)),
-                ),
+                self.getAnimationTrack('pie', startFrame=fromFrame, 
+                    endFrame=self.FinalThrowFrame, 
+                playRate=(self.playRate * self.ReleasePlayRateMultiplier)),
                 Func(finalize),
             ),
             Sequence(
                 Wait(timeUntilRelease / self.ReleaseSpeed),
                 Func(shouldCallRelease)
             )
-        )
+        ))
         
         self.animTrack.start()
 

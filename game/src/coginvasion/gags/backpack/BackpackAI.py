@@ -24,9 +24,9 @@ class BackpackAI(BackpackBase):
     
     # Sets the supply of a gag in the backpack.
     # Returns true or false if the supply was set.
-    def setSupply(self, gagId, supply):
+    def setSupply(self, gagId, supply, updateEnabled=True):
         updatedSupply = BackpackBase.setSupply(self, gagId, supply)
-        if updatedSupply:
+        if updatedSupply and updateEnabled:
             self.updateNetAmmo()
         return updatedSupply
     

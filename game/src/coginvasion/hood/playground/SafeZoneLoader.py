@@ -166,8 +166,10 @@ class SafeZoneLoader(StateData):
         else:
             self.geom = hidden.attachNewNode(node)
         self.makeDictionaries(self.hood.dnaStore)
-        if not self.__class__.__name__ in ['TTSafeZoneLoader']:
+        if not self.__class__.__name__ in ['TTSafeZoneLoader', 'MGSafeZoneLoader']:
             self.geom.flattenMedium()
+        elif self.__class__.__name__ in ['MGSafeZoneLoader']:
+            self.geom.flattenStrong()
         gsg = base.win.getGsg()
         if gsg:
             self.geom.prepareScene(gsg)

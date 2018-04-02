@@ -9,7 +9,9 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from direct.actor.Actor import Actor
-from direct.interval.IntervalGlobal import Parallel, Sequence, LerpScaleInterval, SoundInterval, Wait
+from direct.distributed import DelayDelete
+from direct.interval.IntervalGlobal import Parallel, ParallelEndTogether, ActorInterval, Sequence, \
+    LerpScaleInterval, SoundInterval, Wait
 
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags.GagType import GagType
@@ -45,6 +47,7 @@ class Gag(object):
         self.id = GagGlobals.getIDByName(name)
         self.image = None
         self.timeout = 5
+        self.animTrack = None
 
         # Handles the new recharging for certain gags.
 
@@ -58,11 +61,80 @@ class Gag(object):
             if gagType == GagType.THROW:
                 self.woosh = base.audio3d.loadSfx(GagGlobals.PIE_WOOSH_SFX)
             self.hitSfx = base.audio3d.loadSfx(hitSfx)
+    
+    # This should be called to change the 'animTrack' variable.
+    def setAnimTrack(self, track, withDelayDelete=True):
+        """ Sets the animation track for this gag. """
+        if track is None:
+            # If we try to set the animation track to None, we should
+            # just call clearAnimTrack.
+            self.clearAnimTrack()
+            return
+        
+        self.animTrack = track
+        
+        if withDelayDelete:
+            self.animTrack.delayDelete = DelayDelete.DelayDelete(self.avatar, track.getName())
+    
+    # This should be called whenever we want to clear the 'animTrack' variable.
+    def clearAnimTrack(self):
+        if self.animTrack:
+            DelayDelete.cleanupDelayDeletes(self.animTrack)
+            self.animTrack.pause()
+            self.animTrack = None
 
     def playAnimThatShouldBePlaying(self):
         if self.avatar:
             self.avatar.loop(self.avatar.playingAnim)
-
+            
+    def getAnimationTrack(self, animName, startFrame = None, endFrame = None, playRate = 1.0):
+        return ParallelEndTogether(
+            ActorInterval(self.avatar, 
+                animName, 
+                startFrame = startFrame, 
+                endFrame = endFrame,
+                partName = 'head',
+            playRate = playRate),
+            ActorInterval(self.avatar, 
+                animName, 
+                startFrame = startFrame, 
+                endFrame = endFrame,
+                partName = 'torso-top',
+            playRate = playRate)
+        )
+            
+    def getBobSequence(self, animName, startFrame, endFrame, playRate):
+        return Sequence(
+            ParallelEndTogether(
+                ActorInterval(self.avatar, 
+                    animName, 
+                    startFrame = startFrame, 
+                    endFrame = endFrame,
+                    partName = 'head',
+                playRate = playRate),
+                ActorInterval(self.avatar, 
+                    animName, 
+                    startFrame = startFrame, 
+                    endFrame = endFrame,
+                    partName = 'torso-top',
+                playRate = playRate)
+            ),
+            ParallelEndTogether(
+                ActorInterval(self.avatar, 
+                    animName, 
+                    startFrame = startFrame, 
+                    endFrame = endFrame,
+                    partName = 'head',
+                playRate = (-1 * playRate)),
+                ActorInterval(self.avatar, 
+                    animName, 
+                    startFrame = startFrame, 
+                    endFrame = endFrame,
+                    partName = 'torso-top',
+                playRate = (-1 * playRate))
+            )
+        )
+    
     def setRechargeTime(self, time):
         self.rechargeTime = time
 

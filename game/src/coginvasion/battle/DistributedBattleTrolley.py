@@ -81,12 +81,14 @@ class DistributedBattleTrolley(DistributedObject):
         if self.index == 0:
             hoodAbbr = hood.abbr
         elif self.index == 1:
-            hoodAbbr = CIGlobals.ZoneId2HoodAbbr[self.toZone]
+            hoodAbbr = 'DG' #CIGlobals.ZoneId2HoodAbbr[self.toZone]
         self.hoodAbbr = hoodAbbr
         
         findStr = '**/prop_trolley_station_' + hoodAbbr + '_DNARoot'
         
         self.trolleyStation = hood.loader.geom.find(findStr)
+        if self.trolleyStation.isEmpty():
+            print 'Index: ' + str(self.index)
         self.trolleyCar = self.trolleyStation.find('**/trolley_car')
         self.trolleyKey = self.trolleyStation.find('**/key')
 
