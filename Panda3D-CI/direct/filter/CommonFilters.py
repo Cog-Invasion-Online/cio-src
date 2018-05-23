@@ -197,7 +197,7 @@ class CommonFilters:
                 self.ssao.append(self.manager.renderQuadInto(colortex=ssao2))
                 self.ssao[0].setShaderInput("depth", self.textures["depth"])
                 self.ssao[0].setShaderInput("normal", self.textures["aux"])
-                self.ssao[0].setShaderInput("random", loader.loadTexture("maps/random.rgb"))
+                self.ssao[0].setShaderInput("random", loader.loadTexture("models/maps/random.rgb"))
                 self.ssao[0].setShader(Shader.make(SSAO_BODY % configuration["AmbientOcclusion"].numsamples, Shader.SL_Cg))
                 self.ssao[1].setShaderInput("src", ssao0)
                 self.ssao[1].setShader(self.loadShader("phase_3/models/shaders/filter-blurx.sha"))
@@ -218,7 +218,7 @@ class CommonFilters:
                     downsampler="phase_3/models/shaders/filter-copy.sha"
                 else:
                     scale=2
-                    downsampler="phase_3/models/shaders/ilter-copy.sha"
+                    downsampler="phase_3/models/shaders/filter-copy.sha"
                 self.bloom.append(self.manager.renderQuadInto(colortex=bloom0, div=2,     align=scale))
                 self.bloom.append(self.manager.renderQuadInto(colortex=bloom1, div=scale, align=scale))
                 self.bloom.append(self.manager.renderQuadInto(colortex=bloom2, div=scale, align=scale))
