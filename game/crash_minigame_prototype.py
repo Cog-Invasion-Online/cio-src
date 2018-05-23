@@ -430,7 +430,8 @@ class Crate(NodePath, DirectObject):
     def __watchUnderneathCrate(self, task):
         #print (base.localAvatar.getZ(self.botColl) + base.localAvatar.getHeight())
         z = base.localAvatar.getZ(self.botColl) + base.localAvatar.getHeight() - 2.143
-        if (z <= 7.5 and base.localAvatar.walkControls.isAirborne):
+        print z
+        if (z >= -1.8 and base.localAvatar.walkControls.isAirborne):
             # We've hit the bottom of this crate with our head.
             if (globalClock.getFrameTime() - self.lastHitBotT >= 0.05):
                 self.lastHitBotT = globalClock.getFrameTime()
@@ -938,7 +939,7 @@ class Game:
         regCrateTrans = ((-35, 30, 0), (-15, 10, 0),
         (-27, 45, 0), (-22, 45, 0), (-17, 45, 0),(-12, 45, 0))#, (25, 20, 0), (33, 10, 0), (33, 20, 0), (20, 16, 0))
 
-        bouCrateTrans = ((-5, 20, 0, 0), (-5, 20, 13, 0), (-20, 100, 0, 0), (-20, 100, 13, 0))
+        bouCrateTrans = ((-5, 20, 0, 0), (-5, 20, 12.5, 0), (-20, 100, 0, 0), (-20, 100, 12.5, 0))
         
         for trans in regCrateTrans:
             beans = random.randint(1, 4)
@@ -962,7 +963,7 @@ class Game:
         wc.setWallBitMask(CIGlobals.WallBitmask)
         wc.setFloorBitMask(CIGlobals.FloorBitmask)
         wc.setWalkSpeed(
-            CIGlobals.ToonForwardSpeed, CIGlobals.ToonJumpForce
+            CIGlobals.ToonForwardSpeed, CIGlobals.ToonJumpForce + 2.5
         )
         wc.initializeCollisions(base.cTrav, base.localAvatar, floorOffset=0.025, reach=4.0)
         wc.setAirborneHeightFunc(base.localAvatar.getAirborneHeight)
@@ -987,7 +988,7 @@ class Game:
 
         #base.oobe()
 
-        base.transitions.fadeIn(0.2)
+        base.transitions.irisIn()
         
         #base.acceptOnce('enterplatform_coll', self.__handleSteppedOnPlatform)
 
@@ -995,4 +996,7 @@ game = Game()
 
 #base.cTrav.showCollisions(render)
 
+#base.cTrav.showCollisions(render)
+
+#base.oobe()
 base.run()
