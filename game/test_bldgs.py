@@ -379,7 +379,7 @@ frame = DirectScrolledFrame(canvasSize = (-1, 1, -3.5, 1), frameSize = (-0.8, 2,
 frame.setPos(0, 0, 0)
 frame.setScale(0.3)
 #frame.place()
-
+"""
 from lib.coginvasion.cog.SuitPathDataAI import *
 
 #from lib.coginvasion.cog import SuitPathFinder
@@ -505,7 +505,7 @@ base.accept('p', pause)
 print 'start'
 print time.time() - startTime
 #print datetime.now() - startTime
-"""
+
 
 #render.setAntialias(AntialiasAttrib.MMultisample)
 
@@ -641,7 +641,7 @@ print base.localAvatar.getDuration('win')
 #base.localAvatar.getGeomNode().getChild(0).node().forceSwitch(0)
 
 from panda3d.core import *
-"""
+
 light = PointLight('slight')
 light.setColor(VBase4(1, 1, 1, 1))
 lnp = render.attachNewNode(light)
@@ -653,6 +653,7 @@ anp = render.attachNewNode(amb)
 render.setLight(anp)
 
 render.setShaderAuto()
+
 """
 for nodepath in render.findAllMatches('*'):
 	try:

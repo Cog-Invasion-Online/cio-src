@@ -62,7 +62,9 @@ sync-video #f
 smooth-lag 0.4
 basic-shaders-only #f
 framebuffer-multisample 1
+framebuffer-stencil 1
 multisamples 16
+read-raw-mice #t
 
 audio-dls-file resources/gm.dls
 
@@ -80,19 +82,21 @@ want-WASD #t
 want-gta-controls #t
 show-minigame-dates #f
 want-real-shadows #f
-load-stuff #t
+load-stuff #f
 want-playground-gags #t
 
 ctmusic-numsongs 1
 
-want-pstats 0
+want-pstats 1
 
 egg-load-old-curves 0
 
-#threading-model App/Cull/Draw
+#threading-model /Draw
 
 gl-finish #f
 gl-force-no-error #t
 gl-check-errors #f
 gl-force-no-flush #t
 gl-force-no-scissor #t
+
+#show-buffers #t

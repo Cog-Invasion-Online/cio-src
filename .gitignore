@@ -106,3 +106,11 @@ game/tools/nirai
 # PyCharm IDE:
 .idea
 *.iml
+
+ccoginvasion/Release
+Release
+Debug
+Packages
+ccoginvasion/ccoginvasion.in
+ccoginvasion/ccoginvasion_igate.cxx
+ccoginvasion/ccoginvasion_module.cxx
