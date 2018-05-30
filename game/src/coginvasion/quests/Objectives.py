@@ -13,6 +13,7 @@ from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.cog import Variant
 from src.coginvasion.gags import GagGlobals
 import QuestGlobals
+import random
 
 ####################################
 # Objective types
@@ -257,6 +258,11 @@ class RecoverItemObjective(CogObjective):
         else:
             raise ValueError('RecoverItemObjective: \'recoverChance\' member must be 0 <= n <= 100. '
                              / + 'Instead received {0}.'.format(recoverChance))
+            
+    def handleProgress(self, cog):
+        if not self.isComplete() and self.isNeededCog(cog) and random.randint(0, 101) < self.recoverChance:
+            self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id, 
+                self.quest.questMgr.getObjectiveIndex(self))
         
     def getTaskInfo(self, speech = False):
         cogObjInfo = CogObjective.getTaskInfo(self)
