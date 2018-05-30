@@ -130,6 +130,73 @@ def makeDropShadow(scale):
     sh.flattenMedium()
     return sh
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""" String helper methods """
+
+def makeSingular(noun):
+    """ Makes a plural noun singular. """
+    pluralSuffixes = ['ies', 'es', 's']
+    
+    for suffix in pluralSuffixes:
+        if noun.endswith(suffix):
+            return noun[:-len(suffix)]
+
+    return noun
+
+def makePlural(noun):
+    """ Makes a noun string plural. Follows grammar rules with nouns ending in 'y' and 's'. Assumes noun is singular beforehand. """
+    withoutLast = noun[:-1]
+    
+    if noun.endswith('y'):
+        return '{0}ies'.format(withoutLast)
+    elif noun.endswith('s'):
+        return '{0}es'.format(withoutLast)
+    else:
+        return '{0}s'.format(noun)
+    
+def makePastTense(noun):
+    """ Makes a noun string past tense. """    
+    withoutLast = noun[:-1]
+    secondToLast = noun[-2:-1]
+    lastChar = noun[-1:]
+
+    if noun.endswith('y'):
+        return '{0}ied'.format(withoutLast)
+    elif not (noun.endswith('w') or noun.endswith('y')) and secondToLast in getVowels() and lastChar in getConsonants():
+        # When a noun ends with a vowel then a consonant, we double the consonant and add -ed."
+        return '{0}{1}ed'.format(noun, secondToLast)
+    else:
+        return '{0}ed'.format(noun)
+    
+def getVowels():
+    """ Returns a list of vowels """
+    return ['a', 'e', 'i', 'o', 'u']
+
+def getConsonants():
+    """ Returns a list of consonants """
+    return ['b', 'c', 'd', 'f', 'g', 
+            'h', 'j', 'k', 'l', 'm', 
+            'n', 'p', 'q', 'r', 's', 
+            't', 'v', 'w', 'x', 'y', 
+    'z']
+
+def getAmountString(noun, amount):
+    """ Returns a grammatically correct string stating the amount of something. E.g: An elephant horn, 5 packages, etc. """
+    
+    if amount > 1:
+        return "{0} {1}".format(amount, makePlural(noun))
+    else:
+        firstChar = noun[1:]
+
+        if firstChar in getVowels():
+            # If the noun begins with a vowel, we use 'an'.
+            return 'An {0}'.format(noun)
+        
+        return 'A {0}'.format(noun)
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 def makeSplat(pos, color, scale):
     from direct.actor.Actor import Actor
     from direct.interval.IntervalGlobal import ActorInterval

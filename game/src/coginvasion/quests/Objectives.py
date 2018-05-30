@@ -60,10 +60,9 @@ class Objective:
 
         # The goal (number)
         self.goal = goal
-
-        if self.AreaSpecific:
-            # The area this quest has to be completed in (a playground zoneId or Anywhere)
-            self.area = area
+        
+        # The area this quest has to be completed in (a playground zoneId or Anywhere)
+        self.area = area if self.AreaSpecific else None
 
         # The current progress on this objective (number)
         self.progress = None
@@ -74,14 +73,8 @@ class Objective:
         if self.HasProgress:
             self.quest.setProgressText(self.getProgressText())
 
-    def getInfoText(self):
-        if self.goal > 1:
-            return str(self.goal) + ' '
-        else:
-            return 'A '
-
     def getProgressText(self):
-        return "%d of %d " % (self.progress, self.goal) + QuestGlobals.makePastTense(self.Header)
+        return "%d of %d " % (self.progress, self.goal) + CIGlobals.makePastTense(self.Header)
 
     def handleProgress(self):
         # We have nothing to do here
@@ -95,14 +88,14 @@ class Objective:
 
 class VisitNPCObjective(Objective):
     """
-    [npcId, showAsComplete = 0]
+    [npcId, goal = None, area = None, showAsComplete = 0]
     0 npcId = HQ Officer
     """
 
     Header = QuestGlobals.VISIT
 
-    def __init__(self, npcId, showAsComplete = 0):
-        Objective.__init__(self, None, None)
+    def __init__(self, npcId, goal = None, area = None, showAsComplete = 0):
+        Objective.__init__(self, goal, area)
 
         self.npcId = npcId
 
@@ -118,24 +111,6 @@ class VisitNPCObjective(Objective):
 
     def isComplete(self):
         return False
-    
-class DeliverItemObjective(VisitNPCObjective):
-    Header = QuestGlobals.DELIVER
-    HasProgress = True
-    
-    def __init__(self, goal, area, npcId, itemName, 
-        itemIcon = QuestGlobals.getPackageIcon(), showAsComplete = 0):
-        VisitNPCObjective.__init__(self, npcId, showAsComplete)
-        self.itemName = itemName
-        self.itemIcon = itemIcon
-        
-        if self.itemName in GagGlobals.gagIds.values():
-            invIcons = loader.loadModel('phase_3.5/models/gui/inventory_icons.bam')
-            self.itemIcon = invIcons.find('**/%s' % GagGlobals.InventoryIconByName[self.itemName])
-            invIcons.removeNode()
-        
-    def isComplete(self):
-        return Objective.isComplete(self)
 
 class DefeatObjective(Objective):
     Header = QuestGlobals.DEFEAT
@@ -222,37 +197,71 @@ class CogObjective(DefeatObjective):
         if self.variant:
             variantTxt = Variant.VariantToName.get(self.variant)
             if self.goal > 1:
-                variantTxt = QuestGlobals.makePlural(variantTxt)
+                variantTxt = CIGlobals.makePlural(variantTxt)
             infoText = str('%s %s' % (infoText, variantTxt))
             
         if self.dept:
-            deptName = self.dept.getName() if not self.goal > 1 else QuestGlobals.makePlural(self.dept.getName())
+            deptName = self.dept.getName() if not self.goal > 1 else CIGlobals.makePlural(self.dept.getName())
             infoText = str('%s %s' % (infoText, deptName))
         elif self.cog == QuestGlobals.Any:
             text = CIGlobals.Suit if not self.goal > 1 else CIGlobals.Suits
             infoText = str('%s %s' % (infoText, text))
         elif not self.cog == QuestGlobals.Any:
-            nameText = self.cog if not self.goal > 1 else QuestGlobals.makePlural(self.cog)
+            nameText = self.cog if not self.goal > 1 else CIGlobals.makePlural(self.cog)
             infoText = str('%s %s' % (infoText, nameText))
 
         return infoText
+
+from abc import ABCMeta
+
+class ItemObjective:
+    """ This is a base class for item-based objectives """
+    __metaclass__ = ABCMeta
     
-class RecoverItemObjective(CogObjective):
-    Header = QuestGlobals.RECOVER
-    HasProgress = True
-    
-    def __init__(self, goal, area, itemName, itemIcon = QuestGlobals.getPackageIcon(),
-            name = QuestGlobals.Any, level = None, levelRange = None, 
-        variant = None, dept = None):
-        CogObjective.__init__(self, name, goal, area, level, levelRange, variant, dept)
+    def __init__(self, itemName, itemIcon = QuestGlobals.getPackageIcon()):
         self.itemName = itemName
         self.itemIcon = itemIcon
         
+        if self.itemName in GagGlobals.gagIds.values():
+            invIcons = loader.loadModel('phase_3.5/models/gui/inventory_icons.bam')
+            self.itemIcon = invIcons.find('**/%s' % GagGlobals.InventoryIconByName[self.itemName])
+            invIcons.removeNode()
+    
+class DeliverItemObjective(ItemObjective, VisitNPCObjective):
+    """ [itemName, goal, npcId, itemIcon = QuestGlobals.getPackageIcon(), showAsComplete = 0)] """
+    
+    Header = QuestGlobals.DELIVER
+    HasProgress = True
+    
+    def __init__(self, itemName, goal, npcId, 
+                 itemIcon = QuestGlobals.getPackageIcon(), showAsComplete = 0):
+        ItemObjective.__init__(self, itemName, itemIcon)
+        VisitNPCObjective.__init__(self, npcId, goal, showAsComplete = showAsComplete)
+    
+class RecoverItemObjective(CogObjective):
+    """ [itemName, goal, area, recoverChance (0 <= n <= 100), itemIcon = QuestGlobals.getPackageIcon(),
+            name = QuestGlobals.Any, level = None, levelRange = None, variant = None, dept = None] """
+    
+    Header = QuestGlobals.RECOVER
+    HasProgress = True
+    
+    def __init__(self, itemName, goal, area, recoverChance, itemIcon = QuestGlobals.getPackageIcon(),
+            name = QuestGlobals.Any, level = None, levelRange = None, 
+        variant = None, dept = None):
+        ItemObjective.__init__(self, itemName, itemIcon = QuestGlobals.getPackageIcon())
+        CogObjective.__init__(self, name, goal, area, level, levelRange, variant, dept)
+        
+        # We're expecting that the recover chance be (0 <= n <= 100).
+        if 0 <= recoverChance <= 100:
+            self.recoverChance = recoverChance
+        else:
+            raise ValueError('RecoverItemObjective: \'recoverChance\' member must be 0 <= n <= 100. '
+                             / + 'Instead received {0}.'.format(recoverChance))
+        
     def getTaskInfo(self, speech = False):
         cogObjInfo = CogObjective.getTaskInfo(self)
-        infoText = QuestGlobals.RECOVER + ' ';
-        infoText += str('a %s' % self.itemName) if self.goal == 1 else str('%d %s' % (self.goal, 
-            QuestGlobals.makePlural(self.itemName)))
+        infoText = self.Header + ' ';
+        infoText += CIGlobals.getAmountString(self.itemName, self.goal)
         infoText = str('%s from %s' % (infoText, cogObjInfo))
         return infoText
 
@@ -272,7 +281,7 @@ class CogInvasionObjective(DefeatObjective):
         if self.goal > 1:
             taskInfo = QuestGlobals.QuestSubjects[1]
         else:
-            taskInfo = QuestGlobals.makeSingular(self.Name)
+            taskInfo = CIGlobals.makeSingular(self.Name)
 
         return taskInfo
 
@@ -292,7 +301,7 @@ class CogTournamentObjective(DefeatObjective):
         if self.goal > 1:
             taskInfo = self.Name
         else:
-            taskInfo = QuestGlobals.makeSingular(self.Name)
+            taskInfo = CIGlobals.makeSingular(self.Name)
 
         return taskInfo
 
@@ -335,7 +344,7 @@ class CogBuildingObjective(DefeatObjective):
             subject = name % self.dept.getName()
 
         if self.goal > 1:
-            subject = QuestGlobals.makePlural(subject)
+            subject = CIGlobals.makePlural(subject)
 
         taskInfo += subject
 
@@ -385,16 +394,16 @@ DoubleFrameObjectives = [RecoverItemObjective, DeliverItemObjective]
 SafeEndObjectives = [VisitNPCObjective, DeliverItemObjective, RecoverItemObjective]
 
 ObjectiveType2ObjectiveClass = {
-    DefeatCog:           CogObjective,
-    RecoverItem:      RecoverItemObjective,
-    DeliverItem:       DeliverItemObjective,
-    DefeatCogInvasion:   CogInvasionObjective,
-    DefeatCogTournament: CogTournamentObjective,
-    DefeatCogBuilding:   CogBuildingObjective,
+    DefeatCog:                  CogObjective,
+    RecoverItem:                RecoverItemObjective,
+    DeliverItem:                DeliverItemObjective,
+    DefeatCogInvasion:          CogInvasionObjective,
+    DefeatCogTournament:        CogTournamentObjective,
+    DefeatCogBuilding:          CogBuildingObjective,
 
-    PlayMinigame:        MinigameObjective,
+    PlayMinigame:               MinigameObjective,
 
-    VisitNPC:            VisitNPCObjective,
+    VisitNPC:                   VisitNPCObjective,
 }
 
 ObjectiveClass2ObjectiveType = {v: k for k, v in ObjectiveType2ObjectiveClass.items()}
