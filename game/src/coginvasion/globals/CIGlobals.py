@@ -162,6 +162,16 @@ def getCharacterMaterial(name = "charMat", shininess = 250, rimColor = (1, 1, 1,
 
 SettingsMgr = None
 
+def colorFromRGBScalar255(color):
+    """Takes in a tuple of (r, g, b, scalar) (0-255) and returns a
+    linear (0-1) color with the scalar applied."""
+    
+    scalar = color[3]
+    return VBase4(color[0] * (scalar / 255.0) / 255.0,
+                  color[1] * (scalar / 255.0) / 255.0,
+                  color[2] * (scalar / 255.0) / 255.0,
+                  1.0)
+
 def getSettingsMgr():
     return SettingsMgr
 

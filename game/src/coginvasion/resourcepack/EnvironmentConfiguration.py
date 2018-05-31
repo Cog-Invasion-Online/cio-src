@@ -14,7 +14,7 @@ from panda3d.core import Vec3, VBase4
 
 from yaml import load
 
-from src.coginvasion.globals.CIGlobals import HoodAbbr2Hood
+from src.coginvasion.globals.CIGlobals import HoodAbbr2Hood, colorFromRGBScalar255
 
 boolean = 'boolean'
 color = 'color'
@@ -34,20 +34,26 @@ class Modifier:
     # This method will double-check that and verify that it has everything it needs.
     def digest(self, data):
         if self.modType is color:
-            if not isinstance(data, list) or len(data) != 3:
-                self.notify.warning('Expected 3 [0-255] rgb values for color.')
+            if not isinstance(data, list):
+                self.notify.warning('Expected 3 or 4 [0-255] rgb values for color (position 4 should be scalar).')
                 self.notify.warning('Instead, %d values were found.' % len(data))
                 return None
-            elif isinstance(data, list) and len(data) == 3:
+            else:
                 for n in data:
-                    if isinstance(n, (int, long)):
-                        if not (0 <= n <= 255):
-                            self.notify.warning('Illegal number value for color. Only [0-255] is allowed!')
-                            return None
-                    else:
+                    if not isinstance(n, (int, long)):
                         self.notify.warning('Received a non-int value for color.')
                         return None
-            return VBase4(data[0] / 255.0, data[1] / 255.0, data[2] / 255.0, 1.0)
+            
+            if len(data) < 3:
+                # if the user supplied less than 3 values for a color,
+                # fill in the missing values with the last supplied value.
+                for i in xrange(3 - len(data)):
+                    data.append(data[len(data) - 1])
+            if len(data) < 4:
+                # user didn't supply a scalar.
+                # automatically use 255 (which would be no scaling).
+                data.append(255)
+            return colorFromRGBScalar255(data)
         elif self.modType is stringList:
             if not isinstance(data, list):
                 self.notify.warning('Expected a list of strings.')
