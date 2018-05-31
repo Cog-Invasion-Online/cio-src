@@ -359,7 +359,7 @@ class QuestPoster(DirectFrame):
         infoText = objective.getTaskInfo()
         
         if objective.__class__ == RecoverItemObjective:
-            infoText = QuestGlobals.makePlural(objective.cog)
+            infoText = CIGlobals.makePlural(objective.cog)
         
         if not iconElement:
             iconElement = self.auxIcon
@@ -417,7 +417,7 @@ class QuestPoster(DirectFrame):
             
         # Let's set the progress bar text
         pgBarText = '%d of %d %s' % (objective.progress, objective.goal, 
-            QuestGlobals.makePastTense(auxText))
+            CIGlobals.makePastTense(auxText))
         self.progressBar['text'] = pgBarText
         
         self.auxText['text'] = auxText
@@ -455,7 +455,7 @@ class QuestPoster(DirectFrame):
         
         # Let's set the progress bar text
         pgBarText = '%d of %d %s' % (objective.progress, objective.goal, 
-            QuestGlobals.makePastTense(auxText))
+            CIGlobals.makePastTense(auxText))
         self.progressBar['text'] = pgBarText
         
         self.objectiveInfo['text'] = infoText
@@ -478,7 +478,7 @@ class QuestPoster(DirectFrame):
         
         # Let's set the progress bar text
         pgBarText = '%d of %d %s' % (objective.progress, objective.goal, 
-            QuestGlobals.makePastTense(auxText))
+            CIGlobals.makePastTense(auxText))
         self.progressBar['text'] = pgBarText
         
         self.objectiveInfo['text'] = infoText

@@ -148,7 +148,7 @@ class DoubleFrameQuestPoster(QuestPoster):
         self.handleSimpleIcon(objective.itemIcon, 0.12, self.auxIcon)
         
         # Handle the objective information.
-        infoText = '%d %s' % (objective.goal, QuestGlobals.makePlural(objective.itemName))
+        infoText = '%d %s' % (objective.goal, CIGlobals.makePlural(objective.itemName))
         if objective.goal == 1:
             infoText = objective.itemName
         
@@ -164,7 +164,7 @@ class DoubleFrameQuestPoster(QuestPoster):
             
             # Let's set the progress bar text
             pgBarText = '%d of %d %s' % (objective.progress, objective.goal, 
-                QuestGlobals.makePastTense(QuestGlobals.RECOVER))
+                CIGlobals.makePastTense(QuestGlobals.RECOVER))
             self.progressBar['text'] = pgBarText
             self.progressBar['value'] = objective.progress & pow(2, 16) - 1
         else:
@@ -183,7 +183,7 @@ class DoubleFrameQuestPoster(QuestPoster):
         self.auxFrame.setPos(QuestGlobals.RECOVER_LEFT_PICTURE_POS)
         self.auxFrame['image_color'] = QuestGlobals.RED
         
-        infoText = '%d %s' % (objective.goal, QuestGlobals.makePlural(objective.itemName))
+        infoText = '%d %s' % (objective.goal, CIGlobals.makePlural(objective.itemName))
         if objective.goal == 1:
             infoText = objective.itemName
         self.objectiveInfo.setPos(QuestGlobals.RECOVER_INFO_POS)
@@ -192,7 +192,7 @@ class DoubleFrameQuestPoster(QuestPoster):
         
         # Let's set the progress bar text
         pgBarText = '%d of %d %s' % (objective.progress, objective.goal, 
-            QuestGlobals.makePastTense(QuestGlobals.DELIVER))
+            CIGlobals.makePastTense(QuestGlobals.DELIVER))
         self.progressBar['text'] = pgBarText
         self.progressBar['value'] = objective.progress & pow(2, 16) - 1
         
