@@ -18,7 +18,7 @@ from ControlsCategory import ControlsCategory
 from DisplayCategory import DisplayCategory
 from CategoryTab import CategoryTab
 from GeneralCategory import GeneralCategory
-from AdvancedCategory import AdvancedCategory
+#from AdvancedCategory import AdvancedCategory
 
 from collections import OrderedDict
 
@@ -28,11 +28,11 @@ class OptionsPage(BookPage):
     # Keys are categories and values are x-positions for the text.
     Categories = OrderedDict()
     Categories[AboutCategory] = 0.09
+    Categories[GeneralCategory] = 0.07
+    Categories[DisplayCategory] = 0.07
     Categories[SoundCategory] = 0.0825
     Categories[ControlsCategory] = 0.05
-    Categories[DisplayCategory] = 0.07
-    Categories[GeneralCategory] = 0.07
-    Categories[AdvancedCategory] = 0.04
+    #Categories[AdvancedCategory] = 0.04
 
     def __init__(self, book):
         BookPage.__init__(self, book, "Options")
