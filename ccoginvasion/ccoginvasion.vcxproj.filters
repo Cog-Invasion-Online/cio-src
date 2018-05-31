@@ -71,10 +71,10 @@
     <ClCompile Include="source\config_ccoginvasion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ccoginvasion_igate.cxx">
+    <ClCompile Include="ccoginvasion_igate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ccoginvasion_module.cxx">
+    <ClCompile Include="ccoginvasion_module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

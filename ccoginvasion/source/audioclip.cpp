@@ -69,11 +69,6 @@ void AudioClip::stop()
         }
 }
 
-static double round( double val )
-{
-        return floor( val + 0.5 );
-}
-
 void AudioClip::play_from_index( int start_index )
 {
 
