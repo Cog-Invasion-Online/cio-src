@@ -188,25 +188,6 @@ class NPCDialogue:
     PickQuest = "Choose a ToonTask."
     CancelQuestPicker = "Come back later if you need a ToonTask, bye!"
 
-def makePastTense(text):
-    if text.endswith('e'):
-        return text + 'd'
-    else:
-        return text + 'ed'
-
-def makeSingular(text):
-    if text.endswith('s'):
-        return text[:-1]
-
-def makePlural(text):
-    if text.endswith('y'):
-        text = text[:-1]
-        return text + 'ies'
-    elif text.endswith('s'):
-        return text
-    else:
-        return text + 's'
-
 def getLocationText(location, objective = None):
     # Let's handle when the location is None, this means we want to go
     # to the objective's assigner. OR if we're looking for an HQ officer.
