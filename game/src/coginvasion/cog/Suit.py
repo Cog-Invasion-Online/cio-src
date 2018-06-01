@@ -585,6 +585,8 @@ class Suit(Avatar):
             prefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_%s.jpg'
             if self.variant == Variant.WAITER:
                 prefix = 'phase_3.5/maps/waiter_m_%s.jpg'
+            elif self.variant == Variant.CORRODED:
+                prefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_rust_%s.jpg'
 
             legTex = loader.loadTexture(prefix % 'leg')
             armTex = loader.loadTexture(prefix % 'sleeve')
@@ -597,7 +599,11 @@ class Suit(Avatar):
             self.find('**/legs').setTexture(legTex, 1)
             self.find('**/arms').setTexture(armTex, 1)
             self.find('**/torso').setTexture(blazTex, 1)
-            self.find('**/hands').setColor(self.handColor)
+            
+            if not self.variant == Variant.CORRODED:
+                self.find('**/hands').setColor(self.handColor)
+            else:
+                self.find('**/hands').setColor(Variant.CORRODED_HAND_COLOR)
 
     def setName(self, nameString, charName):
         Avatar.setName(self, nameString, charName = charName, createNow = 1)
