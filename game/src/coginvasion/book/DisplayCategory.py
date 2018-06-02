@@ -28,14 +28,15 @@ class DisplayCategory(OptionsCategory):
         self.masprText = OnscreenText(text = "Maintain aspect ratio?", scale = 0.045, parent = page.book, align = TextNode.ALeft, pos = (-0.7, 0.4))
         self.maspr = DirectCheckButton(scale = 0.07, parent = page.book, pos = (-0.19, 0, 0.41), command = self.__toggleMaspr)
 
-        self.fs = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.25), self.__chooseFS, "Fullscreen")
+        self.fs = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.3), self.__chooseFS, "Fullscreen")
 
-        self.aa = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, 0.07), self.__chooseAA, "Antialiasing")
+        self.aa = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, 0.13), self.__chooseAA, "Antialiasing")
 
-        self.af = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, -0.11), self.__chooseAF, "Anisotropic Filtering")
+        self.af = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, -0.04), self.__chooseAF, "Anisotropic Filtering")
         
-        self.shadows = ChoiceWidget(page, ["Low", "Medium", "High", "Ultra High"], (0, 0, -0.29), 
+        self.shadows = ChoiceWidget(page, ["Low", "Medium", "High", "Ultra High"], (0, 0, -0.21), 
                                  self.__chooseShadowQuality, "Shadows", 0.06)
+        self.bloom = ChoiceWidget(page, ["Off", "On"], (0, 0, -0.38), self.__chooseBloom, "Bloom Filter")
 
         self.discardChanges()
 
@@ -58,6 +59,12 @@ class DisplayCategory(OptionsCategory):
         
         self.origShadows = CIGlobals.getSettingsMgr().getSetting("shadows")
         self.shadowChoice = self.origShadows
+
+        self.origBloom = CIGlobals.getSettingsMgr().getSetting("bloom")
+        self.bloomChoice = self.origBloom
+
+    def __chooseBloom(self, choice):
+        self.bloomChoice = bool(choice)
 
     def __toggleMaspr(self, choice):
         if choice:
@@ -138,6 +145,10 @@ class DisplayCategory(OptionsCategory):
             # Update the shadow quality choice.
             CIGlobals.getSettingsMgr().updateAndWriteSetting("shadows", self.shadowChoice)
 
+        if (self.bloomChoice != self.origBloom):
+            CIGlobals.getSettingsMgr().updateAndWriteSetting("bloom", self.bloomChoice)
+            base.setBloom(self.bloomChoice)
+
         self._setDefaults()
 
         self._hideApplying()
@@ -147,6 +158,7 @@ class DisplayCategory(OptionsCategory):
 
         self.reso.goto(self.reso.options.index(self.resoChoiceStr))
         self.fs.goto(int(self.fsChoice))
+        self.bloom.goto(int(self.bloomChoice))
 
         if (self.aaChoice == 0):
             self.aa.goto(0)
@@ -191,6 +203,10 @@ class DisplayCategory(OptionsCategory):
             self.maspr.destroy()
             del self.maspr
 
+        if hasattr(self, 'bloom'):
+            self.bloom.destroy()
+            del self.bloom
+
         del self.origMaspr
         del self.masprChoice
 
@@ -209,4 +225,8 @@ class DisplayCategory(OptionsCategory):
         
         del self.origShadows
         del self.shadowChoice
+
+        del self.origBloom
+        del self.bloomChoice
+
         OptionsCategory.cleanup(self)
