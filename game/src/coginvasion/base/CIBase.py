@@ -12,6 +12,7 @@ from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, Te
 
 from direct.showbase.ShowBase import ShowBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
+from direct.filter.CommonFilters import CommonFilters
 
 from src.coginvasion.manager.UserInputStorage import UserInputStorage
 from src.coginvasion.globals import CIGlobals
@@ -48,6 +49,7 @@ class CIBase(ShowBase):
 
         self.wakeWaterHeight = -30.0
 
+        self.bloomToggle = False
         """
         print 'TPM START'
         tpMgr = TextPropertiesManager.getGlobalPtr()
@@ -66,11 +68,27 @@ class CIBase(ShowBase):
         print 'SLANT SET'
         print 'TPM END'
         """
+
+    def setBloom(self, flag):
+        self.bloomToggle = flag
+
+        if not hasattr(self, 'filters'):
+            # Sanity check
+            self.notify.warning("setBloom: CommonFilters not constructed")
+            return
+
+        if flag:
+            self.filters.setBloom(desat = 1.0, intensity = 0.4)
+        else:
+            self.filters.delBloom()
         
     def initStuff(self):
         wrm = WaterReflectionManager()
         self.waterReflectionMgr = wrm
         __builtin__.waterReflectionMgr = wrm
+
+        self.filters = CommonFilters(self.win, self.cam)
+        self.setBloom(self.bloomToggle)
 
     def saveCubeMap(self, namePrefix = 'cube_map_#.jpg', size = 1024):
         namePrefix = raw_input("Cube map file: ")

@@ -124,7 +124,7 @@ class SettingsManager:
         # Lighting
         lighting = settings.get("lighting", None)
         if lighting is None:
-            lighting = self.updateAndWriteSetting("lighting", True)
+            lighting = self.updateAndWriteSetting("lighting", False)
         
         # Mouse cursor
         cursor = settings.get("cursor", None)
@@ -144,12 +144,17 @@ class SettingsManager:
         # Reflection quality
         refl = settings.get("refl", None)
         if refl is None:
-            refl = self.updateAndWriteSetting("refl", "Medium")
+            refl = self.updateAndWriteSetting("refl", "Off")
             
         # FPS Meter
         fps = settings.get("fps", None)
         if fps is None:
             fps = self.updateAndWriteSetting("fps", False)
+
+        # bloom filter
+        bloom = settings.get("bloom", None)
+        if bloom is None:
+            bloom = self.updateAndWriteSetting("bloom", False)
 
         base.enableMusic(music)
         base.enableSoundEffects(sfx)
@@ -158,7 +163,7 @@ class SettingsManager:
         
         game.uselighting = lighting
         if lighting:
-            render.show(CIGlobals.ShadowCameraBitmask)
+            #render.show(CIGlobals.ShadowCameraBitmask)
             if ppl:
                 render.setShaderAuto()
             else:
@@ -169,12 +174,14 @@ class SettingsManager:
         
         self.applyHdr(hdr)
 
+        base.setBloom(bloom)
+
         if aa != 0:
-            render.set_antialias(AntialiasAttrib.MMultisample)
-            aspect2d.set_antialias(AntialiasAttrib.MMultisample)
+            render.setAntialias(AntialiasAttrib.MMultisample)
+            aspect2d.setAntialias(AntialiasAttrib.MMultisample)
         else:
-            render.clear_antialias()
-            aspect2d.clear_antialias()
+            render.clearAntialias()
+            aspect2d.clearAntialias()
 
         self.notify.info("Anisotropic degree of {0}".format(af))
         loadPrcFileData("", "texture-anisotropic-degree {0}".format(af))
