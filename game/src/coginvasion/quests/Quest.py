@@ -136,14 +136,17 @@ class Quest:
     def isComplete(self):
         # Returns if all accessible objectives are done and we don't have a next objective or
         # checks if we're on the very last objective of the quest and it's a "safe end" objective.
-        isSafeEndObjective = None
+
+        isSafeEndObjective = False
         curObjData = self.getCurrObjectiveData()
+        accObjsComplete = self.accessibleObjectives.isComplete()
+        noNextObj = self.getNextObjectiveIndex() == -1
+
         if not collection in curObjData.keys():
             isSafeEndObjective = curObjData[objType] in SafeEndObjectives
-        else:
-            isSafeEndObjective = False
-        return (self.accessibleObjectives.isComplete() and self.getNextObjectiveIndex() == -1) \
-            or (self.getNextObjectiveIndex() == -1 and len(self.accessibleObjectives) == 1 and isSafeEndObjective)
+            
+        return (accObjsComplete and noNextObj) or (accObjsComplete and ((len(self.accessibleObjectives) == 1) 
+                and accObjsComplete) and isSafeEndObjective)
     
     def giveRewards(self, avatar):
         for reward in self.rewards:

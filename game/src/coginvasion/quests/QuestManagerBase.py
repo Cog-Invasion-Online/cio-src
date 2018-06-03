@@ -189,8 +189,15 @@ class QuestManagerBase:
         quest.setupCurrentObjectiveFromData(trackObjIndex, curObjIndex, objProgress)
         self.quests[id_] = quest
 
-    def makeQuestsFromData(self, avatar):
-        """Creates new quest instances based on the questData array from the avatar."""
+    def makeQuestsFromData(self, avatar = None):
+        """Creates new quest instances based on the questData array from the avatar. 
+        If not provided an avatar, it will default to the owner of this quest manager. """
+        
+        if avatar is None:
+            avatar = self.avatar
+            
+            if self.avatar is None:
+                raise AssertionError('An avatar must be provided to #makeQuestsFromData() if using an anonymous quest manager.')
 
         # Make sure to cleanup old quests before we override them.
         for quest in self.quests.values():

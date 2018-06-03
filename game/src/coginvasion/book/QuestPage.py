@@ -19,7 +19,6 @@ class QuestPage(BookPage):
         BookPage.__init__(self, book, 'ToonTasks')
 
         self.posters = []
-        #self.notes = []
         self.infoText = None
 
     def load(self):

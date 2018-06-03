@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
-from panda3d.core import TextureStage
+from panda3d.core import TextureStage, VBase4
 
 from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval
 
@@ -157,7 +157,7 @@ def makePlural(noun):
 def makePastTense(noun):
     """ Makes a noun string past tense. """    
     withoutLast = noun[:-1]
-    secondToLast = noun[-2:-1]
+    secondToLast = noun[-2:]
     lastChar = noun[-1:]
 
     if noun.endswith('y'):

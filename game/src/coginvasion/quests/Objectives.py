@@ -66,7 +66,7 @@ class Objective:
         self.area = area if self.AreaSpecific else None
 
         # The current progress on this objective (number)
-        self.progress = None
+        self.progress = 0 # None
 
         self.showAsComplete = 0
 
@@ -239,7 +239,7 @@ class DeliverItemObjective(ItemObjective, VisitNPCObjective):
         ItemObjective.__init__(self, itemName, itemIcon)
         VisitNPCObjective.__init__(self, npcId, goal, showAsComplete = showAsComplete)
     
-class RecoverItemObjective(CogObjective):
+class RecoverItemObjective(ItemObjective, CogObjective):
     """ [itemName, goal, area, recoverChance (0 <= n <= 100), itemIcon = QuestGlobals.getPackageIcon(),
             name = QuestGlobals.Any, level = None, levelRange = None, variant = None, dept = None] """
     
@@ -249,7 +249,7 @@ class RecoverItemObjective(CogObjective):
     def __init__(self, itemName, goal, area, recoverChance, itemIcon = QuestGlobals.getPackageIcon(),
             name = QuestGlobals.Any, level = None, levelRange = None, 
         variant = None, dept = None):
-        ItemObjective.__init__(self, itemName, itemIcon = QuestGlobals.getPackageIcon())
+        ItemObjective.__init__(self, itemName, itemIcon)
         CogObjective.__init__(self, name, goal, area, level, levelRange, variant, dept)
         
         # We're expecting that the recover chance be (0 <= n <= 100).

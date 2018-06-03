@@ -82,8 +82,8 @@ Quests = {
           
     3: {objectives: [
             {objType: VisitNPCObjective, args: [5312]},
-            {objType: RecoverItemObjective, args: [7, CIGlobals.DaisyGardensId, 
-                'Green Beans', QuestGlobals.getPackageIcon(), SuitGlobals.BeanCounter],
+            {objType: RecoverItemObjective, args: ['Green Bean', 7, CIGlobals.DaisyGardensId, 35, QuestGlobals.getPackageIcon(), 
+                SuitGlobals.BeanCounter],
                 assigner: 5312
             }
         ],
