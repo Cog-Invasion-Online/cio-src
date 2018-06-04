@@ -14,6 +14,8 @@ from panda3d.core import TextureStage, VBase4
 
 from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval
 
+import math
+
 WalkCutOff = 0.5
 RunCutOff = 8.0
 STAND_INDEX = 0
@@ -41,8 +43,8 @@ NPCWalkSpeed = 0.02
 NPCRunSpeed = 0.04
 OriginalCameraFov = 40.0
 DefaultCameraFov = 52.0
-DefaultCameraFar = 2000.0
-DefaultCameraNear = 1.0
+DefaultCameraFar = 2500.0
+DefaultCameraNear = 0.1
 PortalScale = 1.5
 SPInvalid = 0
 SPHidden = 1
@@ -73,6 +75,14 @@ CameraShyGame = "Camera Shy"
 EagleGame = "Eagle Summit"
 DeliveryGame = "Delivery!"
 DodgeballGame = "Winter Dodgeball"
+
+def lerpWithRatio(v0, v1, ratio):
+    dt = globalClock.getDt()
+    amt = 1 - math.pow(1 - ratio, dt * 30.0)
+    return lerp(v0, v1, amt)
+
+def lerp(v0, v1, amt):
+    return v0 * amt + v1 * (1 - amt)
 
 NoGlowTS = None
 NoGlowTex = None
@@ -206,6 +216,9 @@ def makeSplat(pos, color, scale):
     splat.setColor(color)
     splat.reparentTo(render)
     splat.setPos(pos)
+    splat.setLightOff(1)
+    splat.setShaderOff(1)
+    splat.setMaterialOff(1)
     seq = Sequence(ActorInterval(splat, "chan"), Func(splat.cleanup))
     seq.start()
 
@@ -217,7 +230,7 @@ def getShinyMaterial(shininess = 250.0):
     return mat
 
 def getCharacterMaterial(name = "charMat", shininess = 250, rimColor = (1, 1, 1, 1), rimWidth = 0.3,
-                         specular = (1, 1, 1, 1), lightwarp = "phase_3/maps/toon_lightwarp_3.jpg"):
+                         specular = (1, 1, 1, 1), lightwarp = None):#"phase_3/maps/toon_lightwarp_3.jpg"):
     mat = Material(name)
     mat.setRimColor(rimColor)
     mat.setRimWidth(rimWidth)
@@ -254,16 +267,18 @@ def makeDirectionalLight(name, color, angle):
     directional = camera.attachNewNode(dir)
     directional.setCompass()
     directional.setHpr(angle)
-    if game.userealshadows:
+    if game.userealshadows and False:
         dir.setShadowCaster(True, 1024 * 4, 1024 * 4)
         dir.getLens().setFilmSize(60, 60)
         dir.getLens().setNearFar(0.1, 10000)
         
     return directional
 
-def makePointLight(name, color, pos):
+def makePointLight(name, color, pos, falloff = 0.4):
     point = PointLight(name + "-point")
     point.setColor(color)
+    ATTN_FCTR = 0.03
+    point.setAttenuation((1, 0, falloff * ATTN_FCTR))
     pnp = render.attachNewNode(point)
     pnp.setPos(pos)
     return pnp
@@ -362,8 +377,19 @@ FloorBitmask = BitMask32(2)
 WallBitmask = BitMask32(1)
 EventBitmask = BitMask32(3)
 CameraBitmask = BitMask32(4)
-ShadowCameraBitmask = BitMask32.bit(5)
 WeaponBitmask = BitMask32.bit(6)
+LocalAvBitmask = BitMask32(7)
+StreetVisGroupBitmask = BitMask32(8)
+
+FloorGroup = BitMask32.bit(2)
+WallGroup = BitMask32.bit(1)
+EventGroup = BitMask32.bit(3)
+CameraGroup = BitMask32.bit(4)
+ShadowCameraBitmask = BitMask32.bit(5)
+WeaponGroup = BitMask32.bit(6)
+LocalAvGroup = BitMask32.bit(7)
+StreetVisGroup = BitMask32.bit(8)
+
 DialogColor = (1, 1, 0.75, 1)
 DefaultBackgroundColor = (0.3, 0.3, 0.3, 1)
 PositiveTextColor = (0, 1, 0, 1)
