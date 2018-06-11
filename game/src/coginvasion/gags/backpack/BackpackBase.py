@@ -116,9 +116,17 @@ class BackpackBase:
             # If we're updating the supply of a gag on the AI,
             # we need to do this a little bit differently.
             if game.process == 'server':
+                currSupply = values[0]
+                if currSupply == supply:
+                    # No change in supply.
+                    return False
                 maxSupply = values[1]
                 self.gags.update({gagId : [supply, maxSupply]})
             else:
+                currSupply = values[1]
+                if currSupply == supply:
+                    # No change in supply.
+                    return False
                 gagInstance = values[0]
                 maxSupply = values[2]
                 self.gags.update({gagId : [gagInstance, supply, maxSupply]})
