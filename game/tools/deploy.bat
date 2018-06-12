@@ -1,6 +1,6 @@
 @echo off
 
 cd ..
-..\Panda3D-CI\python\ppython -B tools/tool_deploy.py
+..\cio-panda3d\built_x64\python\ppython -B tools/tool_deploy.py
 
 pause

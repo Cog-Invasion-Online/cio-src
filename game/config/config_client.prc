@@ -10,13 +10,13 @@ aux-display pandagl
 #clock-frame-rate 10
 
 # Logging...
-notify-level info
+notify-level warning
 notify-timestamp #f
 notify-level-pgraph warning
 notify-level-loader warning
 notify-level-gobj warning
-notify-level-linmath info
-default-directnotify-level info
+notify-level-linmath warning
+default-directnotify-level warning
 
 # Filenames...
 cursor-filename resources/toonmono.cur
@@ -28,14 +28,17 @@ model-cache-dir
 model-cache-model #f
 model-cache-textures #f
 
+physics-debug #f
+
 model-path .
 
 # Audio...
 
 # Woo-hoo!!!! Miles!!
-audio-library-name p3miles_audio
-miles-audio-expand-mp3-threshold 10000000
-miles-audio-panda-threads #t
+audio-library-name p3fmod_audio
+#miles-audio-expand-mp3-threshold 10000000
+#miles-audio-panda-threads #t
+#audio-library-name p3openal_audio
 
 # Virtual file system...
 vfs-mount resourcepack/phase_3 phase_3
@@ -58,7 +61,7 @@ server-address gameserver.coginvasion.com
 
 # Performance...
 hardware-animated-vertices #t
-sync-video #f
+sync-video #t
 smooth-lag 0.4
 basic-shaders-only #f
 framebuffer-multisample 1
@@ -79,7 +82,7 @@ gag-throw-key alt-up
 want-firstperson-battle #f
 chat-key t
 want-WASD #t
-want-gta-controls #t
+want-gta-controls #f
 show-minigame-dates #f
 want-real-shadows #f
 load-stuff #f
@@ -99,4 +102,14 @@ gl-check-errors #f
 gl-force-no-flush #t
 gl-force-no-scissor #t
 
-#show-buffers #t
+show-buffers #f
+
+texture-minfilter mipmap
+texture-magfilter linear
+texture-quality-level best
+text-minfilter mipmap
+text-magfilter linear
+
+textures-power-2 none
+
+interpolate-frames 1

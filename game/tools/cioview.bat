@@ -8,6 +8,6 @@ REM @desc Drag files onto this batch file to run tool_cioview.py
 REM 	with the models you have selected.
 
 @ECHO OFF
-set path=%~dp0/../../Panda3D-CI/python/ppython.exe
+set path=%~dp0/../../cio-panda3d/built_x64/python/ppython.exe
 CALL "%path%" "%~dp0/tool_cioview.py" %*
 PAUSE

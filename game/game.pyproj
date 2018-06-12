@@ -12,7 +12,7 @@
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <InterpreterId>Global|VisualStudio|CIO Python</InterpreterId>
+    <InterpreterId>Global|VisualStudio|cio-panda3d python</InterpreterId>
     <InterpreterVersion>2.7</InterpreterVersion>
     <IsWindowsApplication>False</IsWindowsApplication>
     <InterpreterPath>..\Panda3D-CI\python\ppython.exe</InterpreterPath>
@@ -69,6 +69,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\base\Lighting.py" />
     <Compile Include="src\coginvasion\base\LoadUtility.py" />
     <Compile Include="src\coginvasion\base\Logger.py" />
+    <Compile Include="src\coginvasion\base\MusicCache.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\base\PositionExaminer.py" />
     <Compile Include="src\coginvasion\base\ScreenshotHandler.py" />
     <Compile Include="src\coginvasion\base\SectionedSound.py" />
@@ -91,6 +94,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\battle\DistributedBattleZoneAI.py" />
     <Compile Include="src\coginvasion\battle\DistributedGagBarrel.py" />
     <Compile Include="src\coginvasion\battle\DistributedGagBarrelAI.py" />
+    <Compile Include="src\coginvasion\battle\DistributedHPBarrel.py" />
     <Compile Include="src\coginvasion\battle\DistributedHPBarrelAI.py" />
     <Compile Include="src\coginvasion\battle\DistributedPieTurret.py" />
     <Compile Include="src\coginvasion\battle\DistributedPieTurretAI.py" />
@@ -231,6 +235,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\gags\backpack\__init__.py" />
     <Compile Include="src\coginvasion\gags\BambooCane.py" />
     <Compile Include="src\coginvasion\gags\BananaPeel.py" />
+    <Compile Include="src\coginvasion\gags\BCakeEntity.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\gags\BigWeight.py" />
     <Compile Include="src\coginvasion\gags\BikeHorn.py" />
     <Compile Include="src\coginvasion\gags\BirthdayCake.py" />
@@ -559,6 +566,25 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\pet\DistributedPet.py" />
     <Compile Include="src\coginvasion\pet\DistributedPetAI.py" />
     <Compile Include="src\coginvasion\pet\__init__.py" />
+    <Compile Include="src\coginvasion\phys\BulletCharacterController.py" />
+    <Compile Include="src\coginvasion\phys\FPSCamera.py" />
+    <Compile Include="src\coginvasion\phys\KeepOnGround.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\phys\LocalControls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\phys\PhysicsNodePath.py" />
+    <Compile Include="src\coginvasion\phys\PhysicsUtils.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\phys\TestBananaPeel.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\phys\WorldCollider.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\phys\__init__.py" />
     <Compile Include="src\coginvasion\quests\DistributedDigSite.py" />
     <Compile Include="src\coginvasion\quests\DistributedDigSiteAI.py" />
     <Compile Include="src\coginvasion\quests\DistributedInspectionSite.py" />
@@ -710,6 +736,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Folder Include="src\coginvasion\nametag\" />
     <Folder Include="src\coginvasion\npc\" />
     <Folder Include="src\coginvasion\pet\" />
+    <Folder Include="src\coginvasion\phys\" />
     <Folder Include="src\coginvasion\quests\" />
     <Folder Include="src\coginvasion\quests\poster\" />
     <Folder Include="src\coginvasion\resourcepack\" />
@@ -723,7 +750,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Folder Include="tools\nirai\" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|VisualStudio|CIO Python" />
+    <InterpreterReference Include="Global|VisualStudio|cio-panda3d python" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>
