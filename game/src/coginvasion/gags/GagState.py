@@ -9,4 +9,4 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 class GagState:
-    LOADED, START, RELEASED, RECHARGING = range(4)
+    LOADED, START, RELEASED, RECHARGING, READY = range(5)

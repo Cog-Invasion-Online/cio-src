@@ -222,12 +222,18 @@ class IndoorLightingConfig(LightingConfig):
         
         return IndoorLightingConfig(envConfig.defaultIndoorAmbientColor,
                                     envConfig.defaultInteriorLightColor,
-                                    [Point3(0, 10, 11.5)])
+                                    [Point3(0, 10, 11.5 / 2.0)])
 
     def setup(self):
         LightingConfig.setup(self)
         for lightPos in self.lights:
-            light = CIGlobals.makePointLight('config', self.light / float(len(self.lights)), lightPos)
+            if len(lightPos) == 2:
+                pos = lightPos[0]
+                falloff = lightPos[1]
+            else:
+                pos = lightPos
+                falloff = 0.3
+            light = CIGlobals.makePointLight('config', self.light, pos, falloff)
             self.lightNPs.append(light)
             if self.visLights:
                 vis = loader.loadModel("models/smiley.egg.pz")

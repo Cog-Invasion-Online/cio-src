@@ -69,8 +69,7 @@ class CogInvasionClientRepository(AstronClientRepository):
     ITAG_WORLD = 'world'
     ITAG_GAME = 'game'
 
-    def __init__(self, music, serverVersion):
-        self.music = music
+    def __init__(self, serverVersion):
         self.serverVersion = serverVersion
         AstronClientRepository.__init__(self, ['phase_3/etc/direct.dc', 'phase_3/etc/toon.dc'])
         self.loginFSM = ClassicFSM('login', [State('off', self.enterOff, self.exitOff),
@@ -491,18 +490,15 @@ class CogInvasionClientRepository(AstronClientRepository):
         pass
 
     def playTheme(self):
-        if self.music:
-            base.playMusic(self.music, volume = 0.7, looping = 1, interrupt = 1)
+        base.playMusic(CIGlobals.getThemeSong(), volume = 0.7, looping = 1)
 
     def enterAvChoose(self, newToonSlot = None):
         ModelPool.garbageCollect()
         TexturePool.garbageCollect()
         self.avChooser.load()
         self.avChooser.enter(newToonSlot)
-        if not self.music:
-            self.music = base.loadMusic(CIGlobals.getThemeSong())
-            if newToonSlot is None:
-                self.playTheme()
+        if newToonSlot is None:
+            self.playTheme()
         self.accept("enterMakeAToon", self.__handleMakeAToonReq)
         self.accept("avChooseDone", self.__handleAvChooseDone)
 
@@ -728,9 +724,7 @@ class CogInvasionClientRepository(AstronClientRepository):
         self.gameFSM.request('playGame', [status])
 
     def enterMakeAToon(self, slot):
-        if self.music:
-            self.music.stop()
-            self.music = None
+        base.stopMusic()
         self.makeAToon.setSlot(slot)
         self.makeAToon.loadEnviron()
         self.makeAToon.load()
@@ -778,9 +772,7 @@ class CogInvasionClientRepository(AstronClientRepository):
         pass
 
     def enterPlayGame(self, status):
-        if self.music:
-            self.music.stop()
-            self.music = None
+        base.stopMusic()
         base.transitions.noFade()
         if self.localAvChoice is None:
             self.notify.error("called enterPlayGame() without self.localAvChoice being set!")
@@ -817,9 +809,7 @@ class CogInvasionClientRepository(AstronClientRepository):
             self.tutQuietZoneState.exit()
             self.tutQuietZoneState.unload()
             del self.tutQuietZoneState
-        if self.music:
-            self.music.stop()
-            self.music = None
+        base.stopMusic()
         self.playGame.exit()
         self.playGame.unload()
 

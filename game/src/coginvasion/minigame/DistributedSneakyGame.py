@@ -100,7 +100,7 @@ class DistributedSneakyGame(DistributedMinigame.DistributedMinigame):
 		base.localAvatar.setHpr(hpr)
 		self.toonFps.load()
 		self.myRemoteAvatar = RemoteToonBattleAvatar(self, self.cr, base.localAvatar.doId)
-		self.setMinigameMusic("phase_4/audio/bgm/MG_CogThief.mid")
+		self.setMinigameMusic("phase_4/audio/bgm/MG_CogThief.ogg")
 		self.setDescription("Battle and defeat the other Toons with your water gun to gain points. " + \
 							"Remember to reload your gun when you're out of ammo! " + \
 							"The toon with the most points when the timer runs out gets a nice prize!")

@@ -231,6 +231,8 @@ class DistributedBuilding(DistributedObject):
             self.rightDoor = self.elevatorModel.find('**/right_door')
         self.suitDoorOrigin = newNP.find('**/*_door_origin')
         self.elevatorNodePath.reparentTo(self.suitDoorOrigin)
+        base.createPhysicsNodes(self.elevatorNodePath)
+        base.enablePhysicsNodes(self.elevatorNodePath)
         self.normalizeElevator()
 
     def loadAnimToSuitSfx(self):
@@ -326,6 +328,7 @@ class DistributedBuilding(DistributedObject):
         zoneId = ZoneUtil.getTrueZoneId(zoneId, self.interiorZoneId)
         newParentNP = base.cr.playGame.hood.loader.zoneDict[zoneId]
         suitBuildingNP = suitNP.copyTo(newParentNP)
+        base.createPhysicsNodes(suitBuildingNP)
         buildingTitle = dnaStore.getTitleFromBlockNumber(self.block)
         if not buildingTitle:
             buildingTitle = "Cogs, Inc."
@@ -354,7 +357,9 @@ class DistributedBuilding(DistributedObject):
         suitBuildingNP.setName('sb' + str(self.block) + ':_landmark__DNARoot')
         suitBuildingNP.setPosHprScale(nodePath, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
         suitBuildingNP.flattenMedium()
+
         self.loadElevator(suitBuildingNP)
+        base.enablePhysicsNodes(suitBuildingNP)
         return suitBuildingNP
 
     def cleanupSuitBuilding(self):
@@ -545,12 +550,18 @@ class DistributedBuilding(DistributedObject):
             name = i.getName()
             if name[0] == 's':
                 if name.find('_landmark_') != -1:
+                    base.disablePhysicsNodes(i)
                     i.removeNode()
                 else:
+                    base.enablePhysicsNodes(i)
                     i.unstash()
             elif name[0] == 't':
+                for spl in i.findAllMatches("**/+Spotlight"):
+                    render.clearLight(spl)
+                base.disablePhysicsNodes(i)
                 i.stash()
             elif name[0] == 'c':
+                base.disablePhysicsNodes(i)
                 if name.find('_landmark_') != -1:
                     i.removeNode()
                 else:
@@ -561,6 +572,7 @@ class DistributedBuilding(DistributedObject):
             nodePath = npc.getPath(i)
             self.adjustSbNodepathScale(nodePath)
             self.setupSuitBuilding(nodePath)
+            base.enablePhysicsNodes(nodePath)
 
     def setToToon(self):
         self.stopTransition()
@@ -573,11 +585,17 @@ class DistributedBuilding(DistributedObject):
             i.clearColorScale()
             name = i.getName()
             if name[0] in ['s', 'c']:
+                base.disablePhysicsNodes(i)
                 if name.find('_landmark_') != -1:
+                    for spl in i.findAllMatches("**/+Spotlight"):
+                        render.clearLight(spl)
                     i.removeNode()
                 else:
                     i.stash()
             elif name[0] == 't':
+                for spl in i.findAllMatches("**/+Spotlight"):
+                    render.setLight(spl)
+                base.enablePhysicsNodes(i)
                 i.unstash()
 
     def normalizeElevator(self):

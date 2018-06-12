@@ -12,7 +12,8 @@ from direct.distributed.DistributedObject import DistributedObject
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, LerpPosInterval, LerpColorScaleInterval, Func
 from direct.task.Task import Task
-from panda3d.core import NodePath, CollisionSphere, CollisionNode, Point3, VBase4
+from panda3d.core import NodePath, Point3, VBase4
+from panda3d.bullet import BulletGhostNode, BulletSphereShape
 from panda3d.direct import HideInterval, ShowInterval
 from src.coginvasion.globals import CIGlobals
 
@@ -30,6 +31,7 @@ class DistributedTreasure(DistributedObject):
         self.nodePath = None
         self.modelPath = None
         self.modelChildString = None
+        self.collNodePath = None
         self.sphereRadius = 2.0
         self.scale = 1.0
         self.zOffset = 0.0
@@ -51,7 +53,7 @@ class DistributedTreasure(DistributedObject):
         self.loadModel(self.modelPath, self.modelChildString)
         self.startAnimation()
         self.nodePath.reparentTo(render)
-        self.accept(self.uniqueName('entertreasureSphere'), self.handleEnterSphere)
+        self.accept('enter' + self.uniqueName('treasureSphere'), self.handleEnterSphere)
 
     def loadModel(self, mdlPath, childString = None):
         self.grabSound = base.loadSfx(self.grabSoundPath)
@@ -84,12 +86,12 @@ class DistributedTreasure(DistributedObject):
                 self.dropShadow.setScale(0.4 * self.scale)
                 self.dropShadow.flattenLight()
             self.dropShadow.reparentTo(self.nodePath)
-        collSphere = CollisionSphere(0, 0, 0, self.sphereRadius)
-        collSphere.setTangible(0)
-        collNode = CollisionNode(self.uniqueName('treasureSphere'))
-        collNode.setIntoCollideMask(CIGlobals.WallBitmask)
-        collNode.addSolid(collSphere)
-        self.collNodePath = self.nodePath.attachNewNode(collNode)
+
+        sphere = BulletSphereShape(self.sphereRadius)
+        ghost = BulletGhostNode(self.uniqueName('treasureSphere'))
+        ghost.addShape(sphere)
+        ghost.setIntoCollideMask(CIGlobals.EventGroup)
+        self.collNodePath = self.nodePath.attachNewNode(ghost)
         self.collNodePath.stash()
         
     def __spinTreasure(self, task):
@@ -107,7 +109,9 @@ class DistributedTreasure(DistributedObject):
             self.makeNodePath()
         self.nodePath.reparentTo(render)
         self.nodePath.setPos(x, y, z + self.zOffset)
+
         self.collNodePath.unstash()
+        base.physicsWorld.attachGhost(self.collNodePath.node())
 
     def setReject(self):
         self.cleanupTrack()
@@ -120,7 +124,9 @@ class DistributedTreasure(DistributedObject):
         self.treasureTrack.start()
 
     def setGrab(self, avId):
+        base.physicsWorld.removeGhost(self.collNodePath.node())
         self.collNodePath.stash()
+
         self.avId = avId
         if self.cr.doId2do.has_key(avId):
             self.av = self.cr.doId2do[avId]
@@ -158,6 +164,11 @@ class DistributedTreasure(DistributedObject):
 
     def disable(self):
         self.ignoreAll()
+        if self.collNodePath:
+            self.ignore('enter' + self.uniqueName('treasureSphere'))
+            base.physicsWorld.removeGhost(self.collNodePath.node())
+            self.collNodePath.removeNode()
+            self.collNodePath = None
         self.nodePath.detachNode()
         DistributedObject.disable(self)
 

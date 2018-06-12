@@ -32,28 +32,20 @@ class MGHoodAI(HoodAI.HoodAI):
         HoodAI.HoodAI.__init__(self, air, CIGlobals.MinigameAreaId,
                             CIGlobals.MinigameArea)
         self.stations = []
-        self.trolleys = []
+        self.trolley = None
         self.startup()
 
     def startup(self):
         self.dnaFiles = []
         HoodAI.HoodAI.startup(self)
         
-        for hood in CogBattleGlobals.HoodId2WantBattles.keys():
-            zoneId = ZoneUtil.getZoneId(hood)
+        # Trolley index 1 indicates minigame area trolley
+        # which sends toons back to their last playground.
+        trolley = DistributedBattleTrolleyAI(self.air, 0, 1)
+        trolley.generateWithRequired(self.zoneId)
+        trolley.b_setState('wait')
             
-            trolley = DistributedBattleTrolleyAI(self.air, zoneId, 1)
-            
-            hood = self.air.hoods.get(zoneId)
-            if hood:
-                if hood.cogStation:
-                    hood.cogStation.otherTrolley = trolley
-                    trolley.otherTrolley = hood.cogStation
-                    
-            trolley.generateWithRequired(self.zoneId)
-            trolley.b_setState('leaving')
-            
-            self.trolleys.append(trolley)
+        self.trolley = trolley
 
         self.notify.info("Creating minigames...")
 
@@ -103,6 +95,9 @@ class MGHoodAI(HoodAI.HoodAI):
 
     def shutdown(self):
         self.notify.info("Shutting down minigames...")
+        if self.trolley:
+            self.trolley.requestDelete()
+            self.trolley = None
         for station in self.stations:
             station.requestDelete()
             self.stations.remove(station)

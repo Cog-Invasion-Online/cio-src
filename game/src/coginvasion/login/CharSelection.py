@@ -25,6 +25,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.dna.DNALoader import *
 from src.coginvasion.hood import ZoneUtil
+from src.coginvasion.phys import PhysicsUtils
 
 import sys
 import random
@@ -157,6 +158,9 @@ class CharSelection(DirectObject):
             else:
                 loader.loadDNAFile(self.dnaStore, dnaFile)
 
+        base.createPhysicsNodes(self.szGeom)
+        base.enablePhysicsNodes(self.szGeom)
+
         self.olc = ZoneUtil.getOutdoorLightingConfig(self.choice.lastHood)
         self.olc.setup()
         self.olc.apply()
@@ -222,7 +226,7 @@ class CharSelection(DirectObject):
         if self.isNewToon:
             self.camIval.append(
                 Sequence(Func(self.stageToon.hide),
-                         Func(base.cr.music.stop),
+                         Func(base.stopMusic),
                          SoundInterval(self.newToonAnnounceSfx, startTime = 1.674, duration = 4.047),
                          SoundInterval(self.newToonDrumrollSfx),
                          Func(self.stageToon.pose, 'tele', self.stageToon.getNumFrames('tele')),
@@ -263,6 +267,7 @@ class CharSelection(DirectObject):
             
     def unloadSZGeom(self):
         if self.szGeom:
+            base.disablePhysicsNodes(self.szGeom)
             self.szGeom.removeNode()
             self.szGeom = None
         if self.olc:

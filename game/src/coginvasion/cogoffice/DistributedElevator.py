@@ -8,7 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Point3, TextNode, VBase4, CollisionSphere, CollisionNode
+from panda3d.core import Point3, TextNode, VBase4, TransformState
+from panda3d.bullet import BulletGhostNode, BulletSphereShape
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObject import DistributedObject
@@ -91,7 +92,7 @@ class DistributedElevator(DistributedObject):
     def exitClosed(self):
         pass
 
-    def __handleElevatorTrigger(self, entry):
+    def __handleElevatorTrigger(self, collNp):
         if not self.localAvOnElevator:
             self.cr.playGame.getPlace().fsm.request('stop')
             self.sendUpdate('requestEnter')
@@ -185,13 +186,14 @@ class DistributedElevator(DistributedObject):
 
     def setupElevator(self):
         collisionRadius = ElevatorData[self.type]['collRadius']
-        self.elevatorSphere = CollisionSphere(0, 5, 0, collisionRadius)
-        self.elevatorSphere.setTangible(0)
-        self.elevatorSphereNode = CollisionNode(self.uniqueName('elevatorSphere'))
-        self.elevatorSphereNode.setIntoCollideMask(CIGlobals.WallBitmask)
-        self.elevatorSphereNode.addSolid(self.elevatorSphere)
+        self.elevatorSphere = BulletSphereShape(collisionRadius)
+        self.elevatorSphereNode = BulletGhostNode(self.uniqueName('elevatorSphere'))
+        self.elevatorSphereNode.setKinematic(True)
+        self.elevatorSphereNode.setIntoCollideMask(CIGlobals.EventGroup)
+        self.elevatorSphereNode.addShape(self.elevatorSphere, TransformState.makePos(Point3(0, 5, 0)))
         self.elevatorSphereNodePath = self.getElevatorModel().attachNewNode(self.elevatorSphereNode)
         self.elevatorSphereNodePath.reparentTo(self.getElevatorModel())
+        base.physicsWorld.attachGhost(self.elevatorSphereNode)
         self.openDoors = getOpenInterval(self, self.getLeftDoor(), self.getRightDoor(), self.openSfx, None, self.type)
         self.closeDoors = getCloseInterval(self, self.getLeftDoor(), self.getRightDoor(), self.closeSfx, None, self.type)
         self.closeDoors = Sequence(self.closeDoors, Func(self.onDoorCloseFinish))
@@ -203,6 +205,7 @@ class DistributedElevator(DistributedObject):
         if hasattr(self, 'closeDoors'):
             self.closeDoors.pause()
         self.ignore('enter' + self.uniqueName('elevatorSphere'))
+        base.physicsWorld.removeGhost(self.elevatorSphereNode)
         self.elevatorSphereNodePath.removeNode()
         del self.elevatorSphereNodePath
         del self.elevatorSphereNode
@@ -262,12 +265,14 @@ class DistributedElevator(DistributedObject):
             messenger.send(self.cr.playGame.getPlace().doneEvent)
 
     def doMusic(self):
-        self.elevMusic = base.loadMusic('phase_7/audio/bgm/tt_elevator.mid')
+        self.elevMusic = base.loadMusic('phase_7/audio/bgm/tt_elevator.ogg')
         base.playMusic(self.elevMusic, looping = 1, volume = 0.8)
 
     def fillSlot(self, index, avId):
         toon = self.cr.doId2do.get(avId)
         if toon:
+
+            print "fillSlot", toon
 
             point = ElevatorPoints[index]
             
@@ -297,6 +302,9 @@ class DistributedElevator(DistributedObject):
         toon = self.cr.doId2do.get(avId)
         
         if toon:
+
+            print "emptySlot", toon
+
             OutPoint = ElevatorOutPoints[index]
             InPoint = ElevatorPoints[index]
             toon.stopSmooth()

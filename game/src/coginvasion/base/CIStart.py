@@ -248,8 +248,8 @@ def handleMusicEnabled():
     if not hasattr(base, 'cr'):
         return
         
-    if base.cr.music is not None:
-        base.cr.music.play()
+    if base.music is not None:
+        base.music.play()
 
 base.accept("PandaPaused", maybeDoSomethingWithMusic, [0])
 base.accept("PandaRestarted", maybeDoSomethingWithMusic, [1])
@@ -258,13 +258,17 @@ base.accept('MusicEnabled', handleMusicEnabled)
 def doneInitLoad():
     notify.info("Initial game load finished.")
     from src.coginvasion.distributed import CogInvasionClientRepository
-    base.cr = CogInvasionClientRepository.CogInvasionClientRepository(music, "ver-" + game.version)
+    base.cr = CogInvasionClientRepository.CogInvasionClientRepository("ver-" + game.version)
 
 notify.info("Starting initial game load...")
 from InitialLoad import InitialLoad
 il = InitialLoad(doneInitLoad)
-music = base.loadMusic(CIGlobals.getThemeSong())
-base.playMusic(music, looping = 1, volume = 0.7)
+
+from src.coginvasion.base import MusicCache
+print "Precaching music..."
+MusicCache.precacheMusic()
+
+base.playMusic(CIGlobals.getThemeSong(), volume = 0.7)
 il.load()
 
 base.run()

@@ -26,7 +26,8 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
 
     def __init__(self, cr):
         DistributedToonInterior.DistributedToonInterior.__init__(self, cr)
-        self.lights = [Point3(-5, 30, 11.5)]
+        self.ilc.lights = [[(-40, 30, 8.5), 0.3], [(24, 30, 8.5), 0.3],
+                           [(-5.25, -5, 8.5), 0.3], [(-5.25, 65, 8.5), 0.3]]
         self.buildData = None
         self.ttTimePath = None
         self.clockTaskName = None
@@ -35,6 +36,8 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         self.currentBuild = None
         self.buildDate = None
         self.crashedPiano = None
+        self.logoNode = None
+        self.logoImg = None
 
     def makeInterior(self):
         self.dnaStore = self.cr.playGame.dnaStore
@@ -93,16 +96,10 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         
     def generateBuildDataBoard(self, parent):
         self.buildData = hidden.attachNewNode('buildData')
-        self.buildData.setPosHprScale(0.1, 0, 4.5, 90, 0, 0, 0.9, 0.9, 0.9)
+        self.buildData.setPosHprScale(0.0, 0, 4.5, 90, 0, 0, 0.9, 0.9, 0.9)
+        self.buildData.setDepthOffset(1)
         
-        logoCard = CardMaker('logo')
-        logoCard.setFrame(-1.5, 1.5, -1, 1)
-        logo = NodePath(logoCard.generate())
-        logo.setTexture(loader.loadTexture('phase_3/maps/CogInvasion_Logo.png'), 1)
-        logo.setTransparency(TransparencyAttrib.MAlpha)
-        logo.setScale(6.5, 1.0, 4.5)
-        logo.setZ(-3.15)
-        logo.reparentTo(self.buildData)
+        self.logoNode, self.logoImg = CIGlobals.getLogoImage(self.buildData, 12, (0, 0, -3.15))
         
         # Let's generate the Toontown Time textnode.
         _, self.ttTimePath = self.__generateTextNodeAndNodePath('toontownTimeText', 
@@ -167,6 +164,13 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
     
     def disable(self):
         DistributedToonInterior.DistributedToonInterior.disable(self)
+        
+        if self.logoImg:
+            self.logoImg.destroy()
+            self.logoImg = None
+        if self.logoNode:
+            self.logoNode.removeNode()
+            self.logoNode = None
         
         if self.clockTaskName:
             base.taskMgr.remove(self.clockTaskName)

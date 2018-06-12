@@ -99,16 +99,19 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         seq.append(Func(self.loop, 'walk'))
         ival = NPCWalkInterval(self, point,
             startPos = lastPoint,
-            fluid = 1)
+            fluid = 1, bakeInStart = 0)
         seq.append(ival)
         seq.append(Func(self.loop, 'neutral'))
         seq.start(ts)
+
+        self.enableRay()
 
         self.currentPointLetter = pointLetter
 
         self.walkIval = ival
 
     def exitWalking(self):
+        self.disableRay()
         if self.walkIval:
             self.walkIval.finish()
             self.walkIval = None
@@ -193,12 +196,15 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         DistributedAvatar.setChat(self, chat)
 
     def loadChar(self):
+        
+
         data = CHAR_DATA[self.charId]
         self.loadModel(data[0], 'modelRoot')
         self.loadAnims(data[1], 'modelRoot')
         if self.charId == SLEEP_DONALD:
             self.setPlayRate(0.5, 'neutral')
         self.setHeight(data[2])
+        self.setupPhysics(1.0, data[2])
         self.setName(data[3])
         self.talkEnabled = data[4]
         if self.talkEnabled:
@@ -308,8 +314,7 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
 
         self.initShadow()
         self.shadow.setScale(0.6)
-        self.initializeBodyCollisions(self.avatarType, self.getHeight(), 1.0)
-        self.initializeRay(self.avatarType, 1)
+        
         self.disableShadowRay()
         
         bodyMat = CIGlobals.getCharacterMaterial(shininess = 20.0, specular = (0.2, 0.2, 0.2, 1.0))
@@ -406,7 +411,7 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.sendUpdate('requestStateData')
         if self.charId == SAILOR_DONALD:
             self.disableRay()
-            self.stashBodyCollisions()
+            self.cleanupPhysics()
             boat = self.cr.playGame.hood.loader.geom.find('**/*donalds_boat*')
             boat.find('**/wheel').hide()
             self.setPos(0, -1, 3.95)

@@ -316,7 +316,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
         self.generated()
         return task.done
 
-    def _handleTrigger(self, entry):
+    def _handleTrigger(self, ghostNode):
         if not self.getSuitTakingOver():
             self.cr.playGame.getPlace().fsm.request('stop')
             base.localAvatar.walkControls.setCollisionsActive(0)
@@ -371,7 +371,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
 
     def sendGoingIn(self):
         messenger.send('DistributedDoor_localAvatarGoingInDoor')
-
+        
     def sendWentInDoor(self):
         messenger.send('DistributedDoor_localAvatarWentInDoor')
 
@@ -475,6 +475,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
             self.fixHQTrigger()
 
         self.acceptOnce(self.getEnterTriggerEvent(), self._handleTrigger)
+
         self.ready = True
 
     def toggleDoorHole(self, side, show = False):
@@ -504,7 +505,6 @@ class DistributedDoor(DistributedObject.DistributedObject):
         self.notify.info(self.building.getPos(render))
 
     def disable(self):
-        self.ignore("p")
         self.ignore(self.getEnterTriggerEvent())
         base.taskMgr.remove(self.uniqueName('pollBuilding'))
         for track in self.avatarTracks:

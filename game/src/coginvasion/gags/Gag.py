@@ -16,6 +16,8 @@ from direct.interval.IntervalGlobal import Parallel, ParallelEndTogether, ActorI
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags import GagGlobals
+from src.coginvasion.globals import CIGlobals
+from src.coginvasion.gui.Crosshair import CrosshairData
 
 from panda3d.core import Point3
 from abc import ABCMeta
@@ -48,6 +50,9 @@ class Gag(object):
         self.image = None
         self.timeout = 5
         self.animTrack = None
+        self.holdGag = True
+
+        self.crosshair = CrosshairData()
 
         # Handles the new recharging for certain gags.
 
@@ -61,9 +66,19 @@ class Gag(object):
             if gagType == GagType.THROW:
                 self.woosh = base.audio3d.loadSfx(GagGlobals.PIE_WOOSH_SFX)
             self.hitSfx = base.audio3d.loadSfx(hitSfx)
+            self.drawSfx = base.audio3d.loadSfx(GagGlobals.DEFAULT_DRAW_SFX)
+
+    def getViewModel(self):
+        return base.localAvatar.getViewModel()
+
+    def getFPSCam(self):
+        return base.localAvatar.getFPSCam()
+
+    def getVMGag(self):
+        return base.localAvatar.getFPSCam().vmGag
     
     # This should be called to change the 'animTrack' variable.
-    def setAnimTrack(self, track, withDelayDelete=True):
+    def setAnimTrack(self, track, withDelayDelete=True, startNow = False, looping = False):
         """ Sets the animation track for this gag. """
         if track is None:
             # If we try to set the animation track to None, we should
@@ -75,6 +90,12 @@ class Gag(object):
         
         if withDelayDelete:
             self.animTrack.delayDelete = DelayDelete.DelayDelete(self.avatar, track.getName())
+
+        if startNow:
+            if looping:
+                self.animTrack.loop()
+            else:
+                self.animTrack.start()
     
     # This should be called whenever we want to clear the 'animTrack' variable.
     def clearAnimTrack(self):
@@ -88,50 +109,50 @@ class Gag(object):
             self.avatar.loop(self.avatar.playingAnim)
             
     def getAnimationTrack(self, animName, startFrame = None, endFrame = None, playRate = 1.0):
-        return ParallelEndTogether(
+        return Parallel(
             ActorInterval(self.avatar, 
                 animName, 
                 startFrame = startFrame, 
                 endFrame = endFrame,
                 partName = 'head',
-            playRate = playRate),
+                playRate = playRate),
             ActorInterval(self.avatar, 
                 animName, 
                 startFrame = startFrame, 
                 endFrame = endFrame,
                 partName = 'torso-top',
-            playRate = playRate)
+                playRate = playRate)
         )
             
     def getBobSequence(self, animName, startFrame, endFrame, playRate):
         return Sequence(
-            ParallelEndTogether(
+            Parallel(
                 ActorInterval(self.avatar, 
                     animName, 
                     startFrame = startFrame, 
-                    endFrame = endFrame,
+                    endFrame = endFrame - 1,
                     partName = 'head',
-                playRate = playRate),
+                    playRate = playRate),
                 ActorInterval(self.avatar, 
                     animName, 
                     startFrame = startFrame, 
-                    endFrame = endFrame,
+                    endFrame = endFrame - 1,
                     partName = 'torso-top',
-                playRate = playRate)
+                    playRate = playRate)
             ),
-            ParallelEndTogether(
+            Parallel(
                 ActorInterval(self.avatar, 
                     animName, 
-                    startFrame = startFrame, 
-                    endFrame = endFrame,
+                    startFrame = endFrame, 
+                    endFrame = startFrame + 1,
                     partName = 'head',
-                playRate = (-1 * playRate)),
+                    playRate = playRate),
                 ActorInterval(self.avatar, 
                     animName, 
-                    startFrame = startFrame, 
-                    endFrame = endFrame,
+                    startFrame = endFrame, 
+                    endFrame = startFrame + 1,
                     partName = 'torso-top',
-                playRate = (-1 * playRate))
+                    playRate = playRate)
             )
         )
     
@@ -226,6 +247,8 @@ class Gag(object):
 
     def setAvatar(self, avatar):
         self.avatar = avatar
+        if CIGlobals.isNodePathOk(self.avatar):
+            base.audio3d.attachSoundToObject(self.drawSfx, self.avatar)
 
     def getAvatar(self):
         return self.avatar
@@ -245,9 +268,13 @@ class Gag(object):
     def getType(self):
         return self.gagType
 
+    def maybeBuild(self):
+        if not self.gag:
+            self.build()
+
     def build(self):
         if self.anim:
-            self.gag = Actor(self.model, {'chan' : self.anim})
+            self.gag = Actor(self.model, {'chan' : self.anim, 'zero' : self.model})
         else:
             self.gag = loader.loadModel(self.model)
         self.setHandJoint()
@@ -264,11 +291,22 @@ class Gag(object):
         self.setHandJoint()
         if not self.gag:
             self.build()
-        self.gag.reparentTo(self.handJoint)
+        if self.holdGag:
+            self.gag.reparentTo(self.handJoint)
         self.equipped = True
+
+        self.avatar.getBackpack().setActiveGag(self.getID())
+
+        if self.isLocal():
+            cam = base.localAvatar.getFPSCam()
+            cam.setVMGag(self.gag)
+            if base.localAvatar.isFirstPerson():
+                base.localAvatar.getViewModel().show()
+            self.drawSfx.play()
 
     @abc.abstractmethod
     def unEquip(self):
+        print "unEquip"
         if game.process != 'client':
             return
         if self.equipped and self.handJoint:
@@ -278,6 +316,16 @@ class Gag(object):
                     item.removeNode()
             self.equipped = False
             self.reset()
+
+        self.avatar.getBackpack().setActiveGag(None)
+
+        self.clearAnimTrack()
+        self.avatar.clearForcedTorsoAnim()
+
+        if self.isLocal():
+            base.localAvatar.getFPSCam().clearVMGag()
+            base.localAvatar.getFPSCam().clearVMAnimTrack()
+            base.localAvatar.getViewModel().hide()
 
     def setHealth(self, health):
         self.health = health
@@ -302,6 +350,7 @@ class Gag(object):
         self.handJoint = None
         self.avatar = None
         self.state = None
+        self.drawSfx = None
         self.cleanupGag()
         self.cleanupSplat()
         if self.woosh:
@@ -317,7 +366,7 @@ class Gag(object):
         except: pass
         if self.gag and not self.state in [GagState.RELEASED, GagState.START]:
             name = self.gag.getName()
-            if self.anim:
+            if isinstance(self.gag, Actor):
                 self.gag.cleanup()
             if self.avatar:
                 copies = self.avatar.findAllMatches('**/%s' % name)

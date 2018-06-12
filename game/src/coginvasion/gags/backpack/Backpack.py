@@ -50,6 +50,7 @@ class Backpack(BackpackBase):
         if not gagId == -1 and self.hasGag(gagId):
             # Set the current gag.
             self.currentGag = gagId
+            self.gags.get(self.currentGag)[0].equip()
 
     # Returns the current gag.
     def getCurrentGag(self):

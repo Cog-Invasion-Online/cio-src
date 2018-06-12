@@ -28,25 +28,23 @@ class AboutCategory(OptionsCategory, DirectObject):
     def __init__(self, page):
         OptionsCategory.__init__(self, page)
         DirectObject.__init__(self)
-        self.defaultLogoScale = 0.75
-        self.logo = loader.loadTexture("phase_3/maps/CogInvasion_Logo.png")
-        self.logoNode = self.page.book.attachNewNode('logoNode')
-        self.logoNode.setScale(self.defaultLogoScale)
-        self.logoNode.setPos(0, 0, 0.48)
-        self.logoImg = OnscreenImage(image = self.logo, scale = (0.685, 0, 0.325), parent=self.logoNode)
-        self.logoImg.setTransparency(True)
+        
+        self.logoNode, self.logoImg = CIGlobals.getLogoImage(self.page.book, 0.75, (0, 0, 0.48))
+        
         self.creditsScreen = None
 
         self.exitConfirmDlg = None
+        
+        font = CIGlobals.getToonLogoFont()
 
         self.gVersionText = OnscreenText(text = "Version {0} (Build {1} : {2})".format(game.version,
                                                                                       game.build, 
                                                                                       game.buildtype),
-                                        parent = self.page.book, pos = (0, 0.15, 0.15))
-        self.gBuildDate = OnscreenText(text = game.builddate, parent = self.page.book, pos = (0, 0.085, 0.085), scale = 0.06)
+                                        parent = self.page.book, pos = (0, 0.15, 0.15), font = font, fg = (1, 1, 1, 1))
+        self.gBuildDate = OnscreenText(text = game.builddate, parent = self.page.book, pos = (0, 0.085, 0.085), scale = 0.06, font = font, fg = (1, 1, 1, 1))
 
-        self.eVersionText = OnscreenText(text = "Engine Version {0}".format(PandaSystem.getVersionString()), parent = self.page.book, pos = (0, -0.05))
-        self.eBuildDate = OnscreenText(text = PandaSystem.getBuildDate(), parent = self.page.book, pos = (0, -0.115), scale = 0.06)
+        self.eVersionText = OnscreenText(text = "Engine Version {0}".format(PandaSystem.getVersionString()), parent = self.page.book, pos = (0, -0.05), font = font, fg = (1, 1, 1, 1))
+        self.eBuildDate = OnscreenText(text = PandaSystem.getBuildDate(), parent = self.page.book, pos = (0, -0.115), scale = 0.06, font = font, fg = (1, 1, 1, 1))
 
         self.exitToontown = CIGlobals.makeDefaultBtn("Exit Toontown", pos = (-0.62, -0.62, -0.62), parent = self.page.book, scale = 1.2,
                                                      command = self.showConfirmDlg, geom_scale = (0.8, 0.8, 0.8))
@@ -119,4 +117,3 @@ class AboutCategory(OptionsCategory, DirectObject):
         if hasattr(self, 'creditsScreen'):
             self.creditsScreen = None
             del self.creditsScreen
-        del self.defaultLogoScale

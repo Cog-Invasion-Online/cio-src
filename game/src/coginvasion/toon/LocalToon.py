@@ -9,8 +9,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import Point3, ConfigVariableBool
 from src.coginvasion.globals import CIGlobals
-from direct.controls import ControlManager
-from src.coginvasion.toon.CIGravityWalker import GravityWalker
 from direct.task import Task
 from DistributedToon import DistributedToon
 from SmartCamera import SmartCamera
@@ -31,6 +29,8 @@ from src.coginvasion.friends.FriendsList import FriendsList
 from src.coginvasion.cog import SuitAttacks
 from src.coginvasion.quests.QuestManager import QuestManager
 from src.coginvasion.gui.Crosshair import Crosshair
+from src.coginvasion.toon.TPMouseMovement import TPMouseMovement
+from src.coginvasion.phys.LocalControls import LocalControls
 
 from src.coginvasion.nametag import NametagGlobals
 
@@ -79,7 +79,6 @@ class LocalToon(DistributedToon):
         self.runSfx.setLoop(True)
         self.walkSfx = base.loadSfx("phase_3.5/audio/sfx/AV_footstep_walkloop.ogg")
         self.walkSfx.setLoop(True)
-        self.controlManager = ControlManager.ControlManager(True, False)
         self.offset = 3.2375
         self.firstPersonCamPos = None
         self.movementKeymap = {
@@ -125,6 +124,29 @@ class LocalToon(DistributedToon):
         
         # This is used by the animation traverser.
         self.__traverseGUI = None
+
+    def isFirstPerson(self):
+        return self.walkControls.mode == self.walkControls.MFirstPerson
+
+    def isThirdPerson(self):
+        return self.walkControls.mode == self.walkControls.MThirdPerson
+
+    def getViewModel(self):
+        return self.walkControls.fpsCam.viewModel
+
+    def getFPSCam(self):
+        return self.walkControls.fpsCam
+
+    def equip(self, gagId):
+        DistributedToon.equip(self, gagId)
+        if self.walkControls.mode == self.walkControls.MFirstPerson:
+            self.crosshair.setCrosshair(self.backpack.getGagByID(gagId).crosshair)
+            self.crosshair.show()
+
+    def unEquip(self):
+        DistributedToon.unEquip(self)
+        if self.walkControls.mode == self.walkControls.MFirstPerson:
+            self.crosshair.hide()
         
     def showCrosshair(self):
         self.crosshair.show()
@@ -282,40 +304,26 @@ class LocalToon(DistributedToon):
     def getAirborneHeight(self):
         return self.offset + 0.025000000000000001
 
+    def getEyePoint(self):
+        return Point3(0, 0, max(self.getHeight(), 3.0))
+
     def isMoving(self):
-        fwd, rot, sli = self.walkControls.getSpeeds()
-        return fwd != 0.0 or rot != 0.0 or sli != 0.0
+        return self.walkControls.isMoving()
 
     def setupControls(self):
-        if self.GTAControls:
-            self.prepareToSwitchControlType()
-            self.controlManager.wantWASD = True
-            self.controlManager.disable()
-            self.controlManager.enable()
-            self.controlManager.setWASDTurn(False)
-
-        self.walkControls = GravityWalker(legacyLifter=False)
-        self.walkControls.setWallBitMask(CIGlobals.WallBitmask)
-        self.walkControls.setFloorBitMask(CIGlobals.FloorBitmask)
-        self.walkControls.setWalkSpeed(
-            CIGlobals.ToonForwardSpeed, CIGlobals.ToonJumpForce,
-            CIGlobals.ToonReverseSpeed, CIGlobals.ToonRotateSpeed
-        )
-        self.walkControls.initializeCollisions(base.cTrav, self, floorOffset=0.025, reach=4.0)
-        self.walkControls.cEventSphereNodePath.node().setFromCollideMask(CIGlobals.WallBitmask | CIGlobals.WeaponBitmask
-            | GunGameGlobals.HILL_BITMASK)
-        self.walkControls.setAirborneHeightFunc(self.getAirborneHeight)
+        self.walkControls = LocalControls()
+        self.walkControls.setupControls()
+        self.walkControls.setMode(self.walkControls.MFirstPerson)
 
     def destroyControls(self):
-        self.walkControls.disableAvatarControls()
-        self.walkControls.setCollisionsActive(0)
-        self.walkControls.deleteCollisions()
+        self.walkControls.disableControls()
+        self.walkControls.stopControllerUpdate()
         self.walkControls = None
 
     def setWalkSpeedNormal(self):
         self.walkControls.setWalkSpeed(
             CIGlobals.ToonForwardSpeed, CIGlobals.ToonJumpForce,
-            CIGlobals.ToonForwardSpeed, CIGlobals.ToonRotateSpeed
+            CIGlobals.ToonReverseSpeed, CIGlobals.ToonRotateSpeed
         )
 
     def setWalkSpeedNormalNoJump(self):
@@ -364,28 +372,33 @@ class LocalToon(DistributedToon):
 
     def attachCamera(self):
         #self.notify.info("Attaching camera...")
-        camera.reparentTo(self)
-        camera.setPos(self.smartCamera.getIdealCameraPos())
-        camera.lookAt(self.smartCamera.getLookAtPoint())
+        #camera.reparentTo(self)
+        #camera.setPos(self.smartCamera.getIdealCameraPos())
+        #camera.lookAt(self.smartCamera.getLookAtPoint())
+        pass
 
     def startSmartCamera(self):
         #self.notify.info("Starting camera...")
-        self.smartCamera.startUpdateSmartCamera()
+        #self.smartCamera.startUpdateSmartCamera()
+        pass
 
     def resetSmartCamera(self):
         #self.notify.info("Resetting camera...")
-        self.stopSmartCamera()
-        self.startSmartCamera()
+        #self.stopSmartCamera()
+        #self.startSmartCamera()
+        pass
 
     def stopSmartCamera(self):
         #self.notify.info("Stopping camera...")
-        self.smartCamera.stopUpdateSmartCamera()
+        #self.smartCamera.stopUpdateSmartCamera()
+        pass
 
     def detachCamera(self):
         #self.notify.info("Detaching camera...")
-        camera.reparentTo(render)
-        camera.setPos(0, 0, 0)
-        camera.setHpr(0, 0, 0)
+        #camera.reparentTo(render)
+        #camera.setPos(0, 0, 0)
+        #camera.setHpr(0, 0, 0)
+        pass
 
     def handleSuitAttack(self, attack_id, suit_id):
         DistributedToon.handleSuitAttack(self, attack_id, suit_id)
@@ -423,39 +436,39 @@ class LocalToon(DistributedToon):
         print "Pos: (%s, %s, %s), Hpr: (%s, %s, %s)" % (x, y, z, h, p, r)
 
     def enableAvatarControls(self):
-        self.walkControls.enableAvatarControls()
-        self.accept("control", self.updateMovementKeymap, ["jump", 1])
-        self.accept("control-up", self.updateMovementKeymap, ["jump", 0])
-        self.accept(base.inputStore.NextCameraPosition, self.smartCamera.nextCameraPos, [1])
-        self.accept(base.inputStore.PreviousCameraPosition, self.smartCamera.nextCameraPos, [0])
-        self.accept(base.inputStore.LookUp, self.smartCamera.pageUp)
-        self.accept(base.inputStore.LookDown, self.smartCamera.pageDown)
+        self.walkControls.enableControls()
+        #self.accept("control", self.updateMovementKeymap, ["jump", 1])
+        #self.accept("control-up", self.updateMovementKeymap, ["jump", 0])
+        #self.accept(base.inputStore.NextCameraPosition, self.smartCamera.nextCameraPos, [1])
+        #self.accept(base.inputStore.PreviousCameraPosition, self.smartCamera.nextCameraPos, [0])
+        #self.accept(base.inputStore.LookUp, self.smartCamera.pageUp)
+        #self.accept(base.inputStore.LookDown, self.smartCamera.pageDown)
         self.accept('jumpStart', self.__jump)
-        self.accept('jumpLand', self.__handleJumpLand)
-        self.accept('jumpHardLand', self.__handleJumpHardLand)
         self.avatarMovementEnabled = True
         self.playMovementSfx(None)
-        if self.smartCamera.isOverTheShoulder():
-            self.crosshair.show()
+        #self.mouseMov.enableMovement()
+        #if self.smartCamera.isOverTheShoulder():
+        #    self.crosshair.show()
 
-    def __handleJumpLand(self):
+    def handleJumpLand(self):
         if self.jumpHardLandIval:
             self.jumpHardLandIval.finish()
             self.jumpHardLandIval = None
         if self.getHealth() > 0:
             self.b_setAnimState('Happy')
 
-    def __handleJumpHardLand(self):
+    def handleJumpHardLand(self):
         if self.jumpHardLandIval:
             self.jumpHardLandIval.finish()
             self.jumpHardLandIval = None
         self.jumpHardLandIval = ActorInterval(self, 'zend')
         self.jumpHardLandIval.setDoneEvent('LT::zend-done')
-        self.acceptOnce('LT::zend-done', self.__handleJumpLand)
+        self.acceptOnce('LT::zend-done', self.handleJumpLand)
         self.jumpHardLandIval.start()
 
     def disableAvatarControls(self):
-        self.walkControls.disableAvatarControls()
+        #self.mouseMov.disableMovement(False)
+        self.walkControls.disableControls()
         self.ignore('tab')
         self.ignore('shift-tab')
         self.ignore('page_up')
@@ -479,12 +492,12 @@ class LocalToon(DistributedToon):
         self.isMoving_back = False
         self.isMoving_jump = False
         self.avatarMovementEnabled = False
-        self.playMovementSfx(None)
+        #self.playMovementSfx(None)
         for k, _ in self.movementKeymap.items():
             self.updateMovementKeymap(k, 0)
         self.resetSpeeds()
         self.resetTorsoRotation()
-        self.crosshair.hide()
+        #self.crosshair.hide()
 
     def updateMovementKeymap(self, key, value):
         self.movementKeymap[key] = value
@@ -493,6 +506,7 @@ class LocalToon(DistributedToon):
         return self.movementKeymap[key]
 
     def playMovementSfx(self, movement):
+        return
         if movement == "run":
             self.walkSfx.stop()
             self.runSfx.play()
@@ -601,7 +615,7 @@ class LocalToon(DistributedToon):
         base.taskMgr.remove(self.uniqueName('trackAnimToSpeed'))
 
     def trackAnimToSpeed(self, task):
-        speed, rotSpeed, slideSpeed = self.walkControls.getSpeeds()
+        slideSpeed, speed, rotSpeed = self.walkControls.getSpeeds()
         state = None
         if self.getHealth() > 0:
             state = 'Happy'
@@ -629,8 +643,9 @@ class LocalToon(DistributedToon):
             else:
                 self.resetHeadHpr()
                 self.stopLookAround()
-                if state == 'Happy' and not self.smartCamera.isOverTheShoulder():
-                    self.startLookAround()
+                if self.walkControls.mode == self.walkControls.MThirdPerson:
+                    if state == 'Happy':
+                        self.startLookAround()
                 self.playMovementSfx(None)
         return task.cont
 
@@ -689,9 +704,7 @@ class LocalToon(DistributedToon):
         self.disableGagKeys()
         if self.invGui:
             self.invGui.disable()
-        if hasattr(self, 'backpack'):
-            if self.backpack:
-                self.backpack.setCurrentGag()
+        self.b_unEquip()
 
     def setWeaponType(self, weaponType):
         enableKeysAgain = 0
@@ -702,8 +715,9 @@ class LocalToon(DistributedToon):
             self.disableGagKeys()
             self.enableGagKeys()
 
-    def resetHeadHpr(self):
-        self.b_lookAtObject(0, 0, 0, blink = 0)
+    def resetHeadHpr(self, override = False):
+        if self.walkControls.mode == self.walkControls.MThirdPerson or not self.walkControls.controlsEnabled or override:
+            self.b_lookAtObject(0, 0, 0, blink = 0)
 
     def canUseGag(self, preActive):
         if preActive:
@@ -756,7 +770,9 @@ class LocalToon(DistributedToon):
             Sequence(Wait(0.75), Func(self.releaseGag)).start()
 
     def releaseGag(self):
+        print "LocalToon.releaseGag"
         if not self.canUseGag(False) or self.backpack.getCurrentGag().__class__.__name__ == 'BananaPeel':
+            print "Can't use gag?"
             return
         gag = self.backpack.getActiveGag()
         if not gag:
@@ -764,6 +780,8 @@ class LocalToon(DistributedToon):
         if gag.getState() != GagState.RELEASED:
             gagName = gag.getName()
             self.b_gagRelease(GagGlobals.getIDByName(gagName))
+        else:
+            print "state is released, rip"
 
     def checkSuitHealth(self, suit):
         pass
@@ -856,8 +874,18 @@ class LocalToon(DistributedToon):
             elif self.animFSM.getCurrentState().getName() == 'deadWalk':
                 self.playMovementSfx("run")
                 self.b_setAnimState("run")
+
+        if hp < self.getHealth() and self.isFirstPerson():
+            self.getFPSCam().doDamageFade(1, 0, 0, (self.getHealth() - hp) / 30.0)
         DistributedToon.setHealth(self, hp)
 
+    def reparentTo(self, parent):
+        print "Local toon reparent to", parent.node().getName()
+        DistributedToon.reparentTo(self, parent)
+
+    def wrtReparentTo(self, parent):
+        print "Local toon wrt reparent to", parent.node().getName()
+        DistributedToon.wrtReparentTo(self, parent)
 
     def diedStateDone(self, requestStatus):
         hood = self.cr.playGame.hood.id
@@ -904,10 +932,12 @@ class LocalToon(DistributedToon):
             self.chatInputState = False
 
     def collisionsOn(self):
-        self.controlManager.collisionsOn()
+        pass
+        #self.controlManager.collisionsOn()
 
     def collisionsOff(self):
-        self.controlManager.collisionsOff()
+        pass
+        #self.controlManager.collisionsOff()
 
     def toggleAspect2d(self):
         if self.allowA2dToggle:

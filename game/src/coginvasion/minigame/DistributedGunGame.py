@@ -31,9 +31,9 @@ class DistributedGunGame(DistributedToonFPSGame, TeamMinigame):
                         "The Toon with the most points when the timer runs out gets a nice prize!",
                         GGG.GameModes.CTF: "Steal the other team's flag and take it to where your flag is to score a point. Follow the arrows at the bottom of the screen to find the flags! Use your gun to defend yourself and your flag!",
                         GGG.GameModes.KOTH : "Capture the central point and defend it from the other Toons. The Toon who holds the point the longest wins."}
-    GameMode2Music = {GGG.GameModes.CASUAL: 'phase_4/audio/bgm/MG_TwoDGame.mid',
-                      GGG.GameModes.CTF:    'phase_9/audio/bgm/CHQ_FACT_bg.mid',
-                      GGG.GameModes.KOTH : 'phase_7/audio/bgm/encntr_suit_winning_indoor.mid'}
+    GameMode2Music = {GGG.GameModes.CASUAL: 'phase_4/audio/bgm/MG_TwoDGame.ogg',
+                      GGG.GameModes.CTF:    'phase_9/audio/bgm/CHQ_FACT_bg.ogg',
+                      GGG.GameModes.KOTH : 'phase_7/audio/bgm/encntr_suit_winning_indoor.ogg'}
 
     def __init__(self, cr):
         try:

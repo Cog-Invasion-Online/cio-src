@@ -8,6 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.core import Point3
+
 from src.coginvasion.gags.LightDropGag import LightDropGag
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
@@ -18,6 +20,12 @@ class FlowerPot(LightDropGag):
         LightDropGag.__init__(self, 
                 CIGlobals.FlowerPot, GagGlobals.getProp('5', 'flowerpot-mod'), 
                 GagGlobals.getProp('5', 'flowerpot-chan'), 10, GagGlobals.POT_DROP_SFX, 
-                GagGlobals.POT_MISS_SFX, rotate90 = False, 
-        sphereSize = 2, sphereZ = -3.5)
+                GagGlobals.POT_MISS_SFX, rotate90 = False)
         self.setImage('phase_3.5/maps/flowerpot.png')
+        self.colliderRadius = 2
+        self.colliderOfs = Point3(0, 0, -3.5)
+
+    def startDrop(self):
+        if self.dropLoc:
+            self.dropLoc.setZ(self.dropLoc.getZ() + 3.5)
+        LightDropGag.startDrop(self)

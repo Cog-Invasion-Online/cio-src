@@ -830,7 +830,8 @@ class HoodMgr(DirectObject):
                                  -68.4,
                                  -777.98,
                                  0,
-                                 0])}
+                                 0]),
+     CIGlobals.MinigameArea: ([110, 75, 30, 0, 0, 0],)}
     DefaultDropPoint = [0,
      0,
      0,

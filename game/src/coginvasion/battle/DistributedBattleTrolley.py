@@ -182,7 +182,8 @@ class DistributedBattleTrolley(DistributedObject):
         self.countdownText.setPos(14.58, 10.77, 11.17)
         
         try:
-            self.trolleyStation.find('**/trolley_sphere').setName('trolley{0}_sphere'.format(hoodAbbr))
+            self.trolleySphere = self.trolleyStation.find('**/trolley_sphere')
+            self.trolleySphere.setName('trolley{0}_sphere'.format(hoodAbbr))
         except:
             pass
         
@@ -192,6 +193,7 @@ class DistributedBattleTrolley(DistributedObject):
     def putAvatarInTrolley(self, avId, slot):
         av = self.cr.doId2do.get(avId)
         if av:
+            print "putAvatarInTrolley:", av.node().getName()
             av.stopSmooth()
             av.wrtReparentTo(self.trolleyCar)
             av.setAnimState('off')
@@ -204,15 +206,21 @@ class DistributedBattleTrolley(DistributedObject):
             av.setHpr(90, 0, 0)
 
     def headOff(self):
-        hoodId = ZoneUtil.getHoodId(self.toZone)
-        requestStatus = {'zoneId': self.toZone,
+        if self.index == 1:
+            zoneId = base.localAvatar.getLastHood()
+            hoodId = ZoneUtil.getHoodId(zoneId)
+        else:
+            zoneId = self.toZone
+            hoodId = ZoneUtil.getHoodId(self.toZone)
+
+        requestStatus = {'zoneId': zoneId,
                     'hoodId': hoodId,
                     'where': 'playground',
                     'avId': base.localAvatar.doId,
                     'loader': 'safeZoneLoader',
                     'shardId': None,
                     'wantLaffMeter': 1,
-                    'how': 'trolleyOut',
+                    'how': 'teleportIn',
                     'prevZoneId': base.localAvatar.zoneId,
                     'slot': self.mySlot}
         self.cr.playGame.getPlace().doneStatus = requestStatus
@@ -254,8 +262,8 @@ class DistributedBattleTrolley(DistributedObject):
         self.__maybeAcceptCollisions()
         if self.countdownText:
             self.countdownTrack = Sequence()
-            for i in range(20):
-                self.countdownTrack.append(Func(self.countdownText.node().setText, str(20 - i)))
+            for i in range(10):
+                self.countdownTrack.append(Func(self.countdownText.node().setText, str(10 - i)))
                 self.countdownTrack.append(Wait(1.0))
             self.countdownTrack.start()
 
@@ -297,7 +305,7 @@ class DistributedBattleTrolley(DistributedObject):
         ts = globalClockDelta.localElapsedTime(timestamp)
         self.fsm.request(stateName, [ts])
 
-    def __handleTrolleyTrigger(self, entry):
+    def __handleTrolleyTrigger(self, collNp):
         # workaround for a bug that i don't understand why it happens
         if not hasattr(self, 'cr') or not self.cr:
             self.cr = base.cr
@@ -412,7 +420,7 @@ class DistributedBattleTrolley(DistributedObject):
         track.start()
 
     def __hoppedOffTrolley(self):
-        self.acceptOnce('entertrolley_sphere', self.__handleTrolleyTrigger)
+        #self.acceptOnce('entertrolley_sphere', self.__handleTrolleyTrigger)
         base.localAvatar.walkControls.setCollisionsActive(1)
         self.cr.playGame.getPlace().fsm.request('walk')
 
@@ -445,6 +453,8 @@ class DistributedBattleTrolley(DistributedObject):
                 backWheel.setH(ref, t * wheelAngle)
 
     def delete(self):
+        self.__ignoreCollisions()
+    
         self.trolleyStation = None
         self.trolleyKey = None
         self.soundMoving = None
@@ -465,6 +475,9 @@ class DistributedBattleTrolley(DistributedObject):
         self.trolleyExitFogNode = None
         self.trolleyEnterFogNode = None
         self.trolleyEnterFog = None
+        
+        if self.countdownText:
+            self.countdownText.removeNode()
+            self.countdownText = None
 
-        self.ignore('entertrolley_sphere')
         DistributedObject.delete(self)

@@ -117,8 +117,6 @@ class DistributedBattleZone(DistributedObject):
         # programmed in as a "Place"
         walkData = place.walkStateData if place else self
 
-        if not place and base.localAvatar.GTAControls:
-            walkData.mouseMov.disableMovement(allowReEnable = False)
         if place:
             place.fsm.request('stop')
 
@@ -147,8 +145,6 @@ class DistributedBattleZone(DistributedObject):
         if not base.localAvatar.walkControls.getCollisionsActive():
             base.localAvatar.walkControls.setCollisionsActive(1)
         base.localAvatar.enableAvatarControls()
-        if not place and base.localAvatar.GTAControls:
-            walkData.mouseMov.enableMovement()
 
         base.localAvatar.setBusy(1)
     

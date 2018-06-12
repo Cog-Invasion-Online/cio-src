@@ -8,7 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import CollisionEntry
+from panda3d.core import CollisionEntry, Vec3
+from panda3d.bullet import BulletRigidBodyNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.State import State
@@ -65,7 +66,7 @@ class Street(Place):
         self.loader.hood.enableOutdoorLighting()
         
         self.fsm.enterInitialState()
-        base.playMusic(self.loader.music, volume = 0.8, looping = 1)
+        base.playMusic(self.loader.streetSong)
         
         self.loader.geom.reparentTo(render)
         if visibilityFlag:
@@ -79,9 +80,13 @@ class Street(Place):
     def exit(self, vis = 1):
         if vis:
             self.visibilityOff()
+        self.hideAllVisibles()
+        base.disablePhysicsNodes(self.loader.landmarkBlocks)
+        base.disablePhysicsNodes(self.loader.geom)
         self.loader.geom.reparentTo(hidden)
         #self.loader.hood.stopSky()
-        self.loader.music.stop()
+
+        base.stopMusic()
 
         self.loader.hood.disableOutdoorLighting()
         
@@ -102,29 +107,42 @@ class Street(Place):
 
     def hideAllVisibles(self):
         for i in self.loader.nodeList:
+            base.disablePhysicsNodes(i)
             i.stash()
 
     def showAllVisibles(self):
         for i in self.loader.nodeList:
+            base.enablePhysicsNodes(i)
             i.unstash()
 
     def visibilityOn(self):
         self.hideAllVisibles()
-        self.accept('on-floor', self.enterZone)
+        taskMgr.add(self.__floorVisTask, "Street.floorVisTask")
+
+    def __floorVisTask(self, task):
+        start = camera.getPos(render)
+        end = start + (Vec3.down() * 500)
+        result = base.physicsWorld.rayTestClosest(start, end, CIGlobals.StreetVisGroup)
+        if result.hasHit():
+            self.enterZone(result.getNode())
+        return task.cont
 
     def visibilityOff(self):
-        self.ignore('on-floor')
+        taskMgr.remove("Street.floorVisTask")
         self.showAllVisibles()
 
     def enterZone(self, newZone):
-        if isinstance(newZone, CollisionEntry):
+        if isinstance(newZone, BulletRigidBodyNode):
             try:
-                newZoneId = int(newZone.getIntoNode().getName())
+                newZoneId = int(newZone.getName())
             except:
-                self.notify.warning('Invalid floor collision node in street: %s' % newZone.getIntoNode().getName())
+                self.notify.warning('Invalid floor collision node in street: %s' % newZone.getName())
                 return
-        else:
+        elif type(newZone) is int:
             newZoneId = newZone
+        else:
+            self.notify.warning("Invalid zone: {0}".format(newZone))
+            return
         self.doEnterZone(newZoneId)
 
     def doEnterZone(self, newZoneId):
@@ -135,6 +153,7 @@ class Street(Place):
                     if i not in self.loader.nodeDict[newZoneId]:
                         self.loader.fadeOutDict[i].start()
                 else:
+                    base.disablePhysicsNodes(i)
                     i.stash()
 
         if newZoneId != None:
@@ -147,6 +166,7 @@ class Street(Place):
                         self.loader.fadeOutDict[i].finish()
                     if self.loader.fadeInDict[i].isPlaying():
                         self.loader.fadeInDict[i].finish()
+                    base.enablePhysicsNodes(i)
                     i.unstash()
 
         if newZoneId != self.zoneId:
@@ -163,5 +183,4 @@ class Street(Place):
                     visList = [newZoneId] + loader.zoneVisDict.values()[0]
                     base.cr.sendSetZoneMsg(newZoneId, visList)
             self.zoneId = newZoneId
-        geom = base.cr.playGame.getPlace().loader.geom
         return

@@ -16,13 +16,13 @@ from src.coginvasion.globals import CIGlobals
 
 class TPMouseMovement(DirectObject):
     GeomNodeTurnSpeed = 950.0
-    MaxSpineLegsDiscrepency = 45.0
+    MaxSpineLegsDiscrepency = 85.0
 
     def __init__(self):
         DirectObject.__init__(self)
         self.player_node = None
-        self.min_camerap = -45.0
-        self.max_camerap = 45.0
+        self.min_camerap = -90.0
+        self.max_camerap = 90.0
         self.enabled = False
         self.disabledByFocusLoss = False
         self.disabledByChat = False
@@ -39,6 +39,7 @@ class TPMouseMovement(DirectObject):
             self.player_node = None
 
         self.player_node = base.localAvatar.attachNewNode('PlayerNode')
+        loader.loadModel("models/smiley.egg.pz").reparentTo(self.player_node)
         
     def __handleWindowEvent(self, window = None):
         if window is not None:
@@ -136,14 +137,28 @@ class TPMouseMovement(DirectObject):
             # Do some mouse movement
             goalH = self.player_node.getH() - (x - centerX) * sens
             self.player_node.setH(goalH)
+            goalP = self.player_node.getP() - (y - centerY) * sens
+            if goalP < self.min_camerap:
+                goalP = self.min_camerap
+            elif goalP > self.max_camerap:
+                goalP = self.max_camerap
+            self.player_node.setP(goalP)
             self.geomNodeRenderYaw = base.localAvatar.getGeomNode().getH(render)
 
-            if base.localAvatar.isMoving() or base.localAvatar.smartCamera.isOverTheShoulder():
+            if base.localAvatar.isMoving():
                 # We can turn our character with the mouse while moving.
                 oldH = base.localAvatar.getH(render)
                 base.localAvatar.walkControls.rotationSpeed = abs(oldH - base.localAvatar.getH(render)) / 1.5
                 base.localAvatar.setH(render, self.player_node.getH(render))
                 self.player_node.setH(0)
+                
+                spine = base.localAvatar.find("**/def_cageA")
+
+                if not spine.isEmpty():
+                    spine.setH(0)
+                    spine.setP(render, self.player_node.getP(render))
+                    spine.setR(0)
+                    
                 if self.firstTimeMoving:
                     self.firstTimeMoving = False
                     base.localAvatar.getGeomNode().setH(render, self.geomNodeRenderYaw)
@@ -157,18 +172,21 @@ class TPMouseMovement(DirectObject):
                         base.localAvatar.getGeomNode(), duration = distance / self.GeomNodeTurnSpeed,
                         hpr = (0, 0, 0), startHpr = base.localAvatar.getGeomNode().getHpr()), Func(base.localAvatar.setForceRunSpeed, False))
                     self.geomNodeTurnIval.start()
-            #elif not base.localAvatar.isMoving() and base.localAvatar.smartCamera.isOverTheShoulder():
-            #    oldH = base.localAvatar.getH(render)
-            #    base.localAvatar.walkControls.rotationSpeed = abs(oldH - base.localAvatar.getH(render)) / 1.5
-            #    spine = base.localAvatar.find("**/def_cageA")
-            #    if not spine.isEmpty():
-            #        spine.setH(render, self.player_node.getH(render))
-            #        
-            #    discrep = abs(spine.getH(render) - base.localAvatar.getH(render))
-            #    if discrep > self.MaxSpineLegsDiscrepency:
-            #        spine.setH(0)
-            #        base.localAvatar.setH(render, self.player_node.getH(render))
-            #        self.player_node.setH(0)
+            elif not base.localAvatar.isMoving() and base.localAvatar.smartCamera.isOverTheShoulder():
+                oldH = base.localAvatar.getH(render)
+                base.localAvatar.walkControls.rotationSpeed = abs(oldH - base.localAvatar.getH(render)) / 1.5
+                spine = base.localAvatar.find("**/def_cageA")
+
+                if not spine.isEmpty():
+                    spine.setH(render, self.player_node.getH(render))
+                    spine.setP(render, self.player_node.getP(render))
+                    spine.setR(0)
+                    
+                    discrep = abs(spine.getH(render) - base.localAvatar.getH(render))
+                    if discrep > self.MaxSpineLegsDiscrepency:
+                        spine.setHpr(0, 0, 0)
+                        base.localAvatar.setH(render, self.player_node.getH(render))
+                        self.player_node.setH(0)
             else:
                 self.firstTimeMoving = True
                 

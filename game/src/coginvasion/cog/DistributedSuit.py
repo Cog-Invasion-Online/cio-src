@@ -106,6 +106,7 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
             self.moveIval = None
         if not self.isDead():
             self.animFSM.request('neutral')
+        self.stopFootsteps()
 
     def exitWalking(self):
         self.clearMoveTrack()
@@ -218,9 +219,10 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
 
     def toggleRay(self, ray = 1):
         if ray:
-            Suit.initializeRay(self, self.avatarType, 2)
+            self.enableRay()
         else:
-            Suit.disableRay(self)
+            self.disableRay()
+        pass
 
     def startProjInterval(self, startX, startY, startZ, endX, endY, endZ, duration, gravityMult, ts = 0):
         if isinstance(ts, int) and ts != 0:
@@ -280,14 +282,14 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         self.interruptAttack()
         self.stopMoving()
         if not wantRay:
-            Suit.disableRay(self)
+            self.disableRay()
 
     def d_enableMovement(self):
         self.sendUpdate('enableMovement', [])
-        Suit.initializeRay(self, self.avatarType, 2)
+        self.enableRay()
 
     def startRay(self):
-        Suit.initializeRay(self, self.avatarType, 2)
+        self.enableRay()
 
     def setHealth(self, health):
         if health > self.health:
@@ -312,6 +314,7 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
             if self.isInRange:
                 self.isInRange = False
             self.interruptAttack()
+            self.gruntSound.play()
 
         if self.getLevel() > 12:
             if self.hpFlash:

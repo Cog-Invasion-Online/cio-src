@@ -44,7 +44,7 @@ NPCRunSpeed = 0.04
 OriginalCameraFov = 40.0
 DefaultCameraFov = 52.0
 DefaultCameraFar = 2500.0
-DefaultCameraNear = 0.1
+DefaultCameraNear = 0.3
 PortalScale = 1.5
 SPInvalid = 0
 SPHidden = 1
@@ -242,6 +242,15 @@ def getCharacterMaterial(name = "charMat", shininess = 250, rimColor = (1, 1, 1,
 
 SettingsMgr = None
 
+def calcAttackDamage(distance, baseDmg, maxDist = 40.0):
+    """Global formula for calculating attack damage."""
+
+    distanceMod = 1 - min(1.0, distance / maxDist)
+    ramp = math.sin(math.asin(distanceMod)) + 0.5
+    dmg = baseDmg * ramp
+
+    return int(round(max(1.0, dmg)))
+
 def colorFromRGBScalar255(color):
     """Takes in a tuple of (r, g, b, scalar) (0-255) and returns a
     linear (0-1) color with the scalar applied."""
@@ -274,13 +283,16 @@ def makeDirectionalLight(name, color, angle):
         
     return directional
 
-def makePointLight(name, color, pos, falloff = 0.4):
+def makePointLight(name, color, pos, falloff = 0.3):
     point = PointLight(name + "-point")
     point.setColor(color)
     ATTN_FCTR = 0.03
     point.setAttenuation((1, 0, falloff * ATTN_FCTR))
     pnp = render.attachNewNode(point)
     pnp.setPos(pos)
+    if False:
+        sm = loader.loadModel("models/smiley.egg.pz")
+        sm.reparentTo(pnp)
     return pnp
 
 def makeFog(name, color, expDensity):
@@ -340,17 +352,10 @@ holidayTheme = None
 def getThemeSong():
     global ThemeSong
     if not ThemeSong:
-        themeList = []
-        themeList.append('phase_3/audio/bgm/tt_theme.mid')
-        #vfs = VirtualFileSystem.getGlobalPtr()
-        #for fileName in vfs.scanDirectory('phase_3/audio/bgm/'):
-        #    fullpath = fileName.get_filename().get_fullpath()
-        #    if 'ci_theme' in fullpath:
-        #        themeList.append(fullpath)
+        themeList = ['ci_theme0', 'ci_theme1', 'ci_theme2', 'ci_theme3', 'ci_theme4']
         import random
         ThemeSong = random.choice(themeList)
 
-        #ThemeSong = 'phase_3/audio/bgm/CogInvasion_Final.ogg'
     return ThemeSong
 
 def getHolidayTheme():
@@ -372,6 +377,48 @@ def fixGrayscaleTextures(np):
             tex.store(img)
             img.makeRgb()
             tex.load(img)
+            
+def getLogoFont(font):
+    # Returns a dynamic font in the style of the text from the new logo.
+    # Same color as the logo text and has the same outline.
+    # Make sure that you set fg to (1, 1, 1, 1), so you don't override the color
+    # from this font.
+    from panda3d.core import DynamicTextFont
+    font = DynamicTextFont(font, 0)
+    font.setFg((188 / 255.0, 195 / 255.0, 205 / 255.0, 1.0))
+    font.setOutline((71 / 255.0, 73 / 255.0, 81 / 255.0, 1.0), 0.85, 0.175)
+    font.setScaleFactor(1)
+    return font
+   
+ToonLogoFont = None
+MinnieLogoFont = None
+
+def getToonLogoFont():
+    global ToonLogoFont
+    if not ToonLogoFont:
+        ToonLogoFont = getLogoFont("phase_3/models/fonts/ImpressBT.ttf")
+    return ToonLogoFont
+    
+def getMinnieLogoFont():
+    global MinnieLogoFont
+    if not MinnieLogoFont:
+        MinnieLogoFont = getLogoFont("phase_3/models/fonts/MinnieFont.TTF")
+    return MinnieLogoFont
+    
+def getLogoImage(parent = None, size = 1, pos = (0, 0, 0)):
+    from direct.gui.DirectGui import OnscreenImage
+    
+    if not parent:
+        parent = aspect2d
+    
+    logo = loader.loadTexture("phase_3/maps/CogInvasion_Logo.png")
+    logoNode = parent.attachNewNode('logoNode')
+    logoNode.setScale(size)
+    logoNode.setPos(pos)
+    logoImg = OnscreenImage(image = logo, scale = (0.676, 0, 0.324), parent = logoNode)
+    logoImg.setTransparency(1)
+    
+    return [logoNode, logoImg]
 
 FloorBitmask = BitMask32(2)
 WallBitmask = BitMask32(1)
@@ -491,7 +538,7 @@ else:
     ToonSpeedFactor = 1.25
 ToonForwardSpeed = 16.0 * ToonSpeedFactor
 ToonJumpForce = 24.0
-ToonReverseSpeed = 8.0 * ToonSpeedFactor
+ToonReverseSpeed = ToonForwardSpeed#8.0 * ToonSpeedFactor
 ToonRotateSpeed = 80.0 * ToonSpeedFactor
 ToonForwardSlowSpeed = 6.0
 ToonJumpSlowForce = 4.0
@@ -557,7 +604,7 @@ def getMickeyFont():
 def getMinnieFont():
     global MinnieFont
     if not MinnieFont:
-        MinnieFont = loader.loadFont("phase_3/models/fonts/MinnieFont.bam")
+        MinnieFont = loader.loadFont("phase_3/models/fonts/MinnieFont.TTF")
     return MinnieFont
 
 def getModelDetail(avatar):

@@ -123,6 +123,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.forceRunSpeed = flag
 
     def setForcedTorsoAnim(self, anim):
+        print "setForcedTorsoAnim:", anim
         self.forcedTorsoAnim = anim
 
     def hasForcedTorsoAnim(self):
@@ -133,6 +134,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
     def clearForcedTorsoAnim(self):
         if not self.forcedTorsoAnim is None:
+            print "clearForcedTorsoAnim", self.forcedTorsoAnim
             # Let's switch our current torso and head animation to the
             # animation the legs are running.
             legs = self.__getLowerHalfPartNames()[0]
@@ -170,7 +172,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
     def enterHappy(self, ts = 0, callback = None, extraArgs = []):
         self.playingAnim = None
-        self.standWalkRunReverse = (('neutral', 1.0), ('run', 1.0), ('run', 1.0), ('run', -1.0),
+        self.standWalkRunReverse = (('neutral', 1.0), ('walk', 1.0), ('run', 1.0), ('walk', -1.0),
                                     ('strafe', 1.0), ('strafe', -1.0))
         self.setSpeed(self.forwardSpeed, self.rotateSpeed)
 
@@ -386,31 +388,38 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.getShadow().hide()
         if self.tokenIcon:
             self.tokenIcon.hide()
-        self.stashBodyCollisions()
+        #self.stashBodyCollisions()
         
     def __restoreHide(self):
         if self.tokenIcon:
             self.tokenIcon.show()
         self.getShadow().show()
         self.nametag3d.show()
-        self.getGeomNode().show()
-        self.unstashBodyCollisions()
+        self.getGeomNode().setTransparency(False)
+        self.getGeomNode().setAlphaScale(1.0)
+        if not hasattr(base, 'localAvatar') or (hasattr(base, 'localAvatar') and base.localAvatar != self):
+            self.getGeomNode().show()
+        #self.unstashBodyCollisions()
         
     def handleGhost(self, flag):
         alpha = 1.0 if not flag else 0.25
+        local = self == base.localAvatar
         if flag:
             if self.getAdminToken() >= base.localAvatar.getAdminToken():
                 # Other staff members at this access level or higher should
                 # be able to see this avatar still.
                 alpha = 0.25
-                self.stashBodyCollisions()
-            elif not self == base.localAvatar:
-                self.getGeomNode().hide()
+                #self.stashBodyCollisions()
+            elif not local:
+                self.getGeomNode().setTransparency(True)
+                self.getGeomNode().setColorScale(1.0, 1.0, 1.0, 0.0)
                 self.__actAsGone()
         else:
             self.__restoreHide()
-        self.getGeomNode().setTransparency(flag)
-        self.getGeomNode().setColorScale(1.0, 1.0, 1.0, alpha)
+        if local:
+            self.getGeomNode().setTransparency(flag)
+            self.getGeomNode().setColorScale(1.0, 1.0, 1.0, alpha)
+        
 
     def attachGun(self, gunName):
         self.detachGun()
@@ -665,9 +674,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.accessories.append(glassesNode)
 
     def generateToon(self, makeTag = 1):
-        if not self.collsSetup and (not hasattr(base, 'localAvatar') or base.localAvatar != self):
-            self.collsSetup = True
-            Avatar.Avatar.initializeBodyCollisions(self, self.avatarType, 3, 1)
         self.generateLegs()
         self.generateTorso()
         self.generateHead()
@@ -693,6 +699,9 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
         bodyMat = CIGlobals.getCharacterMaterial(specular = (0, 0, 0, 1))
         self.setMaterial(bodyMat)
+
+        if not hasattr(base, 'localAvatar') or base.localAvatar != self:
+            self.setupPhysics(1.0, self.getHeight())
 
     def attachTNT(self):
         self.pies.attachTNT()
@@ -1099,10 +1108,9 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         if self.portal2:
             self.portal2.cleanup()
             self.portal2 = None
-        if self.getGeomNode():
-            self.getGeomNode().show()
         if self.nametag3d:
             self.nametag3d.show()
+        self.__restoreHide()
         self.playingAnim = 'neutral'
 
     def enterFallFWD(self, ts = 0, callback = None, extraArgs = []):

@@ -17,20 +17,18 @@ from panda3d.core import OmniBoundingVolume, Point3, CollisionSphere, CollisionN
 
 class LightDropGag(DropGag):
 
-    def __init__(self, name, model, anim, damage, hitSfx, missSfx, rotate90 = False, sphereSize = 2, sphereZ = 0):
+    def __init__(self, name, model, anim, damage, hitSfx, missSfx, rotate90 = False):
         DropGag.__init__(self, name, model, anim, damage, hitSfx, missSfx, scale = 1, playRate = 1)
         DropGag.setShadowData(self, isCircle = True, shadowScale = 0.5)
         self.stunTime = 1.5
         self.objTrack = None
         self.rotate90 = rotate90
-        self.sphereSize = sphereSize
-        self.sphereZ = sphereZ
 
     def startDrop(self):
         if self.gag and self.dropLoc:
             x, y, z = self.dropLoc
             startPos = Point3(x, y, z + 20)
-            self.gag.setPos(x, y + 2, z)
+            self.gag.setPos(startPos)
             self.gag.node().setBounds(OmniBoundingVolume())
             self.gag.node().setFinal(1)
             self.gag.headsUp(self.avatar)
@@ -42,12 +40,12 @@ class LightDropGag(DropGag):
             bounceProp = Effects.createZBounce(self.gag, 2, self.dropLoc, 0.5, 1.5)
             objAnimShrink = Sequence(Wait(0.5), Func(self.gag.reparentTo, render), animProp, bounceProp)
             objectTrack.append(objAnimShrink)
-            dropShadow = loader.loadModel('phase_3/models/props/drop_shadow.bam')
-            dropShadow.reparentTo(render)
+            dropShadow = CIGlobals.makeDropShadow(1.0)
+            dropShadow.reparentTo(hidden)
             dropShadow.setPos(self.dropLoc)
-            dropShadow.setScale(self.getShadowScale())
-            shadowTrack = Sequence(LerpScaleInterval(dropShadow, self.fallDuration + 0.1, dropShadow.getScale(),
-                                startScale=Point3(0.01, 0.01, 0.01)), Wait(0.3), Func(dropShadow.removeNode))
+            dropShadow.setScale(0.01)
+            shadowTrack = Sequence(Func(dropShadow.reparentTo, render), LerpScaleInterval(dropShadow, self.fallDuration + 0.1, self.getShadowScale(),
+                                startScale=Point3(0.01, 0.01, 0.01)), Wait(0.8), Func(dropShadow.removeNode))
             self.objTrack = Parallel(Sequence(Wait(self.fallDuration), Func(self.completeDrop)), objectTrack, shadowTrack)
             self.objTrack.start()
             self.dropLoc = None
@@ -64,8 +62,8 @@ class LightDropGag(DropGag):
 
         self.gag.setPos(suit.find('**/joint_head').getPos(render))
         if self.name == CIGlobals.FlowerPot:
-            self.gag.setZ(self.gag, 3)
-        bounce = Effects.createScaleZBounce(self.gag, 1, self.gag.getScale(render), 0.3, 0.75)
+            self.gag.setZ(self.gag, 3.5)
+        bounce = Effects.createScaleZBounce(self.dropMdl, 1, self.dropMdl.getScale(render), 0.3, 0.75)
         dummyNode = suit.attachNewNode('fallOffNode')
         dummyNode.setX(2)
         dummyNode.setY(-2)
@@ -85,16 +83,3 @@ class LightDropGag(DropGag):
 
         dummyNode.removeNode()
         del dummyNode
-
-    def buildCollisions(self):
-        gagSph = CollisionSphere(0, 0, self.sphereZ, self.sphereSize)
-        gagSensor = CollisionNode('gagSensor')
-        gagSensor.addSolid(gagSph)
-        sensorNP = self.gag.attachNewNode(gagSensor)
-        sensorNP.setCollideMask(BitMask32(0))
-        sensorNP.node().setFromCollideMask(CIGlobals.WallBitmask | CIGlobals.FloorBitmask)
-        event = CollisionHandlerEvent()
-        event.set_in_pattern("%fn-into")
-        event.set_out_pattern("%fn-out")
-        base.cTrav.addCollider(sensorNP, event)
-        self.avatar.acceptOnce('gagSensor-into', self.onCollision)

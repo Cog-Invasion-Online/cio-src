@@ -8,7 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import CollisionSphere, CollisionNode, NodePath
+from panda3d.core import NodePath
+from panda3d.bullet import BulletGhostNode, BulletSphereShape
 
 from direct.distributed.DistributedNode import DistributedNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -45,13 +46,14 @@ class DistributedRestockBarrel(DistributedNode):
         self.build()
         
         # Build collisions
-        self.collSphere = CollisionSphere(0, 0, 0, self.sphereRadius)
-        self.collSphere.setTangible(0)
-        self.collNode = CollisionNode(self.uniqueName('barrelSphere'))
+        self.collSphere = BulletSphereShape(self.sphereRadius)
+        self.collNode = BulletGhostNode(self.uniqueName('barrelSphere'))
+        self.collNode.setKinematic(True)
         self.collNode.setIntoCollideMask(CIGlobals.WallBitmask)
-        self.collNode.addSolid(self.collSphere)
+        self.collNode.addShape(self.collSphere)
         self.collNodePath = self.attachNewNode(self.collNode)
         self.collNodePath.hide()
+        base.physicsWorld.attach(self.collNode)
         self.accept('enter' + self.collNodePath.getName(), self.__handleCollision)
         
         self.setParent(CIGlobals.SPRender)
@@ -68,6 +70,8 @@ class DistributedRestockBarrel(DistributedNode):
     def delete(self):
         self.gagNode.removeNode()
         self.barrel.removeNode()
+        base.physicsWorld.remove(self.collNode)
+        self.collNodePath.removeNode()
         del self.barrel
         del self.gagNode
         del self.grabSfx

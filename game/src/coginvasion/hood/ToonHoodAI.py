@@ -48,9 +48,10 @@ class ToonHoodAI(HoodAI):
 
         hood = self.hood
         if CogBattleGlobals.HoodId2WantBattles[hood] is True:
+            # Trolley with index 0 indicates to send to the minigame area.
             self.cogStation = DistributedBattleTrolleyAI(self.air, CIGlobals.MinigameAreaId, 0)
             self.cogStation.generateWithRequired(self.zoneId)
-            self.cogStation.b_setState('waitCountdown')
+            self.cogStation.b_setState('wait')
 
     def shutdown(self):
         if self.gagShop:

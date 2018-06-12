@@ -48,7 +48,7 @@ PROPS = {'photo_frame':     'phase_7/models/props/photo_frame.egg',
         'shadow':           'phase_3/models/props/drop_shadow.bam',
         'BR_sky':           'phase_3.5/models/props/BR_sky.bam',
         'tv_on_wall':       'phase_7/models/props/cogtv.egg',
-        'light_panel':      'phase_7/models/props/ceiling_light_panel.egg'}
+        'light_panel':      '~phase_7/models/props/ceiling_light_panel.egg'}
 
 class Elevator:
 
@@ -65,6 +65,7 @@ class Elevator:
     def setActiveElev(self, index):
 
         if self.activeElev is not None:
+            base.disablePhysicsNodes(self.activeElev)
             self.activeElev.reparentTo(hidden)
 
         if index == Elevator.BLDG:
@@ -73,6 +74,7 @@ class Elevator:
             self.activeElev = self.cogdoElev
 
         self.activeElev.reparentTo(render)
+        base.enablePhysicsNodes(self.activeElev)
 
         self.leftDoor = getLeftDoor(self.activeElev)
         self.rightDoor = getRightDoor(self.activeElev)
@@ -87,10 +89,14 @@ class Elevator:
         return self.activeElev
 
     def cleanup(self):
+        base.disableAndRemovePhysicsNodes(self.elevatorMdl)
         self.elevatorMdl.removeNode()
         del self.elevatorMdl
+        
+        base.disableAndRemovePhysicsNodes(self.cogdoElev)
         self.cogdoElev.removeNode()
         del self.cogdoElev
+        
         del self.rightDoor
         del self.leftDoor
         del self.activeElev
@@ -150,27 +156,27 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                         ['fax_paper', -3.32, 17.81, 3.01, 127.2, 0, 0, 1],
                         ['fax_paper', -3.32, 17.81, 3.005, 147.53, 0, 0, 1],
                         ['light_panel', -15, 10, 15, 0, 0, 0, 1],
-                        #['light_panel', -23.5, 47.5, 28.5, 0, 0, 0, 1],
-                        #['light_panel', -20, 0, 15, 0, 0, 0, 1],
-                        #['light_panel', -30, 0, 15, 0, 0, 0, 1],
-                        #['light_panel', 0, 20, 15, 0, 0, 0, 1],
-                        #['light_panel', -10, 20, 15, 0, 0, 0, 1],
-                        #['light_panel', -20, 20, 15, 0, 0, 0, 1],
-                        #['light_panel', -30, 20, 15, 0, 0, 0, 1],
+                        ['light_panel', -23.5, 47.5, 28.5, 0, 0, 0, 1],
+                        ['light_panel', -20, 0, 15, 0, 0, 0, 1],
+                        ['light_panel', -30, 0, 15, 0, 0, 0, 1],
+                        ['light_panel', 0, 20, 15, 0, 0, 0, 1],
+                        ['light_panel', -10, 20, 15, 0, 0, 0, 1],
+                        ['light_panel', -20, 20, 15, 0, 0, 0, 1],
+                        ['light_panel', -30, 20, 15, 0, 0, 0, 1],
                     ],
                     'elevators': [
                         [0.74202, -9.50081, 0, 180, 0, 0],
                         [-39.49848, 20.74907, 0, 90, 0, 0]
                     ],
                     'lights': [
-                        Point3(-15, 10, 13),
-                        #Point3(-23.5, 47.5, 26.5),
-                        #Point3(-20, 0, 13),
-                        #Point3(-30, 0, 13),
-                        #Point3(0, 20, 13),
-                        #Point3(-10, 20, 13),
-                        #Point3(-20, 20, 13),
-                        #Point3(-30, 20, 13),
+                        Point3(-15, 10, 11),
+                        Point3(-23.5, 47.5, 24.5),
+                        Point3(-20, 0, 11),
+                        Point3(-30, 0, 11),
+                        Point3(0, 20, 11),
+                        Point3(-10, 20, 11),
+                        Point3(-20, 20, 11),
+                        Point3(-30, 20, 11),
                     ],
                     # No need to provide any room sections when it's a single-sectioned room
                     'room_sections': [],
@@ -374,10 +380,12 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.tauntSuitId = 0
         self.openSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_open.ogg')
         self.closeSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_close.ogg')
-        self.rideElevatorMusic = base.loadMusic('phase_7/audio/bgm/tt_elevator.mid')
-        self.bottomFloorsMusic = base.loadMusic('phase_7/audio/bgm/encntr_general_bg_indoor.mid')
-        self.topFloorMusic = base.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.mid')
-        self.intermissionMusic = base.loadMusic('phase_7/audio/bgm/encntr_toon_winning_indoor.mid')
+        
+        self.rideElevatorMusic = 'tt_elevator'
+        self.bottomFloorsMusic = 'encntr_general_bg_indoor'
+        self.topFloorMusic = 'encntr_suit_winning_indoor'
+        self.intermissionMusic = 'encntr_toon_winning_indoor'
+        
         self.fsm = ClassicFSM.ClassicFSM('DistributedCogOfficeBattle', [State.State('off', self.enterOff, self.exitOff),
          State.State('floorIntermission', self.enterFloorIntermission, self.exitFloorIntermission),
          State.State('bldgComplete', self.enterBldgComplete, self.exitBldgComplete),
@@ -415,7 +423,9 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
 
         # Delete the invisible one-piece wall blocking the doorway.
         # John, fix this!
-        self.gagDoor.find('**/door_collisions').removeNode()
+        doorColl = self.gagDoor.find('**/door_collisions')
+        base.physicsWorld.remove(doorColl.node())
+        doorColl.removeNode()
 
         ival = Parallel(LerpPosInterval(leftDoor, 2.0, (lDoorOpen, 0, 0),
                                         (closed, 0, 0), blendType = 'easeOut'),
@@ -496,7 +506,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             self.deptClass = Dept.SALES
         elif dept == 'm':
             self.deptClass = Dept.CASH
-
+            
     def enterOff(self, ts = 0):
         base.transitions.fadeScreen(1)
 
@@ -623,15 +633,16 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         if hasattr(self, 'elevatorTrack'):
             self.elevatorTrack.finish()
             del self.elevatorTrack
-        self.rideElevatorMusic.stop()
+        base.stopMusic()
         base.camLens.setMinFov(CIGlobals.DefaultCameraFov / (4./3.))
 
-    def __handleEnteredRoomSection(self, entry):
-        name = entry.getIntoNodePath().getName()
+    def __handleEnteredRoomSection(self, collNp):
+        name = collNp.getName()
         index = self.getRoomData('room_sections').index(name)
 
         # Tell the AI we've entered this section.
         # Maybe activate some cogs?
+        print "Entered room section:", index
         self.sendUpdate('enterSection', [index])
 
     def enterBattle(self, ts):
@@ -658,16 +669,15 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
     def exitBattle(self):
         for path in self.getRoomData('room_sections'):
             self.ignore('enter' + path)
-        self.bottomFloorsMusic.stop()
+        base.stopMusic()
         taskMgr.remove(self.uniqueName('monitorHP'))
 
     def enterFloorIntermission(self, ts):
-        self.topFloorMusic.stop()
         base.localAvatar.showBookButton()
         base.playMusic(self.intermissionMusic, looping = 1, volume = 0.8)
 
     def exitFloorIntermission(self):
-        self.intermissionMusic.stop()
+        base.stopMusic()
 
     def announceGenerate(self):
         DistributedBattleZone.announceGenerate(self)
@@ -701,9 +711,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.intermissionMusic = None
         self.bldgDoId = None
         self.exteriorZoneId = None
-        if self.topFloorMusic:
-            self.topFloorMusic.stop()
-            self.topFloorMusic = None
+        base.stopMusic()
         base.setBackgroundColor(CIGlobals.DefaultBackgroundColor)
         DistributedBattleZone.disable(self)
 
@@ -728,6 +736,11 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             for item in items:
                 node = flr.find('**/' + item)
                 node.wrtReparentTo(self.gagDoor)
+                
+        if self.gagDoor is not None:
+            base.createAndEnablePhysicsNodes(self.gagDoor)
+                
+        base.createAndEnablePhysicsNodes(self.floorModel)
 
         # Tell the AI that we've finished loading the floor
         self.d_loadedFloor()
@@ -741,9 +754,11 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             prop.removeNode()
         self.props = []
         if self.floorModel:
+            base.disableAndRemovePhysicsNodes(self.floorModel)
             self.floorModel.removeNode()
             self.floorModel = None
         if self.gagDoor:
+            base.disableAndRemovePhysicsNodes(self.gagDoor)
             self.gagDoor.removeNode()
             self.gagDoor = None
         base.cubeMapMgr.clearCubeMaps()
@@ -795,15 +810,22 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             x, y, z = propData[1], propData[2], propData[3]
             h, p, r = propData[4], propData[5], propData[6]
             scale = propData[7]
-            if isinstance(PROPS[name], list):
-                propMdl = loader.loadModel(PROPS[name][0])
+            
+            mdl = PROPS[name] if not isinstance(PROPS[name], list) else PROPS[name][0]
+            twoSided = False
+            if mdl[0] == '~':
+                # Two sided
+                twoSided = True
+                mdl = mdl[1:]
+                
+            if name == 'tv_on_wall':
+                # This is a tv with a movie texture.
+                propMdl = CogTV()
             else:
-                if name == 'tv_on_wall':
-                    # This is a tv with a movie texture.
-                    propMdl = CogTV()
-                else:
-                    propMdl = loader.loadModel(PROPS[name])
+                propMdl = loader.loadModel(mdl)
+                
             propMdl.reparentTo(render)
+            propMdl.setTwoSided(twoSided)
             propMdl.setPosHpr(x, y, z, h, p, r)
             propMdl.setScale(scale)
             propMdl.setMaterialOff()
@@ -819,6 +841,10 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         for _ in xrange(2):
             elevMdl = loader.loadModel('phase_4/models/modules/elevator.bam')
             cogdoElevMdl = loader.loadModel('phase_7/models/modules/cogoffice_elevator.bam')
+            
+            base.createPhysicsNodes(elevMdl)
+            base.createPhysicsNodes(cogdoElevMdl)
+            
             elevator = Elevator(elevMdl, cogdoElevMdl)
             elevator.setActiveElev(Elevator.BLDG)
             self.elevators.append(elevator)

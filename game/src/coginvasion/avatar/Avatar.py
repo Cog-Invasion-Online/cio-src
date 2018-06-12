@@ -10,10 +10,9 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.actor.Actor import Actor
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.controls.ControlManager import CollisionHandlerRayStart
 
-from panda3d.core import CollisionNode, CollisionTube, BitMask32, \
-            CollisionSphere, CollisionRay, ConfigVariableBool
+from panda3d.core import BitMask32, ConfigVariableBool, TransformState, Point3, NodePath
+from panda3d.bullet import BulletRigidBodyNode, BulletCapsuleShape
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.nametag import NametagGlobals
@@ -21,10 +20,11 @@ from src.coginvasion.npc import DisneyCharGlobals as DCG
 from src.coginvasion.toon import ToonTalker
 from src.coginvasion.nametag.NametagGroup import NametagGroup
 from src.coginvasion.base.ShadowPlacer import ShadowPlacer
+from src.coginvasion.phys.PhysicsNodePath import PhysicsNodePath
 
 notify = directNotify.newCategory("Avatar")
 
-class Avatar(ToonTalker.ToonTalker, Actor):
+class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
     RealShadows = ConfigVariableBool('want-real-shadows', False)
 
     def __init__(self, mat=0):
@@ -35,7 +35,10 @@ class Avatar(ToonTalker.ToonTalker, Actor):
             self.Avatar_initialized = 1
 
         ToonTalker.ToonTalker.__init__(self)
-        Actor.__init__(self, None, None, None, flattenable=0, setFinal=1)#self.setColorOff()
+        PhysicsNodePath.__init__(self)
+        Actor.__init__(self, None, None, None, flattenable=0, setFinal=1)
+
+        self.getGeomNode().showThrough(CIGlobals.ShadowCameraBitmask)
 
         self.mat = mat
         self._name = ''
@@ -50,6 +53,7 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         self.nametag.setChatFont(font)
         self.nametag3d = self.attachNewNode('nametag3d')
         self.nametag3d.setTag('cam', 'nametag')
+
         self.setTwoSided(False)
 
         self.enableBlend()
@@ -61,8 +65,81 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         self.height = 0
 
         self.thoughtInProg = False
+
+        self.floorTask = None
         
         return
+
+    def initializeRay(self, *args, **kwargs):
+        pass
+
+    def enableRay(self):
+        self.disableRay()
+
+        self.floorTask = taskMgr.add(self.__keepOnFloorTask, "Avatar.keepOnFloor", sort = 30)
+
+    def disableRay(self):
+        if self.floorTask:
+            taskMgr.remove(self.floorTask)
+            self.floorTask = None
+
+    def __keepOnFloorTask(self, task):
+        # First, check if we are above a ground.
+        # If so, go onto that.
+
+        pFrom = self.getPos(render)
+
+        pTo = pFrom - (0, 0, 2000)
+        aboveResult = base.physicsWorld.rayTestAll(pFrom, pTo, CIGlobals.WallGroup | CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
+        aboveGround = False
+        if aboveResult.hasHits():
+            sortedHits = sorted(aboveResult.getHits(), key = lambda hit: (pFrom - hit.getHitPos()).length())
+            for i in xrange(len(sortedHits)):
+                hit = sortedHits[i]
+                node = hit.getNode()
+                np = NodePath(node)
+                if self.isAncestorOf(np):
+                    continue
+                z = hit.getHitPos().getZ()
+                self.setZ(z)
+                aboveGround = True
+                break
+
+        if aboveGround:
+            return task.cont
+
+        # We're not above a ground, check above?
+        pTo = pFrom + (0, 0, 2000)
+        belowResult = base.physicsWorld.rayTestAll(pFrom, pTo, CIGlobals.WallGroup | CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
+        if belowResult.hasHits():
+            sortedHits = sorted(belowResult.getHits(), key = lambda hit: (pFrom - hit.getHitPos()).length())
+            for i in xrange(len(sortedHits)):
+                hit = sortedHits[i]
+                node = hit.getNode()
+                np = NodePath(node)
+                if self.isAncestorOf(np):
+                    continue
+                z = hit.getHitPos().getZ()
+                self.setZ(z)
+                break
+
+        return task.cont 
+
+    def setupPhysics(self, radius = 1, height = 2):
+        # When the height is passed into BulletCapsuleShape, it's
+        # talking about the height only of the cylinder part.
+        # But what we want is the height of the entire capsule.
+        height -= (radius * 2)
+        # The middle of the capsule is the origin by default. Push the capsule shape up
+        # so the very bottom of the capsule is the origin.
+        zOfs = (height / 2.0) + radius
+
+        capsule = BulletCapsuleShape(radius, height)
+        bodyNode = BulletRigidBodyNode('avatarBodyNode')
+        bodyNode.addShape(capsule, TransformState.makePos(Point3(0, 0, zOfs)))
+        bodyNode.setKinematic(True)
+
+        PhysicsNodePath.setupPhysics(self, bodyNode, True)
 
     def isDistributed(self):
         return hasattr(self, 'doId')
@@ -73,11 +150,15 @@ class Avatar(ToonTalker.ToonTalker, Actor):
     def deleteNameTag(self):
         self.deleteNametag3d()
 
+    def disableBodyCollisions(self):
+        self.cleanupPhysics()
+
     def disable(self):
         try:
             self.Avatar_disabled
         except:
             self.Avatar_disabled = 1
+            self.disableRay()
             self.deleteNametag3d()
             self.nametag.destroy()
             del self.nametag
@@ -92,6 +173,7 @@ class Avatar(ToonTalker.ToonTalker, Actor):
             self.charName = None
             self.nameTag = None
             self._name = None
+            self.cleanupPhysics()
 
             Actor.cleanup(self)
 
@@ -182,120 +264,6 @@ class Avatar(ToonTalker.ToonTalker, Actor):
         height = self.getPos(self.shadowPlacer.shadowNodePath)
         return height.getZ() + 0.025
 
-    def initializeBodyCollisions(self, collIdStr, height, radius):
-        if hasattr(self, 'collNodePath'):
-            if self.collNodePath:
-                self.notify.info('Tried to initialize body collisions more than once!')
-                return
-        height -= 0.5
-        cTube = CollisionTube(0, 0, height, 0, 0, 0, radius)
-        cNode = CollisionNode('cNode')
-        cNode.addSolid(cTube)
-        cNode.setCollideMask(CIGlobals.WallBitmask)
-        self.collNodePath = self.attachNewNode(cNode)
-        self.collNodePath.setZ(0.5)
-        #self.collNodePath.show()
-
-    def collisionFix(self, task):
-        self.collNodePath.forceRecomputeBounds()
-        return task.cont
-
-    def initializeRay(self, name, radius):
-        if hasattr(self, 'rayNodePath'):
-            if self.rayNodePath:
-                self.notify.warning('Tried to initialize ray collisions more than once!')
-                return
-
-        cRay = CollisionRay(0.0, 0.0, CollisionHandlerRayStart, 0.0, 0.0, -1.0)
-        cRayNode = CollisionNode(name + 'r')
-        cRayNode.addSolid(cRay)
-        self.cRayNodePath = self.attachNewNode(cRayNode)
-        cRayBitMask = CIGlobals.FloorBitmask
-        cRayNode.setFromCollideMask(cRayBitMask)
-        cRayNode.setIntoCollideMask(BitMask32.allOff())
-        base.lifter.addCollider(self.cRayNodePath, self)
-
-        cSphere = CollisionSphere(0.0, 0.0, radius, 0.01)
-        cSphereNode = CollisionNode(name + 'fc')
-        cSphereNode.addSolid(cSphere)
-        cSphereNodePath = self.attachNewNode(cSphereNode)
-        #cSphereNodePath.show()
-
-        cSphereNode.setFromCollideMask(CIGlobals.FloorBitmask)
-        cSphereNode.setIntoCollideMask(BitMask32.allOff())
-
-        base.pusher.addCollider(cSphereNodePath, self)
-        self.floorCollNodePath = cSphereNodePath
-        base.cTrav.addCollider(self.floorCollNodePath, base.pusher)
-        base.shadowTrav.addCollider(self.cRayNodePath, base.lifter)
-
-    def disableRay(self):
-        if hasattr(self, 'cRayNodePath'):
-            base.shadowTrav.removeCollider(self.cRayNodePath)
-            base.lifter.removeCollider(self.cRayNodePath)
-            self.cRayNodePath.removeNode()
-            del self.cRayNodePath
-            base.cTrav.removeCollider(self.floorCollNodePath)
-            base.pusher.removeCollider(self.floorCollNodePath)
-            self.floorCollNodePath.removeNode()
-            del self.floorCollNodePath
-        self.rayNode = None
-
-    def initializeLocalCollisions(self, senRadius, senZ, name):
-        pass
-        #self.collNodePath.setCollideMask(BitMask32(0))
-        #self.collNodePath.node().setFromCollideMask(CIGlobals.WallBitmask)
-
-        #pusher = CollisionHandlerPusher()
-        #pusher.setInPattern("%in")
-        #pusher.addCollider(self.collNodePath, self)
-
-        #base.cTrav.addCollider(self.collNodePath, pusher)
-
-        #collisionSphere = CollisionSphere(0, 0, 0, senRadius)
-        #sensorNode = CollisionNode(name + "s")
-        #sensorNode.addSolid(collisionSphere)
-        #self.sensorNodePath = self.attachNewNode(sensorNode)
-        #self.sensorNodePath.setZ(senZ)
-        #self.sensorNodePath.setCollideMask(BitMask32(0))
-        #self.sensorNodePath.node().setFromCollideMask(CIGlobals.WallBitmask)
-
-        #event = CollisionHandlerEvent()
-        #event.setInPattern("%fn-into")
-        #event.setOutPattern("%fn-out")
-        #base.cTrav.addCollider(self.sensorNodePath, event)
-
-    def stashBodyCollisions(self):
-        if hasattr(self, 'collNodePath'):
-            self.collNodePath.stash()
-
-    def unstashBodyCollisions(self):
-        if hasattr(self, 'collNodePath'):
-            self.collNodePath.unstash()
-
-    def stashRay(self):
-        if hasattr(self, 'rayNodePath'):
-            self.rayNodePath.stash()
-
-    def unstashRay(self):
-        if hasattr(self, 'rayNodePath'):
-            self.rayNodePath.unstash()
-
-    def disableBodyCollisions(self):
-        self.notify.info('Disabling body collisions')
-        if hasattr(self, 'collNodePath'):
-            taskMgr.remove(self.uniqueName('collisionFixTask'))
-            self.collNodePath.removeNode()
-            del self.collNodePath
-        return
-
-    def deleteLocalCollisions(self):
-        self.notify.info('Deleting local collisions!')
-        base.cTrav.removeCollider(self.rayNodePath)
-        base.cTrav.removeCollider(self.sensorNodePath)
-        self.rayNodePath.remove_node()
-        self.sensorNodePath.remove_node()
-
     def setAvatarScale(self, scale):
         self.getGeomNode().setScale(scale)
 
@@ -308,7 +276,7 @@ class Avatar(ToonTalker.ToonTalker, Actor):
     def initShadow(self):
         #self.shadow = arbitraryShadow(self.getGeomNode())
 
-        if self.RealShadows:
+        if game.userealshadows:
             self.shadow = self.attachNewNode("fakeShadow")
             self.shadowPlacer = ShadowPlacer(self.shadow, self.mat)
         else:

@@ -19,6 +19,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.toon.ToonTalker import ToonTalker
 from src.coginvasion.nametag.NametagGroup import NametagGroup
 from src.coginvasion.nametag import NametagGlobals
+from src.coginvasion.phys import PhysicsUtils
 import random
 
 class DistributedKnockKnockDoor(DistributedObject, ToonTalker):
@@ -57,6 +58,7 @@ class DistributedKnockKnockDoor(DistributedObject, ToonTalker):
             for door in doorNodes:
                 doorBlock = door.getName()[-1:]
                 if doorBlock == str(self.block):
+                    print "Setting up door"
                     self.__setupDoor(door)
                     break
         except:
@@ -81,9 +83,10 @@ class DistributedKnockKnockDoor(DistributedObject, ToonTalker):
         DistributedObject.delete(self)
             
     def __setupDoor(self, node):
+        print "Setting up door for", node
         self.collisionNode = node
         self.physDoor = node.getParent()
-        self.collisionNode.node().setCollideMask(CIGlobals.EventBitmask)
+        self.collisionNode.setCollideMask(CIGlobals.EventGroup)
         self.accept('enter' + self.collisionNode.getName(), self.__handleEnter)
         self.accept('exit' + self.collisionNode.getName(), self.__handleExit)
         
@@ -117,11 +120,11 @@ class DistributedKnockKnockDoor(DistributedObject, ToonTalker):
     def showName(self):
         self.nametag.manage(base.marginManager)
         
-    def __handleEnter(self, _):
+    def __handleEnter(self, collNp):
         self.notify.warning('Welcome avatar!')
         self.requestJoke()
         
-    def __handleExit(self, _):
+    def __handleExit(self, collNp):
         self.notify.warning('See ya, avatar!')
         self.iKnocked = False
         self.sendUpdate('avatarDitched', [])

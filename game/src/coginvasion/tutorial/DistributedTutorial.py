@@ -9,7 +9,6 @@ from direct.task import Task
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, LerpQuatInterval, LerpPosInterval, LerpHprInterval
 
 from src.coginvasion.toon.Toon import Toon
-from src.coginvasion.toon.TPMouseMovement import TPMouseMovement
 from src.coginvasion.npc import NPCGlobals
 from libpandadna import *
 from src.coginvasion.battle.DistributedBattleZone import DistributedBattleZone
@@ -79,12 +78,9 @@ class DistributedTutorial(DistributedBattleZone):
         self.dnaStore = DNAStorage()
         self.streetGeom = None
         self.guide = None
-        self.music = None
-        self.battleMusic = None
         self.playerCamPos = None
         self.playerCamHpr = None
         self.olc = None
-        self.mouseMov = None
 
     def enableAvStuff(self):
         base.localAvatar.startPosHprBroadcast()
@@ -97,8 +93,6 @@ class DistributedTutorial(DistributedBattleZone):
         base.localAvatar.enableGags(1)
         base.localAvatar.showGagButton()
         base.localAvatar.startTrackAnimToSpeed()
-        if base.localAvatar.GTAControls:
-            self.mouseMov.enableMovement()
 
     def disableAvStuff(self):
         base.localAvatar.lastState = None
@@ -111,8 +105,6 @@ class DistributedTutorial(DistributedBattleZone):
         base.localAvatar.disableGags()
         base.localAvatar.stopTrackAnimToSpeed()
         base.localAvatar.hideGagButton()
-        if base.localAvatar.GTAControls:
-            self.mouseMov.disableMovement(False)
         base.localAvatar.detachCamera()
 
     def enterOff(self):
@@ -262,8 +254,7 @@ class DistributedTutorial(DistributedBattleZone):
         del self.camMoveIval
 
     def enterTrainingPT1(self):
-        self.music.stop()
-        base.playMusic(self.battleMusic, volume = 0.9, looping = 1)
+        base.playMusic('encntr_general_bg')
         self.sendUpdate('makeSuit', [0])
         self.enableAvStuff()
         self.guide.setChat('This should be pretty simple. Just throw a gag at this dummy bot to defeat it.')
@@ -278,8 +269,7 @@ class DistributedTutorial(DistributedBattleZone):
         doDrops = False#base.config.GetBool('want-suit-drops', True)
         if index == 0 and doDrops:
             self.guide.setChat("Pick up the jellybean that he dropped. You can use them to buy more gags for your Toon.")
-        self.battleMusic.stop()
-        base.playMusic(self.music, looping = 1, volume = 0.8)
+        base.playMusic('TC_SZ')
         if not doDrops and index != 2:
             self.pickedUpJellybean()
 
@@ -310,8 +300,7 @@ class DistributedTutorial(DistributedBattleZone):
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
 
     def enterTrainingPT2(self):
-        self.music.stop()
-        base.playMusic(self.battleMusic, volume = 0.9, looping = 1)
+        base.playMusic('encntr_general_bg')
         self.sendUpdate('makeSuit', [1])
         self.enableAvStuff()
 
@@ -329,8 +318,7 @@ class DistributedTutorial(DistributedBattleZone):
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
 
     def enterTrainingPT3(self):
-        self.music.stop()
-        base.playMusic(self.battleMusic, volume = 0.9, looping = 1)
+        base.playMusic('encntr_general_bg')
         self.sendUpdate('makeSuit', [2])
         self.enableAvStuff()
 
@@ -338,7 +326,6 @@ class DistributedTutorial(DistributedBattleZone):
         self.disableAvStuff()
 
     def enterTrainingDone(self):
-        self.mouseMov.disableMovement(allowReEnable = False)
         base.camera.reparentTo(render)
         base.camera.setPos(3.09, 37.16, 3.93)
         base.camera.setHpr(225, 0, 0)
@@ -400,23 +387,14 @@ class DistributedTutorial(DistributedBattleZone):
         
         self.olc = ZoneUtil.getOutdoorLightingConfig(CIGlobals.ToontownCentral)
         self.olc.setupAndApply()
-
-        if base.localAvatar.GTAControls:
-            self.mouseMov = TPMouseMovement()
-            self.mouseMov.initialize()
         
-        self.music = base.loadMusic('phase_3.5/audio/bgm/TC_SZ.mid')
-        base.playMusic(self.music, volume = 0.8, looping = 1)
-        self.battleMusic = base.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.mid')
+        base.playMusic('TC_SZ')
         self.fsm.request('newPlayerEmerge')
         base.localAvatar.inTutorial = True
 
     def disable(self):
         self.fsm.requestFinalState()
         del self.fsm
-        if self.mouseMov and base.localAvatar.GTAControls:
-            self.mouseMov.cleanup()
-            self.mouseMov.ignore(base.inputStore.ToggleGTAControls)
         if self.guide:
             self.guide.disable()
             self.guide.delete()
@@ -424,12 +402,6 @@ class DistributedTutorial(DistributedBattleZone):
         if self.streetGeom:
             self.streetGeom.removeNode()
             self.streetGeom = None
-        if self.music:
-            self.music.stop()
-            self.music = None
-        if self.battleMusic:
-            self.battleMusic.stop()
-            self.battleMusic = None
         if self.olc:
             self.olc.cleanup()
             self.olc = None

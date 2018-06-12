@@ -141,6 +141,7 @@ class CogInvasionLoader(Loader.Loader):
         self._lastTickT = globalClock.getRealTime()
         self.blockName = name
         self.progressScreen.begin(hood, range, wantGui)
+        base.renderFrames()
         return None
 
     def endBulkLoad(self, name):
@@ -153,6 +154,7 @@ class CogInvasionLoader(Loader.Loader):
         self.inBulkBlock = None
         self.wantAutoTick = False
         self.progressScreen.end()
+        base.renderFrames()
         return
 
     def tick(self):

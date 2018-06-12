@@ -18,12 +18,12 @@ class CTCSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
     def __init__(self, hood, parentFSM, doneEvent):
         SafeZoneLoader.SafeZoneLoader.__init__(self, hood, parentFSM, doneEvent)
         self.playground = CTCPlayground.CTCPlayground
-        self.pgMusicFilename = 'phase_4/audio/bgm/TC_nbrhood.mid'
-        self.interiorMusicFilename = 'phase_3.5/audio/bgm/TC_SZ_activity.mid'
-        self.battleMusicFile = 'phase_3.5/audio/bgm/encntr_general_bg.mid'
+        self.safeZoneSong = 'phase_4/audio/bgm/TC_nbrhood.ogg'
+        self.interiorSong = 'phase_3.5/audio/bgm/TC_SZ_activity.ogg'
+        self.battleMusicFile = 'phase_3.5/audio/bgm/encntr_general_bg.ogg'
         self.invasionMusicFiles = [
-            "phase_12/audio/bgm/BossBot_CEO_v1.mid",
-            "phase_9/audio/bgm/encntr_suit_winning.mid"
+            "phase_12/audio/bgm/BossBot_CEO_v1.ogg",
+            "phase_9/audio/bgm/encntr_suit_winning.ogg"
         ]
         self.tournamentMusicFiles = [
             "phase_3.5/audio/bgm/encntr_nfsmw_bg_1.ogg",
@@ -31,7 +31,7 @@ class CTCSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
             "phase_3.5/audio/bgm/encntr_nfsmw_bg_3.ogg",
             "phase_3.5/audio/bgm/encntr_nfsmw_bg_4.ogg",
         ]
-        self.bossBattleMusicFile = 'phase_7/audio/bgm/encntr_suit_winning_indoor.mid'
+        self.bossBattleMusicFile = 'phase_7/audio/bgm/encntr_suit_winning_indoor.ogg'
         self.dnaFile = 'phase_4/dna/cog_toontown_central_sz.pdna'
         self.szStorageDNAFile = 'phase_4/dna/storage_TT_sz.pdna'
         self.szHolidayDNAFile = None

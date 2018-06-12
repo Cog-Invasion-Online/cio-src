@@ -18,14 +18,14 @@ class MGSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
     def __init__(self, hood, parentFSM, doneEvent):
         SafeZoneLoader.SafeZoneLoader.__init__(self, hood, parentFSM, doneEvent)
         self.playground = MGPlayground.MGPlayground
-        self.pgMusicFilename = ['phase_13/audio/bgm/party_original_theme.mid',
-                                'phase_13/audio/bgm/party_generic_theme.mid',
-                                'phase_13/audio/bgm/party_generic_theme_jazzy.mid',
-                                'phase_13/audio/bgm/party_polka_dance.mid',
-                                'phase_13/audio/bgm/party_swing_dance.mid',
-                                'phase_13/audio/bgm/party_waltz_dance.mid']
+        self.safeZoneSong = ['party_original_theme',
+                             'party_generic_theme',
+                             'party_generic_theme_jazzy',
+                             'party_polka_dance',
+                             'party_swing_dance',
+                             'party_waltz_dance']
         # 'phase_13/audio/bgm/minigame_area.ogg'
-        self.interiorMusicFilename = None
+        self.interiorSong = None
         self.battleMusicFile = None
         self.invasionMusicFiles = None
         self.tournamentMusicFiles = None
@@ -52,3 +52,12 @@ class MGSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
 								 
 								 'phase_13/dna/storage_party_sz.pdna', 
                                  'phase_13/dna/storage_mg_sz.pdna']
+                                 
+                                 
+    def load(self):
+        SafeZoneLoader.SafeZoneLoader.load(self)
+        
+        self.geom.ls()
+        
+        base.waterReflectionMgr.addWaterNode(self.geom.find("**/Water.001"), 18.58082)
+        base.waterReflectionMgr.addWaterNode(self.geom.find("**/Water"), 24.37695)

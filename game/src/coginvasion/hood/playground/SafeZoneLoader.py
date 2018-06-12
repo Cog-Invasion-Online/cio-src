@@ -19,6 +19,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood.QuietZoneState import QuietZoneState
 from src.coginvasion.hood import ToonInterior
 from src.coginvasion.hood import LinkTunnel
+from src.coginvasion.phys import PhysicsUtils
 
 import types
 import random
@@ -38,16 +39,11 @@ class SafeZoneLoader(StateData):
         self.placeDoneEvent = 'placeDone'
         self.place = None
         self.playground = None
-        self.battleMusic = None
-        self.invasionMusic = None
-        self.invasionMusicFiles = None
-        self.interiorMusic = None
-        self.bossBattleMusic = None
-        self.music = None
-        self.tournamentMusic = None
         self.linkTunnels = []
         self.szHolidayDNAFile = None
         self.animatedFish = None
+        self.safeZoneSong = ''
+        self.interiorSong = ''
         return
 
     def findAndMakeLinkTunnels(self):
@@ -56,26 +52,10 @@ class SafeZoneLoader(StateData):
             link = LinkTunnel.SafeZoneLinkTunnel(tunnel, dnaRootStr)
             self.linkTunnels.append(link)
 
-    def load(self):
+    def load(self, flattenNow = True):
         StateData.load(self)
-        if self.pgMusicFilename:
-            if type(self.pgMusicFilename) == types.ListType:
-                filename = random.choice(self.pgMusicFilename)
-            else:
-                filename = self.pgMusicFilename
-            self.music = base.loadMusic(filename)
-        if self.battleMusicFile:
-            self.battleMusic = base.loadMusic(self.battleMusicFile)
-        if self.invasionMusicFiles:
-            self.invasionMusic = None
-        if self.bossBattleMusicFile:
-            self.bossBattleMusic = base.loadMusic(self.bossBattleMusicFile)
-        if self.interiorMusicFilename:
-            self.interiorMusic = base.loadMusic(self.interiorMusicFilename)
-        if self.tournamentMusicFiles:
-            self.tournamentMusic = None
 
-        self.createSafeZone(self.dnaFile)
+        self.createSafeZone(self.dnaFile, flattenNow)
 
         children = self.geom.findAllMatches('**/*doorFrameHole*')
 
@@ -95,16 +75,14 @@ class SafeZoneLoader(StateData):
         self.parentFSMState.removeChild(self.fsm)
         del self.parentFSMState
         del self.animatedFish
+        base.disableAndRemovePhysicsNodes(self.geom)
         self.geom.removeNode()
         del self.geom
         del self.fsm
         del self.hood
         del self.playground
-        del self.music
-        del self.interiorMusic
-        del self.battleMusic
-        del self.bossBattleMusic
-        del self.tournamentMusic
+        del self.safeZoneSong
+        del self.interiorSong
         self.ignoreAll()
         ModelPool.garbageCollect()
         TexturePool.garbageCollect()
@@ -147,7 +125,7 @@ class SafeZoneLoader(StateData):
     def setState(self, stateName, requestStatus):
         self.fsm.request(stateName, [requestStatus])
 
-    def createSafeZone(self, dnaFile):
+    def createSafeZone(self, dnaFile, flattenNow = True):
         if self.szStorageDNAFile:
             if isinstance(self.szStorageDNAFile, list):
                 # We are loading multiple sz storages.
@@ -165,14 +143,16 @@ class SafeZoneLoader(StateData):
             self.geom.reparentTo(hidden)
         else:
             self.geom = hidden.attachNewNode(node)
-        self.makeDictionaries(self.hood.dnaStore)
-        if not self.__class__.__name__ in ['TTSafeZoneLoader', 'MGSafeZoneLoader']:
-            self.geom.flattenMedium()
-        elif self.__class__.__name__ in ['MGSafeZoneLoader']:
-            self.geom.flattenStrong()
+        base.createPhysicsNodes(self.geom)
+        if flattenNow:
+            self.doFlatten()
         gsg = base.win.getGsg()
         if gsg:
             self.geom.prepareScene(gsg)
+
+    def doFlatten(self):
+        self.makeDictionaries(self.hood.dnaStore)
+        self.geom.flattenMedium()
 
     def makeDictionaries(self, dnaStore):
         self.nodeList = []

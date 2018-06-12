@@ -77,9 +77,18 @@ class Nametag3d(Nametag, Clickable3d):
             self.cTag.get_chatballoon_region(self.chatBalloon.center, NametagGlobals.chatBalloon3dHeight, reg)
             self.setClickRegionFrame(*reg)
         elif self.panel is not None:
-            reg = []
-            self.cTag.get_panel_region(self.textNode, reg)
-            self.setClickRegionFrame(*reg)
+            # FIXME
+            #reg = []
+            #self.cTag.get_panel_region(self.textNode, reg)
+            #self.setClickRegionFrame(*reg)
+
+            centerX = (self.textNode.getLeft() + self.textNode.getRight()) / 2.0
+            centerY = (self.textNode.getBottom() + self.textNode.getTop()) / 2.0
+            left = centerX - (self.panelWidth / 2.0)
+            right = centerX + (self.panelWidth / 2.0)
+            bottom = centerY - (self.panelHeight / 2.0)
+            top = centerY + (self.panelHeight / 2.0)
+            self.setClickRegionFrame(left, right, bottom, top)
 
     def isClickable(self):
         if self.getChatText() and self.hasChatButton():

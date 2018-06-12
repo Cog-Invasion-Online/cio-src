@@ -36,7 +36,7 @@ class FactorySneakWorld(DirectObject):
         self.popupSound = None
         self.music = [
             'phase_4/audio/bgm/MG_Escape.ogg',
-            'phase_7/audio/bgm/encntr_suit_winning_indoor.mid']
+            'phase_7/audio/bgm/encntr_suit_winning_indoor.ogg']
 
     def playMusic(self, index):
         self.mg.music.stop()

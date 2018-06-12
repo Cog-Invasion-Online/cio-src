@@ -3,14 +3,15 @@ from panda3d.core import *
 from direct.task import Task
 from direct.showbase.DirectObject import DirectObject
 from direct.gui.DirectGui import OnscreenImage
+from direct.filter.CommonFilters import CommonFilters
 
 from src.coginvasion.globals import CIGlobals
 
 class ShadowCaster(DirectObject):
     
-    def __init__(self, lightSrc):
+    def __init__(self, shadowAngle):
         DirectObject.__init__(self)
-        self.lightSrc = lightSrc
+        self.shadowAngle = shadowAngle
         self.shadowCamArm = None
         self.casterState = None
         self.shadowBuffer = None
@@ -31,26 +32,27 @@ class ShadowCaster(DirectObject):
         camNode.setCameraMask(CIGlobals.ShadowCameraBitmask)
         self.shadowLens = OrthographicLens()
         if fMoreShadows:
-            self.shadowLens.setFilmSize(60 * 4, 60 * 4)
+            more = 2
+            self.shadowLens.setFilmSize(60 * more, 60 * more)
         else:
             self.shadowLens.setFilmSize(60, 60)
         camNode.setLens(self.shadowLens)
-        smiley = loader.loadModel("models/smiley.egg.pz")
+        #smiley = loader.loadModel("models/smiley.egg.pz")
         self.shadowCamArm = base.camera.attachNewNode('shadowCamArm')
-        smiley.reparentTo(self.shadowCamArm)
+        #smiley.reparentTo(self.shadowCamArm)
         self.shadowCam = self.shadowCamArm.attachNewNode(camNode)
         self.shadowCamArm.setPos(0, 40, 0)
         self.shadowCam.setPos(0, -40, 0)
-        smiley.copyTo(self.shadowCam)
+        #smiley.copyTo(self.shadowCam)
         taskName = 'shadowCamCompass'
         taskMgr.remove(taskName)
         
         def applyCompassEffect(task, self = self):
-            self.shadowCamArm.setHpr(self.lightSrc, 0, 0, 0)
+            self.shadowCamArm.setHpr(render, self.shadowAngle)
             self.shadowCamArm.setScale(1)
             return Task.cont
 
-        taskMgr.add(applyCompassEffect, taskName)
+        taskMgr.add(applyCompassEffect, taskName, sort = -100)
         self.shadowTex = Texture('shadow')
         self.shadowTex.setBorderColor(self.clearColor)
         self.shadowTex.setWrapU(Texture.WMBorderColor)
@@ -58,7 +60,7 @@ class ShadowCaster(DirectObject):
         if self.shadowImage:
             self.shadowImage.destroy()
             self.shadowImage = None
-        self.shadowImage = OnscreenImage(image = self.shadowTex, scale = 0.3, pos = (0, 0, 0.7))
+        #self.shadowImage = OnscreenImage(image = self.shadowTex, scale = 0.3, pos = (0, 0, 0.7))
         self.casterState = NodePath('temp')
         self.casterState.setColorScaleOff(10)
         self.casterState.setColor(self.shadowColor, self.shadowColor, self.shadowColor, 1, 10)
@@ -67,13 +69,10 @@ class ShadowCaster(DirectObject):
         self.casterState.setFogOff(10)
         camNode.setInitialState(self.casterState.getState())
         render.hide(CIGlobals.ShadowCameraBitmask)
-        #render.show(CIGlobals.ShadowCameraBitmask)
         self.shadowStage = TextureStage('shadow')
-        self.shadowStage.setSort(1000)
-        CIGlobals.setShadowTexStage(self.shadowStage)
-        self.turnOnShadows()
-        
-        #base.oobe()
+        self.shadowStage.setSort(-100)
+
+        #self.turnOnShadows()
 
     
     def hideShadows(self):
@@ -90,6 +89,20 @@ class ShadowCaster(DirectObject):
         
         self.shadowsHidden = False
         self.turnOnShadows()
+        
+    def projectShadows(self):
+        for gmnp in render.findAllMatches("**/+GeomNode"):
+            if gmnp.getBinName() == 'ground':
+                # The ground bin is directly on the node.
+                gmnp.projectTexture(self.shadowStage, self.shadowTex, self.shadowCam)
+                continue
+                
+            # Check the individual geoms for the ground bin
+            for state in gmnp.node().getGeomStates():
+                if state.hasAttrib(CullBinAttrib.getClassType()):
+                    attr = state.getAttrib(CullBinAttrib.getClassType())
+                    if attr.getBinName() == "ground":
+                        gmnp.projectTexture(self.shadowStage, self.shadowTex, self.shadowCam)
 
     
     def turnOnShadows(self):
@@ -97,7 +110,6 @@ class ShadowCaster(DirectObject):
             return None
         
         self.turnOffShadows()
-        render.projectTexture(self.shadowStage, self.shadowTex, self.shadowCam)
         self.__createBuffer()
         self.accept('close_main_window', self.__destroyBuffer)
         self.accept('open_main_window', self.__createBuffer)
@@ -105,7 +117,9 @@ class ShadowCaster(DirectObject):
 
     
     def turnOffShadows(self):
-        render.clearProjectTexture(self.shadowStage)
+        for gmnp in render.findAllMatches("**/+GeomNode"):
+            if gmnp.getBinName() == "ground":
+                gmnp.clearProjectTexture(self.shadowStage)
         self.__destroyBuffer()
         self.ignore('close_main_window')
         self.ignore('open_main_window')
@@ -134,14 +148,8 @@ class ShadowCaster(DirectObject):
         #ShadowCaster.setGlobalDropShadowFlag(1)
 
     
-    def setLightSrc(self, light):
-        if not self.shadowsEnabled:
-            self.lightScr = light
-            return None
-        
-        self.disable()
-        self.lightScr = light
-        self.enable()
+    def setShadowAngle(self, light):
+        self.shadowAngle = light
 
     
     def updateShadows(self, h):
@@ -191,7 +199,7 @@ class ShadowCaster(DirectObject):
         if not base.win.getGsg():
             return None
         
-        if self.fMoreShadows:
+        if self.fMoreShadows and False:
             self.shadowBuffer = base.win.makeTextureBuffer('shadow', 1024 * 4, 1024 * 4, tex = self.shadowTex)
         else:
             self.shadowBuffer = base.win.makeTextureBuffer('shadow', 1024, 1024, tex = self.shadowTex)
@@ -200,6 +208,9 @@ class ShadowCaster(DirectObject):
         dr = self.shadowBuffer.makeDisplayRegion()
         dr.setCamera(self.shadowCam)
         #self.setupTask = taskMgr.doMethodLater(0, self.__setupCamera, 'setupCamera')
+
+        self.filters = CommonFilters(self.shadowBuffer,self.shadowCam)
+        self.filters.setBlurSharpen(.5)
 
     
     def __setupCamera(self, task):
@@ -224,5 +235,6 @@ class ShadowCaster(DirectObject):
             taskMgr.remove(self.setupTask)
             self.setupTask = None
         
+
 
 

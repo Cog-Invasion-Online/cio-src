@@ -14,6 +14,7 @@ from src.coginvasion.cog import SuitGlobals
 from src.coginvasion.cog import Variant
 from src.coginvasion.cog import Voice
 from src.coginvasion.cog.SuitAttacks import SuitAttacks
+from src.coginvasion.cog.SuitType import SuitType
 from src.coginvasion.toon import ParticleLoader
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Parallel, ActorInterval, SoundInterval, Wait, Func
@@ -57,6 +58,11 @@ class Suit(Avatar):
         self.condition = 0
         self.avatarType = CIGlobals.Suit
         self.suitPlan = None
+        self.footstepSound = None
+
+        self.gruntSound = self.audio3d.loadSfx("phase_14/audio/sfx/cog_grunt.ogg")
+        base.audio3d.attachSoundToObject(self.gruntSound, self)
+
         self.animFSM = ClassicFSM('Suit', [
             State('off', self.enterOff, self.exitOff),
             State('neutral', self.enterNeutral, self.exitNeutral),
@@ -72,7 +78,6 @@ class Suit(Avatar):
             State('trayNeutral', self.enterTrayNeutral, self.exitTrayNeutral)
         ], 'off', 'off')
         self.animFSM.enterInitialState()
-        self.initializeBodyCollisions()
 
     def getNametagJoints(self):
         return []
@@ -114,8 +119,10 @@ class Suit(Avatar):
         self.show()
         self.loop("walk")
         self.disableShadowRay()
+        self.startFootsteps()
 
     def exitWalk(self):
+        self.stopFootsteps()
         self.exitTimestampAnimTrack()
         self.exitGeneral()
         self.enableShadowRay()
@@ -228,7 +235,7 @@ class Suit(Avatar):
         self.suitTrack.start(ts)
 
     def exitFlyDown(self):
-        self.initializeRay(self.avatarType, 2)
+        self.enableRay()
         if self.suitTrack != None:
             self.ignore(self.suitTrack.getDoneEvent())
             self.suitTrack.finish()
@@ -386,8 +393,10 @@ class Suit(Avatar):
         self.setVoice(voice)
         self.generateCog()
 
-        mat = CIGlobals.getCharacterMaterial()
+        mat = CIGlobals.getCharacterMaterial(shininess = 50.0, specular = (0.4, 0.4, 0.4, 1))
         self.setMaterial(mat)
+        
+        self.initializeBodyCollisions()
 
         if hideFirst:
             self.hide()
@@ -473,14 +482,10 @@ class Suit(Avatar):
         self.healthCondition = 0
         return
 
-    def initializeLocalCollisions(self, name):
-        self.notify.info('Initializing Local Collisions!')
-        Avatar.initializeLocalCollisions(self, 1, 3, name)
-
     def initializeBodyCollisions(self):
         self.notify.info('Initializing Body Collisions!')
-        Avatar.initializeBodyCollisions(self, self.avatarType, 6, 2)
-        self.initializeRay(self.avatarType, 2)
+        self.setupPhysics(2, self.getHeight())
+        self.enableRay()
 
     def hideSuit(self):
         self.hide()
@@ -510,6 +515,16 @@ class Suit(Avatar):
             self.loadAnims(anims, 'body')
             self.generateHealthBar()
             self.generatePropeller()
+
+            if self.suitPlan.suitType == SuitType.A:
+                self.footstepSound = base.audio3d.loadSfx("phase_5/audio/sfx/ENC_cogafssm.ogg")
+            elif self.suitPlan.suitType == SuitType.B:
+                self.footstepSound = base.audio3d.loadSfx("phase_5/audio/sfx/ENC_cogbfssm.ogg")
+            elif self.suitPlan.suitType == SuitType.C:
+                self.footstepSound = base.audio3d.loadSfx("phase_5/audio/sfx/ENC_cogcfssm.ogg")
+            if self.footstepSound:
+                base.audio3d.attachSoundToObject(self.footstepSound, self)
+
         else:
             if self.variant == Variant.SKELETON or self.variant == Variant.ZOMBIE:
                 self.loadModel('phase_5/models/char/cog%s_robot-lose-mod.bam' % (str(self.suit)), 'body')
@@ -538,7 +553,10 @@ class Suit(Avatar):
         if self.getPart('body'):
             self.removePart('body')
         if self.headModel:
-            self.headModel.removeNode()
+            try:
+                self.headModel.removeNode()
+            except:
+                pass
             self.headModel = None
         self.timestampAnimTrack = None
 
@@ -559,7 +577,10 @@ class Suit(Avatar):
             sound.stop()
         self.propellerSounds = {}
         if self.propeller:
-            self.propeller.cleanup()
+            try:
+                self.propeller.cleanup()
+            except:
+                pass
             self.propeller = None
 
     def setVoice(self, voice):
@@ -604,6 +625,19 @@ class Suit(Avatar):
                 self.find('**/hands').setColor(self.handColor)
             else:
                 self.find('**/hands').setColor(Variant.CORRODED_HAND_COLOR)
+
+    def startFootsteps(self):
+        if not self.footstepSound:
+            return
+
+        self.footstepSound.setLoop(True)
+        self.footstepSound.play()
+
+    def stopFootsteps(self):
+        if not self.footstepSound:
+            return
+
+        self.footstepSound.stop()
 
     def setName(self, nameString, charName):
         Avatar.setName(self, nameString, charName = charName, createNow = 1)
@@ -669,6 +703,7 @@ class Suit(Avatar):
             self.suitTrack.finish()
             DelayDelete.cleanupDelayDeletes(self.suitTrack)
             self.suitTrack = None
+        self.footstepSound = None
         self.animFSM.requestFinalState()
         self.cleanup()
         Avatar.disable(self)

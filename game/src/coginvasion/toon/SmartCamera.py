@@ -100,7 +100,7 @@ class SmartCamera:
                                            0))
         else:
             # Insert an over the shoulder camera angle.
-            self.cameraPositions.insert(self.OTSIndex, (Point3(1.0, -8.5 * heightScaleFactor, camHeight),
+            self.cameraPositions.insert(self.OTSIndex, (Point3(1.0, -4.25 * heightScaleFactor, camHeight),
                                             Point3(1.0, 1.5, camHeight),
                                             Point3(0.0, camHeight, camHeight * 4.0),
                                             Point3(0.0, camHeight, camHeight * -1.0),
@@ -158,17 +158,18 @@ class SmartCamera:
         return self.cameraIndex == self.OTSIndex
 
     def setCameraSettings(self, camSettings):
-        if self.isOverTheShoulder() and base.localAvatar.avatarMovementEnabled:
-            base.localAvatar.showCrosshair()
-            #spine = base.localAvatar.find("**/def_cageA")
-            #if spine.isEmpty():
-            #    base.localAvatar.controlJoint(None, "torso", "def_cageA")
-        else:
-            base.localAvatar.hideCrosshair()
-            #spine = base.localAvatar.find("**/def_spineA")
-            #if not spine.isEmpty():
-            #    spine.detachNode()
-            #    base.localAvatar.releaseJoint("torso", "def_cageA")
+        base.localAvatar.hideCrosshair()
+        #if self.isOverTheShoulder() and base.localAvatar.avatarMovementEnabled:
+        #    base.localAvatar.showCrosshair()
+        #    spine = base.localAvatar.find("**/def_cageA")
+        #    if spine.isEmpty():
+        #        base.localAvatar.controlJoint(None, "torso", "def_cageA")
+        #else:
+        #    base.localAvatar.hideCrosshair()
+        #    spine = base.localAvatar.find("**/def_spineA")
+        #    if not spine.isEmpty():
+        #        spine.detachNode()
+        #        base.localAvatar.releaseJoint("torso", "def_cageA")
         self.setIdealCameraPos(camSettings[0])
         if self.isPageUp and self.isPageDown or not self.isPageUp and not self.isPageDown:
             self.__cameraHasBeenMoved = 1
@@ -443,6 +444,14 @@ class SmartCamera:
         self.__lastPosWrtRender = camera.getPos(render)
         self.__lastHprWrtRender = camera.getHpr(render)
         self.__idealCameraObstructed = 0
+
+        #pitch = base.localAvatar.mouseMov.player_node.getP(render)
+        offsetY = 0#abs(pitch) * 0.1
+        offsetZ = 0#min(0, pitch * 0.2)
+        camera.setPos(self.getIdealCameraPos() + (0, offsetY, offsetZ))
+        camera.lookAt(self.getLookAtPoint())
+
+        """
         if not self.__disableSmartCam:
             self.ccTrav.traverse(self.__geom)
             if self.camCollisionQueue.getNumEntries() > 0:
@@ -451,14 +460,15 @@ class SmartCamera:
                     self.handleCameraObstruction(self.camCollisionQueue.getEntry(0))
                 except AssertionError:
                     pass
-            if not self.__onLevelGround:
-                self.handleCameraFloorInteraction()
+            #if not self.__onLevelGround:
+            #    self.handleCameraFloorInteraction()
         if not self.__idealCameraObstructed:
             self.nudgeCamera()
         if not self.__disableSmartCam:
             self.ccPusherTrav.traverse(self.__geom)
             self.putCameraFloorRayOnCamera()
         self.ccTravOnFloor.traverse(self.__geom)
+        """
         return Task.cont
 
     def positionCameraWithPusher(self, pos, lookAt):

@@ -17,7 +17,7 @@ class SkyUtil:
     notify = directNotify.newCategory("SkyUtil")
     
     def startSky(self, sky):
-        sky.setScale(5)
+        sky.setScale(6)
         if not sky.find('**/cloud1').isEmpty() and not sky.find('**/cloud2').isEmpty():
             sky.find('**/cloud1').setScale(0.6)
             sky.find('**/cloud2').setScale(0.9)

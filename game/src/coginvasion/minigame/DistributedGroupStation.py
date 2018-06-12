@@ -1,13 +1,15 @@
 # Filename: DistributedGroupStation.py
 # Created by:  blach (06Jun15)
 
-from panda3d.core import CollisionSphere, CollisionNode
+from panda3d.bullet import BulletGhostNode, BulletSphereShape
+
 from direct.distributed.DistributedObject import DistributedObject
 from direct.gui.DirectGui import DirectButton
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Parallel, LerpPosInterval, LerpQuatInterval, Sequence, Func
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.phys import PhysicsUtils
 from src.coginvasion.npc.NPCWalker import NPCWalkInterval, NPCLookInterval
 import GroupStation
 
@@ -35,24 +37,26 @@ class DistributedGroupStation(GroupStation.GroupStation, DistributedObject):
     def __initCollisions(self, name):
         self.notify.debug("Initializing collision sphere...")
         numSlots = len(self.circles)
-        ss = CollisionSphere(0,0,0,self.numPlayers2SphereRadius[numSlots])
-        ss.setTangible(0)
-        snode = CollisionNode(name)
-        snode.add_solid(ss)
-        snode.set_collide_mask(CIGlobals.WallBitmask)
+        ss = BulletSphereShape(self.numPlayers2SphereRadius[numSlots])
+        snode = BulletGhostNode(name)
+        snode.addShape(ss)
+        snode.setKinematic(True)
+        snode.setIntoCollideMask(CIGlobals.LocalAvGroup)
         self.snp = self.attach_new_node(snode)
         self.snp.setZ(3)
         self.snp.setY(self.numPlayers2SphereY[numSlots])
         self.snp.setSx(self.numPlayers2SphereSx[numSlots])
         self.snp.setSy(self.numPlayers2SphereSy[numSlots])
+        base.physicsWorld.attachGhost(snode)
         self.acceptOnce("enter" + self.snp.node().getName(), self.__handleEnterCollisionSphere)
 
     def __deleteCollisions(self):
         self.ignore("enter" + self.snp.node().getName())
+        base.physicsWorld.removeGhost(self.snp.node())
         self.snp.removeNode()
         del self.snp
 
-    def __handleEnterCollisionSphere(self, entry):
+    def __handleEnterCollisionSphere(self, collNp):
         self.notify.debug("Entering collision sphere...")
         self.d_requestEnter()
 

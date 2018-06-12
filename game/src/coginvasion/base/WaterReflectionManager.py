@@ -10,9 +10,11 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import (BitMask32, Plane, NodePath, CullFaceAttrib, Texture,
                           TextureStage, Point3, PlaneNode, VBase4, Vec3, WindowProperties,
-                          FrameBufferProperties, GraphicsPipe, GraphicsOutput)
+                          FrameBufferProperties, GraphicsPipe, GraphicsOutput, TransparencyAttrib,
+                          Material)
 
 from direct.filter.FilterManager import FilterManager
+from direct.gui.DirectGui import OnscreenImage
 
 from src.coginvasion.globals import CIGlobals
 
@@ -61,7 +63,7 @@ class WaterReflectionManager:
         self.filterMgr = FilterManager(wbuffer, self.wcamera)
 
         self.ts = TextureStage("reflection")
-        self.ts.setMode(TextureStage.MAdd)
+        self.ts.setMode(TextureStage.MModulate)
         
         self.blur = []
         
@@ -97,7 +99,11 @@ class WaterReflectionManager:
         self.waveQuad.setShaderInput("time", 0.0)
         self.waveQuad.setShader(loader.loadShader("phase_3/models/shaders/waves.sha"))
 
-        taskMgr.add(self.update, "waterRefl-update-" + str(id(self)), priority = 46)
+        #OnscreenImage(image = self.wtexture, scale = 0.3, pos = (-0.7, 0, -0.7))
+        #OnscreenImage(image = depthTex, scale = 0.3, pos = (0, 0, -0.7))
+        #OnscreenImage(image = self.finalTex, scale = 0.3, pos = (0.7, 0, -0.7))
+
+        taskMgr.add(self.update, "waterRefl-update-" + str(id(self)), sort = 45)
 
     def clearPlane(self):
         if not self.enabled:
@@ -126,6 +132,16 @@ class WaterReflectionManager:
         if not self.enabled:
             return
         self.waterNodes.append(node)
+
+        mat = Material()
+        mat.setShininess(40)
+        mat.setSpecular((1, 1, 1, 1))
+        node.setMaterial(mat, 5)
+        node.setTransparency(TransparencyAttrib.MAlpha, 1)
+        node.setTexture(loader.loadTexture("water.png"), 1)
+        ts = TextureStage('water_nm')
+        ts.setMode(TextureStage.MNormal)
+        node.setTexture(ts, loader.loadTexture("water_normal.png"))
         node.hide(REFL_CAM_BITMASK)
         node.projectTexture(self.ts, self.finalTex, self.wcamera)
 

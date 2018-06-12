@@ -1,7 +1,7 @@
 # Filename: DistributedEagleSuit.py
 # Created by:  blach (08Jul15)
 
-from panda3d.core import CollisionSphere, CollisionNode
+from panda3d.bullet import BulletSphereShape, BulletGhostNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.task import Task
 from direct.actor.Actor import Actor
@@ -136,19 +136,20 @@ class DistributedEagleSuit(DistributedSuit):
         return Task.done
 
     def __initializeEventSphere(self):
-        sphere = CollisionSphere(0, 0, 0, 2)
-        sphere.setTangible(0)
-        node = CollisionNode(self.uniqueName("DEagleSuit-eventSphere"))
-        node.addSolid(sphere)
-        node.setCollideMask(CIGlobals.WallBitmask)
+        sphere = BulletSphereShape(2)
+        node = BulletGhostNode(self.uniqueName("DEagleSuit-eventSphere"))
+        node.addShape(sphere)
+        node.setIntoCollideMask(CIGlobals.WallBitmask)
         np = self.attachNewNode(node)
         np.setSz(2.5)
         np.setZ(5.5)
+        base.physicsWorld.attach(node)
         #np.show()
         self.eventSphereNodePath = np
 
     def removeEventSphere(self):
         if self.eventSphereNodePath:
+            base.physicsWorld.remove(self.eventSphereNodePath.node())
             self.eventSphereNodePath.removeNode()
             self.eventSphereNodePath = None
 
@@ -164,7 +165,7 @@ class DistributedEagleSuit(DistributedSuit):
     def setSuit(self, arg, variant):
         DistributedSuit.setSuit(self, arg, 3)
         self.deleteShadow()
-        self.disableBodyCollisions()
+        self.cleanupPhysics()
         self.disableRay()
         self.__initializeEventSphere()
         self.show()

@@ -12,6 +12,7 @@ from src.coginvasion.globals import CIGlobals
 from direct.directnotify.DirectNotify import DirectNotify
 from panda3d.core import TextNode
 from direct.gui.DirectGui import OnscreenImage, DirectWaitBar, DirectLabel, DirectFrame, OnscreenText
+from src.coginvasion.nametag import NametagGlobals
 
 import random
 
@@ -19,18 +20,18 @@ notify = DirectNotify().newCategory("CIProgressScreen")
 
 class CIProgressScreen:
 
+    Color = (118 / 255.0, 121 / 255.0, 127 / 255.0, 1.0)
+    BarColor = (152 / 255.0, 129 / 255.0, 64 / 255.0, 1.0)
+
     def __init__(self):
         self.defaultLogoScale = 1
         self.defaultLogoZ = 0.65
         self.bgm = loader.loadModel("phase_3/models/gui/progress-background.bam")
         self.bgm.find('**/logo').stash()
         self.bg = self.bgm.find('**/bg')
-        self.logo = loader.loadTexture("phase_3/maps/CogInvasion_Logo.png")
-        self.logoNode = hidden.attachNewNode('logoNode')
-        self.logoNode.setScale(self.defaultLogoScale)
-        self.logoNode.setPos(0, self.defaultLogoZ, 0)
-        self.logoImg = OnscreenImage(image = self.logo, scale = (0.685, 0, 0.325), parent=self.logoNode)
-        self.logoImg.setTransparency(True)
+        
+        self.logoNode, self.logoImg = CIGlobals.getLogoImage(hidden, self.defaultLogoScale, (0, 0, self.defaultLogoZ))
+        
         self.bg_img = OnscreenImage(image=self.bg, parent=hidden)
         self.bg_img.setSx(1.35)
         self.bg_img.hide()
@@ -41,18 +42,19 @@ class CIProgressScreen:
         poster = toontipgui.find('**/questCard')
         self.toontipFrame = DirectFrame(image = poster, image_scale = (1.4, 1, 1), parent = hidden, relief = None, pos = (0, 0, -0.1), scale = 0.85)
         self.toontipLbl = OnscreenText(text = "", parent = self.toontipFrame, fg = (89.0 / 255, 95.0 / 255, 98.0 / 255, 1),
-            font = CIGlobals.getToonFont(), wordwrap = 14.5, pos = (-0.59, 0.25), align = TextNode.ALeft, scale = 0.08)
+            font = CIGlobals.getToonFont(), wordwrap = 13, pos = (-0.59, 0.25), align = TextNode.ALeft, scale = 0.08)
         self.loading_lbl = DirectLabel(text="",
                                     relief=None,
                                     scale=0.08,
                                     pos=(-1.0725, 0, -0.79),
                                     text_align=TextNode.ALeft,
                                     sortOrder=100,
-                                    text_fg=(89.0 / 255, 95.0 / 255, 98.0 / 255, 1.0), text_font = CIGlobals.getMinnieFont(), parent=hidden,
-                                    text_shadow=(0, 0, 0, 1))
+                                    text_fg=(1, 1, 1, 1), text_font = CIGlobals.getMinnieLogoFont(), parent=hidden,
+                                    text_shadow=(0, 0, 0, 0))
 
     def begin(self, hood, range, wantGui):
         render.hide()
+        NametagGlobals.setWant2dNametags(False)
         self.renderFrames()
         base.setBackgroundColor(0, 0, 0)
         if hood == "localAvatarEnterGame":
@@ -61,13 +63,7 @@ class CIProgressScreen:
             self.loading_lbl['text'] = "Loading..."
         else:
             self.loading_lbl['text'] = "Heading to %s..." % hood
-        #self.progress_bar['text_align'] = TextNode.ALeft
-        #self.progress_bar['text_pos'] = (-1.01, 0.15)
-        #self.progress_bar['text_scale'] = (0.095, 0.25)
-        #self.progress_bar['text_font'] = CIGlobals.getMinnieFont()
-        #self.progress_bar['text_fg'] = (0.7, 0.3, 0.3, 1.0)
-        #self.progress_bar['text_shadow'] = (0.0, 0.0, 0.0, 1.0)
-        self.progress_bar['barColor'] = (89.0 / 255, 95.0 / 255, 98.0 / 255, 1.0)
+        self.progress_bar['barColor'] = self.BarColor
         self.progress_bar['range'] = range
         self.bgm.reparentTo(aspect2d)
         self.bg.reparentTo(render2d)
@@ -80,7 +76,6 @@ class CIProgressScreen:
         self.toontipFrame.reparentTo(aspect2d)
         self.__count = 0
         self.__expectedCount = range
-        #taskMgr.add(self.renderFramesTask, "renderFrames")
         self.progress_bar.update(self.__count)
 
     def renderFramesTask(self, task):
@@ -99,6 +94,8 @@ class CIProgressScreen:
         self.loading_lbl.reparentTo(hidden)
         self.progress_bar.reparentTo(hidden)
         self.toontipFrame.reparentTo(hidden)
+        base.transitions.fadeScreen(1.0)
+        NametagGlobals.setWant2dNametags(True)
         self.renderFrames()
 
     def destroy(self):

@@ -126,8 +126,8 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
                 [Point3(-5, -15, 0), Vec3(0, 0, 0)],
                 [Point3(-15, -15, 0), Vec3(0, 0, 0)]]}
 
-        self.winnerMusic = base.loadMusic('phase_9/audio/bgm/encntr_hall_of_fame.mid')
-        self.loserMusic = base.loadMusic('phase_9/audio/bgm/encntr_sting_announce.mid')
+        self.winnerMusic = base.loadMusic('phase_9/audio/bgm/encntr_hall_of_fame.ogg')
+        self.loserMusic = base.loadMusic('phase_9/audio/bgm/encntr_sting_announce.ogg')
         self.danceSound = base.loadSfx('phase_3.5/audio/sfx/ENC_Win.ogg')
 
         # Environment vars

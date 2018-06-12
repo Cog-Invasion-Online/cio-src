@@ -397,9 +397,11 @@ def calculateMaxSupply(avatar, name, data):
 def calculateDamage(avId, name, data):
     """ This calculates the damage a gag will do on a Cog (This is an AI-side method) """
     avatar = base.air.doId2do.get(avId, None)
+
+    baseDmg = 0
     
     if 'damage' in data.keys():
-        return float(data.get('damage'))
+        baseDmg = float(data.get('damage'))
     elif 'minDamage' in data.keys():
         track = data.get('track')
         trackExp = avatar.trackExperience.get(track)
@@ -417,15 +419,23 @@ def calculateDamage(avId, name, data):
         earnedExpSinceUnlock = float(trackExp - unlockAtExp)
         
         if scaleDmgEvery == 0:
-            return maxDamage
+            baseDmg = maxDamage
         else:
             dmgAdditions = math.ceil(earnedExpSinceUnlock / scaleDmgEvery)
             
             if (minDamage + dmgAdditions) > maxDamage:
-                return maxDamage
+                baseDmg = maxDamage
             else:
-                return float(minDamage + dmgAdditions)
-    return 0.0
+                baseDmg = float(minDamage + dmgAdditions)
+
+    dist = data.get('distance', 10)
+    ramp = CIGlobals.calcAttackDamage(data.get('distance', 10), baseDmg)
+
+    print "Base damage is", baseDmg
+    print "Distance is", dist
+    print "Ramp damage is", ramp
+
+    return ramp
 
 # These are the splat scales
 splatSizes = {
@@ -490,6 +500,7 @@ FIREHOSE_SFX = "phase_5/audio/sfx/firehose_spray.ogg"
 FLOWER_HIT_SFX = "phase_3.5/audio/sfx/AA_squirt_flowersquirt.ogg"
 FLOWER_MISS_SFX = "phase_5/audio/sfx/AA_squirt_flowersquirt_miss.ogg"
 NULL_SFX = "phase_3/audio/sfx/null.ogg"
+DEFAULT_DRAW_SFX = "phase_5/audio/sfx/General_device_appear.ogg"
 
 # These are globals for splats.
 SPLAT_MDL = "phase_3.5/models/props/splat-mod.bam"

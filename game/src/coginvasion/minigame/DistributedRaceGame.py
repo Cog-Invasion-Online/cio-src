@@ -57,7 +57,7 @@ class DistributedRaceGame(DistributedMinigame.DistributedMinigame):
         self.track.reparentTo(render)
         self.olc = ZoneUtil.getOutdoorLightingConfig(CIGlobals.ToontownCentral)
         self.olc.setupAndApply()
-        self.setMinigameMusic("phase_4/audio/bgm/MG_toontag.mid")
+        self.setMinigameMusic("phase_4/audio/bgm/MG_toontag.ogg")
         self.setDescription("Tap the left and right arrow keys repeatedly, in turns, as fast as " + \
             "you can to win the race! Every time your power bar hits the top, the boost bar starts" + \
             " to fill. When the boost bar is full, press CTRL to boost for a few seconds.")

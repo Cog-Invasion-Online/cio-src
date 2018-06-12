@@ -8,7 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties
+from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3
+from panda3d.bullet import BulletWorld, BulletDebugNode
 
 from direct.showbase.ShowBase import ShowBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -16,10 +17,14 @@ from direct.filter.CommonFilters import CommonFilters
 
 from src.coginvasion.manager.UserInputStorage import UserInputStorage
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.base.ShadowCaster import ShadowCaster
+from src.coginvasion.base import MusicCache
 from CubeMapManager import CubeMapManager
 from WaterReflectionManager import WaterReflectionManager
+from src.coginvasion.phys import PhysicsUtils
 
 import __builtin__
+import random
 
 if game.usepipeline:
     from rpcore import RenderPipeline
@@ -33,6 +38,36 @@ class CIBase(ShowBase):
             self.pipeline.create(self)
         else:
             ShowBase.__init__(self)
+
+        #self.startTk()
+
+        self.camLens.setNearFar(0.5, 10000)
+        self.taskMgr.setupTaskChain('fpsIndependentStuff', numThreads = 1, frameSync = False)
+
+        self.physicsWorld = BulletWorld()
+        # Panda units are in feet, so the gravity is 32 feet per second,
+        # not 9.8 meters per second.
+        self.physicsWorld.setGravity(Vec3(0, 0, -32.1740))
+
+        self.physicsWorld.setGroupCollisionFlag(7, 1, True)
+        self.physicsWorld.setGroupCollisionFlag(7, 2, True)
+        self.physicsWorld.setGroupCollisionFlag(7, 3, False)
+        self.physicsWorld.setGroupCollisionFlag(7, 4, False)
+        self.physicsWorld.setGroupCollisionFlag(7, 8, True)
+
+        self.taskMgr.add(self.__physicsUpdate, "physicsUpdate", sort = 30)
+        
+        debugNode = BulletDebugNode('Debug')
+        self.debugNP = render.attachNewNode(debugNode)
+        self.physicsWorld.setDebugNode(self.debugNP.node())
+
+        self.physicsDbgFlag = False
+        self.setPhysicsDebug(self.config.GetBool('physics-debug', False))
+            
+        self.shadowCaster = ShadowCaster(Vec3(163, -67, 0))
+        self.shadowCaster.enable()
+        
+        self.accept('/', self.projectShadows)
 
         uis = UserInputStorage()
         self.inputStore = uis
@@ -50,6 +85,10 @@ class CIBase(ShowBase):
         self.wakeWaterHeight = -30.0
 
         self.bloomToggle = False
+
+        self.music = None
+        self.currSongName = None
+
         """
         print 'TPM START'
         tpMgr = TextPropertiesManager.getGlobalPtr()
@@ -69,6 +108,86 @@ class CIBase(ShowBase):
         print 'TPM END'
         """
 
+    def renderFrames(self):
+        self.graphicsEngine.renderFrame()
+        self.graphicsEngine.renderFrame()
+
+    def prepareScene(self):
+        render.prepareScene(self.win.getGsg())
+
+    def setPhysicsDebug(self, flag):
+        self.physicsDbgFlag = flag
+        debugNode = self.debugNP.node()
+        if flag:
+            debugNode.showWireframe(True)
+            debugNode.showConstraints(True)
+            debugNode.showBoundingBoxes(True)
+            debugNode.showNormals(False)
+            self.debugNP.show()
+        else:
+            debugNode.showWireframe(False)
+            debugNode.showConstraints(False)
+            debugNode.showBoundingBoxes(False)
+            debugNode.showNormals(False)
+            self.debugNP.hide()
+
+    def stopMusic(self):
+        if self.music:
+            self.music.stop()
+            self.music = None
+        self.currSongName = None
+
+    def playMusic(self, songName, looping = True, volume = 1.0):
+        if isinstance(songName, list):
+            # A list of possible songs were passed in, pick a random one.
+            songName = random.choice(songName)
+
+        if songName == self.currSongName:
+            # Don't replay the same song.
+            return
+
+        self.stopMusic()
+        
+        self.currSongName = songName
+
+        song = MusicCache.findSong(songName)
+        if not song:
+            self.notify.warning("Song `{0}` not found in cache.".format(songName))
+            return
+
+        self.music = song
+        self.music.setLoop(looping)
+        self.music.setVolume(volume)
+        self.music.play()
+
+    def enablePhysicsNodes(self, rootNode):
+        PhysicsUtils.attachBulletNodes(rootNode)
+
+    def disablePhysicsNodes(self, rootNode):
+        PhysicsUtils.detachBulletNodes(rootNode)
+
+    def createPhysicsNodes(self, rootNode):
+        PhysicsUtils.makeBulletCollFromPandaColl(rootNode)
+        
+    def createAndEnablePhysicsNodes(self, rootNode):
+        self.createPhysicsNodes(rootNode)
+        self.enablePhysicsNodes(rootNode)
+        
+    def removePhysicsNodes(self, rootNode):
+        PhysicsUtils.removeBulletNodes(rootNode)
+        
+    def disableAndRemovePhysicsNodes(self, rootNode):
+        PhysicsUtils.detachAndRemoveBulletNodes(rootNode)
+
+    def __physicsUpdate(self, task):
+        dt = globalClock.getDt()
+        try: self.physicsWorld.doPhysics(dt)
+        except: pass
+        return task.cont
+     
+    def projectShadows(self):
+        self.shadowCaster.projectShadows()
+
     def setBloom(self, flag):
         self.bloomToggle = flag
 
@@ -86,6 +205,7 @@ class CIBase(ShowBase):
         wrm = WaterReflectionManager()
         self.waterReflectionMgr = wrm
         __builtin__.waterReflectionMgr = wrm
+        self.shadowCaster.turnOnShadows()
 
         self.filters = CommonFilters(self.win, self.cam)
         self.setBloom(self.bloomToggle)

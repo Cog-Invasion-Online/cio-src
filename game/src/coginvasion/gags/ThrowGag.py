@@ -9,12 +9,15 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import CollisionSphere, BitMask32, CollisionNode, NodePath, CollisionHandlerEvent
-from direct.interval.IntervalGlobal import Sequence, Func, Wait, Parallel, ProjectileInterval
+from panda3d.bullet import BulletSphereShape, BulletGhostNode
+from direct.interval.IntervalGlobal import Sequence, Func, Wait, Parallel, ProjectileInterval, ActorInterval
 from direct.gui.DirectGui import DirectWaitBar, DGG
 
+from src.coginvasion.minigame.FlightProjectileInterval import FlightProjectileInterval
 from src.coginvasion.gags.Gag import Gag
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.phys import PhysicsUtils, WorldCollider
 from direct.actor.Actor import Actor
 import GagGlobals
 
@@ -24,10 +27,10 @@ class ThrowGag(Gag):
     
     ReleaseSpeed = 1.0
     ReleasePlayRateMultiplier = 1.0
-    BobStartFrame = 27
+    BobStartFrame = 30
     BobEndFrame = 40
     BobPlayRateMultiplier = 0.25
-    ThrowObjectFrame = 61
+    ThrowObjectFrame = 62
     FinalThrowFrame = 90
 
     def __init__(self, name, model, damage, hitSfx, splatColor, anim = None, scale = 1):
@@ -68,29 +71,46 @@ class ThrowGag(Gag):
                 self.gag.loop('chan')
         return self.gag
 
-    def start(self):
-        super(ThrowGag, self).start()
-        self.build()
+    def equip(self):
+        Gag.equip(self)
+
+        if self.isLocal():
+            vmGag = base.localAvatar.getFPSCam().vmGag
+            if vmGag:
+                vmGag.setPosHpr(0.07, 0.17, -0.01, 0, -100, -10)
+                vmGag.setScale(self.gag.getScale() * 0.567)
+            vm = base.localAvatar.getViewModel()
+            fpsCam = base.localAvatar.getFPSCam()
+            fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "pie_draw"), Func(vm.loop, "pie_idle")))
+
+        self.__doHold()
+
+    def __doHold(self):
         self.clearAnimTrack()
-        
-        def doBob():
-            self.clearAnimTrack()
-            self.animTrack = self.getBobSequence('pie', self.BobStartFrame, 
-                self.BobEndFrame, 
-            (self.playRate * self.BobPlayRateMultiplier))
-            self.animTrack.loop()
-        
+        self.maybeBuild()
         self.setAnimTrack(Sequence(
             Func(self.avatar.setForcedTorsoAnim, 'pie'),
             Func(self.avatar.setPlayRate, self.playRate, 'pie'),
             self.getAnimationTrack('pie', startFrame=0, 
                 endFrame=self.BobStartFrame, 
             playRate=self.playRate),
-            Func(doBob)
+            Func(self.__doBob)
         ))
         
         self.animTrack.start()
-        
+
+    def __doBob(self):
+        self.clearAnimTrack()
+        self.animTrack = self.getBobSequence('pie', self.BobStartFrame, 
+                                             self.BobEndFrame, 
+                                             (self.playRate * self.BobPlayRateMultiplier))
+        self.animTrack.loop()
+
+    def start(self):
+        Gag.start(self)
+        if not self.gag:
+            self.build()
+
         if self.isLocal():
             taskMgr.remove("hidePowerBarTask" + str(hash(self)))
             self.powerBar.show()
@@ -126,30 +146,26 @@ class ThrowGag(Gag):
         
         if not self.gag:
             self.build()
-            
-        def shouldCallRelease():
+
+        def shouldRelease():
             if self.isLocal():
                 base.localAvatar.releaseGag()
-                
-        def finalize():
-            self.clearAnimTrack()
-            self.avatar.clearForcedTorsoAnim()
-
-        fromFrame = self.avatar.getCurrentFrame('pie', partName = 'torso-top')
-        timeUntilRelease = self.avatar.getDuration('pie', fromFrame = fromFrame, toFrame = self.ThrowObjectFrame)
+                vm = base.localAvatar.getViewModel()
+                fpsCam = base.localAvatar.getFPSCam()
+                fpsCam.setVMAnimTrack(Sequence(Func(vm.hide), Func(vm.pose, "pie_draw", 0)))
         
-        self.setAnimTrack(Parallel(
-            Sequence(
-                self.getAnimationTrack('pie', startFrame=fromFrame, 
-                    endFrame=self.FinalThrowFrame, 
-                playRate=(self.playRate * self.ReleasePlayRateMultiplier)),
-                Func(finalize),
-            ),
-            Sequence(
-                Wait(timeUntilRelease / self.ReleaseSpeed),
-                Func(shouldCallRelease)
+        self.setAnimTrack(
+            Parallel(
+                Sequence(
+                    self.getAnimationTrack('pie', startFrame=self.ThrowObjectFrame,
+                                           playRate=(self.playRate * self.ReleasePlayRateMultiplier)),
+                    Func(self.__doHold),
+                ),
+                Sequence(
+                    Func(shouldRelease)
+                )
             )
-        ))
+        )
         
         self.animTrack.start()
 
@@ -161,34 +177,51 @@ class ThrowGag(Gag):
         base.audio3d.attachSoundToObject(self.woosh, self.gag)
         base.playSfx(self.woosh, node = self.gag)
 
+        throwRoot = render.attachNewNode('throwRoot')
+        throwRoot.setPos(self.avatar.getPos(render))
+        throwRoot.setHpr(self.avatar.getHpr(render))
+        if self.isLocal() and base.localAvatar.isFirstPerson():
+            hitPos = PhysicsUtils.getHitPosFromCamera()
+            throwRoot.headsUp(hitPos)
+            throwRoot.setP(render, camera.getP(render))
         throwPath = NodePath('ThrowPath')
-        throwPath.reparentTo(self.avatar)
+        throwPath.reparentTo(throwRoot)
         throwPath.setScale(render, 1)
         throwPath.setPos(0, self.power, -90)
-        throwPath.setHpr(90, -90, 90)
+        throwPath.setHpr(0, -90, 0)
+
+        gagRoot = render.attachNewNode('gagRoot')
+        gagRoot.setPos(self.handJoint.getPos(render))
+        gagRoot.headsUp(throwPath)
 
         entity = self.gag
 
         if not entity:
             entity = self.build()
 
-        entity.wrtReparentTo(render)
-        entity.setHpr(throwPath.getHpr(render))
+        entity.wrtReparentTo(gagRoot)
+        entity.setHpr(render, throwPath.getHpr(render))
         self.gag = None
 
         if not self.handJoint:
             self.handJoint = self.avatar.find('**/def_joint_right_hold')
 
-        track = ProjectileInterval(entity, startPos = self.handJoint.getPos(render), endPos = throwPath.getPos(render), gravityMult = 0.9, duration = 3)
+        track = FlightProjectileInterval(gagRoot, startPos = self.handJoint.getPos(render), endPos = throwPath.getPos(render), gravityMult = 0.9, duration = 3)
         event = self.avatar.uniqueName('throwIvalDone') + '-' + str(hash(entity))
         track.setDoneEvent(event)
         base.acceptOnce(event, self.__handlePieIvalDone, [entity])
         track.start()
-        self.entities.append([entity, track])
+        
         if self.isLocal():
-            self.buildCollisions(entity)
+            collider = self.buildCollisions(entity)
+            self.entities.append([gagRoot, track, collider])
             base.localAvatar.sendUpdate('usedGag', [self.id])
+        else:
+            self.entities.append([gagRoot, track, NodePath()])
         self.reset()
+
+        throwPath.removeNode()
+        throwRoot.removeNode()
 
     def __handlePieIvalDone(self, pie):
         if not pie.isEmpty():
@@ -210,8 +243,9 @@ class ThrowGag(Gag):
     def cleanupEntity(self, pos):
         closestPie = None
         trackOfClosestPie = None
+        colliderOfClosestPie = None
         pieHash2range = {}
-        for entity, track in self.entities:
+        for entity, track, collider in self.entities:
             if not entity.isEmpty():
                 pieHash2range[hash(entity)] = (entity.getPos(render) - pos).length()
         ranges = []
@@ -221,24 +255,28 @@ class ThrowGag(Gag):
         for pieHash in pieHash2range.keys():
             distance = pieHash2range[pieHash]
             if not distance is None and distance == ranges[0]:
-                for entity, track in self.entities:
+                for entity, track, collData in self.entities:
                     if hash(entity) == pieHash:
                         closestPie = entity
                         trackOfClosestPie = track
+                        colliderOfClosestPie = collData
                         break
             break
-        if closestPie != None and trackOfClosestPie != None:
-            if [closestPie, trackOfClosestPie] in self.entities:
-                self.entities.remove([closestPie, trackOfClosestPie])
+        if closestPie != None and trackOfClosestPie != None and colliderOfClosestPie != None:
+            if [closestPie, trackOfClosestPie, colliderOfClosestPie] in self.entities:
+                self.entities.remove([closestPie, trackOfClosestPie, colliderOfClosestPie])
+            if not colliderOfClosestPie.isEmpty():
+                print colliderOfClosestPie, "removing!"
+                colliderOfClosestPie.removeNode()
             if not closestPie.isEmpty():
                 if isinstance(closestPie, Actor):
                     closestPie.cleanup()
                 closestPie.removeNode()
 
-    def onCollision(self, entry):
-        intoNP = entry.getIntoNodePath()
+    def onCollision(self, frNp, intoNP):
+        print "onCollision:", frNp, "->", intoNP
         avNP = intoNP.getParent()
-        fromNP = entry.getFromNodePath().getParent()
+        fromNP = frNp.getParent()
 
         if fromNP.isEmpty():
             return
@@ -247,7 +285,7 @@ class ThrowGag(Gag):
             obj = base.cr.doId2do[key]
             if obj.__class__.__name__ in CIGlobals.SuitClasses:
                 if obj.getKey() == avNP.getKey():
-                    obj.sendUpdate('hitByGag', [self.getID()])
+                    obj.sendUpdate('hitByGag', [self.getID(), self.avatar.getDistance(obj)])
             elif obj.__class__.__name__ == "DistributedToon":
                 if obj.getKey() == avNP.getKey():
                     if obj.getHealth() < obj.getMaxHealth():
@@ -261,23 +299,15 @@ class ThrowGag(Gag):
                     if obj.getHealth() < obj.getMaxHealth():
                         self.avatar.sendUpdate('toonHitByPie', [obj.doId, self.getID()])
 
-        self.splatPos = fromNP.getPos()
+        self.splatPos = fromNP.getPos(render)
         self.avatar.sendUpdate('setSplatPos', [self.getID(), self.splatPos.getX(), self.splatPos.getY(), self.splatPos.getZ()])
         self.handleSplat()
 
     def buildCollisions(self, entity):
-        pieSphere = CollisionSphere(0, 0, 0, 1)
-        pieSensor = CollisionNode('gagSensor')
-        pieSensor.addSolid(pieSphere)
-        pieNP = entity.attachNewNode(pieSensor)
-        pieNP.setCollideMask(BitMask32(0))
-        pieNP.node().setFromCollideMask(CIGlobals.WallBitmask | CIGlobals.FloorBitmask)
-
-        event = CollisionHandlerEvent()
-        event.set_in_pattern("%fn-into")
-        event.set_out_pattern("%fn-out")
-        base.cTrav.add_collider(pieNP, event)
-        self.avatar.acceptOnce('gagSensor-into', self.onCollision)
+        collider = WorldCollider.WorldCollider('gagSensor', 1, 'throwGagCollide', needSelfInArgs = True)
+        collider.reparentTo(entity)
+        self.avatar.acceptOnce('throwGagCollide', self.onCollision)
+        return collider
 
     def unEquip(self):
         taskMgr.remove("hidePowerBarTask" + str(hash(self)))

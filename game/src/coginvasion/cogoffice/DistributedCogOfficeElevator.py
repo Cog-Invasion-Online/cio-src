@@ -51,6 +51,7 @@ class DistributedCogOfficeElevator(DistributedElevator):
     def __prepareElevator(self):
         self.countdownTextNP.reparentTo(self.getElevatorModel())
         self.elevatorSphereNodePath.reparentTo(self.getElevatorModel())
+        base.physicsWorld.attach(self.elevatorSphereNode)
         self.openDoors = getOpenInterval(self, self.getLeftDoor(), self.getRightDoor(), self.openSfx, None, self.type)
         self.closeDoors = getCloseInterval(self, self.getLeftDoor(), self.getRightDoor(), self.closeSfx, None, self.type)
         self.closeDoors = Sequence(self.closeDoors, Func(self.onDoorCloseFinish))

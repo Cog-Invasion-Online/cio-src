@@ -11,16 +11,16 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.showbase.DirectObject import DirectObject
 import ZoneUtil
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.phys import PhysicsUtils
 
 CollisionName = 'tunnel_trigger'
 
 TunnelNode2LinkTunnel = {}
 zonesTunnelsHaveBeenMadeIn = []
 
-def __handleTunnelCollision(entry):
-    intoNP = entry.getIntoNodePath()
-    parent = intoNP.getParent()
-    linkTunnel = TunnelNode2LinkTunnel.get(parent)
+def __handleTunnelCollision(ghostNode):
+    tunnelNode = ghostNode.getParent()
+    linkTunnel = TunnelNode2LinkTunnel.get(tunnelNode, None)
     if linkTunnel:
         zoneId = linkTunnel.data['zoneId']
         if base.cr.playGame.getPlace():

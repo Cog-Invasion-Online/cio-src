@@ -14,7 +14,8 @@ from direct.interval.IntervalGlobal import ActorInterval, Parallel, LerpScaleInt
 from direct.interval.ProjectileInterval import ProjectileInterval
 from direct.showbase.DirectObject import DirectObject
 from direct.distributed import DelayDelete
-from panda3d.core import CollisionSphere, CollisionNode, CollisionHandlerEvent, NodePath, Vec3, VBase4, Point3, BitMask32, Vec4, VBase3
+from panda3d.core import NodePath, Vec3, VBase4, Point3, BitMask32, Vec4, VBase3
+from panda3d.bullet import BulletSphereShape, BulletGhostNode
 from src.coginvasion.toon import ParticleLoader
 from direct.actor.Actor import Actor
 from src.coginvasion.globals import CIGlobals
@@ -96,12 +97,13 @@ def setEffectOffsetVelo(effect, velo):
     particles.emitter.setOffsetForce(Vec3(0.0, velo, 0.0))
 
 def makeCollision(radius, name):
-    sph = CollisionSphere(0, 0, 0, radius)
-    sph.setTangible(0)
+    sph = BulletSphereShape(radius)
 
-    node = CollisionNode(name)
-    node.addSolid(sph)
-    node.setCollideMask(CIGlobals.WeaponBitmask)
+    node = BulletGhostNode(name)
+    node.addShape(sph)
+    node.setKinematic(True)
+    node.setIntoCollideMask(CIGlobals.WeaponGroup)
+    base.physicsWorld.attach(node)
 
     return node
 
@@ -223,8 +225,7 @@ class ThrowAttack(Attack):
         self.weapon.setScale(weapon_scale)
         self.weapon.setHpr(weapon_h, weapon_p, weapon_r)
         self.weapon.setPos(weapon_x, weapon_y, weapon_z)
-        self.wss = CollisionSphere(0, 0, 0, collsphere_radius)
-        self.wss.setTangible(0)
+        self.wss = BulletSphereShape(collsphere_radius)
         
         self.startToonLockOn()
 
@@ -239,10 +240,11 @@ class ThrowAttack(Attack):
 
         self.weapon.reparentTo(self.suit.find('**/joint_Rhold'))
 
-        wsnode = CollisionNode(weapon_coll_id)
-        wsnode.addSolid(self.wss)
-        wsnode.setCollideMask(CIGlobals.WeaponBitmask)
+        wsnode = BulletGhostNode(weapon_coll_id)
+        wsnode.addShape(self.wss)
+        wsnode.setKinematic(True)
         self.wsnp = self.weapon.attachNewNode(wsnode)
+        self.wsnp.setCollideMask(CIGlobals.WeaponGroup)
         self.startSuitTrack(ts)
 
     def playWeaponSound(self):
@@ -255,8 +257,11 @@ class ThrowAttack(Attack):
             return
             
         self.stopToonLockOn()
-
+        
+        # Watch for a local avatar collision with our weapon.
+        base.physicsWorld.attach(self.wsnp.node())
         self.acceptOnce("enter" + self.wsnp.node().getName(), self.handleWeaponCollision)
+        
         self.playWeaponSound()
         if self.weapon:
             self.weapon.wrtReparentTo(render)
@@ -295,18 +300,28 @@ class ThrowAttack(Attack):
     def interruptAttack(self):
         if self.throwTrajectory:
             if self.throwTrajectory.isStopped():
+                self.delPhysics()
                 self.delWeapon()
 
     def handleWeaponTouch(self):
         if self.throwTrajectory:
             self.throwTrajectory.pause()
             self.throwTrajectory = None
+        self.delPhysics()
         self.delWeapon()
 
     def delWeapon(self):
         if self.weapon:
             self.weapon.removeNode()
             self.weapon = None
+            
+    def delPhysics(self):
+        self.wss = None
+        if self.wsnp:
+            print "delPhysics: removing the ThrowAttack ghost node"
+            base.physicsWorld.remove(self.wsnp.node())
+            self.wsnp.removeNode()
+            self.wsnp = None
 
     def cleanup(self):
         Attack.cleanup(self)
@@ -317,12 +332,8 @@ class ThrowAttack(Attack):
         if self.throwTrajectory:
             self.throwTrajectory.pause()
             self.throwTrajectory = None
+        self.delPhysics()
         self.delWeapon()
-        self.wss = None
-        if self.wsnp:
-            self.wsnp.node().clearSolids()
-            self.wsnp.removeNode()
-            self.wsnp = None
 
 class CannedAttack(ThrowAttack):
     notify = directNotify.newCategory("CannedAttack")
@@ -425,6 +436,8 @@ class GlowerPowerAttack(Attack):
     def cleanup(self):
         Attack.cleanup(self)
         if self.collNP:
+            print "cleanup: removing the GlowerPowerAttack ghost node"
+            base.physicsWorld.remove(self.collNP.node())
             self.collNP.removeNode()
             self.collNP = None
         if self.knives:
@@ -569,16 +582,11 @@ class FountainPenAttack(Attack):
             scale = (1, 20, 1),
             startScale = (1, 1, 1)
         )
-        sphere = CollisionSphere(0, 0, 0, 0.5)
-        sphere.setTangible(0)
         if hasattr(self.suit, 'uniqueName'):
             collName = self.suit.uniqueName('fountainPenCollNode')
         else:
             collName = 'fountainPenCollNode'
-        collNode = CollisionNode(collName)
-        collNode.addSolid(sphere)
-        collNode.setCollideMask(CIGlobals.WeaponBitmask)
-        self.wsnp = self.spray.attachNewNode(collNode)
+        self.wsnp = self.spray.attachNewNode(makeCollision(0.5, collName))
         self.wsnp.setY(1)
         #self.wsnp.show()
 
@@ -643,7 +651,7 @@ class FountainPenAttack(Attack):
     def cleanup(self):
         Attack.cleanup(self)
         if self.wsnp:
-            self.wsnp.node().clearSolids()
+            base.physicsWorld.remove(self.wsnp.node())
             self.wsnp.removeNode()
             self.wsnp = None
         if self.pen:
@@ -698,12 +706,7 @@ class HangUpAttack(Attack):
         base.audio3d.attachSoundToObject(self.phoneSfx, self.phone)
         self.hangupSfx = base.audio3d.loadSfx("phase_3.5/audio/sfx/SA_hangup_place_down.ogg")
         base.audio3d.attachSoundToObject(self.hangupSfx, self.phone)
-        collSphere = CollisionSphere(0, 0, 0, 2)
-        collSphere.setTangible(0)
-        collNode = CollisionNode('phone_shootout')
-        collNode.addSolid(collSphere)
-        collNode.setCollideMask(CIGlobals.WeaponBitmask)
-        self.collNP = self.phone.attachNewNode(collNode)
+        self.collNP = self.phone.attachNewNode(makeCollision(2, 'phone_shootout'))
         #self.collNP.show()
 
     def doAttack(self, ts = 0):
@@ -807,7 +810,7 @@ class HangUpAttack(Attack):
             self.receiver.removeNode()
             self.receiver = None
         if self.collNP:
-            self.collNP.node().clearSolids()
+            base.physicsWorld.remove(self.collNP.node())
             self.collNP.removeNode()
             self.collNP = None
         if self.phoneSfx:
@@ -1058,11 +1061,8 @@ class ParticleAttack(Attack):
         for path in particlePaths:
             particle = ParticleLoader.loadParticleEffect(path)
             self.particles.append(particle)
-        sphere = CollisionSphere(0, 0, 0, 2)
-        sphere.setTangible(0)
-        node = CollisionNode(particleCollId)
-        node.addSolid(sphere)
-        node.setCollideMask(CIGlobals.WeaponBitmask)
+
+        node = makeCollision(2, particleCollId)
         
         self.startToonLockOn()
 
@@ -1158,6 +1158,7 @@ class ParticleAttack(Attack):
             self.handObj = None
         if self.shootOutCollNP:
             self.ignore('enter' + self.shootOutCollNP.node().getName())
+            base.physicsWorld.remove(self.shootOutCollNP.node())
             self.shootOutCollNP.removeNode()
             self.shootOutCollNP = None
         if self.particleMoveIval:
@@ -1508,6 +1509,7 @@ class EvilEyeAttack(Attack):
     def cleanup(self):
         Attack.cleanup(self)
         if self.eyeColl:
+            base.physicsWorld.remove(self.eyeColl.node())
             self.eyeColl.removeNode()
             self.eyeColl = None
         if self.eye:
@@ -1592,6 +1594,7 @@ class TeeOffAttack(Attack):
             self.ballVisRope.removeNode()
             self.ballVisRope = None
         if self.ballCNP:
+            base.physicsWorld.remove(self.ballCNP.node())
             self.ballCNP.removeNode()
             self.ballCNP = None
         if self.ball:
@@ -1672,6 +1675,7 @@ class WatercoolerAttack(Attack):
             self.splash.cleanup()
             self.splash = None
         if self.collNP:
+            base.physicsWorld.remove(self.collNP.node())
             self.collNP.removeNode()
             self.collNP = None
         if self.spray:

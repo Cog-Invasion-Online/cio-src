@@ -366,11 +366,12 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         return isCombo, comboDamage
 
     # The new method for handling gags.
-    def hitByGag(self, gagId):
+    def hitByGag(self, gagId, distance):
         avId = self.air.getAvatarIdFromSender()
         avatar = self.air.doId2do.get(avId, None)
         gagName = GagGlobals.getGagByID(gagId)
-        data = GagGlobals.getGagData(gagId)
+        data = dict(GagGlobals.getGagData(gagId))
+        data['distance'] = distance
         track = GagGlobals.getTrackOfGag(gagId, getId = True)
 
         if self.canGetHit():

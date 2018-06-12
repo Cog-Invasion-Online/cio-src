@@ -22,13 +22,13 @@ class LocationGag:
         self.buttonSfx = loader.loadSfx(self.buttonSoundPath)
         self.buttonAnim = 'push-button'
         self.chooseLocFrame = 34
+        self.hitStartFrame = 45
         self.completeFrame = 77
-        self.avatar = None
         self.dropLoc = None
         self.minDistance = minDistance
         self.maxDistance = maxDistance
         self.locationSeeker = None
-        self.buttonHold = 0.6
+        self.buttonHold = 0.15
         self.actorTrack = None
         self.soundTrack = None
         self.isCircle = False
@@ -42,17 +42,23 @@ class LocationGag:
     def getShadowScale(self):
         return self.shadowScale
 
-    def start(self, avatar):
-        self.avatar = avatar
+    def equip(self):
         self.cleanupLocationSeeker()
         self.buildButton()
         self.button.reparentTo(self.avatar.find('**/def_joint_left_hold'))
 
-        track = Sequence(ActorInterval(self.avatar, self.buttonAnim, startFrame = 0, endFrame = self.chooseLocFrame,
-                         playRate = self.playRate))
+        track = Sequence(Func(self.avatar.setForcedTorsoAnim, self.buttonAnim),
+                         self.getAnimationTrack(self.buttonAnim, 0, self.chooseLocFrame, self.playRate))
 
-        if self.avatar == base.localAvatar:
-            self.locationSeeker = LocationSeeker(self.avatar, self.minDistance, self.maxDistance)
+        if self.isLocal():
+            fpsCam = base.localAvatar.getFPSCam()
+            vm = fpsCam.viewModel
+            fpsCam.setVMGag(self.button, pos = (-0.04, 0.05, -0.01),
+                            hpr = (328.39, 268.95, 359.48), scale = 0.559,
+                            hand = 1)
+            fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, 'button_draw'), Func(vm.loop, 'button_idle')))
+
+            self.locationSeeker = LocationSeeker(self.avatar, self, self.minDistance, self.maxDistance)
             self.locationSeeker.setShadowType(self.isCircle, self.shadowScale)
             self.avatar.acceptOnce(self.locationSeeker.getLocationSelectedName(), base.localAvatar.releaseGag)
             track.append(Func(self.locationSeeker.startSeeking))
@@ -60,13 +66,20 @@ class LocationGag:
             self.helpInfo = OnscreenText(text = 'Move the shadow with your mouse\nClick to release',
                 pos = (0, -0.75), font = CIGlobals.getToonFont(), fg = (1, 1, 1, 1),
                 shadow = (0, 0, 0, 1))
+            self.helpInfo.hide() # yeet
 
-        track.start()
+        self.setAnimTrack(track, startNow = True)
+
+        #if self.isLocal():
+        #    base.oobe()
+        #    base.localAvatar.getFPSCam().vmGag.place()
 
     def release(self):
         if self.avatar:
-            self.cleanupLocationSeeker()
             self.buildTracks()
+            if self.isLocal():
+                self.getFPSCam().setVMAnimTrack(Sequence(ActorInterval(self.getViewModel(), 'button_press'),
+                                                         Func(self.getViewModel().loop, 'button_idle')))
 
     def complete(self):
         if self.button:
@@ -81,7 +94,7 @@ class LocationGag:
             return
         self.cleanupTracks()
         if mode == 0:
-            self.actorTrack = Sequence(ActorInterval(self.avatar, self.buttonAnim, startFrame = self.chooseLocFrame,
+            self.actorTrack = Sequence(ActorInterval(self.avatar, self.buttonAnim, startFrame = self.hitStartFrame,
                                endFrame = self.completeFrame, playRate = self.playRate))
             self.soundTrack = Sequence(Wait(self.buttonHold), SoundInterval(self.buttonSfx, node = self.avatar))
 

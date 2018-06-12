@@ -18,12 +18,26 @@ class DLTownLoader(TownLoader.TownLoader):
     def __init__(self, hood, parentFSM, doneEvent):
         TownLoader.TownLoader.__init__(self, hood, parentFSM, doneEvent)
         self.streetClass = DLStreet.DLStreet
-        self.musicFile = 'phase_8/audio/bgm/DL_SZ.mid'
-        self.interiorMusicFile = 'phase_8/audio/bgm/DL_SZ_activity.mid'
+        self.streetSong = 'DL_SZ'
+        self.interiorSong = 'DL_SZ_activity'
         self.townStorageDNAFile = 'phase_8/dna/storage_DL_town.pdna'
+        self.lampLights = []
+
+    def unload(self):
+        for lamp in self.lampLights:
+            render.clearLight(lamp)
+            lamp.removeNode()
+        self.lampLights = []
 
     def load(self, zoneId):
         TownLoader.TownLoader.load(self, zoneId)
         zone4File = str(self.branchZone)
         dnaFile = 'phase_8/dna/donalds_dreamland_' + zone4File + '.pdna'
-        self.createHood(dnaFile)
+        self.createHood(dnaFile, 1, False)
+
+        for lamp in self.geom.findAllMatches("**/*light_DNARoot*"):
+            lightNP = self.hood.makeLampLight(lamp)
+            lightNP.wrtReparentTo(lamp)
+            self.lampLights.append(lightNP)
+
+        self.doFlatten()

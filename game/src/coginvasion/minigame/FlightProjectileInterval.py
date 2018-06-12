@@ -43,10 +43,14 @@ class FlightProjectileInterval(ProjectileInterval):
         return Vec3(self.startVel[0], self.startVel[1], self.startVel[2] + self.zAcc * tt)
 
     def __calcPitch(self, task):
+        if self.node.isEmpty():
+            return Task.done
+
         t = min(self.getT(), self.getDuration())
         vel = self.getVel(t)
         run = math.sqrt(vel[0] * vel[0] + vel[1] * vel[1])
         rise = vel[2]
         theta = self.__toDegrees(math.atan(rise / run))
         self.node.setP(theta)
+
         return Task.cont

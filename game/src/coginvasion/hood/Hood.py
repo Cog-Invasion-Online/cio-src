@@ -48,6 +48,13 @@ class Hood(StateData):
 
         return
 
+    def makeLampLight(self, lamp):
+        col = (255, 255, 255, 350)
+        lightNP = CIGlobals.makePointLight('DLlamp', CIGlobals.colorFromRGBScalar255(col),
+                                           lamp.getPos(render) + (0, 0, 9.5), 0.1)
+        lamp.setLightOff(1)
+        return lightNP
+
     def enter(self, requestStatus):
         StateData.enter(self)
 

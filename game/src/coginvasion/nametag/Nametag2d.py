@@ -12,7 +12,6 @@ from src.coginvasion.globals import CIGlobals
 
 from ccoginvasion import CNametag
 
-
 class Nametag2d(Nametag, Clickable2d, MarginVisible):
     CONTENTS_SCALE = 0.25
 
@@ -83,10 +82,18 @@ class Nametag2d(Nametag, Clickable2d, MarginVisible):
             self.setClickRegionFrame(*reg)
             self.region.setActive(True)
         elif self.panel is not None:
-            reg = []
-            self.cTag.get_panel_region(self.textNode, reg)
+            # FIXME
+            #reg = []
+            #self.cTag.get_panel_region(self.textNode, reg)
+            #self.setClickRegionFrame(*reg)
 
-            self.setClickRegionFrame(*reg)
+            centerX = (self.textNode.getLeft() + self.textNode.getRight()) / 2.0
+            centerY = (self.textNode.getBottom() + self.textNode.getTop()) / 2.0
+            left = centerX - (self.panelWidth / 2.0)
+            right = centerX + (self.panelWidth / 2.0)
+            bottom = centerY - (self.panelHeight / 2.0)
+            top = centerY + (self.panelHeight / 2.0)
+            self.setClickRegionFrame(left, right, bottom, top)
             self.region.setActive(True)
         else:
             if self.region is not None:

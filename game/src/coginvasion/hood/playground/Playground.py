@@ -50,14 +50,13 @@ class Playground(Place.Place):
     def enter(self, requestStatus):
         self.fsm.enterInitialState()
         self.loader.hood.enableOutdoorLighting()
+
         messenger.send('enterPlayground')
-        if self.loader.music:
-            if self.__class__.__name__ == 'CTPlayground':
-                volume = 2.0
-            else:
-                volume = 0.8
-            base.playMusic(self.loader.music, looping = 1, volume = volume)
+
+        base.playMusic(self.loader.safeZoneSong)
+
         self.loader.geom.reparentTo(render)
+        base.enablePhysicsNodes(self.loader.geom)
         #self.loader.hood.startSky()
         
         self.zoneId = requestStatus['zoneId']
@@ -65,6 +64,7 @@ class Playground(Place.Place):
             base.cr.playGame.suitManager.d_requestSuitInfo()
         how = requestStatus['how']
         self.fsm.request(how, [requestStatus])
+
         Place.Place.enter(self)
 
     def exit(self):
@@ -72,21 +72,9 @@ class Playground(Place.Place):
         messenger.send('exitPlayground')
         
         self.loader.geom.reparentTo(hidden)
-        #self.loader.hood.stopSky()
-        if self.loader.music:
-            # Workaround to try to fix the persistent humming from the DDL safezone music.
-            if self.loader.music == 'phase_8/audio/bgm/DL_nbrhood.mid':
-                base.playMusic(self.loader.music, looping = 0, volume = 0)
-            else:
-                self.loader.music.stop()
-        if self.loader.bossBattleMusic:
-            self.loader.bossBattleMusic.stop()
-        if self.loader.battleMusic:
-            self.loader.battleMusic.stop()
-        if self.loader.invasionMusic:
-            self.loader.invasionMusic.stop()
-        if self.loader.tournamentMusic:
-            self.loader.tournamentMusic.stop()
+        base.disablePhysicsNodes(self.loader.geom)
+        
+        base.stopMusic()
 
         self.loader.hood.disableOutdoorLighting()
         

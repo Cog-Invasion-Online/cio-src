@@ -18,8 +18,8 @@ class MLTownLoader(TownLoader.TownLoader):
     def __init__(self, hood, parentFSM, doneEvent):
         TownLoader.TownLoader.__init__(self, hood, parentFSM, doneEvent)
         self.streetClass = MLStreet.MLStreet
-        self.musicFile = 'phase_6/audio/bgm/MM_SZ.mid'
-        self.interiorMusicFile = 'phase_6/audio/bgm/MM_SZ_activity.mid'
+        self.streetSong = 'MM_SZ'
+        self.interiorMusicFile = 'MM_SZ_activity'
         self.townStorageDNAFile = 'phase_6/dna/storage_MM_town.pdna'
 
     def load(self, zoneId):

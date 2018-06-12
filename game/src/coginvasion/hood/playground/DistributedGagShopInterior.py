@@ -42,4 +42,4 @@ class DistributedGagShopInterior(DistributedToonInterior.DistributedToonInterior
         del self.colors
         del self.dnaStore
         del self.generator
-        self.interior.flattenMedium()
+        self.addLightsForLamps()

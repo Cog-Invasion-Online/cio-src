@@ -125,7 +125,7 @@ class Place(StateData):
         pass
 
     def enterDoorIn(self, distDoor):
-        base.localAvatar.attachCamera()
+        #base.localAvatar.attachCamera()
         requestStatus = {}
         requestStatus['zoneId'] = distDoor.getToZone()
         requestStatus['hoodId'] = base.cr.playGame.hood.id
@@ -147,7 +147,7 @@ class Place(StateData):
         self.acceptOnce('DistributedDoor_localAvatarGoingInDoor', base.transitions.irisOut)
 
     def exitDoorIn(self):
-        base.localAvatar.detachCamera()
+        #base.localAvatar.detachCamera()
         self.ignore('DistributedDoor_localAvatarWentInDoor')
         self.ignore('DistributedDoor_localAvatarGoingInDoor')
 
@@ -162,8 +162,8 @@ class Place(StateData):
         return task.cont
 
     def enterDoorOut(self, requestStatus):
-        base.localAvatar.attachCamera()
-        base.localAvatar.startSmartCamera()
+        #base.localAvatar.attachCamera()
+        #base.localAvatar.startSmartCamera()
         base.localAvatar.d_clearSmoothing()
         base.localAvatar.stopPosHprBroadcast()
         base.localAvatar.walkControls.setCollisionsActive(0)
@@ -192,8 +192,8 @@ class Place(StateData):
 
     def exitDoorOut(self):
         base.taskMgr.remove("Place.waitOnDoor")
-        base.localAvatar.stopSmartCamera()
-        base.localAvatar.detachCamera()
+        #base.localAvatar.stopSmartCamera()
+        #base.localAvatar.detachCamera()
         self.ignore('DistributedDoor_localAvatarCameOutOfDoor')
 
     def handleDoorOutDone(self):
@@ -202,7 +202,7 @@ class Place(StateData):
         self.fsm.request(self.nextState)
 
     def enterShtickerBook(self):
-        base.localAvatar.attachCamera()
+        #base.localAvatar.attachCamera()
         base.localAvatar.createLaffMeter()
         base.localAvatar.startSmartCamera()
         base.localAvatar.startPosHprBroadcast()
@@ -271,8 +271,8 @@ class Place(StateData):
         base.cr.gameFSM.request('closeShard')
 
     def exitShtickerBook(self):
-        base.localAvatar.detachCamera()
-        base.localAvatar.stopSmartCamera()
+        #base.localAvatar.detachCamera()
+        #base.localAvatar.stopSmartCamera()
         base.localAvatar.stopPosHprBroadcast()
         base.localAvatar.disableLaffMeter()
         self.ignore(self.shtickerBookStateData.doneEvent)
@@ -288,16 +288,16 @@ class Place(StateData):
     def enterStop(self, doNeutral = 1):
         if doNeutral:
             base.localAvatar.b_setAnimState('neutral')
-        base.localAvatar.attachCamera()
-        base.localAvatar.startSmartCamera()
+        #base.localAvatar.attachCamera()
+        #base.localAvatar.startSmartCamera()
         base.localAvatar.createLaffMeter()
         #base.localAvatar.showBookButton()
         if base.localAvatar.inBattle:
             base.localAvatar.enableGags(andKeys = 0)
 
     def exitStop(self):
-        base.localAvatar.stopSmartCamera()
-        base.localAvatar.detachCamera()
+        #base.localAvatar.stopSmartCamera()
+        #base.localAvatar.detachCamera()
         self.__disableInteraction()
         if base.localAvatar.inBattle:
             base.localAvatar.disableGags()
@@ -334,8 +334,8 @@ class Place(StateData):
             if av:
                 base.localAvatar.gotoNode(av)
                 base.localAvatar.b_setChat("Hi, %s." % av.getName())
-        base.localAvatar.attachCamera()
-        base.localAvatar.startSmartCamera()
+        #base.localAvatar.attachCamera()
+        #base.localAvatar.startSmartCamera()
         base.localAvatar.startPosHprBroadcast()
         globalClock.tick()
         base.localAvatar.b_setAnimState('teleportIn', callback = self.teleportInDone)
@@ -344,8 +344,8 @@ class Place(StateData):
         return
 
     def exitTeleportIn(self):
-        base.localAvatar.stopSmartCamera()
-        base.localAvatar.detachCamera()
+        #base.localAvatar.stopSmartCamera()
+        #base.localAvatar.detachCamera()
         base.localAvatar.stopPosHprBroadcast()
         return
 
@@ -354,8 +354,8 @@ class Place(StateData):
             self.fsm.request(self.nextState, [1])
 
     def enterAcknowledgeDeath(self, foo = 0):
-        base.localAvatar.attachCamera()
-        base.localAvatar.startSmartCamera()
+        #base.localAvatar.attachCamera()
+        #base.localAvatar.startSmartCamera()
         message = "You were defeated by the Cogs! Collect treasures in the Playground to refill your Laff meter."
         self.dialog = GlobalDialog(message = message, style = 3, doneEvent = 'ackDeathDone')
         self.dialog.show()
@@ -368,14 +368,14 @@ class Place(StateData):
         self.ignore('ackDeathDone')
         self.dialog.cleanup()
         del self.dialog
-        base.localAvatar.stopSmartCamera()
-        base.localAvatar.detachCamera()
+        #base.localAvatar.stopSmartCamera()
+        #base.localAvatar.detachCamera()
 
     def enterDied(self, requestStatus, callback = None):
         if callback is None:
             callback = self.__diedDone
         base.localAvatar.createLaffMeter()
-        base.localAvatar.attachCamera()
+        #base.localAvatar.attachCamera()
         base.localAvatar.b_setAnimState('died', callback, [requestStatus])
 
     def __diedDone(self, requestStatus):
@@ -384,7 +384,7 @@ class Place(StateData):
 
     def exitDied(self):
         base.localAvatar.disableLaffMeter()
-        base.localAvatar.detachCamera()
+        #base.localAvatar.detachCamera()
 
     def enterWalk(self, teleportIn = 0):
         self.walkStateData.enter()
@@ -457,22 +457,22 @@ class Place(StateData):
     def enterTeleportOut(self, requestStatus, callback = None):
         if not callback:
             callback = self.__teleportOutDone
-        base.localAvatar.attachCamera()
-        base.localAvatar.startSmartCamera()
+        #base.localAvatar.attachCamera()
+        #base.localAvatar.startSmartCamera()
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.d_broadcastPositionNow()
         base.localAvatar.b_setAnimState('teleportOut', callback, [requestStatus])
 
     def exitTeleportOut(self):
         base.localAvatar.disableLaffMeter()
-        base.localAvatar.stopSmartCamera()
-        base.localAvatar.detachCamera()
+        #base.localAvatar.stopSmartCamera()
+        #base.localAvatar.detachCamera()
         base.localAvatar.stopPosHprBroadcast()
 
     def enterTunnelIn(self, linkTunnel):
         zoneId = linkTunnel.data['zoneId']
         base.localAvatar.sendUpdate('goThroughTunnel', [zoneId, 0])
-        base.localAvatar.attachCamera()
+        #base.localAvatar.attachCamera()
         base.localAvatar.playMovementSfx("run")
 
         requestStatus = {}
@@ -512,7 +512,7 @@ class Place(StateData):
     def exitTunnelIn(self):
         base.localAvatar.playMovementSfx(None)
         base.localAvatar.reparentTo(render)
-        base.localAvatar.detachCamera()
+        #base.localAvatar.detachCamera()
         base.localAvatar.walkControls.setCollisionsActive(1)
 
     def enterTunnelOut(self, requestStatus):
@@ -526,11 +526,11 @@ class Place(StateData):
     def exitTunnelOut(self):
         base.localAvatar.playMovementSfx(None)
         base.localAvatar.walkControls.setCollisionsActive(1)
-        base.localAvatar.detachCamera()
+        #base.localAvatar.detachCamera()
         del self.nextState
 
     def enterNoAccessFA(self):
-        base.localAvatar.attachCamera()
+        #base.localAvatar.attachCamera()
         base.localAvatar.startSmartCamera()
         base.localAvatar.createLaffMeter()
 
@@ -543,8 +543,8 @@ class Place(StateData):
         self.fsm.request('walk')
 
     def exitNoAccessFA(self):
-        base.localAvatar.stopSmartCamera()
-        base.localAvatar.detachCamera()
+        #base.localAvatar.stopSmartCamera()
+        #base.localAvatar.detachCamera()
         base.localAvatar.disableLaffMeter()
 
         if hasattr(self, 'dialog'):

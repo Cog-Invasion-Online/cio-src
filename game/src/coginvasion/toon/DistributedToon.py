@@ -70,6 +70,9 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         self.numGagSlots = 0
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
 
+        self.takeDmgSfx = base.audio3d.loadSfx("phase_5/audio/sfx/tt_s_ara_cfg_toonHit.ogg")
+        base.audio3d.attachSoundToObject(self.takeDmgSfx, self)
+
         return
         
     def stopSmooth(self):
@@ -203,6 +206,11 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
     def getDefaultShard(self):
         return self.defaultShard
 
+    def updateHeadPitch(self, pitch):
+        head = self.getPart("head")
+        if head and not head.isEmpty():
+            head.setP(pitch)
+
     def doSmoothTask(self, task):
         self.smoother.computeAndApplySmoothPosHpr(self, self)
         if not hasattr(base, 'localAvatar'):
@@ -310,6 +318,10 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
             self.headMeter.updateMeter(self.getHealth())
 
     def setHealth(self, health):
+        if health < self.health:
+            # We took damage, make oof sound.
+            self.takeDmgSfx.play()
+
         self.health = health
         if self.doId != base.localAvatar.doId:
             if not self.firstTimeChangingHP:
@@ -508,6 +520,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
 
     def gagRelease(self, gagId):
         gag = self.backpack.getGagByID(gagId)
+        print "gagRelease:", gag, hasattr(gag, 'name')
         if gag and hasattr(gag, 'name'):
             gag.release()
 

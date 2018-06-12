@@ -22,6 +22,7 @@ from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.hood import ToonInterior
 from src.coginvasion.cogoffice import CogOfficeInterior
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.phys import PhysicsUtils
 
 class TownLoader(StateData):
     notify = directNotify.newCategory("TownLoader")
@@ -40,6 +41,8 @@ class TownLoader(StateData):
         self.branchZone = None
         self.canonicalBranchZone = None
         self.placeDoneEvent = 'placeDone'
+        self.streetSong = ''
+        self.interiorSong = ''
         self.linkTunnels = []
         self.place = None
         return
@@ -58,14 +61,13 @@ class TownLoader(StateData):
         self.zoneId = zoneId
         self.branchZone = ZoneUtil.getBranchZone(zoneId)
         self.canonicalBranchZone = ZoneUtil.getCanonicalBranchZone(zoneId)
-        self.music = base.loadMusic(self.musicFile)
-        self.interiorMusic = base.loadMusic(self.interiorMusicFile)
 
     def unload(self):
         self.parentFSMState.removeChild(self.fsm)
         del self.parentFSMState
         del self.fsm
         del self.streetClass
+        base.disablePhysicsNodes(self.landmarkBlocks)
         self.landmarkBlocks.removeNode()
         del self.landmarkBlocks
         self.hood.dnaStore.resetSuitPoints()
@@ -76,10 +78,11 @@ class TownLoader(StateData):
         del self.fadeInDict
         del self.fadeOutDict
         del self.nodeList
+        base.disablePhysicsNodes(self.geom)
         self.geom.removeNode()
         del self.geom
-        del self.music
-        del self.interiorMusic
+        del self.streetSong
+        del self.interiorSong
         ModelPool.garbageCollect()
         TexturePool.garbageCollect()
         StateData.unload(self)
@@ -204,7 +207,7 @@ class TownLoader(StateData):
     def exitFinal(self):
         pass
 
-    def createHood(self, dnaFile, loadStorage = 1):
+    def createHood(self, dnaFile, loadStorage = 1, flattenNow = True):
         if loadStorage:
             loader.loadDNAFile(self.hood.dnaStore, 'phase_5/dna/storage_town.pdna')
             loader.loadDNAFile(self.hood.dnaStore, self.townStorageDNAFile)
@@ -214,14 +217,20 @@ class TownLoader(StateData):
             self.geom.reparentTo(hidden)
         else:
             self.geom = hidden.attachNewNode(node)
+        if flattenNow:
+            self.doFlatten()
+        self.geom.setName('town_top_level')
+
+    def doFlatten(self):
         self.makeDictionaries(self.hood.dnaStore)
         self.reparentLandmarkBlockNodes()
+        base.createPhysicsNodes(self.geom)
         self.renameFloorPolys(self.nodeList)
+        self.geom.flattenLight()
+
         gsg = base.win.getGsg()
         if gsg:
             self.geom.prepareScene(gsg)
-        self.geom.flattenLight()
-        self.geom.setName('town_top_level')
 
     def reparentLandmarkBlockNodes(self):
         bucket = self.landmarkBlocks = hidden.attachNewNode('landmarkBlocks')
@@ -270,8 +279,8 @@ class TownLoader(StateData):
             visibles.append(ZoneUtil.getBranchZone(zoneId))
             self.zoneVisDict[zoneId] = visibles
             fadeDuration = 0.5
-            self.fadeOutDict[groupNode] = Sequence(Func(groupNode.setTransparency, 1), LerpColorScaleInterval(groupNode, fadeDuration, a0, startColorScale=a1), Func(groupNode.clearColorScale), Func(groupNode.clearTransparency), Func(groupNode.stash), name='fadeZone-' + str(zoneId), autoPause=1)
-            self.fadeInDict[groupNode] = Sequence(Func(groupNode.unstash), Func(groupNode.setTransparency, 1), LerpColorScaleInterval(groupNode, fadeDuration, a1, startColorScale=a0), Func(groupNode.clearColorScale), Func(groupNode.clearTransparency), name='fadeZone-' + str(zoneId), autoPause=1)
+            self.fadeOutDict[groupNode] = Sequence(Func(groupNode.setTransparency, 1), LerpColorScaleInterval(groupNode, fadeDuration, a0, startColorScale=a1), Func(groupNode.clearColorScale), Func(groupNode.clearTransparency), Func(groupNode.stash), Func(base.disablePhysicsNodes, groupNode), name='fadeZone-' + str(zoneId), autoPause=1)
+            self.fadeInDict[groupNode] = Sequence(Func(base.enablePhysicsNodes, groupNode), Func(groupNode.unstash), Func(groupNode.setTransparency, 1), LerpColorScaleInterval(groupNode, fadeDuration, a1, startColorScale=a0), Func(groupNode.clearColorScale), Func(groupNode.clearTransparency), name='fadeZone-' + str(zoneId), autoPause=1)
 
         for i in xrange(numVisGroups):
             groupFullName = dnaStore.getDNAVisGroupName(i)
@@ -292,11 +301,12 @@ class TownLoader(StateData):
 
     def renameFloorPolys(self, nodeList):
         for i in nodeList:
-            collNodePaths = i.findAllMatches('**/+CollisionNode')
+            collNodePaths = i.findAllMatches('**/+BulletRigidBodyNode')
             numCollNodePaths = collNodePaths.getNumPaths()
             visGroupName = i.node().getName()
             for j in xrange(numCollNodePaths):
                 collNodePath = collNodePaths.getPath(j)
                 bitMask = collNodePath.node().getIntoCollideMask()
-                if bitMask.getBit(1):
+                if bitMask == CIGlobals.FloorGroup:
                     collNodePath.node().setName(visGroupName)
+                    collNodePath.setCollideMask(CIGlobals.StreetVisGroup)

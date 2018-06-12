@@ -8,6 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.core import SceneGraphAnalyzer, LineStream
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.gui.DirectGui import OnscreenText, DirectButton, DirectEntry
@@ -18,6 +19,7 @@ from src.coginvasion.book.BookPage import BookPage
 from src.coginvasion.gui.KickBanDialog import KickBanDialog
 from src.coginvasion.gui.AdminTokenDialog import AdminTokenDialog
 from src.coginvasion.gui.WorldAccessDialog import WorldAccessDialog
+from src.coginvasion.gui.Dialog import GlobalDialog, Ok
 
 class AdminPage(BookPage):
 
@@ -217,6 +219,16 @@ class AdminPage(BookPage):
 			text_pos = (0, -0.01),
 			command = base.oobe
         )
+        self.directBtn = DirectButton(
+            geom = geom,
+            text_scale = 0.04,
+            relief = None,
+            scale = 1.0,
+            text = "Start DIRECT",
+            pos = (-0.45, 0.15, 0.1),
+            text_pos = (0, -0.01),
+            command = self.doStartDirect
+        )
         self.tokenBtn = DirectButton(
             geom = geom,
 			text_scale = 0.04,
@@ -259,8 +271,63 @@ class AdminPage(BookPage):
             text_pos = (0, -0.01),
             command = SEND_REQ_GAG_SLOTS
         )
+        self.physDbgBtn = DirectButton(
+            geom = geom,
+            text_scale = 0.039,
+            relief = None,
+            scale = 1.0,
+            text = "Toggle Physics Debug",
+            pos = (0.45, 0.15, 0.0),
+            text_pos = (0, -0.01),
+            command = self.togglePhysDbg
+        )
+        self.analyzeBtn = DirectButton(
+            geom = geom,
+            text_scale = 0.04,
+            relief = None,
+            scale = 1.0,
+            text = "Analyze Scene",
+            pos = (0.45, 0.15, -0.1),
+            text_pos = (0, -0.01),
+            command = self.doAnalyzeScene
+        )
+        self.listBtn = DirectButton(
+            geom = geom,
+            text_scale = 0.04,
+            relief = None,
+            scale = 1.0,
+            text = "List Scene",
+            pos = (0.45, 0.15, -0.2),
+            text_pos = (0, -0.01),
+            command = render.ls
+        )
         base.cr.playGame.getPlace().maybeUpdateAdminPage()
         del geom
+
+    def doStartDirect(self):
+        base.startTk()
+        base.startDirect()
+
+    def doAnalyzeScene(self):
+        ls = LineStream()
+        sga = SceneGraphAnalyzer()
+        sga.addNode(render.node())
+        sga.write(ls)
+        text = ""
+        while ls.isTextAvailable():
+            text += ls.getLine() + "\n"
+        self.acceptOnce('analyzedone', self.__handleAnalyzeDone)
+        self.analyzeDlg = GlobalDialog(message = text, style = Ok,
+                                       doneEvent = 'analyzedone',
+                                       text_scale = 0.05)
+        self.analyzeDlg.show()
+
+    def __handleAnalyzeDone(self):
+        self.analyzeDlg.cleanup()
+        del self.analyzeDlg
+
+    def togglePhysDbg(self):
+        base.setPhysicsDebug(not base.physicsDbgFlag)
 
     def toggleBackground(self):
         if render.isHidden():
@@ -301,3 +368,15 @@ class AdminPage(BookPage):
         del self.allGagsBtn
         self.allSlotsBtn.destroy()
         del self.allSlotsBtn
+        self.physDbgBtn.destroy()
+        del self.physDbgBtn
+        self.analyzeBtn.destroy()
+        del self.analyzeBtn
+        if hasattr(self, 'analyzeDlg'):
+            self.ignore('analyzedone')
+            self.analyzeDlg.cleanup()
+            del self.analyzeDlg
+        self.directBtn.destroy()
+        del self.directBtn
+        self.listBtn.destroy()
+        del self.listBtn

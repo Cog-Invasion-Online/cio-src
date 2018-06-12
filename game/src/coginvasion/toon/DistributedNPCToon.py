@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import CollisionNode, CollisionSphere
+from panda3d.bullet import BulletSphereShape, BulletGhostNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence
 
@@ -61,20 +61,22 @@ class DistributedNPCToon(DistributedToon):
         return self.originIndex
 
     def __setupCollisions(self):
-        sphere = CollisionSphere(0, 0, 0, 4)
-        sphere.setTangible(0)
-        collisionNode = CollisionNode(self.uniqueName('NPCToonSphere'))
-        collisionNode.addSolid(sphere)
-        collisionNode.setCollideMask(CIGlobals.WallBitmask)
-        self.collisionNodePath = self.attachNewNode(collisionNode)
+        sphere = BulletSphereShape(4.0)
+        gnode = BulletGhostNode(self.uniqueName('NPCToonSphere'))
+        gnode.addShape(sphere)
+        gnode.setKinematic(True)
+        self.collisionNodePath = self.attachNewNode(gnode)
         self.collisionNodePath.setY(1.5)
+        self.collisionNodePath.setCollideMask(CIGlobals.EventGroup)
+        base.physicsWorld.attachGhost(self.collisionNodePath.node())
 
     def __removeCollisions(self):
         if self.collisionNodePath:
+            base.physicsWorld.removeGhost(self.collisionNodePath.node())
             self.collisionNodePath.removeNode()
             self.collisionNodePath = None
 
-    def handleEnterCollision(self, entry):
+    def handleEnterCollision(self, collNp):
         self.cr.playGame.getPlace().fsm.request('stop')
         self.sendUpdate('requestEnter', [])
 

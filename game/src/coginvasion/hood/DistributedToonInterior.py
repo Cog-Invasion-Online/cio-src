@@ -14,6 +14,7 @@ from direct.distributed import DistributedObject
 
 from src.coginvasion.base.Lighting import IndoorLightingConfig
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.phys import PhysicsUtils
 
 from libpandadna import *
 import ToonInteriorColors
@@ -34,8 +35,8 @@ class DistributedToonInterior(DistributedObject.DistributedObject):
         DistributedObject.DistributedObject.__init__(self, cr)
         self.interior = None
         self.block = None
-
         self.ilc = IndoorLightingConfig.makeDefault()
+        self.ilc.lights = []
 
     def randomDNAItem(self, category, findFunc):
         codeCount = self.dnaStore.getNumCatalogCodes(category)
@@ -70,6 +71,15 @@ class DistributedToonInterior(DistributedObject.DistributedObject):
                     newNP.setColorScale(self.generator.choice(self.colors[category]))
                 else:
                     newNP.setColorScale(self.generator.choice(self.colors[category]))
+
+    def addLightsForLamps(self):
+        for lamp in self.interior.findAllMatches("**/*TI_lamp*"):
+            zOfs = 4.75
+            falloff = 0.5
+            if 'short' in lamp.getName():
+                zOfs = 1.5
+                falloff = 1.0
+            self.ilc.lights.append([(lamp.getX(render), lamp.getY(render), lamp.getZ(render) + zOfs), falloff])
 
     def makeInterior(self, roomIndex = None):
         self.dnaStore = self.cr.playGame.dnaStore
@@ -122,7 +132,8 @@ class DistributedToonInterior(DistributedObject.DistributedObject):
         del self.generator
         del self.dnaStore
         del self.colors
-        self.interior.flattenMedium()
+
+        self.addLightsForLamps()
 
     def setBlock(self, block):
         self.block = block
@@ -135,9 +146,15 @@ class DistributedToonInterior(DistributedObject.DistributedObject):
         self.makeInterior()
         self.ilc.setup()
         self.ilc.apply()
+        if self.interior:
+            base.createPhysicsNodes(self.interior)
+            base.enablePhysicsNodes(self.interior)
+            self.interior.flattenMedium()
 
     def disable(self):
         if self.interior:
+            base.disablePhysicsNodes(self.interior)
+            base.removePhysicsNodes(self.interior)
             self.interior.removeNode()
             self.interior = None
 

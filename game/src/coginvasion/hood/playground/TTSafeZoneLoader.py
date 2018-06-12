@@ -8,6 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.core import TextureStage, Material, TransparencyAttrib
+
 from direct.actor.Actor import Actor
 
 from src.coginvasion.globals import CIGlobals
@@ -22,20 +24,8 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
     def __init__(self, hood, parentFSM, doneEvent):
         SafeZoneLoader.SafeZoneLoader.__init__(self, hood, parentFSM, doneEvent)
         self.playground = TTPlayground.TTPlayground
-        self.pgMusicFilename = 'phase_4/audio/bgm/TC_nbrhood.mid'
-        self.interiorMusicFilename = 'phase_3.5/audio/bgm/TC_SZ_activity.mid'
-        self.battleMusicFile = 'phase_3.5/audio/bgm/encntr_general_bg.mid'
-        self.invasionMusicFiles = [
-            "phase_12/audio/bgm/BossBot_CEO_v1.mid",
-            "phase_9/audio/bgm/encntr_suit_winning.mid"
-        ]
-        self.tournamentMusicFiles = [
-            "phase_3.5/audio/bgm/encntr_nfsmw_bg_1.ogg",
-            "phase_3.5/audio/bgm/encntr_nfsmw_bg_2.ogg",
-            "phase_3.5/audio/bgm/encntr_nfsmw_bg_3.ogg",
-            "phase_3.5/audio/bgm/encntr_nfsmw_bg_4.ogg",
-        ]
-        self.bossBattleMusicFile = 'phase_7/audio/bgm/encntr_suit_winning_indoor.mid'
+        self.safeZoneSong = 'TC_nbrhood'
+        self.interiorSong = 'TC_SZ_activity'
         self.dnaFile = 'phase_4/dna/new_ttc_sz.pdna'
         self.szStorageDNAFile = 'phase_4/dna/storage_TT_sz.pdna'
         self.szHolidayDNAFile = None
@@ -52,12 +42,13 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         base.wakeWaterHeight = -0.69
 
     def load(self):
-        SafeZoneLoader.SafeZoneLoader.load(self)
+        SafeZoneLoader.SafeZoneLoader.load(self, False)
         self.geom.find('**/ground_center').setBin('ground', 18)
         self.geom.find('**/ground_sidewalk').setBin('ground', 18)
         self.geom.find('**/ground').setBin('ground', 18)
-        self.geom.find('**/ground_center_coll').setCollideMask(CIGlobals.FloorBitmask)
-        self.geom.find('**/ground_sidewalk_coll').setCollideMask(CIGlobals.FloorBitmask)
+        self.geom.find('**/ground_center_coll').setCollideMask(CIGlobals.FloorGroup)
+        self.geom.find('**/ground_sidewalk_coll').setCollideMask(CIGlobals.FloorGroup)
+        self.geom.find('**/ground_coll').setCollideMask(CIGlobals.FloorGroup)
         for tree in self.geom.findAllMatches('**/prop_green_tree_*_DNARoot'):
             tree.wrtReparentTo(hidden)
             self.trees.append(tree)
@@ -76,13 +67,29 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
                             #{'chan': 'phase_3.5/models/props/HQ_telescope-chan.bam'}, copy=0)
         #self.telescope.reparentTo(self.geom.find('**/tb20:toon_landmark_hqTT_DNARoot'))
         #self.telescope.setPos(1, 0.46, 0)
+
+        #self.geom.setMaterialOff()
         
         water = self.geom.find("**/pond_water")
         base.waterReflectionMgr.addWaterNode(water, base.wakeWaterHeight)
         
-        self.geom.setMaterialOff()
+        normalStage = TextureStage('normal')
+        normalStage.setMode(TextureStage.MNormal)
+        
+        fences = ["fence5", "fence11", "fence10", "fence8"]
+        fenceNormal = loader.loadTexture("ttc_fence_normal.jpg")
+        for fenceName in fences:
+            fence = self.geom.find("**/" + fenceName)
+            fence.setTexture(normalStage, fenceNormal)
 
-        self.geom.flattenMedium()
+        groundNormal = loader.loadTexture("phase_3.5/maps/cobblestone_normal.jpg")
+        gnd = self.geom.find("**/ttc_beta/inner/terrain/ground")
+        gnd.setTexture(normalStage, groundNormal)
+        
+        #sidewalk = self.geom.find("**/ground_sidewalk")
+        #swNormal = loader.loadTexture
+
+        self.doFlatten()
 
     def enter(self, requestStatus):
         SafeZoneLoader.SafeZoneLoader.enter(self, requestStatus)

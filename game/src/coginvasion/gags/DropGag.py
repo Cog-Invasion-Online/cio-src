@@ -11,6 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 from src.coginvasion.gags.Gag import Gag
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags.GagState import GagState
+from src.coginvasion.phys.WorldCollider import WorldCollider
 from src.coginvasion.globals import CIGlobals
 from LocationGag import LocationGag
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -24,8 +25,11 @@ class DropGag(Gag, LocationGag):
     notify = directNotify.newCategory('DropGag')
 
     def __init__(self, name, model, anim, damage, hitSfx, missSfx, scale, playRate):
-        Gag.__init__(self, name, model, damage, GagType.DROP, hitSfx, anim = anim, playRate = playRate, scale = scale, autoRelease = True)
-        LocationGag.__init__(self, 10, 50)
+        Gag.__init__(self, name, model, damage, GagType.DROP, hitSfx, anim = anim, playRate = playRate,
+                     scale = scale, autoRelease = True)
+        LocationGag.__init__(self, 3, 50)
+        self.crosshair.wantCrosshair = False
+        self.holdGag = False
         self.missSfx = None
         self.fallSoundPath = 'phase_5/audio/sfx/incoming_whistleALT.ogg'
         self.fallSoundInterval = None
@@ -40,6 +44,12 @@ class DropGag(Gag, LocationGag):
             self.missSfx = base.audio3d.loadSfx(missSfx)
             self.fallSfx = base.audio3d.loadSfx(self.fallSoundPath)
 
+        self.dropCollider = None
+        self.colliderRadius = 0.75
+        self.colliderOfs = Point3(0)
+
+        self.dropMdl = None
+
         # Variables to handle the drop preview with large drops.
         self.crashSite = None
         self.crashSiteGag = None
@@ -49,19 +59,26 @@ class DropGag(Gag, LocationGag):
         self.crashEndPos = None
         self.crashBegun = False
         self.shadowIdleTaskName = 'Handle-IdleShadow'
-        self.shadowIdleTime = 0.0
+
+        self.lastShadowMoveTime = 0.0
+
+    def build(self):
+        self.gag = hidden.attachNewNode('dropGagRoot')
+        self.dropMdl = loader.loadModel(self.model)
+        self.dropMdl.reparentTo(self.gag)
+        self.dropMdl.setScale(self.scale)
+        self.dropMdl.setName(self.getName())
+        base.audio3d.attachSoundToObject(self.fallSfx, self.gag)
+        base.audio3d.attachSoundToObject(self.missSfx, self.gag)
 
     def tickShadowIdleTask(self, task):
-        task.delayTime = 0.1
-        self.shadowIdleTime += 0.1
-        if self.shadowIdleTime >= 0.25:
+        time = globalClock.getFrameTime()
+        if time - self.lastShadowMoveTime >= 0.25:
             self.startCrashEffect()
-        return task.again
+        return task.cont
 
     def __shadowMoved(self):
-        self.shadowIdleTime = 0.0
-        base.taskMgr.remove(self.shadowIdleTaskName)
-        base.taskMgr.add(self.tickShadowIdleTask, self.shadowIdleTaskName)
+        self.lastShadowMoveTime = globalClock.getFrameTime()
 
         if self.crashSite:
             self.cleanupCrashIval()
@@ -134,12 +151,13 @@ class DropGag(Gag, LocationGag):
     def completeDrop(self):
         LocationGag.complete(self)
         self.isDropping = False
-        if game.process != 'client': return
+        if game.process != 'client':
+            return
         self.reset()
 
-    def start(self):
-        super(DropGag, self).start()
-        LocationGag.start(self, self.avatar)
+    def equip(self):
+        Gag.equip(self)
+        LocationGag.equip(self)
 
         if self.isLocal() and self.getName() == CIGlobals.GrandPiano:
             base.taskMgr.add(self.tickShadowIdleTask, self.shadowIdleTaskName)
@@ -155,12 +173,15 @@ class DropGag(Gag, LocationGag):
         pass
 
     def buildCollisions(self):
-        pass
+        self.dropCollider = WorldCollider('dropGagCollider', self.colliderRadius, 'gagSensor-into',
+                                          offset = self.colliderOfs)
+        self.dropCollider.reparentTo(self.gag)
+        self.avatar.acceptOnce('gagSensor-into', self.onCollision)
 
-    def onCollision(self, entry):
+    def onCollision(self, intoNP):
         if not self.gag:
             return
-        intoNP = entry.getIntoNodePath()
+        print "DropGag.onCollision:", intoNP
         avNP = intoNP.getParent()
         hitCog = False
         self.fallSoundInterval.pause()
@@ -171,7 +192,9 @@ class DropGag(Gag, LocationGag):
                 obj = base.cr.doId2do[key]
                 if obj.__class__.__name__ in CIGlobals.SuitClasses:
                     if obj.getKey() == avNP.getKey():
-                        obj.sendUpdate('hitByGag', [self.getID()])
+                        dist = (obj.getPos(render).getXy() - self.gag.getPos(render).getXy()).length()
+                        print dist
+                        obj.sendUpdate('hitByGag', [self.getID(), dist * 4])
                         self.avatar.b_trapActivate(self.getID(), self.avatar.doId, 0, obj.doId)
                         hitCog = True
         gagObj = self.gag
@@ -181,8 +204,7 @@ class DropGag(Gag, LocationGag):
         else:
             SoundInterval(self.missSfx, node = self.gag).start()
         shrinkTrack.append(Wait(0.25))
-        shrinkTrack.append(LerpScaleInterval(self.gag, 0.3, Point3(0.01, 0.01, 0.01), startScale = self.gag.getScale()))
-        shrinkTrack.append(Func(gagObj.removeNode))
+        shrinkTrack.append(LerpScaleInterval(self.dropMdl, 0.3, Point3(0.01, 0.01, 0.01)))
         shrinkTrack.append(Func(self.cleanupGag))
         shrinkTrack.start()
 
@@ -196,8 +218,12 @@ class DropGag(Gag, LocationGag):
     def cleanupGag(self):
         if not self.isDropping:
             super(DropGag, self).cleanupGag()
+        if self.dropCollider:
+            self.dropCollider.removeNode()
+            self.dropCollider = None
 
     def release(self):
+        print "release that bitch"
         if self.isLocal():
             self.startTimeout()
             self.resetCrashEffect()
@@ -209,7 +235,7 @@ class DropGag(Gag, LocationGag):
         if actorTrack:
             actorTrack.append(Func(self.startDrop))
             actorTrack.start()
-            self.fallSoundInterval.append(Parallel(SoundInterval(self.fallSfx, node = self.avatar)))
+            self.fallSoundInterval.append(Parallel(SoundInterval(self.fallSfx)))
             self.fallSoundInterval.start()
         if self.isLocal():
             base.localAvatar.sendUpdate('usedGag', [self.id])

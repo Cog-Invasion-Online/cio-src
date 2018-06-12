@@ -13,8 +13,6 @@ from direct.fsm.StateData import StateData
 from direct.fsm.State import State
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.toon.TPMouseMovement import TPMouseMovement
-
 class Walk(StateData):
     notify = directNotify.newCategory("Walk")
 
@@ -26,10 +24,6 @@ class Walk(StateData):
             State('deadWalking', self.enterDeadWalking, self.exitDeadWalking)],
             'off', 'off')
         self.fsm.enterInitialState()
-        
-        if base.localAvatar.GTAControls:
-            self.mouseMov = TPMouseMovement()
-            self.mouseMov.initialize()
 
     def unload(self):
         del self.fsm
@@ -38,14 +32,12 @@ class Walk(StateData):
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.d_broadcastPositionNow()
         base.localAvatar.startBlink()
-        base.localAvatar.attachCamera()
-        base.localAvatar.startSmartCamera()
+        #base.localAvatar.attachCamera()
+        #base.localAvatar.startSmartCamera()
         base.localAvatar.collisionsOn()
         if not base.localAvatar.walkControls.getCollisionsActive():
             base.localAvatar.walkControls.setCollisionsActive(1)
         base.localAvatar.enableAvatarControls()
-        if base.localAvatar.GTAControls:
-            self.mouseMov.enableMovement()
 
     def exit(self):
         if base.localAvatarReachable():
@@ -55,15 +47,12 @@ class Walk(StateData):
                     and base.localAvatar.walkControls.getCollisionsActive():
                 base.localAvatar.walkControls.setCollisionsActive(0)
             base.localAvatar.disableAvatarControls()
-            base.localAvatar.detachCamera()
-            base.localAvatar.stopSmartCamera()
+            #base.localAvatar.detachCamera()
+            #base.localAvatar.stopSmartCamera()
             base.localAvatar.stopPosHprBroadcast()
             base.localAvatar.stopBlink()
             base.localAvatar.collisionsOff()
-            base.localAvatar.controlManager.placeOnFloor()
-            if base.localAvatar.GTAControls:
-                self.mouseMov.disableMovement()
-                self.mouseMov.ignore(base.inputStore.ToggleGTAControls)
+            #base.localAvatar.controlManager.placeOnFloor()
         
 
     def enterOff(self):

@@ -11,4 +11,14 @@ Copyright (c) CIO Team. All rights reserved.
 import Street
 
 class DLStreet(Street.Street):
-    pass
+
+    def enter(self, requestStatus):
+        for lamp in self.loader.lampLights:
+            render.setLight(lamp)
+        Street.Street.enter(self, requestStatus)
+        base.prepareScene()
+
+    def exit(self):
+        for lamp in self.loader.lampLights:
+            render.clearLight(lamp)
+        Street.Street.exit(self)

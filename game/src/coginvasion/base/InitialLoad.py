@@ -31,7 +31,10 @@ class InitialLoad(LoadUtility):
         self.clouds = None
 
     def createGui(self):
-        self.version_lbl = OnscreenText(text="Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype), scale=0.06, pos=(-1.32, -0.97, -0.97), align=TextNode.ALeft, fg=(0.343, 0.343, 0.343, 1))
+        self.version_lbl = OnscreenText(text="Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype),
+                                        scale=0.06, pos=(-1.32, -0.97, -0.97), align=TextNode.ALeft,
+                                        fg = (1, 1, 1, 1), shadow = (0, 0, 0, 0),
+                                        font = CIGlobals.getToonLogoFont())
         gui = loader.loadModel('phase_3/models/gui/loading-background.bam')
         gui.find('**/fg').removeNode()
         self.clouds = OnscreenImage(image = gui, parent = render2d)
@@ -43,7 +46,7 @@ class InitialLoad(LoadUtility):
         loader.progressScreen.bg.hide()
         loader.progressScreen.toontipFrame.hide()
         loader.progressScreen.logoNode.setPos(0, 0, 0)
-        loader.progressScreen.logoNode.setScale(2.0)
+        loader.progressScreen.logoNode.setScale(1.8)
         self.createGui()
         loader.beginBulkLoad('init', 'init', len(self.models), 0, False)
         LoadUtility.load(self)

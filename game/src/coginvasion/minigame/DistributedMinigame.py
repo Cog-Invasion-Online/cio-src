@@ -78,7 +78,7 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         self.cr = cr
         self.localAv = base.localAvatar
         self.localAvId = self.localAv.doId
-        self.musicPath = "phase_4/audio/bgm/trolley_song.mid"
+        self.musicPath = "phase_4/audio/bgm/trolley_song.ogg"
         self.winSfx = base.loadSfx("phase_4/audio/sfx/MG_win.ogg")
         self.loseSfx = base.loadSfx("phase_4/audio/sfx/MG_lose.ogg")
         self.prizeHigh = base.loadSfx("phase_6/audio/sfx/KART_Applause_1.ogg")

@@ -13,6 +13,8 @@ from panda3d.core import Point3, Vec3
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval, LerpScaleInterval, Parallel
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.toon import ParticleLoader
+from GagState import GagState
 from SquirtGag import SquirtGag
 import GagGlobals
 
@@ -35,17 +37,30 @@ class FireHose(SquirtGag):
         self.timeout = 6
         self.sprayRotation = Vec3(0, 5, 0)
 
-    def start(self):
+        self.sprayParticleRoot = None
+        self.spRootUpdateTask = None
+        self.spraySound = base.audio3d.loadSfx("phase_14/audio/sfx/squirtgun_spray_loop.ogg")
+        self.sprayParticle = ParticleLoader.loadParticleEffect("phase_14/etc/spray.ptf")
+
+    def cleanupHydrantNode(self):
+        if self.hydrantNode:
+            self.hydrantNode.removeNode()
+            self.hydrentNode = None
+
+    def reset(self):
+        SquirtGag.reset(self)
         self.deleteHoseStuff()
 
-        def cleanupHydrantNode():
-            if self.hydrantNode:
-                self.hydrantNode.removeNode()
-                self.hydrentNode = None
+    def equip(self):
+        self.deleteHoseStuff()
 
-        SquirtGag.start(self)
+        SquirtGag.equip(self)
         if self.isLocal():
-            self.startTimeout()
+            vm = self.getViewModel()
+            fpsCam = self.getFPSCam()
+            fpsCam.setVMGag(self.gag, pos = (-1.8, 1.06, -4.13), hpr = (0, 90, 0), hand = 1, animate = False)
+            fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "hose_draw"), Func(vm.loop, "hose_idle")))
+            
         self.origin = self.getSprayStartPos()
         self.hydrant = loader.loadModel('phase_5/models/props/battle_hydrant.bam')
         self.gag.reparentTo(self.hydrant)
@@ -61,32 +76,39 @@ class FireHose(SquirtGag):
             self.hydrant.setPos(torso, 0, 0, -1.85)
         else:
             self.hydrant.setPos(torso, 0, 0, -1.45)
-        base = self.hydrant.find('**/base')
-        base.setColor(1, 1, 1, 0.5)
-        base.setPos(self.avatar, 0, 0, 0)
+        hbase = self.hydrant.find('**/base')
+        hbase.setColor(1, 1, 1, 0.5)
+        hbase.setPos(self.avatar, 0, 0, 0)
 
         self.avatar.loop('neutral')
+
+        self.sprayParticleRoot = render.attachNewNode('sprayParticleRoot')
+        self.spRootUpdateTask = taskMgr.add(self.__spRootUpdate, "spRootUpdate")
 
         tAppearDelay = 0.7
         dAnimHold = 5.1
         dHoseHold = 0.7
         tSprayDelay = 2.8
         track = Parallel()
-        toonTrack = Sequence(Wait(tAppearDelay), ActorInterval(self.avatar, 'firehose'), Func(self.avatar.loop, 'neutral'))
-        sprayTrack = Sequence(Wait(tSprayDelay), Func(self.release))
+        toonTrack = Sequence(Wait(tAppearDelay),
+                             Func(self.avatar.setForcedTorsoAnim, 'firehose'),
+                             ActorInterval(self.avatar, 'firehose', endFrame = 30))
         propTrack = Sequence(Func(self.hydrantNode.reparentTo, self.avatar), LerpScaleInterval(self.hydrantScale, tAppearDelay * 0.5, Point3(1, 1, 1.4),
             startScale=Point3(1, 1, 0.01)), LerpScaleInterval(self.hydrantScale, tAppearDelay * 0.3, Point3(1, 1, 0.8), startScale=Point3(1, 1, 1.4)),
             LerpScaleInterval(self.hydrantScale, tAppearDelay * 0.1, Point3(1, 1, 1.2), startScale=Point3(1, 1, 0.8)),
             LerpScaleInterval(self.hydrantScale, tAppearDelay * 0.1, Point3(1, 1, 1), startScale=Point3(1, 1, 1.2)),
-            ActorInterval(self.gag, 'chan', duration=dAnimHold), Wait(dHoseHold - 0.2),
-            LerpScaleInterval(self.hydrantScale, 0.2, Point3(1, 1, 0.01), startScale=Point3(1, 1, 1)), Func(cleanupHydrantNode))
+            ActorInterval(self.gag, 'chan', endFrame = 30))
         track.append(toonTrack)
-        track.append(sprayTrack)
         track.append(propTrack)
-        track.start()
-        self.hoseTrack = track
+        self.setAnimTrack(track, startNow = True)
 
     def deleteHoseStuff(self):
+        if self.spRootUpdateTask:
+            taskMgr.remove(self.spRootUpdateTask)
+            self.spRootUpdateTask = None
+        if self.sprayParticleRoot:
+            self.sprayParticleRoot.removeNode()
+            self.sprayParticleRoot = None
         if self.hoseTrack:
             self.hoseTrack.pause()
             self.hoseTrack = None
@@ -104,13 +126,41 @@ class FireHose(SquirtGag):
         self.deleteHoseStuff()
         SquirtGag.delete(self)
 
-    def release(self):
+    def __spRootUpdate(self, task):
+        gag = self.gag if not self.isLocal() else self.getVMGag()
+        self.sprayParticleRoot.setHpr(gag.find("**/joint_water_stream").getHpr(render))
+        return task.cont
+
+    def start(self):
+        gag = self.gag if not self.isLocal() else self.getVMGag()
+        base.audio3d.attachSoundToObject(self.spraySound, self.avatar)
+        self.spraySound.setLoop(True)
+        self.spraySound.play()
+        self.sprayParticle.setLightOff()
+        self.sprayParticle.setShaderOff()
+        self.sprayParticle.setMaterialOff()
+        self.sprayParticle.setScale(0.13)
+        self.sprayParticle.start(gag.find("**/joint_water_stream"))
+
+        if self.isLocal():
+            vm = self.getViewModel()
+            fpsCam = self.getFPSCam()
+            fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "hose_shoot_begin"), Func(vm.loop, "hose_shoot_loop")))
+
+    def throw(self):
+        self.spraySound.stop()
         if self.avatar.isEmpty():
             return
-        self.sprayRange = self.avatar.getPos(render) + Point3(0, GagGlobals.SELTZER_RANGE, 0)
-        self.doSpray(self.sprayScale, self.holdTime, self.sprayScale)
-        if self.isLocal():
-            base.localAvatar.sendUpdate('usedGag', [self.id])
+        vm = self.getViewModel()
+        fpsCam = self.getFPSCam()
+        fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "hose_shoot_end"), Func(vm.loop, "hose_idle")))
+        self.sprayParticle.softStop()
+        #self.sprayRange = self.avatar.getPos(render) + Point3(0, GagGlobals.SELTZER_RANGE, 0)
+        #self.doSpray(self.sprayScale, self.holdTime, self.sprayScale)
+        #if self.isLocal():
+        #    base.localAvatar.sendUpdate('usedGag', [self.id])
+
+        self.state = GagState.LOADED
 
     def getSprayStartPos(self):
         self.sprayJoint = self.gag.find('**/joint_water_stream')
