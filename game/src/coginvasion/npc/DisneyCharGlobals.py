@@ -39,7 +39,7 @@ def getBam(num, mdl):
 
 def getDial(num, name):
     if game.process == 'client':
-        return base.loadSfx('phase_{0}/audio/dial/{1}.ogg'.format(num, name))
+        return base.audio3d.loadSfx('phase_{0}/audio/dial/{1}.ogg'.format(num, name))
 
 HOOD2CHAR = {
     CIGlobals.ToontownCentral:    MICKEY,

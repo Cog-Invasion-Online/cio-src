@@ -185,7 +185,7 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
             return
 
         if self.chatsSinceLastNoise >= self.chatsWithoutNoise or self.chatsSinceLastNoise == 0:
-            base.playSfx(self.speechSound, node = self)
+            base.playSfx(self.speechSound)
             self.chatsSinceLastNoise = 0
             self.chatsWithoutNoise = random.randint(1, 5)
         self.chatsSinceLastNoise += 1
