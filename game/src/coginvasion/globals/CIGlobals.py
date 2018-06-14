@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
-from panda3d.core import TextureStage, VBase4
+from panda3d.core import TextureStage, VBase4, TransparencyAttrib
 
 from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval
 
@@ -211,7 +211,7 @@ def makeSplat(pos, color, scale):
     from direct.actor.Actor import Actor
     from direct.interval.IntervalGlobal import ActorInterval
     splat = Actor("phase_3.5/models/props/splat-mod.bam", {"chan": "phase_3.5/models/props/splat-chan.bam"})
-    splat.setBillboardPointEye()
+    splat.setBillboardAxis(3)
     splat.setScale(scale)
     splat.setColor(color)
     splat.reparentTo(render)
@@ -219,7 +219,8 @@ def makeSplat(pos, color, scale):
     splat.setLightOff(1)
     splat.setShaderOff(1)
     splat.setMaterialOff(1)
-    seq = Sequence(ActorInterval(splat, "chan"), Func(splat.cleanup))
+    splat.setTransparency(TransparencyAttrib.MDual)
+    seq = Sequence(ActorInterval(splat, "chan"), Func(splat.cleanup), Func(splat.removeNode))
     seq.start()
 
 def getShinyMaterial(shininess = 250.0):
@@ -436,6 +437,9 @@ ShadowCameraBitmask = BitMask32.bit(5)
 WeaponGroup = BitMask32.bit(6)
 LocalAvGroup = BitMask32.bit(7)
 StreetVisGroup = BitMask32.bit(8)
+
+# For just colliding with the general world.
+WorldGroup = WallGroup | FloorGroup | StreetVisGroup
 
 DialogColor = (1, 1, 0.75, 1)
 DefaultBackgroundColor = (0.3, 0.3, 0.3, 1)
