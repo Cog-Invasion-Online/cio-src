@@ -9,4 +9,4 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 class GagType:
-    THROW, SQUIRT, TRAP, DROP, TOON_UP, SOUND, LURE = range(7)
+    TOON_UP, TRAP, LURE, SOUND, THROW, SQUIRT, DROP = range(7)

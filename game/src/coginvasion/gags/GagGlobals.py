@@ -56,8 +56,8 @@ gagData = {
         'supply': 2, 
     'track' : Trap},
     CIGlobals.FireHose : {'health': 6,
-        'minDamage' : 27,
-        'maxDamage' : 30,
+        'minDamage' : 3,
+        'maxDamage' : 5,
         'minMaxSupply' : 3,
         'maxSupply' : 7,
         'supply' : 3,
@@ -302,8 +302,9 @@ TrackColorByName = {ToonUp : (211 / 255.0, 148 / 255.0, 255 / 255.0),
  Throw : (255 / 255.0, 145 / 255.0, 66 / 255.0),
  Squirt : (255 / 255.0, 65 / 255.0, 199 / 255.0),
  Drop : (67 / 255.0, 243 / 255.0, 255 / 255.0)}
-Type2TrackName = {GagType.TOON_UP : 0, GagType.TRAP : 1, GagType.SOUND : 3, GagType.THROW : 4, GagType.SQUIRT : 5, GagType.DROP : 6}
-TrackNameById = OrderedDict({0 : ToonUp, 1 : Trap, 2 : Lure, 3 : Sound, 4 : Throw, 5 : Squirt, 6 : Drop})
+Type2TrackName = {GagType.TOON_UP : 0, GagType.TRAP : 1, GagType.LURE : 2, GagType.SOUND : 3, GagType.THROW : 4, GagType.SQUIRT : 5, GagType.DROP : 6}
+TrackNameById = OrderedDict({GagType.TOON_UP : ToonUp, GagType.TRAP : Trap, GagType.LURE : Lure,
+                             GagType.SOUND : Sound, GagType.THROW : Throw, GagType.SQUIRT : Squirt, GagType.DROP : Drop})
 TrackGagNamesByTrackName = {Throw : [CIGlobals.Cupcake,
   CIGlobals.FruitPieSlice,
   CIGlobals.CreamPieSlice,
@@ -572,9 +573,9 @@ def processTrackData(trackData, backpack):
         expAmounts = TrackExperienceAmounts.get(track)
         gags = TrackGagNamesByTrackName.get(track)
         
-        for i in range(len(expAmounts)):
+        for i in xrange(len(expAmounts)):
             maxEXP = expAmounts[i]
-            if exp >= maxEXP:
+            if exp >= maxEXP and len(gags) > i:
                 gagAtLevel = gags[i]
                 gagId = gagIdByName.get(gagAtLevel)
                 

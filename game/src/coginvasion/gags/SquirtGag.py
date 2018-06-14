@@ -27,6 +27,7 @@ class SquirtGag(Gag):
         self.origin = None
         self.sprayRange = None
         self.spray = None
+        self.splatDist = None
         self.sprayJoint = None
         self.canSquirt = False
         self.hitSomething = False
@@ -120,12 +121,12 @@ class SquirtGag(Gag):
             self.cleanupSpray()
 
     def handleSplat(self):
-        self.cleanupSplat()
-        self.buildSplat(GagGlobals.splatSizes.get(self.getName()), GagGlobals.WATER_SPRAY_COLOR)
-        self.splat.setPos(self.splatPos)
-        self.splat.reparentTo(render)
+        origSize = GagGlobals.splatSizes.get(self.getName())
+        size = origSize * (self.splatDist / 50.0)
+        size = max(origSize / 3.0, size)
+        CIGlobals.makeSplat(self.splatPos, GagGlobals.WATER_SPRAY_COLOR, size)
         self.splatPos = None
-        taskMgr.doMethodLater(0.5, self.delSplat, 'Delete Splat')
+        self.splatDist = None
 
     def getSprayTrack(self, origin, target, scaleUp, hold, scaleDown, horizScale = 1.0, vertScale = 1.0):
         if self.sprayJoint.isEmpty():

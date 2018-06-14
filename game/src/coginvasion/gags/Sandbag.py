@@ -20,4 +20,4 @@ class Sandbag(LightDropGag):
                 GagGlobals.getProp('5', 'sandbag-chan'), 18, GagGlobals.BAG_DROP_SFX, 
                 GagGlobals.BAG_MISS_SFX, rotate90 = False)
         self.setImage('phase_3.5/maps/sandbag.png')
-        self.colliderRadius = 2
+        self.colliderRadius = 0.75

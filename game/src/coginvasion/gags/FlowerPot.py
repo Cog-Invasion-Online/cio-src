@@ -22,7 +22,7 @@ class FlowerPot(LightDropGag):
                 GagGlobals.getProp('5', 'flowerpot-chan'), 10, GagGlobals.POT_DROP_SFX, 
                 GagGlobals.POT_MISS_SFX, rotate90 = False)
         self.setImage('phase_3.5/maps/flowerpot.png')
-        self.colliderRadius = 2
+        self.colliderRadius = 0.75
         self.colliderOfs = Point3(0, 0, -3.5)
 
     def startDrop(self):

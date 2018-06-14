@@ -21,7 +21,7 @@ class GrandPiano(DropGag):
         DropGag.__init__(self, CIGlobals.GrandPiano, 'phase_5/models/props/piano-mod.bam', 'phase_5/models/props/piano-chan.bam',
                          170, GagGlobals.PIANO_DROP_SFX, GagGlobals.PIANO_MISS_SFX, 1, 1)
         self.setImage('phase_3.5/maps/grand-piano.png')
-        self.colliderRadius = 2
+        self.colliderRadius = 5
         self.colliderOfs = Point3(0, 1.5, 0)
 
     def startDrop(self):

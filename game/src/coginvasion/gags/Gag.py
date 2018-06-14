@@ -302,7 +302,7 @@ class Gag(object):
             cam.setVMGag(self.gag)
             if base.localAvatar.isFirstPerson():
                 base.localAvatar.getViewModel().show()
-            self.drawSfx.play()
+            #self.drawSfx.play()
 
     @abc.abstractmethod
     def unEquip(self):

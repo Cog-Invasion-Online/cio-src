@@ -22,7 +22,7 @@ class Safe(DropGag):
                          60, GagGlobals.SAFE_DROP_SFX, GagGlobals.SAFE_MISS_SFX, 1, 1)
         self.setImage('phase_3.5/maps/safe.png')
         self.colliderOfs = Point3(0, 0, 0.25)
-        self.colliderRadius = 0.75
+        self.colliderRadius = 2
 
     def startDrop(self):
         if self.gag and self.dropLoc:

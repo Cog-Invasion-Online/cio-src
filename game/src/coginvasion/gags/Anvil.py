@@ -20,4 +20,4 @@ class Anvil(LightDropGag):
                 GagGlobals.getProp('4', 'anvil-chan'), 30, GagGlobals.ANVIL_DROP_SFX, 
                 GagGlobals.ANVIL_MISS_SFX, rotate90 = True)
         self.setImage('phase_3.5/maps/anvil.png')
-        self.colliderRadius = 2
+        self.colliderRadius = 0.75
