@@ -45,6 +45,7 @@ class Suit(Avatar):
         self.chat = None
         self.chatDial = None
         self.shadow = None
+        self.deathSound = None
         self.propeller = None
         self.smallExp = None
         self.largeExp = None
@@ -289,8 +290,8 @@ class Suit(Avatar):
         self.nametag.clearChatText()
         self.deleteNameTag()
         self.setShaderOff()
-        deathSound = base.audio3d.loadSfx("phase_3.5/audio/sfx/Cog_Death_Full.ogg")
-        base.audio3d.attachSoundToObject(deathSound, self)
+        self.deathSound = base.audio3d.loadSfx("phase_3.5/audio/sfx/Cog_Death_Full.ogg")
+        base.audio3d.attachSoundToObject(self.deathSound, self)
         trackName = self.uniqueName('enterDie')
 
         smallGears = ParticleLoader.loadParticleEffect('phase_3.5/etc/gearExplosionSmall.ptf')
@@ -317,9 +318,10 @@ class Suit(Avatar):
         self.bigGearExp = bigGearExplosion
 
         gearTrack = Sequence(Wait(0.7), Func(self.doSingleGear), Wait(1.5), Func(self.doSmallGears), Wait(3.0), Func(self.doBigExp))
-        self.suitTrack = Parallel(Sequence(Wait(0.8), SoundInterval(deathSound, node = self, duration = deathSound.length() / 2)),
+        self.suitTrack = Parallel(Sequence(Wait(0.8), SoundInterval(self.deathSound)),
                 Sequence(Wait(0.7), Func(self.doSingleGear), Wait(4.3),
-                Func(self.suitExplode), Wait(1.0), Func(self.disableBodyCollisions), Func(self.__cleanupExplosion)), gearTrack, Sequence(ActorInterval(self, 'lose', duration = 6), Func(self.getGeomNode().hide)), name = trackName)
+                Func(self.suitExplode), Wait(1.0), Func(self.disableBodyCollisions), Func(self.__cleanupExplosion)), gearTrack,
+                Sequence(ActorInterval(self, 'lose', duration = 6), Func(self.getGeomNode().hide)), name = trackName)
         self.suitTrack.setDoneEvent(self.suitTrack.getName())
         self.acceptOnce(self.suitTrack.getName(), self.exitDie)
         if self.isDistributed():
@@ -373,6 +375,9 @@ class Suit(Avatar):
         if hasattr(self, 'bigGearExp'):
             self.bigGearExp.cleanup()
             del self.bigGearExp
+        if self.deathSound:
+            self.deathSound.stop()
+        self.deathSound = Nnoe
         self.__cleanupExplosion()
 
     def enterWin(self, ts = 0):
@@ -546,6 +551,9 @@ class Suit(Avatar):
         Avatar.initShadow(self)
 
     def cleanup(self):
+        if self.footstepSound:
+            self.footstepSound.stop()
+        self.footstepSound = None
         self.cleanupPropeller()
         self.clearChatbox()
         if self.shadow:
@@ -703,7 +711,6 @@ class Suit(Avatar):
             self.suitTrack.finish()
             DelayDelete.cleanupDelayDeletes(self.suitTrack)
             self.suitTrack = None
-        self.footstepSound = None
         self.animFSM.requestFinalState()
         self.cleanup()
         Avatar.disable(self)

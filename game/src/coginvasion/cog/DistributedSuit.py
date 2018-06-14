@@ -314,7 +314,7 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
             if self.isInRange:
                 self.isInRange = False
             self.interruptAttack()
-            self.gruntSound.play()
+            #self.gruntSound.play()
 
         if self.getLevel() > 12:
             if self.hpFlash:
