@@ -31,8 +31,10 @@ GAG_BTN_START = -0.53
 class GagWidget(DirectButton):
 
     Idle = (0, 115 / 255.0, 194 / 255.0, 1)
-    LockedIdle = (0, 115 / 255.0 / 1.75, 194 / 255.0 / 1.75, 1)
     Selected = (0, 115 / 255.0 * 1.5, 194 / 255.0 * 1.5, 1)
+    
+    LockedIdle = (0, 115 / 255.0 / 1.75, 194 / 255.0 / 1.75, 1)
+    LockedSelected = (0, 115 / 255.0 / 1.75, 194 / 255.0 / 1.75, 1)
 
     def __init__(self, track, gagId):
         self.track = track
@@ -114,16 +116,23 @@ class GagWidget(DirectButton):
         DirectButton.unstash(self)
 
     def select(self):
-        self['image_color'] = self.Selected
+        if self.locked or not self.hasAmmo():
+            self['image_color'] = self.LockedSelected
+        else:
+            self['image_color'] = self.Selected
         self.goalScale = 1.15
 
         if self.track.gsg.currentGag != self:
             if self.track.gsg.currentGag is not None:
                 self.track.gsg.currentGag.deselect()
             self.track.gsg.currentGag = self
+            self.track.gsg.update()
+            
+    def hasAmmo(self):
+        return base.localAvatar.backpack.getSupply(self.gagId) > 0
 
     def deselect(self):
-        if self.locked:
+        if self.locked or not self.hasAmmo():
             self['image_color'] = self.LockedIdle
         else:
             self['image_color'] = self.Idle
@@ -260,24 +269,34 @@ class GagSelectionGui(DirectFrame, FSM):
         self.newTrackSound = None
         self.keyScrollSound = None
         self.selectSound = None
+        self.selectDenySound = None
         self.lastActivityTime = 0.0
         self.activityTask = None
         self.midpoint = 0.0
 
         self.ammoFrame = DirectFrame(parent = self, pos = (0, 0, -0.2), image = 'phase_14/maps/status_bar.png',
-                                     image_scale = (0.461, 0, 0.098), relief = None)
+                                     image_scale = (0.461 * 0.7, 0, 0.098), relief = None)
         self.ammoFrame.hide()
         self.ammoTitle = OnscreenText(parent = self.ammoFrame, text = 'SUPPLY', fg = (0, 0, 0, 0.65), align = TextNode.ALeft,
-                                      pos = (-0.37, -0.015, 0))
+                                      pos = (-0.37 * 0.7, -0.015, 0))
         self.ammoText = OnscreenText(parent = self.ammoFrame, text = '', fg = (1, 1, 1, 1), shadow = (0, 0, 0, 1),
-                                     align = TextNode.ARight, pos = (0.37, -0.015, 0))
+                                     align = TextNode.ARight, pos = (0.37 * 0.7, -0.015, 0))
 
     def update(self):
         bp = base.localAvatar.backpack
-        if bp and bp.currentGag != -1:
-            self.ammoFrame.showThrough()
+        
+        gagId = -1
+        if self.getCurrentOrNextState() == 'Idle':
             gagId = bp.currentGag
-            self.ammoText.setText('%i/%i' % (bp.getSupply(gagId), bp.getMaxSupply(gagId)))
+        elif self.getCurrentOrNextState() == 'Select':
+            gagId = self.currentGag.gagId
+        
+        if gagId != -1:
+            self.ammoFrame.showThrough()
+            if bp.hasGag(gagId):
+                self.ammoText.setText('%i/%i' % (bp.getSupply(gagId), bp.getMaxSupply(gagId)))
+            else:
+                self.ammoText.setText('')
             col = GagGlobals.TrackColorByName[GagGlobals.getTrackOfGag(gagId)]
             self.ammoFrame['image_color'] = (col[0], col[1], col[2], 1.0)
         else:
@@ -301,6 +320,7 @@ class GagSelectionGui(DirectFrame, FSM):
         base.localAvatar.disableGagKeys()
         self.ammoFrame.setZ(self.AmmoZSelect)
         self.show()
+        self.update()
         self.acceptSelectionClick()
         self.resetTimeout()
         self.activityTask = taskMgr.add(self.__activityTask, "activityTask")
@@ -330,6 +350,7 @@ class GagSelectionGui(DirectFrame, FSM):
     def enterIdle(self):
         self.ammoFrame.setZ(self.AmmoZIdle)
         self.hide()
+        self.update()
         if base.localAvatar.avatarMovementEnabled:
             base.localAvatar.enableGagKeys()
 
@@ -348,6 +369,11 @@ class GagSelectionGui(DirectFrame, FSM):
         self.request('Off')
 
         self.disableControls()
+        
+        self.newTrackSound = None
+        self.keyScrollSound = None
+        self.selectSound = None
+        self.selectDenySound = None
 
         if self.fwdShakeIval:
             self.fwdShakeIval.finish()
@@ -387,12 +413,10 @@ class GagSelectionGui(DirectFrame, FSM):
         self.setX(self.midpoint)
         self.ammoFrame.setX(-self.midpoint)
 
-        self.newTrackSound = base.loadSfx("phase_14/audio/sfx/wpn_hudon.wav")
-        self.newTrackSound.setVolume(0.5)
-        self.keyScrollSound = base.loadSfx('phase_14/audio/sfx/wpn_moveselect.wav')
-        self.keyScrollSound.setVolume(0.5)
-        self.selectSound = base.loadSfx('phase_14/audio/sfx/wpn_select.wav')
-        self.selectSound.setVolume(0.75)
+        self.newTrackSound = base.loadSfx("phase_3/audio/sfx/GUI_create_toon_back.ogg")
+        self.keyScrollSound = base.loadSfx('phase_3/audio/sfx/GUI_rollover.ogg')
+        self.selectSound = base.loadSfx('phase_3/audio/sfx/GUI_create_toon_fwd.ogg')
+        self.selectDenySound = base.loadSfx('phase_4/audio/sfx/ring_miss.ogg')
 
         self.fwdShakeIval = Effects.createXBounce(self, 1, Vec3(self.midpoint, 0, 0.93), 0.05, 0.05)
         self.revShakeIval = Effects.createXBounce(self, 1, Vec3(self.midpoint, 0, 0.93), 0.05, -0.05)
@@ -409,14 +433,26 @@ class GagSelectionGui(DirectFrame, FSM):
         self.request('Idle')
 
     def selectCurrentGag(self):
+        selected = False
+        
         if self.currentGag is not None:
-            if base.localAvatar.backpack.currentGag != self.currentGag.gagId and not self.currentGag.locked:
+            if base.localAvatar.backpack.currentGag == self.currentGag.gagId:
+                selected = True
+            elif (self.currentGag.hasAmmo() and
+                  not self.currentGag.locked):
                 gagId = self.currentGag.gagId
                 base.localAvatar.needsToSwitchToGag = gagId
                 if base.localAvatar.gagsTimedOut == False:
                     base.localAvatar.b_equip(gagId)
-                    self.selectSound.play()
-        self.request('Idle')
+                    selected = True
+                    
+        if not selected:
+            # Denied!
+            self.selectDenySound.play()
+            self.resetTimeout()
+        else:
+            self.selectSound.play()
+            self.request('Idle')
 
     def disableControls(self):
         self.ignore('wheel_up')
