@@ -27,20 +27,21 @@ class DistributedBRPond(DistributedObject):
     WatchMouseMovementTaskName = 'BRWater-watchMouseMovement'
     WaterWatchTaskName = 'BRWater-waterWatch'
     InWaterZ = 0.93
+    PowerLoss = 1
     
     def __init__(self, cr):
         DistributedObject.__init__(self, cr)
-        self.freezeUpSfx = base.loadSfx('phase_8/audio/sfx/freeze_up.ogg')
+        self.freezeUpSfx = base.audio3d.loadSfx('phase_8/audio/sfx/freeze_up.ogg')
         self.freezeUpSfx.setVolume(12)
 
         self.frozenSfxArray = [
-            base.loadSfx('phase_8/audio/sfx/frozen_1.ogg'),
-            base.loadSfx('phase_8/audio/sfx/frozen_2.ogg'),
-            base.loadSfx('phase_8/audio/sfx/frozen_3.ogg')
+            base.audio3d.loadSfx('phase_8/audio/sfx/frozen_1.ogg'),
+            base.audio3d.loadSfx('phase_8/audio/sfx/frozen_2.ogg'),
+            base.audio3d.loadSfx('phase_8/audio/sfx/frozen_3.ogg')
         ]
         self.coolSfxArray = [
-            base.loadSfx('phase_8/audio/sfx/cool_down_1.ogg'),
-            base.loadSfx('phase_8/audio/sfx/cool_down_2.ogg')
+            base.audio3d.loadSfx('phase_8/audio/sfx/cool_down_1.ogg'),
+            base.audio3d.loadSfx('phase_8/audio/sfx/cool_down_2.ogg')
         ]
         
         # Fancy code that will iterate through both lists and set their volume to 12.
@@ -59,6 +60,7 @@ class DistributedBRPond(DistributedObject):
         
     def attachSoundToAvatar(self, avatar, sound):
         """ This is expecting a valid avatar object, either fetched from base.cr.doId2do#get() or passed directly """
+        base.audio3d.attachSoundToObject(sound, avatar)
         base.playSfx(sound, node=avatar)
             
     def __resetAvatarIvalAndUnloadIceCube(self, avatar):
@@ -251,9 +253,8 @@ class DistributedBRPond(DistributedObject):
     def __lowerPowerBar(self, task):
         if self.powerBar['value'] <= 0:
             self.powerBar.update(0)
-        self.powerBar.update(self.powerBar['value'] - 1)
-        task.delayTime = 0.1
-        return task.again
+        self.powerBar.update(int(self.powerBar['value'] - (self.PowerLoss * globalClock.getDt())))
+        return task.cont
     
     def __watchMouseMovement(self, task):
         if self.powerBar['value'] >= self.powerBar['range']:
@@ -263,7 +264,7 @@ class DistributedBRPond(DistributedObject):
         mw = base.mouseWatcherNode
         if mw.hasMouse():
             if not self.lastMouseX or self.lastMouseX != mw.getMouseX():
-                value = (abs(self.lastMouseX - mw.getMouseX()) * globalClock.getDt()) / 0.001
+                value = abs(self.lastMouseX - mw.getMouseX()) / 0.001
                 self.lastMouseX = mw.getMouseX()
                 self.powerBar.update(self.powerBar['value'] + abs(value))
         return task.cont
