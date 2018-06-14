@@ -124,12 +124,7 @@ class ChatInput(DirectObject, StateData.StateData):
     def enableKeyboardShortcuts(self):
         # Enable the shortcuts to open the chat box.
         if base.localAvatarReachable():
-            if not base.localAvatar.GTAControls:
-                for key in self.keyList:
-                    self.acceptOnce(key, self.openChatInput, [key])
-                    self.acceptOnce("shift-" + key, self.openChatInput, ["shift-" + key.upper()])
-            else:
-                self.acceptOnce(base.inputStore.Chat, self.openChatInput, [""])
+            self.acceptOnce(base.inputStore.Chat, self.openChatInput, [""])
             base.localAvatar.enableGagKeys()
 
     def openChatInput(self, key):
