@@ -14,7 +14,7 @@ from DistributedToon import DistributedToon
 from SmartCamera import SmartCamera
 from src.coginvasion.gui.ChatInput import ChatInput
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
-from src.coginvasion.gui.InventoryGui import InventoryGui
+from src.coginvasion.gui.GagSelectionGui import GagSelectionGui
 from src.coginvasion.gags import GagGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval
 from direct.gui.DirectGui import DirectButton, OnscreenText
@@ -677,10 +677,8 @@ class LocalToon(DistributedToon):
     def enableGags(self, andKeys = 0):
         if self.avatarMovementEnabled and andKeys:
             self.enableGagKeys()
-        self.invGui.enable()
-        if self.backpack.getCurrentGag():
-            slot = self.invGui.getSlotOfGag(self.backpack.getCurrentGag())
-            self.invGui.setWeapon(slot, playSound = False)
+        self.invGui.show()
+        self.invGui.enableControls()
 
     def enableGagKeys(self):
         if self.gagThrowBtn:
@@ -703,17 +701,9 @@ class LocalToon(DistributedToon):
     def disableGags(self):
         self.disableGagKeys()
         if self.invGui:
-            self.invGui.disable()
+            self.invGui.hide()
+            self.invGui.disableControls()
         self.b_unEquip()
-
-    def setWeaponType(self, weaponType):
-        enableKeysAgain = 0
-        if weaponType != self.weaponType:
-            enableKeysAgain = 1
-        self.weaponType = weaponType
-        if enableKeysAgain:
-            self.disableGagKeys()
-            self.enableGagKeys()
 
     def resetHeadHpr(self, override = False):
         if self.walkControls.mode == self.walkControls.MThirdPerson or not self.walkControls.controlsEnabled or override:
@@ -1032,7 +1022,7 @@ class LocalToon(DistributedToon):
             self.friendRequestManager.cleanup()
             self.friendRequestManager = None
         if self.invGui:
-            self.invGui.deleteGui()
+            self.invGui.cleanup()
             self.invGui = None
         if self.crosshair:
             self.crosshair.destroy()
@@ -1072,8 +1062,9 @@ class LocalToon(DistributedToon):
 
         #self.accept('c', self.walkControls.setCollisionsActive, [0])
 
-        self.invGui = InventoryGui()
-        self.invGui.createGui()
+        self.invGui = GagSelectionGui()
+        self.invGui.load()
+        self.invGui.hide()
         self.backpack.loadoutGUI = self.invGui
 
         # Unused developer methods.

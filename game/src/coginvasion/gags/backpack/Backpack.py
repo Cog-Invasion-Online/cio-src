@@ -52,6 +52,9 @@ class Backpack(BackpackBase):
             self.currentGag = gagId
             self.gags.get(self.currentGag)[0].equip()
 
+        if self.loadoutGUI:
+            self.loadoutGUI.update()
+
     # Returns the current gag.
     def getCurrentGag(self):
         return self.getGagByID(self.currentGag)
@@ -74,30 +77,15 @@ class Backpack(BackpackBase):
     def getActiveGag(self):
         return self.getGagByID(self.activeGag)
 
-    # Sets the loadout of the backpack.
-    # Must receive a list of up to 4 gag ids or
-    # an empty list.
-    def setLoadout(self, gagIds):
-        BackpackBase.setLoadout(self, gagIds)
-
-        if self.avatar.doId == base.localAvatar.doId:
-            # Let's reset the loadout to show the new one.
-            if self.loadoutGUI:
-                self.loadoutGUI.updateLoadout()
-
     # Adds a gag to the loadout.
     def addLoadoutGag(self, gagId):
         if len(self.loadout) < 4 and self.hasGag(gagId) and not gagId in self.loadout:
             self.loadout.append(gagId)
-            if self.loadoutGUI:
-                self.loadoutGUI.updateLoadout()
 
     # Removes a gag from the loadout.
     def removeLoadoutGag(self, gagId):
         if len(self.loadout) > 0 and gagId in self.loadout:
             self.loadout.remove(gagId)
-            if self.loadoutGUI:
-                self.loadoutGUI.updateLoadout()
 
     # Sets the max supply of a gag.
     # Returns either true or false depending on if the
