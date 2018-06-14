@@ -1080,6 +1080,7 @@ class ParticleAttack(Attack):
                 mdl = handObjPath[0]
                 anims = handObjPath[1]
                 self.handObj = Actor(mdl, anims)
+            self.handObj.setShaderOff(1)
             self.handObj.reparentTo(handObjParent)
         if hasattr(self.suit, 'uniqueName'):
             track_name = self.suit.uniqueName(track_name)
