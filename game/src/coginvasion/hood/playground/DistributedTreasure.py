@@ -56,12 +56,14 @@ class DistributedTreasure(DistributedObject):
         self.accept('enter' + self.uniqueName('treasureSphere'), self.handleEnterSphere)
 
     def loadModel(self, mdlPath, childString = None):
-        self.grabSound = base.loadSfx(self.grabSoundPath)
-        self.rejectSound = base.loadSfx(self.rejectSoundPath)
+        self.grabSound = base.audio3d.loadSfx(self.grabSoundPath)
+        self.rejectSound = base.audio3d.loadSfx(self.rejectSoundPath)
         if self.nodePath is None:
             self.makeNodePath()
         else:
             self.treasure.getChildren().detach()
+        base.audio3d.attachSoundToObject(self.grabSound, self.nodePath)
+        base.audio3d.attachSoundToObject(self.rejectSound, self.nodePath)
         model = loader.loadModel(mdlPath)
         if base.cr.isChristmas():
             model.setTransparency(1)

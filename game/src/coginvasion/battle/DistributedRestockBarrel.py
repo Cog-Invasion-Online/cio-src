@@ -161,8 +161,10 @@ class DistributedRestockBarrel(DistributedNode):
         self.notify.warning('Pickup rejected.')
         
     def build(self):
-        self.grabSfx = base.loadSfx(self.grabSoundPath)
-        self.rejectSfx = base.loadSfx(self.rejectSoundPath)
+        self.grabSfx = base.audio3d.loadSfx(self.grabSoundPath)
+        self.rejectSfx = base.audio3d.loadSfx(self.rejectSoundPath)
+        base.audio3d.attachSoundToObject(self.grabSfx, self)
+        base.audio3d.attachSoundToObject(self.rejectSfx, self)
         self.barrel = loader.loadModel('phase_4/models/cogHQ/gagTank.bam')
         self.barrel.setScale(self.barrelScale)
         self.barrel.reparentTo(self)

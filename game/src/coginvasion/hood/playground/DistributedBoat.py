@@ -74,10 +74,10 @@ class DistributedBoat(DistributedObject):
 
     def generate(self):
         DistributedObject.generate(self)
-        self.soundFogHorn = base.loadSfx(self.fogHorn)
-        self.soundShipBell = base.loadSfx(self.shipBell)
-        self.soundWaterLap = base.loadSfx(self.waterLap)
-        self.soundDockCreak = base.loadSfx(self.dockCreak)
+        self.soundFogHorn = base.audio3d.loadSfx(self.fogHorn)
+        self.soundShipBell = base.audio3d.loadSfx(self.shipBell)
+        self.soundWaterLap = base.audio3d.loadSfx(self.waterLap)
+        self.soundDockCreak = base.audio3d.loadSfx(self.dockCreak)
         #try:
         #    self.boat = self.cr.playGame.hood.loader.geom.find('**/' + self.boatPath)
         #except:
@@ -85,6 +85,10 @@ class DistributedBoat(DistributedObject):
     #        return
         self.boat = self.cr.playGame.hood.loader.geom.find('**/' + self.boatPath)
         self.boat.setMaterial(CIGlobals.getShinyMaterial())
+        base.audio3d.attachSoundToObject(self.soundFogHorn, self.boat)
+        base.audio3d.attachSoundToObject(self.soundShipBell, self.boat)
+        base.audio3d.attachSoundToObject(self.soundWaterLap, self.boat)
+        base.audio3d.attachSoundToObject(self.soundDockCreak, self.boat)
         self.generated()
 
     def generated(self):

@@ -58,12 +58,12 @@ class DistributedBattleTrolley(DistributedObject):
         self.trolleyCar = None
         self.trolleyKey = None
         self.countdownText = None
-        self.trolleyAwaySfx = base.loadSfx('phase_4/audio/sfx/SZ_trolley_away.ogg')
+        self.trolleyAwaySfx = base.audio3d.loadSfx('phase_4/audio/sfx/SZ_trolley_away.ogg')
 
         if self.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
-            self.trolleyAwaySfx = base.loadSfx('winter/audio/sfx/SZ_trolley_away.mp3')
+            self.trolleyAwaySfx = base.audio3d.loadSfx('winter/audio/sfx/SZ_trolley_away.mp3')
 
-        self.trolleyBellSfx = base.loadSfx('phase_4/audio/sfx/SZ_trolley_bell.ogg')
+        self.trolleyBellSfx = base.audio3d.loadSfx('phase_4/audio/sfx/SZ_trolley_bell.ogg')
         self.toZone = 0
         self.localAvOnTrolley = False
         self.trolleyEnterTrack = None
@@ -87,10 +87,11 @@ class DistributedBattleTrolley(DistributedObject):
         findStr = '**/prop_trolley_station_' + hoodAbbr + '_DNARoot'
         
         self.trolleyStation = hood.loader.geom.find(findStr)
-        if self.trolleyStation.isEmpty():
-            print 'Index: ' + str(self.index)
         self.trolleyCar = self.trolleyStation.find('**/trolley_car')
         self.trolleyKey = self.trolleyStation.find('**/key')
+
+        base.audio3d.attachSoundToObject(self.trolleyAwaySfx, self.trolleyCar)
+        base.audio3d.attachSoundToObject(self.trolleyBellSfx, self.trolleyCar)
 
         exitFog = Fog('TrolleyExitFog')
         exitFog.setColor(0.0, 0.0, 0.0)

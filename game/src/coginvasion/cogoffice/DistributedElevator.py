@@ -27,8 +27,8 @@ class DistributedElevator(DistributedObject):
 
     def __init__(self, cr):
         DistributedObject.__init__(self, cr)
-        self.openSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_open.ogg')
-        self.closeSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_close.ogg')
+        self.openSfx = base.audio3d.loadSfx('phase_5/audio/sfx/elevator_door_open.ogg')
+        self.closeSfx = base.audio3d.loadSfx('phase_5/audio/sfx/elevator_door_close.ogg')
         self.elevatorPoints = ElevatorPoints
         self.type = ELEVATOR_NORMAL
         self.countdownTime = ElevatorData[self.type]['countdown']
@@ -164,6 +164,8 @@ class DistributedElevator(DistributedObject):
         self.rightDoor = self.getRightDoor()
         self.setupElevator()
         self.setupCountdownText()
+        base.audio3d.attachSoundToObject(self.closeSfx, self.getElevatorModel())
+        base.audio3d.attachSoundToObject(self.openSfx, self.getElevatorModel())
         self.sendUpdate('requestStateAndTimestamp')
 
     def setState(self, state, timestamp):
