@@ -138,10 +138,10 @@ class WaterReflectionManager:
         mat.setSpecular((1, 1, 1, 1))
         node.setMaterial(mat, 5)
         node.setTransparency(TransparencyAttrib.MAlpha, 1)
-        node.setTexture(loader.loadTexture("water.png"), 1)
+        node.setTexture(loader.loadTexture("phase_14/maps/water_surface.png"), 1)
         ts = TextureStage('water_nm')
         ts.setMode(TextureStage.MNormal)
-        node.setTexture(ts, loader.loadTexture("water_normal.png"))
+        node.setTexture(ts, loader.loadTexture("phase_14/maps/water_surface_normal.png"))
         node.hide(REFL_CAM_BITMASK)
         node.projectTexture(self.ts, self.finalTex, self.wcamera)
 

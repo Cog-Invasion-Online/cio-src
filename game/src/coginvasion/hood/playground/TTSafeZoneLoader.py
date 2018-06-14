@@ -77,7 +77,7 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         normalStage.setMode(TextureStage.MNormal)
         
         fences = ["fence5", "fence11", "fence10", "fence8"]
-        fenceNormal = loader.loadTexture("ttc_fence_normal.jpg")
+        fenceNormal = loader.loadTexture("phase_14/maps/ttc_fence_normal.jpg")
         for fenceName in fences:
             fence = self.geom.find("**/" + fenceName)
             fence.setTexture(normalStage, fenceNormal)
