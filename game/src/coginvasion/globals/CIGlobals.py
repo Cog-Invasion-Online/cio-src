@@ -362,7 +362,7 @@ def getThemeSong():
 def getHolidayTheme():
     global holidayTheme
     if not holidayTheme:
-        holidayTheme = 'phase_3/audio/bgm/ci_holiday_christmas_bgm.ogg'
+        holidayTheme = 'ci_holiday_christmas_bgm'
     return holidayTheme
 
 # Helper method to check if two objects are facing each other like so: -> <-
@@ -374,6 +374,7 @@ def areFacingEachOther(obj1, obj2):
 def fixGrayscaleTextures(np):
     for tex in np.findAllTextures():
         if (tex.getFormat() == Texture.F_luminance):
+            print "Fixing grayscale texture", tex.getName()
             img = PNMImage()
             tex.store(img)
             img.makeRgb()

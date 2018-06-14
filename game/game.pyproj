@@ -12,7 +12,7 @@
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <InterpreterId>Global|VisualStudio|cio-panda3d python</InterpreterId>
+    <InterpreterId>Global|VisualStudio|cio-panda3d Python</InterpreterId>
     <InterpreterVersion>2.7</InterpreterVersion>
     <IsWindowsApplication>False</IsWindowsApplication>
     <InterpreterPath>..\Panda3D-CI\python\ppython.exe</InterpreterPath>
@@ -305,6 +305,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\gui\Crosshair.py" />
     <Compile Include="src\coginvasion\gui\CutsceneGUI.py" />
     <Compile Include="src\coginvasion\gui\Dialog.py" />
+    <Compile Include="src\coginvasion\gui\GagSelectionGui.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\gui\InventoryGui.py" />
     <Compile Include="src\coginvasion\gui\KickBanDialog.py" />
     <Compile Include="src\coginvasion\gui\KOTHGui.py" />
@@ -750,7 +753,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Folder Include="tools\nirai\" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|VisualStudio|cio-panda3d python" />
+    <InterpreterReference Include="Global|VisualStudio|cio-panda3d Python" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

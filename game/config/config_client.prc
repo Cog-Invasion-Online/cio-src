@@ -35,10 +35,10 @@ model-path .
 # Audio...
 
 # Woo-hoo!!!! Miles!!
-audio-library-name p3fmod_audio
+#audio-library-name p3fmod_audio
 #miles-audio-expand-mp3-threshold 10000000
 #miles-audio-panda-threads #t
-#audio-library-name p3openal_audio
+audio-library-name p3openal_audio
 
 # Virtual file system...
 vfs-mount resourcepack/phase_3 phase_3
@@ -90,7 +90,7 @@ want-playground-gags #t
 
 ctmusic-numsongs 1
 
-want-pstats 1
+want-pstats 0
 
 egg-load-old-curves 0
 
