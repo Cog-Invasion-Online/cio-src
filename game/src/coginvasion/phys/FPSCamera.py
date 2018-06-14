@@ -1,4 +1,4 @@
-from panda3d.core import Point2, WindowProperties, ConfigVariableDouble, Point3, NodePath
+from panda3d.core import Point2, WindowProperties, ConfigVariableDouble, Point3, NodePath, CharacterJointEffect
 
 from direct.showbase.DirectObject import DirectObject
 from direct.actor.Actor import Actor
@@ -100,11 +100,10 @@ class FPSCamera(DirectObject):
 
         hand = self.getViewModelRightHand() if hand == 0 else self.getViewModelLeftHand()
 
-        if isinstance(gag, Actor):
+        if isinstance(gag, Actor) and animate:
             self.vmGag = Actor(other = gag)
             self.vmGag.reparentTo(hand)
-            if animate:
-                self.vmGag.loop('chan')
+            self.vmGag.loop('chan')
         else:
             self.vmGag = gag.copyTo(hand)
         self.vmGag.setPos(pos)

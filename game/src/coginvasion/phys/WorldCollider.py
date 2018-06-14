@@ -6,7 +6,7 @@ from src.coginvasion.globals import CIGlobals
 class WorldCollider(NodePath):
 
     def __init__(self, name, radius, collideEvent,
-                 mask = CIGlobals.FloorGroup | CIGlobals.WallGroup,
+                 mask = CIGlobals.WorldGroup,
                  offset = Point3(0), needSelfInArgs = False):
 
         NodePath.__init__(self, BulletGhostNode(name))

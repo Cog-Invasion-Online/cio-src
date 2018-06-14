@@ -116,6 +116,8 @@ def makeBulletCollFromPandaColl(rootNode, exclusions = []):
             continue
         if pCollNp.node().getType() != CollisionNode.getClassType():
             continue
+        if pCollNp.node().getNumSolids() == 0:
+            continue
 
         mask = pCollNp.node().getIntoCollideMask()
         group = CIGlobals.WallGroup
