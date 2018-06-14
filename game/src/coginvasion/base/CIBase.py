@@ -9,9 +9,11 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3
+from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher
 from panda3d.bullet import BulletWorld, BulletDebugNode
 
 from direct.showbase.ShowBase import ShowBase
+from direct.showbase.Audio3DManager import Audio3DManager
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.filter.CommonFilters import CommonFilters
 
@@ -66,6 +68,15 @@ class CIBase(ShowBase):
             
         self.shadowCaster = ShadowCaster(Vec3(163, -67, 0))
         self.shadowCaster.enable()
+
+        # Setup 3d audio                                 run before igLoop so 3d positioning doesn't lag behind
+        base.audio3d = Audio3DManager(base.sfxManagerList[0], camera, taskPriority = 40)
+        base.audio3d.setDropOffFactor(0.1)
+
+        # Setup collision handlers
+        base.lifter = CollisionHandlerFloor()
+        base.pusher = CollisionHandlerPusher()
+        base.queue = CollisionHandlerQueue()
         
         self.accept('/', self.projectShadows)
 

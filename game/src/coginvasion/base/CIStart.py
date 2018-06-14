@@ -158,6 +158,7 @@ cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
 if not game.userealshadows:
     cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
 cbm.addBin('gui-popup', CullBinManager.BTUnsorted, 60)
+cbm.addBin('gsg-popup', CullBinManager.BTFixed, 70)
 base.setBackgroundColor(CIGlobals.DefaultBackgroundColor)
 base.disableMouse()
 base.enableParticles()
