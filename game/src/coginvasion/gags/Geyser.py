@@ -20,8 +20,7 @@ from panda3d.core import Point3
 class Geyser(SquirtGag, ChargeUpGag):
 
     def __init__(self):
-        SquirtGag.__init__(self, CIGlobals.Geyser, GagGlobals.getProp(5, 'geyser'), 105,
-                           GagGlobals.GEYSER_HIT_SFX, None, None, None, None, None, None, 1, 1)
+        SquirtGag.__init__(self, CIGlobals.Geyser, GagGlobals.getProp(5, 'geyser'), GagGlobals.GEYSER_HIT_SFX)
         ChargeUpGag.__init__(self, 24, 10, 50, 0.5, maxCogs = 4)
         self.setImage('phase_3.5/maps/geyser.png')
         self.entities = []

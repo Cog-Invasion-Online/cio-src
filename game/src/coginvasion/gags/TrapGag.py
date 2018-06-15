@@ -16,7 +16,7 @@ import datetime
 class TrapGag(Gag):
 
     def __init__(self, name, model, damage, hitSfx, anim = None, doesAutoRelease = True):
-        Gag.__init__(self, name, model, damage, GagType.TRAP, hitSfx, anim = anim, autoRelease = doesAutoRelease)
+        Gag.__init__(self, name, model, GagType.TRAP, hitSfx, anim = anim)
         self.hitSfx = None
         self.entity = None
         self.timeout = 3.0

@@ -18,7 +18,7 @@ import random
 class ToonUpGag(Gag):
 
     def __init__(self, name, model, minHeal, maxHeal, efficiency, healSfx, playRate, anim = None):
-        Gag.__init__(self, name, model, 0, GagType.TOON_UP, healSfx, anim = anim, playRate = playRate, scale = 1, autoRelease = False)
+        Gag.__init__(self, name, model, GagType.TOON_UP, healSfx, anim = anim, scale = 1)
         self.minHeal = minHeal
         self.maxHeal = maxHeal
         self.efficiency = efficiency

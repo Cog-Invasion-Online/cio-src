@@ -20,7 +20,7 @@ import random
 class SoundGag(Gag):
 
     def __init__(self, name, model, damage, appearSfx, soundSfx, soundRange = 18, hitSfx = None):
-        Gag.__init__(self, name, model, damage, GagType.SOUND, hitSfx, playRate = 1, anim = None, scale = 1, autoRelease = True)
+        Gag.__init__(self, name, model, GagType.SOUND, hitSfx, anim = None, scale = 1)
         self.appearSfx = None
         self.soundSfx = None
         self.soundRange = soundRange

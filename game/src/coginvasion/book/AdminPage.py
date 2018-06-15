@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import SceneGraphAnalyzer, LineStream
+from panda3d.core import SceneGraphAnalyzer, LineStream, PStatClient
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.gui.DirectGui import OnscreenText, DirectButton, DirectEntry
@@ -229,6 +229,16 @@ class AdminPage(BookPage):
             text_pos = (0, -0.01),
             command = self.doStartDirect
         )
+        self.pstatsBtn = DirectButton(
+            geom = geom,
+            text_scale = 0.04,
+            relief = None,
+            scale = 1.0,
+            text = "Toggle PStats",
+            pos = (-0.45, 0.15, 0.0),
+            text_pos = (0, -0.01),
+            command = self.togglePStats
+        )
         self.tokenBtn = DirectButton(
             geom = geom,
 			text_scale = 0.04,
@@ -329,6 +339,12 @@ class AdminPage(BookPage):
     def togglePhysDbg(self):
         base.setPhysicsDebug(not base.physicsDbgFlag)
 
+    def togglePStats(self):
+        if PStatClient.isConnected():
+            PStatClient.disconnect()
+        else:
+            PStatClient.connect()
+
     def toggleBackground(self):
         if render.isHidden():
             render.show()
@@ -380,3 +396,5 @@ class AdminPage(BookPage):
         del self.directBtn
         self.listBtn.destroy()
         del self.listBtn
+        self.pstatsBtn.destroy()
+        del self.pstatsBtn

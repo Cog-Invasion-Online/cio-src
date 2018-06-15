@@ -320,14 +320,13 @@ class Suit(Avatar):
         gearTrack = Sequence(Wait(0.7), Func(self.doSingleGear), Wait(1.5), Func(self.doSmallGears), Wait(3.0), Func(self.doBigExp))
         self.suitTrack = Parallel(Sequence(Wait(0.8), SoundInterval(self.deathSound)),
                 Sequence(Wait(0.7), Func(self.doSingleGear), Wait(4.3),
-                Func(self.suitExplode), Wait(1.0), Func(self.disableBodyCollisions), Func(self.__cleanupExplosion)), gearTrack,
+                Func(self.suitExplode), Wait(1.0), Func(self.disableBodyCollisions)), gearTrack,
                 Sequence(ActorInterval(self, 'lose', duration = 6), Func(self.getGeomNode().hide)), name = trackName)
         self.suitTrack.setDoneEvent(self.suitTrack.getName())
         self.acceptOnce(self.suitTrack.getName(), self.exitDie)
         if self.isDistributed():
             self.suitTrack.delayDelete = DelayDelete.DelayDelete(self, trackName)
         self.suitTrack.start(ts)
-        del deathSound
 
     def doSingleGear(self):
         self.singleGear.start(self.getGeomNode())
@@ -342,19 +341,12 @@ class Suit(Avatar):
         self.bigGearExp.start(self.getGeomNode())
 
     def suitExplode(self):
-        self.explosion = loader.loadModel('phase_3.5/models/props/explosion.bam')
-        self.explosion.setScale(0.5)
-        self.explosion.reparentTo(render)
-        self.explosion.setBillboardPointEye()
         if self.variant == Variant.SKELETON:
-            self.explosion.setPos(self.getPart('body').find('**/joint_head').getPos(render) + (0, 0, 2))
+            pos = self.getPart('body').find('**/joint_head').getPos(render) + (0, 0, 2)
         else:
-            self.explosion.setPos(self.headModel.getPos(render) + (0,0,2))
+            pos = self.headModel.getPos(render) + (0,0,2)
 
-    def __cleanupExplosion(self):
-        if self.explosion:
-            self.explosion.removeNode()
-            self.explosion = None
+        CIGlobals.makeExplosion(pos, 0.5)
 
     def exitDie(self):
         if self.suitTrack != None:
@@ -377,8 +369,7 @@ class Suit(Avatar):
             del self.bigGearExp
         if self.deathSound:
             self.deathSound.stop()
-        self.deathSound = Nnoe
-        self.__cleanupExplosion()
+        self.deathSound = None
 
     def enterWin(self, ts = 0):
         self.play('win')

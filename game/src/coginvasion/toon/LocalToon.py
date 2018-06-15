@@ -756,13 +756,8 @@ class LocalToon(DistributedToon):
         if not activeGag:
             activeGag = self.backpack.getCurrentGag()
 
-        if not activeGag.doesAutoRelease():
-            Sequence(Wait(0.75), Func(self.releaseGag)).start()
-
     def releaseGag(self):
-        print "LocalToon.releaseGag"
         if not self.canUseGag(False) or self.backpack.getCurrentGag().__class__.__name__ == 'BananaPeel':
-            print "Can't use gag?"
             return
         gag = self.backpack.getActiveGag()
         if not gag:
@@ -770,8 +765,6 @@ class LocalToon(DistributedToon):
         if gag.getState() != GagState.RELEASED:
             gagName = gag.getName()
             self.b_gagRelease(GagGlobals.getIDByName(gagName))
-        else:
-            print "state is released, rip"
 
     def checkSuitHealth(self, suit):
         pass

@@ -221,18 +221,6 @@ base.rightCells = [
     base.marginManager.addCell(-0.1, -1.4, base.a2dTopRight)
 ]
 
-# HACK: I don't feel like making a new file that inherits from ShowBase so I'm just going to do this...
-def setCellsActive(cells, active):
-    for cell in cells:
-        cell.setActive(active)
-    base.marginManager.reorganize()
-base.setCellsActive = setCellsActive
-
-def windowEvent(win):
-    ShowBase.windowEvent(base, win)
-    base.marginManager.updateMarginVisibles()
-base.windowEvent = windowEvent
-
 base.mouseWatcherNode.setEnterPattern('mouse-enter-%r')
 base.mouseWatcherNode.setLeavePattern('mouse-leave-%r')
 base.mouseWatcherNode.setButtonDownPattern('button-down-%r')

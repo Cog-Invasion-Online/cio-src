@@ -34,7 +34,7 @@ class ThrowGag(Gag):
     FinalThrowFrame = 90
 
     def __init__(self, name, model, damage, hitSfx, splatColor, anim = None, scale = 1):
-        Gag.__init__(self, name, model, damage, GagType.THROW, hitSfx, anim = anim, scale = scale, autoRelease = True)
+        Gag.__init__(self, name, model, GagType.THROW, hitSfx, anim = anim, scale = scale)
         self.splatScale = GagGlobals.splatSizes[self.name]
         self.splatColor = splatColor
         self.entities = []
@@ -71,6 +71,10 @@ class ThrowGag(Gag):
                 self.gag.loop('chan')
         return self.gag
 
+    def __doDraw(self):
+        self.doDrawAndHold('pie', 0, self.BobStartFrame, self.playRate, self.BobStartFrame,
+                           self.BobEndFrame, self.playRate * self.BobPlayRateMultiplier)
+
     def equip(self):
         Gag.equip(self)
 
@@ -82,29 +86,6 @@ class ThrowGag(Gag):
             vm = base.localAvatar.getViewModel()
             fpsCam = base.localAvatar.getFPSCam()
             fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "pie_draw"), Func(vm.loop, "pie_idle")))
-
-        self.__doHold()
-
-    def __doHold(self):
-        self.clearAnimTrack()
-        self.maybeBuild()
-        self.setAnimTrack(Sequence(
-            Func(self.avatar.setForcedTorsoAnim, 'pie'),
-            Func(self.avatar.setPlayRate, self.playRate, 'pie'),
-            self.getAnimationTrack('pie', startFrame=0, 
-                endFrame=self.BobStartFrame, 
-            playRate=self.playRate),
-            Func(self.__doBob)
-        ))
-        
-        self.animTrack.start()
-
-    def __doBob(self):
-        self.clearAnimTrack()
-        self.animTrack = self.getBobSequence('pie', self.BobStartFrame, 
-                                             self.BobEndFrame, 
-                                             (self.playRate * self.BobPlayRateMultiplier))
-        self.animTrack.loop()
 
     def start(self):
         Gag.start(self)
@@ -159,7 +140,7 @@ class ThrowGag(Gag):
                 Sequence(
                     self.getAnimationTrack('pie', startFrame=self.ThrowObjectFrame,
                                            playRate=(self.playRate * self.ReleasePlayRateMultiplier)),
-                    Func(self.__doHold),
+                    Func(self.__doDraw),
                 ),
                 Sequence(
                     Func(shouldRelease)

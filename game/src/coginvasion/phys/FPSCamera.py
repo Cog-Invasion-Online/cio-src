@@ -263,7 +263,7 @@ class FPSCamera(DirectObject):
             xBob = math.sin(time * 5) * (amplitude * 1.3)
 
             vmBob.set(xBob, -bob * 2, -bob)
-            vmRaise.set(0, abs(self.camRoot.getP()) * -0.002, self.camRoot.getP() * -0.002)
+            vmRaise.set(0, abs(self.camRoot.getP()) * -0.002, self.camRoot.getP() * 0.002)
             camBob.set(0, 0, cBob)
 
         # Apply bob, raise, and sway to the viewmodel.

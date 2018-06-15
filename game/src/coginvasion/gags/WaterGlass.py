@@ -19,9 +19,7 @@ import GagGlobals
 class WaterGlass(SquirtGag):
 
     def __init__(self):
-        SquirtGag.__init__(self, CIGlobals.WaterGlass, "phase_5/models/props/glass-mod.bam", 8,
-                            GagGlobals.NULL_SFX, GagGlobals.NULL_SFX, GagGlobals.NULL_SFX, 'spit',
-                            82, 110)
+        SquirtGag.__init__(self, CIGlobals.WaterGlass, "phase_5/models/props/glass-mod.bam", GagGlobals.NULL_SFX)
         self.setHealth(GagGlobals.WATERGLASS_HEAL)
         self.setImage('phase_3.5/maps/water-glass.png')
         self.anim = 'spit'

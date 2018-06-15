@@ -47,9 +47,6 @@ class LocationGag:
         self.buildButton()
         self.button.reparentTo(self.avatar.find('**/def_joint_left_hold'))
 
-        track = Sequence(Func(self.avatar.setForcedTorsoAnim, self.buttonAnim),
-                         self.getAnimationTrack(self.buttonAnim, 0, self.chooseLocFrame, self.playRate))
-
         if self.isLocal():
             fpsCam = base.localAvatar.getFPSCam()
             vm = fpsCam.viewModel
@@ -61,18 +58,14 @@ class LocationGag:
             self.locationSeeker = LocationSeeker(self.avatar, self, self.minDistance, self.maxDistance)
             self.locationSeeker.setShadowType(self.isCircle, self.shadowScale)
             self.avatar.acceptOnce(self.locationSeeker.getLocationSelectedName(), base.localAvatar.releaseGag)
-            track.append(Func(self.locationSeeker.startSeeking))
 
             self.helpInfo = OnscreenText(text = 'Move the shadow with your mouse\nClick to release',
                 pos = (0, -0.75), font = CIGlobals.getToonFont(), fg = (1, 1, 1, 1),
                 shadow = (0, 0, 0, 1))
             self.helpInfo.hide() # yeet
 
-        self.setAnimTrack(track, startNow = True)
-
-        #if self.isLocal():
-        #    base.oobe()
-        #    base.localAvatar.getFPSCam().vmGag.place()
+        self.doDrawAndHold(self.buttonAnim, 0, self.chooseLocFrame, bobStart = self.chooseLocFrame,
+                           bobEnd = self.chooseLocFrame + 5, holdCallback = self.locationSeeker.startSeeking)
 
     def release(self):
         if self.avatar:

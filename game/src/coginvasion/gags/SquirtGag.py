@@ -8,75 +8,187 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.core import Point3, Vec3, NodePath, CollisionSphere, CollisionHandlerEvent, CollisionNode
+
+from direct.interval.IntervalGlobal import Sequence, Func, Wait, LerpScaleInterval, Parallel
+from direct.interval.IntervalGlobal import ActorInterval, LerpFunc
+
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.Gag import Gag
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.globals import CIGlobals
-from direct.interval.IntervalGlobal import Sequence, Func, Wait, LerpScaleInterval, Parallel
-from direct.interval.IntervalGlobal import ActorInterval
-from panda3d.core import Point3, Vec3, NodePath, CollisionSphere, CollisionHandlerEvent, CollisionNode
+from src.coginvasion.gags.GagState import GagState
+from src.coginvasion.toon import ParticleLoader
+
 import abc
 
 class SquirtGag(Gag):
 
-    def __init__(self, name, model, damage, hitSfx, spraySfx, missSfx, toonAnim, enableReleaseFrame, completeSquirtFrame, startAnimFrame = 0, scale = 1, playRate = 1):
-        Gag.__init__(self, name, model, damage, GagType.SQUIRT, hitSfx, scale = scale, autoRelease = True, playRate = playRate)
-        self.sprayScale = GagGlobals.splatSizes.get(self.name)
-        self.spraySfx = None
-        self.missSfx = None
-        self.origin = None
-        self.sprayRange = None
-        self.spray = None
+    def __init__(self, name, model, hitSfx, scale = 1):
+        Gag.__init__(self, name, model, GagType.SQUIRT, hitSfx, scale = scale)
         self.splatDist = None
-        self.sprayJoint = None
-        self.canSquirt = False
-        self.hitSomething = False
-        self.toonAnim = toonAnim
-        self.startAnimFrame = 0
-        self.enableReleaseFrame = enableReleaseFrame
-        self.completeSquirtFrame = completeSquirtFrame
-        self.lastFrame = 0
-        self.tracks = None
-        self.sprayTrack = None
-        self.sprayAttempt = None
-        self.sprayRotation = Vec3(0, 0, 0)
 
-        if game.process == 'client':
-            if spraySfx:
-                self.spraySfx = base.audio3d.loadSfx(spraySfx)
-            if missSfx:
-                self.missSfx = base.audio3d.loadSfx(missSfx)
+        self.sprayParticleRoot = None
+        self.waterStreamParent = None
+        self.spRootUpdateTask = None
+        self.sprayParticle = None
+        self.sprayParticleFile = 'phase_14/etc/spray.ptf'
+        self.sprayJoint = 'joint_water_stream'
+        self.spraySound = base.audio3d.loadSfx("phase_14/audio/sfx/squirtgun_spray_loop.ogg")
+        self.spraySound.setVolume(0.0)
+        self.sprayParticleDist = 50.0
+        self.sprayParticleLife = 0.5
+        self.lastDmgTime = 0.0
+        self.dmgIval = 0.2
+        self.spraySoundSpeed = 4.0
+        self.spraySoundIval = None
+
+    def stopSpraySoundIval(self):
+        if self.spraySoundIval:
+            self.spraySoundIval.pause()
+            self.spraySoundIval = None
+
+    def doSpraySoundIval(self, dir = 0):
+        self.stopSpraySoundIval()
+
+        currVol = self.spraySound.getVolume()
+        if dir == 0:
+            goalVol = 1
+        else:
+            goalVol = 0
+        dist = abs(currVol - goalVol)
+        dur = dist / self.spraySoundSpeed
+        ival = Sequence()
+        if dir == 0:
+            ival.append(Func(self.spraySound.play))
+        ival.append(LerpFunc(self.__updateSprayVol, dur, currVol, goalVol))
+        if dir == 1:
+            ival.append(Func(self.spraySound.stop))
+
+        self.spraySoundIval = ival
+        self.spraySoundIval.start()
+
+    def stopParticle(self):
+        if self.spRootUpdateTask:
+            self.spRootUpdateTask.remove()
+            self.spRootUpdateTask = None
+        if self.waterStreamParent:
+            self.waterStreamParent.removeNode()
+            self.waterStreamParent = None
+        if self.sprayParticle:
+            self.sprayParticle.softStop()
+            self.sprayParticle = None
+
+    def reset(self):
+        self.stopParticle()
+        self.stopSpraySoundIval()
+        if self.spraySound:
+            self.spraySound.stop()
+        if self.spRootUpdateTask:
+            taskMgr.remove(self.spRootUpdateTask)
+            self.spRootUpdateTask = None
+        if self.sprayParticleRoot:
+            self.sprayParticleRoot.removeNode()
+            self.sprayParticleRoot = None
+        Gag.reset(self)
+
+    def __updateParticleParent(self, task = None):
+        time = globalClock.getFrameTime()
+        
+        streamPos = self.waterStreamParent.getPos(render)
+        pFrom = camera.getPos(render)
+        pTo = pFrom + camera.getQuat(render).xform(Vec3.forward()) * (self.sprayParticleDist + (pFrom - streamPos).length())
+        hitPos = Point3(pTo)
+        result = base.physicsWorld.rayTestClosest(pFrom, pTo, CIGlobals.WorldGroup)
+        distance = self.sprayParticleDist
+        if result.hasHit():
+            node = result.getNode()
+            hitPos = result.getHitPos()
+            distance = (hitPos - streamPos).length()
+            if time - self.lastDmgTime >= self.dmgIval:
+                self._handleSprayCollision(NodePath(node), hitPos, distance)
+                self.lastDmgTime = time
+            
+        self.waterStreamParent.lookAt(render, hitPos)
+        
+        if self.sprayParticle:
+            system = self.sprayParticle.getParticlesNamed('particles-1')
+            # Make the particles die off at the hit point.
+            lifespan = min(1, distance / self.sprayParticleDist) * self.sprayParticleLife
+            system.factory.setLifespanBase(lifespan)
+        
+        if task:
+            return task.cont
+
+    def __updateSprayVol(self, val):
+        self.spraySound.setVolume(val)
+
+    def loadParticle(self):
+        self.stopParticle()
+        gag = self.gag if not self.isLocal() else self.getVMGag()
+        self.waterStreamParent = gag.find("**/" + self.sprayJoint).attachNewNode("particleParent")
+        self.sprayParticle = ParticleLoader.loadParticleEffect(self.sprayParticleFile)
+        if self.isLocal():
+            # Update now to prevent one particle spraying out the side when we begin.
+            self.__updateParticleParent()
+
+    def equip(self):
+        Gag.equip(self)
+        self.sprayParticleRoot = render.attachNewNode('sprayParticleRoot')
+        self.sprayParticleRoot.setLightOff()
+        self.sprayParticleRoot.setMaterialOff()
+        self.sprayParticleRoot.setShaderOff()
 
     def start(self):
         Gag.start(self)
-        if self.sprayTrack:
-            self.sprayTrack.pause()
-            self.sprayTrack = None
-        if self.tracks:
-            self.tracks.pause()
-            self.tracks = None
-        if self.anim:
-            self.build()
-            self.equip()
-            duration = base.localAvatar.getDuration(self.toonAnim, toFrame = self.enableReleaseFrame)
-            self.sprayAttempt = Parallel(ActorInterval(self.avatar, self.toonAnim, startFrame = self.startAnimFrame, endFrame = self.enableReleaseFrame, playRate = self.playRate),
-                     Wait(duration - 0.15), Func(self.setSquirtEnabled, True)).start()
 
-    def startSquirt(self, sprayScale, containerHold):
-        def startSpray():
-            self.doSpray(sprayScale, containerHold, sprayScale)
-        Sequence(ActorInterval(self.avatar, self.toonAnim, startFrame = self.enableReleaseFrame, endFrame = self.completeSquirtFrame), Func(startSpray)).start()
+        base.audio3d.attachSoundToObject(self.spraySound, self.avatar)
+        self.spraySound.setLoop(True)
 
-    def setSquirtEnabled(self, flag):
-        self.canSquirt = flag
-        self.sprayAttempt = None
+        # Start and fade in the spray sound.
+        self.doSpraySoundIval(0)
 
-    def doSpray(self, scaleUp, scaleDown, hold, horizScale = 1.0, vertScale = 1.0):
-        base.audio3d.attachSoundToObject(self.spraySfx, self.gag)
-        base.playSfx(self.spraySfx, node = self.gag)
-        spraySequence = self.getSprayTrack(self.origin, self.sprayRange, scaleUp, hold, scaleDown, horizScale, vertScale)
-        self.sprayTrack = spraySequence
-        self.sprayTrack.start()
+        self.loadParticle()
+        self.sprayParticle.start(self.waterStreamParent, self.sprayParticleRoot)
+
+        if self.isLocal():
+            self.spRootUpdateTask = taskMgr.add(self.__updateParticleParent, "FH.uPP", sort = -100)
+
+    def throw(self):
+        Gag.throw(self)
+
+        # Fade out and stop the spray sound
+        self.doSpraySoundIval(1)
+        
+        if self.avatar.isEmpty():
+            return
+
+        self.stopParticle()
+
+        if self.isLocal():
+            base.localAvatar.enableGagKeys()
+
+        self.state = GagState.LOADED
+
+    def _handleSprayCollision(self, intoNP, hitPos, distance):
+        avNP = intoNP.getParent()
+        
+        if base.localAvatarReachable() and self.isLocal():
+            for key in base.cr.doId2do.keys():
+                obj = base.cr.doId2do[key]
+                if obj.__class__.__name__ in CIGlobals.SuitClasses:
+                    if obj.getKey() == avNP.getKey():
+                        obj.sendUpdate('hitByGag', [self.getID(), distance])
+                elif obj.__class__.__name__ == "DistributedToon":
+                    if obj.getKey() == avNP.getKey():
+                        if obj.getHealth() < obj.getMaxHealth():
+                            self.avatar.sendUpdate('toonHitByPie', [obj.doId, self.getID()])
+
+            self.splatPos = hitPos
+            self.splatDist = distance
+            gagPos = hitPos
+            self.handleSplat()
+            self.avatar.sendUpdate('setSplatPos', [self.getID(), gagPos.getX(), gagPos.getY(), gagPos.getZ()])
 
     def completeSquirt(self):
         numFrames = base.localAvatar.getNumFrames(self.toonAnim)
@@ -91,35 +203,6 @@ class SquirtGag(Gag):
             if base.localAvatar.getBackpack().getSupply() == 0:
                 self.cleanupGag()
 
-    def onCollision(self, entry):
-        self.hitSomething = True
-        base.audio3d.attachSoundToObject(self.hitSfx, self.sprayNP)
-        base.playSfx(self.hitSfx, node = self.sprayNP)
-        intoNP = entry.getIntoNodePath()
-        avNP = intoNP.getParent()
-        
-        if base.localAvatarReachable() and self.isLocal():
-            for key in base.cr.doId2do.keys():
-                obj = base.cr.doId2do[key]
-                if obj.__class__.__name__ in CIGlobals.SuitClasses:
-                    if obj.getKey() == avNP.getKey():
-                        obj.sendUpdate('hitByGag', [self.getID()])
-                elif obj.__class__.__name__ == "DistributedToon":
-                    if obj.getKey() == avNP.getKey():
-                        if obj.getHealth() < obj.getMaxHealth():
-                            self.avatar.sendUpdate('toonHitByPie', [obj.doId, self.getID()])
-
-            self.splatPos = self.sprayNP.getPos(render)
-            gagPos = self.sprayNP.getPos(render)
-            self.handleSplat()
-            self.avatar.sendUpdate('setSplatPos', [self.getID(), gagPos.getX(), gagPos.getY(), gagPos.getZ()])
-
-    def handleMiss(self):
-        if self.spray and self.hitSomething == False:
-            base.audio3d.attachSoundToObject(self.missSfx, self.spray)
-            base.playSfx(self.missSfx, node = self.spray)
-            self.cleanupSpray()
-
     def handleSplat(self):
         origSize = GagGlobals.splatSizes.get(self.getName())
         size = origSize * (self.splatDist / 50.0)
@@ -127,84 +210,3 @@ class SquirtGag(Gag):
         CIGlobals.makeSplat(self.splatPos, GagGlobals.WATER_SPRAY_COLOR, size)
         self.splatPos = None
         self.splatDist = None
-
-    def getSprayTrack(self, origin, target, scaleUp, hold, scaleDown, horizScale = 1.0, vertScale = 1.0):
-        if self.sprayJoint.isEmpty():
-            self.build()
-            self.origin = self.getSprayStartPos()
-        base.localAvatar.stop(self.toonAnim)
-        self.lastFrame = self.avatar.getCurrentFrame(self.toonAnim)
-        track = Sequence()
-        sprayProp = loader.loadModel(GagGlobals.SPRAY_MDL)
-        sprayProp.setTwoSided(1)
-        sprayScale = hidden.attachNewNode('spray-parent')
-        sprayRot = hidden.attachNewNode('spray-rotate')
-        sprayRot.setColor(GagGlobals.WATER_SPRAY_COLOR)
-        sprayRot.setTransparency(1)
-
-        collNode = CollisionNode('Collision')
-        spraySphere = CollisionSphere(0, 0, 0, 1)
-        spraySphere.setTangible(0)
-        collNode.addSolid(spraySphere)
-        collNode.setCollideMask(CIGlobals.WallBitmask)
-        sprayNP = sprayRot.attachNewNode(collNode)
-        sprayNP.setY(1)
-        self.sprayNP = sprayNP
-        event = CollisionHandlerEvent()
-        event.set_in_pattern("%fn-into")
-        event.set_out_pattern("%fn-out")
-        base.cTrav.add_collider(sprayNP, event)
-        self.avatar.acceptOnce(sprayNP.node().getName() + '-into', self.onCollision)
-
-        def showSpray(sprayScale, sprayProp, origin, target):
-            objects = [sprayRot, sprayScale, sprayProp]
-            for item in objects:
-                index = objects.index(item)
-                if index == 0:
-                    item.reparentTo(self.sprayJoint)
-                    item.setPos(0, 0, 0)
-                    item.setHpr(self.sprayRotation)
-                    item.wrtReparentTo(render)
-                else:
-                    item.reparentTo(objects[index - 1])
-
-        track.append(Func(showSpray, sprayScale, sprayProp, origin, target))
-        self.spray = sprayRot
-
-        def calcTargetScale():
-            distance = Vec3(target - origin).length()
-            yScale = distance / GagGlobals.SPRAY_LEN
-            targetScale = Point3(yScale * horizScale, yScale, yScale * vertScale)
-            return targetScale
-        track.append(Parallel(LerpScaleInterval(sprayScale, scaleUp, calcTargetScale, startScale = GagGlobals.PNT3NEAR0), sprayNP.posInterval(0.25, self.spray.getPos(render) + Point3(0, 50, 0), startPos = self.spray.getPos(render) + Point3(0, 5, 0))))
-        track.append(Wait(hold))
-        track.append(Func(self.handleMiss))
-        track.append(LerpScaleInterval(sprayScale, 0.75, GagGlobals.PNT3NEAR0))
-
-        def hideSpray():
-            lambda prop: prop.removeNode(), [sprayProp, sprayRot, sprayScale]
-        track.append(Func(hideSpray))
-        track.append(Func(self.completeSquirt))
-        return track
-
-    def getSprayRange(self):
-        sprayRange = NodePath('Squirt Range')
-        sprayRange.reparentTo(self.avatar)
-        sprayRange.setScale(render, 1)
-        sprayRange.setPos(0, 160, -90)
-        sprayRange.setHpr(90, -90, 90)
-        return sprayRange
-
-    @abc.abstractmethod
-    def getSprayStartPos(self):
-        return Point3(0, 0, 0)
-
-    def cleanupSpray(self):
-        if self.spray:
-            self.spray.removeNode()
-            self.spray = None
-        if self.sprayAttempt:
-            self.sprayAttempt.pause()
-            self.sprayAttempt = None
-        self.hitSomething = False
-        self.canSquirt = False

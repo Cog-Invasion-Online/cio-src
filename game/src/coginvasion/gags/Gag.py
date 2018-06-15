@@ -11,7 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.actor.Actor import Actor
 from direct.distributed import DelayDelete
 from direct.interval.IntervalGlobal import Parallel, ParallelEndTogether, ActorInterval, Sequence, \
-    LerpScaleInterval, SoundInterval, Wait
+    LerpScaleInterval, SoundInterval, Wait, Func
 
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags.GagType import GagType
@@ -25,29 +25,25 @@ import abc
 
 class Gag(object):
 
-    def __init__(self, name, model, damage, gagType, hitSfx, playRate = 1.0, anim = None, scale = 1, autoRelease = False):
+    def __init__(self, name, model, gagType, hitSfx, anim = None, scale = 1):
         __metaclass__ = ABCMeta
         self.name = name
         self.model = model
         self.anim = anim
         self.scale = scale
-        self.damage = damage
         self.gagType = gagType
-        self.playRate = playRate
+        self.playRate = 1.0
         self.avatar = None
         self.gag = None
+        self.target = None
         self.splat = None
         self.splatPos = None
         self.state = GagState.LOADED
         self.woosh = None
         self.handJoint = None
         self.equipped = False
-        self.autoRelease = autoRelease
         self.index = None
-        self.target = None
-        self.health = 0
         self.id = GagGlobals.getIDByName(name)
-        self.image = None
         self.timeout = 5
         self.animTrack = None
         self.holdGag = True
@@ -67,6 +63,19 @@ class Gag(object):
                 self.woosh = base.audio3d.loadSfx(GagGlobals.PIE_WOOSH_SFX)
             self.hitSfx = base.audio3d.loadSfx(hitSfx)
             self.drawSfx = base.audio3d.loadSfx(GagGlobals.DEFAULT_DRAW_SFX)
+
+    def doDrawAndHold(self, drawAnim, drawAnimStart = None, drawAnimEnd = None,
+                      drawAnimSpeed = 1.0, bobStart = None, bobEnd = None, bobSpeed = 1.0,
+                      holdCallback = None):
+
+        def __doHold():
+            if holdCallback:
+                holdCallback()
+            self.setAnimTrack(self.getBobSequence(drawAnim, bobStart, bobEnd, bobSpeed), startNow = True, looping = True)
+
+        self.setAnimTrack(Sequence(Func(self.avatar.setForcedTorsoAnim, drawAnim),
+                                   self.getAnimationTrack(drawAnim, drawAnimStart, drawAnimEnd, drawAnimSpeed),
+                                   Func(__doHold)), startNow = True)
 
     def getViewModel(self):
         return base.localAvatar.getViewModel()

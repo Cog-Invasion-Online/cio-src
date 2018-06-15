@@ -35,7 +35,6 @@ class WorldCollider(NodePath):
             return
 
         base.physicsWorld.remove(self.node())
-        print "removeNode of WorldCollider"
         NodePath.removeNode(self)
 
     def bitsIntersecting(self, a, b):
@@ -52,10 +51,8 @@ class WorldCollider(NodePath):
                 intoNode = contact.getNode0()
             if intoNode.isOfType(BulletGhostNode.getClassType()):
                 continue
-            print intoNode
             mask = intoNode.getIntoCollideMask()
             if self.bitsIntersecting(mask, self.mask):
-                print "WorldCollider collision! sending event", self.event
                 args = [NodePath(intoNode)]
                 if self.needSelfInArgs:
                     args.insert(0, self)

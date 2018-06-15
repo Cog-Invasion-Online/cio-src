@@ -22,8 +22,7 @@ from panda3d.core import Point3
 class StormCloud(SquirtGag, LocationGag):
 
     def __init__(self):
-        SquirtGag.__init__(self, CIGlobals.StormCloud, GagGlobals.getProp(4, 'stormcloud-mod'), 60,
-                           GagGlobals.CLOUD_HIT_SFX, None, GagGlobals.CLOUD_MISS_SFX, None, None, None, None, 1, 1)
+        SquirtGag.__init__(self, CIGlobals.StormCloud, GagGlobals.getProp(4, 'stormcloud-mod'), GagGlobals.CLOUD_HIT_SFX)
         LocationGag.__init__(self, 10, 50)
         LocationGag.setShadowData(self, isCircle = True, shadowScale = 0.75)
         self.setImage('phase_3.5/maps/storm-cloud.png')

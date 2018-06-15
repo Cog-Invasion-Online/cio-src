@@ -16,69 +16,69 @@ from src.coginvasion.globals import CIGlobals
 from SquirtGag import SquirtGag
 import GagGlobals
 
+import random
+
 class WaterGun(SquirtGag):
 
+    InspectIval = [10, 25]
+
     def __init__(self):
-        SquirtGag.__init__(self, CIGlobals.WaterGun, "phase_4/models/props/water-gun.bam", 12,
-                            GagGlobals.NULL_SFX, GagGlobals.WATERGUN_SFX, GagGlobals.NULL_SFX, 'squirt',
-                            0, 0)
-        self.setHealth(GagGlobals.WATERGLASS_HEAL)
-        self.setImage('phase_3.5/maps/water-gun.png')
+        SquirtGag.__init__(self, CIGlobals.WaterGun, "phase_4/models/props/water-gun.bam", GagGlobals.WATERGUN_SFX)
         self.anim = 'squirt'
-        self.sprayScale = 0.2
+        self.sprayJoint = 'joint_nozzle'
+        self.dmgIval = 0.4
         self.scale = 1.0
-        self.holdTime = 0.0
         self.shootSfx = None
         self.timeout = 3.0
+        self.inspectTask = None
 
-    def build(self):
-        SquirtGag.build(self)
+    def doInspect(self, task):
+        task.delayTime = random.uniform(*self.InspectIval)
+
+        cam = self.getFPSCam()
+        if cam.vmAnimTrack and cam.vmAnimTrack.isPlaying():
+            return task.again
+
+        vm = self.getViewModel()
+        cam.setVMAnimTrack(Sequence(ActorInterval(vm, "sg_inspect"), Func(vm.loop, "sg_idle")))
+
+        return task.again
+
+    def equip(self):
+        SquirtGag.equip(self)
+
+        if self.isLocal():
+            vm = self.getViewModel()
+            fpsCam = self.getFPSCam()
+            vmGag = self.getVMGag()
+            vmGag.setPosHprScale(0.07, 0.17, -0.01,
+                                 -90, 0, 0,
+                                 0.685, 0.685, 0.685)
+            fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "sg_draw"), Func(vm.loop, "sg_idle")))
+            taskMgr.doMethodLater(random.uniform(*self.InspectIval), self.doInspect, "sg_inspectTask")
+
         self.gag.setPos(Point3(0.28, 0.1, 0.08))
         self.gag.setHpr(VBase3(85.6, -4.44, 94.43))
 
+        self.doDrawAndHold('squirt', 0, 48, 1.0, 48, 48)
+
+    def unEquip(self):
+        if self.isLocal():
+            taskMgr.remove("sg_inspectTask")
+        SquirtGag.unEquip(self)
+
     def start(self):
         SquirtGag.start(self)
-        self.origin = self.getSprayStartPos()
-        self.release()
 
-    def release(self):
         if self.isLocal():
-            self.startTimeout()
+            vm = self.getViewModel()
+            fpsCam = self.getFPSCam()
+            fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "sg_shoot_begin"), Func(vm.loop, "sg_shoot_loop")))
 
-        def doSpray():
-            if self.avatar.isEmpty():
-                return
-            self.sprayRange = self.avatar.getPos(render) + Point3(0, GagGlobals.SELTZER_RANGE, 0)
-            self.doSpray(self.sprayScale, self.holdTime, self.sprayScale, horizScale = 0.5, vertScale = 0.5)
-            if self.isLocal():
-                base.localAvatar.sendUpdate('usedGag', [self.id])
-
-        track = Parallel(
-            Sequence(
-                ActorInterval(
-                    self.avatar,
-                    "squirt",
-                    startFrame = 48,
-                    endFrame = 58
-                ),
-                Wait(1.0),
-                ActorInterval(
-                    self.avatar,
-                    "squirt",
-                    startFrame = 107,
-                    endFrame = 126,
-                    playRate = 3
-                )
-            ),
-            Sequence(
-                Wait(0.1),
-                Func(doSpray)
-            )
-        )
-        track.start()
-        self.tracks = track
-
-    def getSprayStartPos(self):
-        self.sprayJoint = self.gag.find('**/joint_nozzle')
-        point = self.sprayJoint.getPos(render)
-        return point
+    def throw(self):
+        SquirtGag.throw(self)
+            
+        if self.isLocal():
+            vm = self.getViewModel()
+            fpsCam = self.getFPSCam()
+            fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "sg_shoot_end"), Func(vm.loop, "sg_idle")))

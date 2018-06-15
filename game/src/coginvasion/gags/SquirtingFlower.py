@@ -20,8 +20,7 @@ from direct.interval.IntervalGlobal import LerpScaleInterval, ActorInterval
 class SquirtingFlower(SquirtGag):
 
     def __init__(self):
-        SquirtGag.__init__(self, CIGlobals.SquirtFlower, GagGlobals.getProp(3.5, 'button'),
-            3, GagGlobals.FLOWER_HIT_SFX, GagGlobals.FLOWER_HIT_SFX, GagGlobals.NULL_SFX, None, 0, 0, 0)
+        SquirtGag.__init__(self, CIGlobals.SquirtFlower, GagGlobals.getProp(3.5, 'button'), GagGlobals.FLOWER_HIT_SFX)
         self.setImage('phase_3.5/maps/squirting-flower.png')
         self.flower = None
         self.flowerScale = 1.5

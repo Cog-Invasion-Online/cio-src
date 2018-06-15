@@ -21,6 +21,7 @@ from src.coginvasion.manager.UserInputStorage import UserInputStorage
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.base.ShadowCaster import ShadowCaster
 from src.coginvasion.base import MusicCache
+from ShakeCamera import ShakeCamera
 from CubeMapManager import CubeMapManager
 from WaterReflectionManager import WaterReflectionManager
 from src.coginvasion.phys import PhysicsUtils
@@ -118,6 +119,11 @@ class CIBase(ShowBase):
         print 'SLANT SET'
         print 'TPM END'
         """
+
+    def doCamShake(self, intensity = 1.0, duration = 0.5, loop = False):
+        shake = ShakeCamera(intensity, duration)
+        shake.start(loop)
+        return shake
 
     def renderFrames(self):
         self.graphicsEngine.renderFrame()
@@ -220,6 +226,11 @@ class CIBase(ShowBase):
 
         self.filters = CommonFilters(self.win, self.cam)
         self.setBloom(self.bloomToggle)
+        
+    def setCellsActive(self, cells, active):
+        for cell in cells:
+            cell.setActive(active)
+        self.marginManager.reorganize()
 
     def saveCubeMap(self, namePrefix = 'cube_map_#.jpg', size = 1024):
         namePrefix = raw_input("Cube map file: ")
@@ -258,6 +269,8 @@ class CIBase(ShowBase):
 
     def adjustWindowAspectRatio(self, aspectRatio):
         if (CIGlobals.getSettingsMgr() is None):
+            ShowBase.adjustWindowAspectRatio(self, aspectRatio)
+            self.credits2d.setScale(1.0 / aspectRatio, 1.0, 1.0)
             return
 
         if (CIGlobals.getSettingsMgr().getSetting("maspr") is True):

@@ -1,14 +1,17 @@
 import random
 
 class ShakeCamera:
-    def __init__(self, intensity, duration=0.5, rate=30.0):
+    def __init__(self, intensity, duration=0.5):
         self.intensity = intensity
         self.duration = duration
-        self.rate = rate
+        self.looping = False
+        self.startTime = 0.0
 
         self.elapsed = 0.0
 
-    def start(self):
+    def start(self, looping = False):
+        self.looping = looping
+        self.startTime = globalClock.getFrameTime()
         taskMgr.add(self.__task, 'shakeCamera')
         
     def stop(self):
@@ -19,17 +22,20 @@ class ShakeCamera:
         random_x = random.random()*2 - 1
         random_z = random.random()*2 - 1
 
+        time = globalClock.getFrameTime()
+
+        self.elapsed = time - self.startTime
+
         lifecycle = self.elapsed / self.duration
         if lifecycle > 1.0:
-            self.elapsed = 0.0
+            self.startTime = time
             base.cam.setPos(0, 0, 0)
-            task.delayTime = 1.0/self.rate
-            return task.again
+            if self.looping:
+                return task.cont
+            return task.done
 
         displacement = (1-lifecycle) * self.intensity
 
         base.cam.setPos(random_x * displacement, 0, random_z * displacement)
 
-        
-        self.elapsed += 1.0/self.rate
-        return task.again
+        return task.cont

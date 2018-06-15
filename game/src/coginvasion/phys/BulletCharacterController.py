@@ -232,13 +232,11 @@ class BulletCharacterController(DirectObject):
         for node in overlapping:
             if node not in self.__prevOverlapping:
                 # The avatar has entered this node.
-                print "enter" + node.getName()
                 messenger.send('enter' + node.getName(), [NodePath(node)])
 
         for node in self.__prevOverlapping:
             if node not in overlapping:
                 # The avatar has exited this node.
-                print "exit" + node.getName()
                 messenger.send('exit' + node.getName(), [NodePath(node)])
 
         self.__prevOverlapping = list(overlapping)

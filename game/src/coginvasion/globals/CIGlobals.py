@@ -12,7 +12,7 @@ from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigV
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
 from panda3d.core import TextureStage, VBase4, TransparencyAttrib
 
-from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval
+from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wait
 
 import math
 
@@ -221,6 +221,30 @@ def makeSplat(pos, color, scale):
     splat.setMaterialOff(1)
     splat.setTransparency(TransparencyAttrib.MDual)
     seq = Sequence(ActorInterval(splat, "chan"), Func(splat.cleanup), Func(splat.removeNode))
+    seq.start()
+
+def makeExplosion(pos = (0, 0, 0), scale = 1, sound = False, shakeCam = True, duration = 1.0):
+    explosion = loader.loadModel('phase_3.5/models/props/explosion.bam')
+    explosion.setScale(scale)
+    explosion.reparentTo(render)
+    explosion.setBillboardPointEye()
+    explosion.setPos(pos)
+
+    if sound:
+        snd = base.audio3d.loadSfx("phase_3.5/audio/sfx/ENC_cogfall_apart.ogg")
+        base.audio3d.attachSoundToObject(snd, explosion)
+        snd.play()
+
+    if shakeCam:
+        dist = camera.getDistance(explosion)
+        maxDist = 80.0 * scale
+        maxIntense = 1.4 * scale
+        if dist <= maxDist:
+            base.doCamShake(maxIntense - (maxIntense * (dist / maxDist)), duration)
+
+    seq = Sequence()
+    seq.append(Wait(duration))
+    seq.append(Func(explosion.removeNode))
     seq.start()
 
 def getShinyMaterial(shininess = 250.0):

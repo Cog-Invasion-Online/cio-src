@@ -25,8 +25,7 @@ class DropGag(Gag, LocationGag):
     notify = directNotify.newCategory('DropGag')
 
     def __init__(self, name, model, anim, damage, hitSfx, missSfx, scale, playRate):
-        Gag.__init__(self, name, model, damage, GagType.DROP, hitSfx, anim = anim, playRate = playRate,
-                     scale = scale, autoRelease = True)
+        Gag.__init__(self, name, model, GagType.DROP, hitSfx, anim = anim, scale = scale)
         LocationGag.__init__(self, 3, 50)
         self.crosshair.wantCrosshair = False
         self.holdGag = False
