@@ -377,7 +377,7 @@ holidayTheme = None
 def getThemeSong():
     global ThemeSong
     if not ThemeSong:
-        themeList = ['ci_theme0', 'ci_theme1', 'ci_theme2', 'ci_theme3', 'ci_theme4']
+        themeList = ['ci_theme0']#, 'ci_theme1', 'ci_theme2', 'ci_theme3', 'ci_theme4']
         import random
         ThemeSong = random.choice(themeList)
 

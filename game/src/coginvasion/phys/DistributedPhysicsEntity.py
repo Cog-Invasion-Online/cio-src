@@ -1,0 +1,24 @@
+
+from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
+
+from PhysicsNodePath import PhysicsNodePath
+
+class DistributedPhysicsEntity(DistributedSmoothNode, PhysicsNodePath):
+
+    def __init__(self, cr):
+        DistributedSmoothNode.__init__(self, cr)
+        PhysicsNodePath.__init__(self, 'physEntity')
+
+    def doSetupPhysics(self):
+        self.setupPhysics(self.getPhysBody(), True)
+
+    def announceGenerate(self):
+        self.doSetupPhysics()
+        DistributedSmoothNode.announceGenerate(self)
+        self.reparentTo(render)
+        self.startSmooth()
+
+    def disable(self):
+        self.stopSmooth()
+        self.cleanupPhysics()
+        DistributedSmoothNode.disable(self)

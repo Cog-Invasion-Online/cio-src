@@ -28,7 +28,10 @@ from panda3d.core import UniqueIdAllocator
 from src.coginvasion.globals import CIGlobals
 from AIZoneData import AIZoneDataStore
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from src.coginvasion.distributed.CogInvasionDoGlobals import DO_ID_DISTRICT_NAME_MANAGER, DO_ID_HOLIDAY_MANAGER, DO_ID_UNIQUE_INTEREST_NOTIFIER
+from src.coginvasion.distributed.CogInvasionDoGlobals import (DO_ID_DISTRICT_NAME_MANAGER,
+                                                              DO_ID_HOLIDAY_MANAGER,
+                                                              DO_ID_UNIQUE_INTEREST_NOTIFIER,
+                                                              DO_ID_CLIENT_SERVICES_MANAGER)
 
 #PStatClient.connect()
 
@@ -51,6 +54,7 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         self.districtNameMgr = self.generateGlobalObject(DO_ID_DISTRICT_NAME_MANAGER, 'DistrictNameManager')
         self.holidayMgr = self.generateGlobalObject(DO_ID_HOLIDAY_MANAGER, 'HolidayManager')
         self.uin = self.generateGlobalObject(DO_ID_UNIQUE_INTEREST_NOTIFIER, 'UniqueInterestNotifier')
+        self.csm = self.generateGlobalObject(DO_ID_CLIENT_SERVICES_MANAGER, 'ClientServicesManager')
         
     def handleCrash(self, e):
         raise e

@@ -31,6 +31,26 @@ class DistributedDistrictAI(DistributedObjectAI):
         self.name = ""
         return
 
+    def spawnTemporaryObject(self, context, dclassNum):
+        # Client wants to spawn and own a temporary object.
+        accId = self.air.getAccountIdFromSender()
+        # Allocate a channel for this object.
+        doId = self.air.allocateChannel()
+
+        dclass = self.air.dclassesByNumber[dclassNum]
+        classDef = dclass.getClassDef()
+        temp = classDef(self.air)
+        temp.generateWithRequiredAndId(doId, self.air.districtId, 0)
+
+        self.notify.info("spawnTemporaryObject: {0}, {1}, {2}".format(context, accId, doId))
+
+        # Grant the client ownership of the temp object from the uberdog.
+        self.air.csm.d_giveClientOwnershipOfObject(context, accId, doId, dclassNum)
+
+    def temporaryObjectComplete(self, ctx, accId, doId):
+        self.notify.info("temporaryObjectComplete: {0}, {1}, {2}".format(ctx, accId, doId))
+        self.sendUpdateToAccountId(accId, 'tempObjectOwnershipGranted', [ctx, doId])
+
     def setDistrictName(self, name):
         self.name = name
 

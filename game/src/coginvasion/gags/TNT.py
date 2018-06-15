@@ -12,9 +12,11 @@ from src.coginvasion.gags.TossTrapGag import TossTrapGag
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
-from direct.interval.IntervalGlobal import Sequence, Wait, Func
+from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval
 from direct.interval.SoundInterval import SoundInterval
 from direct.actor.Actor import Actor
+
+from src.coginvasion.phys.LocalTNT import LocalTNT
 
 class TNT(TossTrapGag):
 
@@ -26,82 +28,37 @@ class TNT(TossTrapGag):
         self.setRechargeTime(19.5)
 
     def start(self):
-        super(TNT, self).start()
-        self.startTrap()
-        if base.localAvatar == self.avatar:
-            Sequence(Wait(1.5), Func(base.localAvatar.b_gagRelease, self.getID())).start()
+        pass
 
-    def release(self):
-        super(TNT, self).release()
+    def throw(self):
+        if self.isLocal():
+            tnt = LocalTNT(self, base.cr)
+            tnt.doId = 0
+            tnt.dclass = base.cr.dclassesByName['DistributedTNT']
+            tnt.generateInit()
+            tnt.generate()
+            tnt.announceGenerate()
+            tnt.postGenerateMessage()
+            base.cr.myDistrict.d_spawnTemporaryObject(tnt, tnt.ownershipGranted)
+            tnt.setPos(self.avatar.find("**/def_joint_right_hold").getPos(render))
+            tnt.toss()
+
+            vm = self.getViewModel()
+            cam = self.getFPSCam()
+            cam.setVMAnimTrack(Func(vm.pose, "pie_draw", 0))
 
     def equip(self):
-        self.build()
-        super(TNT, self).equip()
-        if not self.gag:
-            self.build()
-            self.gag.reparentTo(self.handJoint)
-
-    def unEquip(self):
-        TossTrapGag.unEquip(self)
-
-    def onCollision(self, entry):
-        TossTrapGag.onCollision(self, entry)
-        base.localAvatar.b_gagCollision(self.getID())
-
-    def doCollision(self):
-        if not self.entity:
-            self.build()
-            self.entity = self.gag
-            self.gag = None
-        if self.wantParticles:
-            if not self.particles:
-                self.buildParticles()
-            emitter = self.entity.find('**/joint_attachEmitter')
-            self.particles.start(parent = emitter, renderParent = emitter)
-        base.audio3d.attachSoundToObject(self.idleSfx, self.entity)
-        base.playSfx(self.idleSfx, node = self.entity)
-        if self.entity and self.anim: self.entity.play('chan')
-        if self.track:
-            self.track.pause()
-            self.track = None
+        TossTrapGag.equip(self)
         if self.isLocal():
-            Sequence(Wait(2), Func(self.avatar.b_gagActivate, self.getID())).start()
+            vm = self.getViewModel()
+            cam = self.getFPSCam()
+            cam.setVMGag(self.gag, scale = 0.5, animate = False)
+            cam.setVMAnimTrack(Sequence(ActorInterval(vm, "pie_draw"), Func(vm.loop, "pie_idle")))
 
-    def explode(self):
-        self.explosion = Actor("phase_5/models/props/kapow-mod.bam", {"chan": "phase_5/models/props/kapow-chan.bam"})
-        self.explosion.reparentTo(render)
-        self.explosion.setBillboardPointEye()
-        self.explosion.setPos(self.entity.getPos(render) + (0, 0, 4))
-        self.explosion.setScale(0.5)
-        self.explosion.play('chan')
-        if self.idleSfx:
-            self.idleSfx.stop()
-        base.audio3d.attachSoundToObject(self.hitSfx, self.explosion)
-        SoundInterval(self.hitSfx, node = self.explosion).start()
-        self.cleanupParticles()
-        self.cleanupEntity()
-        self.setState(GagState.LOADED)
-        backpack = self.avatar.getBackpack()
-        if backpack.getSupply(self.getID()) > 0 and backpack.getCurrentGag() == self:
-            self.equip()
-        Sequence(Wait(0.5), Func(self.cleanupExplosion)).start()
-
-    def activate(self):
-        if not self.entity: return
+    def activate(self, node):
         for obj in base.cr.doId2do.values():
             if obj.__class__.__name__ in CIGlobals.SuitClasses:
                 if obj.getPlace() == base.localAvatar.zoneId:
-                    if obj.getDistance(self.entity) <= self.maxDistance:
-                        if self.avatar.doId == base.localAvatar.doId:
-                            obj.sendUpdate('hitByGag', [self.getID()])
-        self.explode()
-
-    def cleanupEntity(self):
-        if self.entity:
-            self.entity.cleanup()
-            self.entity = None
-
-    def cleanupExplosion(self):
-        if self.explosion:
-            self.explosion.cleanup()
-            self.explosion.removeNode()
+                    dist = obj.getDistance(node)
+                    if dist <= self.maxDistance:
+                        obj.sendUpdate('hitByGag', [self.getID(), dist])

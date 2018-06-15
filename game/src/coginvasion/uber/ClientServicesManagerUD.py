@@ -131,6 +131,21 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         self.private__dg = PyDatagram()
         return
 
+    def giveClientOwnershipOfObject(self, context, accId, doId, dclassNum):
+        print "CSM: giveClientOwnershipOfObject:", context, accId, doId
+        sender = self.air.getMsgSender()
+
+        # Activate the object on the db stateserver.
+        self.air.sendActivate(doId, 0, 0)
+
+        # Grant the client ownership of the object.
+        dg = PyDatagram()
+        dg.addServerHeader(doId, self.air.ourChannel, STATESERVER_OBJECT_SET_OWNER)
+        dg.addChannel(accId << 32 | doId)
+        self.air.send(dg)
+
+        self.sendUpdateToChannel(sender, 'clientObjectOwnershipGranted', [context, accId, doId])
+
     def unsandboxClient(self, sender):
         dg = PyDatagram()
         dg.addServerHeader(sender, self.air.ourChannel, CLIENTAGENT_SET_STATE)

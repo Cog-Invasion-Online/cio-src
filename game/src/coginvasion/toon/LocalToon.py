@@ -747,10 +747,7 @@ class LocalToon(DistributedToon):
 
         self.ignore(CIGlobals.getSettingsMgr().getSetting("gagkey") + "-up")
 
-        if self.backpack.getActiveGag().getType() == GagType.SQUIRT and self.backpack.getActiveGag().getName() in [CIGlobals.SeltzerBottle]:
-            self.b_gagRelease(self.backpack.getActiveGag().getID())
-        else:
-            self.b_gagThrow(self.backpack.getActiveGag().getID())
+        self.b_gagThrow(self.backpack.getActiveGag().getID())
 
         activeGag = self.backpack.getActiveGag()
         if not activeGag:
