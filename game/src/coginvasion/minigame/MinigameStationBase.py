@@ -92,7 +92,7 @@ class MinigameStationBase(DirectObject):
 		
 		for key in self.cr.doId2do.keys():
 			val = self.cr.doId2do[key]
-			if val.__class__.__name__ == "DistributedToon":
+			if val.__class__.__name__ == "DistributedPlayerToon":
 				if val.getKey() == toonNP.getKey():
 					if val.zoneId == 30:
 						if self.station.getAvailableSlots() > 0 and not val in self.station.avatars:

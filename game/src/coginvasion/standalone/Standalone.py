@@ -9,6 +9,11 @@ from panda3d.core import CollisionTraverser, AntialiasAttrib, loadPrcFile, loadP
 from panda3d.core import CullBinManager
 import __builtin__
 
+class game:
+    process = 'client'
+
+__builtin__.game = game()
+
 loadPrcFile('config/config_client.prc')
 loadPrcFileData('', 'framebuffer-multisample 0')
 loadPrcFileData('', 'multisamples 16')
@@ -17,11 +22,6 @@ loadPrcFileData('', 'egg-load-old-curves 0')
 loadPrcFileData('', 'model-path resources')
 
 from direct.distributed.ClientRepository import ClientRepository
-
-class game:
-    process = 'client'
-
-__builtin__.game = game()
 
 cbm = CullBinManager.getGlobalPtr()
 cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
@@ -63,6 +63,7 @@ class Standalone:
     def __init__(self):
         self.process = 'client'
         __builtin__.game = self
+        print __builtin__.game
         
         base.cr = ClientRepository(['phase_3/etc/direct.dc', 'phase_3/etc/toon.dc'])
         base.cr.isShowingPlayerIds = None
@@ -80,7 +81,7 @@ class Standalone:
         base.cr.localAvChoice = AvChoice(dnaStrand, name, 0, 0)
         
         # Let's start the avatar.
-        dclass = base.cr.dclassesByName['DistributedToon']
+        dclass = base.cr.dclassesByName['DistributedPlayerToon']
         base.localAvatar = LocalToon(base.cr)
         base.localAvatar.dclass = dclass
         base.localAvatar.doId = base.cr.localAvChoice.getAvId()

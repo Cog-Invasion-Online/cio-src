@@ -16,7 +16,7 @@ from DistributedDodgeballGame import TEAM_COLOR_BY_ID
 from src.coginvasion.toon import ToonEffects
 
 class RemoteDodgeballAvatar(RemoteAvatar):
-    """A wrapper around a DistributedToon for use in the Dodgeball minigame (client side)"""
+    """A wrapper around a DistributedPlayerToon for use in the Dodgeball minigame (client side)"""
 
     notify = directNotify.newCategory("RemoteDodgeballAvatar")
 
