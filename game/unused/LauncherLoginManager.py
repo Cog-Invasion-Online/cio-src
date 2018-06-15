@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: LauncherLoginManager.py
-  Created by: DuckyDuck1553 (08Dec14)
+@file LauncherLoginManager.py
+@author Brian Lach
+@date December 8, 2014
 
 """
 

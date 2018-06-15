@@ -179,7 +179,7 @@ class SquirtGag(Gag):
                 if obj.__class__.__name__ in CIGlobals.SuitClasses:
                     if obj.getKey() == avNP.getKey():
                         obj.sendUpdate('hitByGag', [self.getID(), distance])
-                elif obj.__class__.__name__ == "DistributedToon":
+                elif obj.__class__.__name__ == "DistributedPlayerToon":
                     if obj.getKey() == avNP.getKey():
                         if obj.getHealth() < obj.getMaxHealth():
                             self.avatar.sendUpdate('toonHitByPie', [obj.doId, self.getID()])

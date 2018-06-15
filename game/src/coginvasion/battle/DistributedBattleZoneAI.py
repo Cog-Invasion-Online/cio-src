@@ -14,7 +14,7 @@ from direct.distributed.ClockDelta import globalClockDelta
 
 from src.coginvasion.battle.RPToonData import RPToonData
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.quests.Objectives import DefeatCog, DefeatCogBuilding
+from src.coginvasion.quest.Objectives import DefeatCog, DefeatCogBuilding
 
 import BattleGlobals
 

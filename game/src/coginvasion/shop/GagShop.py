@@ -1,9 +1,13 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: GagShop.py
-  Created by: DecodedLogic (13Jul15)
+@file GagShop.py
+@author Maverick Liberty
+@date July 13, 2015
 
 """
+
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.shop.Shop import Shop

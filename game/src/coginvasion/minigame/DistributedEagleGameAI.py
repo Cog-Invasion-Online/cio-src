@@ -1,5 +1,12 @@
-# Filename: DistributedEagleGameAI.py
-# Created by:  blach (04Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedEagleGameAI.py
+@author Brian Lach
+@date July 4, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.ClockDelta import globalClockDelta

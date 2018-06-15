@@ -1,7 +1,12 @@
-########################################
-# Filename: DistributedGunGameCapturePointAI.py
-# Created by: DecodedLogic (17Apr16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedGunGameCapturePointAI.py
+@author Maverick Liberty
+@date April 17, 2016
+
+"""
 
 from direct.distributed.DistributedNodeAI import DistributedNodeAI
 from direct.directnotify.DirectNotifyGlobal import directNotify

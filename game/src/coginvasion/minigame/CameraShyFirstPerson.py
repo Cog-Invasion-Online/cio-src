@@ -1,5 +1,12 @@
-# Filename: CameraShyFirstPerson.py
-# Created by:  blach (28Apr15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file CameraShyFirstPerson.py
+@author Brian Lach
+@date April 28, 2015
+
+"""
 
 from panda3d.core import BitMask32, CollisionNode, CollisionRay, CollisionHandlerEvent, VBase4, CollisionTraverser, CollisionHandlerQueue
 from direct.fsm.ClassicFSM import ClassicFSM

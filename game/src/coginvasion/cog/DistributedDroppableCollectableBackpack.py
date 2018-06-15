@@ -1,5 +1,12 @@
-# Filename: DistributedDroppableCollectableBackpack.py
-# Created by:  blach (22Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedDroppableCollectableBackpack.py
+@author Brian Lach
+@date July 22, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import SoundInterval

@@ -175,14 +175,14 @@ class CogInvasionClientRepository(AstronClientRepository):
         print "Showing player ids..."
         self.isShowingPlayerIds = True
         for av in self.doId2do.values():
-            if av.__class__.__name__ in ["DistributedToon", "LocalToon", "DistributedSuit"]:
+            if av.__class__.__name__ in ["DistributedPlayerToon", "LocalToon", "DistributedSuit"]:
                 av.showAvId()
 
     def hidePlayerIds(self):
         print "Hiding player ids..."
         self.isShowingPlayerIds = False
         for av in self.doId2do.values():
-            if av.__class__.__name__ in ["DistributedToon", "LocalToon", 'DistributedSuit']:
+            if av.__class__.__name__ in ["DistributedPlayerToon", "LocalToon", 'DistributedSuit']:
                 av.showName()
 
     def sendSetLocation(self, doId, parentId, zoneId):
@@ -618,7 +618,7 @@ class CogInvasionClientRepository(AstronClientRepository):
     def __handleSetAvatarResponse(self, avId, di):
         print "Entering game..."
         enterLoad = EnterLoad(self.enterLoadDone)
-        dclass = self.dclassesByName['DistributedToon']
+        dclass = self.dclassesByName['DistributedPlayerToon']
         localAvatar = LocalToon.LocalToon(base.cr)
         localAvatar.dclass = dclass
         base.localAvatar = localAvatar

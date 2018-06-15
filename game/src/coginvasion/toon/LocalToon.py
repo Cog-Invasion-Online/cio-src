@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 from panda3d.core import Point3, ConfigVariableBool
 from src.coginvasion.globals import CIGlobals
 from direct.task import Task
-from DistributedToon import DistributedToon
+from DistributedPlayerToon import DistributedPlayerToon
 from SmartCamera import SmartCamera
 from src.coginvasion.gui.ChatInput import ChatInput
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
@@ -27,7 +27,7 @@ from src.coginvasion.friends.FriendRequestManager import FriendRequestManager
 from src.coginvasion.base.PositionExaminer import PositionExaminer
 from src.coginvasion.friends.FriendsList import FriendsList
 from src.coginvasion.cog import SuitAttacks
-from src.coginvasion.quests.QuestManager import QuestManager
+from src.coginvasion.quest.QuestManager import QuestManager
 from src.coginvasion.gui.Crosshair import Crosshair
 from src.coginvasion.toon.TPMouseMovement import TPMouseMovement
 from src.coginvasion.phys.LocalControls import LocalControls
@@ -42,7 +42,7 @@ lightwarps = ["phase_3/maps/toon_lightwarp.jpg", "phase_3/maps/toon_lightwarp_2.
               "phase_3/maps/toon_lightwarp_cartoon.jpg", "phase_3/maps/toon_lightwarp_dramatic.jpg",
               "phase_3/maps/toon_lightwarp_bright.jpg"]
 
-class LocalToon(DistributedToon):
+class LocalToon(DistributedPlayerToon):
     neverDisable = 1
 
     GTAControls = ConfigVariableBool('want-gta-controls', False)
@@ -53,7 +53,7 @@ class LocalToon(DistributedToon):
             return
         except:
             self.LocalToon_initialized = 1
-        DistributedToon.__init__(self, cr)
+        DistributedPlayerToon.__init__(self, cr)
         self.chatInputState = False
         self.avatarChoice = cr.localAvChoice
         self.smartCamera = SmartCamera()
@@ -138,13 +138,13 @@ class LocalToon(DistributedToon):
         return self.walkControls.fpsCam
 
     def equip(self, gagId):
-        DistributedToon.equip(self, gagId)
+        DistributedPlayerToon.equip(self, gagId)
         if self.walkControls.mode == self.walkControls.MFirstPerson:
             self.crosshair.setCrosshair(self.backpack.getGagByID(gagId).crosshair)
             self.crosshair.show()
 
     def unEquip(self):
-        DistributedToon.unEquip(self)
+        DistributedPlayerToon.unEquip(self)
         if self.walkControls.mode == self.walkControls.MFirstPerson:
             self.crosshair.hide()
         
@@ -244,7 +244,7 @@ class LocalToon(DistributedToon):
         self.setPos(node, 0, 0, 0)
 
     def setFriendsList(self, friends):
-        DistributedToon.setFriendsList(self, friends)
+        DistributedPlayerToon.setFriendsList(self, friends)
         self.cr.friendsManager.d_requestFriendsList()
         self.panel.maybeUpdateFriendButton()
 
@@ -283,7 +283,7 @@ class LocalToon(DistributedToon):
                 pass
 
     def getBackpack(self):
-        return DistributedToon.getBackpack(self)
+        return DistributedPlayerToon.getBackpack(self)
 
     def setMyBattle(self, battle):
         self.myBattle = battle
@@ -295,10 +295,10 @@ class LocalToon(DistributedToon):
     def enterReadBook(self, ts = 0, callback = None, extraArgs = []):
         self.stopLookAround()
         self.b_lookAtObject(0, -45, 0)
-        DistributedToon.enterReadBook(self, ts, callback, extraArgs)
+        DistributedPlayerToon.enterReadBook(self, ts, callback, extraArgs)
 
     def exitReadBook(self):
-        DistributedToon.exitReadBook(self)
+        DistributedPlayerToon.exitReadBook(self)
         self.startLookAround()
 
     def getAirborneHeight(self):
@@ -346,16 +346,16 @@ class LocalToon(DistributedToon):
         self.smartCamera.setCameraPositionByIndex(0)
 
     def setDNAStrand(self, dnaStrand):
-        DistributedToon.setDNAStrand(self, dnaStrand)
+        DistributedPlayerToon.setDNAStrand(self, dnaStrand)
         if self.firstTimeGenerating:
             self.setupCamera()
             self.firstTimeGenerating = False
 
     def setMoney(self, money):
-        DistributedToon.setMoney(self, money)
+        DistributedPlayerToon.setMoney(self, money)
 
     def setupNameTag(self, tempName = None):
-        DistributedToon.setupNameTag(self, tempName)
+        DistributedPlayerToon.setupNameTag(self, tempName)
         self.nametag.setNametagColor(NametagGlobals.NametagColors[NametagGlobals.CCLocal])
         self.nametag.unmanage(base.marginManager)
         self.nametag.setActive(0)
@@ -368,7 +368,7 @@ class LocalToon(DistributedToon):
     def b_setAnimState(self, anim, callback = None, extraArgs = []):
         if self.anim != anim:
             self.d_setAnimState(anim)
-            DistributedToon.setAnimState(self, anim, callback = callback, extraArgs = extraArgs)
+            DistributedPlayerToon.setAnimState(self, anim, callback = callback, extraArgs = extraArgs)
 
     def attachCamera(self):
         #self.notify.info("Attaching camera...")
@@ -401,7 +401,7 @@ class LocalToon(DistributedToon):
         pass
 
     def handleSuitAttack(self, attack_id, suit_id):
-        DistributedToon.handleSuitAttack(self, attack_id, suit_id)
+        DistributedPlayerToon.handleSuitAttack(self, attack_id, suit_id)
 
         if not self.isDead() and base.config.GetBool('want-sa-reactions'):
             base.taskMgr.remove('LT.attackReactionDone')
@@ -665,7 +665,7 @@ class LocalToon(DistributedToon):
         self.laffMeter.delete()
 
     def setLoadout(self, gagIds):
-        DistributedToon.setLoadout(self, gagIds)
+        DistributedPlayerToon.setLoadout(self, gagIds)
         place = base.cr.playGame.getPlace()
         if place and place.fsm.getCurrentState().getName() == 'shtickerBook':
             if hasattr(place, 'shtickerBookStateData'):
@@ -857,15 +857,15 @@ class LocalToon(DistributedToon):
 
         if hp < self.getHealth() and self.isFirstPerson():
             self.getFPSCam().doDamageFade(1, 0, 0, (self.getHealth() - hp) / 30.0)
-        DistributedToon.setHealth(self, hp)
+        DistributedPlayerToon.setHealth(self, hp)
 
     def reparentTo(self, parent):
         print "Local toon reparent to", parent.node().getName()
-        DistributedToon.reparentTo(self, parent)
+        DistributedPlayerToon.reparentTo(self, parent)
 
     def wrtReparentTo(self, parent):
         print "Local toon wrt reparent to", parent.node().getName()
-        DistributedToon.wrtReparentTo(self, parent)
+        DistributedPlayerToon.wrtReparentTo(self, parent)
 
     def diedStateDone(self, requestStatus):
         hood = self.cr.playGame.hood.id
@@ -967,10 +967,10 @@ class LocalToon(DistributedToon):
             self.__traverseGUI = None
 
     def generate(self):
-        DistributedToon.generate(self)
+        DistributedPlayerToon.generate(self)
 
     def delete(self):
-        DistributedToon.delete(self)
+        DistributedPlayerToon.delete(self)
         self.deleteLaffMeter()
         return
 
@@ -1001,7 +1001,7 @@ class LocalToon(DistributedToon):
         if self.controlManager:
             self.controlManager.delete()
             self.controlManager = None
-        DistributedToon.disable(self)
+        DistributedPlayerToon.disable(self)
         if self.smartCamera:
             self.smartCamera.deleteSmartCameraCollisions()
             self.smartCamera = None
@@ -1042,7 +1042,7 @@ class LocalToon(DistributedToon):
         return
 
     def announceGenerate(self):
-        DistributedToon.announceGenerate(self)
+        DistributedPlayerToon.announceGenerate(self)
         self.setupControls()
         self.startLookAround()
         self.friendRequestManager.watch()

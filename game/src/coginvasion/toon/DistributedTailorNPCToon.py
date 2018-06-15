@@ -1,5 +1,13 @@
-# Filename: DistributedTailorNPCToon.py
-# Created by:  DecodedLogic (11Aug15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedTailorNPCToon.py
+@author Maverick Liberty
+@date August 11, 2015
+
+"""
+
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 import DistributedNPCToon

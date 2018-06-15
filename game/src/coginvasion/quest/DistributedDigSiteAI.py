@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.quests.DistributedInspectionSiteAI import DistributedInspectionSiteAI
+from src.coginvasion.quest.DistributedInspectionSiteAI import DistributedInspectionSiteAI
 
 class DistributedDigSiteAI(DistributedInspectionSiteAI):
     

@@ -18,15 +18,15 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from panda3d.core import TextNode, Point3, Vec4
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.quests import QuestGlobals
-from src.coginvasion.quests.poster.QuestRewardFrame import QuestRewardFrame
-from src.coginvasion.quests.Objectives import CogObjective
-from src.coginvasion.quests.Objectives import CogBuildingObjective
-from src.coginvasion.quests.Objectives import VisitNPCObjective
-from src.coginvasion.quests.Objectives import RecoverItemObjective
-from src.coginvasion.quests.Objectives import DeliverItemObjective
-from src.coginvasion.quests.Objectives import MinigameObjective
-from src.coginvasion.quests.Objectives import DefeatObjectives
+from src.coginvasion.quest import QuestGlobals
+from src.coginvasion.quest.poster.QuestRewardFrame import QuestRewardFrame
+from src.coginvasion.quest.Objectives import CogObjective
+from src.coginvasion.quest.Objectives import CogBuildingObjective
+from src.coginvasion.quest.Objectives import VisitNPCObjective
+from src.coginvasion.quest.Objectives import RecoverItemObjective
+from src.coginvasion.quest.Objectives import DeliverItemObjective
+from src.coginvasion.quest.Objectives import MinigameObjective
+from src.coginvasion.quest.Objectives import DefeatObjectives
 from src.coginvasion.cog import Dept, SuitGlobals, SuitBank
 from src.coginvasion.toon.ToonHead import ToonHead
 from src.coginvasion.toon.ToonDNA import ToonDNA

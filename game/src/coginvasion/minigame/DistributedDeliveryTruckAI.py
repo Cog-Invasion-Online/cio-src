@@ -1,5 +1,12 @@
-# Filename: DistributedDeliveryTruckAI.py
-# Created by:  blach (04Oct15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedDeliveryTruckAI.py
+@author Brian Lach
+@date October 4, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedNodeAI import DistributedNodeAI

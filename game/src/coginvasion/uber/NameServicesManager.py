@@ -1,7 +1,13 @@
-########################################
-# Filename: NameServicesManager.py
-# Created by: DecodedLogic (21Feb16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file NameServicesManager.py
+@author Maverick Liberty
+@date February 21, 2016
+
+"""
+
 from direct.distributed.DistributedObjectGlobal import DistributedObjectGlobal
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

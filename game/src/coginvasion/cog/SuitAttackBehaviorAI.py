@@ -202,11 +202,11 @@ class SuitAttackBehaviorAI(SuitHabitualBehaviorAI):
 
         for obj in base.air.doId2do.values():
             className = obj.__class__.__name__
-            if className in ['DistributedToonAI', 'DistributedPieTurretAI']:
+            if className in ['DistributedPlayerToonAI', 'DistributedPieTurretAI']:
                 if obj.zoneId == self.suit.zoneId:
                     if not obj.isDead():
                         dist = obj.getDistance(self.suit)
-                        if className == 'DistributedToonAI' and obj.getNumAttackers() >= self.MAX_ATTACKERS or className == 'DistributedToonAI' and obj.getGhost():
+                        if className == 'DistributedPlayerToonAI' and obj.getNumAttackers() >= self.MAX_ATTACKERS or className == 'DistributedPlayerToonAI' and obj.getGhost():
                             continue
                         if dist <= self.ATTACK_DISTANCE:
                             toonObjsInRange.update({obj : dist})

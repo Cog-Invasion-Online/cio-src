@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DistributedShop.py
-  Created by: DecodedLogic (13Jul15)
+@file DistributedShop.py
+@author Maverick Liberty
+@date July 13, 2015
 
 """
 

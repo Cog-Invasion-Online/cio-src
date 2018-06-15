@@ -163,7 +163,7 @@ base.cr.localAvChoice = AvChoice("00/01/05/19/01/19/01/19/13/05/27/27/00", "Dog"
 base.musicManager.setVolume(0.65)
 
 
-dclass = base.cr.dclassesByName['DistributedToon']
+dclass = base.cr.dclassesByName['DistributedPlayerToon']
 base.localAvatar = LocalToon.LocalToon(base.cr)
 base.localAvatar.dclass = dclass
 base.localAvatar.doId = base.cr.localAvChoice.getAvId()

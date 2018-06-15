@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DistributedDroppableCollectableJellybeanAI.py
-  Created by: blach (22Mar15)
+@file DistributedDroppableCollectableJellybeanAI.py
+@author Brian Lach
+@date March 22, 2015
 
 """
 

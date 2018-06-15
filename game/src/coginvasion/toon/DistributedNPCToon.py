@@ -14,13 +14,13 @@ from direct.interval.IntervalGlobal import Sequence
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
-from src.coginvasion.quests import Quests
-from src.coginvasion.quests.Quests import objType
-from src.coginvasion.quests.QuestGlobals import NPCDialogue, getPossessive, QUEST_DATA_UPDATE_EVENT
+from src.coginvasion.quest import Quests
+from src.coginvasion.quest.Quests import objType
+from src.coginvasion.quest.QuestGlobals import NPCDialogue, getPossessive, QUEST_DATA_UPDATE_EVENT
 from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.gui import QuestEmblemGui
 from DistributedToon import DistributedToon
-from src.coginvasion.quests.Objectives import VisitNPCObjective
+from src.coginvasion.quest.Objectives import VisitNPCObjective
 
 import random
 

@@ -36,7 +36,7 @@ class RequestFriendsListProcess:
         self.cleanup()
 
     def friendRetrieved(self, dclass, fields):
-        if dclass != self.air.dclassesByName['DistributedToonUD']:
+        if dclass != self.air.dclassesByName['DistributedPlayerToonUD']:
             self.notify.warning("Toon on friends list was deleted.")
             self.avatarFriendsList.remove(self.avatarFriendsList[self.friendIndex])
             dg = self.senderDclass.aiFormatUpdate('setFriendsList', self.sender, self.sender, self.air.ourChannel, [self.avatarFriendsList])
@@ -66,7 +66,7 @@ class RequestFriendsListProcess:
         )
 
     def senderRetrieved(self, dclass, fields):
-        if dclass != self.air.dclassesByName['DistributedToonUD']:
+        if dclass != self.air.dclassesByName['DistributedPlayerToonUD']:
             self.notify.warning("Queried a non toon object?!")
             return
 
@@ -106,7 +106,7 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
         sender = self.air.getAvatarIdFromSender()
 
         def senderAvatarResponse(dclass, fields):
-            if dclass != self.air.dclassesByName['DistributedToonUD']:
+            if dclass != self.air.dclassesByName['DistributedPlayerToonUD']:
                 return
             name = fields['setName'][0]
             self.sendUpdateToAvatarId(target, 'whisper', [sender, message, name])
@@ -125,7 +125,7 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
     def toonOnline(self, avatarId):
 
         def avatarResponse(dclass, fields):
-            if dclass != self.air.dclassesByName['DistributedToonUD']:
+            if dclass != self.air.dclassesByName['DistributedPlayerToonUD']:
                 self.notify.warning('toonOnline: avatarResponse: Attempted to get name of a newly online Toon and retrieved non-toon.')
                 return
 
@@ -142,7 +142,7 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
     def toonOffline(self, avatarId):
         
         def avatarResponse(dclass, fields):
-            if dclass != self.air.dclassesByName['DistributedToonUD']:
+            if dclass != self.air.dclassesByName['DistributedPlayerToonUD']:
                 self.notify.warning('toonOffline: avatarResponse: Attempted to get name of an offline Toon and retrieved non-toon.')
                 return
 
@@ -176,7 +176,7 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
         sender = self.air.getAvatarIdFromSender()
 
         def avatarResponse(dclass, fields):
-            if dclass != self.air.dclassesByName["DistributedToonUD"]:
+            if dclass != self.air.dclassesByName["DistributedPlayerToonUD"]:
                 self.notify.warning("requestAvatarInfo: avatarResponse: It's not a toon.")
                 return
 
@@ -204,7 +204,7 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
         sender = self.air.getAvatarIdFromSender()
 
         def avatarResponse(dclass, fields):
-            if dclass != self.air.dclassesByName["DistributedToonUD"]:
+            if dclass != self.air.dclassesByName["DistributedPlayerToonUD"]:
                 self.notify.warning("requestAvatarInfo: avatarResponse: It's not a toon.")
                 return
 
@@ -223,7 +223,7 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
         sender = self.air.getAvatarIdFromSender()
 
         def removerAvatarResponse(dclass, fields):
-            if dclass != self.air.dclassesByName["DistributedToonUD"]:
+            if dclass != self.air.dclassesByName["DistributedPlayerToonUD"]:
                 self.notify.warning("iRemovedFriend: removerAvatarResponse: It's not a toon.")
                 return
 
@@ -234,7 +234,7 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
             self.air.dbInterface.updateObject(self.air.dbId, sender, dclass, {'setFriendsList': [newList]})
 
         def removeeAvatarResponse(dclass, fields):
-            if dclass != self.air.dclassesByName["DistributedToonUD"]:
+            if dclass != self.air.dclassesByName["DistributedPlayerToonUD"]:
                 self.notify.warning("iRemovedFriend: removeeAvatarResponse: It's not a toon.")
                 return
 
@@ -261,7 +261,7 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
         sender = self.air.getAvatarIdFromSender()
 
         def accepterAvatarResponse(dclass, fields):
-            if dclass != self.air.dclassesByName["DistributedToonUD"]:
+            if dclass != self.air.dclassesByName["DistributedPlayerToonUD"]:
                 self.notify.warning("iAcceptedFriendRequest: accepterAvatarResponse: It's not a toon.")
                 return
 
@@ -272,7 +272,7 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
             self.air.dbInterface.updateObject(self.air.dbId, sender, dclass, {'setFriendsList': [newList]})
 
         def requesterAvatarResponse(dclass, fields):
-            if dclass != self.air.dclassesByName["DistributedToonUD"]:
+            if dclass != self.air.dclassesByName["DistributedPlayerToonUD"]:
                 self.notify.warning("iAcceptedFriendRequest: requesterAvatarResponse: It's not a toon.")
                 return
 
@@ -318,7 +318,7 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
         sender = self.air.getAvatarIdFromSender()
 
         def teleportingAvatarResponse(dclass, fields):
-            if dclass != self.air.dclassesByName['DistributedToonUD']:
+            if dclass != self.air.dclassesByName['DistributedPlayerToonUD']:
                 return
 
             name = fields['setName'][0]

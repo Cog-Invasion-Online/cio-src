@@ -1,9 +1,13 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DroppableCollectableJellybeans.py
-  Created by: blach (22Mar15)
+@file DroppableCollectableJellybean.py
+@author Brian Lach
+@date March 22, 2015
 
 """
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from DroppableCollectableObject import DroppableCollectableObject
 

@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: CogGuardGlobals.py
-  Created by: blach (31Mar15)
+@file CogGuardGlobals.py
+@author Brian Lach
+@date March 31, 2015
 
 """
 

@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DistributedGagShop.py
-  Created by: DecodedLogic (14Jul15)
+@file DistributedGagShop.py
+@author Maverick Liberty
+@date July 14, 2015
 
 """
 

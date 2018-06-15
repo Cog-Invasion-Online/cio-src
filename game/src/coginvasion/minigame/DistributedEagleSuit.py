@@ -1,5 +1,12 @@
-# Filename: DistributedEagleSuit.py
-# Created by:  blach (08Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedEagleSuit.py
+@author Brian Lach
+@date July 8, 2015
+
+"""
 
 from panda3d.bullet import BulletSphereShape, BulletGhostNode
 from direct.directnotify.DirectNotifyGlobal import directNotify

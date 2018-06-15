@@ -8,11 +8,11 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 """
 
-from src.coginvasion.quests.QuestManagerBase import QuestManagerBase
-from src.coginvasion.quests.Quest import Quest
-from src.coginvasion.quests import QuestData
-from src.coginvasion.quests.Objectives import *
-from src.coginvasion.quests.QuestGlobals import *
+from src.coginvasion.quest.QuestManagerBase import QuestManagerBase
+from src.coginvasion.quest.Quest import Quest
+from src.coginvasion.quest import QuestData
+from src.coginvasion.quest.Objectives import *
+from src.coginvasion.quest.QuestGlobals import *
 
 class QuestManagerAI(QuestManagerBase):
 

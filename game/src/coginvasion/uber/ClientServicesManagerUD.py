@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: ClientServicesManagerUD.py
-  Created by: DuckyDuck1553 (03Dec14)
+@file ClientServicesManagerUD.py
+@author Brian Lach
+@date December 3, 2014
 
 """
 
@@ -78,7 +81,7 @@ class CreateToonProcess:
                 "setQuestHistory": ([],),
                 "setTier": (13,),
                 "setFriendsList": ([],),
-                "setTutorialCompleted": (self.choice[3],),
+                "setTutorialCompleted": (1,),#self.choice[3],),
                 "setHoodsDiscovered": ([CIGlobals.ToontownCentralId],),
                 "setTeleportAccess": ([],),
                 "setLastHood": (CIGlobals.ToontownCentralId,),
@@ -91,7 +94,7 @@ class CreateToonProcess:
 
         self.air.dbInterface.createObject(
                     self.air.dbId,
-                    self.air.dclassesByName['DistributedToonUD'],
+                    self.air.dclassesByName['DistributedPlayerToonUD'],
                     fields,
                     self.createDone)
 
@@ -229,7 +232,7 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         self.air.send(dg)
 
         # Activate the avatar on the db stateserver.
-        self.air.sendActivate(avId, 0, 0, self.air.dclassesByName['DistributedToonUD'])
+        self.air.sendActivate(avId, 0, 0, self.air.dclassesByName['DistributedPlayerToonUD'])
 
         # Add the connection to the avatar channel.
         dg = PyDatagram()
@@ -269,7 +272,7 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         print "toon online " + str(avId)
 
         def toonResponse(dclass, fields):
-            if dclass != self.air.dclassesByName['DistributedToonUD']:
+            if dclass != self.air.dclassesByName['DistributedPlayerToonUD']:
                 return
 
             name = fields['setName'][0]
@@ -336,7 +339,7 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         print "toon offline " + str(avId)
 
         def toonResponse(dclass, fields):
-            if dclass != self.air.dclassesByName['DistributedToonUD']:
+            if dclass != self.air.dclassesByName['DistributedPlayerToonUD']:
                 return
 
             name = fields['setName'][0]
@@ -411,14 +414,14 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
                 pendingAvatars.add(avId)
 
                 def toonResponse(dclass, fields, avId=avId):
-                    if dclass != self.air.dclassesByName['DistributedToonUD']:
+                    if dclass != self.air.dclassesByName['DistributedPlayerToonUD']:
                         return
                     if fields.get('ACCOUNT', None) is None:
                         print "No field ACCOUNT in this toon, I'll add it for you."
                         self.air.dbInterface.updateObject(
                             self.air.dbId,
                             avId,
-                            self.air.dclassesByName['DistributedToonUD'],
+                            self.air.dclassesByName['DistributedPlayerToonUD'],
                             {"ACCOUNT": accId}
                         )
                     collectedAvatars.append([avId, fields['setDNAStrand'][0],
@@ -523,7 +526,7 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
             self.unloadAvatar(sender, currentAvId)
 
         def __handleAvatar(dclass, fields):
-            if dclass != self.air.dclassesByName['DistributedToonUD']:
+            if dclass != self.air.dclassesByName['DistributedPlayerToonUD']:
                 return
             self.setAvatar(fields, avId, accountId)
 

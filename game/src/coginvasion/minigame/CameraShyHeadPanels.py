@@ -1,5 +1,12 @@
-# Filename: CameraShyHeadPanels.py
-# Created by:  blach (09Jul15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file CameraShyHeadPanels.py
+@author Brian Lach
+@date July 9, 2015
+
+"""
 
 from panda3d.core import Point3, VBase4
 from direct.directnotify.DirectNotifyGlobal import directNotify

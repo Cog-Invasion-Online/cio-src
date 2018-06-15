@@ -1,5 +1,12 @@
-# Filename: DistributedDeliveryGameSuit.py
-# Created by:  blach (04Oct15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedDeliveryGameSuit.py
+@author Brian Lach
+@date October 4, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import LerpPosInterval, Sequence, Wait

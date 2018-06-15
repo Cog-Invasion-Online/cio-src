@@ -1,9 +1,12 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: CameraShyLevelLoader.py
-  Created by: DecodedLogic (06Nov15)
+@file CameraShyLevelLoader.py
+@author Maverick Liberty
+@date November 6, 2015
 
-  This module is only suppose to generate a single level. If you want another level, you have to
+@desc This module is only suppose to generate a single level. If you want another level, you have to
   start a new instance. Cleanup deletes all the necessary variables to build levels.
 
 """
