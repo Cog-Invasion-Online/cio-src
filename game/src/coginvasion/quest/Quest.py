@@ -12,12 +12,12 @@ at once.
 
 """
 
-from src.coginvasion.quests.Quests import Quests, RewardType2RewardClass
-from src.coginvasion.quests.Quests import name, tier, finalInTier, rewards, collection
-from src.coginvasion.quests.Quests import reward, assignSpeech, finishSpeech, objectives
-from src.coginvasion.quests.Quests import objType, args, assigner, QuestNPCDialogue
-from src.coginvasion.quests.Objectives import SafeEndObjectives
-from src.coginvasion.quests.ObjectiveCollection import ObjectiveCollection
+from src.coginvasion.quest.Quests import Quests, RewardType2RewardClass
+from src.coginvasion.quest.Quests import name, tier, finalInTier, rewards, collection
+from src.coginvasion.quest.Quests import reward, assignSpeech, finishSpeech, objectives
+from src.coginvasion.quest.Quests import objType, args, assigner, QuestNPCDialogue
+from src.coginvasion.quest.Objectives import SafeEndObjectives
+from src.coginvasion.quest.ObjectiveCollection import ObjectiveCollection
 
 class Quest:
     

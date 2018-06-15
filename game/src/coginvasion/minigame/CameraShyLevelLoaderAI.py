@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: CameraShyLevelLoaderAI.py
-  Created by: DecodedLogic (06Nov15)
+@file CameraShyLevelLoaderAI.py
+@author Maverick Liberty
+@date November 6, 2015
 
 """
 

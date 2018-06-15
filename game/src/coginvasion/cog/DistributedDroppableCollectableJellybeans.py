@@ -1,8 +1,11 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: DistributedDroppableCollectableJellybeans.py
-  Created by: blach (22Mar15)
-  
+@file DistributedDroppableCollectableJellybeans.py
+@author Brian Lach
+@date March 22, 2015
+
 """
 
 from direct.directnotify.DirectNotifyGlobal import directNotify

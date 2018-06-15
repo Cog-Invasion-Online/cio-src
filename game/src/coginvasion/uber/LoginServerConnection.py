@@ -1,7 +1,12 @@
-########################################
-# Filename: LoginServerConnection.py
-# Created by: DecodedLogic (28Jul16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file LoginServerConnection.py
+@author Maverick Liberty
+@date July 28, 2016
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from threading import Thread

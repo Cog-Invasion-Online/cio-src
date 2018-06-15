@@ -1,5 +1,12 @@
-# Filename: DistributedDeliveryGame.py
-# Created by:  blach (04Oct15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedDeliveryGame.py
+@author Brian Lach
+@date October 4, 2015
+
+"""
 
 from panda3d.core import CompassEffect, NodePath, CollisionSphere, CollisionNode, TextNode
 

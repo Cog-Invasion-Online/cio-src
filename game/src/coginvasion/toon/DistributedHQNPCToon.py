@@ -14,12 +14,12 @@ from direct.gui.DirectGui import DirectFrame, DirectButton, DGG
 
 import DistributedNPCToon
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.quests.Quest import Quest
-from src.coginvasion.quests import Objectives
-from src.coginvasion.quests.QuestGlobals import NPCDialogue
+from src.coginvasion.quest.Quest import Quest
+from src.coginvasion.quest import Objectives
+from src.coginvasion.quest.QuestGlobals import NPCDialogue
 from src.coginvasion.minigame.Timer import Timer
 
-from src.coginvasion.quests import QuestGlobals
+from src.coginvasion.quest import QuestGlobals
 
 import random
 

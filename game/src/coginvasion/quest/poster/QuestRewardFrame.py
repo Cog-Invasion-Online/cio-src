@@ -15,7 +15,7 @@ from direct.gui.DirectGuiBase import DGG
 from panda3d.core import TextNode, TransparencyAttrib
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.quests import QuestGlobals
+from src.coginvasion.quest import QuestGlobals
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
 
 class QuestRewardFrame(DirectFrame):

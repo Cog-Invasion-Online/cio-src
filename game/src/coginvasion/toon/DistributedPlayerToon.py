@@ -23,7 +23,7 @@ from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
 from src.coginvasion.hood import LinkTunnel
 from src.coginvasion.globals import ChatGlobals
-from src.coginvasion.quests.QuestGlobals import QUEST_DATA_UPDATE_EVENT
+from src.coginvasion.quest.QuestGlobals import QUEST_DATA_UPDATE_EVENT
 
 class DistributedPlayerToon(DistributedToon):
     notify = directNotify.newCategory('DistributedPlayerToon')

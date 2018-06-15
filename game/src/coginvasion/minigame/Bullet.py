@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Bullet.py
-  Created by: blach (19Jan15)
+@file Bullet.py
+@author Brian Lach
+@date January 19, 2015
 
 """
 

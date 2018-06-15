@@ -18,7 +18,7 @@ from panda3d.core import TransparencyAttrib, CardMaker
 from panda3d.core import CollisionNode, CollisionSphere
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.quests import InspectionSites
+from src.coginvasion.quest import InspectionSites
 
 class DistributedInspectionSite(DistributedNode):
     

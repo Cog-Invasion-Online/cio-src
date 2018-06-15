@@ -1,5 +1,12 @@
-# Filename: DistributedDodgeballGameAI.py
-# Created by:  blach (18Apr16)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedDodgeballGameAI.py
+@author Brian Lach
+@date April 18, 2016
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State

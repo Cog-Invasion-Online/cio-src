@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.quests.DistributedInspectionSite import DistributedInspectionSite
+from src.coginvasion.quest.DistributedInspectionSite import DistributedInspectionSite
 from direct.interval.IntervalGlobal import Sequence, Parallel, ParallelEndTogether
 from direct.interval.IntervalGlobal import LerpPosInterval, LerpColorScaleInterval, LerpHprScaleInterval, Wait
 from direct.interval.IntervalGlobal import ProjectileInterval, SoundInterval, LerpScaleInterval, ActorInterval, Func

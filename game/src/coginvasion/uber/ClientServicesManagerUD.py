@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: ClientServicesManagerUD.py
-  Created by: DuckyDuck1553 (03Dec14)
+@file ClientServicesManagerUD.py
+@author Brian Lach
+@date December 3, 2014
 
 """
 
@@ -78,7 +81,7 @@ class CreateToonProcess:
                 "setQuestHistory": ([],),
                 "setTier": (13,),
                 "setFriendsList": ([],),
-                "setTutorialCompleted": (self.choice[3],),
+                "setTutorialCompleted": (1,),#self.choice[3],),
                 "setHoodsDiscovered": ([CIGlobals.ToontownCentralId],),
                 "setTeleportAccess": ([],),
                 "setLastHood": (CIGlobals.ToontownCentralId,),

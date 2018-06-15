@@ -11,7 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedNodeAI import DistributedNodeAI
 
-from src.coginvasion.quests import InspectionSites
+from src.coginvasion.quest import InspectionSites
 
 class DistributedInspectionSiteAI(DistributedNodeAI):
     

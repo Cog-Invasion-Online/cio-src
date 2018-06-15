@@ -1,7 +1,12 @@
-########################################
-# Filename: UnoGameAIPlayer.py
-# Created by:   DecodedLogic (01Apr15)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file UnoGameAIPlayer.py
+@author Maverick Liberty
+@date April 1, 2015
+
+"""
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.toon.ToonDNA import ToonDNA

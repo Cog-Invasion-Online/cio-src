@@ -11,10 +11,10 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.quests.Quest import Quest
-from src.coginvasion.quests import QuestData
-from src.coginvasion.quests import Objectives
-from src.coginvasion.quests import Quests
+from src.coginvasion.quest.Quest import Quest
+from src.coginvasion.quest import QuestData
+from src.coginvasion.quest import Objectives
+from src.coginvasion.quest import Quests
 
 import random
 

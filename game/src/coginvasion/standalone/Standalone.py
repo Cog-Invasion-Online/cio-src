@@ -1,10 +1,14 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: Standalone.py
-  Created by: DecodedLogic (07Nov15)
-  This is so you can use client objects in a stand-alone program easily.
-  
+@file Standalone.py
+@author Maverick Liberty
+@date November 7, 2015
+@desc This is so you can use client objects in a stand-alone program easily.
+
 """
+
 from panda3d.core import CollisionTraverser, AntialiasAttrib, loadPrcFile, loadPrcFileData
 from panda3d.core import CullBinManager
 import __builtin__

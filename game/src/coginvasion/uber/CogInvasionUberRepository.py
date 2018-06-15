@@ -1,7 +1,10 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: CogInvasionUberRepository.py
-  Created by: DuckyDuck1553 (03Dec14)
+@file CogInvasionUberRepository.py
+@author Brian Lach
+@date December 3, 2014
 
 """
 

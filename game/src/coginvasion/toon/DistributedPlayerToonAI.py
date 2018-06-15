@@ -15,7 +15,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from src.coginvasion.toon.DistributedToonAI import DistributedToonAI
-from src.coginvasion.quests.QuestManagerAI import QuestManagerAI
+from src.coginvasion.quest.QuestManagerAI import QuestManagerAI
 from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals

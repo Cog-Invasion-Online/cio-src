@@ -41,6 +41,8 @@ class DistrictsPage(BookPage, DirectFrame):
     def enter(self):
         BookPage.enter(self)
         self.show()
+        
+        # Let's add our tasks
         base.taskMgr.add(self.__updateDistrictPopTask, 'SB.updateDistrictPopTask')
 
     def __handleShardButton(self, shardId):

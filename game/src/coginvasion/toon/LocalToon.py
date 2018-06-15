@@ -27,7 +27,7 @@ from src.coginvasion.friends.FriendRequestManager import FriendRequestManager
 from src.coginvasion.base.PositionExaminer import PositionExaminer
 from src.coginvasion.friends.FriendsList import FriendsList
 from src.coginvasion.cog import SuitAttacks
-from src.coginvasion.quests.QuestManager import QuestManager
+from src.coginvasion.quest.QuestManager import QuestManager
 from src.coginvasion.gui.Crosshair import Crosshair
 from src.coginvasion.toon.TPMouseMovement import TPMouseMovement
 from src.coginvasion.phys.LocalControls import LocalControls

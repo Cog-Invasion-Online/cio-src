@@ -1,7 +1,13 @@
-########################################
-# Filename: DistributedPet.py
-# Created by: DecodedLogic (25Feb16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedPet.py
+@author Maverick Liberty
+@date February 25, 2016
+
+"""
+
 from src.coginvasion.avatar.DistributedAvatar import DistributedAvatar
 
 from direct.fsm.ClassicFSM import ClassicFSM

@@ -8,16 +8,16 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.quests.poster.QuestPoster import QuestPoster
-from src.coginvasion.quests import QuestGlobals
+from src.coginvasion.quest.poster.QuestPoster import QuestPoster
+from src.coginvasion.quest import QuestGlobals
 from src.coginvasion.globals import CIGlobals
 
 
 # Imports for handling the representation of objectives.
-from src.coginvasion.quests.Objectives import RecoverItemObjective,\
+from src.coginvasion.quest.Objectives import RecoverItemObjective,\
     CogBuildingObjective, CogObjective, MinigameObjective
-from src.coginvasion.quests.Objectives import DeliverItemObjective
-from src.coginvasion.quests.Objectives import DoubleFrameObjectives
+from src.coginvasion.quest.Objectives import DeliverItemObjective
+from src.coginvasion.quest.Objectives import DoubleFrameObjectives
 
 from panda3d.core import TextNode
 

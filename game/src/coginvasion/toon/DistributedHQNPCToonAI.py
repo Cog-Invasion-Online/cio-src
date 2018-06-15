@@ -12,7 +12,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 
 import DistributedNPCToonAI
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.quests.QuestGlobals import NPCDialogue
+from src.coginvasion.quest.QuestGlobals import NPCDialogue
 
 import random
 

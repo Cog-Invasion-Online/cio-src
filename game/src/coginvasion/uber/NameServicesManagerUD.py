@@ -1,7 +1,12 @@
-########################################
-# Filename: NameServicesManagerUD.py
-# Created by: DecodedLogic (21Feb16)
-########################################
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file NameServicesManagerUD.py
+@author Maverick Liberty
+@date February 21, 2016
+
+"""
 
 from direct.distributed.DistributedObjectGlobalUD import DistributedObjectGlobalUD
 

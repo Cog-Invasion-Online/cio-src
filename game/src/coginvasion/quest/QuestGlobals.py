@@ -223,7 +223,7 @@ def generatePoster(quest, parent, **kw):
     if quest and quest.accessibleObjectives.seeker == -1:
         quest.accessibleObjectives.nextObjective()
             
-    from src.coginvasion.quests.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
+    from src.coginvasion.quest.poster.DoubleFrameQuestPoster import DoubleFrameQuestPoster
     poster = DoubleFrameQuestPoster(quest, parent = parent, **kw)
     poster.setup()
     return poster
