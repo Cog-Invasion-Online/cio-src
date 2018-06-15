@@ -288,7 +288,7 @@ class GagSelectionGui(DirectFrame, FSM):
         gagId = -1
         if self.getCurrentOrNextState() == 'Idle':
             gagId = bp.currentGag
-        elif self.getCurrentOrNextState() == 'Select':
+        elif self.getCurrentOrNextState() == 'Select' and self.currentGag:
             gagId = self.currentGag.gagId
         
         if gagId != -1:
@@ -490,6 +490,7 @@ class GagSelectionGui(DirectFrame, FSM):
             newTrack = self.tracks[self.currentTrack]
         else:
             track.selectNextGag()
+        self.keyScrollSound.play()
 
     def __handleScrollDown(self):
         self.__maybeDoSelect()
@@ -501,6 +502,7 @@ class GagSelectionGui(DirectFrame, FSM):
             newTrack = self.tracks[self.currentTrack]
         else:
             track.selectPrevGag()
+        self.keyScrollSound.play()
 
     def nextTrack(self):
         newIdx = self.currentTrack + 1
