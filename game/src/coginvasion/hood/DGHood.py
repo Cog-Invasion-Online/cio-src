@@ -11,18 +11,19 @@ Copyright (c) CIO Team. All rights reserved.
 from panda3d.core import TransparencyAttrib
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
+from src.coginvasion.holiday.HolidayManager import HolidayType
+
 from ToonHood import ToonHood
 from playground.DGSafeZoneLoader import DGSafeZoneLoader
 from street import DGTownLoader
-from src.coginvasion.globals import CIGlobals
-from src.coginvasion.holiday.HolidayManager import HolidayType
+import ZoneUtil
 
 class DGHood(ToonHood):
     notify = directNotify.newCategory("DGHood")
 
     def __init__(self, parentFSM, doneEvent, dnaStore, hoodId):
         ToonHood.__init__(self, parentFSM, doneEvent, dnaStore, hoodId)
-        self.id = CIGlobals.DaisyGardens
+        self.id = ZoneUtil.DaisyGardens
         self.safeZoneLoader = DGSafeZoneLoader
         self.townLoader = DGTownLoader.DGTownLoader
         self.abbr = "DG"

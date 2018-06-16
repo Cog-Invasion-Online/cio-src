@@ -15,6 +15,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
+from src.coginvasion.quest import QuestGlobals
 
 from panda3d.core import Point3, TextNode
 import math
@@ -29,6 +30,7 @@ GagGlowColor = (1.0, 1.0, 0.4, 1.0)
 NewGagCongratsMessages = ['Yeah!', 'Wow!', 
     'Cool!', 'Congrats!', 'Awesome!',
     'Toon-tastic!', 'Fantastic!']
+QuestsPanelName = 'Quests'
 
 class RewardPanel(DirectFrame):
     notify = directNotify.newCategory('RewardPanel')
@@ -76,7 +78,7 @@ class RewardPanel(DirectFrame):
         
         glow = loader.loadModel('phase_4/models/minigames/particleGlow.bam')
         invIcons = loader.loadModel('phase_3.5/models/gui/inventory_icons.bam')
-        gag = invIcons.find(GagGlobals.InventoryIconByName.get(CIGlobals.Foghorn))
+        gag = invIcons.find(GagGlobals.InventoryIconByName.get(GagGlobals.Foghorn))
         self.favoriteGag = OnscreenImage(parent = self.playerInfo, 
             image = gag, pos = FavoriteGagPos, 
             scale = (1.65, 1.65, 1.65))
@@ -91,8 +93,9 @@ class RewardPanel(DirectFrame):
         self.favoriteGagGlow.setDepthWrite(False)
         
         self.favoriteGagName = OnscreenText(parent = self.playerInfo,
-            text = CIGlobals.Foghorn, font = CIGlobals.getToonFont(),
+            text = GagGlobals.Foghorn, font = CIGlobals.getToonFont(),
             pos = FavoriteGagNamePos, mayChange = 1)
+
         ################################################################################
         # GUI elements showing gag experience on the right-side of the gag exp panel   #
         ################################################################################
@@ -123,6 +126,11 @@ class RewardPanel(DirectFrame):
             self.trackBars.append(progressBar)
             
         ################################################################################
+        # GUI elements showing progress updates on quests                              #
+        ################################################################################
+        
+        self.questFrame = DirectFrame(parent = self, relief = None)
+        self.questPosters = []
         
         self.congratsLeft = OnscreenText(parent = self.playerInfo, pos = (-0.1, 0.125, -0.1), text = '',
             scale = 0.06, align = TextNode.ARight)
@@ -173,6 +181,54 @@ class RewardPanel(DirectFrame):
                        (5.2, 5.45, av.getHeight() * 0.66, 131.5, 3.6, 0)]
         shot = random.choice(shotChoices)
         return shot
+    
+    def getQuestsProgressInterval(self):
+        avatar = self.panelData.avatar
+        intervals = []
+        
+        def toggleFavoriteGagItems(visible):
+            for item in [self.favoriteGag, self.favoriteGagGlow, 
+                         self.favoriteGagText, self.favoriteGagName]:
+                if not visible:
+                    item.hide()
+                else:
+                    item.show()
+                    
+        def setupQuestPosters():
+            questManager = avatar.questManager
+            numQuests = len(questManager.quests.values())
+            
+            yPos = 0.47
+            
+            displayData = {
+                1 : [[Point3(0.0, 0.0, yPos)], 0.88],
+                2 : [[Point3(-0.42, 0.0, yPos), Point3(0.45, 0.0, yPos)], 0.88],
+                3 : [[Point3(-0.57, 0.0, yPos), Point3(0.0, 0.0, yPos), Point3(0.57, 0.0, yPos)], 0.70],
+                4 : [[Point3(-0.32, 0.0, 0.62), Point3(-0.32, 0.0, 0.30), Point3(0.32, 0.0, 0.62), Point3(0.32, 0.0, 0.30)], 0.52]
+            }
+            
+            # A full frame is a frame showing two quests at once.
+            howManyFullFrames = math.ceil(numQuests / 2.0)
+            howManyRemainderFrames = (numQuests - howManyFullFrames)
+            
+            
+            
+            for i, quest in enumerate(questManager.quests.values()):
+                poster = QuestGlobals.generatePoster(quest, parent = self.questFrame)
+                poster.setScale(displayData.get(numQuests)[1])
+                poster.setPos(displayData.get(numQuests)[0][i])
+                poster.show()
+                self.questPosters.append(poster)
+        
+        intervals.append(Func(self.gagExpFrame.hide))
+        intervals.append(Func(self.playerInfo.show))
+        intervals.append(Func(self.panelContentsTitle.setText, QuestsPanelName))
+        intervals.append(Func(toggleFavoriteGagItems, False))
+        intervals.append(Func(setupQuestPosters))
+        #intervals.append(Func(self.playerInfo.initialiseoptions, DirectFrame))
+        
+        return intervals
+        
         
     def getGagExperienceInterval(self):
         avatar = self.panelData.avatar

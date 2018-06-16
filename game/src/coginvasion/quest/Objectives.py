@@ -10,6 +10,7 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
+from src.coginvasion.npc import NPCGlobals
 from src.coginvasion.cog import Variant
 from src.coginvasion.gags import GagGlobals
 import QuestGlobals
@@ -107,7 +108,7 @@ class VisitNPCObjective(Objective):
             self.type = VisitHQOfficer
             self.npcZone = 0
         else:
-            self.npcZone = CIGlobals.NPCToonDict[npcId][0]
+            self.npcZone = NPCGlobals.NPCToonDict[npcId][0]
             self.area = self.npcZone 
 
     def isComplete(self):
@@ -120,8 +121,8 @@ class DefeatObjective(Objective):
     def isValidLocation(self, hood):
         return (self.area == QuestGlobals.Anywhere or
             ZoneUtil.getHoodId(self.area, 1) == hood or
-            ZoneUtil.getHoodId(self.area, 1) == CIGlobals.ToontownCentral and
-            hood == CIGlobals.BattleTTC)
+            ZoneUtil.getHoodId(self.area, 1) == ZoneUtil.ToontownCentral and
+            hood == ZoneUtil.BattleTTC)
 
 class CogObjective(DefeatObjective):
     """ [cogName, goal, area, level, levelRange, name, variant, dept] """
@@ -366,7 +367,7 @@ class MinigameObjective(Objective):
     def __init__(self, minigame, goal):
         Objective.__init__(self, goal, None)
         self.minigame = minigame
-        self.area = CIGlobals.MinigameAreaId
+        self.area = ZoneUtil.MinigameAreaId
 
     def handleProgress(self, minigame):
 
@@ -391,7 +392,7 @@ class InspectLocation(Objective):
     
     def __init__(self, inspectionSiteId):
         
-        Objective.__init__(self, goal = 1, area = area)
+        Objective.__init__(self, goal = 1)
     
 # The objectives listed below require the double frame poster style.
 DoubleFrameObjectives = [RecoverItemObjective, DeliverItemObjective]

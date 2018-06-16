@@ -11,7 +11,8 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from DistributedToonAI import DistributedToonAI
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.npc import NPCGlobals
+from src.coginvasion.hood import ZoneUtil
 
 import random
 
@@ -23,7 +24,7 @@ class DistributedNPCToonAI(DistributedToonAI):
         DistributedToonAI.__init__(self, air)
         self.originIndex = originIndex
         self.npcId = npcId
-        npcData = CIGlobals.NPCToonDict.get(npcId)
+        npcData = NPCGlobals.NPCToonDict.get(npcId)
         self.dnaStrand = npcData[2]
         self.setName(npcData[1])
         self.backpack = 0
@@ -36,7 +37,7 @@ class DistributedNPCToonAI(DistributedToonAI):
         self.currentAvatarQuestOfMe = None
 
     def isHQOfficer(self):
-        return CIGlobals.NPCToonDict[self.npcId][3] == CIGlobals.NPC_HQ
+        return NPCGlobals.NPCToonDict[self.npcId][3] == NPCGlobals.NPC_HQ
 
     def getNpcId(self):
         return self.npcId
@@ -95,19 +96,19 @@ class DistributedNPCToonAI(DistributedToonAI):
             lastVisited = av.questManager.wasLastObjectiveToVisit(self.npcId)
             if (len(av.questManager.quests.values()) == 0 or (not needsToVisit and not lastVisited)):
                 # This avatar entered for no reason. They either have no quests or no objective to visit me.
-                chatArray = CIGlobals.NPCEnter_Pointless_Dialogue
+                chatArray = NPCGlobals.NPCEnter_Pointless_Dialogue
             elif lastVisited:
                 # This avatar entered, but still has to complete the objective I gave him/her.
-                chatArray = CIGlobals.NPCEnter_MFCO_Dialogue
+                chatArray = NPCGlobals.NPCEnter_MFCO_Dialogue
 
             welcomeToShopDialogueIndex = 28
 
             if chatArray:
                 chat = random.choice(chatArray)
                 if '%s' in chat:
-                    if (chatArray == CIGlobals.NPCEnter_Pointless_Dialogue and
-                    CIGlobals.NPCEnter_Pointless_Dialogue.index(chat) == welcomeToShopDialogueIndex):
-                        chat = chat % CIGlobals.zone2TitleDict[self.zoneId][0]
+                    if (chatArray == NPCGlobals.NPCEnter_Pointless_Dialogue and
+                    NPCGlobals.NPCEnter_Pointless_Dialogue.index(chat) == welcomeToShopDialogueIndex):
+                        chat = chat % ZoneUtil.zone2TitleDict[self.zoneId][0]
                     else:
                         chat = chat % av.getName()
                 self.d_setChat(chat)

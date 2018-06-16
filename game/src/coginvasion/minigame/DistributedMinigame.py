@@ -243,10 +243,10 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
                 Func(self.d_leaving), Func(self.headBackToMinigameArea)).start()
 
     def headBackToMinigameArea(self):
-        whereName = ZoneUtil.getWhereName(CIGlobals.MinigameAreaId)
-        loaderName = ZoneUtil.getLoaderName(CIGlobals.MinigameAreaId)
-        requestStatus = {'zoneId': CIGlobals.MinigameAreaId,
-            'hoodId': CIGlobals.MinigameArea,
+        whereName = ZoneUtil.getWhereName(ZoneUtil.MinigameAreaId)
+        loaderName = ZoneUtil.getLoaderName(ZoneUtil.MinigameAreaId)
+        requestStatus = {'zoneId': ZoneUtil.MinigameAreaId,
+            'hoodId': ZoneUtil.MinigameArea,
             'where': whereName,
             'how': 'teleportIn',
             'avId': base.localAvatar.doId,

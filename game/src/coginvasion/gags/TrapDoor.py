@@ -10,14 +10,13 @@ Copyright (c) CIO Team. All rights reserved.
 
 from src.coginvasion.gags.ActivateTrapGag import ActivateTrapGag
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Parallel, Wait, Func, LerpScaleInterval, LerpPosInterval, SoundInterval, ActorInterval
 from panda3d.core import Vec4, Point3
 
 class TrapDoor(ActivateTrapGag):
     
     def __init__(self):
-        ActivateTrapGag.__init__(self, CIGlobals.TrapDoor, 'phase_5/models/props/trapdoor.bam', 
+        ActivateTrapGag.__init__(self, GagGlobals.TrapDoor, 'phase_5/models/props/trapdoor.bam', 
                                  70, GagGlobals.TRAP_DOOR_SFX, 2.5, activateSfx = GagGlobals.FALL_SFX)
         self.setImage('phase_3.5/maps/trap-door.png')
         

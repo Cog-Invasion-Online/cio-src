@@ -163,7 +163,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         self.stopBlink()
         self.ignore('showAvId')
         self.ignore('showName')
-        self.token = None
         self.stopSmooth()
         Toon.Toon.disable(self)
         DistributedAvatar.disable(self)
@@ -176,6 +175,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
             self.DistributedToon_deleted = 1
             del self.animState2animId
             del self.animId2animState
+            del self.track
             Toon.Toon.delete(self)
             DistributedAvatar.delete(self)
             DistributedSmoothNode.delete(self)

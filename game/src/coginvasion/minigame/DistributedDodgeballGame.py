@@ -413,7 +413,7 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
             snowball.setPos(snowdata)
             self.snowballs.append(snowball)
 
-        self.olc = ZoneUtil.getOutdoorLightingConfig(CIGlobals.TheBrrrgh)
+        self.olc = ZoneUtil.getOutdoorLightingConfig(ZoneUtil.TheBrrrgh)
         self.olc.setupAndApply()
 
     def throw(self, snowballIndex, p):

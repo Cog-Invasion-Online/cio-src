@@ -19,6 +19,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectFrame
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.minigame.RemoteCameraShyAvatar import RemoteCameraShyAvatar
 
 class Viewfinder(DirectFrame):
     notify = directNotify.newCategory("Viewfinder")
@@ -93,6 +94,11 @@ class Viewfinder(DirectFrame):
         Returns True if the `nodePath` is both in the bounds of the
         camera lens and not occluded by anything.
         """
+        
+        if not nodePath or not isinstance(nodePath, RemoteCameraShyAvatar):
+            return False
+        
+        nodePath = nodePath.avatar
 
         lensBounds = self.captureCam.node().getLens().makeBounds()
         bounds = nodePath.getBounds()
@@ -101,7 +107,7 @@ class Viewfinder(DirectFrame):
 
         if inView:
             # We have another step, make sure they're not occluded by another object.
-            self.focusRayNode.lookAt(av)
+            self.focusRayNode.lookAt(nodePath)
             self.focusTrav.traverse(render)
             if self.focusHandler.getNumEntries() > 0:
 

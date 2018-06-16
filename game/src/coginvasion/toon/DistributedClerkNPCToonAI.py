@@ -1,9 +1,16 @@
-# Filename: DistributedClerkNPCToonAI.py
-# Created by:  blach (06Nov15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedClerkNPCToonAI.py
+@author Brian Lach
+@date November 6, 2015
+
+"""
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.npc import NPCGlobals
 from DistributedNPCToonAI import DistributedNPCToonAI
 
 class DistributedClerkNPCToonAI(DistributedNPCToonAI):
@@ -41,4 +48,4 @@ class DistributedClerkNPCToonAI(DistributedNPCToonAI):
     def requestExit(self):
         DistributedNPCToonAI.requestExit(self)
         if self.currentAvatar is None:
-            self.d_setChat(CIGlobals.ShopGoodbye)
+            self.d_setChat(NPCGlobals.ShopGoodbye)

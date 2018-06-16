@@ -559,7 +559,7 @@ class CogInvasionClientRepository(AstronClientRepository):
 
     def enterWaitForShardList(self):
         self.shardListHandle = self.addTaggedInterest(
-            self.GameGlobalsId, CIGlobals.DistrictZone,
+            self.GameGlobalsId, ZoneUtil.DistrictZone,
             self.ITAG_PERM, 'localShardList', event = 'shardList_complete'
         )
         self.acceptOnce('shardList_complete', self._handleShardListComplete)
@@ -663,7 +663,7 @@ class CogInvasionClientRepository(AstronClientRepository):
 
     def handleEnteredShard(self, status):
         self.uberZoneInterest = self.addInterest(
-            localAvatar.defaultShard, CIGlobals.UberZone,
+            localAvatar.defaultShard, ZoneUtil.UberZone,
             'uberZone', 'uberZoneInterestComplete'
         )
         self.acceptOnce('uberZoneInterestComplete', self.uberZoneInterestComplete, [status])
@@ -930,4 +930,4 @@ class CogInvasionClientRepository(AstronClientRepository):
             self.csm.sendSetAvatar(avId)
 
     def sendQuietZoneRequest(self):
-        self.sendSetZoneMsg(CIGlobals.QuietZone)
+        self.sendSetZoneMsg(ZoneUtil.QuietZone)

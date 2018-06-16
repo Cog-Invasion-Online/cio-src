@@ -8,7 +8,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.holiday.HolidayManager import HolidayType
 from panda3d.core import TransparencyAttrib
 
@@ -16,12 +15,13 @@ from playground import CTCSafeZoneLoader
 from street import TTTownLoader
 
 import ToonHood
+import ZoneUtil
 
 class CTCHood(ToonHood.ToonHood):
 
     def __init__(self, parentFSM, doneEvent, dnaStore, hoodId):
         ToonHood.ToonHood.__init__(self, parentFSM, doneEvent, dnaStore, hoodId)
-        self.id = CIGlobals.BattleTTC
+        self.id = ZoneUtil.BattleTTC
         self.safeZoneLoader = CTCSafeZoneLoader.CTCSafeZoneLoader
         self.townLoader = TTTownLoader.TTTownLoader
         self.storageDNAFile = "phase_4/dna/storage_TT.pdna"

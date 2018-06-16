@@ -1,5 +1,12 @@
-# Filename: DistributedTutorial.py
-# Created by:  blach (16Oct15)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedTutorial.py
+@author Brian Lach
+@date October 16, 2015
+
+"""
 
 from panda3d.core import NodePath, CompassEffect
 
@@ -13,7 +20,6 @@ from src.coginvasion.npc import NPCGlobals
 from libpandadna import *
 from src.coginvasion.battle.DistributedBattleZone import DistributedBattleZone
 from src.coginvasion.gui.WhisperPopup import WhisperPopup
-from src.coginvasion.globals import CIGlobals, ChatGlobals
 from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.hood import ZoneUtil
 
@@ -341,8 +347,8 @@ class DistributedTutorial(DistributedBattleZone):
         base.localAvatar.b_setAnimState('teleportOut', callback = self.__teleOutDone)
 
     def __teleOutDone(self):
-        zoneId = CIGlobals.ToontownCentralId
-        hoodId = CIGlobals.ToontownCentral
+        zoneId = ZoneUtil.ToontownCentralId
+        hoodId = ZoneUtil.ToontownCentral
         whereName = 'playground'
         avId = base.localAvatar.doId
         loaderName = 'safeZoneLoader'
@@ -359,8 +365,8 @@ class DistributedTutorial(DistributedBattleZone):
         base.transitions.fadeScreen(0.0)
         self.guide = Toon(base.cr)
         self.guide.autoClearChat = False
-        self.guide.parseDNAStrand(CIGlobals.NPCToonDict[self.GUIDE_NPCID][2])
-        self.guide.setName(CIGlobals.NPCToonDict[self.GUIDE_NPCID][1])
+        self.guide.parseDNAStrand(NPCGlobals.NPCToonDict[self.GUIDE_NPCID][2])
+        self.guide.setName(NPCGlobals.NPCToonDict[self.GUIDE_NPCID][1])
         self.guide.generateToon()
         self.guide.nametag.setNametagColor(NametagGlobals.NametagColors[NametagGlobals.CCNPC])
         self.guide.nametag.setActive(0)
@@ -385,7 +391,7 @@ class DistributedTutorial(DistributedBattleZone):
         self.streetGeom.setPos(20.5, -20, 0)
         self.streetGeom.setH(90)
         
-        self.olc = ZoneUtil.getOutdoorLightingConfig(CIGlobals.ToontownCentral)
+        self.olc = ZoneUtil.getOutdoorLightingConfig(ZoneUtil.ToontownCentral)
         self.olc.setupAndApply()
         
         base.playMusic('TC_SZ')

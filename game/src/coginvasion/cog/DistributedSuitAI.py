@@ -14,6 +14,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
+from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cog import CogBattleGlobals
 from src.coginvasion.cog.SuitItemDropperAI import SuitItemDropperAI
 
@@ -392,16 +393,16 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
                 if self.firstTimeDead:
                     self.sendUpdate('doStunEffect')
 
-                if track == GagType.THROW or gagName == CIGlobals.TNT:
+                if track == GagType.THROW or gagName == GagGlobals.TNT:
                     self.b_setAnimState('pie', 0)
                 elif track == GagType.DROP:
-                    majorDrops = [CIGlobals.GrandPiano, CIGlobals.Safe, CIGlobals.BigWeight]
+                    majorDrops = [GagGlobals.GrandPiano, GagGlobals.Safe, GagGlobals.BigWeight]
                     if gagName in majorDrops:
                         self.b_setAnimState('drop', 0)
                     else:
                         self.b_setAnimState('drop-react', 0)
                 elif track == GagType.SQUIRT or track == GagType.SOUND:
-                    if gagName == CIGlobals.StormCloud:
+                    if gagName == GagGlobals.StormCloud:
                         self.b_setAnimState('soak', 0)
                     else:
                         self.b_setAnimState('squirt-small', 0)
@@ -515,7 +516,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             pursue.battle = self.getManager().getBattle()
             self.brain.addBehavior(pursue, priority = 1)
             self.brain.addBehavior(SuitAttackTurretBehaviorAI(self), priority = 2)
-        place = CIGlobals.SuitSpawnPoints[self.hood]
+        place = CogBattleGlobals.SuitSpawnPoints[self.hood]
         landspot = random.choice(place.keys())
         path = place[landspot]
         index = place.keys().index(landspot)
@@ -657,7 +658,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
 
     def getPosFromCurrentPath(self):
         # Get the position of the path we are going to.
-        return CIGlobals.SuitSpawnPoints[self.getHood()][self.getCurrentPath()]
+        return CogBattleGlobals.SuitSpawnPoints[self.getHood()][self.getCurrentPath()]
 
     def getCurrentPathQueue(self):
         return self.currentPathQueue

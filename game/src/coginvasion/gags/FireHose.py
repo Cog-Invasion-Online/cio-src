@@ -12,7 +12,6 @@ from panda3d.core import Point3, Vec3, NodePath
 
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval, LerpScaleInterval, Parallel
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.toon import ParticleLoader
 from src.coginvasion.phys import PhysicsUtils
 from GagState import GagState
@@ -22,7 +21,7 @@ import GagGlobals
 class FireHose(SquirtGag):
 
     def __init__(self):
-        SquirtGag.__init__(self, CIGlobals.FireHose, "phase_5/models/props/firehose-mod.bam", GagGlobals.NULL_SFX)
+        SquirtGag.__init__(self, GagGlobals.FireHose, "phase_5/models/props/firehose-mod.bam", GagGlobals.NULL_SFX)
         self.anim = 'phase_5/models/props/firehose-chan.bam'
         self.sprayParticleFile = 'phase_14/etc/spray.ptf'
         self.scale = 1.0

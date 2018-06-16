@@ -10,13 +10,12 @@ Copyright (c) CIO Team. All rights reserved.
 
 from src.coginvasion.gags.ToonUpGag import ToonUpGag
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Func, Parallel, ActorInterval
 
 class JugglingBalls(ToonUpGag):
 
     def __init__(self):
-        ToonUpGag.__init__(self, CIGlobals.JugglingBalls,
+        ToonUpGag.__init__(self, GagGlobals.JugglingBalls,
                            'phase_5/models/props/cubes-mod.bam', 90, 120, 100, GagGlobals.JUGGLE_SFX, 1, anim = 'phase_5/models/props/cubes-chan.bam')
         self.setImage('phase_3.5/maps/juggling-cubes.png')
         self.track = None

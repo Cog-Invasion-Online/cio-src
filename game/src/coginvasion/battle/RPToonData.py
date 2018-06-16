@@ -12,7 +12,6 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
 
 from collections import OrderedDict
@@ -34,7 +33,7 @@ class RPToonData:
         self.avatar = avatar
         self.avatarName = None if not self.avatar else avatar.getName()
         self.notify = directNotify.newCategory('RPToonData[%s]' % self.avatarName if self.avatarName else 'Undefined')
-        self.favoriteGag = CIGlobals.Cupcake
+        self.favoriteGag = GagGlobals.Cupcake
 
         # All the gag tracks
         self.tracks = OrderedDict()

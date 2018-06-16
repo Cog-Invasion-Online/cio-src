@@ -1,5 +1,12 @@
-# Filename: DistributedDisneyChar.py
-# Created by:  blach (21Jun16)
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedDisneyChar.py
+@author Brian Lach
+@date June 21, 2016
+
+"""
 
 from panda3d.core import ModelNode, CharacterJointEffect, Texture
 

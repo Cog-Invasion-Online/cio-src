@@ -11,10 +11,12 @@ Copyright (c) CIO Team. All rights reserved.
 from panda3d.core import ModelNode, NodePath, Point3, CardMaker, \
     TransparencyAttrib, TextNode
 
+from libpandadna import *
+
 from src.coginvasion.globals import CIGlobals
 import DistributedToonInterior
 import ToonInteriorColors
-from libpandadna import *
+import ZoneUtil
 
 """
 from datetime import datetime
@@ -45,7 +47,7 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         self.generator.seed(self.zoneId)
         self.interior = loader.loadModel('phase_3.5/models/modules/HQ_interior.bam')
         self.interior.reparentTo(render)
-        self.colors = ToonInteriorColors.colors[CIGlobals.ToontownCentral]
+        self.colors = ToonInteriorColors.colors[ZoneUtil.ToontownCentral]
         doorModelName = 'door_double_round_ul'
         if doorModelName[-1:] == 'r':
             doorModelName = doorModelName[:-1] + 'l'

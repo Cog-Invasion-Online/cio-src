@@ -153,7 +153,7 @@ class DistributedDeliveryGame(DistributedMinigame):
         self.world.setY(-5)
         self.world.reparentTo(base.render)
         self.world.find('**/ground').setBin('ground', 18)
-        self.olc = ZoneUtil.getOutdoorLightingConfig(CIGlobals.ToontownCentral)
+        self.olc = ZoneUtil.getOutdoorLightingConfig(ZoneUtil.ToontownCentral)
         self.olc.setupAndApply()
         base.camera.setPos(20, 50, 30)
         base.camera.lookAt(20, 0, 7.5)

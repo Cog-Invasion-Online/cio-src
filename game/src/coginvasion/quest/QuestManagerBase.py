@@ -10,7 +10,7 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.npc import NPCGlobals
 from src.coginvasion.quest.Quest import Quest
 from src.coginvasion.quest import QuestData
 from src.coginvasion.quest import Objectives
@@ -46,7 +46,7 @@ class QuestManagerBase:
         for questId, quest in self.quests.items():
             accObjs = quest.accessibleObjectives
 
-            isHQ = CIGlobals.NPCToonDict[npcId][3] == CIGlobals.NPC_HQ
+            isHQ = NPCGlobals.NPCToonDict[npcId][3] == NPCGlobals.NPC_HQ
             
             for objective in accObjs: 
                 if objective.type == Objectives.VisitNPC and objective.npcId == npcId:
@@ -95,7 +95,7 @@ class QuestManagerBase:
 
             elif lastObjectiveType == Objectives.VisitHQOfficer:
                 # As long as the NPC is an HQ officer, we're good.
-                if CIGlobals.NPCToonDict[npcId][3] == CIGlobals.NPC_HQ:
+                if NPCGlobals.NPCToonDict[npcId][3] == NPCGlobals.NPC_HQ:
                     return (not checkCurrentCompleted) or (checkCurrentCompleted 
                         and accessibleObjectives.isComplete())
 
@@ -109,7 +109,7 @@ class QuestManagerBase:
             objectives = quest.accessibleObjectives
             complete = objectives.isComplete()
 
-            isHQ = CIGlobals.NPCToonDict[npcId][3] == CIGlobals.NPC_HQ
+            isHQ = NPCGlobals.NPCToonDict[npcId][3] == NPCGlobals.NPC_HQ
             
             for objective in objectives:
                 mustVisitOfficer = objective.assigner is 0

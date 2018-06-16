@@ -55,7 +55,7 @@ class DistributedRaceGame(DistributedMinigame.DistributedMinigame):
         self.deleteWorld()
         self.track = loader.loadModel(self.trackPath)
         self.track.reparentTo(render)
-        self.olc = ZoneUtil.getOutdoorLightingConfig(CIGlobals.ToontownCentral)
+        self.olc = ZoneUtil.getOutdoorLightingConfig(ZoneUtil.ToontownCentral)
         self.olc.setupAndApply()
         self.setMinigameMusic("phase_4/audio/bgm/MG_toontag.ogg")
         self.setDescription("Tap the left and right arrow keys repeatedly, in turns, as fast as " + \

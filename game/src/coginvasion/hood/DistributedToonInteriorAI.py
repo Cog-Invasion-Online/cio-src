@@ -11,9 +11,10 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed import DistributedObjectAI
 
-from src.coginvasion.globals import CIGlobals
-import DistributedDoorAI
 from src.coginvasion.toon import DistributedNPCToonAI, DistributedHQNPCToonAI, DistributedTailorNPCToonAI, DistributedClerkNPCToonAI
+from src.coginvasion.npc import NPCGlobals
+
+import DistributedDoorAI
 
 class DistributedToonInteriorAI(DistributedObjectAI.DistributedObjectAI):
     notify = directNotify.newCategory('DistributedToonInteriorAI')
@@ -32,22 +33,22 @@ class DistributedToonInteriorAI(DistributedObjectAI.DistributedObjectAI):
         self.createNPCs()
 
     def createNPCs(self):
-        npcIdList = CIGlobals.zone2NpcDict.get(self.zoneId, [])
+        npcIdList = NPCGlobals.zone2NpcDict.get(self.zoneId, [])
         for npcId in npcIdList:
             while npcIdList.count(npcId) > 1:
                 npcIdList.remove(npcId)
         for i in xrange(len(npcIdList)):
             npcId = npcIdList[i]
-            npcData = CIGlobals.NPCToonDict.get(npcId)
-            if not npcData[3] in [CIGlobals.NPC_REGULAR, CIGlobals.NPC_HQ, CIGlobals.NPC_TAILOR, CIGlobals.NPC_CLERK]:
+            npcData = NPCGlobals.NPCToonDict.get(npcId)
+            if not npcData[3] in [NPCGlobals.NPC_REGULAR, NPCGlobals.NPC_HQ, NPCGlobals.NPC_TAILOR, NPCGlobals.NPC_CLERK]:
                 continue
-            if npcData[3] == CIGlobals.NPC_REGULAR:
+            if npcData[3] == NPCGlobals.NPC_REGULAR:
                 npcClass = DistributedNPCToonAI.DistributedNPCToonAI
-            elif npcData[3] == CIGlobals.NPC_HQ:
+            elif npcData[3] == NPCGlobals.NPC_HQ:
                 npcClass = DistributedHQNPCToonAI.DistributedHQNPCToonAI
-            elif npcData[3] == CIGlobals.NPC_TAILOR:
+            elif npcData[3] == NPCGlobals.NPC_TAILOR:
                 npcClass = DistributedTailorNPCToonAI.DistributedTailorNPCToonAI
-            elif npcData[3] == CIGlobals.NPC_CLERK:
+            elif npcData[3] == NPCGlobals.NPC_CLERK:
                 npcClass = DistributedClerkNPCToonAI.DistributedClerkNPCToonAI
             npc = npcClass(self.air, npcId, len(self.npcs))
             npc.generateWithRequired(self.zoneId)

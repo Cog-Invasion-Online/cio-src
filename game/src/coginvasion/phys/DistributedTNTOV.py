@@ -46,7 +46,7 @@ class DistributedTNTOV(DistributedTNT, DistributedObjectOV):
                 if obj.getPlace() == base.localAvatar.zoneId:
                     dist = obj.getDistance(self)
                     if dist <= GagGlobals.TNT_RANGE:
-                        obj.sendUpdate('hitByGag', [GagGlobals.gagIdByName[CIGlobals.TNT], dist])
+                        obj.sendUpdate('hitByGag', [GagGlobals.gagIdByName[GagGlobals.TNT], dist])
 
     def getPhysBody(self):
         body = DistributedTNT.getPhysBody(self)

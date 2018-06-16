@@ -12,14 +12,13 @@ from panda3d.core import Point3
 
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
-from src.coginvasion.globals import CIGlobals
 from SquirtGag import SquirtGag
 import GagGlobals
 
 class WaterGlass(SquirtGag):
 
     def __init__(self):
-        SquirtGag.__init__(self, CIGlobals.WaterGlass, "phase_5/models/props/glass-mod.bam", GagGlobals.NULL_SFX)
+        SquirtGag.__init__(self, GagGlobals.WaterGlass, "phase_5/models/props/glass-mod.bam", GagGlobals.NULL_SFX)
         self.setHealth(GagGlobals.WATERGLASS_HEAL)
         self.setImage('phase_3.5/maps/water-glass.png')
         self.anim = 'spit'

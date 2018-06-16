@@ -31,6 +31,7 @@ from SpawnMode import SpawnMode
 from SuitUtils import getMoveIvalFromPath
 import SuitBank
 import SuitGlobals
+import CogBattleGlobals
 import Voice
 import Variant
 import SuitAttacks
@@ -116,10 +117,10 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
     def enterFlyingDown(self, startIndex, endIndex, ts = 0.0):
         if self.getHood() != '' and startIndex != -1 and endIndex != -1:
             duration = 3.5
-            startPoint = CIGlobals.SuitSpawnPoints[self.getHood()].keys()[startIndex]
-            startPos = CIGlobals.SuitSpawnPoints[self.getHood()][startPoint] + (0, 0, 6.5 * 4.8)
-            endPoint = CIGlobals.SuitSpawnPoints[self.getHood()].keys()[endIndex]
-            endPos = CIGlobals.SuitSpawnPoints[self.getHood()][endPoint]
+            startPoint = CogBattleGlobals.SuitSpawnPoints[self.getHood()].keys()[startIndex]
+            startPos = CogBattleGlobals.SuitSpawnPoints[self.getHood()][startPoint] + (0, 0, 6.5 * 4.8)
+            endPoint = CogBattleGlobals.SuitSpawnPoints[self.getHood()].keys()[endIndex]
+            endPos = CogBattleGlobals.SuitSpawnPoints[self.getHood()][endPoint]
             self.stopMoving(finish = 1)
             groundF = 28
             dur = self.getDuration('land')
@@ -142,13 +143,13 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         if self.getHood() != '':
             duration = 3
             if startIndex > -1:
-                startPoint = CIGlobals.SuitSpawnPoints[self.getHood()].keys()[startIndex]
-                startPos = CIGlobals.SuitSpawnPoints[self.getHood()][startPoint]
+                startPoint = CogBattleGlobals.SuitSpawnPoints[self.getHood()].keys()[startIndex]
+                startPos = CogBattleGlobals.SuitSpawnPoints[self.getHood()][startPoint]
             else:
                 startPos = self.getPos(render)
             if endIndex > -1:
-                endPoint = CIGlobals.SuitSpawnPoints[self.getHood()].keys()[endIndex]
-                endPos = CIGlobals.SuitSpawnPoints[self.getHood()][endPoint] + (0, 0, 6.5 * 4.8)
+                endPoint = CogBattleGlobals.SuitSpawnPoints[self.getHood()].keys()[endIndex]
+                endPos = CogBattleGlobals.SuitSpawnPoints[self.getHood()][endPoint] + (0, 0, 6.5 * 4.8)
             else:
                 endPos = self.getPos(render) + (0, 0, 6.5 * 4.8)
 
@@ -373,10 +374,10 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
 
     def spawn(self, startIndex, endIndex, spawnMode = SpawnMode.FLYDOWN):
         if spawnMode == SpawnMode.FLYDOWN:
-            startPoint = CIGlobals.SuitSpawnPoints[self.getHood()].keys()[startIndex]
-            startPos = CIGlobals.SuitSpawnPoints[self.getHood()][startPoint] + (0, 0, 50)
-            endPoint = CIGlobals.SuitSpawnPoints[self.getHood()].keys()[endIndex]
-            endPos = CIGlobals.SuitSpawnPoints[self.getHood()][endPoint]
+            startPoint = CogBattleGlobals.SuitSpawnPoints[self.getHood()].keys()[startIndex]
+            startPos = CogBattleGlobals.SuitSpawnPoints[self.getHood()][startPoint] + (0, 0, 50)
+            endPoint = CogBattleGlobals.SuitSpawnPoints[self.getHood()].keys()[endIndex]
+            endPos = CogBattleGlobals.SuitSpawnPoints[self.getHood()][endPoint]
             if self.moveIval:
                 self.moveIval.finish()
                 self.moveIval = None

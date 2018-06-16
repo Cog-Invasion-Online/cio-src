@@ -12,6 +12,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags.Gag import Gag
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags.GagState import GagState
+from src.coginvasion.gags import GagGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, SoundInterval
 from direct.particles.ParticleEffect import ParticleEffect
 from panda3d.core import Point3
@@ -71,7 +72,7 @@ class SoundGag(Gag):
             if suit.isDead():
                 track.finish()
         for suit in suits:
-            if self.name != CIGlobals.Opera:
+            if self.name != GagGlobals.Opera:
                 suit.sendUpdate('hitByGag', [self.getID()])
             else:
                 breakEffect = ParticleEffect()

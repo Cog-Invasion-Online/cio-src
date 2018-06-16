@@ -11,13 +11,13 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from ToonHoodAI import ToonHoodAI
-from src.coginvasion.globals import CIGlobals
+import ZoneUtil
 
 class DLHoodAI(ToonHoodAI):
     notify = directNotify.newCategory('DLHoodAI')
 
     def __init__(self, air):
-        ToonHoodAI.__init__(self, air, CIGlobals.DonaldsDreamlandId, CIGlobals.DonaldsDreamland)
+        ToonHoodAI.__init__(self, air, ZoneUtil.DonaldsDreamlandId, ZoneUtil.DonaldsDreamland)
         self.startup()
 
     def startup(self):

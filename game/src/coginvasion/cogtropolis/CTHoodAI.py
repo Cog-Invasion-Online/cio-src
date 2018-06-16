@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.hood import HoodAI
+from src.coginvasion.hood import ZoneUtil, HoodAI
 from src.coginvasion.globals import CIGlobals
 import DistributedCityCartAI
 
@@ -20,7 +20,7 @@ class CTHoodAI(HoodAI.HoodAI):
     MaxCarts = 6
 
     def __init__(self, air):
-        HoodAI.HoodAI.__init__(self, air, CIGlobals.CogTropolisId, CIGlobals.CogTropolis)
+        HoodAI.HoodAI.__init__(self, air, ZoneUtil.CogTropolisId, ZoneUtil.CogTropolis)
         self.carts = []
         self.startup()
 

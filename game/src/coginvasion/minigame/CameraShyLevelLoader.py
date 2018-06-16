@@ -14,7 +14,6 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from panda3d.core import Point3, Vec3, NodePath, Material
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.distributed.HoodMgr import HoodMgr
 from src.coginvasion.dna.DNALoader import *
@@ -26,7 +25,7 @@ class CameraShyLevelLoader:
 
     levelData = {
         'TT_maze' : {
-            'name' : CIGlobals.ToontownCentral,
+            'name' : ZoneUtil.ToontownCentral,
             'models' : {
                 'phase_4/models/minigames/maze_1player.bam' : {'name' : 'maze', 'scale' : Point3(3.0, 3.0, 3.0)},
                 'phase_4/models/minigames/maze_1player_collisions.egg' : {'name' : 'maze_collisions', 'scale' : Point3(3.0, 3.0, 3.0)},
@@ -41,13 +40,13 @@ class CameraShyLevelLoader:
             ]
         },
         'DG_playground' : {
-            'name' : CIGlobals.DaisyGardens,
+            'name' : ZoneUtil.DaisyGardens,
             'dna': [
                 'phase_8/dna/storage_DG.pdna',
                 'phase_8/dna/storage_DG_sz.pdna',
                 'phase_8/dna/daisys_garden_sz.pdna'
             ],
-            'spawnPoints': hoodMgr.dropPoints[CIGlobals.DaisyGardens]
+            'spawnPoints': hoodMgr.dropPoints[ZoneUtil.DaisyGardens]
         }
     }
 

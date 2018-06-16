@@ -13,6 +13,10 @@ from direct.interval.IntervalGlobal import Sequence, Func
 from direct.interval.IntervalGlobal import Wait, SoundInterval, ActorInterval
 
 class ChargeUpGag:
+    
+    StartBobFrame = 34
+    EndBobFrame = 40
+    BobPlayRateMultiplier = 0.25
 
     def __init__(self, selectionRadius, minDistance, maxDistance, shadowScale, maxCogs = 4):
         self.avatar = None
@@ -40,14 +44,16 @@ class ChargeUpGag:
         self.button.reparentTo(self.avatar.find('**/def_joint_left_hold'))
         track = Sequence(ActorInterval(self.avatar, self.buttonAnim, startFrame = 0, endFrame = self.chooseLocFrame,
                                        playRate = self.playRate, loop = 1))
-
+        base.localAvatar.startTraverseAnimationControls(self.buttonAnim)
+        
         if self.avatar == base.localAvatar:
             self.chargeUpSpot = ChargeUpSpot(self, self.avatar, self.selectionRadius,
                                               self.minDistance, self.maxDistance, self.shadowScale, self.maxCogs)
+            self.chargeUpSpot.start()
             self.avatar.acceptOnce(self.chargeUpSpot.getChargedUpName(), base.localAvatar.releaseGag)
             self.avatar.acceptOnce(self.chargeUpSpot.getChargedCanceledName(), self.handleStopCharging)
-            track.append(Func(self.chargeUpSpot.startSeeking))
-        track.start()
+            #track.append(Func(self.chargeUpSpot.startSeeking))
+        #track.start()
 
     def resetGag(self, wantButton = 0):
         self.cleanupChargeUpSpot()
@@ -63,7 +69,8 @@ class ChargeUpGag:
             self.avatar.ignore(self.chargeUpSpot.getChargedCanceledName())
             self.selectedCogs = self.chargeUpSpot.getSelectedCogs()
             self.cleanupChargeUpSpot()
-        self.buildTracks()
+        #self.buildTracks()
+        self.chargeUpSpot.release()
 
     def handleStopCharging(self):
         if hasattr(self, 'avatar') and self.avatar and self.avatar.getBackpack().getSupply(self.getID()) > 0:

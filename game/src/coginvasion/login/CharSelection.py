@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Vec4, TextNode, Fog, Point3, Vec3
+from panda3d.core import NodePath, Point3, Vec3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm import ClassicFSM, State
@@ -31,33 +31,33 @@ import sys
 import random
 
 HOOD_ID_2_DNA = {
-    CIGlobals.ToontownCentral:      ["phase_4/dna/pickatoon/storage_TT_pickatoon.pdna",
+    ZoneUtil.ToontownCentral:      ["phase_4/dna/pickatoon/storage_TT_pickatoon.pdna",
                                      "phase_4/dna/pickatoon/new_ttc_sz_pickatoon.pdna"],
 
-    CIGlobals.DonaldsDock:          ["phase_6/dna/pickatoon/storage_DD_pickatoon.pdna",
+    ZoneUtil.DonaldsDock:          ["phase_6/dna/pickatoon/storage_DD_pickatoon.pdna",
                                      "phase_6/dna/pickatoon/donalds_dock_sz_pickatoon.pdna"],
 
-    CIGlobals.MinniesMelodyland:    ["phase_6/dna/pickatoon/storage_MM_pickatoon.pdna",
+    ZoneUtil.MinniesMelodyland:    ["phase_6/dna/pickatoon/storage_MM_pickatoon.pdna",
                                      "phase_6/dna/pickatoon/minnies_melody_land_sz_pickatoon.pdna"],
 
-    CIGlobals.DaisyGardens:         ["phase_8/dna/pickatoon/storage_DG_pickatoon.pdna",
+    ZoneUtil.DaisyGardens:         ["phase_8/dna/pickatoon/storage_DG_pickatoon.pdna",
                                      "phase_8/dna/pickatoon/daisys_garden_sz_pickatoon.pdna"],
 
-    CIGlobals.DonaldsDreamland:     ["phase_8/dna/pickatoon/storage_DL_pickatoon.pdna",
+    ZoneUtil.DonaldsDreamland:     ["phase_8/dna/pickatoon/storage_DL_pickatoon.pdna",
                                      "phase_8/dna/pickatoon/donalds_dreamland_sz_pickatoon.pdna"],
                                      
-    CIGlobals.TheBrrrgh:            ["phase_8/dna/pickatoon/storage_BR_pickatoon.pdna",
+    ZoneUtil.TheBrrrgh:            ["phase_8/dna/pickatoon/storage_BR_pickatoon.pdna",
                                      "phase_8/dna/pickatoon/the_burrrgh_sz_pickatoon.pdna"]
 }
 
 HOOD_STAGE_DATA = {
     #                                   cam start             cam end         toon pos                     toon hpr
-    CIGlobals.ToontownCentral:      [Point3(0, 60, 15), Point3(0, 10, 3), Point3(77, 15, 7.4),          Vec3(90, 0, 0)],
-    CIGlobals.DonaldsDock:          [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-110.4, -37.3, 5.7),   Vec3(-60, 0, 0)],
-    CIGlobals.MinniesMelodyland:    [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-47, 45.23, 6.525),    Vec3(-115, 0, 0)],
-    CIGlobals.DaisyGardens:         [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-0.25, 14, 0.025),     Vec3(0, 0, 0)],
-    CIGlobals.DonaldsDreamland:     [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-6, -90.3, 0.025),     Vec3(0, 0, 0)],
-    CIGlobals.TheBrrrgh:            [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-113, -40.7, 8.55),    Vec3(-69, 0, 0)]
+    ZoneUtil.ToontownCentral:      [Point3(0, 60, 15), Point3(0, 10, 3), Point3(77, 15, 7.4),          Vec3(90, 0, 0)],
+    ZoneUtil.DonaldsDock:          [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-110.4, -37.3, 5.7),   Vec3(-60, 0, 0)],
+    ZoneUtil.MinniesMelodyland:    [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-47, 45.23, 6.525),    Vec3(-115, 0, 0)],
+    ZoneUtil.DaisyGardens:         [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-0.25, 14, 0.025),     Vec3(0, 0, 0)],
+    ZoneUtil.DonaldsDreamland:     [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-6, -90.3, 0.025),     Vec3(0, 0, 0)],
+    ZoneUtil.TheBrrrgh:            [Point3(0, 60, 15), Point3(0, 10, 3), Point3(-113, -40.7, 8.55),    Vec3(-69, 0, 0)]
 }
 
 ST_RANDOM_ANIMS = ['bow', 'bored', 'shrug', 'read', 'wave', 'win', 'fallf', 'fallb']

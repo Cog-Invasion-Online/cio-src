@@ -12,8 +12,7 @@ from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.globals import CIGlobals
-from src.coginvasion.hood import Place
+from src.coginvasion.hood import ZoneUtil, Place
 
 class Playground(Place.Place):
     notify = directNotify.newCategory("Playground")
@@ -100,11 +99,11 @@ class Playground(Place.Place):
 
     def enterWalk(self, teleportIn = 0):
         Place.Place.enterWalk(self, teleportIn)
-        if base.localAvatar.zoneId != CIGlobals.RecoverAreaId:
+        if base.localAvatar.zoneId != ZoneUtil.RecoverAreaId:
             base.localAvatar.startMonitoringHP()
 
     def exitWalk(self):
-        if base.localAvatar.zoneId != CIGlobals.RecoverAreaId:
+        if base.localAvatar.zoneId != ZoneUtil.RecoverAreaId:
             base.localAvatar.stopMonitoringHP()
         Place.Place.exitWalk(self)
 

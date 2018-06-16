@@ -15,7 +15,8 @@ from direct.distributed.DistributedNode import DistributedNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, LerpScaleInterval, Func
 
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.globals.CIGlobals import WallBitmask, SPRender
+from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.gags import GagGlobals
 
 class DistributedRestockBarrel(DistributedNode):
@@ -49,14 +50,14 @@ class DistributedRestockBarrel(DistributedNode):
         self.collSphere = BulletSphereShape(self.sphereRadius)
         self.collNode = BulletGhostNode(self.uniqueName('barrelSphere'))
         self.collNode.setKinematic(True)
-        self.collNode.setIntoCollideMask(CIGlobals.WallBitmask)
+        self.collNode.setIntoCollideMask(WallBitmask)
         self.collNode.addShape(self.collSphere)
         self.collNodePath = self.attachNewNode(self.collNode)
         self.collNodePath.hide()
         base.physicsWorld.attach(self.collNode)
         self.accept('enter' + self.collNodePath.getName(), self.__handleCollision)
         
-        self.setParent(CIGlobals.SPRender)
+        self.setParent(SPRender)
         
     def disable(self):
         DistributedNode.disable(self)
@@ -116,18 +117,18 @@ class DistributedRestockBarrel(DistributedNode):
         else:
             # Provided a hood id, the restock barrel will select the model of the
             # treasure for that playground and use it as the label.
-            hoodName = CIGlobals.ZoneId2Hood.get(labelId)
+            hoodName = ZoneUtil.ZoneId2Hood.get(labelId)
             modelPath = 'phase_4/models/props/icecream.bam'
             
-            if hoodName is CIGlobals.DonaldsDreamland:
+            if hoodName is ZoneUtil.DonaldsDreamland:
                 modelPath = 'phase_8/models/props/zzz_treasure.bam'
-            elif hoodName is CIGlobals.TheBrrrgh:
+            elif hoodName is ZoneUtil.TheBrrrgh:
                 modelPath = 'phase_8/models/props/snowflake_treasure.bam'
-            elif hoodName is CIGlobals.MinniesMelodyland:
+            elif hoodName is ZoneUtil.MinniesMelodyland:
                 modelPath = 'phase_6/models/props/music_treasure.bam'
-            elif hoodName is CIGlobals.DaisyGardens:
+            elif hoodName is ZoneUtil.DaisyGardens:
                 modelPath = 'phase_8/models/props/flower_treasure.bam'
-            elif hoodName is CIGlobals.DonaldsDock:
+            elif hoodName is ZoneUtil.DonaldsDock:
                 modelPath = 'phase_6/models/props/starfish_treasure.bam'
             
             self.gagModel = loader.loadModel(modelPath)

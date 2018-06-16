@@ -8,9 +8,9 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.toon.ToonDNA import ToonDNA
 from src.coginvasion.minigame import UnoGameGlobals as UGG
+from src.coginvasion.npc import NPCGlobals
 import random
 
 class UnoGameAIPlayer(ToonDNA):
@@ -19,8 +19,8 @@ class UnoGameAIPlayer(ToonDNA):
         ToonDNA.__init__(self)
         self.game = uno_ai
         self.npc_id = npc_id
-        self.name = CIGlobals.NPCToonDict[npc_id][1]
-        self.dna = CIGlobals.NPCToonDict[npc_id][2]
+        self.name = NPCGlobals.NPCToonDict[npc_id][1]
+        self.dna = NPCGlobals.NPCToonDict[npc_id][2]
         self.cards = []
         self.dealingCards = []
         self.strategicCards = []

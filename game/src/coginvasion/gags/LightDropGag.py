@@ -9,6 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from src.coginvasion.gags.DropGag import DropGag
+from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.minigame.FlightProjectileInterval import FlightProjectileInterval
 from direct.interval.IntervalGlobal import Sequence, LerpPosInterval, LerpScaleInterval, Func, Wait, Parallel
@@ -61,7 +62,7 @@ class LightDropGag(DropGag):
             self.build()
 
         self.gag.setPos(suit.find('**/joint_head').getPos(render))
-        if self.name == CIGlobals.FlowerPot:
+        if self.name == GagGlobals.FlowerPot:
             self.gag.setZ(self.gag, 3.5)
         bounce = Effects.createScaleZBounce(self.dropMdl, 1, self.dropMdl.getScale(render), 0.3, 0.75)
         dummyNode = suit.attachNewNode('fallOffNode')

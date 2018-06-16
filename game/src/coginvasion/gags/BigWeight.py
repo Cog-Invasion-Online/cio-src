@@ -18,7 +18,7 @@ from panda3d.core import OmniBoundingVolume, Point3, CollisionSphere, CollisionN
 class BigWeight(DropGag):
 
     def __init__(self):
-        DropGag.__init__(self, CIGlobals.BigWeight, 'phase_5/models/props/weight-mod.bam', 'phase_5/models/props/weight-chan.bam',
+        DropGag.__init__(self, GagGlobals.BigWeight, 'phase_5/models/props/weight-mod.bam', 'phase_5/models/props/weight-chan.bam',
                          45, GagGlobals.WEIGHT_DROP_SFX, GagGlobals.WEIGHT_MISS_SFX, 1, 1)
         self.setImage('phase_3.5/maps/big-weight.png')
         self.colliderRadius = 2

@@ -25,7 +25,7 @@ from src.coginvasion.hood.DDHoodAI import DDHoodAI
 from src.coginvasion.cogtropolis.CTHoodAI import CTHoodAI
 
 from panda3d.core import UniqueIdAllocator
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
 from AIZoneData import AIZoneDataStore
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.distributed.CogInvasionDoGlobals import (DO_ID_DISTRICT_NAME_MANAGER,
@@ -45,8 +45,8 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         )
         self.notify.setInfo(True)
         self.district = None
-        self.zoneAllocator = UniqueIdAllocator(CIGlobals.DynamicZonesBegin,
-                                            CIGlobals.DynamicZonesEnd)
+        self.zoneAllocator = UniqueIdAllocator(ZoneUtil.DynamicZonesBegin,
+                                            ZoneUtil.DynamicZonesEnd)
         self.zoneDataStore = AIZoneDataStore()
         self.hoods = {}
         self.dnaStoreMap = {}

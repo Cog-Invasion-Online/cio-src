@@ -14,7 +14,6 @@ from direct.fsm import ClassicFSM, State
 
 from src.coginvasion.battle.DistributedBattleZoneAI import DistributedBattleZoneAI
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cog import SuitBank, Variant
 from src.coginvasion.cog.SuitType import SuitType
 from src.coginvasion.cog import CogBattleGlobals, SuitGlobals
@@ -22,6 +21,7 @@ from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.battle.DistributedGagBarrelAI import DistributedGagBarrelAI
 from src.coginvasion.battle.DistributedHPBarrelAI import DistributedHPBarrelAI
 from src.coginvasion.battle import BattleGlobals
+from src.coginvasion.hood import ZoneUtil
 from DistributedCogOfficeElevatorAI import DistributedCogOfficeElevatorAI
 from DistributedCogOfficeSuitAI import DistributedCogOfficeSuitAI
 from CogOfficeConstants import *
@@ -425,8 +425,8 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         suit.battleZone = self
         variant = Variant.NORMAL
         hood = self.hood
-        if self.hood == CIGlobals.ToontownCentral:
-            hood = CIGlobals.BattleTTC
+        if self.hood == ZoneUtil.ToontownCentral:
+            hood = ZoneUtil.BattleTTC
         if CogBattleGlobals.hi2hi[hood] == CogBattleGlobals.WaiterHoodIndex:
             variant = Variant.WAITER
         suit.b_setSuit(plan, variant)
@@ -542,7 +542,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                 
                 if random.randrange(0, 100) < healBarrelChance:
                     # Let's generate an HP restock barrel!
-                    barrel = DistributedHPBarrelAI(CIGlobals.Hood2ZoneId.get(self.hood), self.air)
+                    barrel = DistributedHPBarrelAI(ZoneUtil.Hood2ZoneId.get(self.hood), self.air)
                 else:
                     # Let's generate a gag restock barrel!
                     gagIcon = random.choice([0, 2])

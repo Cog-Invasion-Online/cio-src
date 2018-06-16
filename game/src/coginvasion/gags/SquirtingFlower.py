@@ -12,7 +12,6 @@ from panda3d.core import Vec3, Point3
 
 from src.coginvasion.gags.SquirtGag import SquirtGag
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.globals import CIGlobals
 
 from direct.interval.IntervalGlobal import Sequence, Func, Wait, Parallel
 from direct.interval.IntervalGlobal import LerpScaleInterval, ActorInterval
@@ -20,7 +19,7 @@ from direct.interval.IntervalGlobal import LerpScaleInterval, ActorInterval
 class SquirtingFlower(SquirtGag):
 
     def __init__(self):
-        SquirtGag.__init__(self, CIGlobals.SquirtFlower, GagGlobals.getProp(3.5, 'button'), GagGlobals.FLOWER_HIT_SFX)
+        SquirtGag.__init__(self, GagGlobals.SquirtFlower, GagGlobals.getProp(3.5, 'button'), GagGlobals.FLOWER_HIT_SFX)
         self.setImage('phase_3.5/maps/squirting-flower.png')
         self.flower = None
         self.flowerScale = 1.5

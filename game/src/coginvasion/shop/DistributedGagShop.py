@@ -11,9 +11,9 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.actor.Actor import Actor
 from src.coginvasion.shop.DistributedShop import DistributedShop
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.shop.GagShop import GagShop
 from src.coginvasion.npc.Char import Char
+from src.coginvasion.npc import DisneyCharGlobals
 
 class DistributedGagShop(DistributedShop):
     notify = directNotify.newCategory('DistributedGagShop')
@@ -27,8 +27,8 @@ class DistributedGagShop(DistributedShop):
     def setupClerk(self):
         DistributedShop.setupClerk(self)
         self.clerk = Char()
-        self.clerk.generateChar(CIGlobals.Goofy)
-        self.clerk.setName(CIGlobals.Goofy)
+        self.clerk.generateChar(DisneyCharGlobals.Goofy)
+        self.clerk.setName(DisneyCharGlobals.Goofy)
         self.clerk.setupNameTag()
         self.clerk.reparentTo(self)
         self.clerk.animFSM.request('neutral')

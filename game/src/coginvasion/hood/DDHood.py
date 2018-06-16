@@ -9,19 +9,19 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import VBase4
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.holiday.HolidayManager import HolidayType
 
 from street import DDTownLoader
 from playground import DDSafeZoneLoader
 
 from ToonHood import ToonHood
+import ZoneUtil
 
 class DDHood(ToonHood):
 
     def __init__(self, parentFSM, doneEvent, dnaStore, hoodId):
         ToonHood.__init__(self, parentFSM, doneEvent, dnaStore, hoodId)
-        self.id = CIGlobals.DonaldsDock
+        self.id = ZoneUtil.DonaldsDock
         self.safeZoneLoader = DDSafeZoneLoader.DDSafeZoneLoader
         self.townLoader = DDTownLoader.DDTownLoader
         self.abbr = "DD"

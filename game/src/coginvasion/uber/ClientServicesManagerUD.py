@@ -16,11 +16,10 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.distributed import AdminCommands
+from src.coginvasion.hood import ZoneUtil
 from panda3d.core import NetDatagram
 import anydbm
 import os
-
-from src.coginvasion.globals import CIGlobals
 
 class CreateToonProcess:
     notify = directNotify.newCategory("CreateToonProcess")
@@ -82,9 +81,9 @@ class CreateToonProcess:
                 "setTier": (13,),
                 "setFriendsList": ([],),
                 "setTutorialCompleted": (1,),#self.choice[3],),
-                "setHoodsDiscovered": ([CIGlobals.ToontownCentralId],),
+                "setHoodsDiscovered": ([ZoneUtil.ToontownCentralId],),
                 "setTeleportAccess": ([],),
-                "setLastHood": (CIGlobals.ToontownCentralId,),
+                "setLastHood": (ZoneUtil.ToontownCentralId,),
                 "setDefaultShard": (0,),
                 "setNumGagSlots": (GagGlobals.InitGagSlots,)}
         self.notify.info("Creating new toon!")

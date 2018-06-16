@@ -23,7 +23,7 @@ class GunGameLevelLoader:
     LevelData = {
         # momada means: Mix Of Mint And District Attorney's
         'momada': {
-            'name': CIGlobals.ToonBattleOriginalLevel,
+            'name': ZoneUtil.ToonBattleOriginalLevel,
             'camera': (Point3(0.0, -25.80, 7.59), Vec3(0.00, 0.00, 0.00)),
             'models': [
                 "phase_11/models/lawbotHQ/LB_Zone03a.bam",
@@ -82,7 +82,7 @@ class GunGameLevelLoader:
         },
 
         'dg': {
-            'name': CIGlobals.DaisyGardens,
+            'name': ZoneUtil.DaisyGardens,
             'camera': (Point3(-33.13, -3.20, 48.62), Vec3(326.31, 332.68, 0.00)),
             'dna': [
                 'phase_8/dna/storage_DG.pdna',
@@ -90,11 +90,11 @@ class GunGameLevelLoader:
                 'phase_8/dna/daisys_garden_sz.pdna'
             ],
             'sky': 'TT',
-            'spawn_points': hoodMgr.dropPoints[CIGlobals.DaisyGardens]
+            'spawn_points': hoodMgr.dropPoints[ZoneUtil.DaisyGardens]
         },
 
         'mml': {
-            'name': CIGlobals.MinniesMelodyland,
+            'name': ZoneUtil.MinniesMelodyland,
             'camera': (Point3(-54.42, -91.05, 34.89), Vec3(315.29, 336.80, 0.00)),
             'dna': [
                 'phase_6/dna/storage_MM.pdna',
@@ -102,11 +102,11 @@ class GunGameLevelLoader:
                 'phase_6/dna/minnies_melody_land_sz.pdna'
             ],
             'sky': 'MM',
-            'spawn_points': hoodMgr.dropPoints[CIGlobals.MinniesMelodyland]
+            'spawn_points': hoodMgr.dropPoints[ZoneUtil.MinniesMelodyland]
         },
 
         'oz': {
-            'name': CIGlobals.OutdoorZone,
+            'name': ZoneUtil.OutdoorZone,
             'camera': (Point3(-54.42, -91.05, 34.89), Vec3(315.29, 336.80, 0.00)),
             'dna': [
                 'phase_6/dna/storage_OZ.pdna',
@@ -114,19 +114,19 @@ class GunGameLevelLoader:
                 'phase_6/dna/outdoor_zone_sz.pdna'
             ],
             'sky': 'TT',
-            'spawn_points': hoodMgr.dropPoints[CIGlobals.OutdoorZone]
+            'spawn_points': hoodMgr.dropPoints[ZoneUtil.OutdoorZone]
         },
 
         'cbhq': {
-            'name': CIGlobals.CashbotHQ,
+            'name': ZoneUtil.CashbotHQ,
             'camera': (Point3(302.64, 5.00, 15.20), Vec3(135.00, 341.57, 0.00)),
             'model': 'phase_10/models/cogHQ/CashBotShippingStation.bam',
             'sky': None,
-            'spawn_points': hoodMgr.dropPoints[CIGlobals.CashbotHQ]
+            'spawn_points': hoodMgr.dropPoints[ZoneUtil.CashbotHQ]
         },
 
         'sbf': {
-            'name': CIGlobals.SellbotFactory,
+            'name': ZoneUtil.SellbotFactory,
             'camera': (Point3(0, 0, 0), Vec3(0, 0, 0)),
             'model': "phase_9/models/cogHQ/SelbotLegFactory.bam",
             'sky': 'cog',
@@ -146,7 +146,7 @@ class GunGameLevelLoader:
         },
         
         'ttc' : {
-            'name' : CIGlobals.ToontownCentral,
+            'name' : ZoneUtil.ToontownCentral,
             'dna' : [
                 'phase_4/dna/storage_TT.pdna',
                 'phase_4/dna/storage_TT_sz.pdna',

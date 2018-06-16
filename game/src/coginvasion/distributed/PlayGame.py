@@ -32,24 +32,24 @@ from src.coginvasion.dna.DNALoader import *
 class PlayGame(StateData):
     notify = directNotify.newCategory('PlayGame')
 
-    Hood2HoodClass = {CIGlobals.ToontownCentral: TTHood.TTHood,
-                CIGlobals.MinigameArea: MGHood.MGHood,
-                CIGlobals.TheBrrrgh: BRHood.BRHood,
-                CIGlobals.DonaldsDreamland: DLHood.DLHood,
-                CIGlobals.MinniesMelodyland: MLHood.MLHood,
-                CIGlobals.DaisyGardens: DGHood.DGHood,
-                CIGlobals.DonaldsDock: DDHood.DDHood,
-                CIGlobals.BattleTTC: CTCHood.CTCHood,
-                CIGlobals.CogTropolis: CTHood.CTHood}
-    Hood2HoodState = {CIGlobals.ToontownCentral: 'TTHood',
-                CIGlobals.MinigameArea: 'MGHood',
-                CIGlobals.TheBrrrgh: 'BRHood',
-                CIGlobals.DonaldsDreamland: 'DLHood',
-                CIGlobals.MinniesMelodyland: 'MLHood',
-                CIGlobals.DaisyGardens: 'DGHood',
-                CIGlobals.DonaldsDock: 'DDHood',
-                CIGlobals.BattleTTC: 'CTCHood',
-                CIGlobals.CogTropolis: 'CTHood'}
+    Hood2HoodClass = {ZoneUtil.ToontownCentral: TTHood.TTHood,
+                ZoneUtil.MinigameArea: MGHood.MGHood,
+                ZoneUtil.TheBrrrgh: BRHood.BRHood,
+                ZoneUtil.DonaldsDreamland: DLHood.DLHood,
+                ZoneUtil.MinniesMelodyland: MLHood.MLHood,
+                ZoneUtil.DaisyGardens: DGHood.DGHood,
+                ZoneUtil.DonaldsDock: DDHood.DDHood,
+                ZoneUtil.BattleTTC: CTCHood.CTCHood,
+                ZoneUtil.CogTropolis: CTHood.CTHood}
+    Hood2HoodState = {ZoneUtil.ToontownCentral: 'TTHood',
+                ZoneUtil.MinigameArea: 'MGHood',
+                ZoneUtil.TheBrrrgh: 'BRHood',
+                ZoneUtil.DonaldsDreamland: 'DLHood',
+                ZoneUtil.MinniesMelodyland: 'MLHood',
+                ZoneUtil.DaisyGardens: 'DGHood',
+                ZoneUtil.DonaldsDock: 'DDHood',
+                ZoneUtil.BattleTTC: 'CTCHood',
+                ZoneUtil.CogTropolis: 'CTHood'}
 
     def __init__(self, parentFSM, doneEvent):
         StateData.__init__(self, "playGameDone")
@@ -113,7 +113,7 @@ class PlayGame(StateData):
         self.hood.exit()
         self.hood.unload()
         self.hood = None
-        self.lastHood = CIGlobals.CogTropolis
+        self.lastHood = ZoneUtil.CogTropolis
 
     def enterCTCHood(self, requestStatus):
         self.accept(self.hoodDoneEvent, self.handleHoodDone)
@@ -124,7 +124,7 @@ class PlayGame(StateData):
         self.hood.exit()
         self.hood.unload()
         self.hood = None
-        self.lastHood = CIGlobals.ToontownCentral
+        self.lastHood = ZoneUtil.ToontownCentral
 
     def enterDDHood(self, requestStatus):
         self.accept(self.hoodDoneEvent, self.handleHoodDone)
@@ -135,7 +135,7 @@ class PlayGame(StateData):
         self.hood.exit()
         self.hood.unload()
         self.hood = None
-        self.lastHood = CIGlobals.DonaldsDock
+        self.lastHood = ZoneUtil.DonaldsDock
 
     def enterDGHood(self, requestStatus):
         self.accept(self.hoodDoneEvent, self.handleHoodDone)
@@ -146,7 +146,7 @@ class PlayGame(StateData):
         self.hood.exit()
         self.hood.unload()
         self.hood = None
-        self.lastHood = CIGlobals.DaisyGardens
+        self.lastHood = ZoneUtil.DaisyGardens
 
     def enterMLHood(self, requestStatus):
         self.accept(self.hoodDoneEvent, self.handleHoodDone)
@@ -157,7 +157,7 @@ class PlayGame(StateData):
         self.hood.exit()
         self.hood.unload()
         self.hood = None
-        self.lastHood = CIGlobals.MinniesMelodyland
+        self.lastHood = ZoneUtil.MinniesMelodyland
 
     def enterDLHood(self, requestStatus):
         self.accept(self.hoodDoneEvent, self.handleHoodDone)
@@ -168,7 +168,7 @@ class PlayGame(StateData):
         self.hood.exit()
         self.hood.unload()
         self.hood = None
-        self.lastHood = CIGlobals.DonaldsDreamland
+        self.lastHood = ZoneUtil.DonaldsDreamland
 
     def enterBRHood(self, requestStatus):
         self.accept(self.hoodDoneEvent, self.handleHoodDone)
@@ -179,7 +179,7 @@ class PlayGame(StateData):
         self.hood.exit()
         self.hood.unload()
         self.hood = None
-        self.lastHood = CIGlobals.TheBrrrgh
+        self.lastHood = ZoneUtil.TheBrrrgh
 
     def enterTTHood(self, requestStatus):
         self.accept(self.hoodDoneEvent, self.handleHoodDone)
@@ -190,7 +190,7 @@ class PlayGame(StateData):
         self.hood.exit()
         self.hood.unload()
         self.hood = None
-        self.lastHood = CIGlobals.ToontownCentral
+        self.lastHood = ZoneUtil.ToontownCentral
 
     def enterMGHood(self, requestStatus):
         self.accept(self.hoodDoneEvent, self.handleHoodDone)
@@ -201,7 +201,7 @@ class PlayGame(StateData):
         self.hood.exit()
         self.hood.unload()
         self.hood = None
-        self.lastHood = CIGlobals.MinigameArea
+        self.lastHood = ZoneUtil.MinigameArea
 
     def handleHoodDone(self):
         doneStatus = self.hood.getDoneStatus()

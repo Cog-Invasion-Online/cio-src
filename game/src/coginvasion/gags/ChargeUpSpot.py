@@ -12,7 +12,6 @@ from src.coginvasion.gags.LocationSeeker import LocationSeeker
 from direct.showbase.InputStateGlobal import inputState
 from direct.interval.IntervalGlobal import Sequence, Parallel, LerpScaleInterval, SoundInterval
 from direct.interval.IntervalGlobal import Func, LerpColorScaleInterval
-from direct.task.Task import Task
 from panda3d.core import VBase4
 from src.coginvasion.globals import CIGlobals
 
@@ -68,12 +67,10 @@ class ChargeUpSpot(LocationSeeker):
         self.selectedCogs = []
         for obj in base.cr.doId2do.values():
             if obj.__class__.__name__ in CIGlobals.SuitClasses:
-                if obj.getPlace() == self.avatar.zoneId:
-                    if obj.getDistance(self.dropShadow) <= self.selectionRadius:
-                        if self.avatar.doId == self.avatar.doId:
-                            if len(self.selectedCogs) < self.maxCogs:
-                                if not obj.isDead():
-                                    self.selectedCogs.append(obj)
+                dist = obj.getDistance(self.dropShadow)
+                if obj.getPlace() == self.avatar.zoneId and dist <= self.selectionRadius \
+                    and len(self.selectedCogs) < self.maxCogs and not obj.isDead():
+                        self.selectedCogs.append(obj)
 
     # This returns a track that
     # does a quick red flash effect with a sound.
@@ -175,12 +172,12 @@ class ChargeUpSpot(LocationSeeker):
 
     def __pollMouseHeldDown(self, task):
         if not hasattr(self, 'mouseDownName'):
-            return Task.done
+            return task.done
         if inputState.isSet(self.mouseDownName) and not self.isCharging:
             self.startCharging()
         elif not inputState.isSet(self.mouseDownName) and self.isCharging:
             self.stopCharging()
-        return Task.cont
+        return task.cont
 
     def getSelectedCogs(self):
         return self.selectedCogs

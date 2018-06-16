@@ -8,7 +8,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.SoundGag import SoundGag
 from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, SoundInterval, ActorInterval
@@ -17,7 +16,7 @@ from panda3d.core import Vec3
 class ElephantHorn(SoundGag):
 
     def __init__(self):
-        SoundGag.__init__(self, CIGlobals.ElephantHorn, 'phase_5/models/props/elephant.bam', 21,
+        SoundGag.__init__(self, GagGlobals.ElephantHorn, 'phase_5/models/props/elephant.bam', 21,
                           GagGlobals.ELEPHANT_APPEAR_SFX, GagGlobals.ELEPHANT_SFX, soundRange = 35, hitSfx = None)
         self.setImage('phase_3.5/maps/elephant-horn.png')
         self.setRechargeTime(6.5)

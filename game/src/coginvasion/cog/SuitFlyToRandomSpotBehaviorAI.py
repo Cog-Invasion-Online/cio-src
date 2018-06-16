@@ -9,7 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from src.coginvasion.cog.SuitHabitualBehaviorAI import SuitHabitualBehaviorAI
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.cog import CogBattleGlobals
 
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel
 from direct.interval.ProjectileInterval import ProjectileInterval
@@ -47,7 +47,7 @@ class SuitFlyToRandomSpotBehaviorAI(SuitHabitualBehaviorAI):
             self.exit()
             return
         self.accept(self.suit.healthChangeEvent, self.__healthChange)
-        pathKeys = CIGlobals.SuitSpawnPoints[self.suit.getHood()].keys()
+        pathKeys = CogBattleGlobals.SuitSpawnPoints[self.suit.getHood()].keys()
         pathKey = random.choice(pathKeys)
         endIndex = pathKeys.index(pathKey)
         if not self.suit.getCurrentPath():
@@ -84,7 +84,7 @@ class SuitFlyToRandomSpotBehaviorAI(SuitHabitualBehaviorAI):
             self.exit()
             return
         self.isAirborne = True
-        endPos = CIGlobals.SuitSpawnPoints[self.suit.getHood()][spot]
+        endPos = CogBattleGlobals.SuitSpawnPoints[self.suit.getHood()][spot]
         self.suit.headsUp(endPos)
         startPos = self.suit.getPos(render)
         duration = 5.0

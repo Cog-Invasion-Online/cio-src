@@ -18,7 +18,7 @@ from src.coginvasion.toon.DistributedToonAI import DistributedToonAI
 from src.coginvasion.quest.QuestManagerAI import QuestManagerAI
 from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.distributed import AdminCommands
 from src.coginvasion.tutorial.DistributedTutorialAI import DistributedTutorialAI
 import ToonDNA
@@ -90,9 +90,9 @@ class DistributedPlayerToonAI(DistributedToonAI):
         
     def reqSetWorldAccess(self, andTP):
         if self.__requesterAuthorized():
-            self.b_setHoodsDiscovered(CIGlobals.Hood2ZoneId.values())
+            self.b_setHoodsDiscovered(ZoneUtil.Hood2ZoneId.values())
             if andTP:
-                self.b_setTeleportAccess(CIGlobals.Hood2ZoneId.values())
+                self.b_setTeleportAccess(ZoneUtil.Hood2ZoneId.values())
         
     def d_setDNAStrand(self, strand):
         self.sendUpdate('setDNAStrand', [strand])
@@ -497,15 +497,14 @@ class DistributedPlayerToonAI(DistributedToonAI):
     def toonHitByPie(self, avId, gagId):
         obj = self.air.doId2do.get(avId, None)
         hp = GagGlobals.getGagData(gagId).get('health', 0)
-        if obj:
-            if obj.getHealth() < obj.getMaxHealth() and not obj.isDead():
-                if obj.__class__.__name__ == 'DistributedToonAI':
-                    obj.toonUp(hp)
-                else:
-                    if obj.getHealth() + hp > obj.getMaxHealth():
-                        hp = obj.getMaxHealth() - obj.getHealth()
-                    obj.b_setHealth(obj.getHealth() + hp)
-                    obj.d_announceHealth(1, hp)
+        if obj and obj.getHealth() < obj.getMaxHealth() and not obj.isDead:
+            if obj.__class__.__name__ == 'DistributedPlayerToonAI':
+                obj.toonUp(hp)
+            else:
+                if obj.getHealth() + hp > obj.getMaxHealth():
+                    hp = obj.getMaxHealth() - obj.getHealth()
+                obj.b_setHealth(obj.getHealth() + hp)
+                obj.d_announceHealth(1, hp)
 
     def gagStart(self, gagId):
         for suit in self.air.doFindAll("DistributedSuitAI"):
@@ -522,18 +521,51 @@ class DistributedPlayerToonAI(DistributedToonAI):
         try:
             self.DistributedPlayerToonAI_deleted
         except:
-            if type(self.backpack) != types.IntType and self.backpack is not None:
-                self.backpack.cleanup()
-                self.backpack = None
             self.DistributedPlayerToonAI_deleted = 1
             self.questManager.cleanup()
             self.questManager = None
-            self.tutDone = None
-            self.token = None
+            self.money = None
             self.portal = None
             self.book = None
-            self.place = None
+            self.token = None
+            self.ghost = None
             self.attackers = None
+            self.puInventory = None
+            self.equippedPU = None
+            if type(self.backpack) != types.IntType and self.backpack is not None:
+                self.backpack.cleanup()
+                self.backpack = None
+            self.quests = None
+            self.questHistory = None
+            self.tier = None
+            self.friends = None
+            self.tutDone = None
+            self.hoodsDiscovered = None
+            self.teleportAccess = None
+            self.lastHood = None
+            self.defaultShard = None
             self.numGagSlots = None
+            self.trackExperience = None
+            del self.questManager
+            del self.money
+            del self.portal
+            del self.book
+            del self.token
+            del self.ghost
+            del self.attackers
+            del self.puInventory
+            del self.equippedPU
+            del self.backpack
+            del self.quests
+            del self.questHistory
+            del self.tier
+            del self.friends
+            del self.tutDone
+            del self.hoodsDiscovered
+            del self.teleportAccess
+            del self.lastHood
+            del self.defaultShard
+            del self.numGagSlots
+            del self.trackExperience
             DistributedPlayerToonAI.delete(self)
         return

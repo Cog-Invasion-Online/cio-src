@@ -14,6 +14,7 @@ from direct.interval.IntervalGlobal import Sequence
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood import ZoneUtil
+from src.coginvasion.npc import NPCGlobals
 from src.coginvasion.quest import Quests
 from src.coginvasion.quest.Quests import objType
 from src.coginvasion.quest.QuestGlobals import NPCDialogue, getPossessive, QUEST_DATA_UPDATE_EVENT
@@ -108,10 +109,10 @@ class DistributedNPCToon(DistributedToon):
             objective = self.currentQuest.getCurrObjectiveData()
 
         npcId = objective[Quests.args][0]
-        npcZone = CIGlobals.NPCToonDict[npcId][0]
+        npcZone = NPCGlobals.NPCToonDict[npcId][0]
 
-        name = CIGlobals.NPCToonNames[npcId]
-        shopName = CIGlobals.zone2TitleDict[npcZone][0]
+        name = NPCGlobals.NPCToonNames[npcId]
+        shopName = ZoneUtil.zone2TitleDict[npcZone][0]
         chat = random.choice(NPCDialogue.FindNPC)
         if "[p]" in chat:
             chat = chat.replace("[p]", getPossessive(name))
@@ -221,12 +222,12 @@ class DistributedNPCToon(DistributedToon):
 
             self.doCameraNPCInteraction()
 
-            if CIGlobals.NPCToonDict[self.npcId][3] == CIGlobals.NPC_HQ:
+            if NPCGlobals.NPCToonDict[self.npcId][3] == NPCGlobals.NPC_HQ:
                 if not quest.isComplete():
                     self.b_setChat(self.__getNPCObjectiveChat())
                 else:
                     self.b_setChat(self.__getHQOfficerQuestCompletedChat())
-            if CIGlobals.NPCToonDict[self.npcId][3] == CIGlobals.NPC_REGULAR:
+            if NPCGlobals.NPCToonDict[self.npcId][3] == NPCGlobals.NPC_REGULAR:
                 if quest.isComplete():
                     self.b_setChat(self.__getQuestCompletedChat())
                 else:
@@ -334,7 +335,7 @@ class DistributedNPCToon(DistributedToon):
         needsToVisit = base.localAvatar.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId)
         pickableQuestList = []
         
-        if CIGlobals.NPCToonDict[self.npcId][3] == CIGlobals.NPC_HQ:
+        if NPCGlobals.NPCToonDict[self.npcId][3] == NPCGlobals.NPC_HQ:
             pickableQuestList = base.localAvatar.questManager.getPickableQuestList(self)
 
         if needsToVisit:

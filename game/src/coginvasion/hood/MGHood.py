@@ -8,12 +8,13 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.State import State
-from panda3d.core import TransparencyAttrib
-import ToonHood
+
 from playground import MGSafeZoneLoader
+import ToonHood
+import ZoneUtil
 
 class MGHood(ToonHood.ToonHood):
     notify = directNotify.newCategory("MGHood")
@@ -22,7 +23,7 @@ class MGHood(ToonHood.ToonHood):
         ToonHood.ToonHood.__init__(self, parentFSM, doneEvent, dnaStore, hoodId)
         self.fsm.addState(State('minigame', self.enterMinigame, self.exitMinigame))
         self.fsm.getStateNamed('quietZone').addTransition('minigame')
-        self.id = CIGlobals.MinigameArea
+        self.id = ZoneUtil.MinigameArea
         self.abbr = "MG"
         self.safeZoneLoader = MGSafeZoneLoader.MGSafeZoneLoader
         self.storageDNAFile = None
