@@ -543,6 +543,8 @@ class DistributedPlayerToon(DistributedToon):
         return self.token
     
     def disable(self):
+        base.audio3d.detachSound(self.takeDmgSfx)
+        self.takeDmgSfx = None
         if self.tunnelTrack:
             self.ignore(self.tunnelTrack.getDoneEvent())
             self.tunnelTrack.finish()
@@ -569,6 +571,7 @@ class DistributedPlayerToon(DistributedToon):
         self.lastHood = None
         self.defaultShard = None
         self.numGagSlots = None
+        self.trackExperience = None
         self.__removeHeadMeter()
         self.destroyBattleMeter()
         DistributedToon.disable(self)
@@ -578,6 +581,7 @@ class DistributedPlayerToon(DistributedToon):
             self.DistributedPlayerToon_deleted
         except:
             self.DistributedPlayerToon_deleted = 1
+            del self.takeDmgSfx
             del self.tunnelTrack
             del self.dmgFadeIval
             del self.token
@@ -597,5 +601,8 @@ class DistributedPlayerToon(DistributedToon):
             del self.lastHood
             del self.defaultShard
             del self.numGagSlots
+            del self.trackExperience
+            del self.battleMeter
+            del self.headMeter
             DistributedToon.delete(self)
         return

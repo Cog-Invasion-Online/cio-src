@@ -107,4 +107,16 @@ class DistributedAvatarAI(DistributedNodeAI.DistributedNodeAI):
         self.health = None
         self.maxHealth = None
         self._name = None
+        self.place = None
+        self.hood = None
+        self.battleZone = None
+        return
+    
+    def delete(self):
+        del self.health
+        del self.maxHealth
+        del self._name
+        del self.place
+        del self.hood
+        del self.battleZone
         return

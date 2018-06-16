@@ -857,12 +857,12 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
     def enterNeutral(self, ts = 0, callback = None, extraArgs = []):
         if self.backpack:
-            if self.backpack.getCurrentGag():
-                if self.backpack.getCurrentGag().getState() in [GagState.START, GagState.RELEASED]:
-                    self.loop("neutral", partName = "legs")
-                    if self.animal == "dog":
-                        self.loop("neutral", partName = "head")
-                    return
+            cg = self.backpack.getCurrentGag()
+            if cg and cg.getState() in [GagState.START, GagState.RELEASED]:
+                self.loop("neutral", partName = "legs")
+                if self.animal == "dog":
+                    self.loop("neutral", partName = "head")
+                return
         if self.forcedTorsoAnim != None:
             self.loop(self.forcedTorsoAnim, partName = 'torso')
             self.loop("neutral", partName = "legs")
@@ -876,27 +876,24 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
     def exitGeneral(self):
         if self.backpack:
-            if self.backpack.getCurrentGag():
-                if self.backpack.getCurrentGag().getState() in [GagState.START, GagState.RELEASED]:
-                    self.stop(partName = 'legs')
-                else:
-                    self.stop()
-            else:
-                self.stop()
-        else:
-            self.stop()
+            cg = self.backpack.getCurrentGag()
+            if cg and cg.getState() in [GagState.START, GagState.RELEASED]:
+                self.stop(partName = 'legs')
+                return
+
+        self.stop()
 
     def enterRun(self, ts = 0, callback = None, extraArgs = []):
         if self.backpack:
-            if self.backpack.getCurrentGag():
-                if self.backpack.getCurrentGag().getState() in [GagState.START, GagState.RELEASED]:
-                    self.loop("run", partName = "legs")
-                    if self.animal == "dog":
-                        self.loop("run", partName = "head")
-                    return
+            cg = self.backpack.getCurrentGag()
+            if cg and cg.getState() in [GagState.START, GagState.RELEASED]:
+                self.loop('run', partName = 'legs')
+                if self.animal == 'dog':
+                    self.loop('run', partName = 'head')
+                return
         if self.forcedTorsoAnim != None:
             self.loop(self.forcedTorsoAnim, partName = 'torso')
-            self.loop("run", partName = "legs")
+            self.loop('run', partName = 'legs')
             return
         self.loop("run")
 
@@ -905,17 +902,17 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
     def enterWalk(self, ts = 0, callback = None, extraArgs = []):
         if self.backpack:
-            if self.backpack.getCurrentGag():
-                if self.backpack.getCurrentGag().getState() in [GagState.START, GagState.RELEASED]:
-                    self.loop("walk", partName = "legs")
-                    if self.animal == "dog":
-                        self.loop("walk", partName = "head")
-                    return
+            cg = self.backpack.getCurrentGag()
+            if cg and cg.getState() in [GagState.START, GagState.RELEASED]:
+                self.loop('walk', partName = 'legs')
+                if self.animal == 'dog':
+                    self.loop('walk', partName = 'head')
+                return
         if self.forcedTorsoAnim != None:
             self.loop(self.forcedTorsoAnim, partName = 'torso')
-            self.loop("walk", partName = "legs")
+            self.loop('walk', partName = 'legs')
             return
-        self.loop("walk")
+        self.loop('walk')
 
     def exitWalk(self):
         self.exitGeneral()

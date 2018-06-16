@@ -33,7 +33,6 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         self.anim = "neutral"
         self.chat = ""
         self.health = 50
-        self.damage = 0
         self.height = 3
         self.gender = "boy"
         self.headtype = "dgm_skirt"
@@ -82,10 +81,9 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
             self.DistributedToonAI_deleted = 1
             DistributedAvatarAI.delete(self)
             DistributedSmoothNodeAI.delete(self)
+            self.avatarType = None
             self.anim = None
             self.chat = None
-            self.health = None
-            self.damage = None
             self.height = None
             self.gender = None
             self.headtype = None
@@ -115,4 +113,36 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
             self.toon_legs = None
             self.toon_torso = None
             self.toon_head = None
+            del self.avatarType
+            del self.anim
+            del self.chat
+            del self.height
+            del self.gender
+            del self.headtype
+            del self.head
+            del self.legtype
+            del self.torsotype
+            del self.hr
+            del self.hg
+            del self.hb
+            del self.tr
+            del self.tg
+            del self.tb
+            del self.lr
+            del self.lg
+            del self.lb
+            del self.shir
+            del self.shig
+            del self.shib
+            del self.shor
+            del self.shog
+            del self.shob
+            del self.shirt
+            del self.short
+            del self.sleeve
+            del self.isdying
+            del self.isdead
+            del self.toon_legs
+            del self.toon_torso
+            del self.toon_head
         return
