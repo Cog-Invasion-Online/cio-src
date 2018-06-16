@@ -400,36 +400,6 @@ class LocalToon(DistributedPlayerToon):
         #camera.setHpr(0, 0, 0)
         pass
 
-    def handleSuitAttack(self, attack_id, suit_id):
-        DistributedPlayerToon.handleSuitAttack(self, attack_id, suit_id)
-
-        if not self.isDead() and base.config.GetBool('want-sa-reactions'):
-            base.taskMgr.remove('LT.attackReactionDone')
-            attack = SuitAttacks.SuitAttackLengths.keys()[attack_id]
-            suit = self.cr.doId2do.get(suit_id)
-            animToPlay = None
-            timeToWait = 3.0
-            if not attack in ["pickpocket", "fountainpen"]:
-                suitH = suit.getH(render) % 360
-                myH = self.getH(render) % 360
-                if -90.0 <= (suitH - myH) <= 90.0:
-                    animToPlay = "fallFWD"
-                else:
-                    animToPlay = "fallBCK"
-            elif attack in ["pickpocket"]:
-                animToPlay = "cringe"
-            elif attack in ["fountainpen"]:
-                animToPlay = "conked"
-                timeToWait = 5.0
-            self.cr.playGame.getPlace().fsm.request('stop')
-            self.b_setAnimState(animToPlay)
-            base.taskMgr.doMethodLater(timeToWait, self.__attackReactionDone, 'LT.attackReactionDone')
-
-    def __attackReactionDone(self, task):
-        self.cr.playGame.hood.loader.place.fsm.request('walk')
-        self.b_setAnimState('neutral')
-        return Task.done
-
     def printPos(self):
         x, y, z = self.getPos(render)
         h, p, r = self.getHpr(render)
