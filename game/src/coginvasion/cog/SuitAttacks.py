@@ -136,7 +136,6 @@ class Attack(DirectObject):
     def announceHit(self, foo = None):
         if self.suit:
             self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
-            base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
             
     def lockOnToonTask(self, task):
         if (not CIGlobals.isNodePathOk(self.suit) or
@@ -207,7 +206,7 @@ class ThrowAttack(Attack):
     def handleWeaponCollision(self, entry):
         if self.suit:
             self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
-            base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
+            #base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
             #self.suit.b_handleWeaponTouch()
 
     def doAttack(self, weapon_path, weapon_scale, track_name,
@@ -536,7 +535,7 @@ class PickPocketAttack(Attack):
             self.playWeaponSound()
             self.dollar.reparentTo(self.suit.find('**/joint_Rhold'))
             self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
-            base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
+            #base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
 
     def playWeaponSound(self):
         self.pickSfx = base.audio3d.loadSfx("phase_5/audio/sfx/SA_pick_pocket.ogg")
@@ -640,7 +639,7 @@ class FountainPenAttack(Attack):
     def handleSprayCollision(self, entry):
         if self.suit:
             self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
-            base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
+            #base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
         self.sprayScaleIval.pause()
 
     def playWeaponSound(self):
@@ -776,7 +775,7 @@ class HangUpAttack(Attack):
     def handleCollision(self, entry):
         if self.suit:
             self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
-            base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
+            #base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
 
     def shootOut(self):
         pathNode = NodePath('path')
@@ -1053,7 +1052,7 @@ class ParticleAttack(Attack):
     def handleCollision(self, entry):
         if self.suit:
             self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
-            base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
+            #base.localAvatar.b_handleSuitAttack(self.getAttackId(self.attack), self.suit.doId)
 
     def doAttack(self, particlePaths, track_name, particleCollId, animation_name,
                 delayUntilRelease, animationSpeed = 1, handObjPath = None, handObjParent = None,
