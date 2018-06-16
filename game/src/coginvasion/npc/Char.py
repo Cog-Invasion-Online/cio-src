@@ -32,7 +32,7 @@ class Char(Avatar.Avatar):
         except:
             self.Char_initialized = 1
         Avatar.Avatar.__init__(self)
-        self.avatarType = DisneyCharGlobals.CChar
+        self.avatarType = CIGlobals.CChar
         self.avatarName = None
         self.currentAnim = None
         self.charType = ""

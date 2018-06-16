@@ -21,8 +21,6 @@ from panda3d.core import TextureStage, VBase4, TransparencyAttrib
 
 from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wait
 
-from src.coginvasion.npc.DisneyCharGlobals import CChar
-
 import math
 
 WalkCutOff = 0.5
@@ -550,6 +548,8 @@ UpdateRegClosed = "The Cog Invasion server will be restarting now."
 UpdateEmg5Min = "The Cog Invasion server will be closing for an emergency update in 5 minutes."
 UpdateEmg1Min = "The Cog Invasion server will be closing for an emergency update in 60 seconds."
 UpdateEmgClosed = "The Cog Invasion server is now closing for an emergency update. It shouldn't be too long until the server is back up."
+
+CChar = 'cchar'
 
 ModelPolys = {CChar: {"high": 1200,
                     "medium": 800,

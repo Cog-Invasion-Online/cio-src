@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals.CIGlobals import BattleTTC, TheBrrrgh
+from src.coginvasion.hood.ZoneUtil import BattleTTC, TheBrrrgh
 
 ArcadeModeBadCode = 'Sorry, that code is not associated with any rooms.'
 ArcadeModeFriendsOnlyRoom = 'Sorry, you must be a friend of that room\'s host to join.'

@@ -14,7 +14,8 @@ from panda3d.core import Vec3, VBase4
 
 from yaml import load
 
-from src.coginvasion.globals.CIGlobals import HoodAbbr2Hood, colorFromRGBScalar255
+from src.coginvasion.globals.CIGlobals import colorFromRGBScalar255
+from src.coginvasion.hood.ZoneUtil import HoodAbbr2Hood
 
 boolean = 'boolean'
 color = 'color'

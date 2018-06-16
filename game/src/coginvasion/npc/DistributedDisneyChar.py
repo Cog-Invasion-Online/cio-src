@@ -20,7 +20,6 @@ from direct.distributed.ClockDelta import globalClockDelta
 from src.coginvasion.avatar.DistributedAvatar import DistributedAvatar
 from src.coginvasion.avatar.Avatar import Avatar
 from src.coginvasion.nametag import NametagGlobals
-from src.coginvasion.npc import DisneyCharGlobals
 from src.coginvasion.npc.NPCWalker import NPCWalkInterval, NPCLookInterval
 from src.coginvasion.globals import CIGlobals
 
@@ -50,7 +49,7 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
 
         self.charId = 0
         self.geoEyes = 0
-        self.avatarType = DisneyCharGlobals.CChar
+        self.avatarType = CIGlobals.CChar
         self.headNode = None
         self.isInRange = False
         self.currentPointLetter = "a"
