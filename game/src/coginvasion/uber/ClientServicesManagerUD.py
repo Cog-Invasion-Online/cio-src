@@ -253,6 +253,9 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
         dg.addChannel(sender << 32 | avId)
         self.air.send(dg)
 
+        # The avatar should stay around for the entire client session.
+        self.air.clientAddSessionObject(accId, avId)
+
         # OLD WAY: Tell the friends manager a toon has gone online.
         # self.__handleToonOnline(avId)
         
