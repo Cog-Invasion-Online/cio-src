@@ -17,6 +17,8 @@ from pprint import _id
 
 from src.coginvasion.npc.NPCGlobals import NPC_DNA
 
+# Beta outfit shirt: 137, shorts: 59
+
 class ToonDNA:
     notify = directNotify.newCategory("ToonDNA")
     # The length of the strand must be exactly this:
@@ -379,7 +381,8 @@ class ToonDNA:
          'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding05.jpg',
          'phase_4/maps/tt_t_chr_avt_shirtSleeve_anniversary.jpg',
          'phase_4/maps/tsasleeve.jpg',
-         'phase_4/maps/tsasleeve_dev.jpg']
+         'phase_4/maps/tsasleeve_dev.jpg',
+         'phase_14/maps/tt_t_chr_avt_shirtSleeve_betaoutfit.jpg']
 
     maleTopDNA2maleTop = {
         "00": [
@@ -1501,6 +1504,13 @@ class ToonDNA:
             [
                 "27"
             ]
+        ],
+        "137": [
+            "phase_14/maps/tt_t_chr_avt_shirt_betaoutfit.jpg",
+            137,
+            [
+                "27"
+            ]
         ]
     }
 
@@ -2067,6 +2077,13 @@ class ToonDNA:
         "136": [
             "phase_4/maps/tsashirt_dev.jpg",
             136,
+            [
+                "27"
+            ]
+        ],
+        "137": [
+            "phase_14/maps/tt_t_chr_avt_shirt_betaoutfit.jpg",
+            137,
             [
                 "27"
             ]
@@ -3567,6 +3584,12 @@ class ToonDNA:
         ],
         "58": [
             "phase_4/maps/tsashorts_dev.jpg",
+            [
+                "27"
+            ]
+        ],
+        "59": [
+            "phase_14/maps/tt_t_chr_avt_shorts_betaoutfit.jpg",
             [
                 "27"
             ]

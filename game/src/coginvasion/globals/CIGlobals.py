@@ -12,7 +12,7 @@ from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigV
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
 from panda3d.core import TextureStage, VBase4, TransparencyAttrib
 
-from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wait
+from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wait, Parallel
 
 import math
 
@@ -222,13 +222,28 @@ def makeSplat(pos, color, scale):
     splat.setTransparency(TransparencyAttrib.MDual)
     seq = Sequence(ActorInterval(splat, "chan"), Func(splat.cleanup), Func(splat.removeNode))
     seq.start()
+    
+SmokeParticleRender = None
 
 def makeExplosion(pos = (0, 0, 0), scale = 1, sound = False, shakeCam = True, duration = 1.0):
+    global SmokeParticleRender
+    if not SmokeParticleRender:
+        SmokeParticleRender = render.attachNewNode('smokeParticleRender')
+        SmokeParticleRender.setLightOff(1)
+        SmokeParticleRender.setShaderOff(1)
+        SmokeParticleRender.setMaterialOff(1)
+        
     explosion = loader.loadModel('phase_3.5/models/props/explosion.bam')
     explosion.setScale(scale)
     explosion.reparentTo(render)
     explosion.setBillboardPointEye()
     explosion.setPos(pos)
+    
+    from src.coginvasion.toon import ParticleLoader
+    smoke = ParticleLoader.loadParticleEffect("phase_14/etc/explosion_smoke.ptf")
+    smoke.setScale(scale)
+    smoke.setPos(pos)
+    smoke.start(render, SmokeParticleRender)
 
     if sound:
         snd = base.audio3d.loadSfx("phase_3.5/audio/sfx/ENC_cogfall_apart.ogg")
@@ -242,10 +257,10 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = False, shakeCam = True, du
         if dist <= maxDist:
             base.doCamShake(maxIntense - (maxIntense * (dist / maxDist)), duration)
 
-    seq = Sequence()
-    seq.append(Wait(duration))
-    seq.append(Func(explosion.removeNode))
-    seq.start()
+    track = Parallel()
+    track.append(Sequence(Wait(duration), Func(explosion.removeNode)))
+    track.append(Sequence(Wait(duration), Func(smoke.softStop)))
+    track.start()
 
 def getShinyMaterial(shininess = 250.0):
     mat = Material()
