@@ -913,6 +913,8 @@ class CogInvasionClientRepository(AstronClientRepository):
             zoneId = di.getUint32()
             dclassId = di.getUint16()
             self.__handleSetAvatarResponse(doId, di)
+        else:
+            AstronClientRepository.handleEnterObjectRequiredOwner(self, di)
 
     def addTaggedInterest(self, parentId, zoneId, mainTag, desc, otherTags = [], event = None):
         return self.addInterest(parentId, zoneId, desc, event)
