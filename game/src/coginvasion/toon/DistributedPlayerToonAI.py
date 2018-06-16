@@ -57,6 +57,19 @@ class DistributedPlayerToonAI(DistributedToonAI):
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
         return
 
+    def createObjectForMe(self, dclassNum):
+        sender = self.air.getMsgSender()
+        dclass = self.air.dclassesByNumber.get(dclassNum, None)
+        if not dclass:
+            self.ejectSelf("Wanted me to create odd dclassNum")
+            return
+        classDef = dclass.getClassDef()
+        obj = classDef(self.air)
+        obj.generateWithRequired(0)
+        self.air.setOwner(obj.doId, sender) # lol your welcome
+        obj.setLocation(self.parentId, self.zoneId)
+        print "made object", classDef, "for my friend"
+
     def __requesterAuthorized(self, notDev = False):
         requester = self.air.doId2do.get(self.air.getAvatarIdFromSender())
         if requester:

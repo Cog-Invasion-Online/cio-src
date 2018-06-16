@@ -1,3 +1,13 @@
+"""
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
+
+@file DistributedTNT.py
+@author Brian Lach
+@date June 15, 2018
+
+"""
+
 from panda3d.bullet import BulletRigidBodyNode, BulletCylinderShape, ZUp
 
 from direct.actor.Actor import Actor
@@ -16,24 +26,30 @@ class DistributedTNT(DistributedPhysicsEntity):
 
     def explode(self):
         self.tntSound.stop()
-        CIGlobals.makeExplosion(self.getPos(render), 0.3, True)
+        self.hide()
+        self.particle.softStop()
+        self.cleanupPhysics()
+        CIGlobals.makeExplosion(self.getPos(render) + (0, 0, 5.0), 0.7, True)
 
     def doSetupPhysics(self):
         self.setupPhysics(self.getPhysBody(), True)
 
     def getPhysBody(self):
-        shape = BulletCylinderShape(0.5, 1.2, ZUp)
+        shape = BulletCylinderShape(0.3925, 1.4, ZUp)
         body = BulletRigidBodyNode('tntBody')
         body.addShape(shape)
         body.setKinematic(True)
         body.setCcdMotionThreshold(1e-7)
-        body.setCcdSweptSphereRadius(0.5)
+        body.setCcdSweptSphereRadius(0.3925)
         return body
 
     def announceGenerate(self):
         self.tnt = Actor('phase_5/models/props/tnt-mod.bam', {'chan': 'phase_5/models/props/tnt-chan.bam'})
         self.tnt.reparentTo(self)
-        self.tntSound = base.audio3d.loadSfx("phase_5/audio/sfx/TL_dynamite.ogg")
+        self.tnt.play('chan')
+        self.tnt.setP(97.492)
+        self.tnt.setY(0.38)
+        self.tntSound = base.audio3d.loadSfx("phase_14/audio/sfx/dynamite_loop.ogg")
         base.audio3d.attachSoundToObject(self.tntSound, self.tnt)
         self.particle = ParticleLoader.loadParticleEffect("phase_5/etc/tnt.ptf")
         self.particle.start(self.tnt.find('**/joint_attachEmitter'), render)

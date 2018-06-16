@@ -16,8 +16,6 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval
 from direct.interval.SoundInterval import SoundInterval
 from direct.actor.Actor import Actor
 
-from src.coginvasion.phys.LocalTNT import LocalTNT
-
 class TNT(TossTrapGag):
 
     def __init__(self):
@@ -32,33 +30,24 @@ class TNT(TossTrapGag):
 
     def throw(self):
         if self.isLocal():
-            tnt = LocalTNT(self, base.cr)
-            tnt.doId = 0
-            tnt.dclass = base.cr.dclassesByName['DistributedTNT']
-            tnt.generateInit()
-            tnt.generate()
-            tnt.announceGenerate()
-            tnt.postGenerateMessage()
-            base.cr.myDistrict.d_spawnTemporaryObject(tnt, tnt.ownershipGranted)
-            tnt.setPos(self.avatar.find("**/def_joint_right_hold").getPos(render))
-            tnt.toss()
-
+            base.localAvatar.sendUpdate('createObjectForMe', [base.cr.dclassesByName['DistributedTNTOV'].getNumber()])
             vm = self.getViewModel()
             cam = self.getFPSCam()
             cam.setVMAnimTrack(Func(vm.pose, "pie_draw", 0))
 
+        self.gag.hide()
+        self.setAnimTrack(self.getAnimationTrack('toss', 60), startNow = True)
+
     def equip(self):
         TossTrapGag.equip(self)
+
+        if not self.gag:
+            self.build()
+
         if self.isLocal():
             vm = self.getViewModel()
             cam = self.getFPSCam()
-            cam.setVMGag(self.gag, scale = 0.5, animate = False)
+            cam.setVMGag(self.gag, pos = (-0.05, 0.05, 0), hpr = (0, -97.492, 0), scale = 0.5, animate = False)
             cam.setVMAnimTrack(Sequence(ActorInterval(vm, "pie_draw"), Func(vm.loop, "pie_idle")))
 
-    def activate(self, node):
-        for obj in base.cr.doId2do.values():
-            if obj.__class__.__name__ in CIGlobals.SuitClasses:
-                if obj.getPlace() == base.localAvatar.zoneId:
-                    dist = obj.getDistance(node)
-                    if dist <= self.maxDistance:
-                        obj.sendUpdate('hitByGag', [self.getID(), dist])
+        self.doDrawAndHold('toss', 0, 30, 1.0, 30, 33, 1.0)
