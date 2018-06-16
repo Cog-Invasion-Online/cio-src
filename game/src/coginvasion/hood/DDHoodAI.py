@@ -12,13 +12,13 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from ToonHoodAI import ToonHoodAI
 from playground import DistributedBoatAI
-from src.coginvasion.globals import CIGlobals
+import ZoneUtil
 
 class DDHoodAI(ToonHoodAI):
     notify = directNotify.newCategory('DDHoodAI')
 
     def __init__(self, air):
-        ToonHoodAI.__init__(self, air, CIGlobals.DonaldsDockId, CIGlobals.DonaldsDock)
+        ToonHoodAI.__init__(self, air, ZoneUtil.DonaldsDockId, ZoneUtil.DonaldsDock)
         self.boat = None
         self.startup()
 

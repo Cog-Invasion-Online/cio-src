@@ -10,8 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.hood import ToonHood
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil, ToonHood
 import CTSafeZoneLoader
 
 class CTHood(ToonHood.ToonHood):
@@ -19,7 +18,7 @@ class CTHood(ToonHood.ToonHood):
 
     def __init__(self, parentFSM, doneEvent, dnaStore, hoodId):
         ToonHood.ToonHood.__init__(self, parentFSM, doneEvent, dnaStore, hoodId)
-        self.id = CIGlobals.CogTropolis
+        self.id = ZoneUtil.CogTropolis
         self.safeZoneLoader = CTSafeZoneLoader.CTSafeZoneLoader
         self.storageDNAFile = None
         self.holidayDNAFile = None

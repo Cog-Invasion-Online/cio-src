@@ -10,7 +10,16 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import Point3
 
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
+from src.coginvasion.cog.SuitGlobals import Suits
+
+CChar = 'cchar'
+Pluto = 'Pluto'
+Donald = 'Donald'
+Goofy = 'Goofy'
+Mickey = 'Mickey'
+MickeyMouse = 'Mickey Mouse'
+Minnie = 'Minnie'
 
 MICKEY = 0
 MINNIE = 1
@@ -34,6 +43,16 @@ TIMES_LONELY_RANGE = (1, 2)
 SHARED_COMMENT_CHANCE = range(1, 70 + 1)
 UNIQUE_COMMENT_CHANCE = range(71, 100 + 1)
 
+MickeyPaths = {'a': Point3(17, -17, 4.025),
+            'b': Point3(17.5, 7.6, 4.025),
+            'c': Point3(85, 11.5, 4.025),
+            'd': Point3(85, -13, 4.025),
+            'e': Point3(-27.5, -5.25, 0.0),
+            'f': Point3(-106.15, -4.0, -2.5),
+            'g': Point3(-89.5, 93.5, 0.5),
+            'h': Point3(-139.95, 1.69, 0.5),
+            'i': Point3(-110.95, -68.57, 0.5)}
+
 def getBam(num, mdl):
     return "phase_{0}/models/char/{1}.bam".format(num, mdl)
 
@@ -42,12 +61,12 @@ def getDial(num, name):
         return base.audio3d.loadSfx('phase_{0}/audio/dial/{1}.ogg'.format(num, name))
 
 HOOD2CHAR = {
-    CIGlobals.ToontownCentral:    MICKEY,
-    CIGlobals.DaisyGardens:       DAISY,
-    CIGlobals.DonaldsDreamland:   SLEEP_DONALD,
-    CIGlobals.TheBrrrgh:          PLUTO,
-    CIGlobals.MinniesMelodyland:  MINNIE,
-    CIGlobals.DonaldsDock:        SAILOR_DONALD
+    ZoneUtil.ToontownCentral:    MICKEY,
+    ZoneUtil.DaisyGardens:       DAISY,
+    ZoneUtil.DonaldsDreamland:   SLEEP_DONALD,
+    ZoneUtil.TheBrrrgh:          PLUTO,
+    ZoneUtil.MinniesMelodyland:  MINNIE,
+    ZoneUtil.DonaldsDock:        SAILOR_DONALD
 }
 
 CHAR_DATA = {
@@ -249,6 +268,46 @@ CHATTER = {
               "I think I'll take my boat for a spin at my dock."]
     }
 }
+
+MickeyChatter = ['Welcome to Toontown Central.', "Hi, my name is Mickey. What's yours?", 'Hey, have you seen Donald?',
+    "I'm going to go watch the fog roll in at Donald's Dock.",
+    'If you see my pal Goofy, say hi to him for me.',
+    'I hear Daisy has planted some new flowers in her garden.', "I'm going to MelodyLand to see Minnie!",
+    "Gosh, I'm late for my date with Minnie!",
+    "Looks like it's time for Pluto's dinner!",
+    "I think I'll go swimming at Donald's Dock.",
+    "It's time for a nap. I'm going to Dreamland."]
+MinnieChatter = ['Welcome to Melodyland.', "Hi, my name is Minnie. What's yours?", 'The hills are alive with the sound of music!',
+  'You have a cool outfit, %s.',
+  'Hey, have you seen Mickey?',
+  'If you see my friend Goofy, say hi to him for me.',
+  "Wow, there are lots of Cogs near Donald's Dreamland.",
+  "I heard it's foggy at the Donald's Dock.",
+  'Be sure and try the maze in Daisy Gardens.'
+  "I think I'll go catch some tunes.",
+  'Hey %s, look at that over there.',
+  'I love the sound of music.',
+  "I bet you didn't know Melodyland is also called TuneTown!  Hee Hee!",
+  'I love to play the Matching Game. Do you?',
+  'I like to make people giggle.',
+  'Boy, trotting around in heels all day is hard on your feet!',
+  'Nice shirt, %s.',
+  'Is that a Jellybean on the ground?', "Gosh, I'm late for my date with Mickey!", "Looks like it's time for Pluto's dinner.", "It's time for a nap. I'm going to Dreamland."]
+
+GoofySpeedwayChatter = (['Welcome to ' + ZoneUtil.ToontownCentral + '.', 'Hi, my name is ' + Goofy + ". What's yours?", "Gawrsh, it's nice to see you %s!", 'Boy, I saw a terrific race earlier.',
+    'Watch out for banana peels on the race track!',
+    'Have you upgraded your kart lately?',
+    'We just got in some new rims at the kart shop.',
+    'Hey, have you seen ' + Donald + '?',
+    'If you see my friend ' + Mickey + ', say hi to him for me.',
+    "D'oh! I forgot to fix " + Mickey + "'s breakfast!",
+    'Gawrsh there sure are a lot of ' + Suits + ' near ' + ZoneUtil.DonaldsDock + '.',
+    'At the Brrrgh branch of my Gag Shop, Hypno-Goggles are on sale for only 1 Jellybean!',
+    "Goofy's Gag Shops offer the best jokes, tricks, and funnybone-ticklers in all of Toontown!",
+    "At Goofy's Gag Shops, every pie in the face is guaranteed to make a laugh or you get your Jellybeans back!", "I'm going to Melody Land to see %s!" % Mickey,
+    "Gosh, I'm late for my game with %s!" % Donald,
+    "I think I'll go swimming at " + ZoneUtil.DonaldsDock + '.',
+    "It's time for a nap. I'm going to Dreamland."])
 
 WALK_POINTS = {
 

@@ -61,7 +61,7 @@ class Hood(StateData):
         hoodId = requestStatus['hoodId']
         zoneId = requestStatus['zoneId']
         rootZone = ZoneUtil.getZoneId(hoodId)
-        if base.localAvatar.getLastHood() != rootZone and hoodId != CIGlobals.MinigameArea:
+        if base.localAvatar.getLastHood() != rootZone and hoodId != ZoneUtil.MinigameArea:
             base.localAvatar.b_setLastHood(rootZone)
         if not base.localAvatar.hasDiscoveredHood(rootZone):
             hoodsDiscovered = list(base.localAvatar.getHoodsDiscovered())
@@ -79,11 +79,11 @@ class Hood(StateData):
 
     def getHoodText(self, zoneId):
         if ZoneUtil.getWhereName(zoneId) == 'street' and zoneId < 61000:
-            hoodText = CIGlobals.BranchZone2StreetName[ZoneUtil.getBranchZone(zoneId)]
+            hoodText = ZoneUtil.BranchZone2StreetName[ZoneUtil.getBranchZone(zoneId)]
             hoodText += '\n' + self.id
         else:
             hoodText = self.id
-            if self.id != CIGlobals.MinigameArea:
+            if self.id != ZoneUtil.MinigameArea:
                 hoodText += '\n' + ZoneUtil.getWhereName(zoneId).upper()
         return hoodText
 
@@ -180,10 +180,10 @@ class Hood(StateData):
         elif where == 'minigame':
             name = 'Minigame'
         elif where == 'street':
-            name = CIGlobals.BranchZone2StreetName[ZoneUtil.getBranchZone(zoneID)]
+            name = ZoneUtil.BranchZone2StreetName[ZoneUtil.getBranchZone(zoneID)]
         if loaderName == 'safeZoneLoader' or loaderName == 'townLoader':
             if not loader.inBulkBlock:
-                loader.beginBulkLoad('hood', name, CIGlobals.safeZoneLSRanges.get(self.id, 6))
+                loader.beginBulkLoad('hood', name, ZoneUtil.safeZoneLSRanges.get(self.id, 6))
             self.loadLoader(requestStatus)
         else:
             base.transitions.fadeScreen(1.0)

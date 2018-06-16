@@ -10,14 +10,13 @@ Copyright (c) CIO Team. All rights reserved.
 
 from src.coginvasion.gags.ToonUpGag import ToonUpGag
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, LerpPosInterval, LerpScaleInterval, ActorInterval
 from panda3d.core import Point3
 
 class Lipstick(ToonUpGag):
 
     def __init__(self):
-        ToonUpGag.__init__(self, CIGlobals.Lipstick,
+        ToonUpGag.__init__(self, GagGlobals.Lipstick,
                            GagGlobals.getProp(5, 'lipstick'), 25, 30, 75, GagGlobals.SMOOCH_SFX, 1)
         self.setImage('phase_3.5/maps/lipstick.png')
         self.avAnim = 'smooch'

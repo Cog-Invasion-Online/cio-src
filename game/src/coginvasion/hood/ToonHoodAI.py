@@ -10,13 +10,13 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.battle.DistributedBattleTrolleyAI import DistributedBattleTrolleyAI
 from src.coginvasion.cog import CogBattleGlobals
 from src.coginvasion.npc.DistributedDisneyCharAI import DistributedDisneyCharAI
 from src.coginvasion.npc.DisneyCharGlobals import *
 
 from HoodAI import HoodAI
+import ZoneUtil
 
 class ToonHoodAI(HoodAI):
     notify = directNotify.newCategory("ToonHoodAI")
@@ -49,7 +49,7 @@ class ToonHoodAI(HoodAI):
         hood = self.hood
         if CogBattleGlobals.HoodId2WantBattles[hood] is True:
             # Trolley with index 0 indicates to send to the minigame area.
-            self.cogStation = DistributedBattleTrolleyAI(self.air, CIGlobals.MinigameAreaId, 0)
+            self.cogStation = DistributedBattleTrolleyAI(self.air, ZoneUtil.MinigameAreaId, 0)
             self.cogStation.generateWithRequired(self.zoneId)
             self.cogStation.b_setState('wait')
 

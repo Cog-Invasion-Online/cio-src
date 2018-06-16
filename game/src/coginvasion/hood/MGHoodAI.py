@@ -29,8 +29,8 @@ class MGHoodAI(HoodAI.HoodAI):
                 CIGlobals.DodgeballGame]
 
     def __init__(self, air):
-        HoodAI.HoodAI.__init__(self, air, CIGlobals.MinigameAreaId,
-                            CIGlobals.MinigameArea)
+        HoodAI.HoodAI.__init__(self, air, ZoneUtil.MinigameAreaId,
+                            ZoneUtil.MinigameArea)
         self.stations = []
         self.trolley = None
         self.startup()

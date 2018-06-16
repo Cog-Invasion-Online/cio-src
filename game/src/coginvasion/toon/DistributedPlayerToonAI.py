@@ -18,7 +18,7 @@ from src.coginvasion.toon.DistributedToonAI import DistributedToonAI
 from src.coginvasion.quest.QuestManagerAI import QuestManagerAI
 from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.distributed import AdminCommands
 from src.coginvasion.tutorial.DistributedTutorialAI import DistributedTutorialAI
 import ToonDNA
@@ -90,9 +90,9 @@ class DistributedPlayerToonAI(DistributedToonAI):
         
     def reqSetWorldAccess(self, andTP):
         if self.__requesterAuthorized():
-            self.b_setHoodsDiscovered(CIGlobals.Hood2ZoneId.values())
+            self.b_setHoodsDiscovered(ZoneUtil.Hood2ZoneId.values())
             if andTP:
-                self.b_setTeleportAccess(CIGlobals.Hood2ZoneId.values())
+                self.b_setTeleportAccess(ZoneUtil.Hood2ZoneId.values())
         
     def d_setDNAStrand(self, strand):
         self.sendUpdate('setDNAStrand', [strand])

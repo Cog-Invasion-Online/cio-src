@@ -10,9 +10,10 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cog import CogBattleGlobals
 from src.coginvasion.cog import Dept, SuitBank, Variant
+from src.coginvasion.hood import ZoneUtil
+
 from DistributedTakeOverSuitAI import DistributedTakeOverSuitAI
 import SuitBuildingGlobals
 
@@ -44,8 +45,8 @@ class BuildingSuitPlannerAI:
 
         if not suitLevel:
             hoodName = self.hoodClass.hood
-            if hoodName == CIGlobals.ToontownCentral:
-                hoodName = CIGlobals.BattleTTC
+            if hoodName == ZoneUtil.ToontownCentral:
+                hoodName = ZoneUtil.BattleTTC
             suitLevel = random.choice(CogBattleGlobals.HoodIndex2LevelRange[CogBattleGlobals.HoodId2HoodIndex[hoodName]])
         numFloors = self.chooseNumFloors(suitLevel)
 
@@ -91,8 +92,8 @@ class BuildingSuitPlannerAI:
             bldg.door.b_setSuitTakingOver(1)
 
             hoodName = self.hoodClass.hood
-            if hoodName == CIGlobals.ToontownCentral:
-                hoodName = CIGlobals.BattleTTC
+            if hoodName == ZoneUtil.ToontownCentral:
+                hoodName = ZoneUtil.BattleTTC
 
             levelRange = CogBattleGlobals.HoodIndex2LevelRange[CogBattleGlobals.HoodId2HoodIndex[hoodName]]
 

@@ -15,14 +15,11 @@ from direct.fsm.State import State
 from direct.actor.Actor import Actor
 from panda3d.core import ModelPool, TexturePool, NodePath
 
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.hood.QuietZoneState import QuietZoneState
 from src.coginvasion.hood import ToonInterior
 from src.coginvasion.hood import LinkTunnel
 from src.coginvasion.phys import PhysicsUtils
-
-import types
-import random
 
 class SafeZoneLoader(StateData):
     notify = directNotify.newCategory("SafeZoneLoader")
@@ -89,7 +86,7 @@ class SafeZoneLoader(StateData):
 
     def enter(self, requestStatus):
         StateData.enter(self)
-        if base.localAvatar.zoneId < CIGlobals.DynamicZonesBegin:
+        if base.localAvatar.zoneId < ZoneUtil.DynamicZonesBegin:
             self.findAndMakeLinkTunnels()
         self.fsm.enterInitialState()
         messenger.send('enterSafeZone')

@@ -10,14 +10,13 @@ Copyright (c) CIO Team. All rights reserved.
 
 from src.coginvasion.gags.ActivateTrapGag import ActivateTrapGag
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Parallel, Wait, Func, LerpScaleInterval, LerpPosInterval, SoundInterval, ActorInterval
 from panda3d.core import Point3
 
 class Quicksand(ActivateTrapGag):
     
     def __init__(self):
-        ActivateTrapGag.__init__(self, CIGlobals.Quicksand, 'phase_5/models/props/quicksand.bam', 
+        ActivateTrapGag.__init__(self, GagGlobals.Quicksand, 'phase_5/models/props/quicksand.bam', 
                                  50, GagGlobals.QUICKSAND_SFX, 2.5, activateSfx = GagGlobals.FALL_SFX)
         self.setImage('phase_3.5/maps/quicksand.png')
         

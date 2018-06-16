@@ -19,6 +19,7 @@ from direct.interval.IntervalGlobal import LerpPosHprInterval, Sequence, Wait, F
 from direct.gui.DirectGui import DirectButton
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
 from ElevatorConstants import *
 from ElevatorUtils import *
 
@@ -249,7 +250,7 @@ class DistributedElevator(DistributedObject):
                 loader = 'townLoader'
                 where = 'street'
                 how = 'elevatorIn'
-                world = CIGlobals.CogTropolis
+                world = ZoneUtil.CogTropolis
 
             requestStatus = {
                 'zoneId' : self.getToZoneId(),

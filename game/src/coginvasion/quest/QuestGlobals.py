@@ -9,7 +9,7 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 """
 
 from panda3d.core import Vec4, Point3
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.npc import NPCGlobals
 from src.coginvasion.hood import ZoneUtil
 
 #####################################################################
@@ -196,21 +196,21 @@ def getLocationText(location, objective = None):
         if location == 0 or objective.assigner == 0:
             return 'Any Street\nAny Neighborhood'
         else:
-            return getLocationText(CIGlobals.NPCToonDict[objective.assigner][0])
+            return getLocationText(NPCGlobals.NPCToonDict[objective.assigner][0])
     
-    if location in CIGlobals.ZoneId2Hood.keys():
-        if location == CIGlobals.MinigameAreaId:
-            return CIGlobals.ZoneId2Hood.get(location)
-        return '%s\n%s' % ('Any Street', CIGlobals.ZoneId2Hood.get(location))
-    elif location in CIGlobals.BranchZone2StreetName.keys():
-        streetName = CIGlobals.BranchZone2StreetName.get(location)
-        playground = CIGlobals.ZoneId2Hood.get(location - (location % 1000))
+    if location in ZoneUtil.ZoneId2Hood.keys():
+        if location == ZoneUtil.MinigameAreaId:
+            return ZoneUtil.ZoneId2Hood.get(location)
+        return '%s\n%s' % ('Any Street', ZoneUtil.ZoneId2Hood.get(location))
+    elif location in ZoneUtil.BranchZone2StreetName.keys():
+        streetName = ZoneUtil.BranchZone2StreetName.get(location)
+        playground = ZoneUtil.ZoneId2Hood.get(location - (location % 1000))
         return '%s\n%s' % (streetName, playground)
-    elif location in CIGlobals.zone2TitleDict.keys():
-        shop = CIGlobals.zone2TitleDict.get(location)[0]
+    elif location in ZoneUtil.zone2TitleDict.keys():
+        shop = ZoneUtil.zone2TitleDict.get(location)[0]
         streetZone = ZoneUtil.getBranchZone(location)
         if streetZone % 1000 >= 100:
-            streetName = CIGlobals.BranchZone2StreetName[streetZone]
+            streetName = ZoneUtil.BranchZone2StreetName[streetZone]
         else:
             streetName = PLAYGROUND
         hoodName = ZoneUtil.getHoodId(streetZone, 1)
@@ -229,7 +229,7 @@ def generatePoster(quest, parent, **kw):
     return poster
     
 def isShopLocation(location):
-    return location in CIGlobals.zone2TitleDict.keys() or location == 0
+    return location in ZoneUtil.zone2TitleDict.keys() or location == 0
 
 def getOrdinal(number):
     """Returns number as a string with an ordinal. Ex: 1st, 2nd, 3rd"""

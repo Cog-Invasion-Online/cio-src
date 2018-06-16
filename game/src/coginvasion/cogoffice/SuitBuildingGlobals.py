@@ -9,7 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from ElevatorConstants import ElevatorData, ELEVATOR_NORMAL, TOON_VICTORY_EXIT_TIME
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
 
 VICTORY_RUN_TIME = ElevatorData[ELEVATOR_NORMAL]['openTime'] + TOON_VICTORY_EXIT_TIME
 TO_TOON_BLDG_TIME = 8
@@ -29,32 +29,32 @@ BOSS_LEVEL_RANGE = 2
 HEAL_BARREL_CHANCE = 3
 
 buildingInfo = {
-    CIGlobals.ToontownCentral:   {GUARDS_PER_SECTION: (0, 2),
+    ZoneUtil.ToontownCentral:   {GUARDS_PER_SECTION: (0, 2),
                                   LEVEL_RANGE:        (1, 4),
                                   BOSS_LEVEL_RANGE:   (2, 4),
                                   HEAL_BARREL_CHANCE:  10},
 
-    CIGlobals.DonaldsDock:       {GUARDS_PER_SECTION: (1, 3),
+    ZoneUtil.DonaldsDock:       {GUARDS_PER_SECTION: (1, 3),
                                   LEVEL_RANGE:        (2, 6),
                                   BOSS_LEVEL_RANGE:   (3, 6),
                                   HEAL_BARREL_CHANCE:  15},
 
-    CIGlobals.DaisyGardens:      {GUARDS_PER_SECTION: (2, 3),
+    ZoneUtil.DaisyGardens:      {GUARDS_PER_SECTION: (2, 3),
                                   LEVEL_RANGE:        (2, 6),
                                   BOSS_LEVEL_RANGE:   (4, 6),
                                   HEAL_BARREL_CHANCE:  20},
 
-    CIGlobals.MinniesMelodyland: {GUARDS_PER_SECTION: (2, 4),
+    ZoneUtil.MinniesMelodyland: {GUARDS_PER_SECTION: (2, 4),
                                   LEVEL_RANGE:        (3, 6),
                                   BOSS_LEVEL_RANGE:   (4, 6),
                                   HEAL_BARREL_CHANCE:  25},
 
-    CIGlobals.TheBrrrgh:         {GUARDS_PER_SECTION: (3, 4),
+    ZoneUtil.TheBrrrgh:         {GUARDS_PER_SECTION: (3, 4),
                                   LEVEL_RANGE:        (6, 11),
                                   BOSS_LEVEL_RANGE:   (8, 11),
                                   HEAL_BARREL_CHANCE:  30},
 
-    CIGlobals.DonaldsDreamland:  {GUARDS_PER_SECTION: (3, 4),
+    ZoneUtil.DonaldsDreamland:  {GUARDS_PER_SECTION: (3, 4),
                                   LEVEL_RANGE:        (8, 11),
                                   BOSS_LEVEL_RANGE:   (8, 12),
                                   HEAL_BARREL_CHANCE:  35}
@@ -62,45 +62,45 @@ buildingInfo = {
 
 # The minimum and maximum number of cog buildings that can be present on each street.
 buildingMinMax = {
-    CIGlobals.SillyStreet: (1, 3),
-    CIGlobals.PunchlinePlace: (1, 3),
-    CIGlobals.LoopyLane: (1, 3),
-    CIGlobals.BarnacleBoulevard: (1, 5),
-    CIGlobals.SeaweedStreet: (1, 5),
-    CIGlobals.LighthouseLane: (1, 5),
-    CIGlobals.ElmStreet: (2, 6),
-    CIGlobals.MapleStreet: (2, 6),
-    CIGlobals.OakStreet: (2, 6),
-    CIGlobals.AltoAvenue: (3, 7),
-    CIGlobals.BaritoneBoulevard: (3, 7),
-    CIGlobals.TenorTerrace: (3, 7),
-    CIGlobals.WalrusWay: (5, 10),
-    CIGlobals.SleetStreet: (5, 10),
-    CIGlobals.PolarPlace: (5, 10),
-    CIGlobals.LullabyLane: (6, 12),
-    CIGlobals.PajamaPlace: (6, 12)
+    ZoneUtil.SillyStreet: (1, 3),
+    ZoneUtil.PunchlinePlace: (1, 3),
+    ZoneUtil.LoopyLane: (1, 3),
+    ZoneUtil.BarnacleBoulevard: (1, 5),
+    ZoneUtil.SeaweedStreet: (1, 5),
+    ZoneUtil.LighthouseLane: (1, 5),
+    ZoneUtil.ElmStreet: (2, 6),
+    ZoneUtil.MapleStreet: (2, 6),
+    ZoneUtil.OakStreet: (2, 6),
+    ZoneUtil.AltoAvenue: (3, 7),
+    ZoneUtil.BaritoneBoulevard: (3, 7),
+    ZoneUtil.TenorTerrace: (3, 7),
+    ZoneUtil.WalrusWay: (5, 10),
+    ZoneUtil.SleetStreet: (5, 10),
+    ZoneUtil.PolarPlace: (5, 10),
+    ZoneUtil.LullabyLane: (6, 12),
+    ZoneUtil.PajamaPlace: (6, 12)
 }
 
 # The chance a cog building will be spawned each interval.
 # Temporarily buffed TTC spawning rate from 2% to 20%
 buildingChances = {
-    CIGlobals.SillyStreet: 20.0,
-    CIGlobals.LoopyLane: 20.0,
-    CIGlobals.PunchlinePlace: 20.0,
-    CIGlobals.BarnacleBoulevard: 75.0,
-    CIGlobals.SeaweedStreet: 75.0,
-    CIGlobals.LighthouseLane: 75.0,
-    CIGlobals.ElmStreet: 90.0,
-    CIGlobals.MapleStreet: 90.0,
-    CIGlobals.OakStreet: 90.0,
-    CIGlobals.AltoAvenue: 95.0,
-    CIGlobals.BaritoneBoulevard: 95.0,
-    CIGlobals.TenorTerrace: 95.0,
-    CIGlobals.WalrusWay: 100.0,
-    CIGlobals.SleetStreet: 100.0,
-    CIGlobals.PolarPlace: 100.0,
-    CIGlobals.LullabyLane: 100.0,
-    CIGlobals.PajamaPlace: 100.0,
+    ZoneUtil.SillyStreet: 20.0,
+    ZoneUtil.LoopyLane: 20.0,
+    ZoneUtil.PunchlinePlace: 20.0,
+    ZoneUtil.BarnacleBoulevard: 75.0,
+    ZoneUtil.SeaweedStreet: 75.0,
+    ZoneUtil.LighthouseLane: 75.0,
+    ZoneUtil.ElmStreet: 90.0,
+    ZoneUtil.MapleStreet: 90.0,
+    ZoneUtil.OakStreet: 90.0,
+    ZoneUtil.AltoAvenue: 95.0,
+    ZoneUtil.BaritoneBoulevard: 95.0,
+    ZoneUtil.TenorTerrace: 95.0,
+    ZoneUtil.WalrusWay: 100.0,
+    ZoneUtil.SleetStreet: 100.0,
+    ZoneUtil.PolarPlace: 100.0,
+    ZoneUtil.LullabyLane: 100.0,
+    ZoneUtil.PajamaPlace: 100.0,
 }
 
 # The chances a cog level has of spawning a building with a certain number of floors.

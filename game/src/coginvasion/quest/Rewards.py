@@ -8,7 +8,7 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
 import QuestGlobals
 
 ###################################
@@ -74,7 +74,7 @@ class AccessReward(Reward):
         avatar.b_setHoodsDiscovered(avatar.getHoodsDiscovered() + [self.rewardValue])
 
     def fillInDialogue(self):
-        return self.Dialogue % CIGlobals.ZoneId2Hood[self.rewardValue]
+        return self.Dialogue % ZoneUtil.ZoneId2Hood[self.rewardValue]
 
 RewardType2RewardClass = {
     Health:     HealthReward,

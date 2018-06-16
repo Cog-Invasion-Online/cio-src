@@ -12,7 +12,6 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.distributed.HoodMgr import HoodMgr
 from src.coginvasion.dna.DNALoader import *
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cogoffice.BuildingSuitPlannerAI import BuildingSuitPlannerAI
 
 from playground.SZTreasurePlannerAI import SZTreasurePlannerAI
@@ -135,7 +134,7 @@ class HoodAI:
                                 kkDoor = DistributedKnockKnockDoorAI.DistributedKnockKnockDoorAI(self.air, exteriorZone, block, zoneId)
                                 kkDoor.generateWithRequired(exteriorZone)
             if not isSZ:
-                self.buildingPlanners[zoneId] = BuildingSuitPlannerAI(zoneId, CIGlobals.BranchZone2StreetName[zoneId], self)
+                self.buildingPlanners[zoneId] = BuildingSuitPlannerAI(zoneId, ZoneUtil.BranchZone2StreetName[zoneId], self)
 
         butterflies = ButterflyGlobals.Spots.get(self.zoneId) is not None
         if butterflies:

@@ -18,7 +18,7 @@ from panda3d.core import OmniBoundingVolume, Point3, CollisionSphere, CollisionN
 class Safe(DropGag):
 
     def __init__(self):
-        DropGag.__init__(self, CIGlobals.Safe, 'phase_5/models/props/safe-mod.bam', 'phase_5/models/props/safe-chan.bam',
+        DropGag.__init__(self, GagGlobals.Safe, 'phase_5/models/props/safe-mod.bam', 'phase_5/models/props/safe-chan.bam',
                          60, GagGlobals.SAFE_DROP_SFX, GagGlobals.SAFE_MISS_SFX, 1, 1)
         self.setImage('phase_3.5/maps/safe.png')
         self.colliderOfs = Point3(0, 0, 0.25)

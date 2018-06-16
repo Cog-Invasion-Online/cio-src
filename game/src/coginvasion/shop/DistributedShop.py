@@ -11,6 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.distributed.DistributedNode import DistributedNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.npc import NPCGlobals
 from src.coginvasion.shop.ItemType import ItemType
 from panda3d.core import NodePath, CollisionSphere, CollisionNode
 import abc
@@ -55,7 +56,7 @@ class DistributedShop(DistributedNode):
             self.clerk = None
 
     def setClerkChat(self, msgId):
-        msgs = [CIGlobals.ShopGoodbye, CIGlobals.ShopNoMoney]
+        msgs = [NPCGlobals.ShopGoodbye, NPCGlobals.ShopNoMoney]
         if self.clerk: self.clerk.setChat(msgs[msgId])
 
     def __initShopCollisions(self, colName):

@@ -8,18 +8,17 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
-
 from playground import BRSafeZoneLoader
 from street import BRTownLoader
 
 import ToonHood
+import ZoneUtil
 
 class BRHood(ToonHood.ToonHood):
 
 	def __init__(self, parentFSM, doneEvent, dnaStore, hoodId):
 		ToonHood.ToonHood.__init__(self, parentFSM, doneEvent, dnaStore, hoodId)
-		self.id = CIGlobals.TheBrrrgh
+		self.id = ZoneUtil.TheBrrrgh
 		self.safeZoneLoader = BRSafeZoneLoader.BRSafeZoneLoader
 		self.townLoader = BRTownLoader.BRTownLoader
 		self.abbr = "BR"

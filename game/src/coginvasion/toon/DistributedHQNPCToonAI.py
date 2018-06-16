@@ -11,7 +11,7 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 import DistributedNPCToonAI
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.npc import NPCGlobals
 from src.coginvasion.quest.QuestGlobals import NPCDialogue
 
 import random
@@ -48,11 +48,11 @@ class DistributedHQNPCToonAI(DistributedNPCToonAI.DistributedNPCToonAI):
                 pickableQuestList = av.questManager.getPickableQuestList(self)
                 # We don't need to visit this NPC and we're full on quests.
                 if len(av.questManager.quests.keys()) >= 4:
-                    array = list(CIGlobals.NPCEnter_Pointless_Dialogue)
+                    array = list(NPCGlobals.NPCEnter_Pointless_Dialogue)
                     chat = random.choice(array)
                 elif len(pickableQuestList) == 0:
                     # We don't need to visit this NPC and he doesn't have any quests to give us.
-                    chat = CIGlobals.NPCEnter_HQ_FinishCurrentQuest
+                    chat = NPCGlobals.NPCEnter_HQ_FinishCurrentQuest
             if chat:
                 if '%s' in chat:
                     chat = chat % av.getName()

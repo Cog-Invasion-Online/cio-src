@@ -1,11 +1,14 @@
 """
+COG INVASION ONLINE
+Copyright (c) CIO Team. All rights reserved.
 
-  Filename: UnoGameAIPlayerMgr
-  Created by: mliberty (01Apr15)
-    
+@file UnoGameAIPlayerMgr.py
+@author Maverick Liberty
+@date April 1, 2015
+
 """
 
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.npc import NPCGlobals
 from src.coginvasion.minigame.UnoGameAIPlayer import UnoGameAIPlayer
 from panda3d.core import UniqueIdAllocator
 import random
@@ -18,7 +21,7 @@ class UnoGameAIPlayerMgr:
         self.idAllocator = UniqueIdAllocator(1, 4)
         
     def createPlayer(self, difficulty = None):
-        npc_id = random.choice(CIGlobals.NPCToonDict.keys())
+        npc_id = random.choice(NPCGlobals.NPCToonDict.keys())
         player = UnoGameAIPlayer(npc_id, self.idAllocator.allocate(), self.game)
         player.generate()
         self.players.append(player)

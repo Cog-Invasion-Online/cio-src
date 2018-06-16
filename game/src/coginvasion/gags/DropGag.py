@@ -11,6 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 from src.coginvasion.gags.Gag import Gag
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags.GagState import GagState
+from src.coginvasion.gags import GagGlobals
 from src.coginvasion.phys.WorldCollider import WorldCollider
 from src.coginvasion.globals import CIGlobals
 from LocationGag import LocationGag
@@ -158,7 +159,7 @@ class DropGag(Gag, LocationGag):
         Gag.equip(self)
         LocationGag.equip(self)
 
-        if self.isLocal() and self.getName() == CIGlobals.GrandPiano:
+        if self.isLocal() and self.getName() == GagGlobals.GrandPiano:
             base.taskMgr.add(self.tickShadowIdleTask, self.shadowIdleTaskName)
             base.accept(self.getLocationSeeker().getShadowMovedName(), self.__shadowMoved)
 

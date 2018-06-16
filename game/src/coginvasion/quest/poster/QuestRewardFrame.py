@@ -16,6 +16,7 @@ from panda3d.core import TextNode, TransparencyAttrib
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.quest import QuestGlobals
+from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
 
 class QuestRewardFrame(DirectFrame):
@@ -60,7 +61,7 @@ class QuestRewardFrame(DirectFrame):
             self['image'] = QuestGlobals.getTPAccessIcon()
             self['image_scale'] = QuestGlobals.TP_ACCESS_SCALE
             self.setPos(QuestGlobals.LEFT_TP_ACCESS_POS)
-            self.info['text'] = CIGlobals.ZoneId2HoodAbbr[self.reward.rewardValue]
+            self.info['text'] = ZoneUtil.ZoneId2HoodAbbr[self.reward.rewardValue]
             self.info.setPos(-0.0025, 0, -0.04)
         elif self.reward.rewardType == 3:
             # This is a laff boost reward.

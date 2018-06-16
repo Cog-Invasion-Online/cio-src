@@ -2,7 +2,7 @@ import math
 
 from ccoginvasion import SuitPathFinderAI
 
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
 
 # Some helper functions for below:
 def rect(x1, y1, x2, y2):
@@ -32,7 +32,7 @@ FatTreeRadius = 4
 # this is the outer boundary, which is wound CCW so that it is inside-out (i.e.
 # so that it has the "solid" part on the outside)
 PathPolygons = {
-    CIGlobals.BattleTTC: [
+    ZoneUtil.BattleTTC: [
         # Outermost loop, in CCW order
         [
             (-137.450,  -51.427),
@@ -242,7 +242,7 @@ PathPolygons = {
         rect(86.9, 28.9, 94.6, 21.0)
     ],
 
-    CIGlobals.TheBrrrgh: [
+    ZoneUtil.TheBrrrgh: [
         # Outermost loop, in CCW order (includes side walls)
         [
             (-62.7133, -158.926),

@@ -839,8 +839,8 @@ class LocalToon(DistributedPlayerToon):
 
     def diedStateDone(self, requestStatus):
         hood = self.cr.playGame.hood.id
-        if hood == CIGlobals.BattleTTC:
-            hood = CIGlobals.ToontownCentral
+        if hood == ZoneUtil.BattleTTC:
+            hood = ZoneUtil.ToontownCentral
         toZone = ZoneUtil.getZoneId(hood)
         if self.zoneId != toZone:
             requestStatus = {'zoneId': toZone,
@@ -857,8 +857,8 @@ class LocalToon(DistributedPlayerToon):
             return
 
     def teleportToCT(self):
-        toZone = CIGlobals.CogTropolisId
-        hood = CIGlobals.CogTropolis
+        toZone = ZoneUtil.CogTropolisId
+        hood = ZoneUtil.CogTropolis
         requestStatus = {'zoneId': toZone,
                 'hoodId': hood,
                 'where': ZoneUtil.getWhereName(toZone),

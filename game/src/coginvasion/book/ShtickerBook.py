@@ -26,6 +26,7 @@ from src.coginvasion.book.DistrictsPage import DistrictsPage
 from src.coginvasion.book.AdminPage import AdminPage
 from src.coginvasion.book.GagsPage import GagsPage
 from src.coginvasion.book.QuestPage import QuestPage
+from src.coginvasion.book.ArcadeModePage import ArcadeModePage
 from src.coginvasion.hood import ZoneUtil
 
 class ShtickerBook(DirectFrame, StateData):
@@ -230,6 +231,7 @@ class ShtickerBook(DirectFrame, StateData):
         self.registerPage(MapPage(self))
         self.registerPage(GagsPage(self))
         self.registerPage(QuestPage(self))
+        self.registerPage(ArcadeModePage(self))
 
         if base.localAvatar.getAdminToken() != AdminCommands.NoToken:
             self.registerPage(AdminPage(self))
@@ -276,9 +278,9 @@ class ShtickerBook(DirectFrame, StateData):
         if base.localAvatar.isDead() and type(zone) == type(1):
             return
         doneStatus = {}
-        if zone in [CIGlobals.ToontownCentralId, CIGlobals.MinigameAreaId,
-        CIGlobals.TheBrrrghId, CIGlobals.DonaldsDreamlandId, CIGlobals.MinniesMelodylandId,
-        CIGlobals.DaisyGardensId, CIGlobals.DonaldsDockId]:
+        if zone in [ZoneUtil.ToontownCentralId, ZoneUtil.MinigameAreaId,
+        ZoneUtil.TheBrrrghId, ZoneUtil.DonaldsDreamlandId, ZoneUtil.MinniesMelodylandId,
+        ZoneUtil.DaisyGardensId, ZoneUtil.DonaldsDockId]:
             doneStatus["mode"] = 'teleport'
             doneStatus["zoneId"] = zone
             doneStatus["hoodId"] = ZoneUtil.getHoodId(zone)

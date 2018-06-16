@@ -43,19 +43,19 @@ class MapPage(BookPage, DirectFrame):
                     [(0.18, 0, -0.45),  (0.52, 0.27, 0.32), (0, 0, 0)],
                     [(0.67, 0, -0.44),  (0.63, 0.35, 0.48), (180, 0, 0)]]
 
-        self.hoodClouds = [#[(0.02, 0, -0.17),  (0.63, 0.35, 0.48), (180, 0, 0), CIGlobals.ToontownCentral],
-                      [(0.63, 0, -0.13),  (0.63, 0.35, 0.40), (0, 0, 0), CIGlobals.DonaldsDock],
-                      [(0.51, 0, 0.25),  (0.57, 0.35, 0.40), (0, 0, 0), CIGlobals.TheBrrrgh],
-                      [(0.03, 0, 0.19),  (0.63, 0.35, 0.40), (180, 0, 0), CIGlobals.MinniesMelodyland],
-                      [(-0.08, 0, 0.46),  (0.54, 0.35, 0.40), (0, 0, 0), CIGlobals.DonaldsDreamland],
-                      [(-0.28, 0, -0.49),  (0.60, 0.35, 0.45), (0, 0, 0), CIGlobals.DaisyGardens]]
+        self.hoodClouds = [#[(0.02, 0, -0.17),  (0.63, 0.35, 0.48), (180, 0, 0), ZoneUtil.ToontownCentral],
+                      [(0.63, 0, -0.13),  (0.63, 0.35, 0.40), (0, 0, 0), ZoneUtil.DonaldsDock],
+                      [(0.51, 0, 0.25),  (0.57, 0.35, 0.40), (0, 0, 0), ZoneUtil.TheBrrrgh],
+                      [(0.03, 0, 0.19),  (0.63, 0.35, 0.40), (180, 0, 0), ZoneUtil.MinniesMelodyland],
+                      [(-0.08, 0, 0.46),  (0.54, 0.35, 0.40), (0, 0, 0), ZoneUtil.DonaldsDreamland],
+                      [(-0.28, 0, -0.49),  (0.60, 0.35, 0.45), (0, 0, 0), ZoneUtil.DaisyGardens]]
 
-        self.labelData = [[(0, 0, -0.2), CIGlobals.ToontownCentral],
-                     [(0.65, 0, -0.125), CIGlobals.DonaldsDock],
-                     [(0.07, 0, 0.18), CIGlobals.MinniesMelodyland],
-                     [(-0.1, 0, 0.45), CIGlobals.DonaldsDreamland],
-                     [(0.5, 0, 0.25), CIGlobals.TheBrrrgh],
-                     [(-0.37, 0, -0.525), CIGlobals.DaisyGardens]]
+        self.labelData = [[(0, 0, -0.2), ZoneUtil.ToontownCentral],
+                     [(0.65, 0, -0.125), ZoneUtil.DonaldsDock],
+                     [(0.07, 0, 0.18), ZoneUtil.MinniesMelodyland],
+                     [(-0.1, 0, 0.45), ZoneUtil.DonaldsDreamland],
+                     [(0.5, 0, 0.25), ZoneUtil.TheBrrrgh],
+                     [(-0.37, 0, -0.525), ZoneUtil.DaisyGardens]]
 
         # The buttons
         self.infoLabel = None
@@ -120,16 +120,16 @@ class MapPage(BookPage, DirectFrame):
 
         currHoodName = base.cr.playGame.hood.id
         currLocation = ''
-        if base.localAvatar.zoneId == CIGlobals.MinigameAreaId or base.localAvatar.getMyBattle() is not None:
+        if base.localAvatar.zoneId == ZoneUtil.MinigameAreaId or base.localAvatar.getMyBattle() is not None:
             currLocation = ''
         elif ZoneUtil.getWhereName(base.localAvatar.zoneId) == 'playground':
             currLocation = 'Playground'
         elif ZoneUtil.getWhereName(base.localAvatar.zoneId) in ['street', 'interior']:
-            currLocation = CIGlobals.BranchZone2StreetName[ZoneUtil.getBranchZone(base.localAvatar.zoneId)]
+            currLocation = ZoneUtil.BranchZone2StreetName[ZoneUtil.getBranchZone(base.localAvatar.zoneId)]
         self.infoLabel = DirectLabel(relief = None, text = 'You are in: {0}\n{1}'.format(currHoodName, currLocation),
                                      scale = 0.06, pos = (-0.4, 0, -0.74), parent = self, text_align = TextNode.ACenter)
 
-        if currHoodName in [CIGlobals.MinigameArea, CIGlobals.BattleTTC]:
+        if currHoodName in [ZoneUtil.MinigameArea, ZoneUtil.BattleTTC]:
             currHoodName = base.cr.playGame.lastHood
         btpText = 'Back to Playground'
         btpEA = [ZoneUtil.getZoneId(currHoodName)]
@@ -137,11 +137,11 @@ class MapPage(BookPage, DirectFrame):
             text_pos = (0, -0.018), geom_scale = (1.3, 1.11, 1.11), text_scale = 0.06, parent = self,
             text_font = CIGlobals.getToonFont(), pos = (0.25, 0, -0.75), command = self.book.finished,
         extraArgs = btpEA, scale = 0.7)
-        if base.localAvatar.zoneId != CIGlobals.MinigameAreaId:
-            self.MGAButton = DirectButton(relief = None, text = 'Minigame Area', geom = CIGlobals.getDefaultBtnGeom(),
+        if base.localAvatar.zoneId != ZoneUtil.MinigameAreaId:
+            self.MGAButton = DirectButton(relief = None, text = ZoneUtil.MinigameArea, geom = CIGlobals.getDefaultBtnGeom(),
                 text_pos = (0, -0.018), geom_scale = (1, 1.11, 1.11), text_scale = 0.06, parent = self,
                 text_font = CIGlobals.getToonFont(), pos = (0.625, 0, -0.75), command = self.book.finished,
-            extraArgs = [CIGlobals.MinigameAreaId], scale = 0.7)
+            extraArgs = [ZoneUtil.MinigameAreaId], scale = 0.7)
 
         icons = loader.loadModel('phase_3.5/models/gui/sos_textures.bam')
         self.icon = icons.find('**/teleportIcon')

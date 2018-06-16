@@ -18,7 +18,7 @@ from panda3d.core import OmniBoundingVolume, Point3, CollisionSphere, CollisionN
 class GrandPiano(DropGag):
 
     def __init__(self):
-        DropGag.__init__(self, CIGlobals.GrandPiano, 'phase_5/models/props/piano-mod.bam', 'phase_5/models/props/piano-chan.bam',
+        DropGag.__init__(self, GagGlobals.GrandPiano, 'phase_5/models/props/piano-mod.bam', 'phase_5/models/props/piano-chan.bam',
                          170, GagGlobals.PIANO_DROP_SFX, GagGlobals.PIANO_MISS_SFX, 1, 1)
         self.setImage('phase_3.5/maps/grand-piano.png')
         self.colliderRadius = 5

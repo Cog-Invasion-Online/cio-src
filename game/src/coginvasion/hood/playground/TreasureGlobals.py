@@ -8,13 +8,13 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
 from DistributedTTCTreasureAI import DistributedTTCTreasureAI
 from DistributedTBTreasureAI import DistributedTBTreasureAI
 from DistributedDLTreasureAI import DistributedDLTreasureAI
 from DistributedMLTreasureAI import DistributedMLTreasureAI
 from DistributedDDTreasureAI import DistributedDDTreasureAI
 from DistributedDGTreasureAI import DistributedDGTreasureAI
+from src.coginvasion.hood import ZoneUtil
 
 TreasureTT = 0
 TreasureDD = 1
@@ -24,7 +24,7 @@ TreasureMM = 4
 TreasureDL = 5
 
 treasureSpawns = {
-    CIGlobals.ToontownCentralId : (DistributedTTCTreasureAI, 3, [
+    ZoneUtil.ToontownCentralId : (DistributedTTCTreasureAI, 3, [
             (97.1152, -14.073, 8.09022),
             (10.1026, 92.386, 8.03993),
             (-83.8212, 36.2664, 8.02391),
@@ -38,7 +38,7 @@ treasureSpawns = {
             (-29.5332, -33.6149, 0.0086359),
             (-94.4124, 4.01301, 8.05116),
     ], 10, 5),
-    CIGlobals.TheBrrrghId: (
+    ZoneUtil.TheBrrrghId: (
         DistributedTBTreasureAI, 12,
         [
             (-108, 46, 6.2),
@@ -60,7 +60,7 @@ treasureSpawns = {
             (-135, -102, 6.2),
             (35, -98, 6.2),
         ], 10, 2),
-    CIGlobals.DonaldsDockId: (
+    ZoneUtil.DonaldsDockId: (
         DistributedDDTreasureAI, 10,
         [
             (52.9072, -23.4768, -12.308),
@@ -92,7 +92,7 @@ treasureSpawns = {
         ],
         10, 2
     ),
-    CIGlobals.DaisyGardensId: (
+    ZoneUtil.DaisyGardensId: (
         DistributedDGTreasureAI, 10,
         [
             (-49, 156, 0.0),
@@ -118,7 +118,7 @@ treasureSpawns = {
         ],
         7, 2
     ),
-    CIGlobals.MinniesMelodylandId: (
+    ZoneUtil.MinniesMelodylandId: (
         DistributedMLTreasureAI, 10,
         [
             (118, -39, 3.3),
@@ -143,7 +143,7 @@ treasureSpawns = {
         ],
         10, 2
     ),
-    CIGlobals.DonaldsDreamlandId: (
+    ZoneUtil.DonaldsDreamlandId: (
         DistributedDLTreasureAI, 12,
         [
             (86, 69, -17.4),

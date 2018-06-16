@@ -15,15 +15,15 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from ToonHood import ToonHood
 from playground.MLSafeZoneLoader import MLSafeZoneLoader
 from street.MLTownLoader import MLTownLoader
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.holiday.HolidayManager import HolidayType
+import ZoneUtil
 
 class MLHood(ToonHood):
     notify = directNotify.newCategory("MLHood")
 
     def __init__(self, parentFSM, doneEvent, dnaStore, hoodId):
         ToonHood.__init__(self, parentFSM, doneEvent, dnaStore, hoodId)
-        self.id = CIGlobals.MinniesMelodyland
+        self.id = ZoneUtil.MinniesMelodyland
         self.safeZoneLoader = MLSafeZoneLoader
         self.townLoader = MLTownLoader
         self.abbr = "MM"

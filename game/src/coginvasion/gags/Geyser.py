@@ -11,7 +11,6 @@ Copyright (c) CIO Team. All rights reserved.
 from src.coginvasion.gags.SquirtGag import SquirtGag
 from src.coginvasion.gags.ChargeUpGag import ChargeUpGag
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpScaleInterval
 from direct.interval.IntervalGlobal import ActorInterval, LerpPosInterval, Parallel
 from direct.interval.IntervalGlobal import SoundInterval
@@ -20,7 +19,7 @@ from panda3d.core import Point3
 class Geyser(SquirtGag, ChargeUpGag):
 
     def __init__(self):
-        SquirtGag.__init__(self, CIGlobals.Geyser, GagGlobals.getProp(5, 'geyser'), GagGlobals.GEYSER_HIT_SFX)
+        SquirtGag.__init__(self, GagGlobals.Geyser, GagGlobals.getProp(5, 'geyser'), GagGlobals.GEYSER_HIT_SFX)
         ChargeUpGag.__init__(self, 24, 10, 50, 0.5, maxCogs = 4)
         self.setImage('phase_3.5/maps/geyser.png')
         self.entities = []

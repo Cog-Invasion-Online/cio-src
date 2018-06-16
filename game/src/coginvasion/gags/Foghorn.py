@@ -8,7 +8,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags.SoundGag import SoundGag
 from src.coginvasion.gags import GagGlobals
 from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, SoundInterval, LerpHprInterval, ActorInterval
@@ -17,7 +16,7 @@ from panda3d.core import Vec3
 class Foghorn(SoundGag):
 
     def __init__(self):
-        SoundGag.__init__(self, CIGlobals.Foghorn, 'phase_5/models/props/fog_horn.bam', 50, GagGlobals.FOG_APPEAR_SFX,
+        SoundGag.__init__(self, GagGlobals.Foghorn, 'phase_5/models/props/fog_horn.bam', 50, GagGlobals.FOG_APPEAR_SFX,
                           GagGlobals.FOG_SFX, soundRange = 40, hitSfx = None)
         self.setImage('phase_3.5/maps/fog-horn.png')
         self.setRechargeTime(14.5)

@@ -22,6 +22,7 @@ from direct.distributed.ClockDelta import globalClockDelta
 
 from src.coginvasion.avatar.DistributedAvatar import DistributedAvatar
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.gags import GagGlobals
 from src.coginvasion.battle.TurretGag import TurretGag
 
 import random
@@ -66,7 +67,7 @@ class DistributedPieTurret(DistributedAvatar, DistributedSmoothNode):
         return self.owner
 
     def setGag(self, upgradeId):
-        gags = {0 : CIGlobals.WholeCreamPie, 1 : CIGlobals.WholeFruitPie, 2 : CIGlobals.BirthdayCake, 3 : CIGlobals.WeddingCake}
+        gags = {0 : GagGlobals.WholeCreamPie, 1 : GagGlobals.WholeFruitPie, 2 : GagGlobals.BirthdayCake, 3 : GagGlobals.WeddingCake}
         self.gag = gags.get(upgradeId)
         if not self.readyGag:
             self.loadGagInTurret()

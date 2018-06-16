@@ -8,7 +8,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals.CIGlobals import Suits
 from src.coginvasion.cog import Dept
 from src.coginvasion.cog.SuitType import SuitType
 
@@ -51,6 +50,7 @@ VicePresident = 'Senior V.P.'
 LucyCrossbill = 'Lucy Crossbill'
 
 HealTaunt = "Here, take this med-kit."
+Suits = 'Cogs'
 
 GeneralTaunts = ["It's my day off.",
                     "I believe you're in the wrong office.",

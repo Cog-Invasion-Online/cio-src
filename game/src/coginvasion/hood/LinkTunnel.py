@@ -10,7 +10,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.showbase.DirectObject import DirectObject
 import ZoneUtil
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.phys import PhysicsUtils
 
 CollisionName = 'tunnel_trigger'
@@ -64,7 +63,7 @@ class LinkTunnel(DirectObject):
         self.toZone = 0
 
     def canEnter(self):
-        return CIGlobals.Hood2ZoneId[ZoneUtil.getHoodId(self.toZone, 1)] in base.localAvatar.getHoodsDiscovered()
+        return ZoneUtil.Hood2ZoneId[ZoneUtil.getHoodId(self.toZone, 1)] in base.localAvatar.getHoodsDiscovered()
 
     def cleanup(self):
         del TunnelNode2LinkTunnel[self.tunnel]

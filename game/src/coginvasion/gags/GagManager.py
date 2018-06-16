@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.BirthdayCake import BirthdayCake
 from src.coginvasion.gags.CreamPieSlice import CreamPieSlice
 from src.coginvasion.gags.WholeCreamPie import WholeCreamPie
@@ -49,42 +49,42 @@ from src.coginvasion.gags.SquirtingFlower import SquirtingFlower
 class GagManager:
 
     def __init__(self):
-        self.gags = {CIGlobals.BirthdayCake : BirthdayCake,
-                     CIGlobals.CreamPieSlice : CreamPieSlice,
-                     CIGlobals.WholeCreamPie : WholeCreamPie,
-                     CIGlobals.TNT : TNT,
-                     CIGlobals.SeltzerBottle : SeltzerBottle,
-                     CIGlobals.WholeFruitPie : WholeFruitPie,
-                     CIGlobals.WeddingCake : WeddingCake,
-                     CIGlobals.FruitPieSlice : FruitPieSlice,
-                     CIGlobals.GrandPiano : GrandPiano,
-                     CIGlobals.Safe : Safe,
-                     CIGlobals.BambooCane : BambooCane,
-                     CIGlobals.JugglingBalls : JugglingBalls,
-                     CIGlobals.Megaphone : Megaphone,
-                     CIGlobals.Cupcake : Cupcake,
-                     CIGlobals.TrapDoor : TrapDoor,
-                     CIGlobals.Quicksand : Quicksand,
-                     CIGlobals.BananaPeel : BananaPeel,
-                     CIGlobals.Lipstick : Lipstick,
-                     CIGlobals.Foghorn : Foghorn,
-                     CIGlobals.Aoogah : Aoogah,
-                     CIGlobals.ElephantHorn : ElephantHorn,
-                     CIGlobals.Opera : Opera,
-                     CIGlobals.BikeHorn : BikeHorn,
-                     CIGlobals.Whistle : Whistle,
-                     CIGlobals.Bugle : Bugle,
-                     CIGlobals.PixieDust : PixieDust,
-                     CIGlobals.FlowerPot : FlowerPot,
-                     CIGlobals.Sandbag : Sandbag,
-                     CIGlobals.Anvil : Anvil,
-                     CIGlobals.Geyser : Geyser,
-                     CIGlobals.BigWeight : BigWeight,
-                     CIGlobals.StormCloud : StormCloud,
-                     CIGlobals.WaterGlass : WaterGlass,
-                     CIGlobals.WaterGun : WaterGun,
-                     CIGlobals.FireHose : FireHose,
-                     CIGlobals.SquirtFlower : SquirtingFlower}
+        self.gags = {GagGlobals.BirthdayCake : BirthdayCake,
+                     GagGlobals.CreamPieSlice : CreamPieSlice,
+                     GagGlobals.WholeCreamPie : WholeCreamPie,
+                     GagGlobals.TNT : TNT,
+                     GagGlobals.SeltzerBottle : SeltzerBottle,
+                     GagGlobals.WholeFruitPie : WholeFruitPie,
+                     GagGlobals.WeddingCake : WeddingCake,
+                     GagGlobals.FruitPieSlice : FruitPieSlice,
+                     GagGlobals.GrandPiano : GrandPiano,
+                     GagGlobals.Safe : Safe,
+                     GagGlobals.BambooCane : BambooCane,
+                     GagGlobals.JugglingBalls : JugglingBalls,
+                     GagGlobals.Megaphone : Megaphone,
+                     GagGlobals.Cupcake : Cupcake,
+                     GagGlobals.TrapDoor : TrapDoor,
+                     GagGlobals.Quicksand : Quicksand,
+                     GagGlobals.BananaPeel : BananaPeel,
+                     GagGlobals.Lipstick : Lipstick,
+                     GagGlobals.Foghorn : Foghorn,
+                     GagGlobals.Aoogah : Aoogah,
+                     GagGlobals.ElephantHorn : ElephantHorn,
+                     GagGlobals.Opera : Opera,
+                     GagGlobals.BikeHorn : BikeHorn,
+                     GagGlobals.Whistle : Whistle,
+                     GagGlobals.Bugle : Bugle,
+                     GagGlobals.PixieDust : PixieDust,
+                     GagGlobals.FlowerPot : FlowerPot,
+                     GagGlobals.Sandbag : Sandbag,
+                     GagGlobals.Anvil : Anvil,
+                     GagGlobals.Geyser : Geyser,
+                     GagGlobals.BigWeight : BigWeight,
+                     GagGlobals.StormCloud : StormCloud,
+                     GagGlobals.WaterGlass : WaterGlass,
+                     GagGlobals.WaterGun : WaterGun,
+                     GagGlobals.FireHose : FireHose,
+                     GagGlobals.SquirtFlower : SquirtingFlower}
         
     def getGagNameByType(self, gagType):
         for gName, definedType in self.gags.iteritems():

@@ -12,7 +12,6 @@ from panda3d.core import Point3, VBase3
 
 from direct.interval.IntervalGlobal import Sequence, Parallel, Wait, Func, ActorInterval
 
-from src.coginvasion.globals import CIGlobals
 from SquirtGag import SquirtGag
 import GagGlobals
 
@@ -23,7 +22,7 @@ class WaterGun(SquirtGag):
     InspectIval = [10, 25]
 
     def __init__(self):
-        SquirtGag.__init__(self, CIGlobals.WaterGun, "phase_4/models/props/water-gun.bam", GagGlobals.WATERGUN_SFX)
+        SquirtGag.__init__(self, GagGlobals.WaterGun, "phase_4/models/props/water-gun.bam", GagGlobals.WATERGUN_SFX)
         self.anim = 'squirt'
         self.sprayJoint = 'joint_nozzle'
         self.dmgIval = 0.4

@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import Point3
 
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.hood import ZoneUtil
 
 SitTime = [1.0, 20.0]
 Speed = 2
@@ -18,7 +18,7 @@ Speed = 2
 StateIdx2State = {0: 'off', 1: 'sit', 2: 'fly'}
 
 Spots = {
-    CIGlobals.ToontownCentralId: [
+    ZoneUtil.ToontownCentralId: [
         Point3(-54.2873306274, -4.53878879547, 0.00864257663488),
         Point3(-17.1854743958, 24.9851093292, 0.00864257663488),
         Point3(11.2990150452, 24.2988739014, 0.00864257663488),

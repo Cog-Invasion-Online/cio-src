@@ -5,10 +5,9 @@ Copyright (c) CIO Team. All rights reserved.
 @file QuestPoster.py
 @author Maverick Liberty
 @date March 17, 2017
+@desc This is the bare bones, base class for quest posters.
 
 """
-
-""" This is the bare bones, base class for the QuestPosters. """
 
 from direct.gui.DirectGui import DirectFrame, DirectLabel, DGG
 from direct.gui.DirectWaitBar import DirectWaitBar
@@ -18,6 +17,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from panda3d.core import TextNode, Point3, Vec4
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.npc import NPCGlobals
 from src.coginvasion.quest import QuestGlobals
 from src.coginvasion.quest.poster.QuestRewardFrame import QuestRewardFrame
 from src.coginvasion.quest.Objectives import CogObjective
@@ -495,9 +495,9 @@ class QuestPoster(DirectFrame):
             npcId = objective.npcId
 
         if npcId == 0:
-            infoText = 'A %s' % CIGlobals.lHQOfficerF
+            infoText = 'A %s' % NPCGlobals.lHQOfficerF
         else:
-            infoText = CIGlobals.NPCToonNames[npcId]
+            infoText = NPCGlobals.NPCToonNames[npcId]
         
         if not iconElement:
             iconElement = self.auxIcon
@@ -505,7 +505,7 @@ class QuestPoster(DirectFrame):
         # Let's generate the head.
         if not npcId == 0:
             dna = ToonDNA()
-            dna.setDNAStrand(CIGlobals.NPCToonDict.get(npcId)[2])
+            dna.setDNAStrand(NPCGlobals.NPCToonDict.get(npcId)[2])
             head = ToonHead(base.cr)
             head.generateHead(dna.getGender(), dna.getAnimal(), dna.getHead(), forGui = 1)
             head.setHeadColor(dna.getHeadColor())

@@ -8,7 +8,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.SoundGag import SoundGag
 from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, SoundInterval, ParticleInterval, ActorInterval
@@ -18,7 +17,7 @@ from direct.particles.ParticleEffect import ParticleEffect
 class Opera(SoundGag):
 
     def __init__(self):
-        SoundGag.__init__(self, CIGlobals.Opera, 'phase_5/models/props/singing.bam', 90, appearSfx = GagGlobals.FOG_APPEAR_SFX,
+        SoundGag.__init__(self, GagGlobals.Opera, 'phase_5/models/props/singing.bam', 90, appearSfx = GagGlobals.FOG_APPEAR_SFX,
                           soundSfx = GagGlobals.OPERA_SFX, soundRange = 50, hitSfx = GagGlobals.OPERA_HIT_SFX)
         self.setImage('phase_3.5/maps/opera.png')
 

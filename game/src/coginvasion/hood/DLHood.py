@@ -12,18 +12,19 @@ from panda3d.core import PolylightEffect, VBase4
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
+from src.coginvasion.holiday.HolidayManager import HolidayType
+
 from ToonHood import ToonHood
 from playground.DLSafeZoneLoader import DLSafeZoneLoader
 from street.DLTownLoader import DLTownLoader
-from src.coginvasion.globals import CIGlobals
-from src.coginvasion.holiday.HolidayManager import HolidayType
+import ZoneUtil
 
 class DLHood(ToonHood):
     notify = directNotify.newCategory("DLHood")
 
     def __init__(self, parentFSM, doneEvent, dnaStore, hoodId):
         ToonHood.__init__(self, parentFSM, doneEvent, dnaStore, hoodId)
-        self.id = CIGlobals.DonaldsDreamland
+        self.id = ZoneUtil.DonaldsDreamland
         self.safeZoneLoader = DLSafeZoneLoader
         self.townLoader = DLTownLoader
         self.abbr = "DL"

@@ -8,7 +8,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.SoundGag import SoundGag
 from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, SoundInterval, ActorInterval
@@ -17,7 +16,7 @@ from panda3d.core import Vec3
 class Whistle(SoundGag):
 
     def __init__(self):
-        SoundGag.__init__(self, CIGlobals.Whistle, 'phase_5/models/props/whistle.bam', 7,
+        SoundGag.__init__(self, GagGlobals.Whistle, 'phase_5/models/props/whistle.bam', 7,
                           GagGlobals.WHISTLE_APPEAR_SFX, GagGlobals.WHISTLE_SFX, hitSfx = None)
         self.setImage('phase_3.5/maps/whistle.png')
         self.setRechargeTime(3.5)

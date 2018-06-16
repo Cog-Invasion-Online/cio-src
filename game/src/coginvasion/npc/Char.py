@@ -9,6 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.npc import DisneyCharGlobals
 from src.coginvasion.avatar import Avatar
 from src.coginvasion.nametag import NametagGlobals
 
@@ -31,7 +32,7 @@ class Char(Avatar.Avatar):
         except:
             self.Char_initialized = 1
         Avatar.Avatar.__init__(self)
-        self.avatarType = CIGlobals.CChar
+        self.avatarType = DisneyCharGlobals.CChar
         self.avatarName = None
         self.currentAnim = None
         self.charType = ""
@@ -77,11 +78,11 @@ class Char(Avatar.Avatar):
         return
 
     def setChat(self, chatString):
-        if self.charType == CIGlobals.Mickey:
+        if self.charType == DisneyCharGlobals.Mickey:
             self.dial = base.audio3d.loadSfx("phase_3/audio/dial/mickey.ogg")
-        elif self.charType == CIGlobals.Minnie:
+        elif self.charType == DisneyCharGlobals.Minnie:
             self.dial = base.audio3d.loadSfx("phase_3/audio/dial/minnie.ogg")
-        elif self.charType == CIGlobals.Goofy:
+        elif self.charType == DisneyCharGlobals.Goofy:
             self.dial = base.audio3d.loadSfx("phase_6/audio/dial/goofy.ogg")
         base.audio3d.attachSoundToObject(self.dial, self)
         self.dial.play()
@@ -99,7 +100,7 @@ class Char(Avatar.Avatar):
 
     def generateChar(self, charType):
         self.charType = charType
-        if charType == CIGlobals.Mickey or charType == CIGlobals.Minnie:
+        if charType == DisneyCharGlobals.Mickey or charType == DisneyCharGlobals.Minnie:
             self.loadModel("phase_3/models/char/" + charType.lower() + "-" + str(CIGlobals.ModelDetail(self.avatarType)) + ".bam")
             self.loadAnims({"neutral": "phase_3/models/char/" + charType.lower() + "-wait.bam",
                             "walk": "phase_3/models/char/" + charType.lower() + "-walk.bam",
@@ -108,7 +109,7 @@ class Char(Avatar.Avatar):
                             "left": "phase_3.5/models/char/" + charType.lower() + "-left.bam",
                             "right-start": "phase_3.5/models/char/" + charType.lower() + "-right-start.bam",
                             "right": "phase_3.5/models/char/" + charType.lower() + "-right.bam"})
-            if charType == CIGlobals.Mickey:
+            if charType == DisneyCharGlobals.Mickey:
                 self.mickeyEye = self.controlJoint(None, "modelRoot", "joint_pupilR")
                 self.mickeyEye.setY(0.025)
 
@@ -141,14 +142,14 @@ class Char(Avatar.Avatar):
                 ears.setBillboardAxis()
 
                 self.startBlink()
-        elif charType == CIGlobals.Pluto:
+        elif charType == DisneyCharGlobals.Pluto:
             self.loadModel("phase_6/models/char/pluto-1000.bam")
             self.loadAnims({"walk": "phase_6/models/char/pluto-walk.bam",
                                 "neutral": "phase_6/models/char/pluto-neutral.bam",
                                 "sit": "phase_6/models/char/pluto-sit.bam",
                                 "stand": "phase_6/models/char/pluto-stand.bam"})
 
-        elif charType == CIGlobals.Goofy:
+        elif charType == DisneyCharGlobals.Goofy:
             self.loadModel("phase_6/models/char/TT_G-1500.bam")
             self.loadAnims({"neutral": "phase_6/models/char/TT_GWait.bam",
                                 "walk": "phase_6/models/char/TT_GWalk.bam"})
@@ -183,7 +184,7 @@ class Char(Avatar.Avatar):
     def closeEyes(self):
         self.find('**/joint_pupilR').hide()
         self.find('**/joint_pupilL').hide()
-        if self.charType == CIGlobals.Mickey:
+        if self.charType == DisneyCharGlobals.Mickey:
             self.mickeyEye.setY(-0.025)
             self.mickeyEye.hide()
 
@@ -192,7 +193,7 @@ class Char(Avatar.Avatar):
     def openEyes(self, task):
         self.find('**/joint_pupilR').show()
         self.find('**/joint_pupilL').show()
-        if self.charType == CIGlobals.Mickey:
+        if self.charType == DisneyCharGlobals.Mickey:
             self.mickeyEye.setY(0.025)
             self.mickeyEye.show()
 

@@ -8,7 +8,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.ToonUpGag import ToonUpGag
 from direct.particles.ParticleEffect import ParticleEffect
@@ -18,7 +17,7 @@ from panda3d.core import Point3
 class PixieDust(ToonUpGag):
 
     def __init__(self):
-        ToonUpGag.__init__(self, CIGlobals.PixieDust, None, 50, 70, 85, GagGlobals.PIXIE_DUST_SFX, 1)
+        ToonUpGag.__init__(self, GagGlobals.PixieDust, None, 50, 70, 85, GagGlobals.PIXIE_DUST_SFX, 1)
         self.setImage('phase_3.5/maps/pixie-dust.png')
         self.radius = 25
         self.timeout = 4.0

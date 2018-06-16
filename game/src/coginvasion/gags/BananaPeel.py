@@ -10,14 +10,13 @@ Copyright (c) CIO Team. All rights reserved.
 
 from src.coginvasion.gags.ActivateTrapGag import ActivateTrapGag
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Parallel, Sequence, Wait, LerpPosInterval, LerpScaleInterval, ActorInterval, SoundInterval
 from panda3d.core import Point3
 
 class BananaPeel(ActivateTrapGag):
 
     def __init__(self):
-        ActivateTrapGag.__init__(self, CIGlobals.BananaPeel,
+        ActivateTrapGag.__init__(self, GagGlobals.BananaPeel,
                                  'phase_5/models/props/banana-peel-mod.bam', 10, GagGlobals.BANANA_SFX, 2.0, mode = 1,
                                  anim = 'phase_5/models/props/banana-peel-chan.bam', activateSfx = GagGlobals.FALL_SFX,
                                  autoRelease = True)
