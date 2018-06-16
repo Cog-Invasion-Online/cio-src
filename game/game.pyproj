@@ -64,6 +64,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\base\CogInvasionLoader.py" />
     <Compile Include="src\coginvasion\base\CubeMapManager.py" />
     <Compile Include="src\coginvasion\base\EnterLoad.py" />
+    <Compile Include="src\coginvasion\base\Explosion.py" />
     <Compile Include="src\coginvasion\base\FileUtility.py" />
     <Compile Include="src\coginvasion\base\InitialLoad.py" />
     <Compile Include="src\coginvasion\base\Lighting.py" />
@@ -570,11 +571,26 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\pet\DistributedPetAI.py" />
     <Compile Include="src\coginvasion\pet\__init__.py" />
     <Compile Include="src\coginvasion\phys\BulletCharacterController.py" />
+    <Compile Include="src\coginvasion\phys\DistributedPhysicsEntity.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\phys\DistributedPhysicsEntityAI.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\phys\DistributedTNT.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\phys\DistributedTNTAI.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\phys\FPSCamera.py" />
     <Compile Include="src\coginvasion\phys\KeepOnGround.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\coginvasion\phys\LocalControls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\phys\DistributedTNTOV.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\coginvasion\phys\PhysicsNodePath.py" />
@@ -588,26 +604,26 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\coginvasion\phys\__init__.py" />
-    <Compile Include="src\coginvasion\quests\DistributedDigSite.py" />
-    <Compile Include="src\coginvasion\quests\DistributedDigSiteAI.py" />
-    <Compile Include="src\coginvasion\quests\DistributedInspectionSite.py" />
-    <Compile Include="src\coginvasion\quests\DistributedInspectionSiteAI.py" />
-    <Compile Include="src\coginvasion\quests\InspectionSites.py" />
-    <Compile Include="src\coginvasion\quests\ObjectiveCollection.py" />
-    <Compile Include="src\coginvasion\quests\Objectives.py" />
-    <Compile Include="src\coginvasion\quests\poster\DoubleFrameQuestPoster.py" />
-    <Compile Include="src\coginvasion\quests\poster\QuestPoster.py" />
-    <Compile Include="src\coginvasion\quests\poster\QuestRewardFrame.py" />
-    <Compile Include="src\coginvasion\quests\poster\__init__.py" />
-    <Compile Include="src\coginvasion\quests\Quest.py" />
-    <Compile Include="src\coginvasion\quests\QuestData.py" />
-    <Compile Include="src\coginvasion\quests\QuestGlobals.py" />
-    <Compile Include="src\coginvasion\quests\QuestManager.py" />
-    <Compile Include="src\coginvasion\quests\QuestManagerAI.py" />
-    <Compile Include="src\coginvasion\quests\QuestManagerBase.py" />
-    <Compile Include="src\coginvasion\quests\Quests.py" />
-    <Compile Include="src\coginvasion\quests\Rewards.py" />
-    <Compile Include="src\coginvasion\quests\__init__.py" />
+    <Compile Include="src\coginvasion\quest\DistributedDigSite.py" />
+    <Compile Include="src\coginvasion\quest\DistributedDigSiteAI.py" />
+    <Compile Include="src\coginvasion\quest\DistributedInspectionSite.py" />
+    <Compile Include="src\coginvasion\quest\DistributedInspectionSiteAI.py" />
+    <Compile Include="src\coginvasion\quest\InspectionSites.py" />
+    <Compile Include="src\coginvasion\quest\ObjectiveCollection.py" />
+    <Compile Include="src\coginvasion\quest\Objectives.py" />
+    <Compile Include="src\coginvasion\quest\poster\DoubleFrameQuestPoster.py" />
+    <Compile Include="src\coginvasion\quest\poster\QuestPoster.py" />
+    <Compile Include="src\coginvasion\quest\poster\QuestRewardFrame.py" />
+    <Compile Include="src\coginvasion\quest\poster\__init__.py" />
+    <Compile Include="src\coginvasion\quest\Quest.py" />
+    <Compile Include="src\coginvasion\quest\QuestData.py" />
+    <Compile Include="src\coginvasion\quest\QuestGlobals.py" />
+    <Compile Include="src\coginvasion\quest\QuestManager.py" />
+    <Compile Include="src\coginvasion\quest\QuestManagerAI.py" />
+    <Compile Include="src\coginvasion\quest\QuestManagerBase.py" />
+    <Compile Include="src\coginvasion\quest\Quests.py" />
+    <Compile Include="src\coginvasion\quest\Rewards.py" />
+    <Compile Include="src\coginvasion\quest\__init__.py" />
     <Compile Include="src\coginvasion\resourcepack\EnvironmentConfiguration.py" />
     <Compile Include="src\coginvasion\resourcepack\ResourcePack.py" />
     <Compile Include="src\coginvasion\resourcepack\__init__.py" />
@@ -635,11 +651,13 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\toon\DistributedHQNPCToonAI.py" />
     <Compile Include="src\coginvasion\toon\DistributedNPCToon.py" />
     <Compile Include="src\coginvasion\toon\DistributedNPCToonAI.py" />
+    <Compile Include="src\coginvasion\toon\DistributedPlayerToon.py" />
+    <Compile Include="src\coginvasion\toon\DistributedPlayerToonAI.py" />
+    <Compile Include="src\coginvasion\toon\DistributedPlayerToonUD.py" />
     <Compile Include="src\coginvasion\toon\DistributedTailorNPCToon.py" />
     <Compile Include="src\coginvasion\toon\DistributedTailorNPCToonAI.py" />
     <Compile Include="src\coginvasion\toon\DistributedToon.py" />
     <Compile Include="src\coginvasion\toon\DistributedToonAI.py" />
-    <Compile Include="src\coginvasion\toon\DistributedToonUD.py" />
     <Compile Include="src\coginvasion\toon\LabelScaler.py" />
     <Compile Include="src\coginvasion\toon\LocalToon.py" />
     <Compile Include="src\coginvasion\toon\NameTag.py" />
@@ -667,6 +685,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\tutorial\TutorialGlobals.py" />
     <Compile Include="src\coginvasion\tutorial\__init__.py" />
     <Compile Include="src\coginvasion\uber\ClientServicesManager.py" />
+    <Compile Include="src\coginvasion\uber\ClientServicesManagerAI.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\uber\ClientServicesManagerUD.py" />
     <Compile Include="src\coginvasion\uber\CogInvasionUberRepository.py" />
     <Compile Include="src\coginvasion\uber\DistrictNameManager.py" />
@@ -740,8 +761,8 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Folder Include="src\coginvasion\npc\" />
     <Folder Include="src\coginvasion\pet\" />
     <Folder Include="src\coginvasion\phys\" />
-    <Folder Include="src\coginvasion\quests\" />
-    <Folder Include="src\coginvasion\quests\poster\" />
+    <Folder Include="src\coginvasion\quest\" />
+    <Folder Include="src\coginvasion\quest\poster\" />
     <Folder Include="src\coginvasion\resourcepack\" />
     <Folder Include="src\coginvasion\shop\" />
     <Folder Include="src\coginvasion\standalone\" />
