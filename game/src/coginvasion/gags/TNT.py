@@ -22,17 +22,22 @@ class TNT(TossTrapGag):
                              "phase_5/audio/sfx/TL_dynamite.ogg", particlesFx="phase_5/etc/tnt.ptf", anim = "phase_5/models/props/tnt-chan.bam")
         self.maxDistance = GagGlobals.TNT_RANGE
         self.setImage('phase_3.5/maps/tnt.png')
-        self.setRechargeTime(19.5)
+        self.setRechargeTime(0.0)
+        self.timeout = 1
 
     def start(self):
         pass
 
     def throw(self):
+        self.state = GagState.RELEASED
+
         if self.isLocal():
             base.localAvatar.sendUpdate('createObjectForMe', [base.cr.dclassesByName['DistributedTNTOV'].getNumber()])
             vm = self.getViewModel()
             cam = self.getFPSCam()
             cam.setVMAnimTrack(Func(vm.pose, "pie_draw", 0))
+            base.localAvatar.sendUpdate('usedGag', [self.id])
+            self.startTimeout()
 
         self.gag.hide()
         self.setAnimTrack(self.getAnimationTrack('toss', 60), startNow = True)
@@ -42,6 +47,8 @@ class TNT(TossTrapGag):
 
         if not self.gag:
             self.build()
+
+        self.gag.show()
 
         if self.isLocal():
             vm = self.getViewModel()

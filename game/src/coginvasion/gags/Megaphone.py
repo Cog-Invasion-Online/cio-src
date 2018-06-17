@@ -18,7 +18,7 @@ import random
 class Megaphone(ToonUpGag):
 
     def __init__(self):
-        ToonUpGag.__init__(self, CIGlobals.Megaphone, 'phase_5/models/props/megaphone.bam', 10, 20, 100, GagGlobals.TELLJOKE_SFX, 1)
+        ToonUpGag.__init__(self, GagGlobals.Megaphone, 'phase_5/models/props/megaphone.bam', 10, 20, 100, GagGlobals.TELLJOKE_SFX, 1)
         self.setImage('phase_3.5/maps/megaphone.png')
         self.track = None
         self.soundInterval = None

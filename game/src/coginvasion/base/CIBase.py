@@ -67,8 +67,8 @@ class CIBase(ShowBase):
         self.physicsDbgFlag = False
         self.setPhysicsDebug(self.config.GetBool('physics-debug', False))
             
-        self.shadowCaster = ShadowCaster(Vec3(163, -67, 0))
-        self.shadowCaster.enable()
+        #self.shadowCaster = ShadowCaster(Vec3(163, -67, 0))
+        #self.shadowCaster.enable()
 
         # Setup 3d audio                                 run before igLoop so 3d positioning doesn't lag behind
         base.audio3d = Audio3DManager(base.sfxManagerList[0], camera, taskPriority = 40)
@@ -203,7 +203,8 @@ class CIBase(ShowBase):
         return task.cont
      
     def projectShadows(self):
-        self.shadowCaster.projectShadows()
+        #self.shadowCaster.projectShadows()
+        pass
 
     def setBloom(self, flag):
         self.bloomToggle = flag
@@ -222,7 +223,7 @@ class CIBase(ShowBase):
         wrm = WaterReflectionManager()
         self.waterReflectionMgr = wrm
         __builtin__.waterReflectionMgr = wrm
-        self.shadowCaster.turnOnShadows()
+        #self.shadowCaster.turnOnShadows()
 
         self.filters = CommonFilters(self.win, self.cam)
         self.setBloom(self.bloomToggle)

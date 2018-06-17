@@ -58,6 +58,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
 
         self.enableBlend()
 
+        self.showNametagInMargins = True
         self.avatarType = None
         self.charName = None
         self._name = None
@@ -257,7 +258,8 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
             self.nametag.setChatFont(CIGlobals.getToonFont())
             self.nametag.setNametagColor(NametagGlobals.NametagColors[NametagGlobals.CCOtherPlayer])
         self.nametag.setText(name)
-        self.nametag.manage(base.marginManager)
+        if self.showNametagInMargins:
+            self.nametag.manage(base.marginManager)
         self.nametag.updateAll()
 
     def getAirborneHeight(self):

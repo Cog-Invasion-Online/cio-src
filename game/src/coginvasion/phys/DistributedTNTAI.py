@@ -11,4 +11,9 @@ Copyright (c) CIO Team. All rights reserved.
 from DistributedPhysicsEntityAI import DistributedPhysicsEntityAI
 
 class DistributedTNTAI(DistributedPhysicsEntityAI):
-    pass
+    
+    def explode(self):
+        # Go ahead and delete this object for the owner client.
+        # Clients can't delete objects over the network, even
+        # if they are the owner.
+        self.requestDelete()

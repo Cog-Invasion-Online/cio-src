@@ -176,6 +176,9 @@ class Gag(object):
 
     def getRechargeElapsedTime(self):
         return self.rechargeElapsedTime
+        
+    def handleRechargeComplete(self):
+        pass
 
     def __doRecharge(self, task):
         task.delayTime = 0.1
@@ -183,6 +186,8 @@ class Gag(object):
         messenger.send('%s-Recharge-Tick' % (str(self.getID())))
 
         if self.rechargeElapsedTime >= self.rechargeTime:
+            if self.equipped:
+                self.handleRechargeComplete()
             self.state = GagState.LOADED
             return task.done
         return task.again
@@ -198,6 +203,8 @@ class Gag(object):
                 base.localAvatar.b_equip(base.localAvatar.needsToSwitchToGag)
             elif base.localAvatar.needsToSwitchToGag == 'unequip':
                 base.localAvatar.b_unEquip()
+        if self.equipped and base.localAvatar.backpack.getSupply(self.id) > 0:
+            self.equip()
         if base.localAvatar.avatarMovementEnabled:
             base.localAvatar.enableGagKeys()
         return task.done
@@ -323,8 +330,9 @@ class Gag(object):
             for item in inHand:
                 if(item.getName() == self.getName()):
                     item.removeNode()
-            self.equipped = False
             self.reset()
+            
+        self.equipped = False
 
         self.avatar.getBackpack().setActiveGag(None)
 

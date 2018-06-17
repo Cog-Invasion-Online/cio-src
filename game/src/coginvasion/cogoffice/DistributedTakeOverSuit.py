@@ -26,6 +26,7 @@ class DistributedTakeOverSuit(DistributedSuit):
 
     def __init__(self, cr):
         DistributedSuit.__init__(self, cr)
+        self.showNametagInMargins = True
         self.doorDoId = None
         self.door = None
         self.takeOverTrack = None

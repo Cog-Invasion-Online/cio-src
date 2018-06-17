@@ -210,16 +210,13 @@ class ThrowGag(Gag):
 
     def handleSplat(self):
         base.audio3d.detachSound(self.woosh)
-        if self.woosh: self.woosh.stop()
-        self.buildSplat(self.splatScale, self.splatColor)
-        base.audio3d.attachSoundToObject(self.hitSfx, self.splat)
-        self.splat.reparentTo(render)
-        self.splat.setPos(self.splatPos)
-        base.playSfx(self.hitSfx, node = self.splat)
+        if self.woosh:
+            self.woosh.stop()
+
+        CIGlobals.makeSplat(self.splatPos, self.splatColor, self.splatScale, self.hitSfx)
+
         self.cleanupEntity(self.splatPos)
         self.splatPos = None
-        taskMgr.doMethodLater(0.5, self.delSplat, 'Delete Splat')
-        return
 
     def cleanupEntity(self, pos):
         closestPie = None

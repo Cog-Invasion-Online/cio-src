@@ -60,6 +60,7 @@ class Suit(Avatar):
         self.avatarType = CIGlobals.Suit
         self.suitPlan = None
         self.footstepSound = None
+        self.showNametagInMargins = False
 
         self.gruntSound = self.audio3d.loadSfx("phase_14/audio/sfx/cog_grunt.ogg")
         base.audio3d.attachSoundToObject(self.gruntSound, self)
@@ -346,7 +347,7 @@ class Suit(Avatar):
         else:
             pos = self.headModel.getPos(render) + (0,0,2)
 
-        CIGlobals.makeExplosion(pos, 0.5)
+        CIGlobals.makeExplosion(pos, 0.5, False)
 
     def exitDie(self):
         if self.suitTrack != None:

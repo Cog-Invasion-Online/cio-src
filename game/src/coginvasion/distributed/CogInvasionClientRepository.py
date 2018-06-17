@@ -150,6 +150,61 @@ class CogInvasionClientRepository(AstronClientRepository):
         self.loginFSM.request('connect')
         return
 
+    def deleteObject(self, doId):
+        """
+        implementation copied from AstronClientRepository.py
+
+        Brian: modified to also delete owner views
+
+        Removes the object from the client's view of the world.  This
+        should normally not be called directly except in the case of
+        error recovery, since the server will normally be responsible
+        for deleting and disabling objects as they go out of scope.
+
+        After this is called, future updates by server on this object
+        will be ignored (with a warning message).  The object will
+        become valid again the next time the server sends a generate
+        message for this doId.
+
+        This is not a distributed message and does not delete the
+        object on the server or on any other client.
+        """
+
+        if doId in self.doId2do:
+            # If it is in the dictionary, remove it.
+            obj = self.doId2do[doId]
+            # Remove it from the dictionary
+            del self.doId2do[doId]
+            # Disable, announce, and delete the object itself...
+            # unless delayDelete is on...
+            obj.deleteOrDelay()
+            if self.isLocalId(doId):
+                self.freeDoId(doId)
+        elif doId in self.doId2ownerView:
+            # If it is in the owner dictionary, remove it.
+            obj = self.doId2ownerView[doId]
+            # Remove it from the dictionary
+            del self.doId2ownerView[doId]
+            # Disable, announce, and delete the object itself...
+            # unless delayDelete is on...
+            obj.deleteOrDelay()
+            if self.isLocalId(doId):
+                self.freeDoId(doId)
+        elif self.cache.contains(doId):
+            # If it is in the cache, remove it.
+            self.cache.delete(doId)
+            if self.isLocalId(doId):
+                self.freeDoId(doId)
+        elif self.cacheOwner.contains(doId):
+            # If it is in the owner cache, remove it.
+            self.cacheOwner.delete(doId)
+            if self.isLocalId(doId):
+                self.freeDoId(doId)
+        else:
+            # Otherwise, ignore it
+            self.notify.warning(
+                "Asked to delete non-existent DistObj " + str(doId))
+
     #def uniqueName(self, idString):
     #	return "%s-%s" % (idString, self.taskNameAllocator.allocate())
 

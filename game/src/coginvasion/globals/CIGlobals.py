@@ -19,7 +19,7 @@ from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigV
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
 from panda3d.core import TextureStage, VBase4, TransparencyAttrib
 
-from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wait, Parallel
+from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wait, Parallel, SoundInterval
 
 import math
 
@@ -206,9 +206,11 @@ def getAmountString(noun, amount):
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-def makeSplat(pos, color, scale):
+def makeSplat(pos, color, scale, sound = None):
     from direct.actor.Actor import Actor
     from direct.interval.IntervalGlobal import ActorInterval
+    from panda3d.core import AudioSound
+
     splat = Actor("phase_3.5/models/props/splat-mod.bam", {"chan": "phase_3.5/models/props/splat-chan.bam"})
     splat.setBillboardAxis(3)
     splat.setScale(scale)
@@ -219,12 +221,20 @@ def makeSplat(pos, color, scale):
     splat.setShaderOff(1)
     splat.setMaterialOff(1)
     splat.setTransparency(TransparencyAttrib.MDual)
+
+    if sound:
+        if isinstance(sound, str):
+            sound = base.audio3d.loadSfx(sound)
+        if isinstance(sound, AudioSound):
+            base.audio3d.attachSoundToObject(sound, splat)
+            sound.play()
+
     seq = Sequence(ActorInterval(splat, "chan"), Func(splat.cleanup), Func(splat.removeNode))
     seq.start()
     
 SmokeParticleRender = None
 
-def makeExplosion(pos = (0, 0, 0), scale = 1, sound = False, shakeCam = True, duration = 1.0):
+def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, duration = 1.0):
     global SmokeParticleRender
     if not SmokeParticleRender:
         SmokeParticleRender = render.attachNewNode('smokeParticleRender')
@@ -243,11 +253,24 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = False, shakeCam = True, du
     smoke.setScale(scale)
     smoke.setPos(pos)
     smoke.start(render, SmokeParticleRender)
+    
+    track = Parallel()
 
     if sound:
         snd = base.audio3d.loadSfx("phase_3.5/audio/sfx/ENC_cogfall_apart.ogg")
         base.audio3d.attachSoundToObject(snd, explosion)
-        snd.play()
+        
+        # explosion aftermaths
+        import random
+        debChoice = random.randint(1, 4)
+        if debChoice <= 3:
+            debris = base.audio3d.loadSfx("phase_14/audio/sfx/debris{0}.wav".format(debChoice))
+        else:
+            debris = base.audio3d.loadSfx("phase_4/audio/sfx/MG_crash_whizz.ogg")
+        base.audio3d.attachSoundToObject(debris, explosion)
+        
+        track.append(SoundInterval(snd))
+        track.append(Sequence(Wait(0.0791), SoundInterval(debris)))
 
     if shakeCam:
         dist = camera.getDistance(explosion)
@@ -255,8 +278,7 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = False, shakeCam = True, du
         maxIntense = 1.4 * scale
         if dist <= maxDist:
             base.doCamShake(maxIntense - (maxIntense * (dist / maxDist)), duration)
-
-    track = Parallel()
+    
     track.append(Sequence(Wait(duration), Func(explosion.removeNode)))
     track.append(Sequence(Wait(duration), Func(smoke.softStop)))
     track.start()
