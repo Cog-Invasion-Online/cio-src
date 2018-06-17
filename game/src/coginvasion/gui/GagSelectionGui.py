@@ -413,10 +413,16 @@ class GagSelectionGui(DirectFrame, FSM):
         self.setX(self.midpoint)
         self.ammoFrame.setX(-self.midpoint)
 
-        self.newTrackSound = base.loadSfx("phase_3/audio/sfx/GUI_create_toon_back.ogg")
-        self.keyScrollSound = base.loadSfx('phase_3/audio/sfx/GUI_rollover.ogg')
-        self.selectSound = base.loadSfx('phase_3/audio/sfx/GUI_create_toon_fwd.ogg')
-        self.selectDenySound = base.loadSfx('phase_4/audio/sfx/ring_miss.ogg')
+        if base.config.GetBool('gsg-want-hlsounds', False):
+            self.newTrackSound = base.loadSfx("phase_14/audio/sfx/wpn_hudon.wav")
+            self.keyScrollSound = base.loadSfx('phase_14/audio/sfx/wpn_moveselect.wav')
+            self.selectSound = base.loadSfx('phase_14/audio/sfx/wpn_select.wav')
+            self.selectDenySound = base.loadSfx('phase_14/audio/sfx/wpn_denyselect.wav')
+        else:
+            self.newTrackSound = base.loadSfx("phase_3/audio/sfx/GUI_create_toon_back.ogg")
+            self.keyScrollSound = base.loadSfx('phase_3/audio/sfx/GUI_rollover.ogg')
+            self.selectSound = base.loadSfx('phase_3/audio/sfx/GUI_create_toon_fwd.ogg')
+            self.selectDenySound = base.loadSfx('phase_4/audio/sfx/ring_miss.ogg')
 
         self.fwdShakeIval = Effects.createXBounce(self, 1, Vec3(self.midpoint, 0, 0.93), 0.05, 0.05)
         self.revShakeIval = Effects.createXBounce(self, 1, Vec3(self.midpoint, 0, 0.93), 0.05, -0.05)
