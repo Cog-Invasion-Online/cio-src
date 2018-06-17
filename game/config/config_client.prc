@@ -61,7 +61,7 @@ server-address gameserver.coginvasion.com
 
 # Performance...
 hardware-animated-vertices #t
-sync-video #t
+sync-video #f
 smooth-lag 0.4
 basic-shaders-only #f
 framebuffer-multisample 1
@@ -87,6 +87,7 @@ show-minigame-dates #f
 want-real-shadows #f
 load-stuff #f
 want-playground-gags #t
+gsg-want-hlsounds #f
 
 ctmusic-numsongs 1
 
