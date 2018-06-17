@@ -87,6 +87,8 @@ class ThrowGag(Gag):
             fpsCam = base.localAvatar.getFPSCam()
             fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "pie_draw"), Func(vm.loop, "pie_idle")))
 
+        self.__doDraw()
+
     def start(self):
         Gag.start(self)
         if not self.gag:

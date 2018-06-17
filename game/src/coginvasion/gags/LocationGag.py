@@ -65,7 +65,8 @@ class LocationGag:
             self.helpInfo.hide() # yeet
 
         self.doDrawAndHold(self.buttonAnim, 0, self.chooseLocFrame, bobStart = self.chooseLocFrame,
-                           bobEnd = self.chooseLocFrame + 5, holdCallback = self.locationSeeker.startSeeking)
+                           bobEnd = self.chooseLocFrame + 5,
+                           holdCallback = self.locationSeeker.startSeeking if self.isLocal() else None)
 
     def release(self):
         if self.avatar:

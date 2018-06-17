@@ -123,7 +123,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.forceRunSpeed = flag
 
     def setForcedTorsoAnim(self, anim):
-        print "setForcedTorsoAnim:", anim
         self.forcedTorsoAnim = anim
 
     def hasForcedTorsoAnim(self):
@@ -134,7 +133,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
     def clearForcedTorsoAnim(self):
         if not self.forcedTorsoAnim is None:
-            print "clearForcedTorsoAnim", self.forcedTorsoAnim
             # Let's switch our current torso and head animation to the
             # animation the legs are running.
             legs = self.__getLowerHalfPartNames()[0]

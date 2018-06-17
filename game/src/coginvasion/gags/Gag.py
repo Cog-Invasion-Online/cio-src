@@ -94,6 +94,9 @@ class Gag(object):
             # just call clearAnimTrack.
             self.clearAnimTrack()
             return
+
+        # Stop the one that was playing before.
+        self.clearAnimTrack()
         
         self.animTrack = track
         
@@ -322,7 +325,6 @@ class Gag(object):
 
     @abc.abstractmethod
     def unEquip(self):
-        print "unEquip"
         if game.process != 'client':
             return
         if self.equipped and self.handJoint:

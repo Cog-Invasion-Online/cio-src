@@ -58,6 +58,8 @@ class DistributedTNT(DistributedPhysicsEntity):
 
         self.tntSound.play()
 
+        print "tnt announce generate"
+
     def disable(self):
         if self.tnt:
             self.tnt.cleanup()

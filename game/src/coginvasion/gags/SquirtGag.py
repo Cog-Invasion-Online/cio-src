@@ -205,7 +205,10 @@ class SquirtGag(Gag):
 
     def handleSplat(self):
         origSize = GagGlobals.splatSizes.get(self.getName())
-        size = origSize * (self.splatDist / self.sprayParticleDist)
+        if self.splatDist is not None and self.sprayParticleDist is not None:
+            size = origSize * (self.splatDist / self.sprayParticleDist)
+        else:
+            size = origSize
         size = max(origSize / 3.0, size)
         CIGlobals.makeSplat(self.splatPos, GagGlobals.WATER_SPRAY_COLOR, size)
         self.splatPos = None

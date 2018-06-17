@@ -274,7 +274,7 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
 
     if shakeCam:
         dist = camera.getDistance(explosion)
-        maxDist = 80.0 * scale
+        maxDist = 100.0 * scale
         maxIntense = 1.4 * scale
         if dist <= maxDist:
             base.doCamShake(maxIntense - (maxIntense * (dist / maxDist)), duration)
