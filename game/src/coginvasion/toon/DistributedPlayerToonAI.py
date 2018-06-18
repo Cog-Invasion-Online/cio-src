@@ -59,6 +59,8 @@ class DistributedPlayerToonAI(DistributedToonAI):
 
     def createObjectForMe(self, dclassNum):
         sender = self.air.getMsgSender()
+        accId = self.air.getAccountIdFromSender()
+        
         dclass = self.air.dclassesByNumber.get(dclassNum, None)
         if not dclass:
             self.ejectSelf("createObjectForMe: odd dclass number")
@@ -67,7 +69,9 @@ class DistributedPlayerToonAI(DistributedToonAI):
         obj = classDef(self.air)
         obj.generateWithRequired(0)
         self.air.setOwner(obj.doId, sender) # lol your welcome
-        obj.b_setLocation(self.parentId, self.zoneId)
+        self.air.clientAddPostRemove(sender, obj.doId)
+        self.air.clientAddSessionObject(sender, obj.doId)
+        obj.b_setLocation(obj.parentId, self.zoneId)
 
     def __requesterAuthorized(self, notDev = False):
         requester = self.air.doId2do.get(self.air.getAvatarIdFromSender())

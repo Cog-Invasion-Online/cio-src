@@ -44,8 +44,9 @@ class DLSafeZoneLoader(SafeZoneLoader):
     def load(self):
         SafeZoneLoader.load(self, False)
         
-        for lamp in self.geom.findAllMatches("**/*light_DNARoot*"):
-            self.lampLights.append(self.hood.makeLampLight(lamp))
+        if game.uselighting:
+            for lamp in self.geom.findAllMatches("**/*light_DNARoot*"):
+                self.lampLights.append(self.hood.makeLampLight(lamp))
 
         self.doFlatten()
 

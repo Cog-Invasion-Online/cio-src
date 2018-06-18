@@ -34,10 +34,11 @@ class DLTownLoader(TownLoader.TownLoader):
         zone4File = str(self.branchZone)
         dnaFile = 'phase_8/dna/donalds_dreamland_' + zone4File + '.pdna'
         self.createHood(dnaFile, 1, False)
-
-        for lamp in self.geom.findAllMatches("**/*light_DNARoot*"):
-            lightNP = self.hood.makeLampLight(lamp)
-            lightNP.wrtReparentTo(lamp)
-            self.lampLights.append(lightNP)
+        
+        if game.uselighting:
+            for lamp in self.geom.findAllMatches("**/*light_DNARoot*"):
+                lightNP = self.hood.makeLampLight(lamp)
+                lightNP.wrtReparentTo(lamp)
+                self.lampLights.append(lightNP)
 
         self.doFlatten()

@@ -16,4 +16,6 @@ class DistributedTNTAI(DistributedPhysicsEntityAI):
         # Go ahead and delete this object for the owner client.
         # Clients can't delete objects over the network, even
         # if they are the owner.
+        sender = self.air.getMsgSender()
+        self.air.clientRemoveSessionObject(sender, self.doId)
         self.requestDelete()

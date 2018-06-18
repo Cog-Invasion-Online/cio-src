@@ -256,6 +256,10 @@ class CogInvasionClientRepository(AstronClientRepository):
 
     def getQuietZoneLeftEvent(self):
         return 'leftQuietZone-%s' % (id(self),)
+        
+    def b_setLocation(self, do, parentId, zoneId):
+        self.sendSetLocation(do.doId, parentId, zoneId)
+        do.setLocation(parentId, zoneId)
 
     def sendSetZoneMsg(self, zoneId, visibleZoneList = None):
         event = self.getNextSetZoneDoneEvent()
