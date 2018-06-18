@@ -198,7 +198,7 @@ class CIBase(ShowBase):
 
     def __physicsUpdate(self, task):
         dt = globalClock.getDt()
-        try: self.physicsWorld.doPhysics(dt)
+        try: self.physicsWorld.doPhysics(dt, 0)
         except: pass
         return task.cont
      
