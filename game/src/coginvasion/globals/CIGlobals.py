@@ -232,16 +232,17 @@ def makeSplat(pos, color, scale, sound = None):
     seq = Sequence(ActorInterval(splat, "chan"), Func(splat.cleanup), Func(splat.removeNode))
     seq.start()
     
-SmokeParticleRender = None
+ParticleRender = None
+def getParticleRender():
+    global ParticleRender
+    if not ParticleRender:
+        ParticleRender = render.attachNewNode('particleRender')
+        ParticleRender.setLightOff(1)
+        ParticleRender.setShaderOff(1)
+        ParticleRender.setMaterialOff(1)
+    return ParticleRender
 
-def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, duration = 1.0):
-    global SmokeParticleRender
-    if not SmokeParticleRender:
-        SmokeParticleRender = render.attachNewNode('smokeParticleRender')
-        SmokeParticleRender.setLightOff(1)
-        SmokeParticleRender.setShaderOff(1)
-        SmokeParticleRender.setMaterialOff(1)
-        
+def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, duration = 1.0, soundVol = 0.5):
     explosion = loader.loadModel('phase_3.5/models/props/explosion.bam')
     explosion.setScale(scale)
     explosion.reparentTo(render)
@@ -252,7 +253,7 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
     smoke = ParticleLoader.loadParticleEffect("phase_14/etc/explosion_smoke.ptf")
     smoke.setScale(scale)
     smoke.setPos(pos)
-    smoke.start(render, SmokeParticleRender)
+    smoke.start(render, getParticleRender())
     
     track = Parallel()
 
@@ -269,8 +270,8 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
             debris = base.audio3d.loadSfx("phase_4/audio/sfx/MG_crash_whizz.ogg")
         base.audio3d.attachSoundToObject(debris, explosion)
         
-        track.append(SoundInterval(snd))
-        track.append(Sequence(Wait(0.0791), SoundInterval(debris)))
+        track.append(SoundInterval(snd, volume = soundVol))
+        track.append(Sequence(Wait(0.0791), SoundInterval(debris, volume = soundVol * 1.2)))
 
     if shakeCam:
         dist = camera.getDistance(explosion)

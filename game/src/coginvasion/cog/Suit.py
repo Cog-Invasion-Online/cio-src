@@ -16,6 +16,7 @@ from src.coginvasion.cog import Voice
 from src.coginvasion.cog.SuitAttacks import SuitAttacks
 from src.coginvasion.cog.SuitType import SuitType
 from src.coginvasion.toon import ParticleLoader
+from src.coginvasion.cog import GagEffects
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Parallel, ActorInterval, SoundInterval, Wait, Func
 from direct.distributed import DelayDelete
@@ -319,7 +320,7 @@ class Suit(Avatar):
         self.bigGearExp = bigGearExplosion
 
         gearTrack = Sequence(Wait(0.7), Func(self.doSingleGear), Wait(1.5), Func(self.doSmallGears), Wait(3.0), Func(self.doBigExp))
-        self.suitTrack = Parallel(Sequence(Wait(0.8), SoundInterval(self.deathSound)),
+        self.suitTrack = Parallel(Sequence(Wait(0.8), SoundInterval(self.deathSound, duration = 4.28)),
                 Sequence(Wait(0.7), Func(self.doSingleGear), Wait(4.3),
                 Func(self.suitExplode), Wait(1.0), Func(self.disableBodyCollisions)), gearTrack,
                 Sequence(ActorInterval(self, 'lose', duration = 6), Func(self.getGeomNode().hide)), name = trackName)
@@ -347,7 +348,7 @@ class Suit(Avatar):
         else:
             pos = self.headModel.getPos(render) + (0,0,2)
 
-        CIGlobals.makeExplosion(pos, 0.5, False)
+        CIGlobals.makeExplosion(pos, 0.5, soundVol = 0.32)
 
     def exitDie(self):
         if self.suitTrack != None:
@@ -357,16 +358,16 @@ class Suit(Avatar):
                 DelayDelete.cleanupDelayDeletes(self.suitTrack)
             self.suitTrack = None
         if hasattr(self, 'singleGear'):
-            self.singleGear.cleanup()
+            self.singleGear.softStop()
             del self.singleGear
         if hasattr(self, 'smallGears'):
-            self.smallGears.cleanup()
+            self.smallGears.softStop()
             del self.smallGears
         if hasattr(self, 'smallGearExp'):
-            self.smallGearExp.cleanup()
+            self.smallGearExp.softStop()
             del self.smallGearExp
         if hasattr(self, 'bigGearExp'):
-            self.bigGearExp.cleanup()
+            self.bigGearExp.softStop()
             del self.bigGearExp
         if self.deathSound:
             self.deathSound.stop()
@@ -494,6 +495,9 @@ class Suit(Avatar):
 
     def doStunEffect(self):
         SuitGlobals.createStunInterval(self, 0, 2).start()
+
+    def doGagEffect(self, flags):
+        GagEffects.doGagEffect(self, flags)
 
     def generateCog(self, isLose = 0):
         self.cleanup()

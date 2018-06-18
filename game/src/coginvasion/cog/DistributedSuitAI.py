@@ -34,6 +34,7 @@ import SuitAttacks
 import SuitBank
 import SuitGlobals
 import Variant
+import GagEffects
 
 import types
 import random
@@ -416,6 +417,13 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             else:
                 # I've been hit! Take appropriate actions.
                 self.handleToonThreat(avatar, True)
+
+            # Do appropriate gag effects.
+            flags = 0
+            if gagName == GagGlobals.TNT:
+                flags |= GagEffects.GEAsh
+            if flags != 0:
+                self.sendUpdate('doGagEffect', [flags])
 
     def __handleDeath(self, task):
         if hasattr(self, 'deathTimeLeft'):

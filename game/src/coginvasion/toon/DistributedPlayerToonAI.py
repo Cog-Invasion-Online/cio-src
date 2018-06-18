@@ -69,7 +69,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
         obj = classDef(self.air)
         obj.generateWithRequired(0)
         self.air.setOwner(obj.doId, sender) # lol your welcome
-        self.air.clientAddPostRemove(sender, obj.doId)
+        #self.air.clientAddPostRemove(sender, obj.doId)
         self.air.clientAddSessionObject(sender, obj.doId)
         obj.b_setLocation(obj.parentId, self.zoneId)
 
