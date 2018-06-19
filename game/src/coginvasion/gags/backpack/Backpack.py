@@ -134,6 +134,8 @@ class Backpack(BackpackBase):
     def updateSuppliesFromNetString(self, netString):
         dg = PyDatagram(netString)
         dgi = PyDatagramIterator(dg)
+
+        addedGag = False
         
         while dgi.getRemainingSize() > 0:
             gagId = dgi.getUint8()
@@ -142,7 +144,12 @@ class Backpack(BackpackBase):
             if self.hasGag(gagId):
                 self.setSupply(gagId, supply)
             else:
+                addedGag = True
                 self.addGag(gagId, supply)
+
+        if addedGag and self.avatar == base.localAvatar:
+            if base.localAvatar.invGui:
+                base.localAvatar.reloadInvGui()
 
     # Cleans up all the variables that are no longer needed.
     def cleanup(self):

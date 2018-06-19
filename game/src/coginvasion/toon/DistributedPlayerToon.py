@@ -517,7 +517,9 @@ class DistributedPlayerToon(DistributedToon):
     
     def setTrackExperience(self, netString):
         self.trackExperience = GagGlobals.getTrackExperienceFromNetString(netString)
-        GagGlobals.processTrackData(self.trackExperience, self.backpack)
+        if GagGlobals.processTrackData(self.trackExperience, self.backpack) and self == base.localAvatar:
+            if base.localAvatar.invGui:
+                base.localAvatar.reloadInvGui()
         
     def getTrackExperience(self):
         return GagGlobals.trackExperienceToNetString(self.trackExperience)

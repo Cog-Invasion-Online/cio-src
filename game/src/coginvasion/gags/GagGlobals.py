@@ -786,6 +786,8 @@ def trackExperienceToNetString(tracks):
 
 # Expects a TRACK_NAME : EXP dictionary and the backpack that should get updates.
 def processTrackData(trackData, backpack):
+    addedGag = False
+
     for track, exp in trackData.iteritems():
         expAmounts = TrackExperienceAmounts.get(track)
         gags = TrackGagNamesByTrackName.get(track)
@@ -797,12 +799,15 @@ def processTrackData(trackData, backpack):
                 gagId = gagIdByName.get(gagAtLevel)
                 
                 if not backpack.hasGag(gagAtLevel):
+                    addedGag = True
                     backpack.addGag(gagId, 1, None)
                 
     for gagId in backpack.gags.keys():
         gagName = gagIds.get(gagId)
         maxSupply = calculateMaxSupply(backpack.avatar, gagName, gagData.get(gagName))
         backpack.setMaxSupply(gagId, maxSupply)
+
+    return addedGag
 
 def getTrackExperienceFromNetString(netString):
     dg = PyDatagram(netString)

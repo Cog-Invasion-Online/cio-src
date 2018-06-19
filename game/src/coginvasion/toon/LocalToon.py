@@ -114,6 +114,8 @@ class LocalToon(DistributedPlayerToon):
         self.lastState = None
         self.lastAction = None
 
+        self.invGui = None
+
         self.jumpHardLandIval = None
 
         # Modified by DistributedBattleZone.
@@ -981,9 +983,7 @@ class LocalToon(DistributedPlayerToon):
         if self.friendRequestManager:
             self.friendRequestManager.cleanup()
             self.friendRequestManager = None
-        if self.invGui:
-            self.invGui.cleanup()
-            self.invGui = None
+        self.destroyInvGui()
         if self.crosshair:
             self.crosshair.destroy()
             self.crosshair = None
@@ -1011,6 +1011,21 @@ class LocalToon(DistributedPlayerToon):
         self.ignore(base.inputStore.ToggleAspect2D)
         return
 
+    def createInvGui(self):
+        self.invGui = GagSelectionGui()
+        self.invGui.load()
+        self.invGui.hide()
+        self.backpack.loadoutGUI = self.invGui
+
+    def reloadInvGui(self):
+        self.destroyInvGui()
+        self.createInvGui()
+
+    def destroyInvGui(self):
+        if self.invGui:
+            self.invGui.cleanup()
+            self.invGui = None
+
     def announceGenerate(self):
         DistributedPlayerToon.announceGenerate(self)
         self.setupControls()
@@ -1022,13 +1037,10 @@ class LocalToon(DistributedPlayerToon):
 
         #self.accept('c', self.walkControls.setCollisionsActive, [0])
 
-        self.invGui = GagSelectionGui()
-        self.invGui.load()
-        self.invGui.hide()
-        self.backpack.loadoutGUI = self.invGui
+        self.createInvGui()
 
         # Unused developer methods.
-        self.accept('/', self.printPos)
+        #self.accept('/', self.printPos)
         #self.accept('p', self.enterPictureMode)
         #self.accept('c', self.teleportToCT)
         #posBtn = DirectButton(text = "Get Pos", scale = 0.08, pos = (0.3, 0, 0), parent = base.a2dLeftCenter, command = self.printAvPos)
