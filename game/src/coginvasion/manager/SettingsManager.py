@@ -99,7 +99,7 @@ class SettingsManager:
         # General gameplay FOV
         genfov = settings.get("genfov", None)
         if genfov is None:
-            genfov = self.updateAndWriteSetting("genfov", 52.0)
+            genfov = self.updateAndWriteSetting("genfov", 70.0) # 52.0
 
         # First person minigame FOV
         fpmgfov = settings.get("fpmgfov", None)
