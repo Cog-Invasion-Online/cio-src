@@ -100,8 +100,8 @@ class Gag(object):
         
         self.animTrack = track
         
-        if withDelayDelete:
-            self.animTrack.delayDelete = DelayDelete.DelayDelete(self.avatar, track.getName())
+        #if withDelayDelete and not looping:
+        #    self.animTrack.delayDelete = DelayDelete.DelayDelete(self.avatar, track.getName())
 
         if startNow:
             if looping:
@@ -112,7 +112,7 @@ class Gag(object):
     # This should be called whenever we want to clear the 'animTrack' variable.
     def clearAnimTrack(self):
         if self.animTrack:
-            DelayDelete.cleanupDelayDeletes(self.animTrack)
+            #DelayDelete.cleanupDelayDeletes(self.animTrack)
             self.animTrack.pause()
             self.animTrack = None
 

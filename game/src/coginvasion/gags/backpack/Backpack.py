@@ -153,6 +153,8 @@ class Backpack(BackpackBase):
 
     # Cleans up all the variables that are no longer needed.
     def cleanup(self):
+        if self.currentGag != -1:
+            self.gags.get(self.currentGag)[0].unEquip()
         for _, data in self.gags.iteritems():
             gag = data[0]
             gag.delete()

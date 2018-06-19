@@ -140,19 +140,14 @@ class ChatInput(DirectObject, StateData.StateData):
     def disableKeyboardShortcuts(self):
         # Disable the shortcuts to open the chat box.
         if base.localAvatarReachable():
-            if not base.localAvatar.GTAControls:
-                for key in self.keyList:
-                    self.ignore(key)
-                    self.ignore('shift-' + key)
-            else:
-                self.ignore(base.inputStore.Chat)
+            self.ignore(base.inputStore.Chat)
             base.localAvatar.disableGagKeys()
 
     def enterInput(self, key, recipient = None):
         # Let's send our open chat window event.
         messenger.send(CHAT_WINDOW_OPENED_EVENT, [])
 
-        if base.localAvatarReachable() and base.localAvatar.GTAControls:
+        if base.localAvatarReachable():
             if hasattr(base.localAvatar, 'book_btn'):
                 base.localAvatar.book_btn.hide()
             key = ""
@@ -236,7 +231,7 @@ class ChatInput(DirectObject, StateData.StateData):
             self.fsm.request('idle')
 
     def exitInput(self):
-        if base.localAvatarReachable() and base.localAvatar.GTAControls and hasattr(base.localAvatar, 'book_btn'):
+        if base.localAvatarReachable() and hasattr(base.localAvatar, 'book_btn'):
             base.localAvatar.book_btn.show()
         if self.chatFrame:
             self.chatFrame.hide()

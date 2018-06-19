@@ -266,6 +266,8 @@ class LocalControls(DirectObject):
         inputState.set('use', False, inputSource = inputState.WASD)
         base.taskMgr.remove("LocalControls.handlePlayerControls")
         base.taskMgr.remove("LocalControls.handleFootsteps")
+        self.controller.setLinearMovement(Vec3(0))
+        self.controller.setAngularMovement(0)
         self.controlsEnabled = False
 
     def __handleStandUp(self):
