@@ -55,7 +55,7 @@ class SettingsManager:
         # music volume
         musvol = settings.get("musvol", None)
         if musvol is None:
-            musvol = self.updateAndWriteSetting("musvol", 0.65)
+            musvol = self.updateAndWriteSetting("musvol", 0.35)
 
         # sfx toggle
         sfx = settings.get("sfx", None)

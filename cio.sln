@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "game", "game\game.pyproj", "{306E2AC4-D120-45A2-BE56-442C5A5B7047}"
 EndProject
@@ -29,8 +29,8 @@ Global
 		{0DED181D-1026-4EE3-9C7E-308BE4AF387D}.Debug|x86.ActiveCfg = Debug|Win32
 		{0DED181D-1026-4EE3-9C7E-308BE4AF387D}.Debug|x86.Build.0 = Debug|Win32
 		{0DED181D-1026-4EE3-9C7E-308BE4AF387D}.Release|Any CPU.ActiveCfg = Release|Win32
-		{0DED181D-1026-4EE3-9C7E-308BE4AF387D}.Release|x64.ActiveCfg = Release|x64
-		{0DED181D-1026-4EE3-9C7E-308BE4AF387D}.Release|x64.Build.0 = Release|x64
+		{0DED181D-1026-4EE3-9C7E-308BE4AF387D}.Release|x64.ActiveCfg = Release Static|x64
+		{0DED181D-1026-4EE3-9C7E-308BE4AF387D}.Release|x64.Build.0 = Release Static|x64
 		{0DED181D-1026-4EE3-9C7E-308BE4AF387D}.Release|x86.ActiveCfg = Release|Win32
 		{0DED181D-1026-4EE3-9C7E-308BE4AF387D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection

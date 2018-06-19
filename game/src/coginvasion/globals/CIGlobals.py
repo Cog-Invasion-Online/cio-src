@@ -248,6 +248,11 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
     explosion.reparentTo(render)
     explosion.setBillboardPointEye()
     explosion.setPos(pos)
+
+    frames = 10.0
+    fps = 24.0
+    duration = frames / fps
+    explosion.find("**/+SequenceNode").node().play()
     
     from src.coginvasion.toon import ParticleLoader
     smoke = ParticleLoader.loadParticleEffect("phase_14/etc/explosion_smoke.ptf")

@@ -175,6 +175,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\cog\DroppableCollectableJellybeanJar.py" />
     <Compile Include="src\coginvasion\cog\DroppableCollectableJellybeans.py" />
     <Compile Include="src\coginvasion\cog\DroppableCollectableObject.py" />
+    <Compile Include="src\coginvasion\cog\GagEffects.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\cog\Head.py" />
     <Compile Include="src\coginvasion\cog\SpawnMode.py" />
     <Compile Include="src\coginvasion\cog\Suit.py" />

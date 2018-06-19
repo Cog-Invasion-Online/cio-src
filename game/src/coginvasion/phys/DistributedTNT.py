@@ -50,6 +50,7 @@ class DistributedTNT(DistributedPhysicsEntity):
         self.tnt.setP(97.492)
         self.tnt.setY(0.38)
         self.tntSound = base.audio3d.loadSfx("phase_14/audio/sfx/dynamite_loop.ogg")
+        self.tntSound.setLoop(True)
         base.audio3d.attachSoundToObject(self.tntSound, self.tnt)
         self.particle = ParticleLoader.loadParticleEffect("phase_14/etc/tnt_spark.ptf")
         self.particle.start(self.tnt.find('**/joint_attachEmitter'), CIGlobals.getParticleRender())
