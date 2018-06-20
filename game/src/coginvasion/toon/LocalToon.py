@@ -152,6 +152,9 @@ class LocalToon(DistributedPlayerToon):
 
     def unEquip(self):
         DistributedPlayerToon.unEquip(self)
+
+        if not self.walkControls:
+            return
         if self.walkControls.mode == self.walkControls.MFirstPerson:
             self.crosshair.hide()
             self.b_setLookMode(self.LMHead)
@@ -966,6 +969,8 @@ class LocalToon(DistributedPlayerToon):
         return
 
     def disable(self):
+        DistributedPlayerToon.disable(self)
+
         self.stopTrackAnimToSpeed()
         base.camLens.setMinFov(CIGlobals.OriginalCameraFov / (4./3.))
         if self.jumpHardLandIval:
@@ -989,10 +994,6 @@ class LocalToon(DistributedPlayerToon):
         self.stopLookAround()
         self.disableAvatarControls()
         self.destroyControls()
-        if self.controlManager:
-            self.controlManager.delete()
-            self.controlManager = None
-        DistributedPlayerToon.disable(self)
         if self.smartCamera:
             self.smartCamera.deleteSmartCameraCollisions()
             self.smartCamera = None
@@ -1029,6 +1030,12 @@ class LocalToon(DistributedPlayerToon):
         self.ignore('/')
         self.ignore(base.inputStore.ToggleAspect2D)
         return
+
+    def delete(self):
+        DistributedPlayerToon.delete(self)
+        del base.localAvatar
+        del __builtins__['localAvatar']
+        print "Local avatar finally deleted"
 
     def createInvGui(self):
         self.invGui = GagSelectionGui()
