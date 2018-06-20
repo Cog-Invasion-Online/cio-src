@@ -284,6 +284,9 @@ class GagSelectionGui(DirectFrame, FSM):
 
     def update(self):
         bp = base.localAvatar.backpack
+
+        if not bp:
+            return
         
         gagId = -1
         if self.getCurrentOrNextState() == 'Idle':

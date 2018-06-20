@@ -586,12 +586,9 @@ class CogInvasionClientRepository(AstronClientRepository):
         self.deleteAllObjects()
         self.handler = None
         self.gameFSM.request('off')
-        if hasattr(base, 'localAvatar'):
-            camera.reparentTo(render)
-            camera.setPos(0, 0, 0)
-            camera.setHpr(0, 0, 0)
-            del base.localAvatar
-            del __builtins__['localAvatar']
+        camera.reparentTo(render)
+        camera.setPos(0, 0, 0)
+        camera.setHpr(0, 0, 0)
         self.localAvChoice = None
         if loader.inBulkBlock:
             loader.endBulkLoad(loader.blockName)

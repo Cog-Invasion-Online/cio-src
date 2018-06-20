@@ -92,6 +92,8 @@ class LocalControls(DirectObject):
             base.localAvatar.showCrosshair()
             self.fpsCam.getViewModel().show()
             base.localAvatar.b_setLookMode(base.localAvatar.LMCage)
+        else:
+            base.localAvatar.b_setLookMode(base.localAvatar.LMHead)
 
     def exitFirstPerson(self):
         self.fpsCam.disableMouseMovement()

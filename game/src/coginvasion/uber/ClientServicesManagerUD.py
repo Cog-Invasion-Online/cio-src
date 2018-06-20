@@ -295,6 +295,9 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
 
         print "unloadAvatar"
 
+        # Allow the avatar to be deleted now.
+        self.air.clientRemoveSessionObject(target, doId)
+
         # Clear the postremove
         dg = PyDatagram()
         dg.addServerHeader(
