@@ -23,7 +23,7 @@ class ControlsCategory(OptionsCategory):
         gagKeys = base.inputStore.getControlOptions('UseGag')
         self.gagKey = ChoiceWidget(page, gagKeys, (0, 0.47, 0.47), self.__handleChooseGK, "Use Gag Key")
 
-        self.fpmsSlider = SliderWidget(page, "Mouse Sensitivity\n(First Person)", (0.02, 1.0), self.__setFPMS, (0, 0, 0.2))
+        self.fpmsSlider = SliderWidget(page, "Mouse Sensitivity\n(First Person)", (0.05, 0.3), self.__setFPMS, (0, 0, 0.2))
         self.fpfovSlider = SliderWidget(page, "Field of View\n(First Person)", (54.0, 70.0), self.__setFPFov, (0, 0, -0.1))
         self.genFovSlider = SliderWidget(page, "Field of View\n(General Gameplay)", (40.0, 70.0), self.__setGenFov, (0, 0, -0.4))
 
