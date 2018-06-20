@@ -29,7 +29,7 @@ class Megaphone(ToonUpGag):
         if not self.gag:
             self.build()
         if self.avatar == base.localAvatar:
-            question, answer = random.choice(CIGlobals.ToonHealJokes)
+            question, answer = random.choice(GagGlobals.ToonHealJokes)
         self.setupHandJoints()
         self.placeProp(self.handJoint, self.gag)
         self.soundInterval = self.getSoundTrack(self.avatar.getDuration('shout', fromFrame = 0, toFrame = 18), self.gag, 5.5)

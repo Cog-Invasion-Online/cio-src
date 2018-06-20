@@ -692,7 +692,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                 self.makeSubpart("torso-pants", ["def_left_skirt_backA", "def_left_skirt_frontA", "def_left_skirt_topA",
                                                  "def_right_skirt_backA", "def_right_skirt_frontA", "def_right_skirt_topA"], parent = "torso")
             elif self.torso == 'dgl_skirt':
-                self.makeSubpart("torso-pants" ["def_left_skirt_bottomA", "def_left_skirt_topA", "def_right_hip"], parent = "torso")
+                self.makeSubpart("torso-pants", ["def_left_skirt_bottomA", "def_left_skirt_topA", "def_right_hip"], parent = "torso")
             else:
                 self.makeSubpart("torso-pants", ["def_left_skirt_bottomA", "def_left_skirt_topA", "def_right_skirt_bottomA", "def_right_skirt_topA"], parent = "torso")
         self.makeSubpart("torso-top", ["def_spineB"], parent = "torso")

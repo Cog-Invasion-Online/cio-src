@@ -69,14 +69,21 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
 
         if self.lookMode == self.LMCage:
             head = self.getPart('head')
-            oldPitch = head.getP(self)
-            head.setP(self, 0)
-            self.getCageBone().setP(self, oldPitch)
+            if head and not head.isEmpty():
+                oldPitch = head.getP(self)
+                head.setP(self, 0)
+            cage = self.getCageBone()
+            if cage and not cage.isEmpty():
+                cage.setP(self, oldPitch)
         elif self.lookMode == self.LMHead:
             # transfer from cage to head
-            oldPitch = self.getCageBone().getP(self)
-            self.resetCageBone()
-            self.getPart('head').setP(self, oldPitch)
+            cage = self.getCageBone()
+            if cage and not cage.isEmpty():
+                oldPitch = self.getCageBone().getP(self)
+                self.resetCageBone()
+            head = self.getPart('head')
+            if head and not head.isEmpty():
+                head.setP(self, oldPitch)
 
         if self.lookMode != self.LMOff:
             self.startLookTask()
@@ -93,12 +100,19 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         return self.lookPitch
 
     def getCageBone(self, makeIfEmpty = True):
+        if self.isEmpty():
+            return None
+
         cageBone = self.find("**/def_cageA")
         if cageBone.isEmpty() and makeIfEmpty:
             cageBone = self.controlJoint(None, "torso", "def_cageA")
+
         return cageBone
 
     def resetCageBone(self):
+        if self.isEmpty():
+            return
+
         cageBone = self.find("**/def_cageA")
         if not cageBone.isEmpty():
             self.releaseJoint("torso", "def_cageA")
@@ -118,7 +132,8 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
 
         elif self.lookMode == self.LMCage:
             bone = self.getCageBone()
-            bone.setHpr(self, 0, self.lookPitch, 0)
+            if bone and not bone.isEmpty():
+                bone.setHpr(self, 0, self.lookPitch, 0)
             self.__updateHead(True)
 
         return task.cont
@@ -224,6 +239,8 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         self.startSmooth()
 
     def disable(self):
+        self.stopLookTask()
+
         self.animState2animId = None
         self.animId2animState = None
 
