@@ -19,11 +19,12 @@ from direct.distributed import DistributedSmoothNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
+from direct.gui.DirectGui import OnscreenText
 
 from direct.task import Task
 
 from panda3d.core import URLSpec, CollisionHandlerFloor, CollisionHandlerPusher
-from panda3d.core import CollisionHandlerQueue, ModelPool, TexturePool
+from panda3d.core import CollisionHandlerQueue, ModelPool, TexturePool, TextNode
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gui.Dialog import GlobalDialog
@@ -53,6 +54,7 @@ import ccoginvasion
 
 import os, sys
 import random
+import math
 
 class CogInvasionClientRepository(AstronClientRepository):
     notify = directNotify.newCategory("CIClientRepository")
@@ -145,9 +147,49 @@ class CogInvasionClientRepository(AstronClientRepository):
         self.friendsManager = self.generateGlobalObject(DO_ID_FRIENDS_MANAGER, 'FriendsManager')
         self.uin = self.generateGlobalObject(DO_ID_UNIQUE_INTEREST_NOTIFIER, 'UniqueInterestNotifier')
 
+        self.pingToggle = False
+        self.currentPing = None
+
+        self.pingText = OnscreenText("", align = TextNode.ALeft, parent = base.a2dBottomLeft, fg = (1, 1, 1, 1), shadow = (0, 0, 0, 0.5),
+                                     pos = (0.3, 0.09))
+        self.pingText.setBin('gsg-popup', 1000)
+        self.pingText.hide()
+
         SpeedHackChecker.startChecking()
         self.loginFSM.request('connect')
         return
+
+    def togglePing(self):
+        self.pingToggle = not self.pingToggle
+
+        if self.pingToggle:
+            taskMgr.add(self.__districtPingTask, "CICR.districtPingTask")
+            self.showPing()
+        else:
+            self.hidePing()
+            taskMgr.remove("CICR.districtPingTask")
+
+    def showPing(self):
+        self.pingText.show()
+
+    def hidePing(self):
+        self.pingText.hide()
+
+    def handleNewPing(self):
+        if self.currentPing is None:
+            display = "?"
+        else:
+            display = int(round(self.currentPing))
+
+        self.pingText.setText("Ping: {0} ms".format(display))
+
+    def __districtPingTask(self, task):
+        if self.myDistrict:
+            # Figure out how much network latency there is.
+            self.myDistrict.d_ping()
+
+        task.delayTime = 1.0
+        return task.again
 
     def deleteObject(self, doId):
         """
@@ -740,17 +782,17 @@ class CogInvasionClientRepository(AstronClientRepository):
             #self.timeManager.d_setSignature(self.userSignature, h.asBin(), pyc.asBin())
             #self.timeManager.sendCpuInfo()
 
-            # Turn off somewhat spammy time manager info
-            self.timeManager.notify.setInfo(False)
-
-            from direct.distributed.ClockDelta import globalClockDelta
-            globalClockDelta.notify.setInfo(False)
-
+            self.timeManager.lastAttempt = -self.timeManager.minWait*2
             if self.timeManager.synchronize('startup'):
                 self.accept('gotTimeSync', self.gotTimeSync, [status])
             else:
                 self.gotTimeSync(status)
         return
+
+    def getPing(self):
+        if self.myDistrict:
+            return self.myDistrict.currentPing
+        return 0
 
     def exitWaitForGameEnterResponse(self):
         self.ignore('uberZoneInterestComplete')

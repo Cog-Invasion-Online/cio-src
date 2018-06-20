@@ -12,6 +12,8 @@ from direct.distributed.DistributedObject import DistributedObject
 from src.coginvasion.gui.WhisperPopup import WhisperPopup
 from src.coginvasion.globals import CIGlobals, ChatGlobals
 
+import math
+
 class TempObjRequest:
 
     def __init__(self, context, do, callback):
@@ -35,30 +37,26 @@ class DistributedDistrict(DistributedObject):
         self.popRecord = 0
         self.name = None
 
-        self.tempObjContext = 0
-        self.tempReqs = []
+        self.pingStart = 0
+        self.pingState = False
 
         return
 
-    def d_spawnTemporaryObject(self, do, callback):
-        ctx = TempObjRequest(self.tempObjContext, do, callback)
-        self.tempObjContext += 1
-        if self.tempObjContext > 255:
-            self.tempObjContext = 0
-        self.tempReqs.append(ctx)
-        self.sendUpdate('spawnTemporaryObject', [ctx.context, do.dclass.getNumber()])
+    def d_ping(self):
+        if self.pingState:
+            # We are already waiting on a response to our last ping.
+            return
 
-    def tempObjectOwnershipGranted(self, ctx, doId):
-        print "ownership granted! for something"
-        for tempReq in self.tempReqs:
-            print tempReq.context
-            print ctx
-            if tempReq.context == ctx:
-                tempReq.callback(doId)
-                time = globalClock.getFrameTime() - tempReq.birthTime
-                print "Took {0} seconds to get ownership of {1}".format(time, doId)
-                self.tempReqs.remove(tempReq)
-                break
+        self.pingState = True
+        self.pingStart = globalClock.getRealTime()
+        self.sendUpdate('ping')
+
+    def pingResp(self):
+        now = globalClock.getRealTime()
+        # ping in milliseconds
+        self.cr.currentPing = (now - self.pingStart) * 1000.0
+        self.pingState = False
+        self.cr.handleNewPing()
 
     def setDistrictName(self, name):
         self.name = name
