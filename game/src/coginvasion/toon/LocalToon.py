@@ -127,6 +127,10 @@ class LocalToon(DistributedPlayerToon):
         # This is used by the animation traverser.
         self.__traverseGUI = None
 
+    def areGagsAllowed(self):
+        return (self.walkControls.controlsEnabled and
+                (self.chatInput is not None and self.chatInput.fsm.getCurrentState().getName() == 'idle'))
+
     def isFirstPerson(self):
         return self.walkControls.mode == self.walkControls.MFirstPerson
 
@@ -653,6 +657,9 @@ class LocalToon(DistributedPlayerToon):
         self.invGui.enableControls()
 
     def enableGagKeys(self):
+        if not self.areGagsAllowed():
+            return
+
         if self.gagThrowBtn:
             self.gagThrowBtn.bind(DGG.B1PRESS, self.startGag)
             self.gagThrowBtn.bind(DGG.B1RELEASE, self.throwGag)

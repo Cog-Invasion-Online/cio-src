@@ -90,6 +90,7 @@ class LocalControls(DirectObject):
         bp = base.localAvatar.getBackpack()
         if bp and bp.getCurrentGag():
             base.localAvatar.showCrosshair()
+            self.fpsCam.getViewModel().show()
 
     def exitFirstPerson(self):
         self.fpsCam.disableMouseMovement()
@@ -98,6 +99,8 @@ class LocalControls(DirectObject):
     def enterThirdPerson(self):
         base.localAvatar.getGeomNode().show()
         self.tp_attachCamera()
+        base.localAvatar.showCrosshair()
+        self.fpsCam.getViewModel().hide()
 
     def tp_attachCamera(self):
         camera.reparentTo(base.localAvatar)

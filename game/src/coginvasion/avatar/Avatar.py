@@ -71,6 +71,11 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         
         return
 
+    def isLocalAvatar(self):
+        if not hasattr(base, 'localAvatar'):
+            return False
+        return self == base.localAvatar
+
     def initializeRay(self, *args, **kwargs):
         pass
 

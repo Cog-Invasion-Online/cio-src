@@ -147,6 +147,10 @@ class ChatInput(DirectObject, StateData.StateData):
         # Let's send our open chat window event.
         messenger.send(CHAT_WINDOW_OPENED_EVENT, [])
 
+        self.currGagsState = bool(base.localAvatar.gagsEnabled)
+        if self.currGagsState:
+            base.localAvatar.disableGagKeys()
+
         if base.localAvatarReachable():
             if hasattr(base.localAvatar, 'book_btn'):
                 base.localAvatar.book_btn.hide()
@@ -231,8 +235,11 @@ class ChatInput(DirectObject, StateData.StateData):
             self.fsm.request('idle')
 
     def exitInput(self):
-        if base.localAvatarReachable() and hasattr(base.localAvatar, 'book_btn'):
-            base.localAvatar.book_btn.show()
+        if base.localAvatarReachable():
+            if hasattr(base.localAvatar, 'book_btn'):
+                base.localAvatar.book_btn.show()
+            if base.localAvatar.areGagsAllowed() and self.currGagsState:
+                base.localAvatar.enableGagKeys()
         if self.chatFrame:
             self.chatFrame.hide()
         if self.chatBx_close:

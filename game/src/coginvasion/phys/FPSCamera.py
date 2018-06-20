@@ -181,10 +181,10 @@ class FPSCamera(DirectObject):
             self.enableMouseMovement()
 
     def handleJumpHardLand(self):
-        down = Parallel(LerpPosInterval(base.cam, 0.1, (-1, 0, -3), (0, 0, 0), blendType = 'easeOut'),
-                        LerpHprInterval(base.cam, 0.1, (0, 0, -7), (0, 0, 0), blendType = 'easeOut'))
-        up = Parallel(LerpPosInterval(base.cam, 0.7, (0, 0, 0), (-1, 0, -3), blendType = 'easeInOut'),
-                      LerpHprInterval(base.cam, 0.7, (0, 0, 0), (0, 0, -7), blendType = 'easeInOut'))
+        down = Parallel(LerpPosInterval(base.cam, 0.1, (-0.1, 0, -0.2), (0, 0, 0), blendType = 'easeOut'),
+                        LerpHprInterval(base.cam, 0.1, (0, 0, -2.5), (0, 0, 0), blendType = 'easeOut'))
+        up = Parallel(LerpPosInterval(base.cam, 0.7, (0, 0, 0), (-0.1, 0, -0.2), blendType = 'easeInOut'),
+                      LerpHprInterval(base.cam, 0.7, (0, 0, 0), (0, 0, -2.5), blendType = 'easeInOut'))
         Sequence(down, up).start()
             
     def __updateTask(self, task):

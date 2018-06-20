@@ -170,7 +170,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
     def enterHappy(self, ts = 0, callback = None, extraArgs = []):
         self.playingAnim = None
-        self.standWalkRunReverse = (('neutral', 1.0), ('walk', 1.0), ('run', 1.0), ('walk', -1.0),
+        self.standWalkRunReverse = (('neutral', 1.0), ('run', 1.0), ('run', 1.0), ('run', -1.0),
                                     ('strafe', 1.0), ('strafe', -1.0))
         self.setSpeed(self.forwardSpeed, self.rotateSpeed)
 
@@ -230,42 +230,44 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.strafeSpeed = strafeSpeed
         action = None
         if self.standWalkRunReverse != None:
+
+            rotateCutOff = CIGlobals.RotateCutOff if not self.isLocalAvatar() else CIGlobals.WalkCutOff
         
-            if strafeSpeed == 0:
+            if strafeSpeed < CIGlobals.WalkCutOff and strafeSpeed > -CIGlobals.WalkCutOff:
                 self.resetTorsoRotation()
 
             if (forwardSpeed >= CIGlobals.RunCutOff and
-                strafeSpeed < CIGlobals.RunCutOff and
-                strafeSpeed > -CIGlobals.RunCutOff):
+                strafeSpeed < CIGlobals.StafeCutOff and
+                strafeSpeed > -CIGlobals.StafeCutOff):
                 action = CIGlobals.RUN_INDEX
 
-            elif strafeSpeed > CIGlobals.RunCutOff or strafeSpeed < -CIGlobals.RunCutOff:
+            elif strafeSpeed > CIGlobals.StafeCutOff or strafeSpeed < -CIGlobals.StafeCutOff:
                 spine = self.find("**/def_spineB")
 
                 if spine.isEmpty():
                     spine = self.controlJoint(None, "torso", "def_spineB")
 
-                if strafeSpeed > 0 and (forwardSpeed < CIGlobals.RunCutOff and forwardSpeed > -CIGlobals.RunCutOff):
+                if strafeSpeed > CIGlobals.StafeCutOff and (forwardSpeed < CIGlobals.RunCutOff and forwardSpeed > -CIGlobals.RunCutOff):
                     action = CIGlobals.RUN_INDEX
                     self.getPart("legs").setH(-90)
                     spine.setH(90)
-                elif strafeSpeed < 0 and (forwardSpeed < CIGlobals.RunCutOff and forwardSpeed > -CIGlobals.RunCutOff):
+                elif strafeSpeed < -CIGlobals.StafeCutOff and (forwardSpeed < CIGlobals.RunCutOff and forwardSpeed > -CIGlobals.RunCutOff):
                     action = CIGlobals.RUN_INDEX
                     self.getPart("legs").setH(90)
                     spine.setH(-90)
-                elif strafeSpeed > 0 and forwardSpeed > CIGlobals.RunCutOff:
+                elif strafeSpeed > CIGlobals.StafeCutOff and forwardSpeed > CIGlobals.RunCutOff:
                     action = CIGlobals.RUN_INDEX
                     self.getPart("legs").setH(-45)
                     spine.setH(45)
-                elif strafeSpeed > 0 and forwardSpeed < -CIGlobals.RunCutOff:
+                elif strafeSpeed > CIGlobals.StafeCutOff and forwardSpeed < -CIGlobals.RunCutOff:
                     action = CIGlobals.REVERSE_INDEX
                     self.getPart('legs').setH(45)
                     spine.setH(-45)
-                elif strafeSpeed < 0 and forwardSpeed < -CIGlobals.RunCutOff:
+                elif strafeSpeed < -CIGlobals.StafeCutOff and forwardSpeed < -CIGlobals.RunCutOff:
                     action = CIGlobals.REVERSE_INDEX
                     self.getPart("legs").setH(-45)
                     spine.setH(45)
-                elif strafeSpeed < 0 and forwardSpeed > CIGlobals.RunCutOff:
+                elif strafeSpeed < -CIGlobals.StafeCutOff and forwardSpeed > CIGlobals.RunCutOff:
                     action = CIGlobals.RUN_INDEX
                     self.getPart('legs').setH(45)
                     spine.setH(-45)
@@ -276,7 +278,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                 action = CIGlobals.WALK_INDEX
             elif forwardSpeed < -CIGlobals.WalkCutOff:
                 action = CIGlobals.REVERSE_INDEX
-            elif abs(rotateSpeed) > CIGlobals.WalkCutOff:
+            elif abs(rotateSpeed) > rotateCutOff:
                 action = CIGlobals.WALK_INDEX
             else:
                 action = CIGlobals.STAND_INDEX
