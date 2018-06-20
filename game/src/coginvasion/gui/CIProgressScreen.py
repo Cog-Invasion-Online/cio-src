@@ -8,11 +8,13 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
 from direct.directnotify.DirectNotify import DirectNotify
-from panda3d.core import TextNode
 from direct.gui.DirectGui import OnscreenImage, DirectWaitBar, DirectLabel, DirectFrame, OnscreenText
+from panda3d.core import TextNode, TextureStage
+
+from src.coginvasion.globals import CIGlobals
 from src.coginvasion.nametag import NametagGlobals
+from src.coginvasion.hood import ZoneUtil
 
 import random
 
@@ -29,6 +31,7 @@ class CIProgressScreen:
         self.bgm = loader.loadModel("phase_3/models/gui/progress-background.bam")
         self.bgm.find('**/logo').stash()
         self.bg = self.bgm.find('**/bg')
+        self.defaultBgTexture = self.bg.findTexture('*')
         
         self.logoNode, self.logoImg = CIGlobals.getLogoImage(hidden, self.defaultLogoScale, (0, 0, self.defaultLogoZ))
         
@@ -66,6 +69,15 @@ class CIProgressScreen:
         self.progress_bar['barColor'] = self.BarColor
         self.progress_bar['range'] = range
         self.bgm.reparentTo(aspect2d)
+        
+        # We only want to show special loading screens for actual in-game locations.
+        if hood in ZoneUtil.Hood2ZoneId.keys():
+            abbr = ZoneUtil.ZoneId2HoodAbbr.get(ZoneUtil.Hood2ZoneId.get(hood)).lower()
+            bgTexture = loader.loadTexture('phase_14/maps/{0}_loading.png'.format(abbr), okMissing=True)
+            
+            if bgTexture:
+                self.bg.setTexture(bgTexture, 1)
+
         self.bg.reparentTo(render2d)
         self.bg_img.reparentTo(hidden)
         self.loading_lbl.reparentTo(aspect2d)
@@ -86,6 +98,10 @@ class CIProgressScreen:
         base.setBackgroundColor(CIGlobals.DefaultBackgroundColor)
         taskMgr.remove("renderFrames")
         render.show()
+        
+        # Let's get rid of the extra texture stage.
+        self.bg.setTexture(self.defaultBgTexture, 1)
+        
         self.progress_bar.finish()
         self.bg_img.reparentTo(hidden)
         self.logoNode.reparentTo(hidden)
@@ -111,6 +127,7 @@ class CIProgressScreen:
         del self.loading_lbl
         del self.progress_bar
         del self.bgm
+        del self.defaultBgTexture
 
     def renderFrames(self):
         base.graphicsEngine.renderFrame()

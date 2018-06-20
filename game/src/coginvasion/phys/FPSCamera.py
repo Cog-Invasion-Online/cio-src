@@ -16,7 +16,6 @@ class FPSCamera(DirectObject):
     
     MaxP = 90.0
     MinP = -90.0
-    Sensitivity = ConfigVariableDouble("mouse-sensitivity", 0.3)
     PitchUpdateEpsilon = 0.1
 
     def __init__(self):
@@ -206,9 +205,9 @@ class FPSCamera(DirectObject):
             xDist = md.getX() - center.getX()
             yDist = md.getY() - center.getY()
             
-            angular = -(xDist * FPSCamera.Sensitivity.getValue()) / dt
+            angular = -(xDist * self.__getMouseSensitivity()) / dt
             base.localAvatar.walkControls.controller.setAngularMovement(angular)
-            self.camRoot.setP(self.camRoot.getP() - yDist * FPSCamera.Sensitivity.getValue())
+            self.camRoot.setP(self.camRoot.getP() - yDist * self.__getMouseSensitivity())
             
             if self.camRoot.getP() > FPSCamera.MaxP:
                 self.camRoot.setP(FPSCamera.MaxP)
@@ -284,3 +283,6 @@ class FPSCamera(DirectObject):
         self.lastPitch = newPitch
             
         return task.cont
+    
+    def __getMouseSensitivity(self):
+        return CIGlobals.getSettingsMgr().getSetting('fpmgms')

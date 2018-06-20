@@ -45,7 +45,7 @@ class ControlsCategory(OptionsCategory):
 
     def __setFPMS(self):
         val = self.fpmsSlider.getSliderVal()
-        self.fpmsSlider.setValText("{:.1f}".format(val * 10.0))
+        self.fpmsSlider.setValText("{:.2f}".format(val * 10.0))
         self.fpMs = val
 
     def __setFPFov(self):
@@ -94,7 +94,7 @@ class ControlsCategory(OptionsCategory):
         self.gagKey.goto(self.gagKey.options.index(self.origGagKey))
 
         self.fpmsSlider.setSliderVal(self.origFPms)
-        self.fpmsSlider.setValText("{:.1f}".format(self.origFPms * 10.0))
+        self.fpmsSlider.setValText("{:.2f}".format(self.origFPms * 10.0))
 
         self.fpfovSlider.setSliderVal(self.origFPfov)
         self.fpfovSlider.setValText("{:.0f}".format(self.origFPfov))
