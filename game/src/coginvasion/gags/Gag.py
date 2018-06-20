@@ -111,7 +111,7 @@ class Gag(object):
     
     # This should be called whenever we want to clear the 'animTrack' variable.
     def clearAnimTrack(self):
-        if self.animTrack:
+        if self.animTrack is not None:
             #DelayDelete.cleanupDelayDeletes(self.animTrack)
             self.animTrack.pause()
             self.animTrack = None

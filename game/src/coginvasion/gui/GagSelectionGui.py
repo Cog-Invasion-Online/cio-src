@@ -244,10 +244,10 @@ class GagTrack(DirectFrame):
             btn = GagWidget(self, gagId)
             btn.reparentTo(self)
             btn.setX(GAG_BTN_START + (GAG_BTN_OFFSET * i))
-            if base.localAvatar.getBackpack().hasGag(gagId):
-                btn.setLocked(False)
-            else:
+            if not base.localAvatar.getBackpack().hasGag(gagId) or gagName not in GagGlobals.tempAllowedGags:
                 btn.setLocked(True)
+            else:
+                btn.setLocked(False)
             self.gagBtns.append(btn)
         self.stashContents()
 

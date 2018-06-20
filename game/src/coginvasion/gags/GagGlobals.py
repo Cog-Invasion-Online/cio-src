@@ -904,3 +904,10 @@ def getDefaultBackpack(isAI = False):
     defaultBackpack.addGag(13, cupcake.get('supply'), cupcake.get('maxSupply'))
     defaultBackpack.addGag(35, flower.get('supply'), flower.get('maxSupply'))
     return defaultBackpack
+
+# Specifies which gags are allowed to be used. This should only be temporary until all the gags are implemented correctly.
+tempAllowedGags = [Cupcake, FruitPieSlice, CreamPieSlice, WholeFruitPie, WholeCreamPie, BirthdayCake,
+                   WaterGun, FireHose,
+                   FlowerPot, Sandbag, Anvil, BigWeight, Safe, GrandPiano,
+                   TNT,
+                   Megaphone, Lipstick, JugglingBalls, BambooCane, PixieDust]
