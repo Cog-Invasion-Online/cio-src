@@ -178,7 +178,7 @@ class LocalControls(DirectObject):
         base.taskMgr.add(self.__handlePlayerControls, "LocalControls.handlePlayerControls")
         base.taskMgr.add(self.__handleFootsteps, "LocalControls.handleFootsteps", taskChain = "fpsIndependentStuff")
 
-        self.accept('alt', self.__throwTestBPeel)
+        #self.accept('alt', self.__throwTestBPeel)
         self.accept('tab', self.switchMode)
 
         if self.mode == LocalControls.MFirstPerson:
