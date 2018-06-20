@@ -99,13 +99,14 @@ class CIProgressScreen:
         taskMgr.remove("renderFrames")
         render.show()
         
-        # Let's get rid of the extra texture stage.
-        self.bg.setTexture(self.defaultBgTexture, 1)
-        
         self.progress_bar.finish()
         self.bg_img.reparentTo(hidden)
         self.logoNode.reparentTo(hidden)
         self.bg.reparentTo(hidden)
+        
+        # Let's get rid of the extra texture stage.
+        self.bg.setTexture(self.defaultBgTexture, 1)
+        
         self.bgm.reparentTo(hidden)
         self.loading_lbl.reparentTo(hidden)
         self.progress_bar.reparentTo(hidden)
