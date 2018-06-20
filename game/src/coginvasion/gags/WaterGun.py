@@ -56,8 +56,8 @@ class WaterGun(SquirtGag):
             fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "sg_draw"), Func(vm.loop, "sg_idle")))
             taskMgr.doMethodLater(random.uniform(*self.InspectIval), self.doInspect, "sg_inspectTask")
 
-        self.gag.setPos(Point3(0.28, 0.1, 0.08))
-        self.gag.setHpr(VBase3(85.6, -4.44, 94.43))
+        self.gag.setPos(Point3(0.28, -0.09, 0.08))
+        self.gag.setHpr(VBase3(73.00, 9.27, 94.43))
 
         self.doDrawAndHold('squirt', 0, 48, 1.0, 48, 48)
 

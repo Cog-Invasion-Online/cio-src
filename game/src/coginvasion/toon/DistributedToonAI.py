@@ -62,7 +62,21 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         self.toon_legs = None
         self.toon_torso = None
         self.toon_head = None
+        self.lookMode = 2 # LMOff
+        self.lookPitch = 0
         return
+
+    def setLookPitch(self, pitch):
+        self.lookPitch = pitch
+
+    def getLookPitch(self):
+        return self.lookPitch
+
+    def setLookMode(self, mode):
+        self.lookMode = mode
+
+    def getLookMode(self):
+        return self.lookMode
 
     def setAnimState(self, anim, timestamp = 0):
         self.anim = anim

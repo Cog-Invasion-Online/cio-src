@@ -132,7 +132,8 @@ class DropGag(Gag, LocationGag):
 
     def resetCrashEffect(self):
         base.taskMgr.remove(self.shadowIdleTaskName)
-        base.ignore(self.getLocationSeeker().getShadowMovedName())
+        if self.getLocationSeeker():
+            self.ignore(self.getLocationSeeker().getShadowMovedName())
         self.cleanupCrashIval()
         if self.crashSite:
             self.crashSite.removeNode()
@@ -161,11 +162,13 @@ class DropGag(Gag, LocationGag):
 
         if self.isLocal() and self.getName() == GagGlobals.GrandPiano:
             base.taskMgr.add(self.tickShadowIdleTask, self.shadowIdleTaskName)
-            base.accept(self.getLocationSeeker().getShadowMovedName(), self.__shadowMoved)
+            self.accept(self.getLocationSeeker().getShadowMovedName(), self.__shadowMoved)
 
     def unEquip(self):
-        LocationGag.cleanupLocationSeeker(self)
-        super(DropGag, self).unEquip()
+        if self.isLocal():
+            self.resetCrashEffect()
+        LocationGag.cleanup(self)
+        Gag.unEquip(self)
         if self.state != GagState.LOADED:
             self.completeDrop()
 

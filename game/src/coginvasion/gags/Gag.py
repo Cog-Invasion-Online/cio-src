@@ -9,6 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from direct.actor.Actor import Actor
+from direct.showbase.DirectObject import DirectObject
 from direct.distributed import DelayDelete
 from direct.interval.IntervalGlobal import Parallel, ParallelEndTogether, ActorInterval, Sequence, \
     LerpScaleInterval, SoundInterval, Wait, Func
@@ -23,10 +24,11 @@ from panda3d.core import Point3
 from abc import ABCMeta
 import abc
 
-class Gag(object):
+class Gag(object, DirectObject):
 
     def __init__(self, name, model, gagType, hitSfx, anim = None, scale = 1):
         __metaclass__ = ABCMeta
+        DirectObject.__init__(self)
         self.name = name
         self.model = model
         self.anim = anim
@@ -201,13 +203,15 @@ class Gag(object):
 
     def __timeoutDone(self, task):
         base.localAvatar.gagsTimedOut = False
+        equippedAGag = False
         if base.localAvatar.needsToSwitchToGag != None:
             if base.localAvatar.needsToSwitchToGag != self.getID() and base.localAvatar.needsToSwitchToGag != 'unequip':
                 base.localAvatar.b_equip(base.localAvatar.needsToSwitchToGag)
+                equippedAGag = True
             elif base.localAvatar.needsToSwitchToGag == 'unequip':
                 base.localAvatar.b_unEquip()
-        if self.equipped and base.localAvatar.backpack.getSupply(self.id) > 0:
-            self.equip()
+        if self.equipped and base.localAvatar.backpack.getSupply(self.id) > 0 and not equippedAGag:
+            base.localAvatar.b_equip(self.id)
         if base.localAvatar.avatarMovementEnabled:
             base.localAvatar.enableGagKeys()
         return task.done
@@ -311,6 +315,7 @@ class Gag(object):
         if not self.gag:
             self.build()
         if self.holdGag:
+            self.gag.show()
             self.gag.reparentTo(self.handJoint)
         self.equipped = True
 

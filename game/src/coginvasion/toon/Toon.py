@@ -685,7 +685,16 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.generateMask()
 
         # Make torso subparts so we can play a run animation on the pants but another animation on the spine and arms.
-        self.makeSubpart("torso-pants", ["def_left_pant_bottom", "def_left_pant_top", "def_right_pant_bottom", "def_right_pant_top"], parent = "torso")
+        if self.gender == 'boy':
+            self.makeSubpart("torso-pants", ["def_left_pant_bottom", "def_left_pant_top", "def_right_pant_bottom", "def_right_pant_top"], parent = "torso")
+        elif self.gender == 'girl':
+            if self.torso == 'dgs_skirt':
+                self.makeSubpart("torso-pants", ["def_left_skirt_backA", "def_left_skirt_frontA", "def_left_skirt_topA",
+                                                 "def_right_skirt_backA", "def_right_skirt_frontA", "def_right_skirt_topA"], parent = "torso")
+            elif self.torso == 'dgl_skirt':
+                self.makeSubpart("torso-pants" ["def_left_skirt_bottomA", "def_left_skirt_topA", "def_right_hip"], parent = "torso")
+            else:
+                self.makeSubpart("torso-pants", ["def_left_skirt_bottomA", "def_left_skirt_topA", "def_right_skirt_bottomA", "def_right_skirt_topA"], parent = "torso")
         self.makeSubpart("torso-top", ["def_spineB"], parent = "torso")
 
         if makeTag:

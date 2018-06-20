@@ -167,6 +167,8 @@ class ThrowGag(Gag):
             hitPos = PhysicsUtils.getHitPosFromCamera()
             throwRoot.headsUp(hitPos)
             throwRoot.setP(render, camera.getP(render))
+        else:
+            throwRoot.setP(self.avatar, self.avatar.getLookPitch())
         throwPath = NodePath('ThrowPath')
         throwPath.reparentTo(throwRoot)
         throwPath.setScale(render, 1)

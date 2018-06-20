@@ -148,11 +148,15 @@ class LocalToon(DistributedPlayerToon):
         if self.walkControls.mode == self.walkControls.MFirstPerson:
             self.crosshair.setCrosshair(self.backpack.getGagByID(gagId).crosshair)
             self.crosshair.show()
+            self.b_setLookMode(self.LMCage)
 
     def unEquip(self):
         DistributedPlayerToon.unEquip(self)
         if self.walkControls.mode == self.walkControls.MFirstPerson:
             self.crosshair.hide()
+            self.b_setLookMode(self.LMHead)
+        else:
+            self.b_setLookMode(self.LMOff)
         
     def showCrosshair(self):
         self.crosshair.show()
@@ -649,6 +653,14 @@ class LocalToon(DistributedPlayerToon):
                 if stateData.getCurrentPage() is not None:
                     if stateData.getCurrentPage().title == 'Gags':
                         stateData.getCurrentPage().gui.fsm.request('idle')
+
+    def b_setLookMode(self, mode):
+        self.setLookMode(mode)
+        self.sendUpdate('setLookMode', [mode])
+
+    def b_setLookPitch(self, pitch):
+        self.setLookPitch(pitch)
+        self.sendUpdate('setLookPitch', [pitch])
 
     def enableGags(self, andKeys = 0):
         if self.avatarMovementEnabled and andKeys:

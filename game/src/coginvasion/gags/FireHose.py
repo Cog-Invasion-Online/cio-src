@@ -28,6 +28,8 @@ class FireHose(SquirtGag):
         self.hydrant = None
         self.hydrantNode = None
         self.hydrantScale = None
+        self.hoseJoint = None
+        self.controlHoseTask = None
         self.timeout = 6
 
     def cleanupHydrantNode(self):
@@ -41,6 +43,16 @@ class FireHose(SquirtGag):
 
     def __doBob(self):
         self.setAnimTrack(self.getBobSequence('firehose', 30, 30, 1.0), startNow = True, looping = True)
+
+    def __controlHoseTask(self, task):
+        if not self.hoseJoint or self.hoseJoint.isEmpty():
+            return task.done
+
+        hand = self.avatar.find("**/def_joint_left_hold")
+        self.hoseJoint.setHpr(self.avatar, hand.getHpr(self.avatar) + (-5, 5, 0))
+        self.hoseJoint.setPos(self.avatar, hand.getPos(self.avatar) + (-0.1, 0.2, 0.1))
+
+        return task.cont
 
     def equip(self):
         self.deleteHoseStuff()
@@ -56,6 +68,9 @@ class FireHose(SquirtGag):
         self.hydrant = loader.loadModel('phase_5/models/props/battle_hydrant.bam')
         self.gag.reparentTo(self.hydrant)
         self.gag.pose('chan', 2)
+        self.gag.listJoints()
+        self.hoseJoint = self.gag.controlJoint(None, "modelRoot", "joint_x")
+
         self.hydrantNode = self.avatar.attachNewNode('hydrantNode')
         self.hydrantNode.clearTransform(self.avatar.getGeomNode().getChild(0))
         self.hydrantScale = self.hydrantNode.attachNewNode('hydrantScale')
@@ -70,6 +85,11 @@ class FireHose(SquirtGag):
         hbase = self.hydrant.find('**/base')
         hbase.setColor(1, 1, 1, 0.5)
         hbase.setPos(self.avatar, 0, 0, 0)
+
+        if self.controlHoseTask:
+            self.controlHoseTask.remove()
+            self.controlHoseTask = None
+        self.controlHoseTask = taskMgr.add(self.__controlHoseTask, self.avatar.taskName("controlHoseTask"))
 
         self.avatar.loop('neutral')
 
@@ -92,6 +112,13 @@ class FireHose(SquirtGag):
         self.setAnimTrack(track, startNow = True)
 
     def deleteHoseStuff(self):
+        if self.controlHoseTask:
+            self.controlHoseTask.remove()
+            self.controlHoseTask = None
+        if self.hoseJoint:
+            self.hoseJoint.detachNode()
+            self.gag.releaseJoint("modelRoot", "joint_x")
+            self.hoseJoint = None
         if self.hydrant:
             self.hydrant.removeNode()
             self.hydrant = None

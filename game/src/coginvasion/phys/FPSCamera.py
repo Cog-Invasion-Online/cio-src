@@ -279,7 +279,7 @@ class FPSCamera(DirectObject):
                 # Constrain the head pitch a little bit so it doesn't look like their head snapped
                 headPitch = max(-47, newPitch)
                 headPitch = min(75, headPitch)
-                base.localAvatar.sendUpdate('updateHeadPitch', [headPitch])
+                base.localAvatar.b_setLookPitch(headPitch)
 
         self.lastPitch = newPitch
             

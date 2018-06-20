@@ -136,7 +136,6 @@ class LocationGag:
             self.helpInfo.destroy()
 
     def cleanup(self):
-        LocationSeeker.cleanup(self)
         self.cleanupButton()
         self.cleanupLocationSeeker()
         self.cleanupTracks()
@@ -144,4 +143,3 @@ class LocationGag:
         self.buttonSfx.stop()
         self.buttonSoundPath = None
         self.buttonAnim = None
-        self.avatar = None

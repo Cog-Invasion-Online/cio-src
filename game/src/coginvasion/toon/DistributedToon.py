@@ -25,6 +25,10 @@ import types
 class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, DelayDeletable):
     notify = directNotify.newCategory('DistributedToon')
 
+    LMHead = 0
+    LMCage = 1
+    LMOff = 2
+
     def __init__(self, cr):
         try:
             self.DistributedToon_initialized
@@ -38,6 +42,12 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         for index in range(len(self.animFSM.getStates())):
             self.animState2animId[self.animFSM.getStates()[index].getName()] = index
         self.animId2animState = {v: k for k, v in self.animState2animId.items()}
+
+        self.lookMode = self.LMOff
+        self.lookPitch = 0
+        self.cageBone = None
+        self.lookTask = None
+
         return
 
     def setupNameTag(self, tempName = None):
@@ -45,10 +55,73 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         self.nametag.getNametag3d().setClickEvent('toonClicked', [self.doId])
         self.nametag.getNametag2d().setClickEvent('toonClicked', [self.doId])
 
-    def updateHeadPitch(self, pitch):
+    def stopLookTask(self):
+        if self.lookTask:
+            self.lookTask.remove()
+            self.lookTask = None
+
+    def startLookTask(self):
+        self.stopLookTask()
+        self.lookTask = taskMgr.add(self.updateLookPitch, self.uniqueName('updateLookPitch'))
+
+    def setLookMode(self, mode):
+        self.lookMode = mode
+
+        if self.lookMode == self.LMCage:
+            head = self.getPart('head')
+            oldPitch = head.getP(self)
+            head.setP(self, 0)
+            self.getCageBone().setP(self, oldPitch)
+        elif self.lookMode == self.LMHead:
+            # transfer from cage to head
+            oldPitch = self.getCageBone().getP(self)
+            self.resetCageBone()
+            self.getPart('head').setP(self, oldPitch)
+
+        if self.lookMode != self.LMOff:
+            self.startLookTask()
+        else:
+            self.stopLookTask()
+
+    def getLookMode(self):
+        return self.mode
+
+    def setLookPitch(self, pitch):
+        self.lookPitch = pitch
+
+    def getLookPitch(self):
+        return self.lookPitch
+
+    def getCageBone(self, makeIfEmpty = True):
+        cageBone = self.find("**/def_cageA")
+        if cageBone.isEmpty() and makeIfEmpty:
+            cageBone = self.controlJoint(None, "torso", "def_cageA")
+        return cageBone
+
+    def resetCageBone(self):
+        cageBone = self.find("**/def_cageA")
+        if not cageBone.isEmpty():
+            self.releaseJoint("torso", "def_cageA")
+            cageBone.detachNode()
+
+    def __updateHead(self, cage):
         head = self.getPart('head')
         if head and not head.isEmpty():
-            head.setP(pitch)
+            if cage:
+                head.setHpr(self, 0, self.lookPitch, 0)
+            else:
+                head.setP(self.lookPitch)
+
+    def updateLookPitch(self, task):
+        if self.lookMode == self.LMHead:
+            self.__updateHead(False)
+
+        elif self.lookMode == self.LMCage:
+            bone = self.getCageBone()
+            bone.setHpr(self, 0, self.lookPitch, 0)
+            self.__updateHead(True)
+
+        return task.cont
 
     def doSmoothTask(self, task):
         self.smoother.computeAndApplySmoothPosHpr(self, self)
