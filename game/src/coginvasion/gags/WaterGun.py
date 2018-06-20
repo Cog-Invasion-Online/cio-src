@@ -59,7 +59,7 @@ class WaterGun(SquirtGag):
         self.gag.setPos(Point3(0.28, -0.09, 0.08))
         self.gag.setHpr(VBase3(73.00, 9.27, 94.43))
 
-        self.doDrawAndHold('squirt', 0, 48, 1.0, 48, 48)
+        self.doDrawAndHold('squirt', 0, 43, 1.0, 43, 43)
 
     def unEquip(self):
         if self.isLocal():

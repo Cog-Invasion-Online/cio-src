@@ -1170,8 +1170,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         def shouldDisableGags():
             if hasattr(self, 'disableGags'):
                 self.disableGags()
-            if hasattr(self, 'b_unEquip'):
-                self.b_unEquip()
+            if hasattr(self, 'b_setCurrentGag'):
+                self.b_setCurrentGag(-1)
         
         self.playingAnim = 'lose'
         self.isdying = True

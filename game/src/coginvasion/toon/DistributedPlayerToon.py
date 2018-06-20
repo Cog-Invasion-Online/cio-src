@@ -478,21 +478,14 @@ class DistributedPlayerToon(DistributedToon):
         self.gagBuild(gagId)
         self.sendUpdate('gagBuild', [gagId])
         
-    def equip(self, gagId):
+    def setCurrentGag(self, gagId):
         if self.backpack:
             self.backpack.setCurrentGag(gagId)
 
-    def unEquip(self):
+    def getCurrentGag(self):
         if self.backpack:
-            self.backpack.setCurrentGag(None)
-
-    def b_unEquip(self):
-        self.unEquip()
-        self.sendUpdate('unEquip', [])
-
-    def b_equip(self, gag_id):
-        self.equip(gag_id)
-        self.sendUpdate('equip', [gag_id])
+            return self.backpack.currentGag
+        return -1
 
     def getBackpack(self):
         return self.backpack

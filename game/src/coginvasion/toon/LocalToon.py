@@ -143,23 +143,29 @@ class LocalToon(DistributedPlayerToon):
     def getFPSCam(self):
         return self.walkControls.fpsCam
 
-    def equip(self, gagId):
-        DistributedPlayerToon.equip(self, gagId)
-        if self.walkControls.mode == self.walkControls.MFirstPerson:
-            self.crosshair.setCrosshair(self.backpack.getGagByID(gagId).crosshair)
-            self.crosshair.show()
-            self.b_setLookMode(self.LMCage)
+    def b_setCurrentGag(self, gagId):
+        self.setCurrentGag(gagId)
+        self.sendUpdate('setCurrentGag', [gagId])
 
-    def unEquip(self):
-        DistributedPlayerToon.unEquip(self)
+    def b_unEquipGag(self):
+        self.b_setCurrentGag(-1)
 
-        if not self.walkControls:
-            return
-        if self.walkControls.mode == self.walkControls.MFirstPerson:
-            self.crosshair.hide()
-            self.b_setLookMode(self.LMHead)
+    def setCurrentGag(self, gagId):
+        DistributedPlayerToon.setCurrentGag(self, gagId)
+        if gagId != -1:
+            if self.walkControls.mode == self.walkControls.MFirstPerson:
+                self.crosshair.setCrosshair(self.backpack.getGagByID(gagId).crosshair)
+                self.crosshair.show()
+                self.b_setLookMode(self.LMCage)
         else:
-            self.b_setLookMode(self.LMOff)
+            # We've unequipped
+            if not self.walkControls:
+                return
+            if self.walkControls.mode == self.walkControls.MFirstPerson:
+                self.crosshair.hide()
+                self.b_setLookMode(self.LMHead)
+            else:
+                self.b_setLookMode(self.LMOff)
         
     def showCrosshair(self):
         self.crosshair.show()
@@ -697,7 +703,7 @@ class LocalToon(DistributedPlayerToon):
         if self.invGui:
             self.invGui.hide()
             self.invGui.disableControls()
-        self.b_unEquip()
+        self.b_setCurrentGag(-1)
 
     def resetHeadHpr(self, override = False):
         if self.walkControls.mode == self.walkControls.MThirdPerson or not self.walkControls.controlsEnabled or override:

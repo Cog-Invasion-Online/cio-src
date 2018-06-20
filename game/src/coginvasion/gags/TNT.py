@@ -56,4 +56,4 @@ class TNT(TossTrapGag):
             cam.setVMGag(self.gag, pos = (-0.05, 0.05, 0), hpr = (0, -97.492, 0), scale = 0.5, animate = False)
             cam.setVMAnimTrack(Sequence(ActorInterval(vm, "pie_draw"), Func(vm.loop, "pie_idle")))
 
-        self.doDrawAndHold('toss', 0, 30, 1.0, 30, 33, 1.0)
+        self.doDrawAndHold('toss', 0, 30, 1.0, 30, 30, 1.0)

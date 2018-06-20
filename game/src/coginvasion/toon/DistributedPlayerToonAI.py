@@ -54,8 +54,15 @@ class DistributedPlayerToonAI(DistributedToonAI):
         self.lastHood = 0
         self.defaultShard = 0
         self.numGagSlots = 0
+        self.currentGag = -1
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
         return
+
+    def setCurrentGag(self, gagId):
+        self.currentGag = gagId
+
+    def getCurrentGag(self):
+        return self.currentGag
 
     def createObjectForMe(self, dclassNum):
         sender = self.air.getMsgSender()
