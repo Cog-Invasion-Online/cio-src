@@ -23,16 +23,12 @@ from direct.distributed import DelayDelete
 from direct.actor.Actor import Actor
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
-from direct.showbase.Audio3DManager import Audio3DManager
 from direct.task.Task import Task
 from panda3d.core import Vec4, VBase4, Texture
 import random
 
 class Suit(Avatar):
     notify = directNotify.newCategory('Suit')
-    audio3d = Audio3DManager(base.sfxManagerList[0], camera)
-    audio3d.setDistanceFactor(25)
-    audio3d.setDropOffFactor(audio3d.getDistanceFactor() / 1000)
 
     def __init__(self):
         Avatar.__init__(self)
@@ -63,7 +59,7 @@ class Suit(Avatar):
         self.footstepSound = None
         self.showNametagInMargins = False
 
-        self.gruntSound = self.audio3d.loadSfx("phase_14/audio/sfx/cog_grunt.ogg")
+        self.gruntSound = base.audio3d.loadSfx("phase_14/audio/sfx/cog_grunt.ogg")
         base.audio3d.attachSoundToObject(self.gruntSound, self)
 
         self.animFSM = ClassicFSM('Suit', [
@@ -569,15 +565,15 @@ class Suit(Avatar):
         self.propeller = Actor('phase_4/models/props/propeller-mod.bam',
                                {'chan' : 'phase_4/models/props/propeller-chan.bam'})
         self.propeller.reparentTo(self.find('**/joint_head'))
-        self.propellerSounds['in'] = self.audio3d.loadSfx(SuitGlobals.propellerInSfx)
-        self.propellerSounds['out'] = self.audio3d.loadSfx(SuitGlobals.propellerOutSfx)
-        self.propellerSounds['neutral'] = self.audio3d.loadSfx(SuitGlobals.propellerNeutSfx)
+        self.propellerSounds['in'] = base.audio3d.loadSfx(SuitGlobals.propellerInSfx)
+        self.propellerSounds['out'] = base.audio3d.loadSfx(SuitGlobals.propellerOutSfx)
+        self.propellerSounds['neutral'] = base.audio3d.loadSfx(SuitGlobals.propellerNeutSfx)
         for sound in self.propellerSounds.values():
-            self.audio3d.attachSoundToObject(sound, self.propeller)
+            base.audio3d.attachSoundToObject(sound, self.propeller)
 
     def cleanupPropeller(self):
         for sound in self.propellerSounds.values():
-            self.audio3d.detachSound(sound)
+            base.audio3d.detachSound(sound)
             sound.stop()
         self.propellerSounds = {}
         if self.propeller:
@@ -668,20 +664,20 @@ class Suit(Avatar):
             question02Dial = self.voice.getSoundFile('question_2')
 
         if '!' in self.chat:
-            chatDial = self.audio3d.loadSfx(gruntDial)
+            chatDial = base.audio3d.loadSfx(gruntDial)
         elif '?' in self.chat:
             questionDials = [questionDial]
             if self.voice == Voice.NORMAL:
                 questionDials.append(question02Dial)
-            chatDial = self.audio3d.loadSfx(random.choice(questionDials))
+            chatDial = base.audio3d.loadSfx(random.choice(questionDials))
         else:
-            chatDial = self.audio3d.loadSfx(statementDial)
+            chatDial = base.audio3d.loadSfx(statementDial)
         self.chatDial = chatDial
 
         if self.variant == Variant.SKELETON:
-            self.audio3d.attachSoundToObject(self.chatDial, self)
+            base.audio3d.attachSoundToObject(self.chatDial, self)
         else:
-            self.audio3d.attachSoundToObject(self.chatDial, self.headModel)
+            base.audio3d.attachSoundToObject(self.chatDial, self.headModel)
         base.playSfx(self.chatDial, node = self)
 
     def setChat(self, chat):

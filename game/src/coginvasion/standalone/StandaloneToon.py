@@ -72,8 +72,8 @@ base.loader.mountMultifiles(None)
 sm.applySettings()
 from src.coginvasion.globals import CIGlobals
 CIGlobals.SettingsMgr = sm
-from direct.showbase.Audio3DManager import Audio3DManager
-base.audio3d = Audio3DManager(base.sfxManagerList[0], camera)
+from src.coginvasion.base.CIAudio3DManager import CIAudio3DManager
+base.audio3d = CIAudio3DManager(base.sfxManagerList[0], camera)
 base.audio3d.setDistanceFactor(25)
 base.audio3d.setDropOffFactor(0.025)
 from direct.distributed.ClientRepository import ClientRepository

@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from src.coginvasion.gags.TrapGag import TrapGag
 from src.coginvasion.globals import CIGlobals
-from direct.particles.ParticleEffect import ParticleEffect
+from src.coginvasion.base.CIParticleEffect import CIParticleEffect
 from direct.interval.IntervalGlobal import ProjectileInterval
 from panda3d.core import NodePath, BitMask32, CollisionSphere, CollisionNode, CollisionHandlerEvent
 
@@ -45,7 +45,7 @@ class TossTrapGag(TrapGag):
         self.cleanupParticles()
         if hasattr(self, 'wantParticles') and hasattr(self, 'particlesFx'):
             if self.wantParticles and self.particlesFx:
-                self.particles = ParticleEffect()
+                self.particles = CIParticleEffect()
                 self.particles.loadConfig(self.particlesFx)
 
     def buildCollisions(self):

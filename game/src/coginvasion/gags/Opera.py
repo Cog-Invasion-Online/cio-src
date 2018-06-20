@@ -12,7 +12,8 @@ from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.SoundGag import SoundGag
 from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, SoundInterval, ParticleInterval, ActorInterval
 from panda3d.core import Vec3, Point3
-from direct.particles.ParticleEffect import ParticleEffect
+
+from src.coginvasion.base.CIParticleEffect import CIParticleEffect
 
 class Opera(SoundGag):
 
@@ -23,7 +24,7 @@ class Opera(SoundGag):
 
     def __createToonInterval(self, delay):
         track = Sequence(Wait(delay))
-        sprayEffect = ParticleEffect()
+        sprayEffect = CIParticleEffect()
         sprayEffect.loadConfig('phase_5/etc/soundWave.ptf')
         sprayEffect.setDepthWrite(0)
         sprayEffect.setDepthTest(0)

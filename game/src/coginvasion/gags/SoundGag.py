@@ -13,8 +13,8 @@ from src.coginvasion.gags.Gag import Gag
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags import GagGlobals
+from src.coginvasion.base.CIParticleEffect import CIParticleEffect
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, SoundInterval
-from direct.particles.ParticleEffect import ParticleEffect
 from panda3d.core import Point3
 import random
 
@@ -75,7 +75,7 @@ class SoundGag(Gag):
             if self.name != GagGlobals.Opera:
                 suit.sendUpdate('hitByGag', [self.getID()])
             else:
-                breakEffect = ParticleEffect()
+                breakEffect = CIParticleEffect()
                 breakEffect.loadConfig('phase_5/etc/soundBreak.ptf')
                 breakEffect.setDepthWrite(0)
                 breakEffect.setDepthTest(0)

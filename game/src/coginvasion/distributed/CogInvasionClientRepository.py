@@ -20,7 +20,6 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 
-from direct.showbase.Audio3DManager import Audio3DManager
 from direct.task import Task
 
 from panda3d.core import URLSpec, CollisionHandlerFloor, CollisionHandlerPusher
