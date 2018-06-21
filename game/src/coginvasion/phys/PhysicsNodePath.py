@@ -67,7 +67,7 @@ class PhysicsNodePath(NodePath):
             self.reparentTo(self.bodyNP)
             self.assign(self.bodyNP)
         else:
-            self.bodyNP.wrtReparentTo(self)
+            self.bodyNP.reparentTo(self)
         if self.bodyNode.isExactType(BulletGhostNode.getClassType()):
             base.physicsWorld.attachGhost(self.bodyNode)
         else:
