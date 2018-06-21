@@ -6,7 +6,7 @@
 
 """
 
-from panda3d.core import PerspectiveLens, LensNode, Texture
+from panda3d.core import PerspectiveLens, LensNode, Texture, Point3, Mat4
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Parallel, Sequence, LerpHprInterval
@@ -24,17 +24,32 @@ class ToonHead(Actor.Actor):
 
     if game.process == 'client':
         EyesOpen = loader.loadTexture('phase_3/maps/eyes.jpg', 'phase_3/maps/eyes_a.rgb')
-        EyesOpen.setMinfilter(Texture.FTLinear)
+        EyesOpen.setMinfilter(Texture.FTLinearMipmapLinear)
         EyesOpen.setMagfilter(Texture.FTLinear)
         EyesClosed = loader.loadTexture('phase_3/maps/eyesClosed.jpg', 'phase_3/maps/eyesClosed_a.rgb')
-        EyesClosed.setMinfilter(Texture.FTLinear)
+        EyesClosed.setMinfilter(Texture.FTLinearMipmapLinear)
         EyesClosed.setMagfilter(Texture.FTLinear)
         EyesOpenSad = loader.loadTexture('phase_3/maps/eyesSad.jpg', 'phase_3/maps/eyesSad_a.rgb')
-        EyesOpenSad.setMinfilter(Texture.FTLinear)
+        EyesOpenSad.setMinfilter(Texture.FTLinearMipmapLinear)
         EyesOpenSad.setMagfilter(Texture.FTLinear)
         EyesClosedSad = loader.loadTexture('phase_3/maps/eyesSadClosed.jpg', 'phase_3/maps/eyesSadClosed_a.rgb')
-        EyesClosedSad.setMinfilter(Texture.FTLinear)
+        EyesClosedSad.setMinfilter(Texture.FTLinearMipmapLinear)
         EyesClosedSad.setMagfilter(Texture.FTLinear)
+        
+    LeftA = Point3(0.06, 0.0, 0.14)
+    LeftB = Point3(-0.13, 0.0, 0.1)
+    LeftC = Point3(-0.05, 0.0, 0.0)
+    LeftD = Point3(0.06, 0.0, 0.0)
+    RightA = Point3(0.13, 0.0, 0.1)
+    RightB = Point3(-0.06, 0.0, 0.14)
+    RightC = Point3(-0.06, 0.0, 0.0)
+    RightD = Point3(0.05, 0.0, 0.0)
+    LeftAD = Point3(LeftA[0] - LeftA[2] * (LeftD[0] - LeftA[0]) / (LeftD[2] - LeftA[2]), 0.0, 0.0)
+    LeftBC = Point3(LeftB[0] - LeftB[2] * (LeftC[0] - LeftB[0]) / (LeftC[2] - LeftB[2]), 0.0, 0.0)
+    RightAD = Point3(RightA[0] - RightA[2] * (RightD[0] - RightA[0]) / (RightD[2] - RightA[2]), 0.0, 0.0)
+    RightBC = Point3(RightB[0] - RightB[2] * (RightC[0] - RightB[0]) / (RightC[2] - RightB[2]), 0.0, 0.0)
+    LeftMid = (LeftA + LeftB + LeftC + LeftD) / 4.0
+    RightMid = (RightA + RightB + RightC + RightD) / 4.0
 
     def __init__(self, cr):
         try:
@@ -60,34 +75,43 @@ class ToonHead(Actor.Actor):
         self.doLookAroundTaskName = "doLookAround" + str(id(self))
         self.openEyesTaskName = "openEyes" + str(id(self))
         return
+    
+    def getLeftPupil(self):
+        return self.__lpupil
+
+    def getRightPupil(self):
+        return self.__rpupil
+
+    def getPupils(self):
+        return [self.__lpupil, self.__rpupil]
 
     def generateHead(self, gender, head, headType, forGui = 0):
 
         def stashMuzzles(length, stashNeutral=0):
             if stashNeutral:
                 if length == "short":
-                    self.findAllMatches('**/muzzle-long-neutral').hide()
+                    self.findAllMatches('**/muzzle-long-neutral;+s').stash()
                 elif length == "long":
-                    self.findAllMatches('**/muzzle-short-neutral').hide()
+                    self.findAllMatches('**/muzzle-short-neutral;+s').stash()
             else:
                 if length == "short":
-                    if self.find('**/muzzle-long-neutral').isHidden():
-                        self.find('**/muzzle-long-neutral').show()
+                    if self.find('**/muzzle-long-neutral;+s').isStashed():
+                        self.find('**/muzzle-long-neutral;+s').unstash()
                 elif length == "long":
-                    if self.find('**/muzzle-short-neutral').isHidden():
-                        self.find('**/muzzle-short-neutral').show()
-            self.findAllMatches('**/muzzle-' + length + '-s*').hide()
-            self.findAllMatches('**/muzzle-' + length + '-laugh').hide()
-            self.findAllMatches('**/muzzle-' + length + '-angry').hide()
+                    if self.find('**/muzzle-short-neutral;+s').isStashed():
+                        self.find('**/muzzle-short-neutral;+s').unstash()
+            self.findAllMatches('**/muzzle-' + length + '-s*;+s').stash()
+            self.findAllMatches('**/muzzle-' + length + '-laugh;+s').stash()
+            self.findAllMatches('**/muzzle-' + length + '-angry;+s').stash()
 
         def stashParts(length):
-            for part in self.findAllMatches('**/*' + length + '*'):
-                part.hide()
+            for part in self.findAllMatches('**/*' + length + '*;+s'):
+                part.stash()
 
         self.gender = gender
         self.animal = head
         self.head = headType
-        _modelDetail = str(CIGlobals.getModelDetail(CIGlobals.Toon))
+        _modelDetail = "1000"
         if head != "dog":
             self.loadModel("phase_3/models/char/%s-heads-%s.bam" % (head, _modelDetail), 'head')
         else:
@@ -139,10 +163,10 @@ class ToonHead(Actor.Actor):
                 _pupilL = self.findAllMatches('**/joint_pupilL_short')
                 _pupilR = self.findAllMatches('**/joint_pupilR_short')
             if head == "rabbit":
-                self.findAllMatches('**/head-long').show()
-                self.findAllMatches('**/head-front-long').show()
-                #self.findAllMatches('**/head-front-short').hide()
-                #self.findAllMatches('**/head-short').hide()
+                self.findAllMatches('**/head-long').unstash()
+                self.findAllMatches('**/head-front-long').unstash()
+                #self.findAllMatches('**/head-front-short').stash()
+                #self.findAllMatches('**/head-short').stash()
         elif headType == "3":
             stashParts("short")
             stashMuzzles("long", stashNeutral=0)
@@ -150,10 +174,10 @@ class ToonHead(Actor.Actor):
             _pupilL = self.findAllMatches('**/joint_pupilL_long')
             _pupilR = self.findAllMatches('**/joint_pupilR_long')
             if head == "rabbit":
-                self.findAllMatches('**/head-long').hide()
-                self.findAllMatches('**/head-front-long').hide()
-                self.findAllMatches('**/head-front-short').show()
-                self.findAllMatches('**/head-short').show()
+                self.findAllMatches('**/head-long').stash()
+                self.findAllMatches('**/head-front-long').stash()
+                self.findAllMatches('**/head-front-short').unstash()
+                self.findAllMatches('**/head-short').unstash()
         elif headType == "4":
             stashParts("short")
             stashMuzzles("short", stashNeutral=0)
@@ -162,22 +186,19 @@ class ToonHead(Actor.Actor):
             _pupilR = self.findAllMatches('**/joint_pupilR_long')
         self.pupils.append(_pupilL)
         self.pupils.append(_pupilR)
-        if forGui:
-            self.guiFix()
+        self.fixEyes()
         if self.gender == "girl":
             self.setupEyelashes()
         return
-
-    def guiFix(self):
-        #if self.animal in ['monkey', 'rabbit', 'cat', 'duck']:
-        #    return
-
-        #self.drawInFront('eyes*', 'head-front*', -2)
-        #if not self.find('**/joint_pupil*').isEmpty():
-        #    self.drawInFront('joint_pupil*', 'eyes*', -1)
-        #else:
-        #    self.drawInFront('def_*_pupil', 'eyes*', -1)
-        """
+        
+    def fixEyes(self):
+        mode = -3
+        self.drawInFront("eyes*", "head-front*", mode)
+        if not self.find('**/joint_pupil*').isEmpty():
+            self.drawInFront('joint_pupil*', 'eyes*', -1)
+        else:
+            self.drawInFront('def_*_pupil', 'eyes*', -1)
+                
         self.__eyes = self.find('**/eyes*')
         if not self.__eyes.isEmpty():
             self.__eyes.setColorOff()
@@ -187,9 +208,11 @@ class ToonHead(Actor.Actor):
             rp = self.pupils[1]
             leye = self.__eyes.attachNewNode('leye')
             reye = self.__eyes.attachNewNode('reye')
-            lmat = Mat4(0.802174, 0.59709, 0, 0, -0.586191, 0.787531, 0.190197, 0, 0.113565, -0.152571, 0.981746, 0, -0.233634, 0.418062, 0.0196875, 1)
+            lmat = Mat4(0.802174, 0.59709, 0, 0, -0.586191, 0.787531, 0.190197, 0, 0.113565,
+                        -0.152571, 0.981746, 0, -0.233634, 0.418062, 0.0196875, 1)
             leye.setMat(lmat)
-            rmat = Mat4(0.786788, -0.617224, 0, 0, 0.602836, 0.768447, 0.214658, 0, -0.132492, -0.16889, 0.976689, 0, 0.233634, 0.418062, 0.0196875, 1)
+            rmat = Mat4(0.786788, -0.617224, 0, 0, 0.602836, 0.768447, 0.214658, 0, -0.132492,
+                        -0.16889, 0.976689, 0, 0.233634, 0.418062, 0.0196875, 1)
             reye.setMat(rmat)
             self.__lpupil = leye.attachNewNode('lpupil')
             self.__rpupil = reye.attachNewNode('rpupil')
@@ -201,8 +224,63 @@ class ToonHead(Actor.Actor):
             rp.reparentTo(rpt)
             self.__lpupil.adjustAllPriorities(1)
             self.__rpupil.adjustAllPriorities(1)
-            self.__lpupil.flattenStrong()
-            self.__rpupil.flattenStrong()
+            if self.animal != 'dog':
+                self.__lpupil.flattenStrong()
+                self.__rpupil.flattenStrong()
+     
+    def setPupilDirection(self, x, y):
+        if y < 0.0:
+            y2 = -y
+            left1 = self.LeftAD + (self.LeftD - self.LeftAD) * y2
+            left2 = self.LeftBC + (self.LeftC - self.LeftBC) * y2
+            right1 = self.RightAD + (self.RightD - self.RightAD) * y2
+            right2 = self.RightBC + (self.RightC - self.RightBC) * y2
+        else:
+            y2 = y
+            left1 = self.LeftAD + (self.LeftA - self.LeftAD) * y2
+            left2 = self.LeftBC + (self.LeftB - self.LeftBC) * y2
+            right1 = self.RightAD + (self.RightA - self.RightAD) * y2
+            right2 = self.RightBC + (self.RightB - self.RightBC) * y2
+        left0 = Point3(0.0, 0.0, left1[2] - left1[0] * (left2[2] - left1[2]) / (left2[0] - left1[0]))
+        right0 = Point3(0.0, 0.0, right1[2] - right1[0] * (right2[2] - right1[2]) / (right2[0] - right1[0]))
+        if x < 0.0:
+            x2 = -x
+            left = left0 + (left2 - left0) * x2
+            right = right0 + (right2 - right0) * x2
+        else:
+            x2 = x
+            left = left0 + (left1 - left0) * x2
+            right = right0 + (right1 - right0) * x2
+        self.__lpupil.setPos(left)
+        self.__rpupil.setPos(right)
+        
+    def lookPupilsAt(self, node, point):
+        if node != None:
+            mat = node.getMat(self.__eyes)
+            point = mat.xformPoint(point)
+        distance = 1.0
+        recip_z = 1.0 / max(0.1, point[1])
+        x = distance * point[0] * recip_z
+        y = distance * point[2] * recip_z
+        x = min(max(x, -1), 1)
+        y = min(max(y, -1), 1)
+        self.setPupilDirection(x, y)
+
+    def lookPupilsMiddle(self):
+        self.__lpupil.setPos(0, 0, 0)
+        self.__rpupil.setPos(0, 0, 0)
+
+    def guiFix(self):
+        #if self.animal in ['monkey', 'rabbit', 'cat', 'duck']:
+        #    return
+
+        #self.drawInFront('eyes*', 'head-front*', -2)
+        #if not self.find('**/joint_pupil*').isEmpty():
+        #    self.drawInFront('joint_pupil*', 'eyes*', -1)
+        #else:
+        #    self.drawInFront('def_*_pupil', 'eyes*', -1)
+        """
+        
         """
 
 
@@ -390,6 +468,17 @@ class ToonHead(Actor.Actor):
         spot = random.randint(0, len(spots) - 1)
         h, p, r = spots[spot]
         return tuple((h, p, r))
+
+    def getEyes(self):
+        return self.find("**/eyes*")
+
+    def lerpLookAtNode(self, node):
+        head = self.getPart("head")
+        startHpr = head.getHpr()
+        head.lookAt(node, Point3(0, 0, -2))
+        endHpr = head.getHpr()
+        head.setHpr(startHpr)
+        self.lerpLookAt(head, endHpr)
 
     def lerpLookAt(self, head, hpr, time = 1.0):
         self.lookAtTrack = Parallel(Sequence(LerpHprInterval(head, time, hpr, blendType='easeInOut')))
