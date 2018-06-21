@@ -47,11 +47,13 @@ class SnowEffect:
         if self.loaded:
             return
             
-        self.particles = ParticleLoader.loadParticleEffect('phase_8/etc/snowdisk.ptf')
-        self.particles.setPos(0, 0, 5)
+        
         self.particlesRender = render.attachNewNode('snowRender')
         self.particlesRender.setDepthWrite(0)
         self.particlesRender.setBin('fixed', 1)
+        self.particlesRender.setLightOff(1)
+        self.particlesRender.setShaderOff(1)
+        self.particlesRender.setMaterialOff(1)
         self.fog = Fog('snowFog')
         self.fog.setColor(0.486, 0.784, 1)
         self.fog.setExpDensity(0.003)
@@ -59,17 +61,23 @@ class SnowEffect:
         self.loaded = True
 
     def start(self):
+        self.particles = ParticleLoader.loadParticleEffect('phase_8/etc/snowdisk.ptf')
+        self.particles.setPos(0, 0, 5)
         self.particles.start(parent = camera, renderParent = self.particlesRender)
+
         # Only use the fog if it's christmas.
         # This class is used by the Brrrgh all the time, but
         # it will use the OutdoorLightingConfig fog.
         if base.cr.isChristmas():
             base.render.setFog(self.fog)
+
         self.startWind()
 
     def stop(self):
         self.stopWind()
-        self.particles.softStop()
+        if self.particles:
+            self.particles.softStop()
+            self.particles = None
         if base.cr.isChristmas():
             base.render.clearFog()
 

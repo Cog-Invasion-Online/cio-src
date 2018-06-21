@@ -525,7 +525,7 @@ class Place(StateData):
 
     def exitTunnelOut(self):
         base.localAvatar.playMovementSfx(None)
-        base.localAvatar.walkControls.setCollisionsActive(1)
+        #base.localAvatar.walkControls.setCollisionsActive(1)
         #base.localAvatar.detachCamera()
         del self.nextState
 

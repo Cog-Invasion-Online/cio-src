@@ -183,7 +183,7 @@ class LocalToon(DistributedPlayerToon):
         messenger.send(self.cr.playGame.getPlace().doneEvent)
 
     def _handleCameOutTunnel(self):
-        self.walkControls.setCollisionsActive(1)
+        #self.walkControls.setCollisionsActive(1)
         self.cr.playGame.getPlace().fsm.request(self.cr.playGame.getPlace().nextState)
 
     def handleClickedWhisper(self, senderName, fromId, isPlayer, openPanel = False):

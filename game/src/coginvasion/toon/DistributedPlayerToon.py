@@ -181,12 +181,18 @@ class DistributedPlayerToon(DistributedToon):
                     startPos = (linkTunnel.inPivotStartX, pivotPointNode.getY(), pivotPointNode.getZ())
             )))
         elif inOrOut == 1:
-            
-            def handleAvatarExit():
+
+            def doAvatarExit():
+                worldSpacePos = self.getPos(render)
+                worldSpaceHpr = self.getHpr(render)
                 self.reparentTo(render)
-                
-                if not base.localAvatar.doId == self.doId:
+                self.setPos(worldSpacePos)
+                self.setHpr(worldSpaceHpr)
+                if self.doId != base.localAvatar.doId:
                     self.startSmooth()
+
+            def handleAvatarExit():
+                self.acceptOnce('e', doAvatarExit)
             
             # Going out!
             pivotPoint = linkTunnel.outPivotPoint
@@ -220,7 +226,7 @@ class DistributedPlayerToon(DistributedToon):
                     hpr = linkTunnel.outPivotEndHpr,
                     startHpr = linkTunnel.outPivotStartHpr,
                 ),
-                Func(handleAvatarExit)
+                Func(doAvatarExit)
             )
             self.tunnelTrack.append(exitSeq)
 
