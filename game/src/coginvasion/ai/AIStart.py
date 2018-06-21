@@ -72,7 +72,7 @@ loadPrcFileData('', 'audio-library-name none')
 
 from direct.showbase.ShowBase import ShowBase
 base = ShowBase()
-base.setSleep(0.04)
+base.setSleep(0.015)
 
 from src.coginvasion.ai.CogInvasionAIRepository import CogInvasionAIRepository as CIAIR
 base.air = CIAIR(config.GetInt('air-base-channel', 401000000), config.GetInt('air-stateserver', 10000))
