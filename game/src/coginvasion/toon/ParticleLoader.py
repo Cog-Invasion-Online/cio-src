@@ -5,11 +5,11 @@
   
 """
 
-from direct.particles.Particles import Particles
-from direct.particles.ParticleEffect import ParticleEffect
 from panda3d.core import Filename
 
+from src.coginvasion.base.CIParticleEffect import CIParticleEffect
+
 def loadParticleEffect(file):
-	p = ParticleEffect()
+	p = CIParticleEffect()
 	p.loadConfig(Filename(file))
 	return p

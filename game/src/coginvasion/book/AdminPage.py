@@ -239,6 +239,16 @@ class AdminPage(BookPage):
             text_pos = (0, -0.01),
             command = self.togglePStats
         )
+        self.pingBtn = DirectButton(
+            geom = geom,
+            text_scale = 0.04,
+            relief = None,
+            scale = 1.0,
+            text = "Toggle Ping",
+            pos = (-0.45, 0.15, -0.1),
+            text_pos = (0, -0.01),
+            command = base.cr.togglePing
+        )
         self.tokenBtn = DirectButton(
             geom = geom,
 			text_scale = 0.04,
@@ -398,3 +408,5 @@ class AdminPage(BookPage):
         del self.listBtn
         self.pstatsBtn.destroy()
         del self.pstatsBtn
+        self.pingBtn.destroy()
+        del self.pingBtn

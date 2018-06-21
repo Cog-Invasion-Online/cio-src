@@ -8,11 +8,12 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from direct.particles.ParticleEffect import ParticleEffect
 from direct.actor.Actor import Actor
 
+from src.coginvasion.base.CIParticleEffect import CIParticleEffect
+
 def loadParticle(phase, name):
-    particle = ParticleEffect()
+    particle = CIParticleEffect()
     particle.loadConfig('phase_%s/etc/%s.ptf' % (str(phase), name))
     return particle
 

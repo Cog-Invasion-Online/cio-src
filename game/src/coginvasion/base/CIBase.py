@@ -13,7 +13,6 @@ from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, Collision
 from panda3d.bullet import BulletWorld, BulletDebugNode
 
 from direct.showbase.ShowBase import ShowBase
-from direct.showbase.Audio3DManager import Audio3DManager
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.filter.CommonFilters import CommonFilters
 
@@ -21,6 +20,7 @@ from src.coginvasion.manager.UserInputStorage import UserInputStorage
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.base.ShadowCaster import ShadowCaster
 from src.coginvasion.base import MusicCache
+from CIAudio3DManager import CIAudio3DManager
 from ShakeCamera import ShakeCamera
 from CubeMapManager import CubeMapManager
 from WaterReflectionManager import WaterReflectionManager
@@ -71,7 +71,7 @@ class CIBase(ShowBase):
         #self.shadowCaster.enable()
 
         # Setup 3d audio                                 run before igLoop so 3d positioning doesn't lag behind
-        base.audio3d = Audio3DManager(base.sfxManagerList[0], camera, taskPriority = 40)
+        base.audio3d = CIAudio3DManager(base.sfxManagerList[0], camera, taskPriority = 40)
         base.audio3d.setDropOffFactor(0.1)
 
         # Setup collision handlers

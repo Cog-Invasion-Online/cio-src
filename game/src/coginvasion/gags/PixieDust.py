@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.ToonUpGag import ToonUpGag
-from direct.particles.ParticleEffect import ParticleEffect
+from src.coginvasion.base.CIParticleEffect import CIParticleEffect
 from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, ParticleInterval, ActorInterval
 from panda3d.core import Point3
 
@@ -23,7 +23,7 @@ class PixieDust(ToonUpGag):
         self.timeout = 4.0
 
     def createParticle(self, particleFile):
-        particle = ParticleEffect()
+        particle = CIParticleEffect()
         particle.loadConfig('phase_5/etc/%s.ptf' % (particleFile))
         return particle
 

@@ -143,28 +143,28 @@ class Gag(object, DirectObject):
             Parallel(
                 ActorInterval(self.avatar, 
                     animName, 
-                    startFrame = startFrame, 
-                    endFrame = endFrame - 1,
+                    startFrame = startFrame,
+                    endFrame = endFrame,
                     partName = 'head',
                     playRate = playRate),
                 ActorInterval(self.avatar, 
                     animName, 
                     startFrame = startFrame, 
-                    endFrame = endFrame - 1,
+                    endFrame = endFrame,
                     partName = 'torso-top',
                     playRate = playRate)
             ),
             Parallel(
                 ActorInterval(self.avatar, 
                     animName, 
-                    startFrame = endFrame, 
-                    endFrame = startFrame + 1,
+                    startFrame = endFrame,
+                    endFrame = startFrame,
                     partName = 'head',
                     playRate = playRate),
-                ActorInterval(self.avatar, 
+                ActorInterval(self.avatar,
                     animName, 
-                    startFrame = endFrame, 
-                    endFrame = startFrame + 1,
+                    startFrame = endFrame,
+                    endFrame = startFrame,
                     partName = 'torso-top',
                     playRate = playRate)
             )
@@ -206,12 +206,12 @@ class Gag(object, DirectObject):
         equippedAGag = False
         if base.localAvatar.needsToSwitchToGag != None:
             if base.localAvatar.needsToSwitchToGag != self.getID() and base.localAvatar.needsToSwitchToGag != 'unequip':
-                base.localAvatar.b_equip(base.localAvatar.needsToSwitchToGag)
+                base.localAvatar.b_setCurrentGag(base.localAvatar.needsToSwitchToGag)
                 equippedAGag = True
             elif base.localAvatar.needsToSwitchToGag == 'unequip':
-                base.localAvatar.b_unEquip()
+                base.localAvatar.b_setCurrentGag(-1)
         if self.equipped and base.localAvatar.backpack.getSupply(self.id) > 0 and not equippedAGag:
-            base.localAvatar.b_equip(self.id)
+            base.localAvatar.b_setCurrentGag(self.id)
         if base.localAvatar.avatarMovementEnabled:
             base.localAvatar.enableGagKeys()
         return task.done
@@ -249,7 +249,7 @@ class Gag(object, DirectObject):
                         self.setRechargeElapsedTime(0)
                         messenger.send('%s-Recharge-Tick' % (str(self.getID())))
                         taskMgr.doMethodLater(0.5, self.__doRecharge, '%s-Recharge' % (str(self.getID())))
-                        base.localAvatar.b_unEquip()
+                        base.localAvatar.b_setCurrentGag(-1)
 
     @abc.abstractmethod
     def throw(self):
