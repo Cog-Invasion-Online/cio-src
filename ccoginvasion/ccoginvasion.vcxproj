@@ -207,7 +207,7 @@ interrogate.bat</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILDING_CCOGINVASION;NDEBUG;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>D:\OTHER\lachb\Documents\cio\ccoginvasion\source;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_x64\python\include;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -228,7 +228,7 @@ interrogate.bat</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>LINK_ALL_STATIC;NDEBUG;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILDING_CCOGINVASION;LINK_ALL_STATIC;NDEBUG;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>D:\OTHER\lachb\Documents\cio\ccoginvasion\source;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_x64_static\python\include;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_x64_static\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
