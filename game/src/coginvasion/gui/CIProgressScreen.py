@@ -54,10 +54,20 @@ class CIProgressScreen:
                                     sortOrder=100,
                                     text_fg=(1, 1, 1, 1), text_font = CIGlobals.getMinnieLogoFont(), parent=hidden,
                                     text_shadow=(0, 0, 0, 0))
+        
+        # This is useful when the user has chosen to hide aspect2d before the loading screen.
+        # However, we want to show the loading screen all the time, so we need to restore the
+        # previous state after the loading screen ends.
+        self.mustRestoreHiddenAspect2d = False
 
     def begin(self, hood, range, wantGui):
         render.hide()
         NametagGlobals.setWant2dNametags(False)
+        
+        if base.aspect2d.isHidden():
+            base.aspect2d.show()
+            self.mustRestoreHiddenAspect2d = True
+        
         self.renderFrames()
         base.setBackgroundColor(0, 0, 0)
         if hood == "localAvatarEnterGame":
@@ -99,6 +109,10 @@ class CIProgressScreen:
         taskMgr.remove("renderFrames")
         render.show()
         
+        if self.mustRestoreHiddenAspect2d:
+            base.aspect2d.hide()
+            self.mustRestoreHiddenAspect2d = False
+        
         self.progress_bar.finish()
         self.bg_img.reparentTo(hidden)
         self.logoNode.reparentTo(hidden)
@@ -124,11 +138,13 @@ class CIProgressScreen:
         self.loading_lbl.destroy()
         self.progress_bar.destroy()
         self.bgm.destroy()
+        self.mustRestoreHiddenAspect2d = False
         del self.bg_img
         del self.loading_lbl
         del self.progress_bar
         del self.bgm
         del self.defaultBgTexture
+        del self.mustRestoreHiddenAspect2d
 
     def renderFrames(self):
         base.graphicsEngine.renderFrame()
