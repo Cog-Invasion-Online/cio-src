@@ -511,15 +511,15 @@ class Place(StateData):
 
     def exitTunnelIn(self):
         base.localAvatar.playMovementSfx(None)
-        base.localAvatar.reparentTo(render)
+        base.localAvatar.wrtReparentTo(render)
         #base.localAvatar.detachCamera()
         base.localAvatar.walkControls.setCollisionsActive(1)
 
     def enterTunnelOut(self, requestStatus):
         zone = requestStatus['fromZone']
         base.localAvatar.sendUpdate('goThroughTunnel', [zone, 1])
-        base.localAvatar.playMovementSfx("run")
-        base.transitions.irisIn()
+        base.localAvatar.playMovementSfx('run')
+
         self.nextState = requestStatus.get('nextState', 'walk')
         base.localAvatar.goThroughTunnel(zone, 1)
 
