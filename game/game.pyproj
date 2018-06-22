@@ -58,7 +58,13 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\avatar\__init__.py" />
     <Compile Include="src\coginvasion\base\AnisotropicFiltering.py" />
     <Compile Include="src\coginvasion\base\ChatCommands.py" />
+    <Compile Include="src\coginvasion\base\CIAudio3DManager.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\base\CIBase.py" />
+    <Compile Include="src\coginvasion\base\CIParticleEffect.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\base\CIStart.py" />
     <Compile Include="src\coginvasion\base\CIStartGlobal.py" />
     <Compile Include="src\coginvasion\base\CogInvasionLoader.py" />
@@ -86,9 +92,11 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\base\WaterManager.py" />
     <Compile Include="src\coginvasion\base\WaterReflectionManager.py" />
     <Compile Include="src\coginvasion\base\__init__.py" />
+    <Compile Include="src\coginvasion\battle\ArcadeMatchData.py" />
     <Compile Include="src\coginvasion\battle\BattleGlobals.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\battle\DistributedArcadeBattleZoneAI.py" />
     <Compile Include="src\coginvasion\battle\DistributedBattleTrolley.py" />
     <Compile Include="src\coginvasion\battle\DistributedBattleTrolleyAI.py" />
     <Compile Include="src\coginvasion\battle\DistributedBattleZone.py" />
@@ -109,6 +117,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\book\AboutCategory.py" />
     <Compile Include="src\coginvasion\book\AdminPage.py" />
     <Compile Include="src\coginvasion\book\AdvancedCategory.py" />
+    <Compile Include="src\coginvasion\book\ArcadeModePage.py" />
     <Compile Include="src\coginvasion\book\BookPage.py" />
     <Compile Include="src\coginvasion\book\CategoryTab.py" />
     <Compile Include="src\coginvasion\book\ChoiceWidget.py" />
@@ -510,6 +519,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\minigame\DistributedToonFPSGameAI.py" />
     <Compile Include="src\coginvasion\minigame\DistributedUnoGame.py" />
     <Compile Include="src\coginvasion\minigame\DistributedUnoGameAI.py" />
+    <Compile Include="src\coginvasion\minigame\DistributedUnoTable.py" />
     <Compile Include="src\coginvasion\minigame\DodgeballFirstPerson.py" />
     <Compile Include="src\coginvasion\minigame\DodgeballGlobals.py" />
     <Compile Include="src\coginvasion\minigame\EagleGameGlobals.py" />
@@ -687,6 +697,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\tutorial\DistributedTutorialSuitAI.py" />
     <Compile Include="src\coginvasion\tutorial\TutorialGlobals.py" />
     <Compile Include="src\coginvasion\tutorial\__init__.py" />
+    <Compile Include="src\coginvasion\uber\ArcadeModeManagerUD.py" />
     <Compile Include="src\coginvasion\uber\ClientServicesManager.py" />
     <Compile Include="src\coginvasion\uber\ClientServicesManagerAI.py">
       <SubType>Code</SubType>
@@ -696,8 +707,6 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\uber\DistrictNameManager.py" />
     <Compile Include="src\coginvasion\uber\DistrictNameManagerAI.py" />
     <Compile Include="src\coginvasion\uber\DistrictNameManagerUD.py" />
-    <Compile Include="src\coginvasion\uber\LauncherLoginManager.py" />
-    <Compile Include="src\coginvasion\uber\LauncherLoginManagerUD.py" />
     <Compile Include="src\coginvasion\uber\LoginServerConnection.py" />
     <Compile Include="src\coginvasion\uber\LoginToken.py" />
     <Compile Include="src\coginvasion\uber\LoginTokenGenerator.py" />
