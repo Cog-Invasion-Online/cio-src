@@ -20,6 +20,7 @@ from src.coginvasion.hood.QuietZoneState import QuietZoneState
 from src.coginvasion.hood import ToonInterior
 from src.coginvasion.hood import LinkTunnel
 from src.coginvasion.phys import PhysicsUtils
+from src.coginvasion.globals import CIGlobals
 
 class SafeZoneLoader(StateData):
     notify = directNotify.newCategory("SafeZoneLoader")
@@ -91,8 +92,8 @@ class SafeZoneLoader(StateData):
         del self.safeZoneSong
         del self.interiorSong
         self.ignoreAll()
-        ModelPool.garbageCollect()
-        TexturePool.garbageCollect()
+
+        CIGlobals.doSceneCleanup()
 
     def enter(self, requestStatus):
         StateData.enter(self)

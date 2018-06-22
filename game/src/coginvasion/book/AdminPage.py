@@ -329,6 +329,8 @@ class AdminPage(BookPage):
         base.startDirect()
 
     def doAnalyzeScene(self):
+        render.analyze()
+        
         ls = LineStream()
         sga = SceneGraphAnalyzer()
         sga.addNode(render.node())

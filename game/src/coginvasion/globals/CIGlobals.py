@@ -77,6 +77,23 @@ EagleGame = "Eagle Summit"
 DeliveryGame = "Delivery!"
 DodgeballGame = "Winter Dodgeball"
 
+def doSceneCleanup():
+    from panda3d.core import ModelPool, TexturePool, RenderState, RenderAttrib, TransformState, GeomCacheManager
+
+    ModelPool.garbageCollect()
+    TexturePool.garbageCollect()
+    RenderState.clearMungerCache()
+    RenderState.clearCache()
+    RenderState.garbageCollect()
+    RenderAttrib.garbageCollect()
+    TransformState.clearCache()
+    TransformState.garbageCollect()
+    GeomCacheManager.getGlobalPtr().flush()
+        
+    base.graphicsEngine.renderFrame()
+
+    print "CIGlobals: doSceneCleanup()"
+
 def lerpWithRatio(v0, v1, ratio):
     dt = globalClock.getDt()
     amt = 1 - math.pow(1 - ratio, dt * 30.0)

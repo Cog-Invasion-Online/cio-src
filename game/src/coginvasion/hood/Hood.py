@@ -157,8 +157,9 @@ class Hood(StateData):
         self.dnaStore.reset_suit_points()
         del self.dnaStore
         self.ignoreAll()
-        ModelPool.garbageCollect()
-        TexturePool.garbageCollect()
+
+        CIGlobals.doSceneCleanup()
+
         StateData.unload(self)
 
     def enterOff(self):

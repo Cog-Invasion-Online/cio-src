@@ -152,14 +152,12 @@ class CharSelection(DirectObject):
                     self.szGeom.reparentTo(render)
                 else:
                     self.szGeom = render.attachNewNode(node)
+                self.szGeom.flattenStrong()
                 gsg = base.win.getGsg()
                 if gsg:
                     self.szGeom.prepareScene(gsg)
             else:
                 loader.loadDNAFile(self.dnaStore, dnaFile)
-
-        base.createPhysicsNodes(self.szGeom)
-        base.enablePhysicsNodes(self.szGeom)
 
         self.olc = ZoneUtil.getOutdoorLightingConfig(self.choice.lastHood)
         self.olc.setup()
@@ -267,7 +265,6 @@ class CharSelection(DirectObject):
             
     def unloadSZGeom(self):
         if self.szGeom:
-            base.disablePhysicsNodes(self.szGeom)
             self.szGeom.removeNode()
             self.szGeom = None
         if self.olc:
@@ -512,3 +509,5 @@ class CharSelection(DirectObject):
         base.camera.setHpr(0, 0, 0)
         base.transitions.noTransitions()
         del self.selectionFSM
+
+        CIGlobals.doSceneCleanup()
