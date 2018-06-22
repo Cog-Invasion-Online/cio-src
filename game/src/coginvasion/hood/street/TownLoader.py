@@ -85,9 +85,6 @@ class TownLoader(StateData):
         del self.geom
         del self.streetSong
         del self.interiorSong
-
-        base.win.getGsg().getPreparedObjects().releaseAll()
-        base.graphicsEngine.renderFrame()
         StateData.unload(self)
 
     def enter(self, requestStatus):
