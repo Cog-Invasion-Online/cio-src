@@ -157,6 +157,9 @@ class DistributedPlayerToon(DistributedToon):
                 self.stopSmooth()
             self.wrtReparentTo(pivotPointNode)
             self.setPos(avPos)
+            self.resetHeadHpr()
+            self.resetTorsoRotation()
+            self.stopLookAround()
             
             if linkTunnel.__class__.__name__ == "SafeZoneLinkTunnel":
                 self.setHpr(180, 0, 0)
@@ -185,20 +188,27 @@ class DistributedPlayerToon(DistributedToon):
             def doAvatarExit():
                 worldSpacePos = self.getPos(render)
                 worldSpaceHpr = self.getHpr(render)
-                self.reparentTo(render)
-                self.setPos(worldSpacePos)
-                self.setHpr(worldSpaceHpr)
-                if self.doId != base.localAvatar.doId:
-                    self.startSmooth()
-
-            def handleAvatarExit():
-                self.acceptOnce('e', doAvatarExit)
+                    
+                # This seems to correct the going into the gray
+                # bug with the delay.
+                Sequence(
+                    Wait(0.025),
+                    Func(self.stopSmooth),
+                    Func(self.reparentTo, render),
+                    Func(self.setPos, worldSpacePos),
+                    Func(self.setHpr, worldSpaceHpr),
+                    Func(self.startSmooth),
+                    Func(self.startLookAround)
+                ).start()
             
             # Going out!
             pivotPoint = linkTunnel.outPivotPoint
             pivotPointNode = linkTunnel.tunnel.attachNewNode('tunnelPivotPoint')
             pivotPointNode.setPos(pivotPoint)
             pivotPointNode.setHpr(linkTunnel.outPivotStartHpr)
+            
+            exitSeq = Sequence()
+            
             if base.localAvatar.doId == self.doId:
                 base.localAvatar.walkControls.setCollisionsActive(0)
                 base.localAvatar.detachCamera()
@@ -209,10 +219,14 @@ class DistributedPlayerToon(DistributedToon):
                 camera.setHpr(tunnelCamHpr)
                 doneMethod = self._handleCameOutTunnel
                 extraArgs = []
+                
+                exitSeq.append(Func(base.transitions.irisIn))
+                
             self.reparentTo(pivotPointNode)
             self.setHpr(linkTunnel.toonOutHpr)
             self.setPos(linkTunnel.toonOutPos)
-            exitSeq = Sequence(
+            
+            exitSeq.append(Sequence(
                 Func(self.loop, 'run'),
                 LerpPosInterval(
                     pivotPointNode,
@@ -227,7 +241,7 @@ class DistributedPlayerToon(DistributedToon):
                     startHpr = linkTunnel.outPivotStartHpr,
                 ),
                 Func(doAvatarExit)
-            )
+            ))
             self.tunnelTrack.append(exitSeq)
 
         if base.localAvatar.doId == self.doId:

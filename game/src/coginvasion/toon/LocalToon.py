@@ -434,7 +434,6 @@ class LocalToon(DistributedPlayerToon):
         #self.accept(base.inputStore.LookDown, self.smartCamera.pageDown)
         self.accept('jumpStart', self.__jump)
         self.avatarMovementEnabled = True
-        self.playMovementSfx(None)
         #self.mouseMov.enableMovement()
         #if self.smartCamera.isOverTheShoulder():
         #    self.crosshair.show()
@@ -481,7 +480,6 @@ class LocalToon(DistributedPlayerToon):
         self.isMoving_back = False
         self.isMoving_jump = False
         self.avatarMovementEnabled = False
-        #self.playMovementSfx(None)
         for k, _ in self.movementKeymap.items():
             self.updateMovementKeymap(k, 0)
         self.resetSpeeds()
@@ -495,11 +493,12 @@ class LocalToon(DistributedPlayerToon):
         return self.movementKeymap[key]
 
     def playMovementSfx(self, movement):
-        return
-        if movement == "run":
+        """ This previously was the main method of playing movement sfxs, but now this is only used for tunnels """
+
+        if movement == 'run':
             self.walkSfx.stop()
             self.runSfx.play()
-        elif movement == "walk":
+        elif movement == 'walk':
             self.runSfx.stop()
             self.walkSfx.play()
         else:
@@ -510,11 +509,9 @@ class LocalToon(DistributedPlayerToon):
         self.resetHeadHpr()
         self.stopLookAround()
         if self.getHealth() < 1:
-            self.playMovementSfx("walk")
             self.setPlayRate(1.2, 'dwalk')
             self.setAnimState('deadWalk')
         else:
-            self.playMovementSfx("run")
             self.setAnimState('run')
         self.isMoving_side = False
         self.isMoving_back = False
@@ -524,7 +521,6 @@ class LocalToon(DistributedPlayerToon):
     def __turn(self):
         self.resetHeadHpr()
         self.stopLookAround()
-        self.playMovementSfx("walk")
         if self.getHealth() < 1:
             self.setPlayRate(1.2, 'dwalk')
             self.setAnimState('deadWalk')
@@ -542,17 +538,14 @@ class LocalToon(DistributedPlayerToon):
         if self.getHealth() < 1:
             self.setPlayRate(-1.0, 'dwalk')
             self.setAnimState('deadWalk')
-            self.playMovementSfx("walk")
         else:
             self.setAnimState("walkBack")
-            self.playMovementSfx("run")
         self.isMoving_side = False
         self.isMoving_forward = False
         self.isMoving_back = True
         self.isMoving_jump = False
 
     def __jump(self):
-        self.playMovementSfx(None)
         if base.localAvatar.getHealth() > 0:
             if self.playingAnim in ['run', 'walk']:
                 self.b_setAnimState("leap")
@@ -566,7 +559,6 @@ class LocalToon(DistributedPlayerToon):
     def __neutral(self):
         self.resetHeadHpr()
         self.startLookAround()
-        self.playMovementSfx(None)
         if base.localAvatar.getHealth() > 0:
             self.setAnimState("neutral")
         else:
@@ -624,18 +616,15 @@ class LocalToon(DistributedPlayerToon):
             if action == CIGlobals.WALK_INDEX:
                 self.resetHeadHpr()
                 self.stopLookAround()
-                self.playMovementSfx("walk")
             elif action == CIGlobals.RUN_INDEX or action in [CIGlobals.STRAFE_LEFT_INDEX, CIGlobals.STRAFE_RIGHT_INDEX] or action == CIGlobals.REVERSE_INDEX:
                 self.resetHeadHpr()
                 self.stopLookAround()
-                self.playMovementSfx("run")
             else:
                 self.resetHeadHpr()
                 self.stopLookAround()
                 if self.walkControls.mode == self.walkControls.MThirdPerson:
                     if state == 'Happy':
                         self.startLookAround()
-                self.playMovementSfx(None)
         return task.cont
 
     def createLaffMeter(self):
@@ -849,10 +838,8 @@ class LocalToon(DistributedPlayerToon):
                     if self.cr.playGame.getPlace().walkStateData.fsm.getCurrentState().getName() == 'deadWalking':
                         self.cr.playGame.getPlace().walkStateData.fsm.request('walking')
             if self.animFSM.getCurrentState().getName() == 'deadNeutral':
-                self.playMovementSfx(None)
                 self.b_setAnimState("neutral")
             elif self.animFSM.getCurrentState().getName() == 'deadWalk':
-                self.playMovementSfx("run")
                 self.b_setAnimState("run")
 
         if hp < self.getHealth() and self.isFirstPerson():
@@ -1072,7 +1059,7 @@ class LocalToon(DistributedPlayerToon):
         self.createInvGui()
 
         # Unused developer methods.
-        #self.accept('/', self.printPos)
+        self.accept('/', self.printPos)
         #self.accept('p', self.enterPictureMode)
         #self.accept('c', self.teleportToCT)
         #posBtn = DirectButton(text = "Get Pos", scale = 0.08, pos = (0.3, 0, 0), parent = base.a2dLeftCenter, command = self.printAvPos)
