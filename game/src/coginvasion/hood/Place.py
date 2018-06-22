@@ -15,7 +15,7 @@ from panda3d.core import VBase4
 
 from direct.fsm.StateData import StateData
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.interval.IntervalGlobal import Sequence, Wait, Func
+from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosHprInterval
 from src.coginvasion.globals import CIGlobals
 from PublicWalk import PublicWalk
 from src.coginvasion.book.ShtickerBook import ShtickerBook
@@ -231,6 +231,11 @@ class Place(StateData):
             base.localAvatar.b_setAnimState('closeBook', self.__handleBookCloseResume, [doneStatus])
         elif doneStatus['mode'] == 'switchShard':
             base.localAvatar.b_setAnimState('closeBook', self.__handleBookCloseSwitchShard, [doneStatus])
+            
+        if doneStatus['mode'] in ['switchShard', 'teleport']:
+            LerpPosHprInterval(nodePath = camera, other = base.localAvatar, duration = 1.0,
+                pos = (0, -8, base.localAvatar.getHeight() + 1.0), hpr = (0, -15, 0),
+                blendType = 'easeInOut').start()
 
     def __handleBookCloseSwitchShard(self, requestStatus):
         base.localAvatar.b_setAnimState('teleportOut', self.__handleBookSwitchShard, [requestStatus])
@@ -319,11 +324,18 @@ class Place(StateData):
             if av:
                 base.localAvatar.gotoNode(av)
                 base.localAvatar.b_setChat("Hi, %s." % av.getName())
-        base.localAvatar.startPosHprBroadcast()
         globalClock.tick()
-        base.localAvatar.b_setAnimState('teleportIn', callback = self.teleportInDone)
-        base.localAvatar.d_broadcastPositionNow()
-        base.localAvatar.b_setParent(CIGlobals.SPRender)
+        
+        Sequence(
+            Func(base.localAvatar.startPosHprBroadcast),
+            Func(base.localAvatar.b_setAnimState, 'teleportIn', callback = self.teleportInDone),
+            LerpPosHprInterval(nodePath = camera, other = base.localAvatar, duration = 1.0,
+                                                           pos = (0, -8, base.localAvatar.getHeight() + 1.0), hpr = (0, -15, 0),
+                                                           blendType = 'easeInOut'),
+            Func(base.localAvatar.d_broadcastPositionNow),
+            Func(base.localAvatar.b_setParent, CIGlobals.SPRender)
+        ).start()
+
         return
 
     def exitTeleportIn(self):
@@ -434,7 +446,15 @@ class Place(StateData):
             callback = self.__teleportOutDone
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.d_broadcastPositionNow()
-        base.localAvatar.b_setAnimState('teleportOut', callback, [requestStatus])
+        
+        Sequence(
+            LerpPosHprInterval(nodePath = camera, other = base.localAvatar, duration = 1.0,
+                                               pos = (0, -8, base.localAvatar.getHeight() + 1.0), hpr = (0, -15, 0),
+                                               blendType = 'easeInOut'),
+            Func(base.localAvatar.b_setAnimState, 'teleportOut', callback, [requestStatus])
+        ).start()
+        
+        #base.localAvatar.b_setAnimState('teleportOut', callback, [requestStatus])
 
     def exitTeleportOut(self):
         base.localAvatar.disableLaffMeter()
