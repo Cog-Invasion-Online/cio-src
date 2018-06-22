@@ -39,7 +39,7 @@ class CIParticleEffect(ParticleEffect):
     def __stopCleanupTask(self):
         if self.cleanupTask:
             self.cleanupTask.remove()
-            self.cleanupTask = None
+        self.cleanupTask = None
 
     def softStop(self):
         try:

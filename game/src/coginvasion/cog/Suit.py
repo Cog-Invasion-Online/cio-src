@@ -511,7 +511,6 @@ class Suit(Avatar):
                 anims[anim.getName()] = path
             self.loadAnims(anims, 'body')
             self.generateHealthBar()
-            self.generatePropeller()
 
             if self.suitPlan.suitType == SuitType.A:
                 self.footstepSound = base.audio3d.loadSfx("phase_5/audio/sfx/ENC_cogafssm.ogg")
@@ -576,12 +575,9 @@ class Suit(Avatar):
             base.audio3d.detachSound(sound)
             sound.stop()
         self.propellerSounds = {}
-        if self.propeller:
-            try:
-                self.propeller.cleanup()
-            except:
-                pass
-            self.propeller = None
+        if self.propeller and not self.propeller.isEmpty():
+            self.propeller.cleanup()
+        self.propeller = None
 
     def setVoice(self, voice):
         if not voice:

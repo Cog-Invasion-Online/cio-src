@@ -48,6 +48,8 @@ __builtins__.args = args
 
 for prc in args.config:
     loadPrcFile(prc)
+    
+loadPrcFileData('', 'model-path ./resources')
 
 localconfig = ''
 if args.base_channel: localconfig += 'air-base-channel %s\n' % args.base_channel

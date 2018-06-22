@@ -11,7 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 from panda3d.core import (BitMask32, Plane, NodePath, CullFaceAttrib, Texture,
                           TextureStage, Point3, PlaneNode, VBase4, Vec3, WindowProperties,
                           FrameBufferProperties, GraphicsPipe, GraphicsOutput, TransparencyAttrib,
-                          Material)
+                          Material, WeakNodePath)
 
 from direct.filter.FilterManager import FilterManager
 from direct.gui.DirectGui import OnscreenImage
@@ -30,8 +30,6 @@ class WaterReflectionManager:
         if reso == 0:
             self.enabled = False
             return
-
-        self.waterNodes = []
 
         wbuffer = base.win.makeTextureBuffer("water", reso, reso)
         wbuffer.setSort(-1)
@@ -131,7 +129,6 @@ class WaterReflectionManager:
     def addWaterNode(self, node, height):
         if not self.enabled:
             return
-        self.waterNodes.append(node)
 
         mat = Material()
         mat.setShininess(40)
@@ -150,9 +147,6 @@ class WaterReflectionManager:
     def clearWaterNodes(self):
         if not self.enabled:
             return
-        for node in self.waterNodes:
-            if not node.isEmpty():
-                node.clearProjectTexture(self.ts)
         self.clearPlane()
 
     def cleanup(self):

@@ -383,7 +383,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.closeSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_close.ogg')
         
         self.rideElevatorMusic = 'tt_elevator'
-        self.bottomFloorsMusic = 'encntr_general_bg_indoor'
+        self.bottomFloorsMusic = 'encntr_suit_winning'
         self.topFloorMusic = 'encntr_suit_winning_indoor'
         self.intermissionMusic = 'encntr_toon_winning_indoor'
         
@@ -528,13 +528,13 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         if self.isTopFloor():
             song = self.topFloorMusic
             taunt = DistributedCogOfficeBattle.TOP_FLOOR_TAUNT
-            volume = 0.9
+            volume = 0.7
         else:
             song = self.bottomFloorsMusic
             taunt = SuitGlobals.FaceoffTaunts[tauntSuit.suitPlan.getName()][tauntIndex]
-            volume = 0.7
+            volume = 0.9
 
-        base.playMusic(song, looping = 1, volume = 0.7)
+        base.playMusic(song, looping = 1, volume = volume)
 
         base.camLens.setMinFov(30.0 / (4./3.))
 

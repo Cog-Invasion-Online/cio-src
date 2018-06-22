@@ -8,8 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3
-from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher
+from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3, MemoryUsage, MemoryUsagePointers
+from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState
 from panda3d.bullet import BulletWorld, BulletDebugNode
 
 from direct.showbase.ShowBase import ShowBase
@@ -120,6 +120,62 @@ class CIBase(ShowBase):
         print 'TPM END'
         """
 
+    def removeEverything(self):
+        for task in self.taskMgr.getTasks():
+            if task.getName() not in ['dataLoop', 'igLoop']:
+                task.remove()
+        camera.reparentTo(render)
+        for tex in render.findAllTextures():
+            tex.releaseAll()
+        for tex in aspect2d.findAllTextures():
+            tex.releaseAll()
+        for tex in render2d.findAllTextures():
+            tex.releaseAll()
+        for tex in hidden.findAllTextures():
+            tex.releaseAll()
+        for node in render.findAllMatches("**;+s"):
+            node.removeNode()
+        for node in aspect2d.findAllMatches("**;+s"):
+            node.removeNode()
+        for node in render2d.findAllMatches("**;+s"):
+            node.removeNode()
+        for node in hidden.findAllMatches("**;+s"):
+            node.removeNode()
+        TexturePool.garbageCollect()
+        ModelPool.garbageCollect()
+        RenderState.garbageCollect()
+        RenderState.clearCache()
+        RenderState.clearMungerCache()
+
+        self.win.getGsg().getPreparedObjects().releaseAll()
+        self.graphicsEngine.renderFrame()
+        
+    def doMemReport(self):
+        MemoryUsage.showCurrentTypes()
+        MemoryUsage.showCurrentAges()
+        print MemoryUsage.getCurrentCppSize()
+        print MemoryUsage.getExternalSize()
+        print MemoryUsage.getTotalSize()
+        
+        
+    def doPointers(self):
+        print "---------------------------------------------------------------------"
+        data = {}
+        mup = MemoryUsagePointers()
+        MemoryUsage.getPointers(mup)
+        for i in xrange(mup.getNumPointers()):
+            ptr = mup.getPythonPointer(i)
+            if ptr.__class__.__name__ in data.keys():
+                data[ptr.__class__.__name__] += 1
+            else:
+                data[ptr.__class__.__name__] = 1
+        
+        print "NodeReferenceCount:", data["NodeReferenceCount"]
+        print "CopyOnWriteObject:", data["CopyOnWriteObject"]
+        
+        print "---------------------------------------------------------------------"
+        
+        
     def doCamShake(self, intensity = 1.0, duration = 0.5, loop = False):
         shake = ShakeCamera(intensity, duration)
         shake.start(loop)

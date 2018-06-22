@@ -36,6 +36,7 @@ class SafeZoneLoader(StateData):
         self.placeDoneEvent = 'placeDone'
         self.place = None
         self.playground = None
+        self.nodeList = []
         self.linkTunnels = []
         self.szHolidayDNAFile = None
         self.animatedFish = None
@@ -68,6 +69,15 @@ class SafeZoneLoader(StateData):
             self.animatedFish.cleanup()
             self.animatedFish.removeNode()
             self.animatedFish = None
+
+        if self.linkTunnels is not None:
+            for link in self.linkTunnels:
+                link.cleanup()
+        self.linkTunnels = None
+        if self.nodeList is not None:
+            for node in self.nodeList:
+                node.removeNode()
+        self.nodeList = None
 
         self.parentFSMState.removeChild(self.fsm)
         del self.parentFSMState

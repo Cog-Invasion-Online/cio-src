@@ -23,6 +23,8 @@ sys.dont_write_bytecode = True
 
 from panda3d.core import loadPrcFile, loadPrcFileData, VirtualFileSystem
 
+loadPrcFileData('', 'model-path ./resources')
+
 vfs = VirtualFileSystem.getGlobalPtr()
 vfs.mount(Filename("resources/phase_0.mf"), ".", VirtualFileSystem.MFReadOnly)
 vfs.mount(Filename("resources/phase_3.mf"), ".", VirtualFileSystem.MFReadOnly)

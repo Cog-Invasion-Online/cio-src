@@ -156,10 +156,12 @@ class DistributedToonInterior(DistributedObject.DistributedObject):
             base.disablePhysicsNodes(self.interior)
             base.removePhysicsNodes(self.interior)
             self.interior.removeNode()
-            self.interior = None
+        self.interior = None
 
         self.ilc.unapply()
         self.ilc.cleanup()
         self.ilc = None
+
+        self.block = None
 
         DistributedObject.DistributedObject.disable(self)

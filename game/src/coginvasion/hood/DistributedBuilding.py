@@ -78,6 +78,7 @@ class DistributedBuilding(DistributedObject):
         DistributedObject.disable(self)
 
     def delete(self):
+        self.victorList = None
         if self.elevatorNodePath:
             self.elevatorNodePath.removeNode()
             del self.elevatorNodePath
@@ -86,6 +87,7 @@ class DistributedBuilding(DistributedObject):
                 del self.cab
             del self.leftDoor
             del self.rightDoor
+        self.leftDoor = None
         del self.suitDoorOrigin
         self.cleanupSuitBuilding()
         self.unloadSfx()

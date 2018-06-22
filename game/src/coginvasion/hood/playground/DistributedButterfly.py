@@ -96,9 +96,12 @@ class DistributedButterfly(DistributedNode):
         self.flyTrack.start(ts)
 
     def exitFly(self):
+        self.stopFlyTrack()
+
+    def stopFlyTrack(self):
         if self.flyTrack:
             self.flyTrack.finish()
-            self.flyTrack = None
+        self.flyTrack = None
 
     def generate(self):
         self.butterfly = Actor('phase_4/models/props/SZ_butterfly-mod.bam', {'flutter': 'phase_4/models/props/SZ_butterfly-flutter.bam',
@@ -123,13 +126,14 @@ class DistributedButterfly(DistributedNode):
 
     def disable(self):
         self.fsm.requestFinalState()
+        self.stopFlyTrack()
         if self.shadow:
             self.shadow.removeNode()
-            self.shadow = None
+        self.shadow = None
         if self.butterfly:
             self.butterfly.cleanup()
             self.butterfly.removeNode()
-            self.butterfly = None
+        self.butterfly = None
         self.hood = None
         self.wingType = None
         self.fsm = None

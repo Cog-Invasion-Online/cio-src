@@ -38,7 +38,7 @@ class DLSafeZoneLoader(SafeZoneLoader):
         for lamp in self.lampLights:
             render.clearLight(lamp)
             lamp.removeNode()
-        self.lampLights = []
+        self.lampLights = None
         SafeZoneLoader.unload(self)
 
     def load(self):

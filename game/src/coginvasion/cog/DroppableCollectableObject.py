@@ -65,6 +65,4 @@ class DroppableCollectableObject(DirectObject, NodePath):
 		self.removeCollisions()
 		self.removeObject()
 		self.removeNode()
-		ModelPool.garbageCollect()
-		TexturePool.garbageCollect()
 		

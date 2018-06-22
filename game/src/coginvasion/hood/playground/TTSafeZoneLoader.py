@@ -110,7 +110,7 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
     def unload(self):
         if self.telescope:
             self.telescope.cleanup()
-            self.telescope = None
+        self.telescope = None
         for tree in self.trees:
             tree.removeNode()
         self.trees = None

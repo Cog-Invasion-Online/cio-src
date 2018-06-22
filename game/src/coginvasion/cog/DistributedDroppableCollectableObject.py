@@ -70,8 +70,6 @@ class DistributedDroppableCollectableObject(DistributedNode):
         self.removeCollisions()
         self.removeObject()
         self.removeNode()
-        ModelPool.garbageCollect()
-        TexturePool.garbageCollect()
 
     def handleCollisions(self, avId, wait = 0):
         # May be overridden if needed.

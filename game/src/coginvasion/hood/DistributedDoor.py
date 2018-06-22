@@ -515,6 +515,13 @@ class DistributedDoor(DistributedObject.DistributedObject):
         self.rightDoor = None
         self.leftDoor = None
         self.ready = None
+        self.toZone = None
+        if self.leftTrack:
+            self.leftTrack.finish()
+            self.leftTrack = None
+        if self.rightTrack:
+            self.rightTrack.finish()
+            self.rightTrack = None
         if self.enterDoorWalkBackNode:
             self.enterDoorWalkBackNode.removeNode()
             self.enterDoorWalkBackNode = None
@@ -529,4 +536,13 @@ class DistributedDoor(DistributedObject.DistributedObject):
             self.exitDoorWalkToNode = None
         self.doorOpenSound = None
         self.doorShutSound = None
+
+        self.leftDoorState = None
+        self.rightDoorState = None
+        self.block = None
+        self.doorType = None
+        self.doorIndex = None
+        self.nodeProblemPolled = None
+        self.suitTakingOver = None
+
         DistributedObject.DistributedObject.disable(self)

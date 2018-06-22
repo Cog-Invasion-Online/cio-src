@@ -35,7 +35,6 @@ class DistributedKnockKnockDoor(DistributedObject, ToonTalker):
         self.collisionNode = None
         self.physDoor = None
         self.nametag = None
-        self.nametagNodePath = None
         self.jokeSeq = None
         self.iKnocked = False
         
@@ -71,15 +70,19 @@ class DistributedKnockKnockDoor(DistributedObject, ToonTalker):
             self.hideName()
         if self.jokeSeq:
             self.jokeSeq.pause()
-            self.jokeSeq = None
+        self.jokeSeq = None
         
     def delete(self):
         if self.nametag:
             self.nametag.destroy()
+        self.nametag = None
         self.collisionNode = None
         self.physDoor = None
         self.realJokeNetworkTime = None
-        self.iKnocked = False
+        self.iKnocked = None
+        self.avatarType = None
+        self.zoneId = None
+        self.block = None
         DistributedObject.delete(self)
             
     def __setupDoor(self, node):

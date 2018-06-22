@@ -84,13 +84,16 @@ class SnowEffect:
     def unload(self):
         if not self.loaded:
             return
+
+        base.render.clearFog()
+        self.fog = None
+
+        if self.particlesRender:
+            self.particlesRender.removeNode()
+            self.particlesRender = None
             
         if self.particles:
             self.particles.cleanup()
-            self.particlesRender.removeNode()
-            self.particlesRender = None
-            base.render.clearFog()
-            self.fog = None
             self.particles = None
             
         self.loaded = False

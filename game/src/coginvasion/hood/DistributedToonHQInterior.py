@@ -88,8 +88,7 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
             self.crashedPiano.setPosHpr(1.62019231, 66.6371124268, 0.0250000003725, -46.400062561, 0.0, 0.0)
             
             # This is the ceiling crack above the crashed piano.
-            crack = self.crashedPiano.find('**/shadow_crack').__copy__()
-            crack.reparentTo(self.crashedPiano)
+            crack = self.crashedPiano.find('**/shadow_crack').copyTo(self.crashedPiano)
             crack.setZ(21.425)
             crack.setTwoSided(1)
         
@@ -169,10 +168,10 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         
         if self.logoImg:
             self.logoImg.destroy()
-            self.logoImg = None
+        self.logoImg = None
         if self.logoNode:
             self.logoNode.removeNode()
-            self.logoNode = None
+        self.logoNode = None
         
         if self.clockTaskName:
             base.taskMgr.remove(self.clockTaskName)

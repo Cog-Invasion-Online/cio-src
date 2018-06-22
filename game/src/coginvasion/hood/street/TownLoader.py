@@ -78,13 +78,16 @@ class TownLoader(StateData):
         del self.fadeInDict
         del self.fadeOutDict
         del self.nodeList
+        del self.zoneVisDict
+
         base.disablePhysicsNodes(self.geom)
         self.geom.removeNode()
         del self.geom
         del self.streetSong
         del self.interiorSong
-        ModelPool.garbageCollect()
-        TexturePool.garbageCollect()
+
+        base.win.getGsg().getPreparedObjects().releaseAll()
+        base.graphicsEngine.renderFrame()
         StateData.unload(self)
 
     def enter(self, requestStatus):

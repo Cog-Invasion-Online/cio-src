@@ -52,7 +52,7 @@ class LightingConfig:
     def remove(self):
         if self.ambientNP:
             self.ambientNP.removeNode()
-            self.ambientNP = None
+        self.ambientNP = None
         self.shadows = None
 
     def cleanup(self):
@@ -183,17 +183,17 @@ class OutdoorLightingConfig(LightingConfig):
         LightingConfig.remove(self)
         if self.skyNP:
             self.skyNP.removeNode()
-            self.skyNP = None
+        self.skyNP = None
         if self.sunNP:
             self.sunNP.removeNode()
-            self.sunNP = None
+        self.sunNP = None
         if self.snowEffect:
             self.snowEffect.unload()
-            self.snowEffect = None
+        self.snowEffect = None
         if self.skyEffect:
             self.skyEffect.stopSky()
             self.skyEffect.cleanup()
-            self.skyEffect = None
+        self.skyEffect = None
 
     def cleanup(self):
         LightingConfig.cleanup(self)
@@ -268,3 +268,5 @@ class IndoorLightingConfig(LightingConfig):
         LightingConfig.cleanup(self)
         self.lights = None
         self.light = None
+        self.visLights = None
+        self.lightNPs = None

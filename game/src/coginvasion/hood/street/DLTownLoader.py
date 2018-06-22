@@ -27,7 +27,7 @@ class DLTownLoader(TownLoader.TownLoader):
         for lamp in self.lampLights:
             render.clearLight(lamp)
             lamp.removeNode()
-        self.lampLights = []
+        self.lampLights = None
 
     def load(self, zoneId):
         TownLoader.TownLoader.load(self, zoneId)

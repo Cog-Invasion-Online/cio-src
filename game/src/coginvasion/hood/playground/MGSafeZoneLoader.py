@@ -57,7 +57,5 @@ class MGSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
     def load(self):
         SafeZoneLoader.SafeZoneLoader.load(self)
         
-        self.geom.ls()
-        
         base.waterReflectionMgr.addWaterNode(self.geom.find("**/Water.001"), 18.58082)
         base.waterReflectionMgr.addWaterNode(self.geom.find("**/Water"), 24.37695)

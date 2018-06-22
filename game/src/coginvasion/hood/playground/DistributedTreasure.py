@@ -165,22 +165,48 @@ class DistributedTreasure(DistributedObject):
         pass
 
     def disable(self):
+        self.cleanupTrack()
+
         self.ignoreAll()
         if self.collNodePath:
             self.ignore('enter' + self.uniqueName('treasureSphere'))
             base.physicsWorld.removeGhost(self.collNodePath.node())
             self.collNodePath.removeNode()
-            self.collNodePath = None
-        self.nodePath.detachNode()
+        self.collNodePath = None
+
+        if self.nodePath:
+            self.nodePath.removeNode()
+
+        if self.dropShadow:
+            self.dropShadow.removeNode()
+
+        if self.treasureTrack:
+            self.treasureTrack.finish()
+
+        self.grabSoundPath = None
+        self.rejectSoundPath = None
+        self.dropShadow = None
+        self.treasureTrack = None
+        self.nodePath = None
+        self.modelPath = None
+        self.modelChildString = None
+        self.collNodePath = None
+        self.sphereRadius = None
+        self.scale = None
+        self.zOffset = None
+        self.playSoundForRemoteToons = None
+        self.fly = None
+        self.shadow = None
+        self.billboard = None
+        self.av = None
+
         DistributedObject.disable(self)
 
     def cleanupTrack(self):
         if self.treasureTrack:
             self.treasureTrack.finish()
             self.treasureTrack = None
+        if self.spinTaskName:
+            taskMgr.remove(self.spinTaskName)
         self.spinTaskName = None
 
-    def delete(self):
-        self.cleanupTrack()
-        DistributedObject.delete(self)
-        self.nodePath.removeNode()
