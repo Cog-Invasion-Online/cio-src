@@ -15,7 +15,7 @@ from panda3d.core import TextNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.StateData import StateData
-from direct.gui.DirectGui import DirectButton
+from direct.gui.DirectGui import DirectButton, OnscreenImage
 from direct.gui.DirectGui import DGG, DirectFrame
 
 from src.coginvasion.globals import CIGlobals
@@ -57,6 +57,7 @@ class ShtickerBook(DirectFrame, StateData):
 
         # The sequence node with all the images we'll be using.
         self.bookElements = None
+        self.fade = None
 
         # This is the frame that all the tab buttons are
         # reparented to.
@@ -170,10 +171,9 @@ class ShtickerBook(DirectFrame, StateData):
             else:
                 lastBookPage = self.pages[lastBookPage]
 
-            # Hide the environment and change the background
-            # color to blue.
-            render.hide()
-            base.setBackgroundColor(0.05, 0.15, 0.4)
+            # Hide our toon and put a blur filter on the scene.
+            base.localAvatar.getGeomNode().hide()
+            base.filters.setBlurSharpen(0.0)
 
             # Create the main book image (frame) and play the
             # open sfx.
@@ -183,6 +183,7 @@ class ShtickerBook(DirectFrame, StateData):
 
             # Let's enter the current page.
             self.setCurrentPage(lastBookPage)
+            self.fade.show()
             self.show()
         StateData.enter(self)
 
@@ -192,12 +193,14 @@ class ShtickerBook(DirectFrame, StateData):
                 self.currentPage.exit()
                 self.currentPage = None
 
-            # Show the environment and return the background color.
-            base.setBackgroundColor(CIGlobals.DefaultBackgroundColor)
-            render.show()
+            # Remove that blur.
+            base.filters.delBlurSharpen()
+
+            base.localAvatar.getGeomNode().show()
 
             # Let's hide our stuff.
             self.hide()
+            self.fade.hide()
 
             # Play the exit sfx.
             self.bookCloseSfx.play()
@@ -217,13 +220,23 @@ class ShtickerBook(DirectFrame, StateData):
 
         # Load up the sequence node with all the images we need.
         self.bookElements = loader.loadModel('phase_3.5/models/gui/stickerbook_gui.bam')
-       
 
         # Let's load up the main frame.
         self['image'] = self.bookElements.find('**/big_book')
         self['image_scale'] = (2, 1, 1.5)
         self['scale'] = (2, 1, 1.5)
         self.resetFrameSize()
+        bookShadow = self['image'].copyTo(self)
+        bookShadow.setScale(2, 1, 1.5)
+        bookShadow.setTransparency(1)
+        bookShadow.setColorScale(0, 0, 0, 0.5)
+        bookShadow.setPos(0.02, 0, -0.02)
+        bookShadow.setBin('fixed', -10)
+        self.fade = OnscreenImage(image = 'phase_14/maps/white.jpg', parent = render2d)
+        self.fade.setScale(10, 10, 10)
+        self.fade.setTransparency(1)
+        self.fade.setColorScale(0, 0, 0, 0.6)
+        self.fade.setBin('fixed', -20)
 
         # Let's register our pages.
         self.registerPage(OptionsPage(self))
@@ -254,14 +267,12 @@ class ShtickerBook(DirectFrame, StateData):
         self.prevPageBtn.destroy()
         self.tabButtonFrame.destroy()
         self.destroy()
+        
+        self.fade.destroy()
+        del self.fade
 
         # Let's get rid of our elements.
         self.bookElements.removeNode()
-
-        # Let's get rid of our sfx.
-        self.bookOpenSfx.stop()
-        self.bookCloseSfx.stop()
-        self.pageTurnSfx.stop()
 
         del self.bookOpenSfx
         del self.bookCloseSfx

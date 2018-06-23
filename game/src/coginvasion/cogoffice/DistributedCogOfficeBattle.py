@@ -383,9 +383,10 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.closeSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_close.ogg')
         
         self.rideElevatorMusic = 'tt_elevator'
-        self.bottomFloorsMusic = 'encntr_suit_winning'
-        self.topFloorMusic = 'encntr_suit_winning_indoor'
+        self.bottomFloorsMusic = ['encntr_suit_winning', 'encntr_general_bg']
+        self.topFloorMusic = ['encntr_suit_winning_indoor', 'BossBot_CEO_v2']
         self.intermissionMusic = 'encntr_toon_winning_indoor'
+        self.winMusic = 'encntr_toon_winning'
         
         self.fsm = ClassicFSM.ClassicFSM('DistributedCogOfficeBattle', [State.State('off', self.enterOff, self.exitOff),
          State.State('floorIntermission', self.enterFloorIntermission, self.exitFloorIntermission),
@@ -447,10 +448,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         base.taskMgr.doMethodLater(0.1, self.victoryTask, self.uniqueName('victoryTask'))
 
     def enterVictory(self, ts):
-        pass
-        #self.elevators[1].setToZoneId(self.exteriorZoneId)
-
-        # This would show the rewards panel eventually.
+        base.playMusic(self.winMusic, looping = 1)
 
     def victoryTask(self, task):
         requestStatus = {
@@ -528,13 +526,11 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         if self.isTopFloor():
             song = self.topFloorMusic
             taunt = DistributedCogOfficeBattle.TOP_FLOOR_TAUNT
-            volume = 0.7
         else:
             song = self.bottomFloorsMusic
             taunt = SuitGlobals.FaceoffTaunts[tauntSuit.suitPlan.getName()][tauntIndex]
-            volume = 0.9
 
-        base.playMusic(song, looping = 1, volume = volume)
+        base.playMusic(song, looping = 1)
 
         base.camLens.setMinFov(30.0 / (4./3.))
 
@@ -618,7 +614,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         camera.setHpr(180, 0, 0)
 
         base.transitions.noTransitions()
-        base.playMusic(self.rideElevatorMusic, volume = 0.8, looping = 1)
+        base.playMusic(self.rideElevatorMusic, looping = 1)
 
         self.elevatorTrack = getRideElevatorInterval()
         self.elevatorTrack.append(Func(self.__doFloorTextPulse))
@@ -675,7 +671,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
 
     def enterFloorIntermission(self, ts):
         base.localAvatar.showBookButton()
-        base.playMusic(self.intermissionMusic, looping = 1, volume = 0.8)
+        base.playMusic(self.intermissionMusic, looping = 1)
 
     def exitFloorIntermission(self):
         base.stopMusic()

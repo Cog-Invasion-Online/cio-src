@@ -3,7 +3,7 @@ from panda3d.bullet import BulletBoxShape, BulletRigidBodyNode, BulletTriangleMe
 
 from src.coginvasion.globals import CIGlobals
 
-def getHitPosFromCamera(mask = CIGlobals.WallGroup | CIGlobals.FloorGroup | CIGlobals.CameraGroup, dist = 1000.0):
+def getHitPosFromCamera(mask = CIGlobals.WallGroup | CIGlobals.FloorGroup | CIGlobals.StreetVisGroup, dist = 1000.0):
     pFrom = base.camera.getPos(render)
     pTo = pFrom + (base.camera.getQuat(render).xform(Vec3.forward()) * dist)
     result = base.physicsWorld.rayTestClosest(pFrom, pTo, mask)

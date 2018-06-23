@@ -78,6 +78,7 @@ except:
         sys.path.insert(0, "./renderpipeline")
     
     # Load phases from resoures folder in dev mode
+    loadPrcFileData("", "model-path ./resources") # Don't require mounting of phases
     game.phasedir = './resources/'
     game.production = False
     notify.info("Running dev")
@@ -257,7 +258,7 @@ from src.coginvasion.base import MusicCache
 print "Precaching music..."
 MusicCache.precacheMusic()
 
-base.playMusic(CIGlobals.getThemeSong(), volume = 0.7)
+base.playMusic(CIGlobals.getThemeSong())
 il.load()
 
 base.run()

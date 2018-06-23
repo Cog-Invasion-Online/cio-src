@@ -11,9 +11,11 @@ Copyright (c) CIO Team. All rights reserved.
 from panda3d.core import Vec3
 
 from direct.distributed.DistributedObjectOV import DistributedObjectOV
+
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
-
+from src.coginvasion.globals import CIGlobals
+from src.coginvasion.phys import PhysicsUtils
 from DistributedTNT import DistributedTNT
 
 import random
@@ -28,18 +30,18 @@ class DistributedTNTOV(DistributedTNT, DistributedObjectOV):
         self.explodeTask = taskMgr.doMethodLater(2.1, self.__explodeTask, 'TNT_explodeTask')
 
         # Toss the TNT!
-        vel = camera.getQuat(render).xform(Vec3(0, 1, 0.25)) * power
+        vel = self.getQuat(render).xform(Vec3(0, 1, 0.25)) * power
         self.node().setLinearVelocity(vel)
         
         # Spin it like we threw it
-        self.node().setAngularVelocity(Vec3(random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(-1, 1)) * 25)
+        #self.node().setAngularVelocity(Vec3(random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(-1, 1)) * 25)
 
     def announceGenerate(self):
         DistributedTNT.announceGenerate(self)
         self.stopSmooth()
         self.startPosHprBroadcast()
         self.setPos(base.localAvatar.find("**/def_joint_right_hold").getPos(render))
-        self.setHpr(camera.getHpr(render))
+        self.lookAt(render, PhysicsUtils.getHitPosFromCamera())
         self.toss()
 
     def b_explode(self):

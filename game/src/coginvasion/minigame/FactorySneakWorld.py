@@ -41,7 +41,7 @@ class FactorySneakWorld(DirectObject):
     def playMusic(self, index):
         self.mg.music.stop()
         self.mg.music = base.loadMusic(self.music[index])
-        base.playMusic(self.mg.music, volume = 0.5, looping = 1)
+        base.playMusic(self.mg.music, looping = 1)
 
     def showAlert(self, text):
         self.stopPulse()

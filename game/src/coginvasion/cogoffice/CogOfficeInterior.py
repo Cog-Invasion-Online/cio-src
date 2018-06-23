@@ -30,8 +30,8 @@ class CogOfficeInterior(Place):
                     ['stop', 'final']),
          State.State('final', self.enterFinal, self.exitFinal, ['start'])], 'start', 'final')
          
-    def enterWalk(self, teleportIn = 0):
-        Place.enterWalk(self, teleportIn)
+    def enterWalk(self, teleportIn = 0, wantMouse = 1):
+        Place.enterWalk(self, teleportIn, wantMouse)
         base.localAvatar.startMonitoringHP()
         
     def exitWalk(self):

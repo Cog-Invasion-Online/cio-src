@@ -33,8 +33,11 @@ class GagWidget(DirectButton):
     Idle = (0, 115 / 255.0, 194 / 255.0, 1)
     Selected = (0, 115 / 255.0 * 1.5, 194 / 255.0 * 1.5, 1)
     
-    LockedIdle = (0, 115 / 255.0 / 1.75, 194 / 255.0 / 1.75, 1)
-    LockedSelected = (0, 115 / 255.0 / 1.75, 194 / 255.0 / 1.75, 1)
+    NoAmmoIdle = (0, 115 / 255.0 / 1.75, 194 / 255.0 / 1.75, 1)
+    NoAmmoSelected = (0, 115 / 255.0 / 1.75, 194 / 255.0 / 1.75, 1)
+
+    LockedIdle = (0.5, 0.5, 0.5, 1.0)
+    LockedSelected = (0.5, 0.5, 0.5, 1.0)
 
     def __init__(self, track, gagId):
         self.track = track
@@ -116,10 +119,13 @@ class GagWidget(DirectButton):
         DirectButton.unstash(self)
 
     def select(self):
-        if self.locked or not self.hasAmmo():
+        if self.locked:
             self['image_color'] = self.LockedSelected
+        elif not self.hasAmmo():
+            self['image_color'] = self.NoAmmoSelected
         else:
             self['image_color'] = self.Selected
+
         self.goalScale = 1.15
 
         if self.track.gsg.currentGag != self:
@@ -132,8 +138,10 @@ class GagWidget(DirectButton):
         return base.localAvatar.backpack.getSupply(self.gagId) > 0
 
     def deselect(self):
-        if self.locked or not self.hasAmmo():
+        if self.locked:
             self['image_color'] = self.LockedIdle
+        elif not self.hasAmmo():
+            self['image_color'] = self.NoAmmoIdle
         else:
             self['image_color'] = self.Idle
         self.goalScale = 1.0

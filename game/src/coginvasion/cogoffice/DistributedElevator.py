@@ -269,7 +269,7 @@ class DistributedElevator(DistributedObject):
 
     def doMusic(self):
         self.elevMusic = base.loadMusic('phase_7/audio/bgm/tt_elevator.ogg')
-        base.playMusic(self.elevMusic, looping = 1, volume = 0.8)
+        base.playMusic(self.elevMusic, looping = 1)
 
     def fillSlot(self, index, avId):
         toon = self.cr.doId2do.get(avId)

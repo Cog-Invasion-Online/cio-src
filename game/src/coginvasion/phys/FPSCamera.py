@@ -140,6 +140,12 @@ class FPSCamera(DirectObject):
 
     def getViewModel(self):
         return self.viewModel
+
+    def acceptEngageKeys(self):
+        self.acceptOnce("escape", self.__handleEscapeKey)
+
+    def ignoreEngageKeys(self):
+        self.ignore("escape")
         
     def enableMouseMovement(self):
         props = WindowProperties()
@@ -153,7 +159,7 @@ class FPSCamera(DirectObject):
         base.win.movePointer(0, base.win.getXSize() / 2, base.win.getYSize() / 2)
         
         base.taskMgr.add(self.__updateTask, "mouseUpdateFPSCamera", sort = -40)
-        self.acceptOnce("escape", self.__handleEscapeKey)
+        self.acceptEngageKeys()
         
         self.mouseEnabled = True
         
@@ -166,9 +172,9 @@ class FPSCamera(DirectObject):
         base.taskMgr.remove("mouseUpdateFPSCamera")
         
         if allowEnable:
-            self.acceptOnce("escape", self.__handleEscapeKey)
+            self.acceptEngageKeys()
         else:
-            self.ignore("escape")
+            self.ignoreEngageKeys()
             base.localAvatar.getGeomNode().show()
             
         self.mouseEnabled = False

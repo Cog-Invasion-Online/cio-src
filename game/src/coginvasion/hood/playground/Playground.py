@@ -97,8 +97,8 @@ class Playground(Place.Place):
     def exitStation(self):
         pass
 
-    def enterWalk(self, teleportIn = 0):
-        Place.Place.enterWalk(self, teleportIn)
+    def enterWalk(self, teleportIn = 0, wantMouse = 1):
+        Place.Place.enterWalk(self, teleportIn, wantMouse)
         if base.localAvatar.zoneId != ZoneUtil.RecoverAreaId:
             base.localAvatar.startMonitoringHP()
 
@@ -113,7 +113,7 @@ class Playground(Place.Place):
         else:
             requestStatus['nextState'] = 'walk'
         x, y, z, h, p, r = base.cr.hoodMgr.getPlaygroundCenterFromId(self.loader.hood.id)
-        base.localAvatar.detachNode()
+        #base.localAvatar.detachNode()
         base.localAvatar.setPosHpr(render, x, y, z, h, p, r)
         Place.Place.enterTeleportIn(self, requestStatus)
         return

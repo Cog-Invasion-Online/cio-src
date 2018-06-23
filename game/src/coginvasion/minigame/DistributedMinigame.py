@@ -306,7 +306,6 @@ class DistributedMinigame(DistributedObject.DistributedObject, Timer.Timer):
         self.stopMinigameMusic()
         self.music = base.loadMusic(self.musicPath)
         self.music.setLoop(True)
-        self.music.setVolume(0.8)
         self.music.play()
 
     def stopMinigameMusic(self):

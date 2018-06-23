@@ -23,8 +23,8 @@ class PublicWalk(Walk.Walk):
         Walk.Walk.__init__(self, doneEvent)
         self.parentFSM = parentFSM
 
-    def enter(self):
-        Walk.Walk.enter(self)
+    def enter(self, wantMouse = 0):
+        Walk.Walk.enter(self, wantMouse)
         base.localAvatar.showBookButton()
         base.localAvatar.createLaffMeter()
 

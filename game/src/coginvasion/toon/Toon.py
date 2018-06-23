@@ -397,8 +397,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.nametag3d.show()
         self.getGeomNode().setTransparency(False)
         self.getGeomNode().setAlphaScale(1.0)
-        if not hasattr(base, 'localAvatar') or (hasattr(base, 'localAvatar') and base.localAvatar != self):
-            self.getGeomNode().show()
+        self.getGeomNode().show()
         #self.unstashBodyCollisions()
         
     def handleGhost(self, flag):
@@ -1079,7 +1078,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         toonTrack = Sequence(
             Wait(0.3), 
             Func(self.__restoreHide),
-        ActorInterval(self, 'happy', startTime = 0.45))
+            ActorInterval(self, 'happy', startTime = 0.45))
 
         if hasattr(self, 'uniqueName'):
             trackName = self.uniqueName('teleportIn')
@@ -1102,8 +1101,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.track.start(ts)
 
     def teleportInDone(self, callback, extraArgs):
-        self.__doCallback(callback, extraArgs)
         self.exitTeleportIn()
+        self.__doCallback(callback, extraArgs)
 
     def exitTeleportIn(self):
         if self.track != None:
@@ -1116,7 +1115,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.portal2 = None
         if self.nametag3d:
             self.nametag3d.show()
-        self.__restoreHide()
         self.playingAnim = 'neutral'
 
     def enterFallFWD(self, ts = 0, callback = None, extraArgs = []):

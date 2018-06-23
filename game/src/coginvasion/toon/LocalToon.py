@@ -16,7 +16,7 @@ from src.coginvasion.gui.ChatInput import ChatInput
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
 from src.coginvasion.gui.GagSelectionGui import GagSelectionGui
 from src.coginvasion.gags import GagGlobals
-from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval
+from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval, LerpPosHprInterval
 from direct.gui.DirectGui import DirectButton, OnscreenText
 from direct.showbase.InputStateGlobal import inputState
 from direct.gui.DirectGui import DGG
@@ -126,6 +126,16 @@ class LocalToon(DistributedPlayerToon):
         
         # This is used by the animation traverser.
         self.__traverseGUI = None
+
+    def doFirstPersonCameraTransition(self):
+        if self.isFirstPerson():
+            # Fancy little camera transition for first person
+            camHeight = max(self.getHeight(), 3.0)
+            heightScaleFactor = camHeight * 0.3333333333
+
+            LerpPosHprInterval(nodePath = camera, other = self, duration = 1.0,
+                               pos = (0, -9.0 * heightScaleFactor, camHeight), hpr = (0, 0, 0),
+                               blendType = 'easeInOut').start()
 
     def areGagsAllowed(self):
         return (self.walkControls.controlsEnabled and
@@ -424,8 +434,8 @@ class LocalToon(DistributedPlayerToon):
         h, p, r = self.getHpr(render)
         print "Pos: (%s, %s, %s), Hpr: (%s, %s, %s)" % (x, y, z, h, p, r)
 
-    def enableAvatarControls(self):
-        self.walkControls.enableControls()
+    def enableAvatarControls(self, wantMouse = 0):
+        self.walkControls.enableControls(wantMouse)
         #self.accept("control", self.updateMovementKeymap, ["jump", 1])
         #self.accept("control-up", self.updateMovementKeymap, ["jump", 0])
         #self.accept(base.inputStore.NextCameraPosition, self.smartCamera.nextCameraPos, [1])

@@ -167,9 +167,9 @@ class DistributedDodgeballGame(DistributedToonFPSGame, TeamMinigame):
         base.playSfx(self.danceSound, looping = 1)
 
         if self.winnerTeam == self.team:
-            base.playMusic(self.winnerMusic, volume = 0.8)
+            base.playMusic(self.winnerMusic)
         else:
-            base.playMusic(self.loserMusic, volume = 0.8)
+            base.playMusic(self.loserMusic)
 
         winnerPositions = [(-2, 0, 0), (2, 0, 0), (6, 0, 0), (-6, 0, 0)]
         loserPositions = [(-3.5, -10, 0), (-1.5, -15, 0), (3.0, -8, 0), (5.5, -12, 0)]

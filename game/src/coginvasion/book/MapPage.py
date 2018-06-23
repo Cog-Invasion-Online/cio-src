@@ -60,7 +60,6 @@ class MapPage(BookPage, DirectFrame):
         # The buttons
         self.infoLabel = None
         self.BTPButton = None
-        self.MGAButton = None
 
         self.clouds = []
         self.labels = []
@@ -137,11 +136,6 @@ class MapPage(BookPage, DirectFrame):
             text_pos = (0, -0.018), geom_scale = (1.3, 1.11, 1.11), text_scale = 0.06, parent = self,
             text_font = CIGlobals.getToonFont(), pos = (0.25, 0, -0.75), command = self.book.finished,
         extraArgs = btpEA, scale = 0.7)
-        if base.localAvatar.zoneId != ZoneUtil.MinigameAreaId:
-            self.MGAButton = DirectButton(relief = None, text = ZoneUtil.MinigameArea, geom = CIGlobals.getDefaultBtnGeom(),
-                text_pos = (0, -0.018), geom_scale = (1, 1.11, 1.11), text_scale = 0.06, parent = self,
-                text_font = CIGlobals.getToonFont(), pos = (0.625, 0, -0.75), command = self.book.finished,
-            extraArgs = [ZoneUtil.MinigameAreaId], scale = 0.7)
 
         icons = loader.loadModel('phase_3.5/models/gui/sos_textures.bam')
         self.icon = icons.find('**/teleportIcon')
@@ -154,8 +148,6 @@ class MapPage(BookPage, DirectFrame):
         self.infoLabel.destroy()
         self.BTPButton.destroy()
 
-        if self.MGAButton:
-            self.MGAButton.destroy()
         self.destroy()
 
         # Destroy the labels.
@@ -171,4 +163,3 @@ class MapPage(BookPage, DirectFrame):
         del self.clouds
         del self.infoLabel
         del self.BTPButton
-        del self.MGAButton

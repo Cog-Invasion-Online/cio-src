@@ -8,6 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.core import ConfigVariableBool
+
 from direct.distributed.DistributedSmoothNodeAI import DistributedSmoothNodeAI
 from direct.distributed.ClockDelta import globalClockDelta
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -41,6 +43,7 @@ import random
 
 class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
     notify = directNotify.newCategory('DistributedSuitAI')
+    dropItems = ConfigVariableBool('want-suit-drops', True)
 
     def __init__(self, air):
         DistributedAvatarAI.__init__(self, air)
@@ -53,7 +56,8 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.suitMgr = None
         self.suitPlan = 0
         self.variant = Variant.NORMAL
-        self.itemDropper = SuitItemDropperAI(self)
+        if self.dropItems.getValue():
+            self.itemDropper = SuitItemDropperAI(self)
         self.suitState = 0
         self.startPoint = -1
         self.endPoint = -1
@@ -149,7 +153,9 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.variant = Variant.getVariantById(variant)
         self.maxHealth = SuitGlobals.calculateHP(self.level)
         self.health = self.maxHealth
-        self.itemDropper.calculate(tutorial)
+
+        if self.dropItems.getValue():
+            self.itemDropper.calculate(tutorial)
 
         if self.level == 0:
             self.maxHealth = 1
@@ -501,8 +507,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             self.track.start()
 
     def closeSuit(self):
-        dropItem = base.config.GetBool('want-suit-drops', True)
-        if dropItem:
+        if self.dropItems.getValue():
             self.itemDropper.drop()
         if self.getManager():
             self.getManager().deadSuit(self.doId)
@@ -591,8 +596,9 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         if self.tacticalSeq:
             self.tacticalSeq.pause()
             self.tacticalSeq = None
-        self.itemDropper.cleanup()
-        self.itemDropper = None
+        if self.dropItems.getValue():
+            self.itemDropper.cleanup()
+            self.itemDropper = None
         self.lateX = None
         self.lateY = None
         self.anim = None
@@ -621,7 +627,8 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
     def delete(self):
         self.DELETED = True
         del self.brain
-        del self.itemDropper
+        if self.dropItems.getValue():
+            del self.itemDropper
         del self.lateX
         del self.lateY
         del self.anim

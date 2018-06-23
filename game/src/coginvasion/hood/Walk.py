@@ -28,7 +28,7 @@ class Walk(StateData):
     def unload(self):
         del self.fsm
 
-    def enter(self):
+    def enter(self, wantMouse = 0):
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.d_broadcastPositionNow()
         base.localAvatar.startBlink()
@@ -37,7 +37,7 @@ class Walk(StateData):
         base.localAvatar.collisionsOn()
         if not base.localAvatar.walkControls.getCollisionsActive():
             base.localAvatar.walkControls.setCollisionsActive(1)
-        base.localAvatar.enableAvatarControls()
+        base.localAvatar.enableAvatarControls(wantMouse)
 
     def exit(self):
         if base.localAvatarReachable():

@@ -83,8 +83,13 @@ class LocalControls(DirectObject):
         if self.controlsEnabled:
             self.fp_enable()
 
-    def fp_enable(self):
-        self.fpsCam.enableMouseMovement()
+    def fp_enable(self, wantMouse = 0):
+        if wantMouse:
+            self.fpsCam.enableMouseMovement()
+        else:
+            # At least allow them to engage the mouse.
+            self.fpsCam.acceptEngageKeys()
+
         base.localAvatar.resetHeadHpr(True)
 
         bp = base.localAvatar.getBackpack()
@@ -175,7 +180,7 @@ class LocalControls(DirectObject):
     def getCurrentSurface(self):
         return self.currentSurface
 
-    def enableControls(self):
+    def enableControls(self, wantMouse = 0):
         if self.controlsEnabled:
             return
         
@@ -186,7 +191,7 @@ class LocalControls(DirectObject):
         self.accept('tab', self.switchMode)
 
         if self.mode == LocalControls.MFirstPerson:
-            self.fp_enable()
+            self.fp_enable(wantMouse)
         elif self.mode == LocalControls.MThirdPerson:
             self.tp_attachCamera()
 

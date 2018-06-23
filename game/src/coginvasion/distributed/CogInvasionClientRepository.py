@@ -580,7 +580,7 @@ class CogInvasionClientRepository(AstronClientRepository):
         pass
 
     def playTheme(self):
-        base.playMusic(CIGlobals.getThemeSong(), volume = 0.7, looping = 1)
+        base.playMusic(CIGlobals.getThemeSong(), looping = 1)
 
     def enterAvChoose(self, newToonSlot = None):
         ModelPool.garbageCollect()

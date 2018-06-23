@@ -145,6 +145,8 @@ class Place(StateData):
         self.acceptOnce('DistributedDoor_localAvatarWentInDoor', self.handleDoorInDone, [requestStatus])
         self.acceptOnce('DistributedDoor_localAvatarGoingInDoor', base.transitions.irisOut)
 
+        base.localAvatar.doFirstPersonCameraTransition()
+
     def exitDoorIn(self):
         self.ignore('DistributedDoor_localAvatarWentInDoor')
         self.ignore('DistributedDoor_localAvatarGoingInDoor')
@@ -200,7 +202,11 @@ class Place(StateData):
         base.localAvatar.startSmartCamera()
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.d_broadcastPositionNow()
-        base.localAvatar.b_setAnimState('openBook', self.enterShtickerBookGui)
+        if base.localAvatar.isFirstPerson():
+            # Don't wait for an animation we can't see, open the book now.
+            self.enterShtickerBookGui()
+        else:
+            base.localAvatar.b_setAnimState('openBook', self.enterShtickerBookGui)
 
     def enterShtickerBookGui(self):
         doneEvent = 'shtickerBookDone'
@@ -223,19 +229,22 @@ class Place(StateData):
         doneStatus = self.shtickerBookStateData.getDoneStatus()
         base.localAvatar.hideBookButton()
         self.shtickerBookStateData.exit()
+
+        data = []
         if doneStatus['mode'] == 'exit':
-            base.localAvatar.b_setAnimState('closeBook', self.__handleBookCloseExit)
+            data = [self.__handleBookCloseExit, []]
         elif doneStatus['mode'] == 'teleport':
-            base.localAvatar.b_setAnimState('closeBook', self.__handleBookCloseTeleport, [doneStatus])
+            data = [self.__handleBookCloseTeleport, [doneStatus]]
         elif doneStatus['mode'] == 'resume':
-            base.localAvatar.b_setAnimState('closeBook', self.__handleBookCloseResume, [doneStatus])
+            data = [self.__handleBookCloseResume, [doneStatus]]
         elif doneStatus['mode'] == 'switchShard':
-            base.localAvatar.b_setAnimState('closeBook', self.__handleBookCloseSwitchShard, [doneStatus])
-            
-        if doneStatus['mode'] in ['switchShard', 'teleport']:
-            LerpPosHprInterval(nodePath = camera, other = base.localAvatar, duration = 1.0,
-                pos = (0, -8, base.localAvatar.getHeight() + 1.0), hpr = (0, -15, 0),
-                blendType = 'easeInOut').start()
+            data = [self.__handleBookCloseSwitchShard, [doneStatus]]
+
+        if base.localAvatar.isFirstPerson():
+            # Don't wait for an animation we can't see.
+            data[0](*data[1])
+        else:
+            base.localAvatar.b_setAnimState('closeBook', data[0], data[1])
 
     def __handleBookCloseSwitchShard(self, requestStatus):
         base.localAvatar.b_setAnimState('teleportOut', self.__handleBookSwitchShard, [requestStatus])
@@ -252,7 +261,9 @@ class Place(StateData):
         if doneStatus.get('callback'):
             doneStatus['callback'](*doneStatus.get("extraArgs", []))
             
-        self.fsm.request('walk')
+        if base.localAvatar.isFirstPerson():
+            base.localAvatar.getGeomNode().hide()
+        self.fsm.request('walk', [0, 0])
 
     def __handleBookCloseTeleport(self, requestStatus):
         self.fsm.request('teleportOut', [requestStatus])
@@ -317,26 +328,20 @@ class Place(StateData):
         self.__ignoreEvents()
 
     def enterTeleportIn(self, requestStatus):
-        base.transitions.irisIn()
         self.nextState = requestStatus.get('nextState', 'walk')
         if requestStatus['avId'] != base.localAvatar.doId:
             av = base.cr.doId2do.get(requestStatus['avId'])
             if av:
                 base.localAvatar.gotoNode(av)
                 base.localAvatar.b_setChat("Hi, %s." % av.getName())
-        globalClock.tick()
-        
-        Sequence(
-            Func(base.localAvatar.startPosHprBroadcast),
-            Func(base.localAvatar.b_setAnimState, 'teleportIn', callback = self.teleportInDone),
-            LerpPosHprInterval(nodePath = camera, other = base.localAvatar, duration = 1.0,
-                                                           pos = (0, -8, base.localAvatar.getHeight() + 1.0), hpr = (0, -15, 0),
-                                                           blendType = 'easeInOut'),
-            Func(base.localAvatar.d_broadcastPositionNow),
-            Func(base.localAvatar.b_setParent, CIGlobals.SPRender)
-        ).start()
 
-        return
+        base.localAvatar.startPosHprBroadcast()
+        base.localAvatar.b_setAnimState('teleportIn', callback = self.teleportInDone)
+        base.localAvatar.d_broadcastPositionNow()
+        base.localAvatar.b_setParent(CIGlobals.SPRender)
+        base.localAvatar.doFirstPersonCameraTransition()
+
+        base.transitions.irisIn()
 
     def exitTeleportIn(self):
         base.localAvatar.stopPosHprBroadcast()
@@ -373,8 +378,8 @@ class Place(StateData):
     def exitDied(self):
         base.localAvatar.disableLaffMeter()
 
-    def enterWalk(self, teleportIn = 0):
-        self.walkStateData.enter()
+    def enterWalk(self, teleportIn = 0, wantMouse = 1):
+        self.walkStateData.enter(wantMouse)
         if teleportIn == 0:
             self.walkStateData.fsm.request('walking')
         self.acceptOnce(self.walkDoneEvent, self.handleWalkDone)
@@ -446,15 +451,8 @@ class Place(StateData):
             callback = self.__teleportOutDone
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.d_broadcastPositionNow()
-        
-        Sequence(
-            LerpPosHprInterval(nodePath = camera, other = base.localAvatar, duration = 1.0,
-                                               pos = (0, -8, base.localAvatar.getHeight() + 1.0), hpr = (0, -15, 0),
-                                               blendType = 'easeInOut'),
-            Func(base.localAvatar.b_setAnimState, 'teleportOut', callback, [requestStatus])
-        ).start()
-        
-        #base.localAvatar.b_setAnimState('teleportOut', callback, [requestStatus])
+        base.localAvatar.b_setAnimState('teleportOut', callback, [requestStatus])
+        base.localAvatar.doFirstPersonCameraTransition()
 
     def exitTeleportOut(self):
         base.localAvatar.disableLaffMeter()
