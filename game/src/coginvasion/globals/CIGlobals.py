@@ -231,7 +231,7 @@ def makeSplat(pos, color, scale, sound = None):
     from panda3d.core import AudioSound
 
     splat = Actor("phase_3.5/models/props/splat-mod.bam", {"chan": "phase_3.5/models/props/splat-chan.bam"})
-    splat.setBillboardAxis(3)
+    splat.setBillboardPointEye()
     splat.setScale(scale)
     splat.setColor(color)
     splat.reparentTo(render)
@@ -266,6 +266,9 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
     explosion.setScale(scale)
     explosion.reparentTo(render)
     explosion.setBillboardPointEye()
+    explosion.setLightOff(1)
+    explosion.setShaderOff(1)
+    explosion.setMaterialOff(1)
     explosion.setPos(pos)
 
     frames = 10.0
