@@ -102,7 +102,7 @@ class GagWidget(DirectButton):
         if self.lastScale == self.goalScale:
             return task.cont
 
-        self.lastScale = CIGlobals.lerpWithRatio(self.lastScale, self.goalScale, 0.7)
+        self.lastScale = CIGlobals.lerpWithRatio(self.goalScale, self.lastScale, 0.8)
         self.setScale(self.lastScale)
 
         return task.cont
@@ -443,6 +443,9 @@ class GagSelectionGui(DirectFrame, FSM):
 
     def selectCurrentGag(self):
         selected = False
+
+        self.newTrackSound.stop()
+        self.keyScrollSound.stop()
         
         if self.currentGag is not None:
             if base.localAvatar.backpack.currentGag == self.currentGag.gagId:
@@ -483,6 +486,8 @@ class GagSelectionGui(DirectFrame, FSM):
         if self.currentTrack == idx:
             # Scroll through the current track.
             self.tracks[self.currentTrack].selectNextGag()
+
+            self.newTrackSound.stop()
             self.keyScrollSound.play()
         else:
             # Always start from the beginning when using the keys to choose a track.
@@ -494,11 +499,12 @@ class GagSelectionGui(DirectFrame, FSM):
         self.resetTimeout()
 
         track = self.tracks[self.currentTrack]
-        if track.isOnLastGag():
-            self.nextTrack()
-            newTrack = self.tracks[self.currentTrack]
+        if track.isOnFirstGag():
+            self.prevTrack()
         else:
-            track.selectNextGag()
+            track.selectPrevGag()
+
+        self.newTrackSound.stop()
         self.keyScrollSound.play()
 
     def __handleScrollDown(self):
@@ -506,11 +512,12 @@ class GagSelectionGui(DirectFrame, FSM):
         self.resetTimeout()
 
         track = self.tracks[self.currentTrack]
-        if track.isOnFirstGag():
-            self.prevTrack()
-            newTrack = self.tracks[self.currentTrack]
+        if track.isOnLastGag():
+            self.nextTrack()
         else:
-            track.selectPrevGag()
+            track.selectNextGag()
+
+        self.newTrackSound.stop()
         self.keyScrollSound.play()
 
     def nextTrack(self):

@@ -204,10 +204,12 @@ class FPSCamera(DirectObject):
 
             xDist = md.getX() - center.getX()
             yDist = md.getY() - center.getY()
+
+            sens = self.__getMouseSensitivity()
             
-            angular = -(xDist * self.__getMouseSensitivity()) / dt
+            angular = -(xDist * sens) / dt
             base.localAvatar.walkControls.controller.setAngularMovement(angular)
-            self.camRoot.setP(self.camRoot.getP() - yDist * self.__getMouseSensitivity())
+            self.camRoot.setP(self.camRoot.getP() - yDist * sens)
             
             if self.camRoot.getP() > FPSCamera.MaxP:
                 self.camRoot.setP(FPSCamera.MaxP)
@@ -216,13 +218,13 @@ class FPSCamera(DirectObject):
                 yDist = 0
                 self.camRoot.setP(FPSCamera.MinP)
 
-            maxSway = 0.6
+            maxSway = 0.55
             minSway = 0.1
-            swayXFactor = 0.1 * 0.7
-            swayYFactor = 0.05 * 0.7
+            swayXFactor = 0.0015 * sens
+            swayYFactor = swayXFactor
             swayRatio = 0.2
-            swayX = (xDist * swayXFactor)
-            swayY = (yDist * swayYFactor)
+            swayX = (xDist * swayXFactor) / dt
+            swayY = (yDist * swayYFactor) / dt
             
             if abs(swayX) < minSway:
                 swayX = 0.0
@@ -259,9 +261,9 @@ class FPSCamera(DirectObject):
             amplitude = base.localAvatar.walkControls.speeds.length() * 0.005
             bob = math.cos(time * 10) * (amplitude * 0.4)
             cBob = math.cos(time * 10) * (amplitude)
-            xBob = math.sin(time * 5) * (amplitude * 1.3)
+            xBob = math.sin(time * 5) * (amplitude * 0.65)
 
-            vmBob.set(xBob, -bob * 2, -bob)
+            vmBob.set(xBob, -bob * 2, -bob / 2)
             vmRaise.set(0, abs(self.camRoot.getP()) * -0.002, self.camRoot.getP() * 0.002)
             camBob.set(0, 0, cBob)
 
