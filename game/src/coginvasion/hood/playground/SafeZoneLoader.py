@@ -160,7 +160,7 @@ class SafeZoneLoader(StateData):
 
     def doFlatten(self):
         self.makeDictionaries(self.hood.dnaStore)
-        self.geom.flattenMedium()
+        self.geom.flattenStrong()
 
     def makeDictionaries(self, dnaStore):
         self.nodeList = []
@@ -170,8 +170,7 @@ class SafeZoneLoader(StateData):
             groupNode = self.geom.find('**/' + groupFullName)
             if groupNode.isEmpty():
                 self.notify.error('Could not find visgroup')
-            if not self.__class__.__name__ in ['TTSafeZoneLoader']:
-                groupNode.flattenMedium()
+            groupNode.flattenStrong()
             self.nodeList.append(groupNode)
 
         self.hood.dnaStore.resetPlaceNodes()
