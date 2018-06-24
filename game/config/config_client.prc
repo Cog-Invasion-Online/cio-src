@@ -10,13 +10,9 @@ aux-display pandagl
 #clock-frame-rate 10
 
 # Logging...
-notify-level warning
+notify-level info
 notify-timestamp #f
-notify-level-pgraph warning
-notify-level-loader warning
-notify-level-gobj warning
-notify-level-linmath warning
-default-directnotify-level warning
+default-directnotify-level info
 
 # Filenames...
 cursor-filename resources/toonmono.cur
@@ -60,14 +56,15 @@ server-port 7032
 server-address gameserver.coginvasion.com
 
 # Performance...
-hardware-animated-vertices #t
+hardware-animated-vertices #f
 sync-video #f
 smooth-lag 0.4
 basic-shaders-only #f
-framebuffer-multisample 1
-framebuffer-stencil 1
-multisamples 16
-read-raw-mice #t
+framebuffer-multisample 0
+framebuffer-stencil 0
+support-stencil 0
+framebuffer-srgb 0
+multisamples 0
 
 audio-dls-file resources/gm.dls
 
@@ -95,22 +92,20 @@ want-pstats 0
 
 egg-load-old-curves 0
 
-#threading-model /Draw
-
-gl-finish #f
-gl-force-no-error #t
-gl-check-errors #f
-gl-force-no-flush #t
-gl-force-no-scissor #t
-
 show-buffers #f
 
-texture-minfilter mipmap
+texture-minfilter linear
 texture-magfilter linear
-texture-quality-level best
-text-minfilter mipmap
+text-minfilter linear
 text-magfilter linear
+texture-quality-level fastest
+gl-coordinate-system default
+gl-force-fbo-color 0
+garbage-collect-states 1
 
-textures-power-2 none
+text-flatten 0
+text-dynamic-merge 1
 
 interpolate-frames 1
+
+threading-model App/Cull/Draw # experimental

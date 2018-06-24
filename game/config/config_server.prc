@@ -27,5 +27,3 @@ trolley-slots 8
 notify-level info
 default-directnotify-level info
 notify-timestamp #t
-
-time-manager-freq 10
