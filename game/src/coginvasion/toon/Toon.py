@@ -696,20 +696,30 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                 self.makeSubpart("torso-pants", ["def_left_skirt_bottomA", "def_left_skirt_topA", "def_right_skirt_bottomA", "def_right_skirt_topA"], parent = "torso")
         self.makeSubpart("torso-top", ["def_spineB"], parent = "torso")
 
-        if makeTag:
-            self.setupNameTag()
         Avatar.Avatar.initShadow(self)
-        if self.cr.isShowingPlayerIds:
-            self.showAvId()
+        
         self.updateChatSoundDict()
         self.setBlend(frameBlend = True)
-        self.loop('neutral')
 
         bodyMat = CIGlobals.getCharacterMaterial(specular = (0, 0, 0, 1))
         self.setMaterial(bodyMat)
 
         if not hasattr(base, 'localAvatar') or base.localAvatar != self:
             self.setupPhysics(1.0, self.getHeight())
+
+        # We can safely optimize the scene graph and combine nodes since we're done manipulating
+        # the separate pieces. After this point, the separate pieces of the toon are no
+        # longer manipulatable, such as arms, sleeves, shirt, etc. If this needs to be done,
+        # the toon will have to be regenerated.
+        self.getPart('legs').flattenStrong()
+        self.postFlatten()
+
+        if makeTag:
+            self.setupNameTag()
+        if self.cr.isShowingPlayerIds:
+            self.showAvId()
+
+        self.loop('neutral')
 
     def attachTNT(self):
         self.pies.attachTNT()

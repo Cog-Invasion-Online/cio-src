@@ -45,7 +45,7 @@ class CIBase(ShowBase):
         #self.startTk()
 
         self.camLens.setNearFar(0.5, 10000)
-        self.taskMgr.setupTaskChain('fpsIndependentStuff', numThreads = 1, frameSync = False)
+        #self.taskMgr.setupTaskChain('fpsIndependentStuff', numThreads = 1, frameSync = False)
 
         self.physicsWorld = BulletWorld()
         # Panda units are in feet, so the gravity is 32 feet per second,

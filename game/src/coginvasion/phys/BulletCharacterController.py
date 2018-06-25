@@ -437,7 +437,7 @@ class BulletCharacterController(DirectObject):
             break
     
     def __updateCapsule(self):
-        self.movementParent.setPos(self.__targetPos)
+        self.movementParent.setPos(render, self.__targetPos)
         self.capsuleNP.setPos(0, 0, self.__capsuleOffset)
         
         self.__capsuleTop = self.__targetPos.z + self.__levitation + self.__capsuleH * 2.0

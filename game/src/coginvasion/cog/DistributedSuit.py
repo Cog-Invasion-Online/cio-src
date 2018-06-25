@@ -469,20 +469,12 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         self.sendUpdate('handleWeaponTouch', [])
         self.handleWeaponTouch()
 
-    def __monitorLocalAvDistance(self, task):
-        if not hasattr(base, 'localAvatar'):
-            return task.done
-
-        return task.cont
-
     def announceGenerate(self):
         DistributedAvatar.announceGenerate(self)
         self.setAnimState('neutral')
 
         # Picked up by DistributedBattleZone:
         messenger.send('suitCreate', [self])
-
-        base.taskMgr.add(self.__monitorLocalAvDistance, self.uniqueName('monitorLocalAvDistance'))
 
     def generate(self):
         DistributedAvatar.generate(self)
@@ -492,7 +484,6 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         # Picked up by DistributedBattleZone:
         messenger.send('suitDelete', [self])
 
-        base.taskMgr.remove(self.uniqueName('monitorLocalAvDistance'))
         self.anim = None
         self._state = None
         self.dept = None

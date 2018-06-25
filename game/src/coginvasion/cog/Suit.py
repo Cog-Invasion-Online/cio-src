@@ -184,6 +184,7 @@ class Suit(Avatar):
 
     def enterFlyNeutral(self, ts = 0):
         self.disableRay()
+        self.disableShadowRay()
         if not self.propeller:
             self.generatePropeller()
         sfx = self.propellerSounds['neutral']
@@ -197,6 +198,7 @@ class Suit(Avatar):
 
     def enterFlyDown(self, ts = 0):
         self.disableRay()
+        self.disableShadowRay()
         if not self.propeller:
             self.generatePropeller()
         sfx = self.propellerSounds['in']
@@ -234,6 +236,7 @@ class Suit(Avatar):
         self.suitTrack.start(ts)
 
     def exitFlyDown(self):
+        self.cleanupPropeller()
         self.enableRay()
         if self.suitTrack != None:
             self.ignore(self.suitTrack.getDoneEvent())
@@ -241,7 +244,6 @@ class Suit(Avatar):
             DelayDelete.cleanupDelayDeletes(self.suitTrack)
             self.suitTrack = None
         self.exitGeneral()
-        self.cleanupPropeller()
 
     def enterFlyAway(self, ts = 0, doFadeOut = 0):
         self.show()
@@ -272,14 +274,15 @@ class Suit(Avatar):
         self.suitTrack.delayDelete = DelayDelete.DelayDelete(self, name)
         self.suitTrack.start(ts)
         self.disableRay()
+        self.disableShadowRay()
 
     def exitFlyAway(self):
+        self.cleanupPropeller()
         if self.suitTrack:
             self.ignore(self.suitTrack.getDoneEvent())
             self.suitTrack.finish()
             DelayDelete.cleanupDelayDeletes(self.suitTrack)
             self.suitTrack = None
-        self.cleanupPropeller()
         self.exitGeneral()
 
     def enterDie(self, ts = 0):
@@ -339,10 +342,7 @@ class Suit(Avatar):
         self.bigGearExp.start(self.getGeomNode())
 
     def suitExplode(self):
-        if self.variant == Variant.SKELETON:
-            pos = self.getPart('body').find('**/joint_head').getPos(render) + (0, 0, 2)
-        else:
-            pos = self.headModel.getPos(render) + (0,0,2)
+        pos = self.getPart('body').find('**/joint_head').getPos(render) + (0, 0, 2)
 
         CIGlobals.makeExplosion(pos, 0.5, soundVol = 0.32)
 
@@ -529,7 +529,7 @@ class Suit(Avatar):
             self.loadAnims({'lose' : 'phase_4/models/char/suit%s-lose.bam' % (str(self.suit))}, 'body')
         if self.variant != Variant.SKELETON:
             self.headModel = self.head.generate()
-            self.headModel.reparentTo(self.find('**/joint_head'))
+            self.headModel.reparentTo(self.find("**/joint_head"))
         if self.suitPlan.getName() == SuitGlobals.VicePresident:
             self.headModel.setScale(0.35)
             self.headModel.setHpr(270, 0, 270)
@@ -539,7 +539,15 @@ class Suit(Avatar):
         self.setAvatarScale(self.suitPlan.getScale() / SuitGlobals.scaleFactors[self.suit])
         self.setHeight(self.suitPlan.getHeight())
         self.setupNameTag()
+
         Avatar.initShadow(self)
+
+        # We've already done all manipulating to the cog, we can just flatten it.
+        self.getPart('body').flattenStrong()
+        self.postFlatten()
+        self.headModel.flattenStrong()
+        if isinstance(self.headModel, Actor):
+            self.headModel.postFlatten()
 
     def cleanup(self):
         if self.footstepSound:
@@ -549,21 +557,19 @@ class Suit(Avatar):
         self.clearChatbox()
         if self.shadow:
             self.deleteShadow()
+        if self.headModel:
+            self.headModel.removeNode()
+        self.headModel = None
         if self.getPart('body'):
             self.removePart('body')
-        if self.headModel:
-            try:
-                self.headModel.removeNode()
-            except:
-                pass
-            self.headModel = None
         self.timestampAnimTrack = None
 
     def generatePropeller(self):
         self.cleanupPropeller()
+
         self.propeller = Actor('phase_4/models/props/propeller-mod.bam',
                                {'chan' : 'phase_4/models/props/propeller-chan.bam'})
-        self.propeller.reparentTo(self.find('**/joint_head'))
+        self.propeller.reparentTo(self.find("**/joint_head"))
         self.propellerSounds['in'] = base.audio3d.loadSfx(SuitGlobals.propellerInSfx)
         self.propellerSounds['out'] = base.audio3d.loadSfx(SuitGlobals.propellerOutSfx)
         self.propellerSounds['neutral'] = base.audio3d.loadSfx(SuitGlobals.propellerNeutSfx)

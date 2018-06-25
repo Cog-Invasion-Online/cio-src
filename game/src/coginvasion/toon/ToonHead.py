@@ -6,13 +6,11 @@
 
 """
 
-from panda3d.core import PerspectiveLens, LensNode, Texture, Point3, Mat4
+from panda3d.core import PerspectiveLens, LensNode, Texture, Point3, Mat4, ModelNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Parallel, Sequence, LerpHprInterval
 from direct.actor import Actor
-
-
 from src.coginvasion.toon import ToonGlobals
 
 from src.coginvasion.globals import CIGlobals
@@ -206,8 +204,9 @@ class ToonHead(Actor.Actor):
             self.__rpupil = None
             lp = self.pupils[0]
             rp = self.pupils[1]
-            leye = self.__eyes.attachNewNode('leye')
-            reye = self.__eyes.attachNewNode('reye')
+            # ModelNodes don't get flattened
+            leye = self.__eyes.attachNewNode(ModelNode('leye'))
+            reye = self.__eyes.attachNewNode(ModelNode('reye'))
             lmat = Mat4(0.802174, 0.59709, 0, 0, -0.586191, 0.787531, 0.190197, 0, 0.113565,
                         -0.152571, 0.981746, 0, -0.233634, 0.418062, 0.0196875, 1)
             leye.setMat(lmat)

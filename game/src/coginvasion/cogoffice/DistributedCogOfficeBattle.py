@@ -739,6 +739,8 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                 
         base.createAndEnablePhysicsNodes(self.floorModel)
 
+        self.floorModel.flattenStrong()
+
         # Tell the AI that we've finished loading the floor
         self.d_loadedFloor()
 
@@ -832,6 +834,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             for oPropPath in otherProps:
                 oPropMdl = loader.loadModel(oPropPath)
                 oPropMdl.reparentTo(propMdl)
+            propMdl.wrtReparentTo(self.floorModel)
             self.props.append(propMdl)
 
     def loadElevators(self):

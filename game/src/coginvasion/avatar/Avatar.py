@@ -19,7 +19,6 @@ from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.npc import DisneyCharGlobals as DCG
 from src.coginvasion.toon import ToonTalker
 from src.coginvasion.nametag.NametagGroup import NametagGroup
-from src.coginvasion.base.ShadowPlacer import ShadowPlacer
 from src.coginvasion.phys.PhysicsNodePath import PhysicsNodePath
 
 notify = directNotify.newCategory("Avatar")
@@ -67,8 +66,10 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
 
         self.thoughtInProg = False
 
-        self.floorTask = None
-        
+        self.shadowFloorToggle = False
+        self.avatarFloorToggle = False
+        self.floorTask = taskMgr.add(self.__keepOnFloorTask, "Avatar.keepOnFloor", sort = 30)
+
         return
 
     def isLocalAvatar(self):
@@ -79,21 +80,38 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
     def initializeRay(self, *args, **kwargs):
         pass
 
-    def enableRay(self):
-        self.disableRay()
+    def enableShadowRay(self):
+        self.shadowFloorToggle = True
 
-        self.floorTask = taskMgr.add(self.__keepOnFloorTask, "Avatar.keepOnFloor", sort = 30)
+    def disableShadowRay(self):
+        self.shadowFloorToggle = False
+
+    def enableRay(self):
+        self.avatarFloorToggle = True
 
     def disableRay(self):
-        if self.floorTask:
-            taskMgr.remove(self.floorTask)
-            self.floorTask = None
+        self.avatarFloorToggle = False
+
+    def updateFloorHeight(self, z):
+        if self.avatarFloorToggle:
+            self.setZ(render, z)
+        if self.shadowFloorToggle and self.shadow:
+            self.shadow.setZ(render, z)
 
     def __keepOnFloorTask(self, task):
         # First, check if we are above a ground.
         # If so, go onto that.
+        
+        if self.isEmpty():
+            return task.done
+
+        if not self.avatarFloorToggle and not self.shadowFloorToggle:
+            # Avoid unnecessary ray casting.
+            return task.cont
 
         pFrom = self.getPos(render)
+
+        z = None
 
         pTo = pFrom - (0, 0, 2000)
         aboveResult = base.physicsWorld.rayTestAll(pFrom, pTo, CIGlobals.WallGroup | CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
@@ -107,11 +125,10 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
                 if self.isAncestorOf(np):
                     continue
                 z = hit.getHitPos().getZ()
-                self.setZ(z)
-                aboveGround = True
                 break
 
-        if aboveGround:
+        if z is not None:
+            self.updateFloorHeight(z)
             return task.cont
 
         # We're not above a ground, check above?
@@ -126,8 +143,10 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
                 if self.isAncestorOf(np):
                     continue
                 z = hit.getHitPos().getZ()
-                self.setZ(z)
                 break
+
+        if z is not None:
+            self.updateFloorHeight(z)
 
         return task.cont 
 
@@ -164,11 +183,15 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
             self.Avatar_disabled
         except:
             self.Avatar_disabled = 1
+            if self.floorTask:
+                self.floorTask.remove()
+            self.floorTask = None
             self.disableRay()
             self.deleteNametag3d()
             self.nametag.destroy()
             del self.nametag
             self.nametag3d.removeNode()
+            self.nametag3d = None
             self.deleteShadow()
             self.removeLoopTask()
             self.mat = None
@@ -180,6 +203,9 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
             self.nameTag = None
             self._name = None
             self.cleanupPhysics()
+            
+            self.avatarFloorToggle = None
+            self.shadowFloorToggle = None
 
             Actor.cleanup(self)
 
@@ -267,10 +293,6 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
             self.nametag.manage(base.marginManager)
         self.nametag.updateAll()
 
-    def getAirborneHeight(self):
-        height = self.getPos(self.shadowPlacer.shadowNodePath)
-        return height.getZ() + 0.025
-
     def setAvatarScale(self, scale):
         self.getGeomNode().setScale(scale)
 
@@ -281,40 +303,26 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         return None
 
     def initShadow(self):
-        #self.shadow = arbitraryShadow(self.getGeomNode())
-
         if game.userealshadows:
             self.shadow = self.attachNewNode("fakeShadow")
-            self.shadowPlacer = ShadowPlacer(self.shadow, self.mat)
         else:
             self.shadow = loader.loadModel("phase_3/models/props/drop_shadow.bam")
             self.shadow.setScale(CIGlobals.ShadowScales[self.avatarType])
             self.shadow.flattenMedium()
             self.shadow.setBillboardAxis(4)
             self.shadow.setColor(0, 0, 0, 0.5, 1)
-            self.shadowPlacer = ShadowPlacer(self.shadow, self.mat)
             if self.avatarType == CIGlobals.Toon:
                 self.shadow.reparentTo(self.getPart('legs').find('**/joint_shadow'))
             elif self.avatarType == CIGlobals.Suit:
-                self.shadow.reparentTo(self)#.find('**/joint_shadow'))
+                self.shadow.reparentTo(self)
             else:
                 self.shadow.reparentTo(self)
 
     def deleteShadow(self):
         if hasattr(self, 'shadow'):
             if self.shadow:
-                self.shadowPlacer.delete_shadow_ray()
-                self.shadowPlacer = None
                 self.shadow.removeNode()
                 self.shadow = None
-                #self.shadow.clear()
-                #self.shadow = None
-
-    def disableShadowRay(self):
-        self.shadowPlacer.delete_shadow_ray()
-
-    def enableShadowRay(self):
-        self.shadowPlacer.setup_shadow_ray(self.shadow, self.mat)
 
     def loopFromFrameToZero(self, animName, restart = 1, partName = None, fromFrame = None):
         # Loop an animation from a frame, restarting at 0.

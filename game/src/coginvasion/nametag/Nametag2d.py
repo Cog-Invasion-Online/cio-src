@@ -235,7 +235,7 @@ class Nametag2d(Nametag, Clickable2d, MarginVisible):
         self.textNode.setTextColor(foreground)
 
         # Attach the TextNode:
-        self.textNodePath = self.contents.attachNewNode(self.textNode, 1)
+        self.textNodePath = self.contents.attachNewNode(self.textNode.generate(), 1)
         self.textNodePath.setTransparency(foreground[3] < 1)
         self.textNodePath.setAttrib(DepthWriteAttrib.make(0))
         self.textNodePath.setY(self.TEXT_Y_OFFSET)

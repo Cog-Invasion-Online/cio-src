@@ -55,7 +55,7 @@ class ChatBalloon(NodePath):
             self.balloon.setTextureOff(1)
 
         # Attach the TextNode:
-        self.textNodePath = self.attachNewNode(self.textNode)
+        self.textNodePath = self.attachNewNode(self.textNode.generate())
         self.textNodePath.setTransparency(self.foreground[3] < 1)
         self.textNodePath.setAttrib(DepthWriteAttrib.make(0))
 

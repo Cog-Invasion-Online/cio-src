@@ -202,9 +202,11 @@ class DropGag(Gag, LocationGag):
                         hitCog = True
         gagObj = self.gag
         if hitCog:
+            base.audio3d.attachSoundToObject(self.hitSfx, self.gag)
             SoundInterval(self.hitSfx, node = self.gag).start()
             shrinkTrack.append(Wait(0.5))
         else:
+            base.audio3d.attachSoundToObject(self.missSfx, self.gag)
             SoundInterval(self.missSfx, node = self.gag).start()
         shrinkTrack.append(Wait(0.25))
         shrinkTrack.append(LerpScaleInterval(self.dropMdl, 0.3, Point3(0.01, 0.01, 0.01)))
