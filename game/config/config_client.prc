@@ -109,3 +109,4 @@ text-dynamic-merge 1
 interpolate-frames 1
 
 threading-model App/Cull/Draw # experimental
+assert-abort 1
