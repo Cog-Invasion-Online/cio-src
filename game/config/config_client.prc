@@ -94,16 +94,16 @@ egg-load-old-curves 0
 
 show-buffers #f
 
-texture-minfilter linear
+texture-minfilter mipmap
 texture-magfilter linear
-text-minfilter linear
+text-minfilter mipmap
 text-magfilter linear
-texture-quality-level fastest
 gl-coordinate-system default
 gl-force-fbo-color 0
 garbage-collect-states 1
+allow-flatten-color 1
 
-text-flatten 0
+text-flatten 1
 text-dynamic-merge 1
 
 interpolate-frames 1
