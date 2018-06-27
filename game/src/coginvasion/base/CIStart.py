@@ -86,10 +86,6 @@ except:
 notify.info("Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype))
 notify.info("Phase dir: " + game.phasedir)
 
-from CIBase import CIBase
-base = CIBase()
-base.loader.destroy()
-
 from src.coginvasion.manager.SettingsManager import SettingsManager
 jsonfile = "settings.json"
 notify.info("Reading settings file " + jsonfile)
@@ -97,8 +93,14 @@ sm = SettingsManager()
 from src.coginvasion.globals import CIGlobals
 CIGlobals.SettingsMgr = sm
 sm.loadFile(jsonfile)
+notify.info("Applying pre settings")
+sm.applyPreSettings()
 
-notify.info("Setting display preferences...")
+from CIBase import CIBase
+base = CIBase()
+base.loader.destroy()
+
+notify.info("Applying post settings")
 sm.applySettings()
 
 from CogInvasionLoader import CogInvasionLoader

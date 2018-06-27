@@ -34,7 +34,12 @@ class SettingsManager:
             self.jsonData = {}
             self.jsonData["settings"] = {}
 
-    def applySettings(self):
+    def applyPreSettings(self):
+        """
+        Applies settings which must be set before the show is initialized.
+        Mainly PRC variable overrides.
+        """
+
         settings = self.jsonData["settings"]
 
         # Game screen resolution
@@ -46,6 +51,45 @@ class SettingsManager:
         fs = settings.get("fullscreen", None)
         if fs is None:
             fs = self.updateAndWriteSetting("fullscreen", False)
+
+        # Antialiasing
+        aa = settings.get("aa", None)
+        if aa is None:
+            aa = self.updateAndWriteSetting("aa", 0)
+
+        # Anisotropic filtering/degree
+        af = settings.get("af", None)
+        if af is None:
+            af = self.updateAndWriteSetting("af", 0)
+
+        # Mouse cursor
+        cursor = settings.get("cursor", None)
+        if cursor is None:
+            cursor = self.updateAndWriteSetting("cursor", SettingsManager.MouseCursors.keys()[0])
+
+        # V-Sync
+        vsync = settings.get("vsync", None)
+        if vsync is None:
+            vsync = self.updateAndWriteSetting("vsync", False)
+
+        loadPrcFileData("", "sync-video {0}".format(int(vsync)))
+
+        if aa != 0:
+            loadPrcFileData("", "framebuffer-multisample 1")
+            loadPrcFileData("", "multisamples {0}".format(aa))
+        else:
+            loadPrcFileData("", "framebuffer-multisample 0")
+            loadPrcFileData("", "multisamples 0")
+
+        self.notify.info("Anisotropic degree of {0}".format(af))
+        loadPrcFileData("", "texture-anisotropic-degree {0}".format(af))
+
+        loadPrcFileData("", "win-size {0} {1}".format(res[0], res[1]))
+        loadPrcFileData("", "fullscreen {0}".format(int(fs)))
+        loadPrcFileData("", "cursor-filename {0}".format(SettingsManager.MouseCursors[cursor]))
+
+    def applySettings(self):
+        settings = self.jsonData["settings"]
 
         # music toggle
         music = settings.get("music", None)
@@ -76,16 +120,6 @@ class SettingsManager:
         model_detail = settings.get('model-detail', None)
         if model_detail is None:
             model_detail = self.updateAndWriteSetting('model-detail', "high")
-
-        # Antialiasing
-        aa = settings.get("aa", None)
-        if aa is None:
-            aa = self.updateAndWriteSetting("aa", 0)
-
-        # Anisotropic filtering/degree
-        af = settings.get("af", None)
-        if af is None:
-            af = self.updateAndWriteSetting("af", 0)
             
         shadows = settings.get("shadows", None)
         if shadows is None:
@@ -125,11 +159,6 @@ class SettingsManager:
         lighting = settings.get("lighting", None)
         if lighting is None:
             lighting = self.updateAndWriteSetting("lighting", False)
-        
-        # Mouse cursor
-        cursor = settings.get("cursor", None)
-        if cursor is None:
-            cursor = self.updateAndWriteSetting("cursor", SettingsManager.MouseCursors.keys()[0])
             
         # Hdr
         hdr = settings.get("hdr", None)
@@ -171,34 +200,22 @@ class SettingsManager:
 
         base.musicManager.setVolume(musvol)
         base.sfxManagerList[0].setVolume(sfxvol)
+
+        if base.config.GetBool("framebuffer-multisample", False):
+            render.setAntialias(AntialiasAttrib.MMultisample)
+            aspect2d.setAntialias(AntialiasAttrib.MMultisample)
+            render2d.setAntialias(AntialiasAttrib.MMultisample)
+        else:
+            render.clearAntialias()
+            aspect2d.clearAntialias()
+            render2d.clearAntialias()
         
         self.applyHdr(hdr)
 
         base.setBloom(bloom)
 
-        if aa != 0:
-            render.setAntialias(AntialiasAttrib.MMultisample)
-            aspect2d.setAntialias(AntialiasAttrib.MMultisample)
-        else:
-            render.clearAntialias()
-            aspect2d.clearAntialias()
-
-        self.notify.info("Anisotropic degree of {0}".format(af))
-        loadPrcFileData("", "texture-anisotropic-degree {0}".format(af))
-
-        if tex_detail == "high":
-            pass
-        elif tex_detail == "low":
-            loadPrcFileData("", "compressed-textures 1")
-
         CIGlobals.DefaultCameraFov = genfov
         CIGlobals.GunGameFov = fpmgfov
-
-        wp = WindowProperties()
-        wp.setSize(res[0], res[1])
-        wp.setFullscreen(fs)
-        wp.setCursorFilename(SettingsManager.MouseCursors[cursor])
-        base.win.requestProperties(wp)
         
     def applyHdr(self, hdr):
         if hdr == 1:
