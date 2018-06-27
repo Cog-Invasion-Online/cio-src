@@ -1176,7 +1176,7 @@ class RazzleDazzleAttack(ParticleAttack):
 
         # Fix up the smile sign:
         self.handObj.setPosHprScale(0.0, -0.42, -0.04, 
-                                    105.715, 73.977, 65.932,
+                                    180, 36.03, 1.15,
                                     1.39, 1.39, 1.39)
         self.handObj.loop('chan')
 
@@ -1552,7 +1552,7 @@ class TeeOffAttack(Attack):
         if self.visualizeBallPath:
             self.ballVisRope = Rope(self.suit.uniqueName('teeOffPathVis'))
             self.ballVisRope.setup(1, ({'node': self.ballRoot, 'point': (0, 0, 0), 'color': (0, 0, 0, 1)},
-                                       {'node': self.ballRoot, 'point': (0, 50, 0), 'color': (0, 0, 0, 1)}))
+                                       {'node': self.ballRoot, 'point': (0, 85, 0), 'color': (0, 0, 0, 1)}))
             self.ballVisRope.reparentTo(render)
 
         self.ball = loader.loadModel("phase_5/models/props/golf-ball.bam")
@@ -1571,7 +1571,8 @@ class TeeOffAttack(Attack):
             Sequence(Wait(4.1), Func(base.playSfx, self.sound)),
             Sequence(Func(self.startToonLockOn), Wait(4.2), Func(self.stopToonLockOn), Func(self.setupBallAngle), Func(self.ballRoot.wrtReparentTo, render),
                      Func(self.acceptOnce, 'enter' + collName, self.__handleGolfBallCollision),
-                     LerpPosInterval(self.ball, duration = 1.0, pos = (0, 50, 0), startPos = (0, 0, 0)),
+                     LerpPosInterval(self.ball, duration = 1.0, pos = (0, 85, 0), startPos = (0, 0, 0)),
+                     Func(self.ball.hide),
                      Func(self.ignore, 'enter' + collName)), name = self.suit.uniqueName('golfBallSuitTrack'))
         self.startSuitTrack(ts)
 
