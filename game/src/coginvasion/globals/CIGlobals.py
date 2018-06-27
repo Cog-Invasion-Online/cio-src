@@ -289,8 +289,8 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
 
         hlsounds = base.config.GetBool('explosion-hlsounds', False)
         if hlsounds:
-            hldir = "/c/Program Files (x86)/Steam/steamapps/common/Half-Life/valve/sound/weapons/"
-            snd = base.audio3d.loadSfx(hldir + random.choice(['explode3', 'explode4', 'explode5']) + ".wav")
+            hldir = "phase_14/audio/sfx/"
+            snd = base.audio3d.loadSfx(hldir + random.choice(['explode3', 'explode4', 'explode5']) + ".ogg")
         else:
             snd = base.audio3d.loadSfx("phase_3.5/audio/sfx/ENC_cogfall_apart.ogg")
 
@@ -299,7 +299,7 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
         # explosion aftermaths
         debChoice = random.randint(1, 4)
         if debChoice <= 3:
-            debris = base.audio3d.loadSfx("phase_14/audio/sfx/debris{0}.wav".format(debChoice))
+            debris = base.audio3d.loadSfx("phase_14/audio/sfx/debris{0}.ogg".format(debChoice))
         else:
             debris = base.audio3d.loadSfx("phase_4/audio/sfx/MG_crash_whizz.ogg")
         base.audio3d.attachSoundToObject(debris, explosion)
