@@ -152,7 +152,21 @@ class CharSelection(DirectObject):
                     self.szGeom.reparentTo(render)
                 else:
                     self.szGeom = render.attachNewNode(node)
+                
+                # The 2D trees should not be flattened, to do that, we're going to traverse
+                # the scene graph for all trees, use #wrtReparentTo(render) on them, flatten
+                # the scene with #flattenStrong(), and finally #wrtReparentTo(self.szGeom)
+                # the trees back to the main scene node so they get cleaned up properly.
+                trees = self.szGeom.findAllMatches('**/*tree*')
+                
+                for tree in trees:
+                    tree.wrtReparentTo(render)
+                
                 self.szGeom.flattenStrong()
+                
+                for tree in trees:
+                    tree.wrtReparentTo(self.szGeom)
+                
                 gsg = base.win.getGsg()
                 if gsg:
                     self.szGeom.prepareScene(gsg)
