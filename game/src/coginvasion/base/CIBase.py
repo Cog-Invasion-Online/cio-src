@@ -120,6 +120,12 @@ class CIBase(ShowBase):
         print 'TPM END'
         """
 
+    def physicsReport(self):
+        print "\nThere are {0} total rigid bodies:".format(base.physicsWorld.getNumRigidBodies())
+        for rb in base.physicsWorld.getRigidBodies():
+            print "\t", NodePath(rb)
+        print "\n"
+
     def removeEverything(self):
         for task in self.taskMgr.getTasks():
             if task.getName() not in ['dataLoop', 'igLoop']:

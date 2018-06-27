@@ -80,6 +80,7 @@ class DistributedBuilding(DistributedObject):
     def delete(self):
         self.victorList = None
         if self.elevatorNodePath:
+            base.disablePhysicsNodes(self.elevatorNodePath)
             self.elevatorNodePath.removeNode()
             del self.elevatorNodePath
             del self.elevatorModel
@@ -291,6 +292,7 @@ class DistributedBuilding(DistributedObject):
                 initPos = Point3(0, 0, self.SUIT_INIT_HEIGHT) + i.getPos()
                 showTrack.append(Func(i.setPos, initPos))
                 showTrack.append(Func(i.unstash))
+                showTrack.append(Func(base.enablePhysicsNodes, i))
                 if i == sideBldgNodes[len(sideBldgNodes) - 1]:
                     showTrack.append(Func(self.normalizeElevator))
                 if not soundPlayed:
@@ -310,6 +312,7 @@ class DistributedBuilding(DistributedObject):
                 timeTillSquish *= timeForDrop
                 hideTrack.append(LerpFunctionInterval(self.adjustColorScale, fromData = 1, toData = 0.25, duration = timeTillSquish, extraArgs = [i]))
                 hideTrack.append(LerpScaleInterval(i, timeForDrop - timeTillSquish, Vec3(1, 1, 0.01)))
+                hideTrack.append(Func(base.disablePhysicsNodes, i))
                 hideTrack.append(Func(i.stash))
                 hideTrack.append(Func(i.setScale, Vec3(1)))
                 hideTrack.append(Func(i.clearColorScale))
@@ -393,6 +396,7 @@ class DistributedBuilding(DistributedObject):
                 hideTrack.append(self.createBounceTrack(i, 9, 1.2, TO_TOON_BLDG_TIME * 0.18, slowInitBounce = 0.0))
                 realScale = i.getScale()
                 hideTrack.append(LerpScaleInterval(i, TO_TOON_BLDG_TIME * 0.1, Vec3(realScale[0], realScale[1], 0.01)))
+                hideTrack.append(Func(base.disablePhysicsNodes, i))
                 if landmark:
                     hideTrack.append(Func(i.removeNode))
                 else:
@@ -407,6 +411,7 @@ class DistributedBuilding(DistributedObject):
                 if not toonSoundPlayed:
                     hideTrack.append(Func(base.playSfx, self.toonGrowSound, 0, 1, None, 0.0))
                 hideTrack.append(Func(i.unstash))
+                hideTrack.append(Func(base.enablePhysicsNodes, i))
                 hideTrack.append(Func(i.setScale, Vec3(1, 1, 0.01)))
                 if not toonSoundPlayed:
                     hideTrack.append(Func(base.playSfx, self.toonSettleSound, 0, 1, None, 0.0))
@@ -574,7 +579,6 @@ class DistributedBuilding(DistributedObject):
             nodePath = npc.getPath(i)
             self.adjustSbNodepathScale(nodePath)
             self.setupSuitBuilding(nodePath)
-            base.enablePhysicsNodes(nodePath)
 
     def setToToon(self):
         self.stopTransition()

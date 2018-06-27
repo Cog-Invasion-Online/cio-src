@@ -750,6 +750,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             self.ilc.cleanup()
             self.ilc = None
         for prop in self.props:
+            base.disableAndRemovePhysicsNodes(prop)
             prop.removeNode()
         self.props = []
         if self.floorModel:
