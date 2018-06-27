@@ -10,8 +10,74 @@ Copyright (c) CIO Team. All rights reserved.
 
 from src.coginvasion.cog import Dept
 from src.coginvasion.cog.SuitType import SuitType
+from src.coginvasion.gags import GagGlobals
 
 from panda3d.core import Vec4
+
+# The cog classes
+CCMinion        = 0
+CCSecretary     = 1
+CCScout         = 2
+CCEnforcer      = 3
+CCMarshal       = 4
+CCSupervisor    = 5
+
+ClassNameById = {
+    CCMinion:       'Minion',
+    CCSecretary:    'Secretary',
+    CCScout:        'Scout',
+    CCEnforcer:     'Enforcer',
+    CCMarshal:      'Marshal',
+    CCSupervisor:   'Supervisor'
+}
+
+def getClassName(id):
+    return ClassNameById.get(id, 'Unknown')
+
+class CogClassAttributes:
+
+    def __init__(self, walkMod = 1.0, hpMod = 1.0, dmgMod = 1.0,
+                 healer = False, footsteps = True, baseHp = 100,
+                 gagRamps = {}, scaleMod = 1.0, voiceMod = 1.0):
+        self.walkMod = walkMod
+        self.hpMod = hpMod
+        self.dmgMod = dmgMod
+        self.healer = healer
+        self.footsteps = footsteps
+        self.baseHp = baseHp
+        self.gagRamps = gagRamps
+        self.scaleMod = scaleMod
+        self.voiceMod = voiceMod
+
+    def getGagDmgRamp(self, gagId):
+        return self.gagRamps.get(gagId, 1.0)
+
+classAttrsById = {
+    # TODO:
+    # Higher level minions can stun toons
+    # Drop gags slow their movement greatly
+    CCMinion:       CogClassAttributes(walkMod = 2.0, dmgMod = 0.5, scaleMod = 0.5, voiceMod = 1.75, baseHp = 10),
+
+    CCSecretary:    CogClassAttributes(walkMod = 1.8, dmgMod = 0.7, scaleMod = 0.7, voiceMod = 1.5, baseHp = 25, healer = True,
+                                       gagRamps = {GagGlobals.Trap: 1.1}),
+
+    CCScout:        CogClassAttributes(walkMod = 1.3, dmgMod = 1.0, scaleMod = 0.95, voiceMod = 1.1, baseHp = 30,
+                                       gagRamps = {GagGlobals.Sound: 0.9, GagGlobals.Squirt: 1.15}, footsteps = False),
+
+    CCEnforcer:     CogClassAttributes(walkMod = 1.2, dmgMod = 1.0, scaleMod = 1.0, voiceMod = 1.0, baseHp = 50),
+
+    # TODO:
+    # Can shield supervisor cogs
+    CCMarshal:      CogClassAttributes(walkMod = 1.1, dmgMod = 1.1, scaleMod = 1.0, voiceMod = 0.9, baseHp = 75),
+
+    # TODO:
+    # Sound gags award a temporary 2-5 second speed boost (they anger them)
+    CCSupervisor:   CogClassAttributes(walkMod = 0.9, dmgMod = 1.2, scaleMod = 1.0, voiceMod = 0.8, baseHp = 100,
+                                       gagRamps = {GagGlobals.Throw: 1.1})
+}
+
+def getClassAttrs(id):
+    return classAttrsById.get(id, CogClassAttributes())
 
 # The following are all the suit names
 TheBigCheese = 'The Big Cheese'

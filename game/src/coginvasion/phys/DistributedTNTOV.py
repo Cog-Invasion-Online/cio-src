@@ -42,6 +42,8 @@ class DistributedTNTOV(DistributedTNT, DistributedObjectOV):
         self.startPosHprBroadcast()
         self.setPos(base.localAvatar.find("**/def_joint_right_hold").getPos(render))
         self.lookAt(render, PhysicsUtils.getHitPosFromCamera())
+        self.d_clearSmoothing()
+        self.d_broadcastPosHpr()
         self.toss()
 
     def b_explode(self):

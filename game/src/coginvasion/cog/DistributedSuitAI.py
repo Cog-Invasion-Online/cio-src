@@ -151,7 +151,12 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
     def setSuit(self, plan, variant = 0, tutorial = None):
         self.suitPlan = plan
         self.variant = Variant.getVariantById(variant)
-        self.maxHealth = SuitGlobals.calculateHP(self.level)
+
+        classAttrs = plan.getCogClassAttrs()
+        self.maxHealth = classAttrs.baseHp
+        self.maxHealth += SuitGlobals.calculateHP(self.level)
+        self.maxHealth *= classAttrs.hpMod
+
         self.health = self.maxHealth
 
         if self.dropItems.getValue():
@@ -328,8 +333,9 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
     def __getGagEffectOnMe(self, avId, gagName, gagData):
         """ Returns the base damage and the damage offset a specified gag name used by "avId" has on this Cog """
         weaknessFactor = self.suitPlan.getGagWeaknesses().get(gagName, 1.0)
+        classWeakness = self.suitPlan.getCogClassAttrs().getGagDmgRamp(GagGlobals.getTrackOfGag(gagName))
         baseDmg = GagGlobals.calculateDamage(avId, gagName, gagData)
-        dmgOffset = int(math.ceil(baseDmg * weaknessFactor)) - baseDmg
+        dmgOffset = int(math.ceil(baseDmg * weaknessFactor * classWeakness)) - baseDmg
         return baseDmg, dmgOffset
 
     def __handleCombos(self, avId, effectiveGagDmg, gagTrack):
@@ -464,6 +470,10 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
                         "jargon", "mumbojumbo", 'doubletalk', 'schmooze', 'fingerwag', 'filibuster']:
             self.d_handleWeaponTouch()
         dmg = int(self.getMaxHealth() / SuitAttacks.SuitAttackDamageFactors[weapon])
+
+        # Factor in class damage modifier
+        dmg *= self.suitPlan.getCogClassAttrs().dmgMod
+
         if dmg == 0:
             # Prevents level 1 and 2 Cogs from doing 0 damage.
             dmg = 1

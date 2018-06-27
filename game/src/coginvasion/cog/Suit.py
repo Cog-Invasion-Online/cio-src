@@ -536,7 +536,9 @@ class Suit(Avatar):
             self.headModel.setZ(-0.10)
             self.headModel.loop('neutral')
         self.setClothes()
-        self.setAvatarScale(self.suitPlan.getScale() / SuitGlobals.scaleFactors[self.suit])
+
+        classScale = 1.0#self.suitPlan.getCogClassAttrs().scaleMod
+        self.setAvatarScale((self.suitPlan.getScale() / SuitGlobals.scaleFactors[self.suit]) * classScale)
         self.setHeight(self.suitPlan.getHeight())
         self.setupNameTag()
 
@@ -629,9 +631,12 @@ class Suit(Avatar):
                 self.find('**/hands').setColor(Variant.CORRODED_HAND_COLOR)
 
     def startFootsteps(self):
-        if not self.footstepSound:
+        classAttrs = self.suitPlan.getCogClassAttrs()
+
+        if not self.footstepSound or not classAttrs.footsteps:
             return
 
+        self.footstepSound.setPlayRate(classAttrs.walkMod)
         self.footstepSound.setLoop(True)
         self.footstepSound.play()
 
@@ -648,7 +653,7 @@ class Suit(Avatar):
         Avatar.setupNameTag(self, tempName = tempName)
         if self.nametag:
             if self.level > 0:
-                self.nametag.setText(self.nametag.getText() + '\n%s\nLevel %s' % (self.dept.getName(), self.level))
+                self.nametag.setText(self.nametag.getText() + '\n%s\nLevel %s %s' % (self.dept.getName(), self.level, self.suitPlan.getCogClassName()))
             else:
                 self.nametag.setText(self.nametag.getText() + '\n%s' % (self.dept.getName()))
 
@@ -676,6 +681,10 @@ class Suit(Avatar):
             chatDial = base.audio3d.loadSfx(statementDial)
         self.chatDial = chatDial
 
+        # Make the voice higher/lower based on the class
+        voiceMod = self.suitPlan.getCogClassAttrs().voiceMod
+        self.chatDial.setPlayRate(voiceMod)
+
         if self.variant == Variant.SKELETON:
             base.audio3d.attachSoundToObject(self.chatDial, self)
         else:
@@ -691,6 +700,7 @@ class Suit(Avatar):
         self.clearChat()
         self.chat = None
         if self.chatDial:
+            base.audio3d.detachSound(self.chatDial)
             self.chatDial.stop()
             self.chatDial = None
 

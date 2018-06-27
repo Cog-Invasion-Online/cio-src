@@ -33,8 +33,13 @@ def attack(suit, toon, attackIndex = None):
     return attack
 
 def getMoveIvalFromPath(suit, path, elapsedT, isClient, seqName):
+    baseSpeed = 5.0
+    walkMod = suit.suitPlan.getCogClassAttrs().walkMod
+    speed = baseSpeed * walkMod
+
     moveIval = Sequence(name = suit.uniqueName(seqName))
     if isClient:
+        moveIval.append(Func(suit.setPlayRate, walkMod, 'walk'))
         moveIval.append(Func(suit.animFSM.request, 'walk'))
     for i in xrange(len(path)):
         if i == 0:
@@ -45,8 +50,9 @@ def getMoveIvalFromPath(suit, path, elapsedT, isClient, seqName):
         ival = NPCWalkInterval(suit, Point3(*waypoint),
             startPos = Point3(*lastWP),
             fluid = 1, name = suit.uniqueName('doWalkIval' + str(i)),
-            duration = (Point2(waypoint[0], waypoint[1]) - Point2(lastWP[0], lastWP[1])).length() * 0.2)
+            duration = (Point2(waypoint[0], waypoint[1]) - Point2(lastWP[0], lastWP[1])).length() / speed)
         moveIval.append(ival)
     if isClient:
+        moveIval.append(Func(suit.setPlayRate, 1.0, 'walk'))
         moveIval.append(Func(suit.animFSM.request, 'neutral'))
     return moveIval

@@ -13,12 +13,7 @@ from panda3d.core import Point3
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.cog.SuitGlobals import Suits
 
-Pluto = 'Pluto'
-Donald = 'Donald'
-Goofy = 'Goofy'
-Mickey = 'Mickey'
-MickeyMouse = 'Mickey Mouse'
-Minnie = 'Minnie'
+from DisneyChars import *
 
 MICKEY = 0
 MINNIE = 1
