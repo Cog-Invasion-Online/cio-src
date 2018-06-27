@@ -132,6 +132,7 @@ class DistributedPlayerToon(DistributedToon):
                 extraArgs = [requestStatus]
                 base.localAvatar.walkControls.setCollisionsActive(0)
                 base.localAvatar.detachCamera()
+                self.resetHeadHpr(override = True)
                 camera.wrtReparentTo(linkTunnel.tunnel)
                 currCamPos = camera.getPos()
                 currCamHpr = camera.getHpr()
@@ -157,7 +158,6 @@ class DistributedPlayerToon(DistributedToon):
                 self.stopSmooth()
             self.wrtReparentTo(pivotPointNode)
             self.setPos(avPos)
-            self.resetHeadHpr()
             self.resetTorsoRotation()
             self.stopLookAround()
             
