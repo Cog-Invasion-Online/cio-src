@@ -56,7 +56,7 @@ server-port 7032
 server-address gameserver.coginvasion.com
 
 # Performance...
-hardware-animated-vertices #f
+hardware-animated-vertices #t
 sync-video #f
 smooth-lag 0.4
 basic-shaders-only #f
@@ -85,6 +85,7 @@ want-real-shadows #f
 load-stuff #f
 want-playground-gags #t
 gsg-want-hlsounds #f
+explosion-hlsounds #f
 
 ctmusic-numsongs 1
 
@@ -96,7 +97,7 @@ show-buffers #f
 
 texture-minfilter mipmap
 texture-magfilter linear
-text-minfilter mipmap
+text-minfilter linear
 text-magfilter linear
 gl-coordinate-system default
 gl-force-fbo-color 0
@@ -108,5 +109,5 @@ text-dynamic-merge 1
 
 interpolate-frames 1
 
-threading-model App/Cull/Draw # experimental
-assert-abort 1
+#threading-model App/Cull/Draw # experimental
+assert-abort 0
