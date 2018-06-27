@@ -285,11 +285,18 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
     track = Parallel()
 
     if sound:
-        snd = base.audio3d.loadSfx("phase_3.5/audio/sfx/ENC_cogfall_apart.ogg")
+        import random
+
+        hlsounds = base.config.GetBool('explosion-hlsounds', False)
+        if hlsounds:
+            hldir = "/c/Program Files (x86)/Steam/steamapps/common/Half-Life/valve/sound/weapons/"
+            snd = base.audio3d.loadSfx(hldir + random.choice(['explode3', 'explode4', 'explode5']) + ".wav")
+        else:
+            snd = base.audio3d.loadSfx("phase_3.5/audio/sfx/ENC_cogfall_apart.ogg")
+
         base.audio3d.attachSoundToObject(snd, explosion)
         
         # explosion aftermaths
-        import random
         debChoice = random.randint(1, 4)
         if debChoice <= 3:
             debris = base.audio3d.loadSfx("phase_14/audio/sfx/debris{0}.wav".format(debChoice))
@@ -298,7 +305,8 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
         base.audio3d.attachSoundToObject(debris, explosion)
         
         track.append(SoundInterval(snd, volume = soundVol))
-        track.append(Sequence(Wait(0.0791), SoundInterval(debris, volume = soundVol * 1.2)))
+        wait = 0.0791 if not hlsounds else 0.0
+        track.append(Sequence(Wait(wait), SoundInterval(debris, volume = soundVol * 1.2)))
 
     if shakeCam:
         dist = camera.getDistance(explosion)
