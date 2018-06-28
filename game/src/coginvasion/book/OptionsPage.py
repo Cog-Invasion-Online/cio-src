@@ -62,7 +62,6 @@ class OptionsPage(BookPage):
                 totalWidth += spacing
             totalWidth += tabWidth
             cl = self.Categories.keys()[i]
-            print cl
             tab = CategoryTab(self, cl.Name, [cl], ((tabWidth + spacing) * i, 0, 0), self.Categories.values()[i])
             self.tabs.append(tab)
 
