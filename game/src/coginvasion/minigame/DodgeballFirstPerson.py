@@ -31,7 +31,7 @@ class DodgeballFirstPerson(FirstPerson):
         self.vModelRoot = None
         self.vModel = None
         self.ival = None
-        self.soundPickup = base.loadSfx('phase_4/audio/sfx/MG_snowball_pickup.wav')
+        self.soundPickup = base.loadSfx('phase_4/audio/sfx/MG_snowball_pickup.ogg')
         self.fakeSnowball = loader.loadModel("phase_5/models/props/snowball.bam")
         self.hasSnowball = False
         self.mySnowball = None
