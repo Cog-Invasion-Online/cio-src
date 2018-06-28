@@ -425,10 +425,10 @@ class GagSelectionGui(DirectFrame, FSM):
         self.ammoFrame.setX(-self.midpoint)
 
         if base.config.GetBool('gsg-want-hlsounds', False):
-            self.newTrackSound = base.loadSfx("phase_14/audio/sfx/wpn_hudon.wav")
-            self.keyScrollSound = base.loadSfx('phase_14/audio/sfx/wpn_moveselect.wav')
-            self.selectSound = base.loadSfx('phase_14/audio/sfx/wpn_select.wav')
-            self.selectDenySound = base.loadSfx('phase_14/audio/sfx/wpn_denyselect.wav')
+            self.newTrackSound = base.loadSfx("phase_14/audio/sfx/wpn_hudon.ogg")
+            self.keyScrollSound = base.loadSfx('phase_14/audio/sfx/wpn_moveselect.ogg')
+            self.selectSound = base.loadSfx('phase_14/audio/sfx/wpn_select.ogg')
+            self.selectDenySound = base.loadSfx('phase_14/audio/sfx/wpn_denyselect.ogg')
         else:
             self.newTrackSound = base.loadSfx("phase_3/audio/sfx/GUI_create_toon_back.ogg")
             self.keyScrollSound = base.loadSfx('phase_3/audio/sfx/GUI_rollover.ogg')
