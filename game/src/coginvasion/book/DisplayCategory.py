@@ -34,18 +34,18 @@ class DisplayCategory(OptionsCategory):
             desc = "Toggles fullscreen mode.", settingKeyName = 'fullscreen')
 
         self.aa = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, 0.01), self.__updateAA, "Antialiasing",
-            desc = "Smooths out sharp edges to the specified degree.\nHigher degree = higher performance impact.",
+            desc = "Smooths out jagged edges on screen.\nAffects performance.",
             settingKeyName = 'aa', mode = DEGREE)
 
         self.af = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, -0.22), widgetName = "Anisotropic Filtering",
-            desc = "Improves the quality of textures viewed from an angle.\nHigher degree = higher performance impact.",
+            desc = "Improves the quality of textures viewed from an angle.\nAffects performance.",
             settingKeyName = 'af', mode = DEGREE)
         
         #self.shadows = ChoiceWidget(page, ["Low", "Medium", "High", "Ultra High"], (0, 0, -0.21), 
         #                         self.__chooseShadowQuality, "Shadows", 0.06)
         
         self.vsync = ChoiceWidget(page, ["Off", "On"], (0, 0, -0.45), widgetName = "V-Sync",
-            desc = "When enabled, FPS is limited to the monitor's refresh rate.", settingKeyName = 'vsync')
+            desc = "Reduces screen tearing by limiting frame rate to your monitor's refresh rate.\nThis is really only effective in Fullscreen mode.", settingKeyName = 'vsync')
         
         self.widgets = [self.fs, self.aa, self.af, self.reso, self.vsync]
 

@@ -19,17 +19,17 @@ class AdvancedDisplayCategory(OptionsCategory):
         OptionsCategory.__init__(self, page)
         
         self.lighting = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.47), self.__updateLighting, "Lighting",
-            desc = 'Toggles lights and shaders. Performance intensive.', settingKeyName = 'lighting')
+            desc = 'Toggles basic per-vertex lighting.\nShould not affect performance.', settingKeyName = 'lighting')
         
         self.ppl = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.2), self.__updatePPL, "Per-Pixel Lighting",
-            desc = 'Calculates illumination for each individual pixel.\nPerformance intensive.', settingKeyName = 'ppl')
+            desc = 'Toggles more advanced per-pixel shaders.\nRequires Lighting to be enabled.\nAffects performance.', settingKeyName = 'ppl')
         
         self.hdr = ChoiceWidget(page, ["None", "Ver. 1", "Ver. 2", "Ver. 3"], (0, 0, -0.07),
-            self.__updateHDR, "HDR Tone Mapping", desc = 'Preserves light details that may be lost due to lower\ncontrast ratios. Performance intesive.',
+            self.__updateHDR, "HDR Tone Mapping", desc = 'Increases range of colors on screen.\nRequires Per-Pixel Lighting to be enabled.',
             settingKeyName = 'hdr')
         
         self.bloom = ChoiceWidget(page, ["Off", "On"], (0, 0, -0.34), self.__updateBloom, "Bloom Filter",
-            desc = "Toggles realistic \"feathers\" of light. Performance intensive.", settingKeyName = 'bloom')
+            desc = "Increases range of brightness by glowing objects that are very bright.\nAffects performance.", settingKeyName = 'bloom')
         
         self.widgets = [self.lighting, self.ppl, self.hdr, self.bloom]
 
