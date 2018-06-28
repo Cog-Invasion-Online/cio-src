@@ -31,12 +31,19 @@ class OptionsCategory:
 
         self.applying = GlobalDialog("Saving settings...")
         self.applying.hide()
+        
+        # This is a list of ChoiceWidgets under this options category.
+        self.widgets = []
 
     def applyChanges(self):
-        pass
+        if self.widgets:
+            for widget in self.widgets:
+                widget.saveSetting()
 
     def discardChanges(self):
-        pass
+        if self.widgets:
+            for widget in self.widgets:
+                widget.reset()
 
     def _showApplying(self):
         self.applying.show()
@@ -60,3 +67,5 @@ class OptionsCategory:
         if hasattr(self, 'applying'):
             self.applying.cleanup()
             del self.applying
+        self.widgets = None
+        del self.widgets

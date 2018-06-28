@@ -24,19 +24,14 @@ class SoundCategory(OptionsCategory):
 
         self.sfxSlider = SliderWidget(page, "Sound Volume", (0.0, 1.0), self.__setSfxVol, (0, 0, 0.335))
 
-        self.chatSounds = ChoiceWidget(self.page, ["Off", "On"], (0, 0.1, 0.1), self.__handleChatSoundsChoice, "Chat Sounds")
+        self.chatSounds = ChoiceWidget(self.page, ["Off", "On"], (0, 0.1, 0.1), widgetName = "Chat Sounds",
+            desc = "Toggles chat sound effects.", settingKeyName = 'chs')
 
         self.discardChanges()
 
     def _setDefaults(self):
         self.origMusicVol = base.musicManager.getVolume()
         self.origSfxVol = base.sfxManagerList[0].getVolume()
-
-        self.origChs = int(CIGlobals.getSettingsMgr().getSetting("chs"))
-        self.chsChoice = bool(self.origChs)
-
-    def __handleChatSoundsChoice(self, choice):
-        self.chsChoice = bool(choice)
 
     def __setMusicVol(self):
         val = self.musicSlider.getSliderVal()
@@ -54,10 +49,9 @@ class SoundCategory(OptionsCategory):
 
     def applyChanges(self):
         self._showApplying()
+        
+        self.chatSounds.saveSetting()
 
-        if (self.chsChoice != bool(self.origChs)):
-            # The chat sounds option has been modified.
-            CIGlobals.getSettingsMgr().updateAndWriteSetting("chs", self.chsChoice)
         if (base.musicManager.getVolume() != self.origMusicVol):
             CIGlobals.getSettingsMgr().updateAndWriteSetting("musvol", base.musicManager.getVolume())
         if (base.sfxManagerList[0].getVolume() != self.origSfxVol):
@@ -80,9 +74,7 @@ class SoundCategory(OptionsCategory):
         self.sfxSlider.setSliderVal(self.origSfxVol)
         self.sfxSlider.setValText("{:.0f}%".format(self.origSfxVol * 100))
 
-        self.origChs = int(CIGlobals.getSettingsMgr().getSetting("chs"))
-        self.chsChoice = bool(self.origChs)
-        self.chatSounds.goto(self.origChs)
+        self.chatSounds.reset()
 
         self._setDefaults()
 

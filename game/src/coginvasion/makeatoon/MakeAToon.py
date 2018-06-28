@@ -174,22 +174,6 @@ class MakeAToon:
     def getSlot(self):
         return self.slot
 
-    def __handleNextShop(self):
-        self.okBtn.hide()
-        self.nextBtn.hide()
-        self.exitBtn.hide()
-        self.backBtn.hide()
-        self.nextBtn.hide()
-        self.setNextShop(nextShops[self.currentShop])
-
-    def __handlePrevShop(self):
-        self.okBtn.hide()
-        self.nextBtn.hide()
-        self.exitBtn.hide()
-        self.backBtn.hide()
-        self.nextBtn.hide()
-        self.setPrevShop(prevShops[self.currentShop])
-
     def __handleExit(self, direction):
         self.okBtn.hide()
         self.nextBtn.hide()
@@ -242,29 +226,17 @@ class MakeAToon:
 
     def isAvailable(self):
         return True
-
-    def setNextShop(self, shop):
-        if shop == "body":
-            Sequence(Wait(0.21), Func(self.matFSM.request, 'bodyShop')).start()
-        elif shop == "color":
-            Sequence(Wait(0.21), Func(self.matFSM.request, 'colorShop')).start()
-        elif shop == "cloth":
-            Sequence(Wait(0.21), Func(self.matFSM.request, 'clothShop')).start()
-        elif shop == "name":
-            Sequence(Wait(0.21), Func(self.matFSM.request, 'nameShop')).start()
+        
+    def switchShop(self, isNextShop = 1):
+        useDict = nextShops if isNextShop else prevShops
+        
+        self.okBtn.hide()
+        self.nextBtn.hide()
+        self.exitBtn.hide()
+        self.backBtn.hide()
+        self.nextBtn.hide()
+        Sequence(Wait(0.21), Func(self.matFSM.request, '{0}Shop'.format(useDict[self.currentShop]))).start()
         self.fade()
-
-    def setPrevShop(self, shop):
-        if shop == "gender":
-            Sequence(Wait(0.21), Func(self.matFSM.request, 'genderShop')).start()
-        elif shop == "body":
-            Sequence(Wait(0.21), Func(self.matFSM.request, 'bodyShop')).start()
-        elif shop == "color":
-            Sequence(Wait(0.21), Func(self.matFSM.request, 'colorShop')).start()
-        elif shop == "cloth":
-            Sequence(Wait(0.21), Func(self.matFSM.request, 'clothShop')).start()
-        self.fade()
-
 
     def exitColorShop(self):
         self.nextAllColorBtn.destroy()
@@ -341,7 +313,7 @@ class MakeAToon:
                                 geom1_scale=0.35,
                                 geom2_scale=0.35,
                                 geom3_scale=0.3,
-                                command=self.__handleNextShop,
+                                command=self.switchShop,
                                 parent=base.a2dBottomRight)
         self.nextBtn.setBin('gui-popup', 60)
         self.backBtn = DirectButton(text=("", "Back", "Back", ""),
@@ -360,7 +332,8 @@ class MakeAToon:
                                 geom1_scale=(-0.35, 0.35, 0.35),
                                 geom2_scale=(-0.35, 0.35, 0.35),
                                 geom3_scale=(-0.3, 0.3, 0.3),
-                                command=self.__handlePrevShop,
+                                command=self.switchShop,
+                                extraArgs=[0],
                                 parent=base.a2dBottomRight)
         self.backBtn.setBin('gui-popup', 60)
 

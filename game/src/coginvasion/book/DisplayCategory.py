@@ -15,6 +15,7 @@ from direct.gui.DirectGui import DirectCheckButton, OnscreenText
 from src.coginvasion.globals import CIGlobals
 from OptionsCategory import OptionsCategory
 from ChoiceWidget import ChoiceWidget
+from ChoiceWidget import DEGREE
 
 class DisplayCategory(OptionsCategory):
     Name = "Display"
@@ -23,48 +24,36 @@ class DisplayCategory(OptionsCategory):
         OptionsCategory.__init__(self, page)
 
         self.reso = ChoiceWidget(page, ["640x480", "800x600", "1024x768", "1280x720", "1360x768", "1366x768", "1600x900", "1920x1080"],
-                                 (0, 0, 0.47), self.__chooseReso, "Resolution", 0.05)
+            (0, 0, 0.47), self.__updateResolution, "Resolution", 0.05, settingKeyName = 'resolution',
+            desc = "Configures the screen resolution.")
 
         self.masprText = OnscreenText(text = "Maintain aspect ratio?", scale = 0.045, parent = page.book, align = TextNode.ALeft, pos = (-0.7, 0.4))
         self.maspr = DirectCheckButton(scale = 0.07, parent = page.book, pos = (-0.19, 0, 0.41), command = self.__toggleMaspr)
 
-        self.fs = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.3), self.__chooseFS, "Fullscreen")
+        self.fs = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.24), self.__updateFullscreen, "Fullscreen",
+            desc = "Toggles fullscreen mode.", settingKeyName = 'fullscreen')
 
-        self.aa = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, 0.13), self.__chooseAA, "Antialiasing")
+        self.aa = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, 0.01), self.__updateAA, "Antialiasing",
+            desc = "Smooths out sharp edges to the specified degree.\nHigher degree = higher performance impact.",
+            settingKeyName = 'aa', mode = DEGREE)
 
-        self.af = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, -0.04), self.__chooseAF, "Anisotropic Filtering")
+        self.af = ChoiceWidget(page, ["None", "x2", "x4", "x8", "x16"], (0, 0, -0.22), widgetName = "Anisotropic Filtering",
+            desc = "Improves the quality of textures viewed from an angle.\nHigher degree = higher performance impact.",
+            settingKeyName = 'af', mode = DEGREE)
         
-        self.shadows = ChoiceWidget(page, ["Low", "Medium", "High", "Ultra High"], (0, 0, -0.21), 
-                                 self.__chooseShadowQuality, "Shadows", 0.06)
-        self.bloom = ChoiceWidget(page, ["Off", "On"], (0, 0, -0.38), self.__chooseBloom, "Bloom Filter")
+        #self.shadows = ChoiceWidget(page, ["Low", "Medium", "High", "Ultra High"], (0, 0, -0.21), 
+        #                         self.__chooseShadowQuality, "Shadows", 0.06)
+        
+        self.vsync = ChoiceWidget(page, ["Off", "On"], (0, 0, -0.45), widgetName = "V-Sync",
+            desc = "When enabled, FPS is limited to the monitor's refresh rate.", settingKeyName = 'vsync')
+        
+        self.widgets = [self.fs, self.aa, self.af, self.reso, self.vsync]
 
         self.discardChanges()
 
     def _setDefaults(self):
-        self.origReso = CIGlobals.getSettingsMgr().getSetting("resolution")
-        self.resoChoice = self.origReso
-        self.resoChoiceStr = str(self.resoChoice[0]) + "x" + str(self.resoChoice[1])
-
-        self.origFS = CIGlobals.getSettingsMgr().getSetting("fullscreen")
-        self.fsChoice = self.origFS
-
-        self.origAA = CIGlobals.getSettingsMgr().getSetting("aa")
-        self.aaChoice = self.origAA
-
-        self.origAF = CIGlobals.getSettingsMgr().getSetting("af")
-        self.afChoice = self.origAF
-
         self.origMaspr = CIGlobals.getSettingsMgr().getSetting("maspr")
         self.masprChoice = self.origMaspr
-        
-        self.origShadows = CIGlobals.getSettingsMgr().getSetting("shadows")
-        self.shadowChoice = self.origShadows
-
-        self.origBloom = CIGlobals.getSettingsMgr().getSetting("bloom")
-        self.bloomChoice = self.origBloom
-
-    def __chooseBloom(self, choice):
-        self.bloomChoice = bool(choice)
 
     def __toggleMaspr(self, choice):
         if choice:
@@ -73,66 +62,29 @@ class DisplayCategory(OptionsCategory):
         else:
             # maintain aspect ratio off!
             self.masprChoice = False
-
-    def __chooseReso(self, choice):
-        op = self.reso.options[choice]
-        spl = op.split('x')
-        w = int(spl[0])
-        h = int(spl[1])
-        self.resoChoice = (w, h)
-        self.resoChoiceStr = op
-
-    def __chooseFS(self, choice):
-        self.fsChoice = bool(choice)
-
-    def __chooseAA(self, choice):
-        if choice == 0:
-            degree = 0
+            
+    def __updateAA(self, degree):
+        if degree == 0:
+            render.clearAntialias()
+            aspect2d.clearAntialias()
         else:
-            op = self.aa.options[choice]
-            degree = int(op.strip("x"))
-
-        self.aaChoice = degree
-
-    def __chooseAF(self, choice):
-        if choice == 0:
-            degree = 0
-        else:
-            op = self.af.options[choice]
-            degree = int(op.strip("x"))
-
-        self.afChoice = degree
+            render.setAntialias(AntialiasAttrib.MMultisample)
+            aspect2d.setAntialias(AntialiasAttrib.MMultisample)
+            
+    def __updateFullscreen(self, flag):
+        wp = WindowProperties()
+        wp.setFullscreen(flag)
+        base.win.requestProperties(wp)
         
-    def __chooseShadowQuality(self, choice):
-        self.shadowChoice = choice
+    def __updateResolution(self, resTuple):
+        wp = WindowProperties()
+        wp.setSize(resTuple[0], resTuple[1])
+        base.win.requestProperties(wp)
 
     def applyChanges(self):
         self._showApplying()
 
-        if (self.resoChoice != self.origReso):
-            CIGlobals.getSettingsMgr().updateAndWriteSetting("resolution", self.resoChoice)
-            wp = WindowProperties()
-            wp.setSize(self.resoChoice[0], self.resoChoice[1])
-            base.win.requestProperties(wp)
-
-        if (self.fsChoice != self.origFS):
-            CIGlobals.getSettingsMgr().updateAndWriteSetting("fullscreen", self.fsChoice)
-            wp = WindowProperties()
-            wp.setFullscreen(self.fsChoice)
-            base.win.requestProperties(wp)
-
-        if (self.aaChoice != self.origAA):
-            CIGlobals.getSettingsMgr().updateAndWriteSetting("aa", self.aaChoice)
-
-            if (self.aaChoice == 0):
-                render.clearAntialias()
-                aspect2d.clearAntialias()
-            else:
-                render.setAntialias(AntialiasAttrib.MMultisample)
-                aspect2d.setAntialias(AntialiasAttrib.MMultisample)
-
-        if (self.afChoice != self.origAF):
-            CIGlobals.getSettingsMgr().updateAndWriteSetting("af", self.afChoice)
+        OptionsCategory.applyChanges(self)
 
         if (self.masprChoice != self.origMaspr):
             CIGlobals.getSettingsMgr().updateAndWriteSetting("maspr", self.masprChoice)
@@ -140,39 +92,14 @@ class DisplayCategory(OptionsCategory):
                 base.doOldToontownRatio()
             else:
                 base.doRegularRatio()
-                
-        if (self.shadowChoice != self.origShadows):
-            # Update the shadow quality choice.
-            CIGlobals.getSettingsMgr().updateAndWriteSetting("shadows", self.shadowChoice)
-
-        if (self.bloomChoice != self.origBloom):
-            CIGlobals.getSettingsMgr().updateAndWriteSetting("bloom", self.bloomChoice)
-            base.setBloom(self.bloomChoice)
-
-        self._setDefaults()
 
         self._hideApplying()
 
     def discardChanges(self):
+        OptionsCategory.discardChanges(self)
         self._setDefaults()
 
-        self.reso.goto(self.reso.options.index(self.resoChoiceStr))
-        self.fs.goto(int(self.fsChoice))
-        self.bloom.goto(int(self.bloomChoice))
-
-        if (self.aaChoice == 0):
-            self.aa.goto(0)
-        else:
-            self.aa.goto(self.aa.options.index("x" + str(self.aaChoice)))
-
-        if (self.afChoice == 0):
-            self.af.goto(0)
-        else:
-            self.af.goto(self.af.options.index("x" + str(self.afChoice)))
-
         self.maspr['indicatorValue'] = self.masprChoice
-
-        self.shadows.goto(int(self.shadowChoice))
 
     def cleanup(self):
         if hasattr(self, 'reso'):
@@ -190,10 +117,6 @@ class DisplayCategory(OptionsCategory):
         if hasattr(self, 'af'):
             self.af.cleanup()
             del self.af
-            
-        if hasattr(self, 'shadows'):
-            self.shadows.cleanup()
-            del self.shadows
 
         if hasattr(self, 'masprText'):
             self.masprText.destroy()
@@ -202,31 +125,12 @@ class DisplayCategory(OptionsCategory):
         if hasattr(self, 'maspr'):
             self.maspr.destroy()
             del self.maspr
-
-        if hasattr(self, 'bloom'):
-            self.bloom.destroy()
-            del self.bloom
+            
+        if hasattr(self, 'vsync'):
+            self.vsync.cleanup()
+            del self.vsync
 
         del self.origMaspr
         del self.masprChoice
-
-        del self.origAA
-        del self.aaChoice
-
-        del self.origAF
-        del self.afChoice
-
-        del self.origFS
-        del self.fsChoice
-
-        del self.origReso
-        del self.resoChoice
-        del self.resoChoiceStr
-        
-        del self.origShadows
-        del self.shadowChoice
-
-        del self.origBloom
-        del self.bloomChoice
 
         OptionsCategory.cleanup(self)

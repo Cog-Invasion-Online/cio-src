@@ -16,7 +16,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 import json
 
 class SettingsManager:
-    MouseCursors = {"None": "", "Toontown": game.phasedir + "toonmono.cur"}
+    MouseCursors = {"Toontown": game.phasedir + "toonmono.cur", "None": ""}
     ReflectionQuality = {"Off": 0, "Low": 256, "Medium": 512, "High": 1024, "Ultra": 2048}
     notify = directNotify.newCategory('SettingsManager')
 

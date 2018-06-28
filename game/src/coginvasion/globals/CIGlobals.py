@@ -221,6 +221,10 @@ def getAmountString(noun, amount):
             return 'An {0}'.format(noun)
         
         return 'A {0}'.format(noun)
+    
+def isEmptyString(string):
+    """ Returns whether or not a string is empty. """
+    return not (string and string.strip())
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

@@ -16,30 +16,154 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.globals import CIGlobals
 
 DISABLED_COLOR = (0.45, 0.45, 0.45, 1)
+DESC_BACKGROUND_COLOR = (0.70, 0.70, 0.70, 1.0)
+AUTO = 1
+MULTICHOICE = 2
+DEGREE = 3
 
 class ChoiceWidget(DirectFrame):
     notify = directNotify.newCategory("ChoiceWidget")
 
-    def __init__(self, page, options, pos = (0, 0, 0), command = None, widgetname = "", choiceTextScale = 0.08):
+    def __init__(self, parent, options, pos = (0, 0, 0), command = None, 
+            widgetName = "", choiceTextScale = 0.08, desc = "",
+            settingKeyName = None, mode = AUTO):
+        """ 
+        Generates an ordered choice widget with the specified parameters.
+        
+        Parameters:
+        
+        parent: Pretty much self-explanatory, this is the parent of the widget.
+        If an object with a `book` attribute is passed in, it will use that instead.
+        
+        options: A list of options that the user can select with the GUI.
+        
+        pos: Pretty much self-explanatory.
+        
+        command: Function that should be executed whenever a game setting is updated.
+        The newly saved choice is passed to the specified function.
+        
+        widgetName: The label shown to the left of the widget identifying what the widget
+        is for.
+        
+        choiceTextScale: The scale of the text which displays which option the user has
+        currently selected.
+        
+        desc: Optional description of what the choices displayed by this widget are for.
+        
+        settingKeyName: The name of the key inside of the game settings map that this choice
+        widget works with. This MUST be set if trying to simulate a game setting changer widget.
+        
+        mode: This is the kind of widget this is going to be. Use one of the following:
+            - AUTO:
+                - The system will attempt to figure out what the type of choices are available.
+                    * 2 options automatically looks like a true/false widget *
+            - MULTICHOICE:
+                - This overrides the system in case there are two options but true/false functionality
+                isn't wanted.
+            - DEGREE:
+                - This means that the choice widget deals with x in front of some sort of degree value that should
+                - be stripped away when selecting choices. This is used for the antialiasing choice widget.
+        
+        """
         self.options = options
         self.command = command
         self.currentChoiceIndex = 0
+        self.origChoice = None
+        self.userChoice = None
+        self.settingKeyName = settingKeyName
+        self.mode = mode
+        
+        widgetParent = parent
+        if hasattr(parent, 'book'):
+            widgetParent = parent.book
+        
+        DirectFrame.__init__(self, parent = widgetParent, pos = pos)
+        
         bg = loader.loadModel('phase_3/models/gui/ChatPanel.bam')
-        DirectFrame.__init__(self, parent = page.book, pos = pos)
 
-        self.selFrame = DirectFrame(pos = (0.4, 0, 0), image = bg, relief = None, image_scale = (0.22, 0.11, 0.11), image_pos = (-0.107, 0.062, 0.062), parent = self)
+        self.selFrame = DirectFrame(pos = (0.4, 0, 0), frameColor = (1.0, 1.0, 1.0, 1.0), image = bg, relief = None, 
+            image_scale = (0.22, 0.11, 0.11), 
+            image_pos = (-0.107, 0.062, 0.062), 
+        parent = self)
+
         self.choiceText = OnscreenText(text = "Hello!", align = TextNode.ACenter, parent = self.selFrame, pos = (0, -0.01), scale = choiceTextScale)
         self.fwdBtn = CIGlobals.makeDirectionalBtn(1, self.selFrame, pos = (0.2, 0, 0), command = self.__goFwd)
         self.bckBtn = CIGlobals.makeDirectionalBtn(0, self.selFrame, pos = (-0.2, 0, 0), command = self.__goBck)
 
-        self.lbl = OnscreenText(text = widgetname + ":", pos = (-0.7, 0, 0), align = TextNode.ALeft, parent = self)
+        self.lbl = OnscreenText(text = widgetName + ":", pos = (-0.7, 0, 0), align = TextNode.ALeft, parent = self)
+        
+        if len(desc) > 0:
+            self.desc = OnscreenText(text = desc, pos = (0.0, -0.1, 0.0), parent = self.selFrame, 
+                scale = 0.05, bg = DESC_BACKGROUND_COLOR, mayChange = False)
+            self.desc.setBin('gui-popup', 40)
+            self.desc.hide()
+            
+            # Let's bind our events on the selection frame for the description.
+            self.selFrame['state'] = DGG.NORMAL
+            self.selFrame.bind(DGG.ENTER, self.__setDescVisible, extraArgs = [True])
+            self.selFrame.bind(DGG.EXIT, self.__setDescVisible, extraArgs = [False])
 
         self.initialiseoptions(ChoiceWidget)
 
-        self.goto(0)
+        self.reset()
 
         bg.detachNode()
         del bg
+        
+    def reset(self):
+        """ Resets the selected choice to the very first option, or, if representing choices for a game setting,
+        resets the widget to the currently saved setting. """ 
+        
+        # The index of the original display choice.
+        destIndex = 0
+
+        if self.settingKeyName:
+            # This widget is supposed to be used to change game settings. Let's lookup the currently saved game setting.
+            self.origChoice = self.__getCurrentSetting()
+            
+            if self.mode == DEGREE:
+                destIndex = self.options.index('x{0}'.format(str(self.origChoice)))
+            elif (self.mode == AUTO and len(self.options) == 2) or isinstance(self.origChoice, (int, long)):
+                destIndex = int(self.origChoice)
+            elif isinstance(self.origChoice, (list, tuple)):
+                destIndex = self.options.index('{0}x{1}'.format(str(self.origChoice[0]), str(self.origChoice[1])))
+            else:
+                # This is a messy but effective way to figure out what choice to display after the reset based on
+                # the user setting saved.
+                try:
+                    destIndex = self.options.index(self.origChoice)
+                except ValueError:
+                    try:
+                        destIndex = self.options.index(self.origChoice.title())
+                    except:
+                        raise ValueError('Could not calculate proper display choice relative to the current user setting based on options entered to GUI.')
+        else:
+            # If this widget is not being used to simulate changing game settings, let's use the first value in options as the original choice.
+            self.origChoice = self.options[0]
+        self.userChoice = self.origChoice
+        self.goto(destIndex)
+        
+    def saveSetting(self):
+        """ If `settingKeyName` was set, this updates the game setting key with the choice selected with the widget. However, 
+        if `settingKeyName` was not set, it will send the command specified with the current user choice. """
+        willUpdateChoice = (self.userChoice != self.origChoice)
+        if self.settingKeyName and willUpdateChoice:
+            CIGlobals.getSettingsMgr().updateAndWriteSetting(self.settingKeyName, self.userChoice)
+            self.reset()
+            
+        if self.command and willUpdateChoice:
+            # Let's send the command with the newly saved choice.
+            self.command(self.userChoice)
+        
+    def __getCurrentSetting(self):
+        return CIGlobals.getSettingsMgr().getSetting(self.settingKeyName)
+        
+    def __setDescVisible(self, visible, _):
+        if visible:
+            CIGlobals.getRolloverSound().play()
+            self.desc.show()
+        else:
+            self.desc.hide()
 
     def cleanup(self):
         if hasattr(self, 'choiceText'):
@@ -57,9 +181,16 @@ class ChoiceWidget(DirectFrame):
         if hasattr(self, 'selFrame'):
             self.selFrame.destroy()
             del self.selFrame
+        if hasattr(self, 'desc'):
+            self.desc.destroy()
+            del self.desc
         del self.options
         del self.command
         del self.currentChoiceIndex
+        del self.settingKeyName
+        del self.origChoice
+        del self.userChoice
+        del self.mode
         self.destroy()
 
     def goto(self, index):
@@ -70,7 +201,26 @@ class ChoiceWidget(DirectFrame):
     def __setCurrentData(self, doCmd = True):
         self.choiceText.setText(self.options[self.currentChoiceIndex])
         if (doCmd):
-            self.command(self.currentChoiceIndex)
+            
+            # Let's update the internal user choice.
+            if self.mode == AUTO and len(self.options) == 2:
+                # If we only have two options, we must be working with on/off choices.
+                self.userChoice = bool(self.currentChoiceIndex)
+            elif self.mode == DEGREE or 'x' in self.choiceText.getText():
+                # We're working with either a degree based option or a resolution option.
+                data = self.options[self.currentChoiceIndex].split('x')
+                
+                if CIGlobals.isEmptyString(data[0]):
+                    # This is a degree-based option.
+                    if self.currentChoiceIndex != 0:
+                        self.userChoice = int(data[1])
+                    else:
+                        self.userChoice = 0
+                else:
+                    # This is a screen resolution option.
+                    self.userChoice = (int(data[0]), int(data[1]))
+            else:
+                self.userChoice = self.options[self.currentChoiceIndex]
 
     def updateDirectionalBtns(self):
         self.fwdBtn['state'] = DGG.NORMAL
