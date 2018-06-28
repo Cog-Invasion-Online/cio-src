@@ -45,7 +45,8 @@ class AdvancedDisplayCategory(OptionsCategory):
             render.setShaderOff()
             
     def __updateHDR(self, hdr):
-        CIGlobals.getSettingsMgr().applyHdr(hdr)
+        versionIndex = self.hdr.options.index(hdr)
+        CIGlobals.getSettingsMgr().applyHdr(versionIndex)
             
     def __updateBloom(self, flag):
         base.setBloom(flag)
