@@ -278,14 +278,13 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
     def announceGenerate(self):
         DistributedBattleZoneAI.announceGenerate(self)
-        elevator0 = DistributedCogOfficeElevatorAI(self.air, self, 0)
-        elevator0.generateWithRequired(self.zoneId)
-        elevator0.b_setState('closed')
-        self.elevators.append(elevator0)
-        elevator1 = DistributedCogOfficeElevatorAI(self.air, self, 1, ELEVATOR_INT)
-        elevator1.generateWithRequired(self.zoneId)
-        elevator1.b_setState('closed')
-        self.elevators.append(elevator1)
+        
+        for i in range(2):
+            elevator = DistributedCogOfficeElevatorAI(self.air, self, i, i)
+            elevator.generateWithRequired(self.zoneId)
+            elevator.b_setState('closed')
+            self.elevators.append(elevator)
+
         #self.resetBattlePoints()
 
     def resetBattlePoints(self):
