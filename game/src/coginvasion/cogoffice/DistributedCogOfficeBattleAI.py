@@ -279,7 +279,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
     def announceGenerate(self):
         DistributedBattleZoneAI.announceGenerate(self)
         
-        for i in range(2):
+        for i in xrange(2):
             elevator = DistributedCogOfficeElevatorAI(self.air, self, i, i)
             elevator.generateWithRequired(self.zoneId)
             elevator.b_setState('closed')
