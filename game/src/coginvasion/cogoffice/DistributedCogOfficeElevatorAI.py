@@ -22,9 +22,13 @@ class DistributedCogOfficeElevatorAI(DistributedElevatorAI):
         DistributedElevatorAI.__init__(self, air, battle, 0, eType)
         self.index = index
         
-    def closingTask(self, task):
+    def enterClosing(self):
+        base.taskMgr.doMethodLater(ElevatorData[self.type]['closeTime'], self.closingTask, self.uniqueName('closingTask'))
         if self.index == 1:
             self.bldg.b_setAvatars(self.getSortedAvatarList())
+        
+    def closingTask(self, task):
+        if self.index == 1:
             self.slotTakenByAvatarId = {}
         self.b_setState('closed')
         return task.done

@@ -496,6 +496,7 @@ class LocalToon(DistributedPlayerToon):
             self.updateMovementKeymap(k, 0)
         self.resetSpeeds()
         self.resetTorsoRotation()
+        self.resetHeadHpr()
         #self.crosshair.hide()
 
     def updateMovementKeymap(self, key, value):

@@ -165,6 +165,9 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         if self.level == 0:
             self.maxHealth = 1
             self.health = self.maxHealth
+            
+        self.d_setMaxHealth(self.maxHealth)
+        self.d_setHealth(self.health)
 
     def getSuit(self):
         return tuple((self.suitPlan, self.variant))

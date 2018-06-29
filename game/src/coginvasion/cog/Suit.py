@@ -454,12 +454,11 @@ class Suit(Avatar):
         else:
             condition = 5
         if self.condition != condition:
+            taskMgr.remove(self.taskName('blink-task'))
             if condition == 4:
                 blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.75), Task(self.__blinkGray), Task.pause(0.1))
                 taskMgr.add(blinkTask, self.taskName('blink-task'))
             elif condition == 5:
-                if self.condition == 4:
-                    taskMgr.remove(self.taskName('blink-task'))
                 blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.25), Task(self.__blinkGray), Task.pause(0.1))
                 taskMgr.add(blinkTask, self.taskName('blink-task'))
             else:

@@ -190,14 +190,6 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
 
     def setLevel(self, level):
         self.level = level
-        if self.level == 12:
-            self.maxHealth = 200
-        elif self.level > 0:
-            self.maxHealth = (self.level + 1) * (self.level + 2)
-        else:
-            self.maxHealth = 1
-        self.health = self.maxHealth
-        self.updateHealthBar(self.health)
 
     def getLevel(self):
         return self.level
