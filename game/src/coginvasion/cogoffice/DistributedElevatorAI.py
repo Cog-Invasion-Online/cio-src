@@ -55,7 +55,7 @@ class DistributedElevatorAI(DistributedObjectAI):
         pass
 
     def enterOpening(self):
-        base.taskMgr.doMethodLater(ElevatorData[self.type]['openTime'], self.openingTask, self.uniqueName('openingTask'))
+        base.taskMgr.doMethodLater(ElevatorData[self.type]['openTime'] + 1, self.openingTask, self.uniqueName('openingTask'))
 
     def openingTask(self, task):
         state = 'waitEmpty'
@@ -84,7 +84,7 @@ class DistributedElevatorAI(DistributedObjectAI):
         base.taskMgr.remove(self.uniqueName('waitCountdownTask'))
 
     def enterClosing(self):
-        base.taskMgr.doMethodLater(ElevatorData[self.type]['closeTime'], self.closingTask, self.uniqueName('closingTask'))
+        base.taskMgr.doMethodLater(ElevatorData[self.type]['closeTime'] + 1, self.closingTask, self.uniqueName('closingTask'))
 
     def closingTask(self, task):
         self.bldg.battle.b_setAvatars(self.getSortedAvatarList())

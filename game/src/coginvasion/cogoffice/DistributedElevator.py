@@ -85,7 +85,8 @@ class DistributedElevator(DistributedObject):
         self.closeDoors.start(ts)
 
     def exitClosing(self):
-        self.closeDoors.finish()
+        if self.closeDoors.isPlaying():
+            self.closeDoors.finish()
 
     def enterClosed(self, ts = 0):
         closeDoors(self.getLeftDoor(), self.getRightDoor())
@@ -160,10 +161,10 @@ class DistributedElevator(DistributedObject):
             return
         self.postAnnounceGenerate()
 
-    def postAnnounceGenerate(self):
+    def postAnnounceGenerate(self, makeIvals = True):
         self.leftDoor = self.getLeftDoor()
         self.rightDoor = self.getRightDoor()
-        self.setupElevator()
+        self.setupElevator(makeIvals)
         self.setupCountdownText()
         base.audio3d.attachSoundToObject(self.closeSfx, self.getElevatorModel())
         base.audio3d.attachSoundToObject(self.openSfx, self.getElevatorModel())
@@ -187,7 +188,7 @@ class DistributedElevator(DistributedObject):
         self.countdownTextNP.setPos(0, 1, 7)
         #self.countdownTextNP.setH(180)
 
-    def setupElevator(self):
+    def setupElevator(self, makeIvals = True):
         collisionRadius = ElevatorData[self.type]['collRadius']
         self.elevatorSphere = BulletSphereShape(collisionRadius)
         self.elevatorSphereNode = BulletGhostNode(self.uniqueName('elevatorSphere'))
@@ -197,9 +198,13 @@ class DistributedElevator(DistributedObject):
         self.elevatorSphereNodePath = self.getElevatorModel().attachNewNode(self.elevatorSphereNode)
         self.elevatorSphereNodePath.reparentTo(self.getElevatorModel())
         base.physicsWorld.attachGhost(self.elevatorSphereNode)
+        if makeIvals:
+            self.makeIvals()
+            
+    def makeIvals(self):
         self.openDoors = getOpenInterval(self, self.getLeftDoor(), self.getRightDoor(), self.openSfx, None, self.type)
-        self.closeDoors = getCloseInterval(self, self.getLeftDoor(), self.getRightDoor(), self.closeSfx, None, self.type)
-        self.closeDoors = Sequence(self.closeDoors, Func(self.onDoorCloseFinish))
+        self.closeDoors = Sequence(getCloseInterval(self, self.getLeftDoor(), self.getRightDoor(), self.closeSfx, None, self.type), Func(self.onDoorCloseFinish))
+        self.closeDoors.setDoneEvent(self.uniqueName('closeDoorsElevatorIval'))
 
     def disable(self):
         self.stopPoll()
@@ -236,6 +241,7 @@ class DistributedElevator(DistributedObject):
         DistributedObject.disable(self)
 
     def onDoorCloseFinish(self):
+        print "Door close finish"
         if self.localAvOnElevator:
             base.transitions.fadeScreen(1.0)
             base.localAvatar.wrtReparentTo(render)

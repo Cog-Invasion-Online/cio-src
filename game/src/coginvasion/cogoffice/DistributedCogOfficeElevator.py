@@ -37,7 +37,7 @@ class DistributedCogOfficeElevator(DistributedElevator):
         return self.thebldg.elevators[self.index].getRightDoor()
 
     def postAnnounceGenerate(self):
-        DistributedElevator.postAnnounceGenerate(self)
+        DistributedElevator.postAnnounceGenerate(self, makeIvals = False)
         # We've polled the building and found it, tell the building that this elevator is ready.
         self.thebldg.elevatorReady()
         self.accept(self.thebldg.uniqueName('prepareElevator'), self.__prepareElevator)
@@ -50,9 +50,7 @@ class DistributedCogOfficeElevator(DistributedElevator):
         self.countdownTextNP.reparentTo(self.getElevatorModel())
         self.elevatorSphereNodePath.reparentTo(self.getElevatorModel())
         base.physicsWorld.attach(self.elevatorSphereNode)
-        self.openDoors = getOpenInterval(self, self.getLeftDoor(), self.getRightDoor(), self.openSfx, None, self.type)
-        self.closeDoors = getCloseInterval(self, self.getLeftDoor(), self.getRightDoor(), self.closeSfx, None, self.type)
-        self.closeDoors = Sequence(self.closeDoors, Func(self.onDoorCloseFinish))
+        self.makeIvals()
         closeDoors(self.getLeftDoor(), self.getRightDoor())
 
     def putToonsInElevator(self):
