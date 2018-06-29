@@ -9,8 +9,6 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.distributed.DistributedObject import DistributedObject
-from direct.interval.IntervalGlobal import Sequence, Func
 
 from src.coginvasion.hood import ZoneUtil
 from ElevatorConstants import *

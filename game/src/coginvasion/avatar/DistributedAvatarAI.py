@@ -101,7 +101,9 @@ class DistributedAvatarAI(DistributedNodeAI.DistributedNodeAI):
         return self.health
 
     def d_announceHealth(self, level, hp, extraId = -1):
-        self.sendUpdate('announceHealth', [level, hp, extraId])
+        # There's no need to announce when the avatar's health doesn't change.
+        if hp != 0:
+            self.sendUpdate('announceHealth', [level, hp, extraId])
 
     def disable(self):
         self.health = None

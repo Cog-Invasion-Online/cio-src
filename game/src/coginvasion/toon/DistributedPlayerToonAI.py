@@ -401,7 +401,10 @@ class DistributedPlayerToonAI(DistributedToonAI):
             self.d_announceHealth(1, amt)
 
     def d_announceHealthAndPlaySound(self, level, hp):
-        self.sendUpdate("announceHealthAndPlaySound", [level, hp])
+        # There's no need to announce when there isn't a change
+        # in health value.
+        if hp != 0:
+            self.sendUpdate("announceHealthAndPlaySound", [level, hp])
 
     def setMoney(self, money):
         self.money = money

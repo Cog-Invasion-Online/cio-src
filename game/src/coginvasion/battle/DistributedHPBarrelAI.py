@@ -42,4 +42,5 @@ class DistributedHPBarrelAI(DistributedRestockBarrelAI):
             if (avatar.health + healAmt > avatar.maxHealth):
                 healAmt = avatar.maxHealth - avatar.health
             
-            avatar.toonUp(healAmt, announce = 1, sound = 1)
+            # Let's toon up the avatar that wants to grab health and announce it.
+            avatar.toonUp(healAmt, announce = 1, sound = 0)
