@@ -89,8 +89,9 @@ class TNT(TossTrapGag):
         self.state = GagState.RELEASED
         
         if self.isLocal():
-            self.powerBar.stop()
-            self.powerBar.hide()
+            if self.powerBar:
+                self.powerBar.stop()
+                self.powerBar.hide()
             self.startTimeout()
             if base.localAvatar.isFirstPerson():
                 vm = self.getViewModel()

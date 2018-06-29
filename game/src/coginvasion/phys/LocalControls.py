@@ -259,12 +259,12 @@ class LocalControls(DirectObject):
             self.movementTokens.append(inputState.watchWithModifiers('turnLeft', 'arrow_left', inputSource = inputState.WASD))
             self.movementTokens.append(inputState.watchWithModifiers('turnRight', 'arrow_right', inputSource = inputState.WASD))
 
-    def disableControls(self):
+    def disableControls(self, chat = False):
         if not self.controlsEnabled:
             return
 
         if self.mode == LocalControls.MFirstPerson:
-            self.fpsCam.disableMouseMovement()
+            self.fpsCam.disableMouseMovement(False, not chat)
 
         self.ignore('alt')
         

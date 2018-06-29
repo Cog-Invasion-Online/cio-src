@@ -47,13 +47,13 @@ class Place(StateData):
     
     def __handleChatInputOpened(self):
         if base.localAvatarReachable():
-            if self.fsm.getCurrentState().getName() == 'walk' and base.localAvatar.isFirstPerson():
-                base.localAvatar.disableAvatarControls()
+            if self.fsm.getCurrentState().getName() == 'walk':
+                base.localAvatar.disableAvatarControls(True)
             
     def __handleChatInputClosed(self):
         if base.localAvatarReachable():
-            if self.fsm.getCurrentState().getName() == 'walk' and base.localAvatar.isFirstPerson():
-                base.localAvatar.enableAvatarControls()
+            if self.fsm.getCurrentState().getName() == 'walk':
+                base.localAvatar.enableAvatarControls(True)
     
     def __acceptEvents(self):
         self.accept(CHAT_WINDOW_OPENED_EVENT, self.__handleChatInputOpened)

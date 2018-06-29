@@ -138,8 +138,10 @@ class LocalToon(DistributedPlayerToon):
                                blendType = 'easeInOut').start()
 
     def areGagsAllowed(self):
-        return (self.walkControls.controlsEnabled and
-                (self.chatInput is not None and self.chatInput.fsm.getCurrentState().getName() == 'idle'))
+        return (self.avatarMovementEnabled and self.walkControls.controlsEnabled and
+                (self.chatInput is not None and self.chatInput.fsm.getCurrentState().getName() == 'idle') and
+                (self.invGui is not None and self.invGui.getCurrentOrNextState() != 'Select') and
+                ((self.isFirstPerson() and self.getFPSCam().mouseEnabled) or self.isThirdPerson()))
 
     def isFirstPerson(self):
         return self.walkControls.mode == self.walkControls.MFirstPerson
@@ -464,9 +466,9 @@ class LocalToon(DistributedPlayerToon):
         self.acceptOnce('LT::zend-done', self.handleJumpLand)
         self.jumpHardLandIval.start()
 
-    def disableAvatarControls(self):
+    def disableAvatarControls(self, chat = False):
         #self.mouseMov.disableMovement(False)
-        self.walkControls.disableControls()
+        self.walkControls.disableControls(chat)
         self.ignore('tab')
         self.ignore('shift-tab')
         self.ignore('page_up')

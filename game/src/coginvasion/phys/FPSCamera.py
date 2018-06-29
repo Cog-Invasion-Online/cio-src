@@ -167,7 +167,9 @@ class FPSCamera(DirectObject):
         
         self.mouseEnabled = True
         
-    def disableMouseMovement(self, allowEnable = False):
+        base.localAvatar.enableGagKeys()
+        
+    def disableMouseMovement(self, allowEnable = False, showAvatar = True):
         props = WindowProperties()
         props.setMouseMode(WindowProperties.MAbsolute)
         props.setCursorHidden(False)
@@ -175,11 +177,16 @@ class FPSCamera(DirectObject):
         
         base.taskMgr.remove("mouseUpdateFPSCamera")
         
+        base.localAvatar.disableGagKeys()
+        
         if allowEnable:
             self.acceptEngageKeys()
         else:
             self.ignoreEngageKeys()
-            base.localAvatar.getGeomNode().show()
+            if showAvatar:
+                base.localAvatar.getGeomNode().show()
+            else:
+                base.localAvatar.getGeomNode().hide()
             
         self.mouseEnabled = False
             
