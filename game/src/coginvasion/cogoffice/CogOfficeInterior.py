@@ -43,6 +43,7 @@ class CogOfficeInterior(Place):
         self.fsm.enterInitialState()
         
     def exit(self):
+        print "Exit CogOfficeInterior"
         Place.exit(self)
 
     def load(self):
@@ -50,6 +51,7 @@ class CogOfficeInterior(Place):
         self.parentFSM.getStateNamed('suitInterior').addChild(self.fsm)
 
     def unload(self):
+        print "Unload CogOfficeInterior"
         self.parentFSM.getStateNamed('suitInterior').removeChild(self.fsm)
         del self.fsm
         del self.parentFSM

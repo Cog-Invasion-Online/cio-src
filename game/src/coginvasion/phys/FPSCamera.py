@@ -56,7 +56,11 @@ class FPSCamera(DirectObject):
                                 "hose_idle": "phase_14/models/char/v_toon_arms-hose_idle.egg",
                                 "hose_shoot_begin": "phase_14/models/char/v_toon_arms-hose_shoot_begin.egg",
                                 "hose_shoot_loop": "phase_14/models/char/v_toon_arms-hose_shoot_loop.egg",
-                                "hose_shoot_end": "phase_14/models/char/v_toon_arms-hose_shoot_end.egg"})
+                                "hose_shoot_end": "phase_14/models/char/v_toon_arms-hose_shoot_end.egg",
+                                
+                                "tnt_draw": "phase_14/models/char/v_toon_arms-tnt_draw.egg",
+                                "tnt_idle": "phase_14/models/char/v_toon_arms-tnt_idle.egg",
+                                "tnt_throw": "phase_14/models/char/v_toon_arms-tnt_throw.egg"})
         self.viewModel.reparentTo(self.camRoot)
         self.viewModel.find("**/hands").setTwoSided(True)
         self.viewModel.hide()

@@ -8,12 +8,15 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval, Parallel
+from direct.interval.SoundInterval import SoundInterval
+from direct.actor.Actor import Actor
+
+from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags.TossTrapGag import TossTrapGag
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags import GagGlobals
-from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval
-from direct.interval.SoundInterval import SoundInterval
-from direct.actor.Actor import Actor
+from src.coginvasion.toon import ParticleLoader
 
 class TNT(TossTrapGag):
 
@@ -23,7 +26,45 @@ class TNT(TossTrapGag):
         self.maxDistance = GagGlobals.TNT_RANGE
         self.setImage('phase_3.5/maps/tnt.png')
         self.setRechargeTime(0.0)
-        self.timeout = 1
+        self.timeout = 2.5
+
+        self.tntSound = None
+        self.lightSound = None
+        self.particle = None
+
+    def unEquip(self):
+        self.__cleanupFakeStuff()
+        TossTrapGag.unEquip(self)
+
+    def __doFakeStuff(self):
+        self.__cleanupFakeStuff()
+
+        self.lightSound = base.audio3d.loadSfx("phase_14/audio/sfx/tnt_snap.ogg")
+        base.audio3d.attachSoundToObject(self.lightSound, self.getVMGag())
+        self.lightSound.play()
+        self.tntSound = base.audio3d.loadSfx("phase_14/audio/sfx/dynamite_loop.ogg")
+        self.tntSound.setLoop(True)
+        base.audio3d.attachSoundToObject(self.tntSound, self.getVMGag())
+        self.tntSound.play()
+        self.particle = ParticleLoader.loadParticleEffect("phase_14/etc/tnt_spark.ptf")
+        self.particle.start(self.getVMGag().find('**/joint_attachEmitter'), CIGlobals.getParticleRender())
+
+    def __cleanupFakeStuff(self):
+        if self.lightSound:
+            self.lightSound.stop()
+        self.lightSound = None
+        if self.tntSound:
+            self.tntSound.stop()
+        self.tntSound = None
+        if self.particle:
+            self.particle.softStop()
+        self.particle = None
+
+    def __actuallyThrow(self):
+        self.__cleanupFakeStuff()
+        self.getVMGag().hide()
+        base.localAvatar.sendUpdate('createObjectForMe', [base.cr.dclassesByName['DistributedTNTOV'].getNumber()])
+        base.localAvatar.sendUpdate('usedGag', [self.id])
 
     def start(self):
         pass
@@ -31,15 +72,17 @@ class TNT(TossTrapGag):
     def throw(self):
         self.state = GagState.RELEASED
 
-        if self.isLocal():
-            base.localAvatar.sendUpdate('createObjectForMe', [base.cr.dclassesByName['DistributedTNTOV'].getNumber()])
+        if self.isLocal() and base.localAvatar.isFirstPerson():
             vm = self.getViewModel()
             cam = self.getFPSCam()
-            cam.setVMAnimTrack(Func(vm.pose, "pie_draw", 0))
-            base.localAvatar.sendUpdate('usedGag', [self.id])
+            cam.setVMAnimTrack(Parallel(ActorInterval(vm, "tnt_throw"), Sequence(Wait(0.3), Func(self.__doFakeStuff), Wait(0.65), Func(self.__actuallyThrow))))
+            self.startTimeout()
+        else:
+            self.__actuallyThrow()
             self.startTimeout()
 
         self.gag.hide()
+
         self.setAnimTrack(self.getAnimationTrack('toss', 60), startNow = True)
 
     def equip(self):
@@ -53,7 +96,7 @@ class TNT(TossTrapGag):
         if self.isLocal():
             vm = self.getViewModel()
             cam = self.getFPSCam()
-            cam.setVMGag(self.gag, pos = (-0.05, 0.05, 0), hpr = (0, -97.492, 0), scale = 0.5, animate = False)
-            cam.setVMAnimTrack(Sequence(ActorInterval(vm, "pie_draw"), Func(vm.loop, "pie_idle")))
+            cam.setVMGag(self.gag, pos = (-0.23, 0.26, 0.05), hpr = (309.15, 55.4, 154.5), scale = 0.5, animate = False)
+            cam.setVMAnimTrack(Sequence(ActorInterval(vm, "tnt_draw"), Func(vm.loop, "tnt_idle")))
 
         self.doDrawAndHold('toss', 0, 30, 1.0, 30, 30, 1.0)

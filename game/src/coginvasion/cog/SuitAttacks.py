@@ -22,6 +22,8 @@ from src.coginvasion.globals import CIGlobals
 from direct.showutil.Rope import Rope
 from direct.task import Task
 import SuitGlobals
+from src.coginvasion.phys.WorldCollider import WorldCollider
+from src.coginvasion.phys import PhysicsUtils
 
 import random
 
@@ -163,6 +165,9 @@ class Attack(DirectObject):
     def interruptAttack(self):
         self.cleanup()
 
+    def attackBlocked(self, pos):
+        CIGlobals.makeDustCloud(pos, 1, base.audio3d.loadSfx("phase_4/audio/sfx/Golf_Hit_Barrier_1.ogg"))
+
     def cleanup(self):
         if self.suitTrack != None:
             self.ignore(self.suitTrack.getDoneEvent())
@@ -195,8 +200,7 @@ class ThrowAttack(Attack):
         Attack.__init__(self, attacksClass, suit)
         self.weapon_state = None
         self.weapon = None
-        self.wss = None
-        self.wsnp = None
+        self.collider = None
         self.suitTrack = None
         self.weaponSfx = None
         self.throwTrajectory = None
@@ -205,8 +209,13 @@ class ThrowAttack(Attack):
 
     def handleWeaponCollision(self, entry):
         if self.suit:
-            self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
-            #self.suit.b_handleWeaponTouch()
+            if PhysicsUtils.isLocalAvatar(entry):
+                # We hit the local avatar.
+                self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
+                return
+
+        # We hit a wall or something, stop the projectile.
+        self.handleWeaponTouch()
 
     def doAttack(self, weapon_path, weapon_scale, track_name,
                 animation_name, collsphere_radius, weapon_coll_id,
@@ -223,7 +232,11 @@ class ThrowAttack(Attack):
         self.weapon.setScale(weapon_scale)
         self.weapon.setHpr(weapon_h, weapon_p, weapon_r)
         self.weapon.setPos(weapon_x, weapon_y, weapon_z)
-        self.wss = BulletSphereShape(collsphere_radius)
+        
+        self.collider = WorldCollider(self.attack, collsphere_radius, mask = CIGlobals.WorldGroup | CIGlobals.LocalAvGroup,
+                                      myMask = CIGlobals.WeaponGroup, startNow = False,
+                                      exclusions = [self.suit])
+        self.collider.reparentTo(self.weapon)
         
         self.startToonLockOn()
 
@@ -238,11 +251,6 @@ class ThrowAttack(Attack):
 
         self.weapon.reparentTo(self.suit.find('**/joint_Rhold'))
 
-        wsnode = BulletGhostNode(weapon_coll_id)
-        wsnode.addShape(self.wss)
-        wsnode.setKinematic(True)
-        self.wsnp = self.weapon.attachNewNode(wsnode)
-        self.wsnp.setCollideMask(CIGlobals.WeaponGroup)
         self.startSuitTrack(ts)
 
     def playWeaponSound(self):
@@ -256,9 +264,9 @@ class ThrowAttack(Attack):
             
         self.stopToonLockOn()
         
-        # Watch for a local avatar collision with our weapon.
-        base.physicsWorld.attach(self.wsnp.node())
-        self.acceptOnce("enter" + self.wsnp.node().getName(), self.handleWeaponCollision)
+        # Watch for a collision with our weapon.
+        self.acceptOnce(self.collider.getCollideEvent(), self.handleWeaponCollision)
+        self.collider.start()
         
         self.playWeaponSound()
         if self.weapon:
@@ -302,6 +310,8 @@ class ThrowAttack(Attack):
                 self.delWeapon()
 
     def handleWeaponTouch(self):
+        if CIGlobals.isNodePathOk(self.weapon):
+            self.attackBlocked(self.weapon.getPos(render))
         if self.throwTrajectory:
             self.throwTrajectory.pause()
             self.throwTrajectory = None
@@ -314,12 +324,9 @@ class ThrowAttack(Attack):
             self.weapon = None
             
     def delPhysics(self):
-        self.wss = None
-        if self.wsnp:
-            print "delPhysics: removing the ThrowAttack ghost node"
-            base.physicsWorld.remove(self.wsnp.node())
-            self.wsnp.removeNode()
-            self.wsnp = None
+        if self.collider:
+            self.collider.removeNode()
+            self.collider = None
 
     def cleanup(self):
         Attack.cleanup(self)

@@ -19,7 +19,7 @@ from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigV
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
 from panda3d.core import TextureStage, VBase4, TransparencyAttrib
 
-from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wait, Parallel, SoundInterval
+from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wait, Parallel, SoundInterval, ActorInterval
 
 import math
 
@@ -91,8 +91,6 @@ def doSceneCleanup():
     GeomCacheManager.getGlobalPtr().flush()
         
     base.graphicsEngine.renderFrame()
-
-    print "CIGlobals: doSceneCleanup()"
 
 def lerpWithRatio(v0, v1, ratio):
     dt = globalClock.getDt()
@@ -322,6 +320,28 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
     track.append(Sequence(Wait(duration), Func(explosion.removeNode)))
     track.append(Sequence(Wait(duration), Func(smoke.softStop)))
     track.start()
+
+def makeDustCloud(pos, scale = (0.1, 0.9, 1), sound = None):
+    from direct.actor.Actor import Actor
+    dust = Actor('phase_5/models/props/dust-mod.bam', {'chan' : 'phase_5/models/props/dust-chan.bam'})
+    objBin = 110
+    for cloudNum in range(1, 12):
+        cloudName = '**/cloud' + str(cloudNum)
+        cloud = dust.find(cloudName)
+        cloud.setBin('fixed', objBin)
+        cloud.setShaderOff(1)
+        cloud.setMaterialOff(1)
+        cloud.setLightOff(1)
+        objBin -= 10
+    dust.setBillboardPointEye()
+    dust.setScale(scale)
+    dust.reparentTo(render)
+    dust.setPos(pos)
+    if sound:
+        base.audio3d.attachSoundToObject(sound, dust)
+        sound.play()
+    dustTrack = Sequence(ActorInterval(dust, "chan"), Func(dust.cleanup))
+    dustTrack.start()
 
 def getShinyMaterial(shininess = 250.0):
     mat = Material()

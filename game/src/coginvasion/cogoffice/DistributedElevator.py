@@ -289,6 +289,7 @@ class DistributedElevator(DistributedObject):
 
             if avId == base.localAvatar.doId:
                 self.localAvOnElevator = True
+                print "We are now on this elevator"
                 track.append(Func(self.showHopOffButton))
                 base.localAvatar.stopSmartCamera()
                 base.localAvatar.walkControls.setCollisionsActive(0)

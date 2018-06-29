@@ -70,12 +70,16 @@ class DistributedCogOfficeElevator(DistributedElevator):
                 toon.setHpr(180, 0, 0)
 
     def onDoorCloseFinish(self):
+        print "Door close finish for index {0}".format(self.index)
+        print "Are we on this elevator? {0}".format(self.localAvOnElevator)
         if self.index == 1:
             if self.localAvOnElevator:
+                print "Ready for next floor."
                 base.transitions.fadeScreen(1)
                 self.thebldg.d_readyForNextFloor()
                 self.localAvOnElevator = False
             else:
+                print "Heading back to the playground."
                 requestStatus = {'zoneId': ZoneUtil.getZoneId(ZoneUtil.getHoodId(self.zoneId, street = 1)),
                             'hoodId': self.cr.playGame.hood.hoodId,
                             'where': 'playground',

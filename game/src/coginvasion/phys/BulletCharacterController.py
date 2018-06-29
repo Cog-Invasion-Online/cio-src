@@ -90,6 +90,7 @@ class BulletCharacterController(DirectObject):
     def setPythonTag(self, *args):
         self.__walkCapsuleNP.setPythonTag(*args)
         self.__crouchCapsuleNP.setPythonTag(*args)
+        self.eventSphereNP.setPythonTag(*args)
     
     def setCollideMask(self, *args):
         self.__walkCapsuleNP.setCollideMask(*args)
