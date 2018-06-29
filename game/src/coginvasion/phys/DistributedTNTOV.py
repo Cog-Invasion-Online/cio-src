@@ -44,7 +44,14 @@ class DistributedTNTOV(DistributedTNT, DistributedObjectOV):
         self.lookAt(render, PhysicsUtils.getHitPosFromCamera())
         self.d_clearSmoothing()
         self.d_broadcastPosHpr()
-        self.toss()
+        
+        power = 50.0
+        bp = base.localAvatar.backpack
+        if bp:
+            gag = bp.getGagByID(GagGlobals.gagIdByName[GagGlobals.TNT])
+            if gag and gag.powerBar:
+                power = gag.powerBar.getPower()
+        self.toss(power)
 
     def b_explode(self):
         self.explode()

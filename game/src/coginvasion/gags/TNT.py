@@ -17,6 +17,7 @@ from src.coginvasion.gags.TossTrapGag import TossTrapGag
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.toon import ParticleLoader
+from PowerBar import PowerBar
 
 class TNT(TossTrapGag):
 
@@ -31,8 +32,22 @@ class TNT(TossTrapGag):
         self.tntSound = None
         self.lightSound = None
         self.particle = None
+        
+        self.powerBar = None
+        
+    def startPowerBar(self):
+        self.stopPowerBar()
+        
+        self.powerBar = PowerBar()
+        self.powerBar.start()
+        
+    def stopPowerBar(self):
+        if self.powerBar:
+            self.powerBar.destroy()
+        self.powerBar = None
 
     def unEquip(self):
+        self.stopPowerBar()
         self.__cleanupFakeStuff()
         TossTrapGag.unEquip(self)
 
@@ -67,15 +82,21 @@ class TNT(TossTrapGag):
         base.localAvatar.sendUpdate('usedGag', [self.id])
 
     def start(self):
-        pass
+        if self.isLocal():
+            self.startPowerBar()
 
     def throw(self):
         self.state = GagState.RELEASED
+        
+        if self.isLocal():
+            self.powerBar.stop()
+            self.powerBar.hide()
 
         if self.isLocal() and base.localAvatar.isFirstPerson():
             vm = self.getViewModel()
             cam = self.getFPSCam()
-            cam.setVMAnimTrack(Parallel(ActorInterval(vm, "tnt_throw"), Sequence(Wait(0.3), Func(self.__doFakeStuff), Wait(0.65), Func(self.__actuallyThrow))))
+            playRate = 1.2
+            cam.setVMAnimTrack(Parallel(ActorInterval(vm, "tnt_throw", playRate = playRate), Sequence(Wait(0.3 / playRate), Func(self.__doFakeStuff), Wait(0.65 / playRate), Func(self.__actuallyThrow))))
             self.startTimeout()
         else:
             self.__actuallyThrow()
@@ -96,7 +117,7 @@ class TNT(TossTrapGag):
         if self.isLocal():
             vm = self.getViewModel()
             cam = self.getFPSCam()
-            cam.setVMGag(self.gag, pos = (-0.23, 0.26, 0.05), hpr = (309.15, 55.4, 154.5), scale = 0.5, animate = False)
+            cam.setVMGag(self.gag, pos = (-0.23, 0.26, 0.05), hpr = (321.45, 55.74, 120.67), scale = 0.5, animate = False)
             cam.setVMAnimTrack(Sequence(ActorInterval(vm, "tnt_draw"), Func(vm.loop, "tnt_idle")))
 
         self.doDrawAndHold('toss', 0, 30, 1.0, 30, 30, 1.0)

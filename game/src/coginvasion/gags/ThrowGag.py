@@ -20,6 +20,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.phys import PhysicsUtils, WorldCollider
 from direct.actor.Actor import Actor
 import GagGlobals
+from PowerBar import PowerBar
 
 import math
 
@@ -39,29 +40,12 @@ class ThrowGag(Gag):
         self.splatColor = splatColor
         self.entities = []
         self.timeout = 1.0
-        self.power = 50
         self.powerBar = None
-        self.tossPieStart = 0
-        self.pieSpeed = 0.2
-        self.pieExponent = 0.75
 
     def setAvatar(self, avatar):
         Gag.setAvatar(self, avatar)
         if self.isLocal():
-            self.powerBar = DirectWaitBar(range = 150, frameColor = (1, 1, 1, 1),
-                         barColor = (0.286, 0.901, 1, 1), relief = DGG.RAISED,
-                         borderWidth = (0.04, 0.04), pos = (0, 0, 0.85), scale = 0.2,
-                         hpr = (0, 0, 0), parent = aspect2d, frameSize = (-0.85, 0.85, -0.12, 0.12))
-            self.powerBar.hide()
-
-    def __getPiePower(self, time):
-        elapsed = max(time - self.tossPieStart, 0.0)
-        t = elapsed / self.pieSpeed
-        t = math.pow(t, self.pieExponent)
-        power = int(t * 150) % 300
-        if power > 150:
-            power = 300 - power
-        return power
+            self.powerBar = PowerBar()
 
     def build(self):
         if not self.gag:
@@ -95,36 +79,16 @@ class ThrowGag(Gag):
             self.build()
 
         if self.isLocal():
-            taskMgr.remove("hidePowerBarTask" + str(hash(self)))
-            self.powerBar.show()
-            self.startPowerBar()
-
-    def startPowerBar(self):
-        self.tossPieStart = globalClock.getFrameTime()
-        taskMgr.add(self.__powerBarUpdate, "powerBarUpdate" + str(hash(self)))
-
-    def __powerBarUpdate(self, task):
-        if self.powerBar is None:
-            return task.done
-        self.powerBar['value'] = self.__getPiePower(globalClock.getFrameTime())
-        return task.cont
-
-    def stopPowerBar(self):
-        taskMgr.remove("powerBarUpdate" + str(hash(self)))
-        self.power = self.powerBar['value']
-
-    def __hidePowerBarTask(self, _):
-        self.powerBar.hide()
+            self.powerBar.start()
 
     def throw(self):
         if self.isLocal():
-            self.stopPowerBar()
-            self.power += 50
+            self.powerBar.stop(hideAfter = 1.5)
+            self.power = self.powerBar.getPower() + 50
             self.power = 250 - self.power
             # Make other toons set the throw power on my gag.
             base.localAvatar.sendUpdate('setThrowPower', [self.id, self.power])
             self.startTimeout()
-            taskMgr.doMethodLater(1.5, self.__hidePowerBarTask, "hidePowerBarTask" + str(hash(self)))
         self.clearAnimTrack()
         
         if not self.gag:
@@ -292,14 +256,11 @@ class ThrowGag(Gag):
         return collider
 
     def unEquip(self):
-        taskMgr.remove("hidePowerBarTask" + str(hash(self)))
         if self.powerBar:
             self.powerBar.hide()
         Gag.unEquip(self)
 
     def delete(self):
-        taskMgr.remove("powerBarUpdate" + str(hash(self)))
-        taskMgr.remove("hidePowerBarTask" + str(hash(self)))
         if self.powerBar:
             self.powerBar.destroy()
             self.powerBar = None
