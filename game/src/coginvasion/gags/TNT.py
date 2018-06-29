@@ -91,16 +91,14 @@ class TNT(TossTrapGag):
         if self.isLocal():
             self.powerBar.stop()
             self.powerBar.hide()
-
-        if self.isLocal() and base.localAvatar.isFirstPerson():
-            vm = self.getViewModel()
-            cam = self.getFPSCam()
-            playRate = 1.2
-            cam.setVMAnimTrack(Parallel(ActorInterval(vm, "tnt_throw", playRate = playRate), Sequence(Wait(0.3 / playRate), Func(self.__doFakeStuff), Wait(0.65 / playRate), Func(self.__actuallyThrow))))
             self.startTimeout()
-        else:
-            self.__actuallyThrow()
-            self.startTimeout()
+            if base.localAvatar.isFirstPerson():
+                vm = self.getViewModel()
+                cam = self.getFPSCam()
+                playRate = 1.2
+                cam.setVMAnimTrack(Parallel(ActorInterval(vm, "tnt_throw", playRate = playRate), Sequence(Wait(0.3 / playRate), Func(self.__doFakeStuff), Wait(0.65 / playRate), Func(self.__actuallyThrow))))
+            else:
+                self.__actuallyThrow()
 
         self.gag.hide()
 
