@@ -155,7 +155,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         if not head or (head and head.getHpr() == (h, p, r)):
             return
         
-        Toon.Toon.lerpLookAt(self, self.getPart('head'), tuple((h, p, r)))
+        Toon.Toon.lerpLookAt(self, head, tuple((h, p, r)))
         if blink:
             self.stopBlink()
             maxBlinks = random.randint(1, 2)
