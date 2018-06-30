@@ -150,8 +150,11 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         return task.cont
 
     def lookAtObject(self, h, p, r, blink=1):
-        if self.getPart('head').getHpr() == (h, p, r):
+        head = self.getPart('head')
+        
+        if not head or (head and head.getHpr() == (h, p, r)):
             return
+        
         Toon.Toon.lerpLookAt(self, self.getPart('head'), tuple((h, p, r)))
         if blink:
             self.stopBlink()
