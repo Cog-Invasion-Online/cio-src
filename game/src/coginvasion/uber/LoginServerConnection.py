@@ -19,24 +19,26 @@ class LoginServerConnectionHandler(SocketServer.BaseRequestHandler):
     notify = directNotify.newCategory('LoginServerConnectionHandler')
     
     def handle(self):
-        self.data = []
-        try:
-            for s in self.request.recv(1024).splitlines():
-                self.data.append(s.strip())
-            
-            tokenIP = self.data[0][2:len(self.data[0])]
-            token = self.data[1]
-            self.request.sendall('%s %s' % (tokenIP, token))
-            
-            # Let's store the token we received.
-            loginToken = LoginToken(token, tokenIP)
-            
-            global uberRepo
-            uberRepo.storeToken(loginToken)
-            self.notify.debug('Stored token %s for IP: %s' % (token, tokenIP))
-        except Exception:
-            self.notify.warning('Client disconnected while processing login token data.')
-            return
+        # Java gets very upset whenever this method returns.
+        while True:
+            self.data = []
+            try:
+                for s in self.request.recv(1024).splitlines():
+                    self.data.append(s.strip())
+                
+                tokenIP = self.data[0][2:len(self.data[0])]
+                token = self.data[1]
+                self.request.sendall('%s %s' % (tokenIP, token))
+                
+                # Let's store the token we received.
+                loginToken = LoginToken(token, tokenIP)
+                
+                global uberRepo
+                uberRepo.storeToken(loginToken)
+                self.notify.debug('Stored token %s for IP: %s' % (token, tokenIP))
+            except Exception:
+                self.notify.warning('Client disconnected while processing login token data.')
+                return
 
 class LoginServerConnection:
     notify = directNotify.newCategory('LoginServerConnection')
