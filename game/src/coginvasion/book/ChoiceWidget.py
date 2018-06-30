@@ -121,22 +121,21 @@ class ChoiceWidget(DirectFrame):
             # This widget is supposed to be used to change game settings. Let's lookup the currently saved game setting.
             self.origChoice = self.__getCurrentSetting()
             
-            if self.mode == DEGREE:
-                destIndex = self.options.index('x{0}'.format(str(self.origChoice)))
-            elif (self.mode == AUTO and len(self.options) == 2) or isinstance(self.origChoice, (int, long)):
-                destIndex = int(self.origChoice)
-            elif isinstance(self.origChoice, (list, tuple)):
-                destIndex = self.options.index('{0}x{1}'.format(str(self.origChoice[0]), str(self.origChoice[1])))
-            else:
-                # This is a messy but effective way to figure out what choice to display after the reset based on
-                # the user setting saved.
-                try:
+            try:
+                if self.mode == DEGREE and not self.origChoice == 0:
+                    destIndex = self.options.index('x{0}'.format(str(self.origChoice)))
+                elif (self.mode == AUTO and len(self.options) == 2) or isinstance(self.origChoice, (int, long)):
+                    destIndex = int(self.origChoice)
+                elif isinstance(self.origChoice, (list, tuple)):
+                    destIndex = self.options.index('{0}x{1}'.format(str(self.origChoice[0]), str(self.origChoice[1])))
+                elif self.origChoice in self.options:
                     destIndex = self.options.index(self.origChoice)
-                except ValueError:
-                    try:
-                        destIndex = self.options.index(self.origChoice.title())
-                    except:
-                        raise ValueError('Could not calculate proper display choice relative to the current user setting based on options entered to GUI.')
+                elif self.origChoice.title() in self.options:
+                    destIndex = self.options.index(self.origChoice.title())
+            except:
+                # We couldn't determine the right index for the original choice. Let's ignore any errors and default
+                # to the very first choice when we reset.
+                pass
         else:
             # If this widget is not being used to simulate changing game settings, let's use the first value in options as the original choice.
             self.origChoice = self.options[0]

@@ -383,7 +383,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.closeSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_close.ogg')
         
         self.rideElevatorMusic = 'tt_elevator'
-        self.bottomFloorsMusic = ['encntr_suit_winning', 'encntr_general_bg']
+        self.bottomFloorsMusic = ['encntr_suit_winning', 'encntr_general_bg_indoor']
         self.topFloorMusic = ['encntr_suit_winning_indoor', 'BossBot_CEO_v2']
         self.intermissionMusic = 'encntr_toon_winning_indoor'
         self.winMusic = 'encntr_toon_winning'
