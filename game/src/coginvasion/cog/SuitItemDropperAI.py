@@ -52,7 +52,7 @@ class SuitItemDropperAI:
                             gags.remove(choice)
                         drop.b_setBP(backpackGags)
                 else:
-                    jellybeans = int(self.suit.getMaxHealth() / SuitAttacks.SuitAttackDamageFactors['glowerpower'])
+                    jellybeans = int(self.suit.getMaxHealth() / 5.5)
                     constructor = DJellybeanAI
                     if jellybeans > self.jarMinSize:
                         constructor = DJellybeanJarAI

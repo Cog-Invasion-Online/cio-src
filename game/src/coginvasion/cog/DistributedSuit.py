@@ -437,16 +437,16 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         else:
             ts = globalClockDelta.localElapsedTime(timestamp)
         
-        taunts = SuitGlobals.AttackTaunts
-        attackName = SuitAttacks.SuitAttackLengths.keys()[attackId]
-        attackTaunt = taunts[attackName][random.randint(0, len(taunts[attackName]) - 1)]
+        attackCls = SuitAttacks.SuitAttacks.attack2attackClass[attackId]
+        taunts = attackCls.taunts
+        attackTaunt = random.choice(taunts)
         avatar = self.cr.doId2do.get(avId)
 
         shouldChat = random.randint(*BattleGlobals.AttackTauntChance) == BattleGlobals.AttackTauntChance[0]
         if shouldChat:
             self.setChat(attackTaunt)
 
-        self.animFSM.request('attack', [attackName, avatar, 0.0])
+        self.animFSM.request('attack', [attackId, avatar, 0.0])
 
     def throwObject(self):
         self.acceptOnce('enter' + self.wsnp.node().getName(), self.__handleWeaponCollision)

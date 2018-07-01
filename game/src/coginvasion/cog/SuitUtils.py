@@ -18,18 +18,15 @@ import SuitAttacks
 
 import random
 
-def attack(suit, toon, attackIndex = None):
+def attack(suit, toon, attack = None):
     suit.b_setAnimState('neutral')
     suit.headsUp(toon)
-    if attackIndex is None:
+    if attack is None:
         attack = random.choice(suit.suitPlan.getAttacks())
-        attackIndex = SuitAttacks.SuitAttackLengths.keys().index(attack)
-    else:
-        attack = SuitAttacks.SuitAttackLengths.keys()[attackIndex]
     timestamp = globalClockDelta.getFrameNetworkTime()
     if suit.isDead():
         return None
-    suit.sendUpdate('doAttack', [attackIndex, toon.doId, timestamp])
+    suit.sendUpdate('doAttack', [attack, toon.doId, timestamp])
     return attack
 
 def getMoveIvalFromPath(suit, path, elapsedT, isClient, seqName):

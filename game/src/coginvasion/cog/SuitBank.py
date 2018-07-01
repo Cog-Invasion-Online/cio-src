@@ -15,15 +15,16 @@ from src.coginvasion.cog.SuitType import SuitType
 from src.coginvasion.cog import Dept
 from src.coginvasion.cog.Head import Head
 from src.coginvasion.cog import Voice
-from src.coginvasion.cog import SuitAttacks
+from src.coginvasion.cog.SuitAttacks import SuitAttacks
 from src.coginvasion.gags import GagGlobals
+from src.coginvasion.cog.SuitAttackGlobals import *
 
 class SuitPlan:
 
     def __init__(self, name, suitType, dept, head, scale, nametagZ, height, headColor = None,
                  headTex = None, headAnims = None, handColor = None, forcedVariant = None, forcedVoice = None,
-                 levelRange = None, forcedLevel = None, attacks = SuitAttacks.SuitAttackLengths.keys(),
-                 headShadowName = "", headShadowScale = 0, headShadowPos = None, gagWeaknesses = {}, cls = SuitGlobals.CCMinion):
+                 levelRange = None, forcedLevel = None, attacks = SuitAttacks.attack2attackClass.keys(),
+                 headShadowName = "", headShadowScale = 0, headShadowPos = None, gagWeaknesses = {}, cls = SuitGlobals.CC_minion):
         self.name = name
         self.height = height
         self.suitType = suitType
@@ -136,8 +137,8 @@ TheBigCheese = SuitPlan(
     headShadowName = 'shadow8',
     headShadowScale = 0.9,
     headShadowPos = Vec3(-0.0225, 10, -0.025),
-    attacks = ['teeoff', 'glowerpower'],
-    cls = SuitGlobals.CCSupervisor
+    attacks = [SA_teeoff, SA_glowerpower],
+    cls = SuitGlobals.CC_supervisor
 )
 CorporateRaider = SuitPlan(
     SuitGlobals.CorporateRaider,
@@ -153,8 +154,8 @@ CorporateRaider = SuitPlan(
     headShadowName = 'shadow7',
     headShadowScale = 1.0,
     headShadowPos = Vec3(0, 10, -0.05),
-    attacks = ['canned', 'playhardball', 'powertie', 'evileye'],
-    cls = SuitGlobals.CCSupervisor
+    attacks = [SA_canned, SA_hardball, SA_powertie, SA_evileye],
+    cls = SuitGlobals.CC_supervisor
 )
 HeadHunter = SuitPlan(
     SuitGlobals.HeadHunter,
@@ -169,8 +170,8 @@ HeadHunter = SuitPlan(
     headShadowScale = 1.05,
     headShadowPos = Vec3(0, 10, -0.0425),
     gagWeaknesses = {GagGlobals.GrandPiano : 1.2},
-    attacks = ['fountainpen', 'glowerpower', 'halfwindsor'], #headshrink, rolodex
-    cls = SuitGlobals.CCMarshal
+    attacks = [SA_fountainpen, SA_glowerpower, SA_halfwindsor], #headshrink, rolodex
+    cls = SuitGlobals.CC_marshal
 )
 Downsizer = SuitPlan(
     SuitGlobals.Downsizer,
@@ -185,8 +186,8 @@ Downsizer = SuitPlan(
     headShadowScale = 1.0,
     headShadowPos = Vec3(-0.02, 10, -0.01),
     gagWeaknesses = {GagGlobals.TrapDoor : 1.2},
-    attacks = ['canned', 'sacked'], #downsize, pinkslip
-    cls = SuitGlobals.CCEnforcer
+    attacks = [SA_canned, SA_sacked], #downsize, pinkslip
+    cls = SuitGlobals.CC_enforcer
 )
 Micromanager = SuitPlan(
     SuitGlobals.Micromanager,
@@ -201,8 +202,8 @@ Micromanager = SuitPlan(
     headShadowScale = 1.0,
     headShadowPos = Vec3(0, 10, -0.02),
     gagWeaknesses = {GagGlobals.Anvil : 1.1},
-    attacks = ['fingerwag', 'fountainpen', 'buzzword'], #demotion, brainstorm
-    cls = SuitGlobals.CCEnforcer
+    attacks = [SA_fingerwag, SA_fountainpen, SA_buzzword], #demotion, brainstorm
+    cls = SuitGlobals.CC_enforcer
 )
 Yesman = SuitPlan(
     SuitGlobals.Yesman,
@@ -217,8 +218,8 @@ Yesman = SuitPlan(
     headShadowScale = 1.125,
     headShadowPos = Vec3(0, 10, -0.015),
     gagWeaknesses = {GagGlobals.FruitPieSlice : 1.2},
-    attacks = ['teeoff', 'razzledazzle'], #rubberstamp, synergy
-    cls = SuitGlobals.CCEnforcer
+    attacks = [SA_teeoff, SA_razzledazzle], #rubberstamp, synergy
+    cls = SuitGlobals.CC_enforcer
 )
 PencilPusher = SuitPlan(
     SuitGlobals.PencilPusher,
@@ -233,8 +234,8 @@ PencilPusher = SuitPlan(
     headShadowScale = 0.9,
     headShadowPos = Vec3(0, 10, 0),
     gagWeaknesses = {GagGlobals.WaterGlass : 1.1},
-    attacks = ['fountainpen', 'fingerwag'], #rubout, writeoff, fillwithlead
-    cls = SuitGlobals.CCSecretary
+    attacks = [SA_fountainpen, SA_fingerwag], #rubout, writeoff, fillwithlead
+    cls = SuitGlobals.CC_secretary
 )
 Flunky = SuitPlan(
     SuitGlobals.Flunky,
@@ -248,8 +249,8 @@ Flunky = SuitPlan(
     headShadowName = 'shadow1',
     headShadowScale = 1.225,
     headShadowPos = Vec3(0, 10, -0.03),
-    attacks = ['clipontie'], #poundkey, shred
-    cls = SuitGlobals.CCMinion
+    attacks = [SA_clipontie], #poundkey, shred
+    cls = SuitGlobals.CC_minion
 )
 BigWig = SuitPlan(
     SuitGlobals.BigWig,
@@ -264,8 +265,8 @@ BigWig = SuitPlan(
     headShadowScale = 0.85,
     headShadowPos = Vec3(-0.005, 10, -0.035),
     gagWeaknesses = {GagGlobals.StormCloud : 1.3},
-    attacks = ['fingerwag'], #powertrip
-    cls = SuitGlobals.CCSupervisor
+    attacks = [SA_fingerwag], #powertrip
+    cls = SuitGlobals.CC_supervisor
 )
 LegalEagle = SuitPlan(
     SuitGlobals.LegalEagle,
@@ -281,8 +282,8 @@ LegalEagle = SuitPlan(
     headShadowScale = 1.125,
     headShadowPos = Vec3(0.005, 10, -0.035),
     gagWeaknesses = {GagGlobals.StormCloud : 1.1},
-    attacks = ['jargon', 'evileye'],  #legalese, peckingorder
-    cls = SuitGlobals.CCSecretary
+    attacks = [SA_jargon, SA_evileye],  #legalese, peckingorder
+    cls = SuitGlobals.CC_secretary
 )
 SpinDoctor = SuitPlan(
     SuitGlobals.SpinDoctor,
@@ -299,8 +300,8 @@ SpinDoctor = SuitPlan(
     headShadowScale = 0.95,
     headShadowPos = Vec3(0, 10, -0.01),
     gagWeaknesses = {GagGlobals.Anvil : 1.2},
-    attacks = ['hangup'], #paradigmshift, quake, spin, writeoff
-    cls = SuitGlobals.CCSecretary
+    attacks = [SA_hangup], #paradigmshift, quake, spin, writeoff
+    cls = SuitGlobals.CC_secretary
 )
 BackStabber = SuitPlan(
     SuitGlobals.BackStabber,
@@ -315,8 +316,8 @@ BackStabber = SuitPlan(
     headShadowScale = 0.9,
     headShadowPos = Vec3(0.005, 10, -0.01),
     gagWeaknesses = {GagGlobals.BigWeight : 1.1},
-    attacks = ['restrainingorder', 'fingerwag'], #guilttrip
-    cls = SuitGlobals.CCMarshal
+    attacks = [SA_restrainingorder, SA_fingerwag], #guilttrip
+    cls = SuitGlobals.CC_marshal
 )
 AmbulanceChaser = SuitPlan(
     SuitGlobals.AmbulanceChaser,
@@ -331,8 +332,8 @@ AmbulanceChaser = SuitPlan(
     headShadowScale = 1.0,
     headShadowPos = Vec3(0, 10, -0.01),
     gagWeaknesses = {GagGlobals.Aoogah : 1.15},
-    attacks = ['redtape', 'hangup'], #rolodex, shake
-    cls = SuitGlobals.CCScout
+    attacks = [SA_redtape, SA_hangup], #rolodex, shake
+    cls = SuitGlobals.CC_scout
 )
 DoubleTalker = SuitPlan(
     SuitGlobals.DoubleTalker,
@@ -347,8 +348,8 @@ DoubleTalker = SuitPlan(
     headShadowName = 'shadow11',
     headShadowScale = 1.0,
     headShadowPos = Vec3(0.005, 10, -0.01),
-    attacks = ['buzzword', 'doubletalk', 'jargon', 'mumbojumbo'], #bouncecheck, rubberstamp
-    cls = SuitGlobals.CCScout
+    attacks = [SA_buzzword, SA_doubletalk, SA_jargon, SA_mumbojumbo], #bouncecheck, rubberstamp
+    cls = SuitGlobals.CC_scout
 )
 Bloodsucker = SuitPlan(
     SuitGlobals.Bloodsucker,
@@ -365,8 +366,8 @@ Bloodsucker = SuitPlan(
     headShadowScale = 1.0,
     headShadowPos = Vec3(0, 10, -0.01),
     gagWeaknesses = {GagGlobals.Cupcake : 1.5},
-    attacks = ['evictionnotice', 'redtape'],#withdrawal, liquidate
-    cls = SuitGlobals.CCMinion
+    attacks = [SA_evictionnotice, SA_redtape],#withdrawal, liquidate
+    cls = SuitGlobals.CC_minion
 )
 BottomFeeder = SuitPlan(
     SuitGlobals.BottomFeeder,
@@ -382,8 +383,8 @@ BottomFeeder = SuitPlan(
     headShadowScale = 1.25,
     headShadowPos = Vec3(0, 10, -0.03),
     gagWeaknesses = {GagGlobals.BananaPeel : 1.3},
-    attacks = ['pickpocket', 'watercooler'], #shred, rubberstamp
-    cls = SuitGlobals.CCMinion
+    attacks = [SA_pickpocket, SA_watercooler], #shred, rubberstamp
+    cls = SuitGlobals.CC_minion
 )
 RobberBaron = SuitPlan(
     SuitGlobals.RobberBaron,
@@ -398,8 +399,8 @@ RobberBaron = SuitPlan(
     headShadowName = 'shadow24',
     headShadowScale = 0.9,
     headShadowPos = Vec3(0, 10, -0.03),
-    attacks = ['teeoff'], #powertrip
-    cls = SuitGlobals.CCSupervisor
+    attacks = [SA_teeoff], #powertrip
+    cls = SuitGlobals.CC_supervisor
 )
 LoanShark = SuitPlan(
     SuitGlobals.LoanShark,
@@ -415,8 +416,8 @@ LoanShark = SuitPlan(
     headShadowScale = 0.95,
     headShadowPos = Vec3(0.02, 10, -0.0175),
     gagWeaknesses = {GagGlobals.Geyser : 1.05},
-    attacks = ['bite', 'chomp', 'playhardball'], #writeoff
-    cls = SuitGlobals.CCEnforcer
+    attacks = [SA_bite, SA_chomp, SA_hardball], #writeoff
+    cls = SuitGlobals.CC_enforcer
 )
 MoneyBags = SuitPlan(
     SuitGlobals.MoneyBags,
@@ -431,8 +432,8 @@ MoneyBags = SuitPlan(
     headShadowScale = 1.0,
     headShadowPos = Vec3(0, 10, -0.06),
     gagWeaknesses = {GagGlobals.Safe : 1.2},
-    attacks = ['marketcrash', 'powertie'], #liquidate
-    cls = SuitGlobals.CCSupervisor
+    attacks = [SA_marketcrash, SA_powertie], #liquidate
+    cls = SuitGlobals.CC_supervisor
 )
 NumberCruncher = SuitPlan(
     SuitGlobals.NumberCruncher,
@@ -446,8 +447,8 @@ NumberCruncher = SuitPlan(
     headShadowName = 'shadow21',
     headShadowScale = 0.95,
     headShadowPos = Vec3(0.0175, 10, -0.015),
-    attacks = ['hangup'], #audit, calculate, crunch, tabulate
-    cls = SuitGlobals.CCMarshal
+    attacks = [SA_hangup], #audit, calculate, crunch, tabulate
+    cls = SuitGlobals.CC_marshal
 )
 BeanCounter = SuitPlan(
     SuitGlobals.BeanCounter,
@@ -462,8 +463,8 @@ BeanCounter = SuitPlan(
     headShadowScale = 1.0,
     headShadowPos = Vec3(0, 10, 0),
     gagWeaknesses = {GagGlobals.Quicksand : 1.25},
-    attacks = ['hangup'], #writeoff, calculate, tabulate, audit
-    cls = SuitGlobals.CCScout
+    attacks = [SA_hangup], #writeoff, calculate, tabulate, audit
+    cls = SuitGlobals.CC_scout
 )
 Tightwad = SuitPlan(
     SuitGlobals.Tightwad,
@@ -478,8 +479,8 @@ Tightwad = SuitPlan(
     headShadowScale = 1.1,
     headShadowPos = Vec3(0, 10, -0.04),
     gagWeaknesses = {GagGlobals.Sandbag : 1.3},
-    attacks = ['glowerpower', 'fingerwag'], #bouncecheck, freezeassets, fired
-    cls = SuitGlobals.CCEnforcer
+    attacks = [SA_glowerpower, SA_fingerwag], #bouncecheck, freezeassets, fired
+    cls = SuitGlobals.CC_enforcer
 )
 PennyPincher = SuitPlan(
     SuitGlobals.PennyPincher,
@@ -494,8 +495,8 @@ PennyPincher = SuitPlan(
     headShadowName = 'shadow18',
     headShadowScale = 1.05,
     headShadowPos = Vec3(0, 10, 0),
-    attacks = ['fingerwag'], #freezeassets, bouncecheck
-    cls = SuitGlobals.CCSecretary
+    attacks = [SA_fingerwag], #freezeassets, bouncecheck
+    cls = SuitGlobals.CC_secretary
 )
 ShortChange = SuitPlan(
     SuitGlobals.ShortChange,
@@ -510,8 +511,8 @@ ShortChange = SuitPlan(
     headShadowScale = 1.2,
     headShadowPos = Vec3(0, 10, -0.01),
     gagWeaknesses = {GagGlobals.FlowerPot : 1.25},
-    attacks = ['clipontie', 'pickpocket', 'watercooler'], #bouncecheck
-    cls = SuitGlobals.CCMinion
+    attacks = [SA_clipontie, SA_pickpocket, SA_watercooler], #bouncecheck
+    cls = SuitGlobals.CC_minion
 )
 MrHollywood = SuitPlan(
     SuitGlobals.MrHollywood,
@@ -526,8 +527,8 @@ MrHollywood = SuitPlan(
     headShadowScale = 0.9,
     headShadowPos = Vec3(0.0025, 10, -0.03),
     gagWeaknesses = {GagGlobals.WeddingCake : 1.1},
-    attacks = ['razzledazzle'], #powertrip
-    cls = SuitGlobals.CCSupervisor
+    attacks = [SA_razzledazzle], #powertrip
+    cls = SuitGlobals.CC_supervisor
 )
 TheMingler = SuitPlan(
     SuitGlobals.TheMingler,
@@ -543,8 +544,8 @@ TheMingler = SuitPlan(
     headShadowScale = 1.0,
     headShadowPos = Vec3(0, 10, -0.02),
     gagWeaknesses = {GagGlobals.BirthdayCake : 1.15},
-    attacks = ['teeoff', 'schmooze', 'buzzword'], #paradigmshift, powertrip
-    cls = SuitGlobals.CCMarshal
+    attacks = [SA_teeoff, SA_schmooze, SA_buzzword], #paradigmshift, powertrip
+    cls = SuitGlobals.CC_marshal
 )
 TwoFace = SuitPlan(
     SuitGlobals.TwoFace,
@@ -558,8 +559,8 @@ TwoFace = SuitPlan(
     headShadowName = 'shadow30',
     headShadowScale = 0.95,
     headShadowPos = Vec3(0.005, 10, -0.01),
-    attacks = ['hangup', 'razzledazzle', 'redtape', 'evileye'],
-    cls = SuitGlobals.CCSecretary
+    attacks = [SA_hangup, SA_razzledazzle, SA_redtape, SA_evileye],
+    cls = SuitGlobals.CC_secretary
 )
 MoverShaker = SuitPlan(
     SuitGlobals.MoverShaker,
@@ -574,8 +575,8 @@ MoverShaker = SuitPlan(
     headShadowScale = 0.93,
     headShadowPos = Vec3(0.005, 10, -0.01),
     gagWeaknesses = {GagGlobals.CreamPieSlice : 1.3},
-    attacks = ['halfwindsor'], #brainstorm, shake, quake, tremor
-    cls = SuitGlobals.CCScout
+    attacks = [SA_halfwindsor], #brainstorm, shake, quake, tremor
+    cls = SuitGlobals.CC_scout
 )
 GladHander = SuitPlan(
     SuitGlobals.GladHander,
@@ -590,8 +591,8 @@ GladHander = SuitPlan(
     headShadowScale = 1.1,
     headShadowPos = Vec3(0, 10, -0.04),
     gagWeaknesses = {GagGlobals.WholeFruitPie : 1.6},
-    attacks = ['fountainpen', 'filibuster', 'schmooze'], #rubberstamp
-    cls = SuitGlobals.CCEnforcer
+    attacks = [SA_fountainpen, SA_filibuster, SA_schmooze], #rubberstamp
+    cls = SuitGlobals.CC_enforcer
 )
 NameDropper = SuitPlan(
     SuitGlobals.NameDropper,
@@ -607,8 +608,8 @@ NameDropper = SuitPlan(
     headShadowScale = 1.0,
     headShadowPos = Vec3(0, 10, 0),
     gagWeaknesses = {GagGlobals.Anvil : 1.3},
-    attacks = ['razzledazzle', 'pickpocket'], #synergy, rolodex
-    cls = SuitGlobals.CCScout
+    attacks = [SA_razzledazzle, SA_pickpocket], #synergy, rolodex
+    cls = SuitGlobals.CC_scout
 )
 Telemarketer = SuitPlan(
     SuitGlobals.Telemarketer,
@@ -623,8 +624,8 @@ Telemarketer = SuitPlan(
     headShadowScale = 1.0,
     headShadowPos = Vec3(0, 10, 0),
     gagWeaknesses = {GagGlobals.Whistle : 1.2},
-    attacks = ['clipontie', 'pickpocket', 'doubletalk'], #rolodex
-    cls = SuitGlobals.CCSecretary
+    attacks = [SA_clipontie, SA_pickpocket, SA_doubletalk], #rolodex
+    cls = SuitGlobals.CC_secretary
 )
 ColdCaller = SuitPlan(
     SuitGlobals.ColdCaller,
@@ -641,8 +642,8 @@ ColdCaller = SuitPlan(
     headShadowScale = 1.15,
     headShadowPos = Vec3(0, 10, -0.01),
     gagWeaknesses = {GagGlobals.SquirtFlower : 1.4},
-    attacks = ['doubletalk'], #hotair, poundkey, freezeassets
-    cls = SuitGlobals.CCMinion
+    attacks = [SA_doubletalk], #hotair, poundkey, freezeassets
+    cls = SuitGlobals.CC_minion
 )
 # Bosses:
 VicePresident = SuitPlan(

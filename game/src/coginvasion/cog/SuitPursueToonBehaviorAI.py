@@ -157,7 +157,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
             return task.done
 
         attack = SuitUtils.attack(self.suit, self.target)
-        timeout = SuitAttacks.SuitAttackLengths[attack]
+        timeout = SuitAttacks.SuitAttacks.attack2attackClass[attack].length
 
         task.delayTime = timeout + (self.suit.getLevel() / self.AttackCooldownFactor)
         return task.again

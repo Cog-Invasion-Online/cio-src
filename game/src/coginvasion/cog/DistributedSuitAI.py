@@ -467,12 +467,9 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
     def addBehavior(self, behavior, priority):
         self.requestedBehaviors.append([behavior, priority])
 
-    def toonHitByWeapon(self, weaponId, avId):
-        weapon = SuitAttacks.SuitAttackLengths.keys()[weaponId]
-        if not weapon in ["pickpocket", "fountainpen", "hangup", "buzzword", "razzledazzle",
-                        "jargon", "mumbojumbo", 'doubletalk', 'schmooze', 'fingerwag', 'filibuster']:
-            self.d_handleWeaponTouch()
-        dmg = int(self.getMaxHealth() / SuitAttacks.SuitAttackDamageFactors[weapon])
+    def toonHitByWeapon(self, weaponId, avId, distance):
+        weapon = SuitAttacks.SuitAttacks.attack2attackClass[weaponId]
+        dmg = CIGlobals.calcAttackDamage(distance, weapon.baseDamage, weapon.maxDist)
 
         # Factor in class damage modifier
         dmg *= self.suitPlan.getCogClassAttrs().dmgMod
@@ -480,10 +477,6 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         if dmg == 0:
             # Prevents level 1 and 2 Cogs from doing 0 damage.
             dmg = 1
-
-        # Temporary way to nerf VP to Level 12 damage.
-        if self.suitPlan.getName() == SuitGlobals.VicePresident:
-            dmg = int(200 / SuitAttacks.SuitAttackDamageFactors[weapon])
 
         toon = self.air.doId2do.get(avId, None)
         if toon:
@@ -495,10 +488,8 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             self.handleAvatarDefeat(toon)
 
     def turretHitByWeapon(self, weaponId, avId):
-        weapon = SuitAttacks.SuitAttackLengths.keys()[weaponId]
-        if not weapon in ["pickpocket", "fountainpen", "hangup"]:
-            self.d_handleWeaponTouch()
-        dmg = int(self.maxHealth / SuitAttacks.SuitAttackDamageFactors[weapon])
+        weapon = SuitAttacks.SuitAttacks.attack2attackClass[weaponId]
+        dmg = CIGlobals.calcAttackDamage(10.0, weapon.baseDamage, weapon.maxDist)
         turret = self.air.doId2do.get(avId, None)
         if turret:
             turret.b_setHealth(turret.getHealth() - 1)

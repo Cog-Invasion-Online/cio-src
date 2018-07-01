@@ -8,84 +8,27 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.core import NodePath, Vec3, VBase4, Point3, BitMask32, Vec4, VBase3
+from panda3d.bullet import BulletSphereShape, BulletGhostNode
+
+from direct.actor.Actor import Actor
+from direct.showutil.Rope import Rope
+from direct.task import Task
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval, SoundInterval
 from direct.interval.IntervalGlobal import ActorInterval, Parallel, LerpScaleInterval, LerpHprInterval
 from direct.interval.ProjectileInterval import ProjectileInterval
 from direct.showbase.DirectObject import DirectObject
 from direct.distributed import DelayDelete
-from panda3d.core import NodePath, Vec3, VBase4, Point3, BitMask32, Vec4, VBase3
-from panda3d.bullet import BulletSphereShape, BulletGhostNode
+
 from src.coginvasion.toon import ParticleLoader
-from direct.actor.Actor import Actor
 from src.coginvasion.globals import CIGlobals
-from direct.showutil.Rope import Rope
-from direct.task import Task
-import SuitGlobals
 from src.coginvasion.phys.WorldCollider import WorldCollider
 from src.coginvasion.phys import PhysicsUtils
+from SuitAttackGlobals import *
+import SuitGlobals
 
 import random
-
-SuitAttackLengths = {"canned": 4,
-                    "clipontie": 4,
-                    "sacked": 4,
-                    "glowerpower": 2.5,
-                    "playhardball": 4,
-                    "marketcrash": 4,
-                    "pickpocket": 3,
-                    "fountainpen": 3,
-                    "hangup": 5,
-                    'redtape': 4,
-                    'powertie': 4,
-                    'halfwindsor': 4,
-                    "bite": 4,
-                    "chomp": 4,
-                    'evictionnotice': 4,
-                    'restrainingorder': 4,
-                    'razzledazzle': 3.5,
-                    'buzzword': 6,
-                    'jargon': 6,
-                    'mumbojumbo': 6,
-                    'filibuster': 6,
-                    'doubletalk': 6,
-                    'schmooze': 6,
-                    'fingerwag': 6,
-                    'teeoff': 7,
-                    'evileye': 7,
-                    'watercooler': 7
-                    }
-SuitAttackDamageFactors = {"canned": 5.5,
-                "clipontie": 13,
-                "sacked": 7,
-                "glowerpower": 5.5,
-                "playhardball": 5.5,
-                "marketcrash": 8,
-                "pickpocket": 10,
-                "fountainpen": 9,
-                "hangup": 7,
-                'redtape': 8,
-                'powertie': 9,
-                'halfwindsor': 11,
-                "bite": 7,
-                "chomp": 5.5,
-                'evictionnotice': 9,
-                'restrainingorder': 8,
-                'razzledazzle': 9,
-                'buzzword': 10,
-                'jargon': 9,
-                'mumbojumbo': 9.5,
-                'filibuster': 9.5,
-                'doubletalk': 10,
-                'schmooze': 8,
-                'fingerwag': 8,
-                'teeoff': 10,
-                'evileye': 8,
-                'watercooler': 12
-                }
-    
-THROW_ATTACK_IVAL_TIME = 0.75
-GLOWER_POWER_IVAL_TIME = 0.5
 
 def setEffectTexture(effect, texture, color):
     particles = effect.getParticlesNamed('particles-1')
@@ -117,17 +60,18 @@ def loadSplat(color):
 
 class Attack(DirectObject):
     notify = directNotify.newCategory("Attack")
-    attack = 'attack'
+    attack = SA_none
     attackName = 'Cog Attack'
+    baseDamage = 10.0
+    maxDist = 40.0
+    length = 5.0
+    taunts = ["Take a memo on this!"]
 
     def __init__(self, attacksClass, suit):
         self.attacksClass = attacksClass
         self.target = self.attacksClass.target
         self.suit = suit
         self.suitTrack = None
-        self.attackName2attackId = {}
-        for index in range(len(self.attacksClass.attackName2attackClass.keys())):
-            self.attackName2attackId[SuitAttackLengths.keys()[index]] = index
 
     def startSuitTrack(self, ts):
         self.suitTrack.setDoneEvent(self.suitTrack.getName())
@@ -137,7 +81,9 @@ class Attack(DirectObject):
 
     def announceHit(self, foo = None):
         if self.suit:
-            self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
+            self.suit.sendUpdate('toonHitByWeapon', [self.attack, base.localAvatar.doId,
+                                                     base.localAvatar.getDistance(self.suit)])
+        base.localAvatar.handleSuitAttack(self.attack)
             
     def lockOnToonTask(self, task):
         if (not CIGlobals.isNodePathOk(self.suit) or
@@ -155,9 +101,6 @@ class Attack(DirectObject):
 
     def doAttack(self, ts = 0.0):
         pass
-
-    def getAttackId(self, attackStr):
-        return self.attackName2attackId[attackStr]
 
     def finishedAttack(self):
         messenger.send(self.attacksClass.doneEvent)
@@ -178,14 +121,13 @@ class Attack(DirectObject):
         self.suit = None
         self.target = None
         self.attacksClass = None
-        self.attackName2attackId = None
 
 from SuitType import SuitType
 
 class ThrowAttack(Attack):
     notify = directNotify.newCategory("ThrowAttack")
-    attack = 'throw'
     attackName = 'Throw Attack'
+    length = 4
 
     # The frame of the throw animation at which the projectile is released.
     suitType2releaseFrame = {
@@ -195,6 +137,7 @@ class ThrowAttack(Attack):
     }
 
     speed = 1.5
+    throwTime = 0.75
 
     def __init__(self, attacksClass, suit):
         Attack.__init__(self, attacksClass, suit)
@@ -208,11 +151,10 @@ class ThrowAttack(Attack):
         self.theActorIval = None
 
     def handleWeaponCollision(self, entry):
-        if self.suit:
-            if PhysicsUtils.isLocalAvatar(entry):
-                # We hit the local avatar.
-                self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
-                return
+        if PhysicsUtils.isLocalAvatar(entry):
+            # We hit the local avatar.
+            self.announceHit()
+            return
 
         # We hit a wall or something, stop the projectile.
         self.handleWeaponTouch()
@@ -233,7 +175,7 @@ class ThrowAttack(Attack):
         self.weapon.setHpr(weapon_h, weapon_p, weapon_r)
         self.weapon.setPos(weapon_x, weapon_y, weapon_z)
         
-        self.collider = WorldCollider(self.attack, collsphere_radius, mask = CIGlobals.WorldGroup | CIGlobals.LocalAvGroup,
+        self.collider = WorldCollider(str(self.attack), collsphere_radius, mask = CIGlobals.WorldGroup | CIGlobals.LocalAvGroup,
                                       myMask = CIGlobals.WeaponGroup, startNow = False,
                                       exclusions = [self.suit])
         self.collider.reparentTo(self.weapon)
@@ -273,7 +215,7 @@ class ThrowAttack(Attack):
             self.weapon.wrtReparentTo(render)
             self.weapon.setHpr(Vec3(0, 0, 0))
 
-        if not self.attack in ['glowerpower']:
+        if not self.attack in [SA_glowerpower]:
             parent = self.suit.find('**/joint_Rhold')
         else:
             parent = self.suit.find('**/joint_head')
@@ -285,14 +227,14 @@ class ThrowAttack(Attack):
         pathNP.setScale(render, 1.0)
         pathNP.setPos(0, 50, 0)
 
-        if self.attack in ['clipontie', 'powertie', 'halfwindsor']:
+        if self.attack in [SA_clipontie, SA_powertie, SA_halfwindsor]:
             self.weapon.setHpr(pathNP.getHpr(render))
 
         self.throwTrajectory = LerpPosInterval(
             self.weapon,
             startPos = parent.getPos(render),
             pos = pathNP.getPos(render),
-            duration = THROW_ATTACK_IVAL_TIME
+            duration = self.throwTime
         )
 
         self.throwTrajectory.start()
@@ -342,8 +284,19 @@ class ThrowAttack(Attack):
 
 class CannedAttack(ThrowAttack):
     notify = directNotify.newCategory("CannedAttack")
-    attack = 'canned'
+    attack = SA_canned
     attackName = 'Canned'
+    baseDamage = 22.0
+    taunts = ['Do you like it out of the can?',
+            '"Can" you handle this?',
+            "This one's fresh out of the can!",
+            'Ever been attacked by canned goods before?',
+            "I'd like to donate this canned good to you!",
+            'Get ready to "Kick the can"!',
+            'You think you "can", you think you "can".',
+            "I'll throw you in the can!",
+            "I'm making me a can o' toon-a!",
+            "You don't taste so good out of the can."]
 
     def doAttack(self, ts = 0):
         ThrowAttack.doAttack(self, "phase_5/models/props/can.bam", 15, 'doCannedAttack',
@@ -361,8 +314,21 @@ class CannedAttack(ThrowAttack):
 
 class HardballAttack(ThrowAttack):
     notify = directNotify.newCategory("HardballAttack")
-    attack = 'playhardball'
+    attack = SA_hardball
     attackName = 'Play Hardball'
+    baseDamage = 25.0
+    taunts = ['So you wanna play hardball?',
+            "You don't wanna play hardball with me.",
+            'Batter up!',
+            'Hey batter, batter!',
+            "And here's the pitch...",
+            "You're going to need a relief pitcher.",
+            "I'm going to knock you out of the park.",
+            "Once you get hit, you'll run home.",
+            'This is your final inning!',
+            "You can't play with me!",
+            "I'll strike you out.",
+            "I'm throwing you a real curve ball!"]
 
     def doAttack(self, ts = 0):
         ThrowAttack.doAttack(self, "phase_5/models/props/baseball.bam", 10, 'doHardballAttack',
@@ -380,8 +346,21 @@ class HardballAttack(ThrowAttack):
 
 class ClipOnTieAttack(ThrowAttack):
     notify = directNotify.newCategory("ClipOnTieAttack")
-    attack = 'clipontie'
+    attack = SA_clipontie
     attackName = 'Clip-On-Tie'
+    baseDamage = 7.0
+    taunts = ['Better dress for our meeting.',
+            "You can't go OUT without your tie.",
+            'The best dressed Cogs wear them.',
+            'Try this on for size.',
+            'You should dress for success.',
+            'No tie, no service.',
+            'Do you need help putting this on?',
+            'Nothing says powerful like a good tie.',
+            "Let's see if this fits.",
+            'This is going to choke you up.',
+            "You'll want to dress up before you go OUT.",
+            "I think I'll tie you up."]
 
     def doAttack(self, ts = 0):
         ThrowAttack.doAttack(self, "phase_3.5/models/props/clip-on-tie-mod.bam", 1, 'doClipOnTieAttack',
@@ -393,8 +372,20 @@ class ClipOnTieAttack(ThrowAttack):
 
 class MarketCrashAttack(ThrowAttack):
     notify = directNotify.newCategory("MarketCrashAttack")
-    attack = 'marketcrash'
+    attack = SA_marketcrash
     attackName = 'Market Crash'
+    baseDamage = 12.0
+    taunts = ["I'm going to crash your party.",
+            "You won't survive the crash.",
+            "I'm more than the market can bear.",
+            "I've got a real crash course for you!",
+            "Now I'll come crashing down.",
+            "I'm a real bull in the market.",
+            'Looks like the market is going down.',
+            'You had better get out quick!',
+            'Sell! Sell! Sell!',
+            'Shall I lead the recession?',
+            "Everybody's getting out, shouldn't you?"]
 
     def doAttack(self, ts = 0):
         ThrowAttack.doAttack(self, "phase_5/models/props/newspaper.bam", 3, 'doMarketCrashAttack',
@@ -407,8 +398,19 @@ class MarketCrashAttack(ThrowAttack):
 
 class SackedAttack(ThrowAttack):
     notify = directNotify.newCategory("SackedAttack")
-    attack = 'sacked'
+    attack = SA_sacked
     attackName = 'Sacked'
+    baseDamage = 16.0
+    taunts = ["Looks like you're getting sacked.",
+            "This one's in the bag.",
+            "You've been bagged.",
+            'Paper or plastic?',
+            'My enemies shall be sacked!',
+            'I hold the Toontown record in sacks per game.',
+            "You're no longer wanted around here.",
+            "Your time is up around here, you're being sacked!",
+            'Let me bag that for you.',
+            'No defense can match my sack attack!']
 
     def doAttack(self, ts = 0):
         ThrowAttack.doAttack(self, "phase_5/models/props/sandbag-mod.bam", 2, 'doSackedAttack',
@@ -421,9 +423,22 @@ class SackedAttack(ThrowAttack):
 
 class GlowerPowerAttack(Attack):
     notify = directNotify.newCategory("GlowerPowerAttack")
-    attack = 'glowerpower'
+    attack = SA_glowerpower
     attackName = 'Glower Power'
     knifeScale = 0.4
+    baseDamage = 28.0
+    length = 2.5
+    taunts = ['You looking at me?',
+            "I'm told I have very piercing eyes.",
+            'I like to stay on the cutting edge.',
+            "Jeepers, Creepers, don't you love my peepers?",
+            "Here's looking at you kid.",
+            "How's this for expressive eyes?",
+            'My eyes are my strongest feature.',
+            'The eyes have it.',
+            'Peeka-boo, I see you.',
+            'Look into my eyes...',
+            'Shall we take a peek at your future?']
 
     eyePosPoints = {
         SuitGlobals.TheBigCheese: [Point3(0.6, 4.5, 6), Point3(-0.6, 4.5, 6)],
@@ -441,7 +456,6 @@ class GlowerPowerAttack(Attack):
     def cleanup(self):
         Attack.cleanup(self)
         if self.collNP:
-            print "cleanup: removing the GlowerPowerAttack ghost node"
             base.physicsWorld.remove(self.collNP.node())
             self.collNP.removeNode()
             self.collNP = None
@@ -503,8 +517,24 @@ class GlowerPowerAttack(Attack):
 
 class PickPocketAttack(Attack):
     notify = directNotify.newCategory("PickPocketAttack")
-    attack = 'pickpocket'
+    attack = SA_pickpocket
     attackName = 'Pick Pocket'
+    length = 3
+    baseDamage = 3.0
+    taunts = ['Let me check your valuables.',
+            "Hey, what's that over there?",
+            'Like taking candy from a baby.',
+            'What a steal.',
+            "I'll hold this for you.",
+            'Watch my hands at all times.',
+            'The hand is quicker than the eye.',
+            "There's nothing up my sleeve.",
+            'The management is not responsible for lost items.',
+            "Finder's keepers.",
+            "You'll never see it coming.",
+            'One for me, none for you.',
+            "Don't mind if I do.",
+            "You won't be needing this..."]
 
     def __init__(self, attacksClass, suit):
         Attack.__init__(self, attacksClass, suit)
@@ -540,7 +570,7 @@ class PickPocketAttack(Attack):
         if shouldDamage:
             self.playWeaponSound()
             self.dollar.reparentTo(self.suit.find('**/joint_Rhold'))
-            self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
+            self.announceHit()
 
     def playWeaponSound(self):
         self.pickSfx = base.audio3d.loadSfx("phase_5/audio/sfx/SA_pick_pocket.ogg")
@@ -558,8 +588,21 @@ class PickPocketAttack(Attack):
 
 class FountainPenAttack(Attack):
     notify = directNotify.newCategory("FountainPenAttack")
-    attack = 'fountainpen'
+    attack = SA_fountainpen
     attackName = 'Fountain Pen'
+    length = 3
+    baseDamage = 8.0
+    taunts = ['This is going to leave a stain.',
+            "Let's ink this deal.",
+            'Be prepared for some permanent damage.',
+            "You're going to need a good dry cleaner.",
+            'You should change.',
+            'This fountain pen has such a nice font.',
+            "Here, I'll use my pen.",
+            'Can you read my writing?',
+            'I call this the plume of doom.',
+            "There's a blot on your performance.",
+            "Don't you hate when this happens?"]
 
     def __init__(self, attacksClass, suit):
         Attack.__init__(self, attacksClass, suit)
@@ -642,8 +685,7 @@ class FountainPenAttack(Attack):
         self.spray.lookAt(self.target.find("**/def_head"))
 
     def handleSprayCollision(self, entry):
-        if self.suit:
-            self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
+        self.announceHit()
         self.sprayScaleIval.pause()
 
     def playWeaponSound(self):
@@ -676,8 +718,22 @@ class FountainPenAttack(Attack):
 
 class HangUpAttack(Attack):
     notify = directNotify.newCategory("HangUpAttack")
-    attack = 'hangup'
+    attack = SA_hangup
     attackName = 'Hang Up'
+    baseDamage = 13.0
+    length = 5
+    taunts = ["You've been disconnected.",
+            'Good bye!',
+            "It's time I end our connection.",
+            " ...and don't call back!",
+            'Click!',
+            'This conversation is over.',
+            "I'm severing this link.",
+            'I think you have a few hang ups.',
+            "It appears you've got a weak link.",
+            'Your time is up.',
+            'I hope you receive this loud and clear.',
+            'You got the wrong number.']
 
     def __init__(self, attacksClass, suit):
         Attack.__init__(self, attacksClass, suit)
@@ -777,8 +833,7 @@ class HangUpAttack(Attack):
         self.suitTrack.start(ts)
 
     def handleCollision(self, entry):
-        if self.suit:
-            self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
+        self.announceHit()
 
     def shootOut(self):
         pathNode = NodePath('path')
@@ -819,127 +874,21 @@ class HangUpAttack(Attack):
             self.phoneSfx.stop()
             self.phoneSfx = None
 
-class BounceCheckAttack(ThrowAttack):
-    notify = directNotify.newCategory('BounceCheckAttack')
-    MaxBounces = 3
-    WeaponHitDistance = 0.5
-    attack = 'bouncecheck'
-    attackName = 'Bounce Check'
-
-    def __init__(self, attacksClass, suit):
-        ThrowAttack.__init__(self, attacksClass, suit)
-        self.attack = 'bouncecheck'
-        self.bounceSound = None
-        self.numBounces = 0
-
-    def __pollCheckDistance(self, task):
-        if base.localAvatar.getDistance(self.weapon) <= self.WeaponHitDistance:
-            self.handleWeaponCollision(None)
-            return Task.done
-        else:
-            return Task.cont
-
-    def loadAttack(self):
-        self.weapon = loader.loadModel('phase_5/models/props/bounced-check.bam')
-        self.weapon.setScale(10)
-        self.weapon.setTwoSided(1)
-        self.bounceSound = base.audio3d.loadSfx('phase_5/audio/sfx/SA_bounce_check_bounce.ogg')
-        base.audio3d.attachSoundToObject(self.bounceSound, self.suit)
-        cSphere = CollisionSphere(0, 0, 0, 0.1)
-        cSphere.setTangible(0)
-        if hasattr(self, 'uniqueName'):
-            name = self.uniqueName('bounced_check_collision')
-        else:
-            name = 'bounced_check_collision'
-        cNode = CollisionNode(name)
-        cNode.addSolid(cSphere)
-        cNode.setFromCollideMask(CIGlobals.FloorBitmask)
-        cNP = self.weapon.attachNewNode(cNode)
-        cNP.setCollideMask(BitMask32(0))
-        self.event = CollisionHandlerEvent()
-        self.event.setInPattern('%fn-into')
-        self.event.setOutPattern('%fn-out')
-        base.cTrav.addCollider(cNP, self.event)
-        self.wsnp = cNP
-        self.wsnp.show()
-
-    def doAttack(self, ts = 0):
-        ThrowAttack.doAttack(self, ts)
-        self.loadAttack()
-        if hasattr(self, 'uniqueName'):
-            name = self.uniqueName('doBounceCheckAttack')
-        else:
-            name = 'doBounceCheckAttack'
-        self.suitTrack = Sequence(name = name)
-        self.weapon.reparentTo(self.suit.find('**/joint_Rhold'))
-        if self.suit.suitPlan.getSuitType() == "C":
-            self.suitTrack.append(Wait(2.3))
-        else:
-            self.suitTrack.append(Wait(3))
-        self.suit.play('throw-paper')
-        self.suitTrack.append(Func(self.throwObject))
-        self.suitTrack.start(ts)
-
-    def throwObject(self):
-        ThrowAttack.throwObject(self)
-        taskMgr.add(self.__pollCheckDistance, "pollCheckDistance")
-        self.__doThrow(0)
-
-    def __doThrow(self, alreadyThrown):
-        self.weapon.setScale(1)
-        pathNP = NodePath('throwPath')
-        if not alreadyThrown:
-            pathNP.reparentTo(self.suit)
-        else:
-            pathNP.reparentTo(self.weapon)
-        pathNP.setScale(render, 1.0)
-        pathNP.setPos(0, 30, -100)
-        pathNP.setHpr(90, -90, 90)
-
-        if self.throwTrajectory:
-            self.throwTrajectory.pause()
-            self.throwTrajectory = None
-
-        if alreadyThrown:
-            startPos = self.weapon.getPos(base.render)
-            gravity = 0.7
-        else:
-            gravity = 0.7
-            startPos = self.suit.find('**/joint_Rhold').getPos(base.render)
-
-        self.throwTrajectory = ProjectileInterval(
-            self.weapon,
-            startPos = startPos,
-            endPos = pathNP.getPos(base.render),
-            gravityMult = gravity,
-            duration = 3.0
-        )
-        self.throwTrajectory.start()
-        self.weapon.setScale(10)
-        self.weapon.reparentTo(render)
-        self.weapon.setHpr(pathNP.getHpr(render))
-        self.weapon_state = 'released'
-        self.acceptOnce(self.wsnp.node().getName() + "-into", self.__handleHitFloor)
-
-    def __handleHitFloor(self, entry):
-        self.numBounces += 1
-        # Bounce again if we still have bounces left.
-        if self.numBounces >= self.MaxBounces:
-            self.cleanup()
-            return
-        base.playSfx(self.bounceSound)
-        self.__doThrow(1)
-
-    def cleanup(self):
-        taskMgr.remove("pollCheckDistance")
-        self.ignore(self.wsnp.node().getName() + "-into")
-        self.bounceSound = None
-        ThrowAttack.cleanup(self)
-
 class RedTapeAttack(ThrowAttack):
     notify = directNotify.newCategory('RedTapeAttack')
-    attack = 'redtape'
+    attack = SA_redtape
     attackName = 'Red Tape'
+    baseDamage = 10.0
+    taunts = ['This should wrap things up.',
+             "I'm going to tie you up for awhile.",
+             "You're on a roll.",
+             'See if you can cut through this.',
+             'This will get sticky.',
+             "Hope you're claustrophobic.",
+             "I'll make sure you stick around.",
+             'Let me keep you busy.',
+             'Just try to unravel this.',
+             'I want this meeting to stick with you.']
 
     def doAttack(self, ts = 0):
         ThrowAttack.doAttack(self, "phase_5/models/props/redtape.bam", 1, 'doRedTapeAttack',
@@ -958,8 +907,19 @@ class RedTapeAttack(ThrowAttack):
 
 class PowerTieAttack(ThrowAttack):
     notify = directNotify.newCategory('PowerTieAttack')
-    attack = 'powertie'
+    attack = SA_powertie
     attackName = 'Power Tie'
+    baseDamage = 20.0
+    taunts = ["I'll call later, you looked tied up.",
+            "Are you ready to tie die?",
+            "Ladies and gentlemen, it's a tie!",
+            "You had better learn how to tie.",
+            "I'll have you tongue-tied!",
+            "This is the worst tie you'll ever get!",
+            "Can you feel the power?",
+            "My powers are far too great for you!",
+            "I've got the power!",
+            "By the powers vested in me, I'll tie you up."]
 
     def doAttack(self, ts = 0):
         ThrowAttack.doAttack(self, "phase_5/models/props/power-tie.bam", 4, 'doPowerTieAttack',
@@ -971,8 +931,18 @@ class PowerTieAttack(ThrowAttack):
 
 class HalfWindsorAttack(ThrowAttack):
     notify = directNotify.newCategory('HalfWindsorAttack')
-    attack = 'halfwindsor'
+    attack = SA_halfwindsor
     attackName = 'Half Windsor'
+    baseDamage = 15.0
+    taunts = ["This is the fanciest tie you'll ever see!",
+            'Try not to get too winded.',
+            "This isn't even half the trouble you're in.",
+            "You're lucky I don't have a whole windsor.",
+            "You can't afford this tie.",
+            "I bet you've never even SEEN a half windsor!",
+            'This tie is out of your league.',
+            "I shouldn't even waste this tie on you.",
+            "You're not even worth half of this tie!"]
 
     def doAttack(self, ts = 0):
         ThrowAttack.doAttack(self, "phase_5/models/props/half-windsor.bam", 6, 'doHalfWindsorAttack',
@@ -985,8 +955,19 @@ class HalfWindsorAttack(ThrowAttack):
 
 class BiteAttack(ThrowAttack):
     notify = directNotify.newCategory('BiteAttack')
-    attack = 'bite'
+    attack = SA_bite
     attackName = 'Bite'
+    baseDamage = 19.0
+    taunts = ['Would you like a bite?',
+          'Try a bite of this!',
+          "You're biting off more than you can chew.",
+          'My bite is bigger than my bark.',
+          'Bite down on this!',
+          'Watch out, I may bite.',
+          "I don't just bite when I'm cornered.",
+          "I'm just gonna grab a quick bite.",
+          "I haven't had a bite all day.",
+          'I just want a bite.  Is that too much to ask?']
 
     def doAttack(self, ts = 0):
         ThrowAttack.doAttack(self, "phase_5/models/props/teeth-mod.bam", 6, 'doBiteAttack',
@@ -1000,8 +981,16 @@ class BiteAttack(ThrowAttack):
 
 class ChompAttack(ThrowAttack):
     notify = directNotify.newCategory('ChompAttack')
-    attack = 'chomp'
+    attack = SA_chomp
     attackName = 'Chomp'
+    baseDamage = 25.0
+    taunts = ['Take a look at these chompers!',
+           'Chomp, chomp, chomp!',
+           "Here's something to chomp on.",
+           'Looking for something to chomp on?',
+           "Why don't you chomp on this?",
+           "I'm going to have you for dinner.",
+           'I love to feed on Toons!']
 
     def doAttack(self, ts = 0):
         ThrowAttack.doAttack(self, "phase_5/models/props/teeth-mod.bam", 6, 'doChompAttack',
@@ -1015,8 +1004,20 @@ class ChompAttack(ThrowAttack):
 
 class EvictionNoticeAttack(ThrowAttack):
     notify = directNotify.newCategory("EvictionNoticeAttack")
-    attack = 'evictionnotice'
+    attack = SA_evictionnotice
     attackName = 'Eviction Notice'
+    baseDamage = 8.0
+    taunts = ["It's moving time.",
+            'Pack your bags, Toon.',
+            'Time to make some new living arrangements.',
+            'Consider yourself served.',
+            "You're behind on your lease.",
+            'This will be extremely unsettling.',
+            "You're about to be uprooted.",
+            "I'm going to send you packing.",
+            "You're out of place.",
+            'Prepare to be relocated.',
+            "You're in a hostel position."]
 
     def doAttack(self, ts = 0):
         ThrowAttack.doAttack(self, "phase_3.5/models/props/shredder-paper-mod.bam", 1, 'doEvictionNoticeAttack',
@@ -1028,15 +1029,27 @@ class EvictionNoticeAttack(ThrowAttack):
 
 class RestrainingOrderAttack(EvictionNoticeAttack):
     notify = directNotify.newCategory('RestrainingOrderAttack')
-    attack = 'restrainingorder'
+    attack = SA_restrainingorder
     attackName = 'Restraining Order'
+    baseDamage = 14.0
+    taunts = ['You should show a little restraint.',
+            "I'm slapping you with a restraining order!",
+            "You can't come within five feet of me.",
+            'Perhaps you better keep your distance.',
+            'You should be restrained.',
+            'Cogs! Restrain that Toon!',
+            'Try and restrain yourself.',
+            "I hope I'm being too much of a restraint on you.",
+            'See if you can lift these restraints!',
+            "I'm ordering you to restrain!",
+            "Why don't we start with basic restraining?"]
 
 class ParticleAttack(Attack):
     notify = directNotify.newCategory('ParticleAttack')
-    attack = 'particleattack'
     attackName = 'Particle Attack'
     particleIvalDur = 1
     shooterDistance = 50
+    length = 6.0
 
     def __init__(self, attacksClass, suit):
         Attack.__init__(self, attacksClass, suit)
@@ -1053,8 +1066,7 @@ class ParticleAttack(Attack):
         pass
 
     def handleCollision(self, entry):
-        if self.suit:
-            self.suit.sendUpdate('toonHitByWeapon', [self.getAttackId(self.attack), base.localAvatar.doId])
+        self.announceHit()
 
     def doAttack(self, particlePaths, track_name, particleCollId, animation_name,
                 delayUntilRelease, animationSpeed = 1, handObjPath = None, handObjParent = None,
@@ -1113,7 +1125,7 @@ class ParticleAttack(Attack):
                 else:
                     particle.start(self.suit)
                 particle.lookAt(pathNP)
-                if self.attack == 'razzledazzle':
+                if self.attack == SA_razzledazzle:
                     particle.setP(particle, 90)
 
             if onlyMoveColl:
@@ -1171,9 +1183,23 @@ class ParticleAttack(Attack):
 
 class RazzleDazzleAttack(ParticleAttack):
     notify = directNotify.newCategory('RazzleDazzleAttack')
-    attack = 'razzledazzle'
+    attack = SA_razzledazzle
     attackName = 'Razzle Dazzle'
     particleIvalDur = 2.0
+    taunts = ['Read my lips.',
+            'How about these choppers?',
+            "Aren't I charming?",
+            "I'm going to wow you.",
+            'My dentist does excellent work.',
+            "Blinding aren't they?",
+            "Hard to believe these aren't real.",
+            "Shocking, aren't they?",
+            "I'm going to cap this off.",
+            'I floss after every meal.',
+            'Say Cheese!']
+
+    baseDamage = 7.0 # Doesn't do much damage, but blinds you.
+    length = 3.5
 
     def doAttack(self, ts):
         ParticleAttack.doAttack(
@@ -1196,11 +1222,22 @@ class RazzleDazzleAttack(ParticleAttack):
 
 class BuzzWordAttack(ParticleAttack):
     notify = directNotify.newCategory('BuzzWordAttack')
-    attack = 'buzzword'
+    attack = SA_buzzword
     attackName = 'Buzz Word'
     particleIvalDur = 1.5
     afterIvalDur = 1.5
     shooterDistance = 50.0
+    baseDamage = 12.0
+    taunts = ['Pardon me if I drone on.',
+              'Have you heard the latest?',
+              'Can you catch on to this?',
+              'See if you can hum this Toon.',
+              'Let me put in a good word for you.',
+              'I\'ll "B" perfectly clear.',
+              'You should "B" more careful.',
+              'See if you can dodge this swarm.',
+              "Careful, you're about to get stung.",
+              'Looks like you have a bad case of hives.']
 
     def doAttack(self, ts):
         texturesList = ['buzzwords-crash',
@@ -1235,11 +1272,22 @@ class BuzzWordAttack(ParticleAttack):
 
 class JargonAttack(ParticleAttack):
     notify = directNotify.newCategory("JargonAttack")
-    attack = 'jargon'
+    attack = SA_jargon
     attackName = 'Jargon'
     particleIvalDur = 1.5
     afterIvalDur = 1.5
     shooterDistance = 50.0
+    baseDamage = 11.0
+    taunts = ['What nonsense.',
+            'See if you can make sense of this.',
+            'I hope you get this loud and clear.',
+            "Looks like I'm going to have to raise my voice.",
+            'I insist on having my say.',
+            "I'm very outspoken.",
+            'I must pontificate on this subject.',
+            'See, words can hurt you.',
+            'Did you catch my meaning?',
+            'Words, words, words, words, words.']
 
     def doAttack(self, ts):
         texturesList = ['jargon-brow',
@@ -1272,11 +1320,22 @@ class JargonAttack(ParticleAttack):
 
 class MumboJumboAttack(ParticleAttack):
     notify = directNotify.newCategory('MumboJumboAttack')
-    attack = 'mumbojumbo'
+    attack = SA_mumbojumbo
     attackName = 'Mumbo Jumbo'
     particleIvalDur = 2.5
     afterIvalDur = 1.5
     shooterDistance = 50.0
+    baseDamage = 15.0
+    taunts = ['Let me make this perfectly clear.',
+            "It's as simple as this.",
+            "This is how we're going to do this.",
+            'Let me supersize this for you.',
+            'You might call this technobabble.',
+            'Here are my five-dollar words.',
+            'Boy, this is a mouth full.',
+            'Some call me bombastic.',
+            'Let me just interject this.',
+            'I believe these are the right words.']
 
     def doAttack(self, ts):
         texturesList = ['mumbojumbo-boiler',
@@ -1311,11 +1370,22 @@ class MumboJumboAttack(ParticleAttack):
 
 class FilibusterAttack(ParticleAttack):
     notify = directNotify.newCategory("FilibusterAttack")
-    attack = 'filibuster'
+    attack = SA_filibuster
     attackName = 'Filibuster'
     particleIvalDur = 1.5
     afterIvalDur = 1.5
     shooterDistance = 40.0
+    baseDamage = 14.0
+    taunts = ["Shall I fill 'er up?",
+            'This is going to take awhile.',
+            'I could do this all day.',
+            "I don't even need to take a breath.",
+            'I keep going and going and going.',
+            'I never get tired of this one.',
+            'I can talk a blue streak.',
+            'Mind if I bend your ear?',
+            "I think I'll shoot the breeze.",
+            'I can always get a word in edgewise.']
 
     def doAttack(self, ts):
         texturesList = ['filibuster-cut',
@@ -1347,11 +1417,12 @@ class FilibusterAttack(ParticleAttack):
 
 class DoubleTalkAttack(ParticleAttack):
     notify = directNotify.newCategory('DoubleTalkAttack')
-    attack = 'doubletalk'
+    attack = SA_doubletalk
     attackName = 'Double Talk'
     particleIvalDur = 3.0
     afterIvalDur = 1.5
     shooterDistance = 50.0
+    baseDamage = 4.0
 
     def doAttack(self, ts):
         texturesList = ['doubletalk-double',
@@ -1381,11 +1452,23 @@ class DoubleTalkAttack(ParticleAttack):
 
 class SchmoozeAttack(ParticleAttack):
     notify = directNotify.newCategory("SchmoozeAttack")
-    attack = 'schmooze'
+    attack = SA_schmooze
     attackName = 'Schmooze'
     particleIvalDur = 1.5
     afterIvalDur = 1.5
     shooterDistance = 40.0
+    baseDamage = 17.0
+    taunts = ["You'll never see this coming.",
+              'This will look good on you.',
+              "You've earned this.",
+              "I don't mean to gush.",
+              'Flattery will get me everywhere.',
+              "I'm going to pile it on now.",
+              'Time to lay it on thick.',
+              "I'm going to get on your good side.",
+              'That deserves a good slap on the back.',
+              "I'm going to ring your praises.",
+              'I hate to knock you off your pedestal, but...']
 
     def doAttack(self, ts):
         texturesList = ['schmooze-genius',
@@ -1417,11 +1500,24 @@ class SchmoozeAttack(ParticleAttack):
 
 class FingerWagAttack(ParticleAttack):
     notify = directNotify.newCategory('FingerWagAttack')
-    attack = 'fingerwag'
+    attack = SA_fingerwag
     attackName = 'Finger Wag'
     particleIvalDur = 2
     afterIvalDur = 1.5
     shooterDistance = 35.0
+    baseDamage = 6.5
+    taunts = ['I have told you a thousand times.',
+            'Now see here Toon.',
+            "Don't make me laugh.",
+            "Don't make me come over there.",
+            "I'm tired of repeating myself.",
+            "I believe we've been over this.",
+            'You have no respect for us Cogs.',
+            "I think it's time you pay attention.",
+            'Blah, Blah, Blah, Blah, Blah.',
+            "Don't make me stop this meeting.",
+            'Am I going to have to separate you?',
+            "We've been through this before."]
 
     def doAttack(self, ts):
         ParticleAttack.doAttack(
@@ -1442,8 +1538,20 @@ class FingerWagAttack(ParticleAttack):
         ParticleAttack.playParticleSound(self)
 
 class EvilEyeAttack(Attack):
-    attack = 'evileye'
+    attack = SA_evileye
     attackName = 'Evil Eye'
+    baseDamage = 21.0
+    length = 7
+    taunts = ["I'm giving you the evil eye.",
+            "Could you eye-ball this for me?",
+            "Wait. I've got something in my eye.",
+            "I've got my eye on you!",
+            "Could you keep an eye on this for me?",
+            "I've got a real eye for evil.",
+            "I'll poke you in the eye!",
+            "\"Eye\" am as evil as they come!",
+            "I'll put you in the eye of the storm!",
+            "I'm rolling my eye at you."]
 
     posPoints = {
         SuitGlobals.CorporateRaider: [Point3(-0.46, 4.85, 5.28), VBase3(-155.0, -20.0, 0.0)],
@@ -1521,14 +1629,27 @@ class EvilEyeAttack(Attack):
             self.eyeRoot.removeNode()
             self.eyeRoot = None
 
-
 class DemotionAttack(Attack):
-    attack = 'demotion'
+    attack = SA_demotion
     attackName = 'Demotion'
 
 class TeeOffAttack(Attack):
-    attack = 'teeoff'
+    attack = SA_teeoff
     attackName = 'Tee Off'
+    length = 7
+    baseDamage = 19.0
+    taunts = ["You're not up to par.",
+            "Fore!",
+            "I'm getting teed off.",
+            "Caddie, I'll need my driver!",
+            "Just try and avoid this hazard.",
+            "Swing!",
+            "This is a sure hole in one.",
+            "You're in my fairway.",
+            "Notice my grip.",
+            "Watch the birdie!",
+            "Keep your eye on the ball!",
+            "Mind if I play through?"]
 
     visualizeBallPath = False
 
@@ -1611,8 +1732,22 @@ class TeeOffAttack(Attack):
             self.club = None
 
 class WatercoolerAttack(Attack):
-    attack = 'watercooler'
+    attack = SA_watercooler
     attackName = 'Watercooler'
+    length = 7
+    baseDamage = 4.0
+    taunts = ['This ought to cool you off.',
+            "Isn't this refreshing?",
+            "I deliver.",
+            "Straight from the tap - into your lap.",
+            "What's the matter, it's just spring water.",
+            "Don't worry, it's purified.",
+            "Ah, another satisfied customer.",
+            "It's time for your daily delivery.",
+            "Hope your colors don't run.",
+            "Care for a drink?",
+            "It all comes out in the wash.",
+            "The drink's on you."]
 
     def __init__(self, ac, suit):
         Attack.__init__(self, ac, suit)
@@ -1688,40 +1823,40 @@ class WatercoolerAttack(Attack):
             self.cooler.removeNode()
             self.cooler = None
 
-
 from direct.fsm.StateData import StateData
 
 class SuitAttacks(StateData):
     notify = directNotify.newCategory("SuitAttacks")
-    attackName2attackClass = {
-        "canned": CannedAttack,
-        "clipontie": ClipOnTieAttack,
-        "sacked": SackedAttack,
-        "glowerpower": GlowerPowerAttack,
-        "playhardball": HardballAttack,
-        "marketcrash": MarketCrashAttack,
-        "pickpocket": PickPocketAttack,
-        "hangup": HangUpAttack,
-        "fountainpen": FountainPenAttack,
-        "redtape": RedTapeAttack,
-        'powertie': PowerTieAttack,
-        'halfwindsor': HalfWindsorAttack,
-        "bite": BiteAttack,
-        "chomp": ChompAttack,
-        'evictionnotice': EvictionNoticeAttack,
-        'restrainingorder': RestrainingOrderAttack,
-        'razzledazzle': RazzleDazzleAttack,
-        'buzzword': BuzzWordAttack,
-        'jargon': JargonAttack,
-        'mumbojumbo': MumboJumboAttack,
-        'filibuster': FilibusterAttack,
-        'doubletalk': DoubleTalkAttack,
-        'schmooze': SchmoozeAttack,
-        'fingerwag': FingerWagAttack,
-        #'demotion': DemotionAttack,
-        'evileye': EvilEyeAttack,
-        'teeoff': TeeOffAttack,
-        'watercooler': WatercoolerAttack
+
+    attack2attackClass = {
+        SA_canned:              CannedAttack,
+        SA_clipontie:           ClipOnTieAttack,
+        SA_sacked:              SackedAttack,
+        SA_glowerpower:         GlowerPowerAttack,
+        SA_hardball:            HardballAttack,
+        SA_marketcrash:         MarketCrashAttack,
+        SA_pickpocket:          PickPocketAttack,
+        SA_hangup:              HangUpAttack,
+        SA_fountainpen:         FountainPenAttack,
+        SA_redtape:             RedTapeAttack,
+        SA_powertie:            PowerTieAttack,
+        SA_halfwindsor:         HalfWindsorAttack,
+        SA_bite:                BiteAttack,
+        SA_chomp:               ChompAttack,
+        SA_evictionnotice:      EvictionNoticeAttack,
+        SA_restrainingorder:    RestrainingOrderAttack,
+        SA_razzledazzle:        RazzleDazzleAttack,
+        SA_buzzword:            BuzzWordAttack,
+        SA_jargon:              JargonAttack,
+        SA_mumbojumbo:          MumboJumboAttack,
+        SA_filibuster:          FilibusterAttack,
+        SA_doubletalk:          DoubleTalkAttack,
+        SA_schmooze:            SchmoozeAttack,
+        SA_fingerwag:           FingerWagAttack,
+        #SA_demotion:           DemotionAttack,
+        SA_evileye:             EvilEyeAttack,
+        SA_teeoff:              TeeOffAttack,
+        SA_watercooler:         WatercoolerAttack
     }
 
     def __init__(self, doneEvent, suit, target):
@@ -1730,9 +1865,9 @@ class SuitAttacks(StateData):
         self.target = target
         self.currentAttack = None
 
-    def load(self, attackName):
+    def load(self, attackId):
         StateData.load(self)
-        className = self.attackName2attackClass[attackName]
+        className = self.attack2attackClass[attackId]
         self.currentAttack = className(self, self.suit)
 
     def enter(self, ts = 0):

@@ -74,6 +74,9 @@ class FPSCamera(DirectObject):
         self.vmGag = None
         self.vmAnimTrack = None
 
+    def handleSuitAttack(self, attack):
+        print "FPSCamera handleSuitAttack:", attack
+
     def doDamageFade(self, r, g, b, severity = 1.0):
         if self.dmgFadeIval:
             self.dmgFadeIval.finish()
