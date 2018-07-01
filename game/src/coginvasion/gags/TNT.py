@@ -96,8 +96,13 @@ class TNT(TossTrapGag):
             if base.localAvatar.isFirstPerson():
                 vm = self.getViewModel()
                 cam = self.getFPSCam()
-                playRate = 1.2
-                cam.setVMAnimTrack(Parallel(ActorInterval(vm, "tnt_throw", playRate = playRate), Sequence(Wait(0.3 / playRate), Func(self.__doFakeStuff), Wait(0.65 / playRate), Func(self.__actuallyThrow))))
+                fps = 24.0
+                playRate = 1.0
+                snapTime = 13.0 / fps
+                throwTime = 29.0 / fps
+                cam.setVMAnimTrack(Parallel(ActorInterval(vm, "tnt_throw", playRate = playRate),
+                                            Sequence(Wait(snapTime / playRate), Func(self.__doFakeStuff)),
+                                            Sequence(Wait(throwTime / playRate), Func(self.__actuallyThrow))))
             else:
                 self.__actuallyThrow()
 
