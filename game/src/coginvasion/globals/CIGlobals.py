@@ -321,7 +321,7 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
     track.append(Sequence(Wait(duration), Func(smoke.softStop)))
     track.start()
 
-def makeDustCloud(pos, scale = (0.1, 0.9, 1), sound = None):
+def makeDustCloud(pos, scale = (0.1, 0.9, 1), sound = None, color = (1, 1, 1, 1)):
     from direct.actor.Actor import Actor
     dust = Actor('phase_5/models/props/dust-mod.bam', {'chan' : 'phase_5/models/props/dust-chan.bam'})
     objBin = 110
@@ -332,6 +332,7 @@ def makeDustCloud(pos, scale = (0.1, 0.9, 1), sound = None):
         cloud.setShaderOff(1)
         cloud.setMaterialOff(1)
         cloud.setLightOff(1)
+        cloud.setColorScale(color, 1)
         objBin -= 10
     dust.setBillboardPointEye()
     dust.setScale(scale)

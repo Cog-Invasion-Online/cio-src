@@ -474,9 +474,8 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         # Factor in class damage modifier
         dmg *= self.suitPlan.getCogClassAttrs().dmgMod
 
-        if dmg == 0:
-            # Prevents level 1 and 2 Cogs from doing 0 damage.
-            dmg = 1
+        dmg = int(round(max(1, dmg)))
+        print "Cog did {0} damage".format(dmg)
 
         toon = self.air.doId2do.get(avId, None)
         if toon:

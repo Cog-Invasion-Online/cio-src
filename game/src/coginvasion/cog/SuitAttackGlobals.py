@@ -42,3 +42,5 @@ SA_marketcrash = 26
 SA_demotion = 27
 SA_writeoff = 28
 SA_rubberstamp = 29
+SA_fired = 30
+SA_hotair = 31

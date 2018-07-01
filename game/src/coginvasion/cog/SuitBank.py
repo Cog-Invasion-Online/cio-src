@@ -479,7 +479,7 @@ Tightwad = SuitPlan(
     headShadowScale = 1.1,
     headShadowPos = Vec3(0, 10, -0.04),
     gagWeaknesses = {GagGlobals.Sandbag : 1.3},
-    attacks = [SA_glowerpower, SA_fingerwag], #bouncecheck, freezeassets, fired
+    attacks = [SA_glowerpower, SA_fingerwag, SA_fired], #bouncecheck, freezeassets
     cls = SuitGlobals.CC_enforcer
 )
 PennyPincher = SuitPlan(
@@ -642,7 +642,7 @@ ColdCaller = SuitPlan(
     headShadowScale = 1.15,
     headShadowPos = Vec3(0, 10, -0.01),
     gagWeaknesses = {GagGlobals.SquirtFlower : 1.4},
-    attacks = [SA_doubletalk], #hotair, poundkey, freezeassets
+    attacks = [SA_doubletalk, SA_hotair], #poundkey, freezeassets
     cls = SuitGlobals.CC_minion
 )
 # Bosses:

@@ -120,6 +120,12 @@ class CIBase(ShowBase):
         print 'TPM END'
         """
 
+    def loadSfxOnNode(self, sndFile, node):
+        """ Loads up a spatialized sound and attaches it to the specified node. """
+        snd = self.audio3d.loadSfx(sndFile)
+        self.audio3d.attachSoundToObject(snd, node)
+        return snd
+
     def physicsReport(self):
         print "\nThere are {0} total rigid bodies:".format(base.physicsWorld.getNumRigidBodies())
         for rb in base.physicsWorld.getRigidBodies():

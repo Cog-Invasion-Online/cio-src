@@ -649,10 +649,6 @@ def calculateDamage(avId, name, data):
     dist = data.get('distance', 10)
     ramp = calcAttackDamage(data.get('distance', 10), baseDmg)
 
-    print "Base damage is", baseDmg
-    print "Distance is", dist
-    print "Ramp damage is", ramp
-
     return ramp
 
 # These are the splat scales

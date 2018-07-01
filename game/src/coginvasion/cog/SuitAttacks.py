@@ -17,6 +17,7 @@ from direct.task import Task
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosInterval, SoundInterval
 from direct.interval.IntervalGlobal import ActorInterval, Parallel, LerpScaleInterval, LerpHprInterval
+from direct.interval.IntervalGlobal import LerpColorScaleInterval
 from direct.interval.ProjectileInterval import ProjectileInterval
 from direct.showbase.DirectObject import DirectObject
 from direct.distributed import DelayDelete
@@ -75,6 +76,24 @@ class Attack(DirectObject):
         self.target = self.attacksClass.target
         self.suit = suit
         self.suitTrack = None
+        self.collider = None
+        self.throwTrack = None
+
+    def startThrowTrack(self, prop, speed, distance):
+        self.stopThrowTrack()
+
+        self.throwTrack = self.getThrowTrack(prop, speed, distance)
+        self.throwTrack.start()
+
+    def stopThrowTrack(self):
+        if self.throwTrack:
+            self.throwTrack.pause()
+        self.throwTrack = None
+
+    def cleanupCollider(self):
+        if self.collider:
+            self.collider.removeNode()
+        self.collider = None
 
     def getThrowTrack(self, prop, speed, distance):
         startPos = prop.getPos(render)
@@ -169,12 +188,13 @@ class Attack(DirectObject):
         CIGlobals.makeDustCloud(pos, 1, base.audio3d.loadSfx("phase_4/audio/sfx/Golf_Hit_Barrier_1.ogg"))
 
     def cleanup(self):
+        self.stopThrowTrack()
+        self.cleanupCollider()
         if self.suitTrack != None:
             self.ignore(self.suitTrack.getDoneEvent())
             self.suitTrack.finish()
             DelayDelete.cleanupDelayDeletes(self.suitTrack)
             self.suitTrack = None
-        self.attack = None
         self.suit = None
         self.target = None
         self.attacksClass = None
@@ -1871,16 +1891,8 @@ class WriteOffAttack(Attack):
     def __init__(self, ac, suit):
         Attack.__init__(self, ac, suit)
         self.check = None
-        self.collider = None
-        self.throwTrack = None
 
     def cleanup(self):
-        if self.throwTrack:
-            self.throwTrack.pause()
-        self.throwTrack = None
-        if self.collider:
-            self.collider.removeNode()
-        self.collider = None
         if self.check:
             self.check.removeNode()
         self.check = None
@@ -1895,14 +1907,13 @@ class WriteOffAttack(Attack):
         if CIGlobals.isNodePathOk(self.check):
             self.check.hide()
 
-        if self.throwTrack:
-            self.throwTrack.pause()
-        self.throwTrack = None
+        self.stopThrowTrack()
 
     def fireCheck(self, pencil):
-        self.check = Attack.getSuitParticle("checkmark").copyTo(render)
-        self.check.setBillboardPointEye()
-        self.check.setScale(1.6)
+        self.check = render.attachNewNode('checkmark')
+        check = Attack.getSuitParticle("checkmark").copyTo(self.check)
+        check.setBillboardPointEye()
+        check.setScale(1.6)
         self.check.setPosHpr(pencil, 0, 0, 0, 0, 0, 0)
         self.check.setP(0)
         self.check.setR(0)
@@ -1911,8 +1922,7 @@ class WriteOffAttack(Attack):
         self.acceptOnce(self.collider.getCollideEvent(), self.handleCheckCollision)
         self.collider.start()
 
-        self.throwTrack = self.getThrowTrack(self.check, 65.0, 50.0)
-        self.throwTrack.start()
+        self.startThrowTrack(self.check, 65.0, 50.0)
 
     def doAttack(self, ts):
         Attack.doAttack(self, ts)
@@ -1965,16 +1975,8 @@ class RubberStampAttack(Attack):
     def __init__(self, ac, suit):
         Attack.__init__(self, ac, suit)
         self.cancelled = None
-        self.collider = None
-        self.throwTrack = None
 
     def cleanup(self):
-        if self.throwTrack:
-            self.throwTrack.pause()
-        self.throwTrack = None
-        if self.collider:
-            self.collider.removeNode()
-        self.collider = None
         if self.cancelled:
             self.cancelled.removeNode()
         self.cancelled = None
@@ -2004,24 +2006,22 @@ class RubberStampAttack(Attack):
         if CIGlobals.isNodePathOk(self.cancelled):
             self.cancelled.hide()
 
-        if self.throwTrack:
-            self.throwTrack.pause()
-        self.throwTrack = None
+        self.stopThrowTrack()
 
     def fireStamp(self, stamp):
-        self.cancelled = self.__makeCancelledNodePath()
-        self.cancelled.reparentTo(render)
-        self.cancelled.setScale(0.6)
+        self.cancelled = render.attachNewNode('cancelled')
+        text = self.__makeCancelledNodePath()
+        text.reparentTo(self.cancelled)
+        text.setScale(0.6)
         self.cancelled.setPosHpr(stamp, 0.81, -1.11, -0.16, 0, 0, 90)
         self.cancelled.setP(0)
         self.cancelled.setR(0)
 
-        self.collider = self.makeWorldCollider(self.cancelled, 0.75)
+        self.collider = self.makeWorldCollider(self.cancelled, 0.8)
         self.acceptOnce(self.collider.getCollideEvent(), self.handleTextCollision)
         self.collider.start()
 
-        self.throwTrack = self.getThrowTrack(self.cancelled, 65.0, 50)
-        self.throwTrack.start()
+        self.startThrowTrack(self.cancelled, 65.0, 50)
 
     def doAttack(self, ts):
         Attack.doAttack(self, ts)
@@ -2049,14 +2049,191 @@ class RubberStampAttack(Attack):
         propTrack.append(LerpScaleInterval(stamp, 0.5, Point3(0.01)))
         propTrack.append(Func(self.removeProp, stamp))
 
-        snd = base.audio3d.loadSfx("phase_5/audio/sfx/SA_rubber_stamp.ogg")
-        base.audio3d.attachSoundToObject(snd, stamp)
+        snd = base.loadSfxOnNode("phase_5/audio/sfx/SA_rubber_stamp.ogg", stamp)
         soundTrack = Sequence(Wait(1.3), SoundInterval(snd, duration = 1.1))
 
         self.suitTrack = Parallel(soundTrack, suitTrack, padPropTrack, propTrack)
         self.startSuitTrack(ts)
 
-        print self.suitTrack.getDuration()
+class FiredAttack(Attack):
+    attack = SA_fired
+    attackName = 'Fired'
+    baseDamage = 2.0 # damage base per flame that hits
+    length = 7.0
+    taunts = ["I hope you brought some marshmallows.",
+              "It's going to get rather warm around here.",
+              "This should take the chill out of the air.",
+              "I hope you're cold blooded.",
+              "Hot, hot and hotter.",
+              "You better stop, drop, and roll!",
+              "You're outta here.",
+              "How does \"well-done\" sound?",
+              "Can you say ouch?",
+              "Hope you wore sunscreen.",
+              "Do you feel a little toasty?",
+              "You're going down in flames.",
+              "You'll go out in a blaze.",
+              "You're a flash in the pan.",
+              "I think I have a bit of a flare about me.",
+              "I just sparkle, don't I?",
+              "Oh look, a crispy critter.",
+              "You shouldn't run around half baked."]
+    emitFlameIval = 0.3
+    maxFlames = 10
+
+    class Flame(NodePath, DirectObject):
+        flameSpeed = 30.0
+
+        def __init__(self, attack):
+            DirectObject.__init__(self)
+            NodePath.__init__(self, 'flame')
+
+            self.setLightOff(1)
+            self.setMaterialOff(1)
+            self.setShaderOff(1)
+
+            self.attack = attack
+            self.suit = self.attack.suit
+
+            fireroot = self.attachNewNode('fireroot')
+            fireroot.setScale(1.25)
+            fireroot.setBillboardAxis()
+            glow = loader.loadModel("phase_14/models/props/lightglow.egg")
+            glow.reparentTo(fireroot)
+            glow.setTransparency(1)
+            glow.setColorScale(1, 0.5, 0, 0.5)
+            glow.setY(-0.01)
+            glow.setTwoSided(1)
+            glow.setScale(0.85)
+            fire = Attack.getSuitParticle("fire").copyTo(fireroot)
+
+            self.reparentTo(render)
+
+            startPos = self.attack.suit.find("**/joint_head").getPos(render)
+            endPos = self.attack.target.getPart("head").getPos(render)
+            distance = (endPos - startPos).length()
+            duration = distance / self.flameSpeed
+
+            self.setPos(startPos)
+
+            self.collider = self.attack.makeWorldCollider(self, 0.75)
+            self.acceptOnce(self.collider.getCollideEvent(), self.handleCollision)
+
+            self.ival = Parallel(Sequence(ProjectileInterval(self, startPos, endPos, duration, gravityMult = 0.7),
+                                          Func(self.removeNode)),
+                                 Sequence(Wait(0.01), Func(self.collider.start)),
+                                 LerpScaleInterval(fireroot, 0.2, Point3(1.25), Point3(0.01)))
+            self.ival.start()
+
+        def handleCollision(self, entry):
+            if not self.isEmpty():
+                CIGlobals.makeDustCloud(self.getPos(render), scale = (0.25, 0.9, 1),
+                                        sound = base.audio3d.loadSfx("phase_14/audio/sfx/SA_hot_air_flame_hit.ogg"),
+                                        color = (0, 0, 0, 1))
+
+            if PhysicsUtils.isLocalAvatar(entry):
+                if CIGlobals.isNodePathOk(self.suit):
+                    self.suit.sendUpdate('toonHitByWeapon', [self.attack.attack, base.localAvatar.doId,
+                                                             base.localAvatar.getDistance(self.suit)])
+                base.localAvatar.handleSuitAttack(self.attack.attack)
+
+            self.removeNode()
+
+        def removeNode(self):
+            if self.ival:
+                self.ival.pause()
+            self.ival = None
+            if self.collider:
+                self.ignore(self.collider.getCollideEvent())
+                self.collider.removeNode()
+            self.collider = None
+            self.attack = None
+            self.suit = None
+            if not self.isEmpty():
+                NodePath.removeNode(self)
+
+    def __init__(self, ac, suit):
+        Attack.__init__(self, ac, suit)
+        self.emitSfx = None
+        self.emitTask = None
+        self.glow = None
+        self.glowTrack = None
+
+    def cleanup(self):
+        self.stopEmitting()
+        if self.glowTrack:
+            self.glowTrack.finish()
+        self.glowTrack = None
+        if self.glow:
+            self.glow.removeNode()
+        self.glow = None
+        self.emitSfx = None
+        Attack.cleanup(self)
+
+    def startEmitting(self):
+        self.stopEmitting()
+
+        self.emitTask = taskMgr.add(self.__emitTask, "FiredEmitTask")
+
+    def __emitTask(self, task):
+        self.emitSfx.play()
+        self.glowTrack.start()
+
+        # Just make it and forget it, the flame will clean itself up
+        FiredAttack.Flame(self)
+
+        task.delayTime = self.emitFlameIval
+        return task.again
+
+    def stopEmitting(self):
+        if self.emitTask:
+            self.emitTask.remove()
+        self.emitTask = None
+
+    def doAttack(self, ts):
+        self.glow = loader.loadModel("phase_14/models/props/lightglow.egg")
+        self.glow.reparentTo(self.suit)
+        self.glow.setLightOff(1)
+        self.glow.setMaterialOff(1)
+        self.glow.setShaderOff(1)
+        self.glow.setP(90)
+        self.glow.setTransparency(1)
+        self.glow.setDepthOffset(1)
+        self.glow.setColorScale(1, 0.5, 0, 0)
+        self.glow.setScale(3)
+
+        self.glowTrack = Sequence(LerpColorScaleInterval(self.glow, self.emitFlameIval / 2, (1, 0.5, 0, 0.5),
+                                                         (1, 0.5, 0, 0), blendType = 'easeInOut'),
+                                  LerpColorScaleInterval(self.glow, self.emitFlameIval / 2, (1, 0.5, 0, 0),
+                                                         (1, 0.5, 0, 0.5), blendType = 'easeInOut'))
+
+        self.emitSfx = base.loadSfxOnNode("phase_14/audio/sfx/SA_hot_air_flame_emit.ogg", self.suit)
+        self.suitTrack = Sequence(Func(self.startToonLockOn),
+                                  ActorInterval(self.suit, 'magic2', endFrame = 32),
+                                  Func(self.startEmitting),
+                                  Func(self.suit.pingpong, 'magic2', 1, None, 32, 50),
+                                  Wait(self.emitFlameIval * self.maxFlames),
+                                  Func(self.stopEmitting),
+                                  Func(self.stopToonLockOn),
+                                  ActorInterval(self.suit, 'magic2', startFrame = 50))
+        self.startSuitTrack(ts)
+
+class HotAirAttack(FiredAttack):
+    attack = SA_hotair
+    attackName = 'Hot Air'
+    baseDamage = 1.0
+    taunts = ["We're having a heated discussion.",
+              "You're experiencing a heat wave.",
+              "I've reached my boiling point.",
+              "This should cause some wind burn.",
+              "I hate to grill you, but...",
+              "Always remember, where there's smoke, there's fire.",
+              "You're looking a little burned out.",
+              "Another meeting up in smoke.",
+              "Guess it's time to add fuel to the fire.",
+              "Let me kindle a working relationship.",
+              "I have some glowing remarks for you.",
+              "Air Raid!!!"]
 
 from direct.fsm.StateData import StateData
 
@@ -2093,7 +2270,9 @@ class SuitAttacks(StateData):
         SA_teeoff:              TeeOffAttack,
         SA_watercooler:         WatercoolerAttack,
         SA_writeoff:            WriteOffAttack,
-        SA_rubberstamp:         RubberStampAttack
+        SA_rubberstamp:         RubberStampAttack,
+        SA_fired:               FiredAttack,
+        SA_hotair:              HotAirAttack
     }
 
     def __init__(self, doneEvent, suit, target):
