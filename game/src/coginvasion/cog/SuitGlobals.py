@@ -554,7 +554,9 @@ animations = [
     Anim(12, 'tray-neutral'),
     Anim(12, 'tray-walk'),
     Anim(5, 'golf-club-swing', name = 'golf', suitTypes = [SuitType.A]),
-    Anim(5, 'watercooler', suitTypes = [SuitType.C])
+    Anim(5, 'watercooler', suitTypes = [SuitType.C]),
+    Anim(5, 'hold-pencil', suitTypes = [SuitType.B]),
+    Anim(5, 'rubber-stamp', suitTypes = [SuitType.A, SuitType.C])
 ]
 
 def getAnimById(animId):

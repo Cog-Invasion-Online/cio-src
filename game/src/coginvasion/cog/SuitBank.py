@@ -218,7 +218,7 @@ Yesman = SuitPlan(
     headShadowScale = 1.125,
     headShadowPos = Vec3(0, 10, -0.015),
     gagWeaknesses = {GagGlobals.FruitPieSlice : 1.2},
-    attacks = [SA_teeoff, SA_razzledazzle], #rubberstamp, synergy
+    attacks = [SA_teeoff, SA_razzledazzle, SA_rubberstamp], #synergy
     cls = SuitGlobals.CC_enforcer
 )
 PencilPusher = SuitPlan(
@@ -234,7 +234,7 @@ PencilPusher = SuitPlan(
     headShadowScale = 0.9,
     headShadowPos = Vec3(0, 10, 0),
     gagWeaknesses = {GagGlobals.WaterGlass : 1.1},
-    attacks = [SA_fountainpen, SA_fingerwag], #rubout, writeoff, fillwithlead
+    attacks = [SA_fountainpen, SA_fingerwag, SA_writeoff], #rubout, fillwithlead
     cls = SuitGlobals.CC_secretary
 )
 Flunky = SuitPlan(
@@ -300,7 +300,7 @@ SpinDoctor = SuitPlan(
     headShadowScale = 0.95,
     headShadowPos = Vec3(0, 10, -0.01),
     gagWeaknesses = {GagGlobals.Anvil : 1.2},
-    attacks = [SA_hangup], #paradigmshift, quake, spin, writeoff
+    attacks = [SA_hangup, SA_writeoff], #paradigmshift, quake, spin
     cls = SuitGlobals.CC_secretary
 )
 BackStabber = SuitPlan(
@@ -348,7 +348,7 @@ DoubleTalker = SuitPlan(
     headShadowName = 'shadow11',
     headShadowScale = 1.0,
     headShadowPos = Vec3(0.005, 10, -0.01),
-    attacks = [SA_buzzword, SA_doubletalk, SA_jargon, SA_mumbojumbo], #bouncecheck, rubberstamp
+    attacks = [SA_buzzword, SA_doubletalk, SA_jargon, SA_mumbojumbo, SA_rubberstamp], #bouncecheck
     cls = SuitGlobals.CC_scout
 )
 Bloodsucker = SuitPlan(
@@ -383,7 +383,7 @@ BottomFeeder = SuitPlan(
     headShadowScale = 1.25,
     headShadowPos = Vec3(0, 10, -0.03),
     gagWeaknesses = {GagGlobals.BananaPeel : 1.3},
-    attacks = [SA_pickpocket, SA_watercooler], #shred, rubberstamp
+    attacks = [SA_pickpocket, SA_watercooler, SA_rubberstamp], #shred
     cls = SuitGlobals.CC_minion
 )
 RobberBaron = SuitPlan(
@@ -416,7 +416,7 @@ LoanShark = SuitPlan(
     headShadowScale = 0.95,
     headShadowPos = Vec3(0.02, 10, -0.0175),
     gagWeaknesses = {GagGlobals.Geyser : 1.05},
-    attacks = [SA_bite, SA_chomp, SA_hardball], #writeoff
+    attacks = [SA_bite, SA_chomp, SA_hardball, SA_writeoff],
     cls = SuitGlobals.CC_enforcer
 )
 MoneyBags = SuitPlan(
@@ -463,7 +463,7 @@ BeanCounter = SuitPlan(
     headShadowScale = 1.0,
     headShadowPos = Vec3(0, 10, 0),
     gagWeaknesses = {GagGlobals.Quicksand : 1.25},
-    attacks = [SA_hangup], #writeoff, calculate, tabulate, audit
+    attacks = [SA_hangup, SA_writeoff], #calculate, tabulate, audit
     cls = SuitGlobals.CC_scout
 )
 Tightwad = SuitPlan(
@@ -591,7 +591,7 @@ GladHander = SuitPlan(
     headShadowScale = 1.1,
     headShadowPos = Vec3(0, 10, -0.04),
     gagWeaknesses = {GagGlobals.WholeFruitPie : 1.6},
-    attacks = [SA_fountainpen, SA_filibuster, SA_schmooze], #rubberstamp
+    attacks = [SA_fountainpen, SA_filibuster, SA_schmooze, SA_rubberstamp],
     cls = SuitGlobals.CC_enforcer
 )
 NameDropper = SuitPlan(

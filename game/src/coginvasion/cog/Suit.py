@@ -77,6 +77,12 @@ class Suit(Avatar):
             State('trayNeutral', self.enterTrayNeutral, self.exitTrayNeutral)
         ], 'off', 'off')
         self.animFSM.enterInitialState()
+        
+    def getLeftHand(self):
+        return self.find("**/joint_Lhold")
+        
+    def getRightHand(self):
+        return self.find("**/joint_Rhold")
 
     def getNametagJoints(self):
         return []

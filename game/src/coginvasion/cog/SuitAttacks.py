@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import NodePath, Vec3, VBase4, Point3, BitMask32, Vec4, VBase3
+from panda3d.core import NodePath, Vec3, VBase4, Point3, BitMask32, Vec4, VBase3, TextNode
 from panda3d.bullet import BulletSphereShape, BulletGhostNode
 
 from direct.actor.Actor import Actor
@@ -27,6 +27,7 @@ from src.coginvasion.phys.WorldCollider import WorldCollider
 from src.coginvasion.phys import PhysicsUtils
 from SuitAttackGlobals import *
 import SuitGlobals
+from SuitType import SuitType
 
 import random
 
@@ -67,11 +68,67 @@ class Attack(DirectObject):
     length = 5.0
     taunts = ["Take a memo on this!"]
 
+    particlesMdl = None
+
     def __init__(self, attacksClass, suit):
         self.attacksClass = attacksClass
         self.target = self.attacksClass.target
         self.suit = suit
         self.suitTrack = None
+
+    def getThrowTrack(self, prop, speed, distance):
+        startPos = prop.getPos(render)
+        targetPos = self.target.getPart("head").getPos(render)
+        dir = (targetPos - startPos).normalized()
+        endPos = startPos + (dir * distance)
+        duration = distance / speed
+        return LerpPosInterval(prop, duration, endPos, startPos, other = render, fluid = 1)
+
+    def makeWorldCollider(self, parent, radius = 1, mask = CIGlobals.WorldGroup | CIGlobals.LocalAvGroup,
+                          startNow = False):
+        coll = WorldCollider(str(self.attack), radius, mask = mask,
+                             myMask = CIGlobals.WeaponGroup, startNow = startNow,
+                             exclusions = [self.suit])
+        coll.reparentTo(parent)
+        return coll
+
+    @staticmethod
+    def getSuitParticle(name):
+        if not Attack.particlesMdl:
+            Attack.particlesMdl = loader.loadModel("phase_3.5/models/props/suit-particles.bam")
+        return Attack.particlesMdl.find("**/" + name)
+
+    def removeProp(self, prop):
+        if not prop or prop.isEmpty():
+            return
+        if isinstance(prop, Actor):
+            prop.cleanup()
+        else:
+            prop.removeNode()
+
+    def showProp(self, prop, parent, pos, hpr = None, scale = None):
+        prop.reparentTo(parent)
+        prop.setPos(pos)
+        if hpr:
+            prop.setHpr(hpr)
+        if scale:
+            prop.setScale(scale)
+
+    def getPropTrack(self, prop, parent, posPoints, appearDelay, remainDelay,
+                     scaleUpPoint = Point3(1), scaleUpTime = 0.5, scaleDownTime = 0.5,
+                     startScale = Point3(0.01), anim = 0, propName = 'none', animDuration = 0.0,
+                     animStartTime = 0.0):
+        if anim:
+            track = Sequence(Wait(appearDelay), Func(self.showProp, prop, parent *posPoints),
+                             LerpScaleInterval(prop, scaleUpTime, scaleUpPoint, startScale = startScale),
+                             ActorInterval(prop, propName, duration = animDuration, startTime = animStartTime),
+                             Wait(remainDelay), Func(self.removeProp, prop))
+        else:
+            track = Sequence(Wait(appearDelay), Func(self.showProp, prop, parent, *posPoints),
+                             LerpScaleInterval(prop, scaleUpTime, scaleUpPoint, startScale = startScale),
+                             Wait(remainDelay), LerpScaleInterval(prop, scaleDownTime, Point3(0.01)), 
+                             Func(self.removeProp, prop))
+        return track
 
     def startSuitTrack(self, ts):
         self.suitTrack.setDoneEvent(self.suitTrack.getName())
@@ -137,7 +194,8 @@ class ThrowAttack(Attack):
     }
 
     speed = 1.5
-    throwTime = 0.75
+    throwSpeed = 66.67
+    throwDistance = 50.0
 
     def __init__(self, attacksClass, suit):
         Attack.__init__(self, attacksClass, suit)
@@ -175,10 +233,7 @@ class ThrowAttack(Attack):
         self.weapon.setHpr(weapon_h, weapon_p, weapon_r)
         self.weapon.setPos(weapon_x, weapon_y, weapon_z)
         
-        self.collider = WorldCollider(str(self.attack), collsphere_radius, mask = CIGlobals.WorldGroup | CIGlobals.LocalAvGroup,
-                                      myMask = CIGlobals.WeaponGroup, startNow = False,
-                                      exclusions = [self.suit])
-        self.collider.reparentTo(self.weapon)
+        self.collider = self.makeWorldCollider(self.weapon, collsphere_radius)
         
         self.startToonLockOn()
 
@@ -211,39 +266,13 @@ class ThrowAttack(Attack):
         self.collider.start()
         
         self.playWeaponSound()
-        if self.weapon:
-            self.weapon.wrtReparentTo(render)
-            self.weapon.setHpr(Vec3(0, 0, 0))
 
-        if not self.attack in [SA_glowerpower]:
-            parent = self.suit.find('**/joint_Rhold')
-        else:
-            parent = self.suit.find('**/joint_head')
+        self.weapon.wrtReparentTo(render)
+        self.weapon.setHpr(Vec3(0, 0, 0))
 
-        startNP = parent.attachNewNode('startNp')
-        startNP.lookAt(self.target.find("**/def_head"))
-        pathNP = NodePath('throwPath')
-        pathNP.reparentTo(startNP)
-        pathNP.setScale(render, 1.0)
-        pathNP.setPos(0, 50, 0)
-
-        if self.attack in [SA_clipontie, SA_powertie, SA_halfwindsor]:
-            self.weapon.setHpr(pathNP.getHpr(render))
-
-        self.throwTrajectory = LerpPosInterval(
-            self.weapon,
-            startPos = parent.getPos(render),
-            pos = pathNP.getPos(render),
-            duration = self.throwTime
-        )
-
+        self.throwTrajectory = self.getThrowTrack(self.weapon, self.throwSpeed, self.throwDistance)
         self.throwTrajectory.start()
         self.weapon_state = 'released'
-
-        startNP.removeNode()
-        del startNP
-        pathNP.removeNode()
-        del pathNP
 
     def interruptAttack(self):
         if self.throwTrajectory:
@@ -1823,6 +1852,212 @@ class WatercoolerAttack(Attack):
             self.cooler.removeNode()
             self.cooler = None
 
+class WriteOffAttack(Attack):
+    attack = SA_writeoff
+    attackName = "Write Off"
+    length = 6.3
+    baseDamage = 10.0
+    taunts = ["Let me increase your losses.",
+              "Let's make the best of a bad deal.",
+              "Time to balance the books.",
+              "This won't look good on your books.",
+              "I'm looking for some dividends.",
+              "You must account for your losses.",
+              "You can forget about a bonus.",
+              "I'll shuffle your accounts around.",
+              "You're about to suffer some losses.",
+              "This is going to hurt your bottom line."]
+
+    def __init__(self, ac, suit):
+        Attack.__init__(self, ac, suit)
+        self.check = None
+        self.collider = None
+        self.throwTrack = None
+
+    def cleanup(self):
+        if self.throwTrack:
+            self.throwTrack.pause()
+        self.throwTrack = None
+        if self.collider:
+            self.collider.removeNode()
+        self.collider = None
+        if self.check:
+            self.check.removeNode()
+        self.check = None
+        Attack.cleanup(self)
+
+    def handleCheckCollision(self, entry):
+        if PhysicsUtils.isLocalAvatar(entry):
+            self.announceHit()
+        else:
+            self.attackBlocked(self.check.getPos(render))
+
+        if CIGlobals.isNodePathOk(self.check):
+            self.check.hide()
+
+        if self.throwTrack:
+            self.throwTrack.pause()
+        self.throwTrack = None
+
+    def fireCheck(self, pencil):
+        self.check = Attack.getSuitParticle("checkmark").copyTo(render)
+        self.check.setBillboardPointEye()
+        self.check.setScale(1.6)
+        self.check.setPosHpr(pencil, 0, 0, 0, 0, 0, 0)
+        self.check.setP(0)
+        self.check.setR(0)
+
+        self.collider = self.makeWorldCollider(self.check, 0.7)
+        self.acceptOnce(self.collider.getCollideEvent(), self.handleCheckCollision)
+        self.collider.start()
+
+        self.throwTrack = self.getThrowTrack(self.check, 65.0, 50.0)
+        self.throwTrack.start()
+
+    def doAttack(self, ts):
+        Attack.doAttack(self, ts)
+
+        pad = loader.loadModel("phase_5/models/props/pad.bam")
+        padPosPoints = [Point3(-0.25, 1.38, -0.08), VBase3(-19.078, -6.603, -171.594)]
+        padPropTrack = self.getPropTrack(pad, self.suit.getLeftHand(), padPosPoints, 0.5, 2.57, Point3(1.89, 1.89, 1.89))
+
+        pencil = loader.loadModel("phase_5/models/props/pencil.bam")
+        pencilPosPoints = [Point3(-0.47, 1.08, 0.28), VBase3(21.045, 12.702, -176.374)]
+        extraArgsForShowProp = [pencil, self.suit.getRightHand()]
+        extraArgsForShowProp.extend(pencilPosPoints)
+
+        suitTrack = ActorInterval(self.suit, 'hold-pencil')
+
+        pencilPropTrack = Sequence(Func(self.startToonLockOn), Wait(0.5), Func(self.showProp, *extraArgsForShowProp),
+                                   LerpScaleInterval(pencil, 0.5, Point3(1.5, 1.5, 1.5),
+                                                     startScale=Point3(0.01)),
+                                   Wait(2), Func(self.stopToonLockOn), Func(self.fireCheck, pencil))
+        pencilPropTrack.append(Wait(0.3))
+        pencilPropTrack.append(LerpScaleInterval(pencil, 0.5, Point3(0.01)))
+        pencilPropTrack.append(Func(self.removeProp, pencil))
+
+        penSfx = base.audio3d.loadSfx("phase_5/audio/sfx/SA_writeoff_pen_only.ogg")
+        base.audio3d.attachSoundToObject(penSfx, pad)
+        dingSfx = base.audio3d.loadSfx("phase_5/audio/sfx/SA_writeoff_ding_only.ogg")
+        base.audio3d.attachSoundToObject(dingSfx, pad)
+
+        soundTrack = Sequence(Wait(2.3), SoundInterval(penSfx, duration=0.9), SoundInterval(dingSfx))
+
+        self.suitTrack = Parallel(suitTrack, pencilPropTrack, padPropTrack, soundTrack)
+        self.startSuitTrack(ts)
+
+class RubberStampAttack(Attack):
+    attack = SA_rubberstamp
+    attackName = 'Rubber Stamp'
+    baseDamage = 8.5
+    length = 5.0
+    taunts = ["I always make a good impression.",
+              "It's important to apply firm and even pressure.",
+              "A perfect imprint every time.",
+              "I want to stamp you out.",
+              "You must be RETURNED TO SENDER.",
+              "You've been CANCELLED.",
+              "You have a PRIORITY delivery.",
+              "I'll make sure you RECEIVED my message.",
+              "You're not going anyways - you have POSTAGE DUE.",
+              "I'll need a response ASAP."]
+
+    def __init__(self, ac, suit):
+        Attack.__init__(self, ac, suit)
+        self.cancelled = None
+        self.collider = None
+        self.throwTrack = None
+
+    def cleanup(self):
+        if self.throwTrack:
+            self.throwTrack.pause()
+        self.throwTrack = None
+        if self.collider:
+            self.collider.removeNode()
+        self.collider = None
+        if self.cancelled:
+            self.cancelled.removeNode()
+        self.cancelled = None
+        Attack.cleanup(self)
+
+    def __makeCancelledNodePath(self):
+        tn = TextNode('CANCELLED')
+        tn.setFont(CIGlobals.getSuitFont())
+        tn.setText('CANCELLED\nCANCELLED\nCANCELLED')
+        tn.setAlign(TextNode.ACenter)
+        tntop = hidden.attachNewNode('CancelledTop')
+        tnpath = tntop.attachNewNode(tn.generate())
+        tnpath.setPosHpr(0, 0, 0, 0, 0, 0)
+        tnpath.setScale(1)
+        tnpath.setColor(0.7, 0, 0, 1)
+        tnpathback = tnpath.instanceUnderNode(tntop, 'backside')
+        tnpathback.setPosHpr(0, 0, 0, 180, 0, 0)
+        tnpath.setScale(1)
+        return tntop
+
+    def handleTextCollision(self, entry):
+        if PhysicsUtils.isLocalAvatar(entry):
+            self.announceHit()
+        else:
+            self.attackBlocked(self.cancelled.getPos(render))
+
+        if CIGlobals.isNodePathOk(self.cancelled):
+            self.cancelled.hide()
+
+        if self.throwTrack:
+            self.throwTrack.pause()
+        self.throwTrack = None
+
+    def fireStamp(self, stamp):
+        self.cancelled = self.__makeCancelledNodePath()
+        self.cancelled.reparentTo(render)
+        self.cancelled.setScale(0.6)
+        self.cancelled.setPosHpr(stamp, 0.81, -1.11, -0.16, 0, 0, 90)
+        self.cancelled.setP(0)
+        self.cancelled.setR(0)
+
+        self.collider = self.makeWorldCollider(self.cancelled, 0.75)
+        self.acceptOnce(self.collider.getCollideEvent(), self.handleTextCollision)
+        self.collider.start()
+
+        self.throwTrack = self.getThrowTrack(self.cancelled, 65.0, 50)
+        self.throwTrack.start()
+
+    def doAttack(self, ts):
+        Attack.doAttack(self, ts)
+
+        stamp = loader.loadModel("phase_5/models/props/rubber-stamp.bam")
+        pad = loader.loadModel("phase_5/models/props/pad.bam")
+        suitType = self.suit.suitPlan.getSuitType()
+        if suitType == SuitType.A:
+            padPosPoints = [Point3(-0.65, 0.83, -0.04), VBase3(5.625, 4.456, -165.125)]
+            stampPosPoints = [Point3(-0.64, -0.17, -0.03), Point3(0)]
+        elif suitType == SuitType.C:
+            padPosPoints = [Point3(0.19, -0.55, -0.21), VBase3(-166.76, -4.001, -1.658)]
+            stampPosPoints = [Point3(-0.64, -0.08, 0.11), Point3(0)]
+        else:
+            padPosPoints = [Point3(-0.65, 0.83, -0.04), VBase3(5.625, 4.456, -165.125)]
+            stampPosPoints = [Point3(-0.64, -0.17, -0.03), Point3(0)]
+
+        suitTrack = ActorInterval(self.suit, 'rubber-stamp')
+        padPropTrack = self.getPropTrack(pad, self.suit.getLeftHand(), padPosPoints, 1e-06, 3.2)
+        propTrack = Sequence(Func(self.startToonLockOn), Func(self.showProp, stamp, self.suit.getRightHand(),
+                                                              stampPosPoints[0], stampPosPoints[1]),
+                             LerpScaleInterval(stamp, 0.5, Point3(1)), Wait(2.6),
+                             Func(self.stopToonLockOn), Func(self.fireStamp, stamp))
+        propTrack.append(Wait(0.3))
+        propTrack.append(LerpScaleInterval(stamp, 0.5, Point3(0.01)))
+        propTrack.append(Func(self.removeProp, stamp))
+
+        snd = base.audio3d.loadSfx("phase_5/audio/sfx/SA_rubber_stamp.ogg")
+        base.audio3d.attachSoundToObject(snd, stamp)
+        soundTrack = Sequence(Wait(1.3), SoundInterval(snd, duration = 1.1))
+
+        self.suitTrack = Parallel(soundTrack, suitTrack, padPropTrack, propTrack)
+        self.startSuitTrack(ts)
+
+        print self.suitTrack.getDuration()
+
 from direct.fsm.StateData import StateData
 
 class SuitAttacks(StateData):
@@ -1856,7 +2091,9 @@ class SuitAttacks(StateData):
         #SA_demotion:           DemotionAttack,
         SA_evileye:             EvilEyeAttack,
         SA_teeoff:              TeeOffAttack,
-        SA_watercooler:         WatercoolerAttack
+        SA_watercooler:         WatercoolerAttack,
+        SA_writeoff:            WriteOffAttack,
+        SA_rubberstamp:         RubberStampAttack
     }
 
     def __init__(self, doneEvent, suit, target):
