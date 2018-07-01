@@ -320,7 +320,7 @@ class Suit(Avatar):
 
         gearTrack = Sequence(Wait(0.7), Func(self.doSingleGear), Wait(1.5), Func(self.doSmallGears), Wait(3.0), Func(self.doBigExp))
         self.suitTrack = Parallel(Sequence(Wait(0.8), SoundInterval(self.deathSound, duration = 4.28)),
-                Sequence(Wait(0.7), Func(self.doSingleGear), Wait(4.3),
+                Sequence(Wait(0.7), Func(self.doSingleGear), Wait(4.5),
                 Func(self.suitExplode), Wait(1.0), Func(self.disableBodyCollisions)), gearTrack,
                 Sequence(ActorInterval(self, 'lose', duration = 6), Func(self.getGeomNode().hide)), name = trackName)
         self.suitTrack.setDoneEvent(self.suitTrack.getName())
