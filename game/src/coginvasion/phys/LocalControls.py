@@ -99,6 +99,8 @@ class LocalControls(DirectObject):
             base.localAvatar.b_setLookMode(base.localAvatar.LMCage)
         else:
             base.localAvatar.b_setLookMode(base.localAvatar.LMHead)
+            
+        base.localAvatar.enableGagKeys()
 
     def exitFirstPerson(self):
         self.fpsCam.disableMouseMovement()
@@ -108,8 +110,10 @@ class LocalControls(DirectObject):
         base.localAvatar.b_setLookMode(base.localAvatar.LMOff)
         base.localAvatar.getGeomNode().show()
         self.tp_attachCamera()
-        base.localAvatar.showCrosshair()
+        base.localAvatar.hideCrosshair()
         self.fpsCam.getViewModel().hide()
+        
+        base.localAvatar.enableGagKeys()
 
     def tp_attachCamera(self):
         camera.reparentTo(base.localAvatar)
@@ -120,6 +124,8 @@ class LocalControls(DirectObject):
         pass
 
     def setMode(self, mode):
+        self.mode = mode
+        
         if mode == LocalControls.MFirstPerson:
             self.fsm.request('firstperson')
         elif mode == LocalControls.MThirdPerson:
@@ -128,7 +134,6 @@ class LocalControls(DirectObject):
             self.notify.warning("unknown control mode {0}".format(mode))
             return
 
-        self.mode = mode
         self.watchMovementInputs()
 
     def switchMode(self):

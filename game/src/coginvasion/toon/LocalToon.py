@@ -141,10 +141,10 @@ class LocalToon(DistributedPlayerToon):
                                blendType = 'easeInOut').start()
 
     def areGagsAllowed(self):
+        state = (self.isFirstPerson() and self.getFPSCam().mouseEnabled) or self.isThirdPerson()
         return (self.avatarMovementEnabled and self.walkControls.controlsEnabled and
                 (self.chatInput is not None and self.chatInput.fsm.getCurrentState().getName() == 'idle') and
-                (self.invGui is not None and self.invGui.getCurrentOrNextState() != 'Select') and
-                ((self.isFirstPerson() and self.getFPSCam().mouseEnabled) or self.isThirdPerson()))
+                (self.invGui is not None and self.invGui.getCurrentOrNextState() != 'Select') and state)
 
     def isFirstPerson(self):
         return self.walkControls.mode == self.walkControls.MFirstPerson
@@ -689,13 +689,16 @@ class LocalToon(DistributedPlayerToon):
         if self.gagThrowBtn:
             self.gagThrowBtn.bind(DGG.B1PRESS, self.startGag)
             self.gagThrowBtn.bind(DGG.B1RELEASE, self.throwGag)
+            
         key = CIGlobals.getSettingsMgr().getSetting("gagkey")
         self.accept(key, self.startGag)
         self.accept(key + "-up", self.throwGag)
+        
         self.gagsEnabled = True
 
     def disableGagKeys(self):
         self.gagsEnabled = False
+        
         if self.gagThrowBtn:
             self.gagThrowBtn.unbind(DGG.B1PRESS)
             self.gagThrowBtn.unbind(DGG.B1RELEASE)
