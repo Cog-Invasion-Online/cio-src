@@ -711,8 +711,11 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         # the separate pieces. After this point, the separate pieces of the toon are no
         # longer manipulatable, such as arms, sleeves, shirt, etc. If this needs to be done,
         # the toon will have to be regenerated.
-        self.getPart('legs').flattenStrong()
-        self.postFlatten()
+        
+        # Don't do it in Make-A-Toon though, as we have to be constantly modifying the pieces.
+        if not self.mat:
+            self.getPart('legs').flattenStrong()
+            self.postFlatten()
 
         if makeTag:
             self.setupNameTag()
