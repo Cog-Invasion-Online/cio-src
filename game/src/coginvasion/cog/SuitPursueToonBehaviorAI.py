@@ -66,6 +66,10 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         self.suit.sendUpdate('setChaseTarget', [self.targetId])
 
     def pickTarget(self):
+        if len(self.battle.avIds) == 0:
+            # We have nothing to do.
+            return
+
         # Choose the toon with the least amount of attackers to target (a maximum of two attackers per target).
         avIds = list(self.battle.avIds)
         avIds.sort(key = lambda avId: self.battle.getNumSuitsTargeting(avId))
@@ -84,7 +88,11 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
 
         # Temporary fix for district resets. TODO: Actually correct this.
         for avId in self.battle.avIds:
-            if self.air.doId2do.get(avId) is None and avId in avIds:
+            av = self.air.doId2do.get(avId)
+            if av is None and avId in avIds:
+                avIds.remove(avId)
+            elif av is not None and av.isDead():
+                # Don't target dead toons.
                 avIds.remove(avId)
 
         # Make sure we found some avatars to pursue.
@@ -100,12 +108,20 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         self.suit.sendUpdate('setChaseTarget', [self.targetId])
         self.suit.battle.newTarget(self.suit.doId, self.targetId)
         return 1
+
+    def resetNextFrame(self):
+        taskMgr.remove(self.suit.uniqueName('resetNextFrame'))
+        taskMgr.doMethodLater(self.PickTargetRetryTime, self.reset, self.suit.taskName('resetNextFrame'))
         
-    def reset(self):
+    def reset(self, task = None):
         self.exit()
         self.enter()
 
+        if task:
+            return task.done
+
     def exit(self):
+        taskMgr.remove(self.suit.uniqueName('resetNextFrame'))
         self.fsm.request('off')
         self.target = None
         self.targetId = None
@@ -139,6 +155,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
 
     def _attackTask(self, useSafeDistance, task):
         if not self.isAvatarReachable(self.target):
+            self.resetNextFrame()
             return task.done
 
         if useSafeDistance:
@@ -153,7 +170,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
 
         if self.target.isDead():
             # They've died, stop attacking
-            self.reset()
+            self.resetNextFrame()
             return task.done
 
         attack = SuitUtils.attack(self.suit, self.target)
@@ -191,7 +208,8 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
 
         moveVector.normalize()
         x, y = currPos + (moveVector * self.DivertDistance)
-        self.createPath(pos = (x, y))
+        if not self.createPath(pos = (x, y)):
+            self.resetNextFrame()
 
     def walkDone(self):
         if self.fsm.getCurrentState().getName() == 'divert':
@@ -203,15 +221,15 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
     def enterPursue(self):
         # Make our initial path to the toon.
         if not self.isAvatarReachable(self.target):
+            self.resetNextFrame()
             return
             
         self.lastCheckedPos = self.target.getPos(render)
         
         if not self.createPath(self.target):
             # We couldn't figure out a good path to this target.
-            # Instead of just getting stuck, move to a new spot, then try again.
-            self.notify.warning("{0}: createPath({1}) failed, diverting".format(self.suit.doId, self.targetId))
-            self.fsm.request('divert')
+            # Try again in a little bit.
+            self.resetNextFrame()
             return
             
         taskMgr.add(self._pursueTask, self.suit.uniqueName('pursueToonTask'))
@@ -246,8 +264,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
     def _pursueTask(self, task):
         if self.target:
             if self.target.isDead():
-                self.fsm.request('off')
-                self.pickTarget()
+                self.resetNextFrame()
                 return task.done
             currPos = self.target.getPos(render)
             if self.suit.getDistance(self.target) <= self.attackSafeDistance and not self.target.isDead():

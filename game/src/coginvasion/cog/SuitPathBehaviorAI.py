@@ -46,6 +46,8 @@ class SuitPathBehaviorAI(SuitBehaviorBaseAI):
             x1, y1 = pos
             z = self.suit.getZ(render)
         x2, y2 = self.suit.getX(render), self.suit.getY(render)
+        if x2 == x1 and y2 == y1:
+            return 0
         path = self.pathFinder.planPath((x2, y2), (x1, y1))
         if path is None:
             return 0
@@ -69,6 +71,9 @@ class SuitPathBehaviorAI(SuitBehaviorBaseAI):
         self.startFollow()
 
     def clearWalkTrack(self, andTurnAround = 0):
+        if not hasattr(self, 'walkTrack'):
+            return
+
         if self.walkTrack:
             self.ignore(self.walkTrack.getDoneEvent())
             self.walkTrack.pause()
