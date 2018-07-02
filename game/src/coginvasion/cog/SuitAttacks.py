@@ -521,18 +521,22 @@ class GlowerPowerAttack(Attack):
         k.setScale(self.knifeScale)
         return k
 
+    def setupKnifeAngle(self):
+        if CIGlobals.isNodePathOk(self.target):
+            self.knifeRoot.lookAt(self.target.find("**/def_head"))
+
     def doAttack(self, ts = 0):
         left, right = self.eyePosPoints[self.suit.suitPlan.getName()]
         self.knifeRoot = self.suit.attachNewNode("knifeRoot")
         self.knifeRoot.setPos(0, left.getY(), left.getZ())
-        self.knifeRoot.lookAt(self.target.find("**/def_head"))
 
         self.sound = base.audio3d.loadSfx("phase_5/audio/sfx/SA_glower_power.ogg")
         base.audio3d.attachSoundToObject(self.sound, self.suit)
 
         collName = self.suit.uniqueName("glowerPowerColl")
         self.collNP = self.knifeRoot.attachNewNode(makeCollision(1.0, collName))
-        collTrack = Sequence(Func(self.startToonLockOn), Wait(0.9), Func(self.stopToonLockOn), Wait(0.2),
+        collTrack = Sequence(Func(self.startToonLockOn), Wait(1.1), Func(self.stopToonLockOn),
+                             Func(self.setupKnifeAngle),
                              Func(self.acceptOnce, 'enter' + collName, self.announceHit),
                              LerpPosInterval(self.collNP, 1.0, (0, 50, 0), (0, 0, 0)),
                              Func(self.ignore, 'enter' + collName))
@@ -697,11 +701,10 @@ class FountainPenAttack(Attack):
         self.suitTrack.append(
             Sequence(
                 Func(self.startToonLockOn),
-                Wait(0.8),
+                Wait(1.2),
                 Func(self.stopToonLockOn),
                 Func(self.attachSpray),
                 Func(self.spray.hide),
-                Wait(0.4),
                 Func(self.acceptOnce, "enter" + self.wsnp.node().getName(), self.handleSprayCollision),
                 Func(self.playWeaponSound),
                 Func(self.spray.show),
@@ -1628,6 +1631,7 @@ class EvilEyeAttack(Attack):
         self.eye = loader.loadModel("phase_5/models/props/evil-eye.bam")
         self.eye.reparentTo(self.eyeRoot)
         self.eye.setHpr(posPoints[1])
+        self.eye.setScale(0.01)
 
         self.sound = base.audio3d.loadSfx("phase_5/audio/sfx/SA_evil_eye.ogg")
         base.audio3d.attachSoundToObject(self.sound, self.eye)
@@ -1636,7 +1640,7 @@ class EvilEyeAttack(Attack):
         suitHoldStop = 1.69
         suitHoldDuration = suitHoldStop - suitHoldStart
         eyeHoldDuration = 1.1
-        moveDuration = 1.1
+        moveDuration = 1.0
         eyeScale = 11.0
 
         collName = self.suit.uniqueName("eyeColl")
@@ -1650,8 +1654,8 @@ class EvilEyeAttack(Attack):
                      Wait(eyeHoldDuration * 0.7), Func(self.setupEyeAngle), Func(self.stopToonLockOn),
                      Func(self.eyeRoot.wrtReparentTo, render),
                      Func(self.acceptOnce, 'enter' + collName, self.__handleEyeCollision),
-                     Parallel(LerpPosInterval(self.eye, moveDuration, (0, 50.0, 0), startPos = (0, 0, 0)),
-                              LerpHprInterval(self.eye, moveDuration, Point3(0, 0, -180))),
+                     Parallel(LerpPosInterval(self.eye, moveDuration, (0, 65.0, 0), startPos = (0, 0, 0)),
+                              LerpHprInterval(self.eye, moveDuration, Point3(0, 0, -180), other = self.eye)),
                      Func(self.ignore, 'enter' + collName))
         )
         self.startSuitTrack(ts)
@@ -1843,7 +1847,7 @@ class WatercoolerAttack(Attack):
         self.suitTrack = Parallel(
             ActorInterval(self.suit, 'watercooler'),
             Sequence(Func(self.startToonLockOn), Wait(1.01), Func(self.cooler.show), LerpScaleInterval(self.cooler, 0.5, Point3(1.15, 1.15, 1.15)),
-                     Wait(1.3), Func(self.stopToonLockOn), Func(self.positionSpray), Func(self.setupSprayAngle), Wait(0.3), Func(self.spray.show),
+                     Wait(1.6), Func(self.stopToonLockOn), Func(self.positionSpray), Func(self.setupSprayAngle), Func(self.spray.show),
                      Func(self.acceptOnce, 'enter' + collName, self.announceHit), LerpScaleInterval(self.spray, duration = 0.3, scale = (1, 20, 1), startScale = (1, 1, 1)),
                      Func(self.spray.hide), Func(self.ignore, 'enter' + collName)),
             Sequence(Wait(1.1), SoundInterval(self.soundAppear, node = self.suit, duration = 1.4722), Wait(0.4), SoundInterval(self.soundSpray, node = self.suit, duration = 2.313)),
@@ -2129,7 +2133,7 @@ class FiredAttack(Attack):
             if not self.isEmpty():
                 CIGlobals.makeDustCloud(self.getPos(render), scale = (0.25, 0.9, 1),
                                         sound = base.audio3d.loadSfx("phase_14/audio/sfx/SA_hot_air_flame_hit.ogg"),
-                                        color = (0, 0, 0, 1))
+                                        color = (0.2, 0.2, 0.2, 0.6))
 
             if PhysicsUtils.isLocalAvatar(entry):
                 if CIGlobals.isNodePathOk(self.suit):
