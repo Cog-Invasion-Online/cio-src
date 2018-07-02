@@ -64,15 +64,15 @@ classAttrsById = {
     CC_scout:        CogClassAttributes(walkMod = 1.3, dmgMod = 1.0, scaleMod = 0.95, voiceMod = 1.1, baseHp = 30,
                                        gagRamps = {GagGlobals.Sound: 0.9, GagGlobals.Squirt: 1.15}, footsteps = False),
 
-    CC_enforcer:     CogClassAttributes(walkMod = 1.2, dmgMod = 1.0, scaleMod = 1.0, voiceMod = 1.0, baseHp = 50),
+    CC_enforcer:     CogClassAttributes(walkMod = 1.2, dmgMod = 1.1, scaleMod = 1.0, voiceMod = 1.0, baseHp = 50),
 
     # TODO:
     # Can shield supervisor cogs
-    CC_marshal:      CogClassAttributes(walkMod = 1.1, dmgMod = 1.1, scaleMod = 1.0, voiceMod = 0.9, baseHp = 75),
+    CC_marshal:      CogClassAttributes(walkMod = 1.1, dmgMod = 1.2, scaleMod = 1.0, voiceMod = 0.9, baseHp = 75),
 
     # TODO:
     # Sound gags award a temporary 2-5 second speed boost (they anger them)
-    CC_supervisor:   CogClassAttributes(walkMod = 0.9, dmgMod = 1.2, scaleMod = 1.0, voiceMod = 0.8, baseHp = 100,
+    CC_supervisor:   CogClassAttributes(walkMod = 0.9, dmgMod = 1.3, scaleMod = 1.0, voiceMod = 0.8, baseHp = 100,
                                        gagRamps = {GagGlobals.Throw: 1.1})
 }
 
