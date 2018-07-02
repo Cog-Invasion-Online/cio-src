@@ -243,14 +243,25 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         else:
             return task.done
 
+        myClass = self.suit.suitPlan.getCogClass()
+        myLevel = self.suit.getLevel()
+
         for suit in data:
             if suit == self.suit:
                 continue
 
-            if suit.getLevel() < self.suit.getLevel():
+            theirClass = suit.suitPlan.getCogClass()
+            theirLevel = suit.getLevel()
+
+            if theirClass < myClass:
+                # Don't make way for a lower class than me.
                 continue
-            elif (suit.getLevel() == self.suit.getLevel() and
+            elif theirClass == myClass and theirLevel < myLevel:
+                # If we are the same class, don't make way for a lower level than me.
+                continue
+            elif (theirLevel == myLevel and
                   suit.doId > self.suit.doId):
+                # If we are the same level, don't make way for a younger cog.
                 continue
 
             currPos = Point2(self.suit.getX(render), self.suit.getY(render))
