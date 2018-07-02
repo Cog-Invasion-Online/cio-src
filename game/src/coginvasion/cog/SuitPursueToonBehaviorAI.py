@@ -66,6 +66,8 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         self.suit.sendUpdate('setChaseTarget', [self.targetId])
 
     def pickTarget(self):
+        if not self.battle:
+            return
         if len(self.battle.avIds) == 0:
             # We have nothing to do.
             return
@@ -110,6 +112,8 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         return 1
 
     def resetNextFrame(self):
+        if not hasattr(self, 'suit') or not self.suit:
+            return
         taskMgr.remove(self.suit.uniqueName('resetNextFrame'))
         taskMgr.doMethodLater(self.PickTargetRetryTime, self.reset, self.suit.taskName('resetNextFrame'))
         
@@ -122,6 +126,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
 
     def exit(self):
         taskMgr.remove(self.suit.uniqueName('resetNextFrame'))
+        taskMgr.remove(self.suit.uniqueName("PickTargetRetryTask"))
         self.fsm.request('off')
         self.target = None
         self.targetId = None
