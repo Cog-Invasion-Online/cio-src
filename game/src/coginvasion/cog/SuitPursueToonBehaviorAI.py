@@ -118,6 +118,9 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         taskMgr.doMethodLater(self.PickTargetRetryTime, self.reset, self.suit.taskName('resetNextFrame'))
         
     def reset(self, task = None):
+        if not hasattr(self, 'suit') or not self.suit:
+            return
+            
         self.exit()
         self.enter()
 
