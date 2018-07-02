@@ -98,7 +98,7 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
 
         self.clearMoveTrack()
         self.moveIval = getMoveIvalFromPath(self, path, elapsedT, True, 'suitMoveIval')
-        self.moveIval.start(elapsedT)
+        self.moveIval.start()#elapsedT) # don't do the timestamp for now
 
     def clearMoveTrack(self):
         if self.moveIval:
