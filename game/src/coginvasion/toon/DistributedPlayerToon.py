@@ -210,7 +210,7 @@ class DistributedPlayerToon(DistributedToon):
             self.setHpr(linkTunnel.toonOutHpr)
             self.setPos(linkTunnel.toonOutPos)
             
-            exitSeq.append(Sequence(
+            seq = Sequence(
                 Func(self.loop, 'run'),
                 LerpPosInterval(
                     pivotPointNode,
@@ -224,7 +224,10 @@ class DistributedPlayerToon(DistributedToon):
                     hpr = linkTunnel.outPivotEndHpr,
                     startHpr = linkTunnel.outPivotStartHpr,
                 )
-            ))
+            )
+            if base.localAvatar.doId != self.doId:
+                seq.append(Func(self.startSmooth))
+            exitSeq.append(seq)
             self.tunnelTrack.append(exitSeq)
 
         if base.localAvatar.doId == self.doId:
