@@ -580,6 +580,8 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                     LerpQuatInterval(toon, duration = 1.0, hpr = hpr,
                         startHpr = lambda toon = toon: toon.getHpr(render)),
                     Func(toon.setAnimState, 'neutral'))
+                if avId != base.localAvatar.doId:
+                    track.append(Func(toon.startSmooth))
                 runTrack.append(track)
 
         for suit in self.suits.values():

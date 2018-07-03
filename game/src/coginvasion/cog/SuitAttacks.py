@@ -214,7 +214,7 @@ class ThrowAttack(Attack):
     }
 
     speed = 1.5
-    throwSpeed = 66.67
+    throwSpeed = 75.0
     throwDistance = 50.0
 
     def __init__(self, attacksClass, suit):
