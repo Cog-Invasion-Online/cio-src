@@ -155,7 +155,11 @@ class Attack(DirectObject):
         self.suitTrack.delayDelete = DelayDelete.DelayDelete(self.suit, self.suitTrack.getName())
         self.suitTrack.start(ts)
 
-    def announceHit(self, foo = None):
+    def announceHit(self, entry = None):
+        if entry is not None:
+            if not PhysicsUtils.isLocalAvatar(entry):
+                return
+
         if self.suit:
             self.suit.sendUpdate('toonHitByWeapon', [self.attack, base.localAvatar.doId,
                                                      base.localAvatar.getDistance(self.suit)])
@@ -500,14 +504,9 @@ class GlowerPowerAttack(Attack):
         self.knifeRoot = None
         self.knives = []
         self.sound = None
-        self.collNP = None
 
     def cleanup(self):
         Attack.cleanup(self)
-        if self.collNP:
-            base.physicsWorld.remove(self.collNP.node())
-            self.collNP.removeNode()
-            self.collNP = None
         if self.knives:
             for knife in self.knives:
                 knife.removeNode()
@@ -532,14 +531,17 @@ class GlowerPowerAttack(Attack):
 
         self.sound = base.audio3d.loadSfx("phase_5/audio/sfx/SA_glower_power.ogg")
         base.audio3d.attachSoundToObject(self.sound, self.suit)
+        
+        self.collider = self.makeWorldCollider(self.knifeRoot)
+        collEvent = self.collider.getCollideEvent()
 
-        collName = self.suit.uniqueName("glowerPowerColl")
-        self.collNP = self.knifeRoot.attachNewNode(makeCollision(1.0, collName))
         collTrack = Sequence(Func(self.startToonLockOn), Wait(1.1), Func(self.stopToonLockOn),
                              Func(self.setupKnifeAngle),
-                             Func(self.acceptOnce, 'enter' + collName, self.announceHit),
-                             LerpPosInterval(self.collNP, 1.0, (0, 50, 0), (0, 0, 0)),
-                             Func(self.ignore, 'enter' + collName))
+                             Func(self.collider.start),
+                             Func(self.acceptOnce, collEvent, self.announceHit),
+                             LerpPosInterval(self.collider, 1.0, (0, 50, 0), (0, 0, 0)),
+                             Func(self.ignore, collEvent),
+                             Func(self.collider.stop))
         
         leftTracks = Parallel()
         rightTracks = Parallel()
@@ -665,7 +667,6 @@ class FountainPenAttack(Attack):
         self.spraySfx = None
         self.sprayParticle = None
         self.sprayScaleIval = None
-        self.wsnp = None
 
     def loadAttack(self):
         self.pen = loader.loadModel("phase_5/models/props/pen.bam")
@@ -686,9 +687,7 @@ class FountainPenAttack(Attack):
             collName = self.suit.uniqueName('fountainPenCollNode')
         else:
             collName = 'fountainPenCollNode'
-        self.wsnp = self.spray.attachNewNode(makeCollision(0.5, collName))
-        self.wsnp.setY(1)
-        #self.wsnp.show()
+        self.collider = self.makeWorldCollider(self.spray, radius = 0.5)
 
     def doAttack(self, ts = 0):
         self.loadAttack()
@@ -705,7 +704,8 @@ class FountainPenAttack(Attack):
                 Func(self.stopToonLockOn),
                 Func(self.attachSpray),
                 Func(self.spray.hide),
-                Func(self.acceptOnce, "enter" + self.wsnp.node().getName(), self.handleSprayCollision),
+                Func(self.acceptOnce, self.collider.getCollideEvent(), self.handleSprayCollision),
+                Func(self.collider.start),
                 Func(self.playWeaponSound),
                 Func(self.spray.show),
                 Func(self.sprayParticle.start, self.pen.find('**/joint_toSpray'), self.pen.find('**/joint_toSpray')),
@@ -714,7 +714,8 @@ class FountainPenAttack(Attack):
                 Func(self.sprayParticle.cleanup),
                 Func(self.spray.setScale, 1),
                 Func(self.spray.reparentTo, hidden),
-                Func(self.ignore, "enter" + self.wsnp.node().getName())
+                Func(self.ignore, self.collider.getCollideEvent()),
+                Func(self.collider.stop)
             )
         )
         self.suitTrack.setDoneEvent(self.suitTrack.getName())
@@ -737,7 +738,7 @@ class FountainPenAttack(Attack):
         self.spray.lookAt(self.target.find("**/def_head"))
 
     def handleSprayCollision(self, entry):
-        self.announceHit()
+        self.announceHit(entry)
         self.sprayScaleIval.pause()
 
     def playWeaponSound(self):
@@ -747,10 +748,6 @@ class FountainPenAttack(Attack):
 
     def cleanup(self):
         Attack.cleanup(self)
-        if self.wsnp:
-            base.physicsWorld.remove(self.wsnp.node())
-            self.wsnp.removeNode()
-            self.wsnp = None
         if self.pen:
             self.pen.removeNode()
             self.pen = None
@@ -791,7 +788,6 @@ class HangUpAttack(Attack):
         Attack.__init__(self, attacksClass, suit)
         self.phone = None
         self.receiver = None
-        self.collNP = None
         self.phoneSfx = None
         self.hangupSfx = None
         self.shootIval = None
@@ -817,8 +813,7 @@ class HangUpAttack(Attack):
         base.audio3d.attachSoundToObject(self.phoneSfx, self.phone)
         self.hangupSfx = base.audio3d.loadSfx("phase_3.5/audio/sfx/SA_hangup_place_down.ogg")
         base.audio3d.attachSoundToObject(self.hangupSfx, self.phone)
-        self.collNP = self.phone.attachNewNode(makeCollision(2, 'phone_shootout'))
-        #self.collNP.show()
+        self.collider = self.makeWorldCollider(self.phone, radius = 2)
 
     def doAttack(self, ts = 0):
         self.loadAttack()
@@ -858,13 +853,15 @@ class HangUpAttack(Attack):
                 Func(self.receiver.setH, 0.0),
                 Func(self.receiver.reparentTo, self.phone),
                 Func(self.stopToonLockOn),
-                Func(self.acceptOnce, "enter" + self.collNP.node().getName(), self.handleCollision),
+                Func(self.acceptOnce, self.collider.getCollideEvent(), self.handleCollision),
+                Func(self.collider.start),
                 Func(self.shootOut),
                 Parallel(
                     SoundInterval(self.hangupSfx, node = self.suit),
                     Sequence(
                         Wait(delayAfterShootToIgnoreCollisions),
-                        Func(self.ignore, "enter" + self.collNP.node().getName())
+                        Func(self.ignore, self.collider.getCollideEvent()),
+                        Func(self.collider.stop)
                     )
                 )
             )
@@ -885,17 +882,17 @@ class HangUpAttack(Attack):
         self.suitTrack.start(ts)
 
     def handleCollision(self, entry):
-        self.announceHit()
+        self.announceHit(entry)
 
     def shootOut(self):
         pathNode = NodePath('path')
         pathNode.reparentTo(self.suit)#.find('**/joint_Lhold'))
         pathNode.setPos(0, 50, self.phone.getZ(self.suit))
 
-        self.collNP.reparentTo(render)
+        self.collider.reparentTo(render)
 
         self.shootIval = LerpPosInterval(
-            self.collNP,
+            self.collider,
             duration = 1.0,
             pos = pathNode.getPos(render),
             startPos = self.phone.getPos(render)
@@ -918,10 +915,6 @@ class HangUpAttack(Attack):
         if self.receiver:
             self.receiver.removeNode()
             self.receiver = None
-        if self.collNP:
-            base.physicsWorld.remove(self.collNP.node())
-            self.collNP.removeNode()
-            self.collNP = None
         if self.phoneSfx:
             self.phoneSfx.stop()
             self.phoneSfx = None
@@ -1107,7 +1100,6 @@ class ParticleAttack(Attack):
         Attack.__init__(self, attacksClass, suit)
         self.particles = []
         self.handObj = None
-        self.shootOutCollNP = None
         self.particleSound = None
         self.particleMoveIval = None
         self.targetX = None
@@ -1118,7 +1110,7 @@ class ParticleAttack(Attack):
         pass
 
     def handleCollision(self, entry):
-        self.announceHit()
+        self.announceHit(entry)
 
     def doAttack(self, particlePaths, track_name, particleCollId, animation_name,
                 delayUntilRelease, animationSpeed = 1, handObjPath = None, handObjParent = None,
@@ -1127,7 +1119,7 @@ class ParticleAttack(Attack):
             particle = ParticleLoader.loadParticleEffect(path)
             self.particles.append(particle)
 
-        node = makeCollision(2, particleCollId)
+        self.collider = self.makeWorldCollider(hidden, radius = 2)
         
         self.startToonLockOn()
 
@@ -1135,9 +1127,9 @@ class ParticleAttack(Attack):
         self.targetY = self.attacksClass.target.getY(render)
         self.targetZ = self.attacksClass.target.getZ(render)
         if len(self.particles) == 1:
-            self.shootOutCollNP = self.particles[0].attachNewNode(node)
+            self.collider.reparentTo(self.particles[0])
         else:
-            self.shootOutCollNP = self.suit.attachNewNode(node)
+            self.collider.reparentTo(self.suit)
         if handObjPath and handObjParent:
             if isinstance(handObjPath, str):
                 self.handObj = loader.loadModel(handObjPath)
@@ -1181,7 +1173,7 @@ class ParticleAttack(Attack):
                     particle.setP(particle, 90)
 
             if onlyMoveColl:
-                target = self.shootOutCollNP
+                target = self.collider
                 target.wrtReparentTo(render)
             else:
                 target = self.particles[0]
@@ -1193,7 +1185,8 @@ class ParticleAttack(Attack):
             )
             self.particleMoveIval.start()
 
-            self.acceptOnce('enter' + self.shootOutCollNP.node().getName(), self.handleCollision)
+            self.acceptOnce(self.collider.getCollideEvent(), self.handleCollision)
+            self.collider.start()
 
             pathNP.removeNode()
             startNP.removeNode()
@@ -1214,6 +1207,7 @@ class ParticleAttack(Attack):
         self.particles = None
 
     def cleanup(self):
+        self.ignore(self.collider.getCollideEvent())
         Attack.cleanup(self)
         self.targetX = None
         self.targetY = None
@@ -1222,11 +1216,6 @@ class ParticleAttack(Attack):
         if self.handObj:
             self.handObj.removeNode()
             self.handObj = None
-        if self.shootOutCollNP:
-            self.ignore('enter' + self.shootOutCollNP.node().getName())
-            base.physicsWorld.remove(self.shootOutCollNP.node())
-            self.shootOutCollNP.removeNode()
-            self.shootOutCollNP = None
         if self.particleMoveIval:
             self.particleMoveIval.pause()
             self.particleMoveIval = None
@@ -1617,7 +1606,6 @@ class EvilEyeAttack(Attack):
         Attack.__init__(self, ac, suit)
         self.eyeRoot = None
         self.eye = None
-        self.eyeColl = None
         self.sound = None
 
     def doAttack(self, ts):
@@ -1645,8 +1633,7 @@ class EvilEyeAttack(Attack):
         moveDuration = 1.0
         eyeScale = 11.0
 
-        collName = self.suit.uniqueName("eyeColl")
-        self.eyeColl = self.eye.attachNewNode(makeCollision(1.0 / eyeScale, collName))
+        self.collider = self.makeWorldCollider(self.eye, 1.0 / eyeScale)
 
         self.suitTrack = Parallel(
             Sequence(Wait(1.3), SoundInterval(self.sound, node = self.eye)),
@@ -1655,15 +1642,17 @@ class EvilEyeAttack(Attack):
                      Wait(eyeHoldDuration * 0.3), LerpHprInterval(self.eye, 0.02, Point3(205, 40, 0)),
                      Wait(eyeHoldDuration * 0.7), Func(self.setupEyeAngle), Func(self.stopToonLockOn),
                      Func(self.eyeRoot.wrtReparentTo, render),
-                     Func(self.acceptOnce, 'enter' + collName, self.__handleEyeCollision),
+                     Func(self.acceptOnce, self.collider.getCollideEvent(), self.__handleEyeCollision),
+                     Func(self.collider.start),
                      Parallel(LerpPosInterval(self.eye, moveDuration, (0, 65.0, 0), startPos = (0, 0, 0)),
                               LerpHprInterval(self.eye, moveDuration, Point3(0, 0, -180), other = self.eye)),
-                     Func(self.ignore, 'enter' + collName))
+                     Func(self.ignore, self.collider.getCollideEvent()),
+                     Func(self.collider.stop))
         )
         self.startSuitTrack(ts)
 
     def __handleEyeCollision(self, entry):
-        self.announceHit()
+        self.announceHit(entry)
         if self.eye and not self.eye.isEmpty():
             self.eye.hide()
 
@@ -1673,10 +1662,6 @@ class EvilEyeAttack(Attack):
 
     def cleanup(self):
         Attack.cleanup(self)
-        if self.eyeColl:
-            base.physicsWorld.remove(self.eyeColl.node())
-            self.eyeColl.removeNode()
-            self.eyeColl = None
         if self.eye:
             self.eye.removeNode()
             self.eye = None
@@ -1721,7 +1706,6 @@ class TeeOffAttack(Attack):
         self.ballRoot = None
         self.club = None
         self.sound = None
-        self.ballCNP = None
         self.ballVisRope = None
 
     def doAttack(self, ts):
@@ -1741,8 +1725,9 @@ class TeeOffAttack(Attack):
         self.ball = loader.loadModel("phase_5/models/props/golf-ball.bam")
         self.ball.reparentTo(self.ballRoot)
         self.ball.setScale(ballScale)
-        collName = self.suit.uniqueName('golfBallColl')
-        self.ballCNP = self.ball.attachNewNode(makeCollision(1.0 / ballScale, collName))
+
+        self.collider = self.makeWorldCollider(self.ball, 1.0 / ballScale, mask = CIGlobals.WallGroup | CIGlobals.LocalAvGroup)
+
         self.club = loader.loadModel("phase_5/models/props/golf-club.bam")
         self.club.reparentTo(self.suit.find("**/joint_Lhold"))
         self.club.setHpr(63.097, 43.988, -18.435)
@@ -1753,17 +1738,19 @@ class TeeOffAttack(Attack):
             ActorInterval(self.suit, 'golf'),
             Sequence(Wait(4.1), Func(base.playSfx, self.sound)),
             Sequence(Func(self.startToonLockOn), Wait(4.2), Func(self.stopToonLockOn), Func(self.setupBallAngle), Func(self.ballRoot.wrtReparentTo, render),
-                     Func(self.acceptOnce, 'enter' + collName, self.__handleGolfBallCollision),
+                     Func(self.acceptOnce, self.collider.getCollideEvent(), self.__handleGolfBallCollision),
+                     Func(self.collider.start),
                      LerpPosInterval(self.ball, duration = 1.0, pos = (0, 85, 0), startPos = (0, 0, 0)),
                      Func(self.ball.hide),
-                     Func(self.ignore, 'enter' + collName)), name = self.suit.uniqueName('golfBallSuitTrack'))
+                     Func(self.collider.stop),
+                     Func(self.ignore, self.collider.getCollideEvent())), name = self.suit.uniqueName('golfBallSuitTrack'))
         self.startSuitTrack(ts)
 
     def setupBallAngle(self):
         self.ballRoot.lookAt(self.target.find("**/def_head"))
         
     def __handleGolfBallCollision(self, entry):
-        self.announceHit()
+        self.announceHit(entry)
         if self.ball and not self.ball.isEmpty():
             self.ball.hide()
     
@@ -1772,10 +1759,6 @@ class TeeOffAttack(Attack):
         if self.visualizeBallPath and self.ballVisRope:
             self.ballVisRope.removeNode()
             self.ballVisRope = None
-        if self.ballCNP:
-            base.physicsWorld.remove(self.ballCNP.node())
-            self.ballCNP.removeNode()
-            self.ballCNP = None
         if self.ball:
             self.ball.removeNode()
             self.ball = None
@@ -1811,7 +1794,6 @@ class WatercoolerAttack(Attack):
         self.splash = None
         self.soundAppear = None
         self.soundSpray = None
-        self.collNP = None
 
     def doAttack(self, ts):
         Attack.doAttack(self, ts)
@@ -1837,9 +1819,8 @@ class WatercoolerAttack(Attack):
         self.spray.reparentTo(render)
         self.spray.hide()
 
-        collName = self.suit.uniqueName("sprayColl")
-        self.collNP = self.spray.attachNewNode(makeCollision(1.0, collName))
-        self.collNP.setY(1.0)
+        self.collider = self.makeWorldCollider(self.spray)
+        self.collider.setY(1.0)
 
         self.splash = loadSplat((0.75, 0.75, 1.0, 0.8))
         self.splash.setTransparency(True)
@@ -1850,8 +1831,9 @@ class WatercoolerAttack(Attack):
             ActorInterval(self.suit, 'watercooler'),
             Sequence(Func(self.startToonLockOn), Wait(1.01), Func(self.cooler.show), LerpScaleInterval(self.cooler, 0.5, Point3(1.15, 1.15, 1.15)),
                      Wait(1.6), Func(self.stopToonLockOn), Func(self.positionSpray), Func(self.setupSprayAngle), Func(self.spray.show),
-                     Func(self.acceptOnce, 'enter' + collName, self.announceHit), LerpScaleInterval(self.spray, duration = 0.3, scale = (1, 20, 1), startScale = (1, 1, 1)),
-                     Func(self.spray.hide), Func(self.ignore, 'enter' + collName)),
+                     Func(self.acceptOnce, self.collider.getCollideEvent(), self.announceHit), Func(self.collider.start),
+                     LerpScaleInterval(self.spray, duration = 0.3, scale = (1, 20, 1), startScale = (1, 1, 1)),
+                     Func(self.spray.hide), Func(self.collider.stop), Func(self.ignore, self.collider.getCollideEvent())),
             Sequence(Wait(1.1), SoundInterval(self.soundAppear, node = self.suit, duration = 1.4722), Wait(0.4), SoundInterval(self.soundSpray, node = self.suit, duration = 2.313)),
         )
         self.startSuitTrack(ts)
