@@ -14,7 +14,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.minigame.FlightProjectileInterval import FlightProjectileInterval
 from direct.interval.IntervalGlobal import Sequence, LerpPosInterval, LerpScaleInterval, Func, Wait, Parallel
 from direct.showutil import Effects
-from panda3d.core import OmniBoundingVolume, Point3, CollisionSphere, CollisionNode, CollisionHandlerEvent, BitMask32
+from panda3d.core import OmniBoundingVolume, Point3
 
 class LightDropGag(DropGag):
 
@@ -25,21 +25,22 @@ class LightDropGag(DropGag):
         self.objTrack = None
         self.rotate90 = rotate90
 
-    def startDrop(self):
-        if self.gag and self.dropLoc:
+    def startDrop(self, entity):
+        if entity and self.dropLoc:
             x, y, z = self.dropLoc
             startPos = Point3(x, y, z + 20)
-            self.gag.setPos(startPos)
-            self.gag.node().setBounds(OmniBoundingVolume())
-            self.gag.node().setFinal(1)
-            self.gag.headsUp(self.avatar)
+            entity.setPos(startPos)
+            entity.node().setBounds(OmniBoundingVolume())
+            entity.node().setFinal(1)
+            entity.headsUp(self.avatar)
+            entity.setPythonTag('EntityRoot', entity)
             if self.rotate90:
-                self.gag.setH(self.gag.getH() - 90)
-            self.buildCollisions()
+                entity.setH(entity.getH() - 90)
+            self.buildCollisions(entity)
             objectTrack = Sequence()
-            animProp = LerpPosInterval(self.gag, self.fallDuration, self.dropLoc, startPos = startPos)
-            bounceProp = Effects.createZBounce(self.gag, 2, self.dropLoc, 0.5, 1.5)
-            objAnimShrink = Sequence(Wait(0.5), Func(self.gag.reparentTo, render), animProp, bounceProp)
+            animProp = LerpPosInterval(entity, self.fallDuration, self.dropLoc, startPos = startPos)
+            bounceProp = Effects.createZBounce(entity, 2, self.dropLoc, 0.5, 1.5)
+            objAnimShrink = Sequence(Wait(0.5), Func(entity.reparentTo, render), animProp, bounceProp)
             objectTrack.append(objAnimShrink)
             dropShadow = CIGlobals.makeDropShadow(1.0)
             dropShadow.reparentTo(hidden)
@@ -51,26 +52,27 @@ class LightDropGag(DropGag):
             self.objTrack.start()
             self.dropLoc = None
 
-    def onActivate(self, ignore, suit):
+    def onActivate(self, entity, suit):
         self.objTrack.finish()
         self.objTrack = None
         if not suit.isDead():
             suit.setAnimState('drop-react')
         suit.d_disableMovement(wantRay = True)
         
-        if not self.gag or self.gag.isEmpty():
-            self.build()
+        if not entity or entity.isEmpty():
+            entity = self.build()
 
-        self.gag.setPos(suit.find('**/joint_head').getPos(render))
+        entity.setPos(suit.find('**/joint_head').getPos(render))
+        dropMdl = entity.find('**/DropMdl')
         if self.name == GagGlobals.FlowerPot:
-            self.gag.setZ(self.gag, 3.5)
-        bounce = Effects.createScaleZBounce(self.dropMdl, 1, self.dropMdl.getScale(render), 0.3, 0.75)
+            entity.setZ(entity, 3.5)
+        bounce = Effects.createScaleZBounce(dropMdl, 1, dropMdl.getScale(render), 0.3, 0.75)
         dummyNode = suit.attachNewNode('fallOffNode')
         dummyNode.setX(2)
         dummyNode.setY(-2)
         flightIval = FlightProjectileInterval(
-            self.gag,
-            startPos = self.gag.getPos(render),
+            entity,
+            startPos = entity.getPos(render),
             endPos = dummyNode.getPos(render),
             duration = 0.8,
             gravityMult = .35

@@ -303,6 +303,7 @@ class Gag(object, DirectObject):
         self.setHandJoint()
         self.gag.setScale(self.scale)
         self.gag.setName(self.getName())
+        return self.gag
 
     def setHandJoint(self):
         if self.avatar:
@@ -312,18 +313,21 @@ class Gag(object, DirectObject):
         if not self.avatar or not self.avatar.getBackpack() or self.avatar.getBackpack() and self.avatar.getBackpack().getSupply(self.getID()) == 0 or self.state == GagState.RECHARGING:
             return
         self.setHandJoint()
-        if not self.gag:
-            self.build()
+        
+        entity = self.gag
+        
+        if not entity:
+            entity = self.build()
         if self.holdGag:
-            self.gag.show()
-            self.gag.reparentTo(self.handJoint)
+            entity.show()
+            entity.reparentTo(self.handJoint)
         self.equipped = True
 
         self.avatar.getBackpack().setActiveGag(self.getID())
 
         if self.isLocal():
             cam = base.localAvatar.getFPSCam()
-            cam.setVMGag(self.gag)
+            cam.setVMGag(entity)
             if base.localAvatar.isFirstPerson():
                 base.localAvatar.getViewModel().show()
             #self.drawSfx.play()

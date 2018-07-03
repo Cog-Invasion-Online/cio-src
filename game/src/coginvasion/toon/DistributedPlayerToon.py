@@ -427,6 +427,11 @@ class DistributedPlayerToon(DistributedToon):
                 entity = None
                 if hasattr(trapGag, 'getEntities') and 0 <= entityId <= (len(trapGag.getEntities()) - 1):
                     entity = trapGag.getEntities()[entityId]
+                    
+                    # This is for light drop gags
+                    if entity is None and entity.hasPythonTag('EntityRoot'):
+                        entity = entity.getPythonTag('EntityRoot')
+                    
                     trapGag.onActivate(entity, suit)
 
     def b_trapActivate(self, gagId, avId, entityId, suitId):

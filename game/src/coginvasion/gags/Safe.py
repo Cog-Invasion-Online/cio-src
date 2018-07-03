@@ -13,7 +13,7 @@ from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import Sequence, LerpPosInterval, LerpScaleInterval, Func, Wait, Parallel
 from direct.showutil import Effects
-from panda3d.core import OmniBoundingVolume, Point3, CollisionSphere, CollisionNode, CollisionHandlerEvent, BitMask32
+from panda3d.core import OmniBoundingVolume, Point3
 
 class Safe(DropGag):
 
@@ -24,20 +24,21 @@ class Safe(DropGag):
         self.colliderOfs = Point3(0, 0, 0.25)
         self.colliderRadius = 2
 
-    def startDrop(self):
-        if self.gag and self.dropLoc:
+    def startDrop(self, entity):
+        if entity and self.dropLoc:
             endPos = self.dropLoc
+            dropMdl = entity.find('**/DropMdl')
             startPos = Point3(endPos.getX(), endPos.getY(), endPos.getZ() + 20)
-            self.gag.setPos(startPos.getX(), startPos.getY() + 2, startPos.getZ())
-            self.dropMdl.setScale(5 * 0.85)
-            self.gag.node().setBounds(OmniBoundingVolume())
-            self.gag.node().setFinal(1)
-            self.gag.headsUp(self.avatar)
-            self.buildCollisions()
+            entity.setPos(startPos.getX(), startPos.getY() + 2, startPos.getZ())
+            dropMdl.setScale(5 * 0.85)
+            entity.node().setBounds(OmniBoundingVolume())
+            entity.node().setFinal(1)
+            entity.headsUp(self.avatar)
+            self.buildCollisions(entity)
             objectTrack = Sequence()
-            animProp = LerpPosInterval(self.gag, self.fallDuration, endPos, startPos = startPos)
-            bounceProp = Effects.createZBounce(self.gag, 2, endPos, 0.5, 1.5)
-            objAnimShrink = Sequence(Func(self.dropMdl.setScale, 5), Wait(0.5), Func(self.gag.reparentTo, render), animProp, bounceProp)
+            animProp = LerpPosInterval(entity, self.fallDuration, endPos, startPos = startPos)
+            bounceProp = Effects.createZBounce(entity, 2, endPos, 0.5, 1.5)
+            objAnimShrink = Sequence(Func(dropMdl.setScale, 5), Wait(0.5), Func(entity.reparentTo, render), animProp, bounceProp)
             objectTrack.append(objAnimShrink)
             dropShadow = CIGlobals.makeDropShadow(1.0)
             dropShadow.reparentTo(hidden)

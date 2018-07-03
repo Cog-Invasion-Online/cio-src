@@ -348,7 +348,10 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
 
     def removePart(self, partName, lodName = "lodRoot"):
         self.removeLoopTask()
-        Actor.removePart(self, partName, lodName = lodName)
+        part = Actor.getPart(self, partName, lodName)
+        
+        if part:
+            Actor.removePart(self, partName, lodName = lodName)
 
     def loopTask(self, animName, restart, partName, task):
         self.loop(animName, restart, partName)
