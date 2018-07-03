@@ -15,7 +15,7 @@ from panda3d.core import VBase4
 
 from direct.fsm.StateData import StateData
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.interval.IntervalGlobal import Sequence, Wait, Func, LerpPosHprInterval
+from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from src.coginvasion.globals import CIGlobals
 from PublicWalk import PublicWalk
 from src.coginvasion.book.ShtickerBook import ShtickerBook
@@ -339,7 +339,6 @@ class Place(StateData):
         base.localAvatar.b_setAnimState('teleportIn', callback = self.teleportInDone)
         base.localAvatar.d_broadcastPositionNow()
         base.localAvatar.b_setParent(CIGlobals.SPRender)
-        base.localAvatar.doFirstPersonCameraTransition()
 
         base.transitions.irisIn()
 
@@ -452,7 +451,6 @@ class Place(StateData):
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.d_broadcastPositionNow()
         base.localAvatar.b_setAnimState('teleportOut', callback, [requestStatus])
-        base.localAvatar.doFirstPersonCameraTransition()
 
     def exitTeleportOut(self):
         base.localAvatar.disableLaffMeter()
