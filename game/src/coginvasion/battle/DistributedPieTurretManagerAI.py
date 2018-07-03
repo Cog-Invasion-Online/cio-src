@@ -60,7 +60,7 @@ class DistributedPieTurretManagerAI(DistributedObjectAI):
         for obj in base.air.doId2do.values():
             className = obj.__class__.__name__
             if obj.zoneId == self.zoneId:
-                if className == 'DistributedToonAI':
+                if className in CIGlobals.ToonClasses:
                     if obj.getPUInventory()[0] > 0:
                         turrets += 1
                 elif className == 'DistributedPieTurretAI':
