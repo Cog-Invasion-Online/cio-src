@@ -1577,6 +1577,8 @@ class FingerWagAttack(ParticleAttack):
             'fingerwag', 1.5, 1.5, None, None, False, ts
         )
         setEffectTexture(self.particles[0], 'blah', Vec4(0.55, 0, 0.55, 1))
+        for particle in self.particles:
+            particle.setZ(self.suit.find('**/joint_head').getZ(render))
         self.suitTrack.append(Wait(self.afterIvalDur))
         self.suitTrack.start(ts)
 

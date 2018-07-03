@@ -37,9 +37,9 @@ class TossTrapGag(TrapGag):
         self.avatar.play('toss', fromFrame = 22)
 
     def build(self):
-        TrapGag.build(self)
         self.buildParticles()
         self.setHandJoint()
+        return TrapGag.build(self)
 
     def buildParticles(self):
         self.cleanupParticles()

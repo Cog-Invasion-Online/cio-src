@@ -29,6 +29,8 @@ class TrapGag(Gag):
         now = datetime.datetime.now()
         debrisName = 'TrapDebris-{0}'.format(now.strftime("%H:%M"))
         self.gag.setName(debrisName)
+        
+        return self.gag
 
     @abc.abstractmethod
     def buildCollisions(self):
