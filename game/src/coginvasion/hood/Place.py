@@ -499,8 +499,8 @@ class Place(StateData):
 
     def exitTunnelIn(self):
         base.localAvatar.playMovementSfx(None)
-        base.localAvatar.wrtReparentTo(render)
-        base.localAvatar.walkControls.setCollisionsActive(1)
+        base.localAvatar.reparentTo(hidden)
+        #base.localAvatar.walkControls.setCollisionsActive(1)
 
     def enterTunnelOut(self, requestStatus):
         zone = requestStatus['fromZone']

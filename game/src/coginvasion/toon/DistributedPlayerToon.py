@@ -182,24 +182,8 @@ class DistributedPlayerToon(DistributedToon):
                     duration = 1.0,
                     pos = (linkTunnel.inPivotEndX, pivotPointNode.getY(), pivotPointNode.getZ()),
                     startPos = (linkTunnel.inPivotStartX, pivotPointNode.getY(), pivotPointNode.getZ())
-            )))
+            ), Func(self.reparentTo, hidden)))
         elif inOrOut == 1:
-
-            def doAvatarExit():
-                worldSpacePos = self.getPos(render)
-                worldSpaceHpr = self.getHpr(render)
-                    
-                # This seems to correct the going into the gray
-                # bug with the delay.
-                Sequence(
-                    Wait(0.025),
-                    Func(self.stopSmooth),
-                    Func(self.reparentTo, render),
-                    Func(self.setPos, worldSpacePos),
-                    Func(self.setHpr, worldSpaceHpr),
-                    Func(self.startSmooth),
-                    Func(self.startLookAround)
-                ).start()
             
             # Going out!
             pivotPoint = linkTunnel.outPivotPoint
@@ -239,8 +223,7 @@ class DistributedPlayerToon(DistributedToon):
                     duration = 2.0,
                     hpr = linkTunnel.outPivotEndHpr,
                     startHpr = linkTunnel.outPivotStartHpr,
-                ),
-                Func(doAvatarExit)
+                )
             ))
             self.tunnelTrack.append(exitSeq)
 

@@ -185,6 +185,10 @@ class BulletCharacterController(DirectObject):
     
     def setLinearMovement(self, speed, *args):
         self.__linearVelocity = speed
+        
+    def placeOnGround(self):
+        self.__land()
+        self.__linearVelocity = Vec3(0)
     
     def update(self):
         """

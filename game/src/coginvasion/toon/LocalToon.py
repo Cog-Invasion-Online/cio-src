@@ -125,6 +125,9 @@ class LocalToon(DistributedPlayerToon):
         
         # This is used by the animation traverser.
         self.__traverseGUI = None
+        
+    def startSmooth(self):
+        self.notify.warning("Tried to call startSmooth() on LocalToon!")
 
     def handleSuitAttack(self, attack):
         if self.isFirstPerson():
@@ -198,7 +201,8 @@ class LocalToon(DistributedPlayerToon):
         messenger.send(self.cr.playGame.getPlace().doneEvent)
 
     def _handleCameOutTunnel(self):
-        #self.walkControls.setCollisionsActive(1)
+        self.wrtReparentTo(render)
+        
         self.cr.playGame.getPlace().fsm.request(self.cr.playGame.getPlace().nextState)
 
     def handleClickedWhisper(self, senderName, fromId, isPlayer, openPanel = False):

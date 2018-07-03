@@ -51,7 +51,7 @@ class Walk(StateData):
             #base.localAvatar.stopSmartCamera()
             base.localAvatar.stopPosHprBroadcast()
             base.localAvatar.stopBlink()
-            base.localAvatar.collisionsOff()
+            #base.localAvatar.collisionsOff()
             #base.localAvatar.controlManager.placeOnFloor()
         
 
