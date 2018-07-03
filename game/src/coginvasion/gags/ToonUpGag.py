@@ -80,7 +80,7 @@ class ToonUpGag(Gag):
 
     def healNearbyAvatars(self, radius):
         for obj in base.cr.doId2do.values():
-            if obj.__class__.__name__ == ToonClasses:
+            if obj.__class__.__name__ in ToonClasses:
                 if self.avatar.getDistance(obj) <= radius:
                     if obj.getHealth() < obj.getMaxHealth():
                         obj.sendUpdate('toonUp', [self.healAmount, 1, 1])
