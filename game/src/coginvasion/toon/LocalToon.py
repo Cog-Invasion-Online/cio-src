@@ -691,8 +691,8 @@ class LocalToon(DistributedPlayerToon):
             self.gagThrowBtn.bind(DGG.B1RELEASE, self.throwGag)
             
         key = CIGlobals.getSettingsMgr().getSetting("gagkey")
-        self.accept(key, self.startGag)
-        self.accept(key + "-up", self.throwGag)
+        CIGlobals.acceptWithModifiers(self, key, self.startGag)
+        CIGlobals.acceptWithModifiers(self, key + "-up", self.throwGag)
         
         self.gagsEnabled = True
 
@@ -703,8 +703,8 @@ class LocalToon(DistributedPlayerToon):
             self.gagThrowBtn.unbind(DGG.B1PRESS)
             self.gagThrowBtn.unbind(DGG.B1RELEASE)
         key = CIGlobals.getSettingsMgr().getSetting("gagkey")
-        self.ignore(key)
-        self.ignore(key + "-up")
+        CIGlobals.ignoreWithModifiers(self, key)
+        CIGlobals.ignoreWithModifiers(self, key + "-up")
 
     def disableGags(self):
         self.disableGagKeys()
@@ -742,7 +742,7 @@ class LocalToon(DistributedPlayerToon):
         if self.gagThrowBtn:
             self.gagThrowBtn.unbind(DGG.B1PRESS)
 
-        self.ignore(CIGlobals.getSettingsMgr().getSetting("gagkey"))
+        CIGlobals.ignoreWithModifiers(self, CIGlobals.getSettingsMgr().getSetting("gagkey"))
         self.resetHeadHpr()
         self.b_gagStart(self.backpack.getCurrentGag().getID())
 
@@ -753,7 +753,7 @@ class LocalToon(DistributedPlayerToon):
         if self.gagThrowBtn:
             self.gagThrowBtn.unbind(DGG.B1RELEASE)
 
-        self.ignore(CIGlobals.getSettingsMgr().getSetting("gagkey") + "-up")
+        CIGlobals.ignoreWithModifiers(self, CIGlobals.getSettingsMgr().getSetting("gagkey") + "-up")
 
         self.b_gagThrow(self.backpack.getActiveGag().getID())
 

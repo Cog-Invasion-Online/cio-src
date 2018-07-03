@@ -77,6 +77,21 @@ EagleGame = "Eagle Summit"
 DeliveryGame = "Delivery!"
 DodgeballGame = "Winter Dodgeball"
 
+patterns = ('%s', 'control-%s', 'shift-control-%s', 'alt-%s',
+            'control-alt-%s', 'shift-%s', 'shift-alt-%s')
+
+def acceptWithModifiers(acceptor, event, callback = None, extraArgs = []):
+    for pattern in patterns:
+        acceptor.accept(pattern % event, callback, extraArgs)
+
+def acceptOnceWithModifiers(acceptor, event, callback = None, extraArgs = []):
+    for pattern in patterns:
+        acceptor.acceptOnce(pattern % event, callback, extraArgs)
+    
+def ignoreWithModifiers(acceptor, event):
+    for pattern in patterns:
+        acceptor.ignore(pattern % event)
+
 def doSceneCleanup():
     from panda3d.core import ModelPool, TexturePool, RenderState, RenderAttrib, TransformState, GeomCacheManager
 

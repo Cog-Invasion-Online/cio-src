@@ -41,6 +41,8 @@ class PowerBar(NodePath):
         return self.bar['value']
         
     def start(self):
+        taskMgr.remove("hideBarTask-" + str(id(self)))
+        
         self.startTime = globalClock.getFrameTime()
         self.task = taskMgr.add(self.__powerBarUpdate, "powerBarUpdate-" + str(id(self)))
         self.show()
