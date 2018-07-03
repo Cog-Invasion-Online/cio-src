@@ -150,7 +150,7 @@ class LocationSeeker:
         indicatorNP = self.dropShadow.attachNewNode(cm.generate())
         indicatorNP.setTexture(loader.loadTexture(self.gag.crosshair.crosshairTex), 1)
         indicatorNP.setScale(self.shadowScale * 2.5)
-        indicatorNP.setDepthOffset(5)
+        indicatorNP.setDepthOffset(16)
         indicatorNP.setTransparency(1)
         indicatorNP.setP(-90)
 
