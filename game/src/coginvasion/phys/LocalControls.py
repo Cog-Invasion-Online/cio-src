@@ -222,7 +222,7 @@ class LocalControls(DirectObject):
     
         self.active = True
         self.controller.placeOnGround()
-        taskMgr.add(self.__controllerUpdate, self.charUpdateTaskName, sort = 30)
+        taskMgr.add(self.__controllerUpdate, self.charUpdateTaskName, sort = 50)
         
     def stopControllerUpdate(self):
         taskMgr.remove(self.charUpdateTaskName)

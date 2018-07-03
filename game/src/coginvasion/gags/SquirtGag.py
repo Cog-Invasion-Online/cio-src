@@ -19,8 +19,10 @@ from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.toon import ParticleLoader
+from src.coginvasion.gui.WaterBar import WaterBar
 
 import abc
+import math
 
 class SquirtGag(Gag):
 
@@ -39,9 +41,13 @@ class SquirtGag(Gag):
         self.sprayParticleDist = 50.0
         self.sprayParticleLife = 0.5
         self.lastDmgTime = 0.0
+        self.lastSprayTime = 0.0
         self.dmgIval = 0.2
         self.spraySoundSpeed = 4.0
         self.spraySoundIval = None
+        
+        self.waterBar = None
+        self.barTask = None
 
     def stopSpraySoundIval(self):
         if self.spraySoundIval:
@@ -93,6 +99,10 @@ class SquirtGag(Gag):
         Gag.reset(self)
 
     def __updateParticleParent(self, task = None):
+        if base.localAvatar.backpack.getSupply(self.id) <= 0:
+            base.localAvatar.b_gagThrow(self.id)
+            return task.done
+    
         time = globalClock.getFrameTime()
         
         streamPos = self.waterStreamParent.getPos(render)
@@ -108,7 +118,11 @@ class SquirtGag(Gag):
             if time - self.lastDmgTime >= self.dmgIval:
                 self._handleSprayCollision(NodePath(node), hitPos, distance)
                 self.lastDmgTime = time
-            
+                
+        if time - self.lastSprayTime >= self.dmgIval:
+            base.localAvatar.sendUpdate('usedGag', [self.id])
+            self.lastSprayTime = time
+
         self.waterStreamParent.lookAt(render, hitPos)
         
         if self.sprayParticle:
@@ -131,6 +145,14 @@ class SquirtGag(Gag):
         if self.isLocal():
             # Update now to prevent one particle spraying out the side when we begin.
             self.__updateParticleParent()
+            
+    def cleanupWaterBar(self):
+        if self.waterBar:
+            self.waterBar.removeNode()
+        self.waterBar = None
+        if self.barTask:
+            self.barTask.remove()
+        self.barTask = None
 
     def equip(self):
         Gag.equip(self)
@@ -138,6 +160,34 @@ class SquirtGag(Gag):
         self.sprayParticleRoot.setLightOff()
         self.sprayParticleRoot.setMaterialOff()
         self.sprayParticleRoot.setShaderOff()
+        
+        if self.isLocal():
+            self.waterBar = WaterBar()
+            self.waterBar.reparentTo(base.a2dLeftCenter)
+            self.waterBar.setScale(0.6)
+            self.waterBar.setX(0.16)
+            self.barTask = taskMgr.add(self.__barUpdate, "SquirtGag.barUpdate")
+            
+    def unEquip(self):
+        if self.isLocal():
+            self.cleanupWaterBar()
+        Gag.unEquip(self)
+        
+    def __barUpdate(self, task):
+        if self.waterBar:
+            max = base.localAvatar.backpack.getMaxSupply(self.id)
+            suppl = base.localAvatar.backpack.getSupply(self.id)
+            perct = float(suppl) / float(max)
+            
+            self.waterBar.range = max
+            self.waterBar.value = suppl
+            
+            if perct <= 0.3:
+                time = globalClock.getFrameTime()
+                alpha = 0.5 + ((math.sin(time * 7) + 1) / 4)
+                self.waterBar.setBarAlpha(alpha)
+            
+        return task.cont
 
     def start(self):
         Gag.start(self)
