@@ -12,6 +12,7 @@ from direct.interval.IntervalGlobal import ActorInterval
 
 from src.coginvasion.gags.Gag import Gag
 from src.coginvasion.gags.GagType import GagType
+from src.coginvasion.globals.CIGlobals import ToonClasses
 from panda3d.core import Point3
 import random
 
@@ -32,7 +33,6 @@ class ToonUpGag(Gag):
         Gag.start(self)
         if self.isLocal():
             self.startTimeout()
-        if self.isLocal():
             base.localAvatar.sendUpdate('usedGag', [self.id])
 
     def equip(self):
@@ -65,7 +65,7 @@ class ToonUpGag(Gag):
         avatars = {}
         distances = []
         for obj in base.cr.doId2do.values():
-            if obj.__class__.__name__ == "DistributedToon":
+            if obj.__class__.__name__ in ToonClasses:
                 distance = self.avatar.getDistance(obj)
                 if obj != self.avatar:
                     if distance <= radius:
@@ -80,7 +80,7 @@ class ToonUpGag(Gag):
 
     def healNearbyAvatars(self, radius):
         for obj in base.cr.doId2do.values():
-            if obj.__class__.__name__ == "DistributedToon":
+            if obj.__class__.__name__ == ToonClasses:
                 if self.avatar.getDistance(obj) <= radius:
                     if obj.getHealth() < obj.getMaxHealth():
                         obj.sendUpdate('toonUp', [self.healAmount, 1, 1])

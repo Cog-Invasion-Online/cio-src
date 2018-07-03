@@ -19,8 +19,13 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Func, SoundInterval, Wait, LerpScaleInterval, Parallel
 from direct.interval.LerpInterval import LerpPosHprInterval,\
     LerpColorScaleInterval
-from panda3d.core import CollisionHandlerFloor, Point3, TransparencyAttrib, Vec4
+    
+from panda3d.core import CollisionHandlerFloor, Point3, TransparencyAttrib, Vec4, NodePath
+
+from datetime import datetime
 import abc
+
+SoundTrackName = 'SoundTrack'
 
 class DropGag(Gag, LocationGag):
     notify = directNotify.newCategory('DropGag')
@@ -32,7 +37,6 @@ class DropGag(Gag, LocationGag):
         self.holdGag = False
         self.missSfx = None
         self.fallSoundPath = 'phase_5/audio/sfx/incoming_whistleALT.ogg'
-        self.fallSoundInterval = None
         self.fallSfx = None
         self.chooseLocFrame = 34
         self.completeFrame = 77
@@ -63,13 +67,24 @@ class DropGag(Gag, LocationGag):
         self.lastShadowMoveTime = 0.0
 
     def build(self):
-        self.gag = hidden.attachNewNode('dropGagRoot')
-        self.dropMdl = loader.loadModel(self.model)
-        self.dropMdl.reparentTo(self.gag)
-        self.dropMdl.setScale(self.scale)
-        self.dropMdl.setName(self.getName())
-        base.audio3d.attachSoundToObject(self.fallSfx, self.gag)
-        base.audio3d.attachSoundToObject(self.missSfx, self.gag)
+        # Let's move away from using the `gag` attribute and instead
+        # use a local scope `entity` attribute and return the entity.
+        entity = hidden.attachNewNode('dropGagRoot')
+        
+        # We can't rely on an avatar doId nor a regular date. So let's use
+        # seconds and microseconds.
+        now = datetime.now()
+        entity.setName('DropDebris-{0}'.format(now.strftime('%S %f')))
+        
+        dropMdl = loader.loadModel(self.model)
+        dropMdl.reparentTo(entity)
+        dropMdl.setScale(self.scale)
+        dropMdl.setName('DropMdl')
+        
+        base.audio3d.attachSoundToObject(self.fallSfx, entity)
+        base.audio3d.attachSoundToObject(self.missSfx, entity)
+
+        return entity
 
     def tickShadowIdleTask(self, task):
         time = globalClock.getFrameTime()
@@ -175,57 +190,66 @@ class DropGag(Gag, LocationGag):
     def onActivate(self, ignore, suit):
         pass
 
-    def buildCollisions(self):
-        self.dropCollider = WorldCollider('dropGagCollider', self.colliderRadius, 'gagSensor-into',
+    def buildCollisions(self, entity):
+        dropCollider = WorldCollider('dropGagCollider', self.colliderRadius, 'gagSensor-into',
                                           offset = self.colliderOfs)
-        self.dropCollider.reparentTo(self.gag)
-        self.avatar.acceptOnce('gagSensor-into', self.onCollision)
+        dropCollider.reparentTo(entity)
+        self.avatar.acceptOnce('gagSensor-into', self.onCollision, extraArgs = [entity])
 
-    def onCollision(self, intoNP):
-        if not self.gag:
+    def onCollision(self, entity, intoNP):
+        if not entity or entity.isEmpty():
             return
+        
+        dropMdl = entity.find('**/DropMdl')
+        soundTrack = entity.getPythonTag(SoundTrackName)
+        print entity.getName()
         print "DropGag.onCollision:", intoNP
         avNP = intoNP.getParent()
         hitCog = False
-        self.fallSoundInterval.pause()
-        self.fallSoundInterval = None
+        soundTrack.pause()
         shrinkTrack = Sequence()
         if self.avatar.doId == base.localAvatar.doId:
             for key in base.cr.doId2do.keys():
                 obj = base.cr.doId2do[key]
                 if obj.__class__.__name__ in CIGlobals.SuitClasses:
                     if obj.getKey() == avNP.getKey():
-                        dist = (obj.getPos(render).getXy() - self.gag.getPos(render).getXy()).length()
+                        dist = (obj.getPos(render).getXy() - entity.getPos(render).getXy()).length()
                         print dist
                         obj.sendUpdate('hitByGag', [self.getID(), dist * 4])
                         self.avatar.b_trapActivate(self.getID(), self.avatar.doId, 0, obj.doId)
                         hitCog = True
-        gagObj = self.gag
+
         if hitCog:
-            base.audio3d.attachSoundToObject(self.hitSfx, self.gag)
-            SoundInterval(self.hitSfx, node = self.gag).start()
+            base.audio3d.attachSoundToObject(self.hitSfx, entity)
+            SoundInterval(self.hitSfx, node = entity).start()
             shrinkTrack.append(Wait(0.5))
         else:
-            base.audio3d.attachSoundToObject(self.missSfx, self.gag)
-            SoundInterval(self.missSfx, node = self.gag).start()
+            base.audio3d.attachSoundToObject(self.missSfx, entity)
+            SoundInterval(self.missSfx, node = entity).start()
         shrinkTrack.append(Wait(0.25))
-        shrinkTrack.append(LerpScaleInterval(self.dropMdl, 0.3, Point3(0.01, 0.01, 0.01)))
-        shrinkTrack.append(Func(self.cleanupGag))
+        shrinkTrack.append(LerpScaleInterval(dropMdl, 0.3, Point3(0.01, 0.01, 0.01)))
+        shrinkTrack.append(Func(self.clearEntity, entity))
         shrinkTrack.start()
 
     def onSuitHit(self, suit):
         pass
 
     @abc.abstractmethod
-    def startDrop(self):
+    def startDrop(self, entity):
         pass
 
     def cleanupGag(self):
         if not self.isDropping:
             super(DropGag, self).cleanupGag()
-        if self.dropCollider:
-            self.dropCollider.removeNode()
-            self.dropCollider = None
+            
+    def clearEntity(self, entity):
+        if entity and not entity.isEmpty():
+            # We have to explicitly remove the world collider.
+            for child in entity.findAllMatches('*'):
+                if isinstance(child, NodePath) and not child.isEmpty():
+                    child.removeNode()
+
+            entity.removeNode()
 
     def release(self):
         print "release that bitch"
@@ -233,15 +257,16 @@ class DropGag(Gag, LocationGag):
             self.startTimeout()
             self.resetCrashEffect()
         LocationGag.release(self)
-        self.build()
+        entity = self.build()
         self.isDropping = True
         actorTrack = LocationGag.getActorTrack(self)
-        self.fallSoundInterval = LocationGag.getSoundTrack(self)
+        soundTrack = LocationGag.getSoundTrack(self)
         if actorTrack:
-            actorTrack.append(Func(self.startDrop))
+            actorTrack.append(Func(self.startDrop, entity))
             actorTrack.start()
-            self.fallSoundInterval.append(Parallel(SoundInterval(self.fallSfx)))
-            self.fallSoundInterval.start()
+            soundTrack.append(Parallel(SoundInterval(self.fallSfx)))
+            soundTrack.start()
+        entity.setPythonTag(SoundTrackName, soundTrack)
         if self.isLocal():
             base.localAvatar.sendUpdate('usedGag', [self.id])
 

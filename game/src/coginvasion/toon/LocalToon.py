@@ -41,6 +41,8 @@ lightwarps = ["phase_3/maps/toon_lightwarp.jpg", "phase_3/maps/toon_lightwarp_2.
               "phase_3/maps/toon_lightwarp_cartoon.jpg", "phase_3/maps/toon_lightwarp_dramatic.jpg",
               "phase_3/maps/toon_lightwarp_bright.jpg"]
 
+NO_TRANSITION = 1
+
 class LocalToon(DistributedPlayerToon):
     neverDisable = 1
 
@@ -407,6 +409,10 @@ class LocalToon(DistributedPlayerToon):
         if self.anim != anim:
             self.d_setAnimState(anim)
             DistributedPlayerToon.setAnimState(self, anim, callback = callback, extraArgs = extraArgs)
+            
+            camTransitionStates = ['teleportIn', 'teleportOut']
+            if anim in camTransitionStates and not NO_TRANSITION in extraArgs:
+                self.doFirstPersonCameraTransition()
 
     def attachCamera(self):
         #self.notify.info("Attaching camera...")

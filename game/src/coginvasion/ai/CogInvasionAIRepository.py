@@ -26,6 +26,7 @@ from src.coginvasion.cogtropolis.CTHoodAI import CTHoodAI
 
 from panda3d.core import UniqueIdAllocator
 from src.coginvasion.hood import ZoneUtil
+from src.coginvasion.globals.CIGlobals import ToonClasses
 from AIZoneData import AIZoneDataStore
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.distributed.CogInvasionDoGlobals import (DO_ID_DISTRICT_NAME_MANAGER,
@@ -108,7 +109,7 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
     def toonsAreInZone(self, zoneId):
         numToons = 0
         for obj in self.doId2do.values():
-            if obj.__class__.__name__ == "DistributedToonAI":
+            if obj.__class__.__name__ in ToonClasses:
                 if obj.zoneId == zoneId:
                     numToons += 1
         return numToons > 0

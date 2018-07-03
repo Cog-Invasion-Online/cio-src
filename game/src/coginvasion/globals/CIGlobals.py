@@ -587,6 +587,7 @@ YellowTextColor = (1, 1, 0, 1)
 
 # Cog classes that can be damaged by gags.
 SuitClasses = ["DistributedSuit", "DistributedTutorialSuit", "DistributedCogOfficeSuit", "DistributedTakeOverSuit"]
+ToonClasses = ["DistributedPlayerToon", "DistributedPlayerToonAI"]
 
 DistrictNames = [
     'Boingy Acres',

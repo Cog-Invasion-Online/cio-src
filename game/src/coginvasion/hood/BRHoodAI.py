@@ -28,8 +28,9 @@ class BRHoodAI(ToonHoodAI.ToonHoodAI):
 		self.dnaFiles = ['phase_8/dna/the_burrrgh_3100.pdna', 'phase_8/dna/the_burrrgh_3200.pdna',
             'phase_8/dna/the_burrrgh_3300.pdna', 'phase_8/dna/the_burrrgh_sz.pdna']
 		ToonHoodAI.ToonHoodAI.startup(self)
-		self.pond = DistributedBRPondAI.DistributedBRPondAI(self.air)
-		self.pond.generateWithRequired(self.zoneId)
+		# The pond is broken right now without having a proper collisions system. No thanks.
+		#self.pond = DistributedBRPondAI.DistributedBRPondAI(self.air)
+		#self.pond.generateWithRequired(self.zoneId)
 		self.notify.info("Finished creating hood %s" % ZoneUtil.TheBrrrgh)
 
 	def shutdown(self):

@@ -1,5 +1,5 @@
 # Default window properties...
-window-title Cog Invasion Online (Alpha)
+window-title Cog Invasion Online (Alpha II)
 win-origin -1 -1
 win-size 640 480
 #win-fixed-size 1
@@ -50,6 +50,7 @@ vfs-mount resourcepack/phase_10 phase_10
 vfs-mount resourcepack/phase_11 phase_11
 vfs-mount resourcepack/phase_12 phase_12
 vfs-mount resourcepack/phase_13 phase_13
+vfs-mount resourcepack/phase_14 phase_14
 
 # Server...
 server-port 7032
