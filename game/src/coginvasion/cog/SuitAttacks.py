@@ -92,6 +92,7 @@ class Attack(DirectObject):
 
     def cleanupCollider(self):
         if self.collider:
+            self.ignore(self.collider.getCollideEvent())
             self.collider.removeNode()
         self.collider = None
 
@@ -193,12 +194,12 @@ class Attack(DirectObject):
 
     def cleanup(self):
         self.stopThrowTrack()
-        self.cleanupCollider()
         if self.suitTrack != None:
             self.ignore(self.suitTrack.getDoneEvent())
             self.suitTrack.finish()
             DelayDelete.cleanupDelayDeletes(self.suitTrack)
             self.suitTrack = None
+        self.cleanupCollider()
         self.suit = None
         self.target = None
         self.attacksClass = None
@@ -1207,7 +1208,8 @@ class ParticleAttack(Attack):
         self.particles = None
 
     def cleanup(self):
-        self.ignore(self.collider.getCollideEvent())
+        if self.collider is not None:
+            self.ignore(self.collider.getCollideEvent())
         Attack.cleanup(self)
         self.targetX = None
         self.targetY = None
@@ -1849,10 +1851,6 @@ class WatercoolerAttack(Attack):
         if self.splash:
             self.splash.cleanup()
             self.splash = None
-        if self.collNP:
-            base.physicsWorld.remove(self.collNP.node())
-            self.collNP.removeNode()
-            self.collNP = None
         if self.spray:
             self.spray.removeNode()
             self.spray = None
@@ -1881,10 +1879,10 @@ class WriteOffAttack(Attack):
         self.check = None
 
     def cleanup(self):
+        Attack.cleanup(self)
         if self.check:
             self.check.removeNode()
         self.check = None
-        Attack.cleanup(self)
 
     def handleCheckCollision(self, entry):
         if PhysicsUtils.isLocalAvatar(entry):
@@ -1965,10 +1963,10 @@ class RubberStampAttack(Attack):
         self.cancelled = None
 
     def cleanup(self):
+        Attack.cleanup(self)
         if self.cancelled:
             self.cancelled.removeNode()
         self.cancelled = None
-        Attack.cleanup(self)
 
     def __makeCancelledNodePath(self):
         tn = TextNode('CANCELLED')
@@ -2148,6 +2146,7 @@ class FiredAttack(Attack):
         self.glowTrack = None
 
     def cleanup(self):
+        Attack.cleanup(self)
         self.stopEmitting()
         if self.glowTrack:
             self.glowTrack.finish()
@@ -2156,7 +2155,6 @@ class FiredAttack(Attack):
             self.glow.removeNode()
         self.glow = None
         self.emitSfx = None
-        Attack.cleanup(self)
 
     def startEmitting(self):
         self.stopEmitting()

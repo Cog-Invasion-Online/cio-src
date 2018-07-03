@@ -110,7 +110,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
 
             if behav.__class__.__name__ == "SuitPursueToonBehaviorAI":
 
-                if behav.fsm.getCurrentState().getName() == "pursue":
+                if behav.fsm.getCurrentState().getName() != "attack":
 
                     if self.getDistance(toon) < 40 and self.battleZone.toonAvailableForTargeting(toon.doId):
 

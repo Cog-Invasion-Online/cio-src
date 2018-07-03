@@ -22,7 +22,7 @@ import random
 class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
     notify = directNotify.newCategory('SuitPursueToonBehaviorAI')
 
-    RemakePathDistance = 20.0
+    RemakePathDistance = 10.0
     DivertDistance = 5.0
     MaxNonSafeDistance = 40.0
     MaxAttackersPerTarget = 2
@@ -56,7 +56,9 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
     def __tryPickAndPursue(self):
         if self.pickTarget():
             # Choose a distance that is good enough to attack this target.
-            self.attackSafeDistance = random.uniform(5.0, 19.0)
+            #                                 the more damage we do, the more distance we can have and still be effective
+            dmgMod = self.suit.suitPlan.getCogClassAttrs().dmgMod
+            self.attackSafeDistance = random.uniform(15 * dmgMod, 30 * dmgMod)
             # Now, chase them down!
             self.fsm.request('pursue')
 

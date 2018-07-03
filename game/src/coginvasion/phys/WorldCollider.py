@@ -33,6 +33,9 @@ class WorldCollider(NodePath):
         return self.node().getName() + str(id(self))
 
     def start(self):
+        if self.isEmpty():
+            return
+            
         base.physicsWorld.attach(self.node())
         self.task = taskMgr.add(self.__collisionTick, "WorldCollider.collisionTick" + str(id(self)))
 
@@ -40,6 +43,9 @@ class WorldCollider(NodePath):
         if hasattr(self, 'task'):
             taskMgr.remove(self.task)
             del self.task
+            
+        if self.isEmpty():
+            return
             
         base.physicsWorld.remove(self.node())
 
