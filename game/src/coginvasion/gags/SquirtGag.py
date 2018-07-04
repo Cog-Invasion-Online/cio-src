@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Point3, Vec3, NodePath, CollisionSphere, CollisionHandlerEvent, CollisionNode
+from panda3d.core import Point3, Vec3, NodePath, CollisionSphere, CollisionHandlerEvent, CollisionNode, Quat
 
 from direct.interval.IntervalGlobal import Sequence, Func, Wait, LerpScaleInterval, Parallel
 from direct.interval.IntervalGlobal import ActorInterval, LerpFunc
@@ -20,6 +20,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.toon import ParticleLoader
 from src.coginvasion.gui.WaterBar import WaterBar
+from src.coginvasion.phys import PhysicsUtils
 
 import abc
 import math
@@ -99,29 +100,42 @@ class SquirtGag(Gag):
         Gag.reset(self)
 
     def __updateParticleParent(self, task = None):
-        if base.localAvatar.backpack.getSupply(self.id) <= 0:
-            base.localAvatar.b_gagThrow(self.id)
-            return task.done
-    
         time = globalClock.getFrameTime()
         
         streamPos = self.waterStreamParent.getPos(render)
-        pFrom = camera.getPos(render)
-        pTo = pFrom + camera.getQuat(render).xform(Vec3.forward()) * (self.sprayParticleDist + (pFrom - streamPos).length())
-        hitPos = Point3(pTo)
-        result = base.physicsWorld.rayTestClosest(pFrom, pTo, CIGlobals.WorldGroup)
         distance = self.sprayParticleDist
-        if result.hasHit():
-            node = result.getNode()
-            hitPos = result.getHitPos()
-            distance = (hitPos - streamPos).length()
-            if time - self.lastDmgTime >= self.dmgIval:
-                self._handleSprayCollision(NodePath(node), hitPos, distance)
-                self.lastDmgTime = time
-                
-        if time - self.lastSprayTime >= self.dmgIval:
-            base.localAvatar.sendUpdate('usedGag', [self.id])
-            self.lastSprayTime = time
+
+        if self.isLocal():
+            if base.localAvatar.backpack.getSupply(self.id) <= 0:
+                base.localAvatar.b_gagThrow(self.id)
+                return task.done
+
+            pFrom = camera.getPos(render)
+            pTo = pFrom + camera.getQuat(render).xform(Vec3.forward()) * (self.sprayParticleDist + (pFrom - streamPos).length())
+            hitPos = Point3(pTo)
+            result = base.physicsWorld.rayTestClosest(pFrom, pTo, CIGlobals.WorldGroup)
+            if result.hasHit():
+                node = result.getNode()
+                hitPos = result.getHitPos()
+                distance = (hitPos - streamPos).length()
+                if time - self.lastDmgTime >= self.dmgIval:
+                    self._handleSprayCollision(NodePath(node), hitPos, distance)
+                    self.lastDmgTime = time
+
+            if time - self.lastSprayTime >= self.dmgIval:
+                base.localAvatar.sendUpdate('usedGag', [self.id])
+                self.lastSprayTime = time
+
+        else:
+            pFrom = self.avatar.getPos(render) + self.avatar.getEyePoint()
+            quat = Quat()
+            quat.setHpr(self.avatar.getHpr(render) + (0, self.avatar.lookPitch, 0))
+            pTo = pFrom + quat.xform(Vec3.forward()) * (self.sprayParticleDist + (pFrom - streamPos).length())
+            hitPos = Point3(pTo)
+            hit = PhysicsUtils.rayTestClosestNotMe(self.avatar, pFrom, pTo, CIGlobals.WorldGroup | CIGlobals.LocalAvGroup)
+            if hit is not None:
+                hitPos = hit.getHitPos()
+                distance = (hitPos - streamPos).length()
 
         self.waterStreamParent.lookAt(render, hitPos)
         
@@ -142,9 +156,8 @@ class SquirtGag(Gag):
         gag = self.gag if not self.isLocal() else self.getVMGag()
         self.waterStreamParent = gag.find("**/" + self.sprayJoint).attachNewNode("particleParent")
         self.sprayParticle = ParticleLoader.loadParticleEffect(self.sprayParticleFile)
-        if self.isLocal():
-            # Update now to prevent one particle spraying out the side when we begin.
-            self.__updateParticleParent()
+        # Update now to prevent one particle spraying out the side when we begin.
+        self.__updateParticleParent()
             
     def cleanupWaterBar(self):
         if self.waterBar:
@@ -201,8 +214,7 @@ class SquirtGag(Gag):
         self.loadParticle()
         self.sprayParticle.start(self.waterStreamParent, self.sprayParticleRoot)
 
-        if self.isLocal():
-            self.spRootUpdateTask = taskMgr.add(self.__updateParticleParent, "FH.uPP", sort = -100)
+        self.spRootUpdateTask = taskMgr.add(self.__updateParticleParent, "FH.uPP", sort = -100)
 
     def throw(self):
         Gag.throw(self)

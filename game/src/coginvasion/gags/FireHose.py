@@ -111,6 +111,9 @@ class FireHose(SquirtGag):
         track.append(propTrack)
         self.setAnimTrack(track, startNow = True)
 
+        if self.isLocal() and base.localAvatar.isFirstPerson():
+            self.hydrantNode.hide()
+
     def deleteHoseStuff(self):
         if self.controlHoseTask:
             self.controlHoseTask.remove()

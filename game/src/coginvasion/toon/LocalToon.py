@@ -344,9 +344,6 @@ class LocalToon(DistributedPlayerToon):
     def getAirborneHeight(self):
         return self.offset + 0.025000000000000001
 
-    def getEyePoint(self):
-        return Point3(0, 0, max(self.getHeight(), 3.0))
-
     def isMoving(self):
         return self.walkControls.isMoving()
 

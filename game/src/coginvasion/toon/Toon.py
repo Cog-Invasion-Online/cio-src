@@ -118,6 +118,9 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         
         if not hasattr(self, 'uniqueName'):
             self.uniqueName = types.MethodType(uniqueName, self)
+
+    def getEyePoint(self):
+        return Point3(0, 0, max(self.getHeight(), 3.0))
             
     def setForceRunSpeed(self, flag):
         self.forceRunSpeed = flag

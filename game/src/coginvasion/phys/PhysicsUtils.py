@@ -153,6 +153,17 @@ def rayTestAllSorted(pFrom, pTo, mask = BitMask32.allOn()):
         sortedHits = sorted(result.getHits(), key = lambda hit: (pFrom - hit.getHitPos()).length())
     return [result, sortedHits]
 
+def rayTestClosestNotMe(me, pFrom, pTo, mask = BitMask32.allOn()):
+    _, hits = rayTestAllSorted(pFrom, pTo, mask)
+    if hits is not None:
+        for i in xrange(len(hits)):
+            hit = hits[i]
+            hitNp = NodePath(hit.getNode())
+            if not me.isAncestorOf(hitNp) and me != hitNp:
+                return hit
+    return None
+
+
 def isChildOfLA(node):
     return hasattr(base, 'localAvatar') and base.localAvatar.isAncestorOf(node)
 
