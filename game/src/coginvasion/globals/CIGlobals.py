@@ -50,7 +50,10 @@ MinnieFont = None
 FloorOffset = 0.025
 NPCWalkSpeed = 0.02
 NPCRunSpeed = 0.04
-OriginalCameraFov = 40.0
+
+# Use this for overriding the chosen FOV with the original Toontown FOV.
+OriginalCameraFov = 52.0
+
 DefaultCameraFov = 52.0
 DefaultCameraFar = 2500.0
 DefaultCameraNear = 0.3

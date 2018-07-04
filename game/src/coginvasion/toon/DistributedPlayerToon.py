@@ -131,7 +131,6 @@ class DistributedPlayerToon(DistributedToon):
                 doneMethod = self._handleWentInTunnel
                 extraArgs = [requestStatus]
                 base.localAvatar.walkControls.setCollisionsActive(0)
-                base.localAvatar.detachCamera()
                 self.resetHeadHpr(override = True)
                 camera.wrtReparentTo(linkTunnel.tunnel)
                 currCamPos = camera.getPos()

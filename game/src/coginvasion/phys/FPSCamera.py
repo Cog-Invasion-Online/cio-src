@@ -124,10 +124,6 @@ class FPSCamera(DirectObject):
             self.vmGag = None
         
     def setup(self):
-        self.camRoot.reparentTo(base.localAvatar)
-        self.camRoot.setPos(base.localAvatar.getEyePoint())
-        self.camRoot.setHpr(0, 0, 0)
-
         # Match the arm color with the torso color of local avatar
         self.viewModel.find("**/arms").setColorScale(base.localAvatar.getTorsoColor(), 1)
         # Same with glove cover
@@ -136,6 +132,9 @@ class FPSCamera(DirectObject):
         self.attachCamera()
 
     def attachCamera(self):
+        self.camRoot.reparentTo(base.localAvatar)
+        self.camRoot.setPos(base.localAvatar.getEyePoint())
+        self.camRoot.setHpr(0, 0, 0)
         base.camera.reparentTo(self.camRoot)
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
 

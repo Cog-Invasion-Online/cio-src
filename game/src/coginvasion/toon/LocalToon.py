@@ -415,11 +415,7 @@ class LocalToon(DistributedPlayerToon):
                 self.doFirstPersonCameraTransition()
 
     def attachCamera(self):
-        #self.notify.info("Attaching camera...")
-        #camera.reparentTo(self)
-        #camera.setPos(self.smartCamera.getIdealCameraPos())
-        #camera.lookAt(self.smartCamera.getLookAtPoint())
-        pass
+        self.walkControls.attachCamera()
 
     def startSmartCamera(self):
         #self.notify.info("Starting camera...")
@@ -438,11 +434,9 @@ class LocalToon(DistributedPlayerToon):
         pass
 
     def detachCamera(self):
-        #self.notify.info("Detaching camera...")
-        #camera.reparentTo(render)
-        #camera.setPos(0, 0, 0)
-        #camera.setHpr(0, 0, 0)
-        pass
+        camera.reparentTo(render)
+        camera.setPos(0, 0, 0)
+        camera.setHpr(0, 0, 0)
 
     def printPos(self):
         x, y, z = self.getPos(render)

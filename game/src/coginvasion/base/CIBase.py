@@ -41,6 +41,9 @@ class CIBase(ShowBase):
             self.pipeline.create(self)
         else:
             ShowBase.__init__(self)
+            
+        # Pre-cache water bar shader, prevents crash from running out of GPU registers
+        loader.loadShader("phase_14/models/shaders/progress_bar.sha")
 
         #self.startTk()
 

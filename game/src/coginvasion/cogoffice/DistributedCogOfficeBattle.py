@@ -156,10 +156,10 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                         ['phone', 3.17, 13.35, 2.97, 171.47, 0, 0, 1],
                         ['fax_paper', -3.32, 17.81, 3.01, 127.2, 0, 0, 1],
                         ['fax_paper', -3.32, 17.81, 3.005, 147.53, 0, 0, 1],
-                        ['light_panel', -15, 10, 15, 0, 0, 0, 1],
-                        ['light_panel', -23.5, 47.5, 28.5, 0, 0, 0, 1],
+                        ['light_panel', -10, 0, 15, 0, 0, 0, 1],
                         ['light_panel', -20, 0, 15, 0, 0, 0, 1],
                         ['light_panel', -30, 0, 15, 0, 0, 0, 1],
+                        ['light_panel', 0, 0, 15, 0, 0, 0, 1],
                         ['light_panel', 0, 20, 15, 0, 0, 0, 1],
                         ['light_panel', -10, 20, 15, 0, 0, 0, 1],
                         ['light_panel', -20, 20, 15, 0, 0, 0, 1],
@@ -170,10 +170,10 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                         [-39.49848, 20.74907, 0, 90, 0, 0]
                     ],
                     'lights': [
-                        Point3(-15, 10, 11),
-                        Point3(-23.5, 47.5, 24.5),
+                        Point3(-10, 0, 11),
                         Point3(-20, 0, 11),
                         Point3(-30, 0, 11),
+                        Point3(0, 0, 11),
                         Point3(0, 20, 11),
                         Point3(-10, 20, 11),
                         Point3(-20, 20, 11),
@@ -558,7 +558,6 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.faceOffTrack.append(Func(tauntSuit.setAutoClearChat, True))
         self.faceOffTrack.append(Func(base.camLens.setMinFov, CIGlobals.DefaultCameraFov / (4./3.)))
         self.faceOffTrack.append(Func(base.localAvatar.attachCamera))
-        self.faceOffTrack.append(Func(camera.lookAt, base.localAvatar.smartCamera.getLookAtPoint()))
         self.faceOffTrack.append(Func(setCamRunY))
         runTrack = Parallel()
         for i in xrange(len(self.avIds)):
@@ -610,7 +609,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         if tauntSuit:
             tauntSuit.headsUp(self.elevators[0].getElevatorModel())
 
-        base.camLens.setFov(CIGlobals.DefaultCameraFov)
+        base.camLens.setFov(CIGlobals.OriginalCameraFov)
         camera.reparentTo(elevator.getElevatorModel())
         camera.setPos(0, 14, 4)
         camera.setHpr(180, 0, 0)

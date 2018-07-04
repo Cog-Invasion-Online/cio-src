@@ -76,6 +76,12 @@ class LocalControls(DirectObject):
 
     def exitOff(self):
         pass
+        
+    def attachCamera(self):
+        if self.mode == LocalControls.MFirstPerson:
+            self.fpsCam.attachCamera()
+        elif self.mode == LocalControls.MThirdPerson:
+            self.tp_attachCamera()
 
     def enterFirstPerson(self):
         self.fpsCam.setup()
