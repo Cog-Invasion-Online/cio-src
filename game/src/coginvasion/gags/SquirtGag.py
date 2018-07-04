@@ -176,6 +176,7 @@ class SquirtGag(Gag):
         
         if self.isLocal():
             self.waterBar = WaterBar()
+            self.__updateWaterBar()
             self.waterBar.reparentTo(base.a2dLeftCenter)
             self.waterBar.setScale(0.6)
             self.waterBar.setX(0.16)
@@ -185,16 +186,23 @@ class SquirtGag(Gag):
         if self.isLocal():
             self.cleanupWaterBar()
         Gag.unEquip(self)
-        
-    def __barUpdate(self, task):
+
+    def __updateWaterBar(self):
         if self.waterBar:
             max = base.localAvatar.backpack.getMaxSupply(self.id)
             suppl = base.localAvatar.backpack.getSupply(self.id)
             perct = float(suppl) / float(max)
-            
+
             self.waterBar.range = max
             self.waterBar.value = suppl
-            
+
+            return perct
+
+        return 1.0
+        
+    def __barUpdate(self, task):
+        if self.waterBar:
+            perct = self.__updateWaterBar()
             if perct <= 0.3:
                 time = globalClock.getFrameTime()
                 alpha = 0.5 + ((math.sin(time * 7) + 1) / 4)
