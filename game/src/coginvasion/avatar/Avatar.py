@@ -318,6 +318,8 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
             else:
                 self.shadow.reparentTo(self)
 
+        self.enableShadowRay()
+
     def deleteShadow(self):
         if hasattr(self, 'shadow'):
             if self.shadow:

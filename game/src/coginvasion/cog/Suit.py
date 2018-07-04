@@ -182,6 +182,7 @@ class Suit(Avatar):
     def enterWalk(self, ts = 0):
         self.show()
         self.loop("walk")
+        self.enableRay()
         self.disableShadowRay()
         self.startFootsteps()
 
@@ -249,7 +250,7 @@ class Suit(Avatar):
 
     def enterFlyNeutral(self, ts = 0):
         self.disableRay()
-        self.disableShadowRay()
+        self.enableShadowRay()
         if not self.propeller:
             self.generatePropeller()
         sfx = self.propellerSounds['neutral']
@@ -263,7 +264,7 @@ class Suit(Avatar):
 
     def enterFlyDown(self, ts = 0):
         self.disableRay()
-        self.disableShadowRay()
+        self.enableShadowRay()
         if not self.propeller:
             self.generatePropeller()
         sfx = self.propellerSounds['in']
@@ -339,7 +340,7 @@ class Suit(Avatar):
         self.suitTrack.delayDelete = DelayDelete.DelayDelete(self, name)
         self.suitTrack.start(ts)
         self.disableRay()
-        self.disableShadowRay()
+        self.enableShadowRay()
 
     def exitFlyAway(self):
         self.cleanupPropeller()

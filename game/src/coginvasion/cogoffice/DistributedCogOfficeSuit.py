@@ -107,6 +107,7 @@ class DistributedCogOfficeSuit(DistributedSuit):
         points = self.getPoints('chairs')
         self.setPosHpr(*points[extraArgs[0]][1])
         self.setAnimState('sit')
+        self.disableRay()
 
     def exitChair(self):
         pass
