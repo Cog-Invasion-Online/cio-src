@@ -131,10 +131,12 @@ class FPSCamera(DirectObject):
 
         self.attachCamera()
 
-    def attachCamera(self):
-        self.camRoot.reparentTo(base.localAvatar)
-        self.camRoot.setPos(base.localAvatar.getEyePoint())
-        self.camRoot.setHpr(0, 0, 0)
+    def attachCamera(self, reset = True):
+        if reset:
+            self.camRoot.reparentTo(base.localAvatar)
+            self.camRoot.setPos(base.localAvatar.getEyePoint())
+            self.camRoot.setHpr(0, 0, 0)
+            
         base.camera.reparentTo(self.camRoot)
         base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
 
@@ -159,7 +161,7 @@ class FPSCamera(DirectObject):
         props.setCursorHidden(True)
         base.win.requestProperties(props)
 
-        self.attachCamera()
+        self.attachCamera(False)
         base.localAvatar.getGeomNode().hide()
         
         base.win.movePointer(0, base.win.getXSize() / 2, base.win.getYSize() / 2)

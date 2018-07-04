@@ -104,7 +104,7 @@ class Attack(DirectObject):
         duration = distance / speed
         return LerpPosInterval(prop, duration, endPos, startPos, other = render, fluid = 1)
 
-    def makeWorldCollider(self, parent, radius = 1, mask = CIGlobals.WorldGroup | CIGlobals.LocalAvGroup,
+    def makeWorldCollider(self, parent, radius = 1, mask = CIGlobals.WallGroup | CIGlobals.LocalAvGroup,
                           startNow = False):
         coll = WorldCollider(str(self.attack), radius, mask = mask,
                              myMask = CIGlobals.WeaponGroup, startNow = startNow,
@@ -524,6 +524,13 @@ class GlowerPowerAttack(Attack):
     def setupKnifeAngle(self):
         if CIGlobals.isNodePathOk(self.target):
             self.knifeRoot.lookAt(self.target.find("**/def_head"))
+            
+    def announceHit(self, entry = None):
+        Attack.announceHit(self, entry)
+        if self.collider and not self.collider.isEmpty():
+            self.attackBlocked(self.collider.getPos(render))
+        if self.knifeRoot and not self.knifeRoot.isEmpty():
+            self.knifeRoot.hide()
 
     def doAttack(self, ts = 0):
         left, right = self.eyePosPoints[self.suit.suitPlan.getName()]
@@ -1728,7 +1735,7 @@ class TeeOffAttack(Attack):
         self.ball.reparentTo(self.ballRoot)
         self.ball.setScale(ballScale)
 
-        self.collider = self.makeWorldCollider(self.ball, 1.0 / ballScale, mask = CIGlobals.WallGroup | CIGlobals.LocalAvGroup)
+        self.collider = self.makeWorldCollider(self.ball, 1.0 / ballScale)
 
         self.club = loader.loadModel("phase_5/models/props/golf-club.bam")
         self.club.reparentTo(self.suit.find("**/joint_Lhold"))
@@ -1754,6 +1761,7 @@ class TeeOffAttack(Attack):
     def __handleGolfBallCollision(self, entry):
         self.announceHit(entry)
         if self.ball and not self.ball.isEmpty():
+            self.attackBlocked(self.ball.getPos(render))
             self.ball.hide()
     
     def cleanup(self):
