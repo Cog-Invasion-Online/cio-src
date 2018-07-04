@@ -425,11 +425,15 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         if self.animFSM.hasStateNamed(animName):
             self.animFSM.request(animName, [ts])
         else:
+            self.animFSM.request('off')
             if loop:
                 self.loop(animName)
             else:
                 self.play(animName)
         messenger.send(SuitGlobals.animStateChangeEvent % (self.uniqueName), [anim, prevAnim])
+
+    def stun(self, animB4Stun):
+        self.animFSM.request('stunned', [animB4Stun])
 
     def doAttack(self, attackId, avId, timestamp = None):
         if timestamp is None:

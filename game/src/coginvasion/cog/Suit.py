@@ -74,9 +74,68 @@ class Suit(Avatar):
             State('flyAway', self.enterFlyAway, self.exitFlyAway),
             State('flyNeutral', self.enterFlyNeutral, self.exitFlyNeutral),
             State('trayWalk', self.enterTrayWalk, self.exitTrayWalk),
-            State('trayNeutral', self.enterTrayNeutral, self.exitTrayNeutral)
+            State('trayNeutral', self.enterTrayNeutral, self.exitTrayNeutral),
+            State('stunned', self.enterStunned, self.exitStunned),
+            State('pie', self.enterPie, self.exitPie),
+            State('drop', self.enterDrop, self.exitDrop),
+            State('drop-react', self.enterDropReact, self.exitDropReact),
+            State('soak', self.enterSoak, self.exitSoak),
+            State('squirt-small', self.enterSquirtSmall, self.exitSquirtSmall)
         ], 'off', 'off')
         self.animFSM.enterInitialState()
+
+    def enterPie(self, ts = 0):
+        self.play('pie')
+
+    def exitPie(self):
+        self.stop()
+
+    def enterDrop(self, ts = 0):
+        self.play("drop")
+
+    def exitDrop(self):
+        self.stop()
+
+    def enterDropReact(self, ts = 0):
+        self.play('drop-react')
+
+    def exitDropReact(self):
+        self.stop()
+
+    def enterSoak(self, ts = 0):
+        self.play('soak')
+
+    def exitSoak(self):
+        self.stop()
+
+    def enterSquirtSmall(self, ts = 0):
+        self.play('squirt-small')
+
+    def exitSquirtSmall(self):
+        self.stop()
+
+    def enterStunned(self, animB4Stun, ts = 0):
+        self.show()
+
+        animB4Stun = SuitGlobals.getAnimById(animB4Stun).getName()
+
+        self.stunnedSound = base.loadSfxOnNode("phase_4/audio/sfx/SZ_TC_bird1.ogg", self)
+        self.stunnedSound.setLoop(True)
+        self.stunnedSound.play()
+
+        self.stunnedIval = Parallel(Sequence(ActorInterval(self, animB4Stun),
+                                             Func(self.loop, 'stunned')),
+                                    SuitGlobals.createStunInterval(self, 0, 100))
+        self.stunnedIval.start()
+
+    def exitStunned(self):
+        if hasattr(self, 'stunnedSound'):
+            self.stunnedSound.stop()
+            del self.stunnedSound
+        if hasattr(self, 'stunnedIval'):
+            self.stunnedIval.finish()
+            del self.stunnedIval
+        self.stop()
         
     def getLeftHand(self):
         return self.find("**/joint_Lhold")

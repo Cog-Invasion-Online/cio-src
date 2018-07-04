@@ -91,6 +91,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
 
         self.allowHits = True
         self.firstTimeDead = True
+        self.stunned = False
         
         # This variable stores what avatarIds have damaged us.
         self.damagers = []
@@ -267,15 +268,23 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         if not self.isDead() or self.isDead() and self.deathTimeLeft > 0:
             self.d_announceHealth(0, prevHealth - self.health)
 
-    def monitorHealth(self, task):
-        if self.health <= 0:
-            if hasattr(self, 'brain') and self.brain is not None:
-                self.brain.stopThinking()
+    def stopSuitInPlace(self, killBrain = True):
+        if hasattr(self, 'brain') and self.brain is not None:
+            self.brain.stopThinking()
+            if killBrain:
                 self.brain.unloadBehaviors()
                 self.brain = None
-            self.b_setSuitState(0, -1, -1)
+        self.b_setSuitState(0, -1, -1)
+        self.clearTrack()
+
+    def restartSuit(self):
+        if self.brain is not None:
+            self.brain.startThinking()
+
+    def monitorHealth(self, task):
+        if self.health <= 0:
+            self.stopSuitInPlace()
             currentAnim = SuitGlobals.getAnimByName(self.anim)
-            self.clearTrack()
             if currentAnim:
                 if not self.deathAnim:
                     self.deathAnim = currentAnim
@@ -332,6 +341,8 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             self.tacticalSeq.append(Func(self.d_announceHealth, 2, -comboDamage, 1))
         
         self.tacticalSeq.start()
+
+        return finalDmg
         
     def __getGagEffectOnMe(self, avId, gagName, gagData):
         """ Returns the base damage and the damage offset a specified gag name used by "avId" has on this Cog """
@@ -382,6 +393,30 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             
         return isCombo, comboDamage
 
+    def __getAnimForGag(self, track, gagName):
+        if track == GagType.THROW or gagName == GagGlobals.TNT:
+            return 'pie'
+        elif track == GagType.DROP:
+            if gagName in GagGlobals.MajorDrops:
+                return 'drop'
+            else:
+                return 'drop-react'
+        elif track == GagType.SQUIRT or track == GagType.SOUND:
+            if gagName == GagGlobals.StormCloud:
+                return 'soak'
+            else:
+                return 'squirt-small'
+
+    def stopStun(self):
+        taskMgr.remove(self.taskName('stunTask'))
+        self.stunned = False
+
+    def __stunTask(self, task):
+        self.stunned = False
+        if not self.isDead():
+            self.restartSuit()
+        return task.done
+
     # The new method for handling gags.
     def hitByGag(self, gagId, distance):
         avId = self.air.getAvatarIdFromSender()
@@ -392,7 +427,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         track = GagGlobals.getTrackOfGag(gagId, getId = True)
 
         if self.canGetHit():
-            self.__handleTacticalAttacks(avatar.doId, gagName, data)
+            damage = self.__handleTacticalAttacks(avatar.doId, gagName, data)
             
             if self.battleZone:
                 # We only want to award credit when Toons use gags that are less than or at the level of the Cog
@@ -406,22 +441,13 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
                 self.damagers.append(avId)
 
             if self.isDead():
+                self.stopStun()
+
                 if self.firstTimeDead:
                     self.sendUpdate('doStunEffect')
 
-                if track == GagType.THROW or gagName == GagGlobals.TNT:
-                    self.b_setAnimState('pie', 0)
-                elif track == GagType.DROP:
-                    majorDrops = [GagGlobals.GrandPiano, GagGlobals.Safe, GagGlobals.BigWeight]
-                    if gagName in majorDrops:
-                        self.b_setAnimState('drop', 0)
-                    else:
-                        self.b_setAnimState('drop-react', 0)
-                elif track == GagType.SQUIRT or track == GagType.SOUND:
-                    if gagName == GagGlobals.StormCloud:
-                        self.b_setAnimState('soak', 0)
-                    else:
-                        self.b_setAnimState('squirt-small', 0)
+                deathAnim = self.__getAnimForGag(track, gagName)
+                self.b_setAnimState(deathAnim, 0)
                 
                 # Let's give everyone credit who damaged me.
                 if self.battleZone:
@@ -429,6 +455,21 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
                         self.battleZone.handleCogDeath(self, damager)
                         
                 self.firstTimeDead = False
+
+            elif gagName in GagGlobals.Stunnables and not self.stunned:
+                # We have been stunned.
+                self.stopSuitInPlace(killBrain = False)
+
+                animName = self.__getAnimForGag(track, gagName)
+                animB4Stun = SuitGlobals.getAnimIdByName(animName)
+                self.sendUpdate('stun', [animB4Stun])
+
+                baseStunTime = 6.0
+                stunTime = (baseStunTime / self.suitPlan.getCogClassAttrs().dmgMod) * (damage / 95.0)
+                taskMgr.doMethodLater(stunTime, self.__stunTask, self.taskName('stunTask'))
+
+                self.stunned = True
+
             else:
                 # I've been hit! Take appropriate actions.
                 self.handleToonThreat(avatar, True)
@@ -588,6 +629,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
     def disable(self):
         DistributedAvatarAI.disable(self)
         self.clearTrack()
+        self.stopStun()
         taskMgr.remove(self.uniqueName('__handleDeath'))
         taskMgr.remove(self.uniqueName('Resume Thinking'))
         taskMgr.remove(self.uniqueName('monitorHealth'))
@@ -625,6 +667,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.clearComboDataTime = None
         self.showComboDamageTime = None
         self.showWeaknessBonusDamageTime = None
+        self.stunned = None
         self.damagers = []
 
     def delete(self):
@@ -658,6 +701,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         del self.showWeaknessBonusDamageTime
         del self.tacticalSeq
         del self.damagers
+        del self.stunned
         DistributedAvatarAI.delete(self)
         DistributedSmoothNodeAI.delete(self)
 

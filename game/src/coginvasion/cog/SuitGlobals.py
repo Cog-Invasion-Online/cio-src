@@ -546,7 +546,7 @@ animations = [
     Anim(5, 'phone'),
     Anim(5, 'finger-wag', name = 'fingerwag'),
     Anim(5, 'speak'),
-    Anim(5, 'lured'),
+    Anim(5, 'lured', name = 'stunned'),
     Anim(5, 'magic1'),
     Anim(5, 'magic2'),
     Anim(5, 'magic3', suitTypes = [SuitType.A, SuitType.B]),
@@ -571,6 +571,11 @@ def getAnimByName(animName):
     for anim in animations:
         if anim.getName() == animName:
             return anim
+
+def getAnimIdByName(animName):
+    for anim in animations:
+        if anim.getName() == animName:
+            return animations.index(anim)
 
 def getAnimations():
     return animations
