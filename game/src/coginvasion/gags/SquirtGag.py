@@ -179,7 +179,7 @@ class SquirtGag(Gag):
             self.__updateWaterBar()
             self.waterBar.reparentTo(base.a2dLeftCenter)
             self.waterBar.setScale(0.6)
-            self.waterBar.setX(0.16)
+            self.waterBar.setX(0.166)
             self.barTask = taskMgr.add(self.__barUpdate, "SquirtGag.barUpdate")
             
     def unEquip(self):
