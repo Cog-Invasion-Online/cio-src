@@ -2,7 +2,7 @@ from direct.gui.DirectGui import DirectFrame
 
 class CrosshairData:
 
-    def __init__(self, wantCrosshair = True, crosshairTex = 'phase_14/maps/crosshair_3.png',
+    def __init__(self, wantCrosshair = True, crosshairTex = 'phase_14/maps/crosshair_4.png',
                  crosshairScale = 1, crosshairRot = 0):
         self.wantCrosshair = wantCrosshair
         self.crosshairTex = crosshairTex
