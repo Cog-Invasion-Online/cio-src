@@ -48,7 +48,6 @@ class DistributedBoat(DistributedObject):
         self.dockCreak = 'phase_6/audio/sfx/SZ_DD_dockcreak.ogg'
         self.eastWest = 'phase_6/paths/dd-e-w.bam'
         self.westEast = 'phase_6/paths/dd-w-e.bam'
-        self.boatPath = '*donalds_boat*'
         self.track = None
         self.state = None
         self.animBoat1Track = None
@@ -60,21 +59,11 @@ class DistributedBoat(DistributedObject):
 
     def __handleOnBoat(self, entry):
         base.localAvatar.b_setParent(CIGlobals.SPDonaldsBoat)
-        base.playSfx(self.soundWaterLap, looping = 1)
 
     def __handleOffBoat(self, entry):
         base.localAvatar.b_setParent(CIGlobals.SPRender)
         base.localAvatar.setR(0)
         base.localAvatar.setP(0)
-        self.soundWaterLap.stop()
-
-    def __pollBoat(self, task):
-        try:
-            self.boat = self.cr.playGame.hood.loader.geom.find('**/' + self.boatPath)
-        except:
-            return task.cont
-        self.generated()
-        return task.done
 
     def generate(self):
         DistributedObject.generate(self)
@@ -83,18 +72,19 @@ class DistributedBoat(DistributedObject):
         self.soundWaterLap = base.audio3d.loadSfx(self.waterLap)
         self.soundDockCreak = base.audio3d.loadSfx(self.dockCreak)
 
-        self.boatMdl = self.cr.playGame.hood.loader.geom.find('**/' + self.boatPath)
-        self.boatMdl.setMaterial(CIGlobals.getShinyMaterial())
-        self.boat = self.boatMdl.getParent().attachNewNode('boatRoot')
-        self.boat.setTransform(self.boatMdl.getTransform())
-        self.boatMdl1 = self.boat.attachNewNode('boatMdl1')
-        self.boatMdl.clearTransform()
-        self.boatMdl.reparentTo(self.boatMdl1)
+        geom = self.cr.playGame.hood.loader.geom
+        self.boatMdl = geom.find('**/*donalds_boat*')
+        self.boat = geom.find("**/ddBoatRoot")
+        self.boatMdl1 = geom.find("**/ddBoatMdl1")
 
         base.audio3d.attachSoundToObject(self.soundFogHorn, self.boat)
         base.audio3d.attachSoundToObject(self.soundShipBell, self.boat)
         base.audio3d.attachSoundToObject(self.soundWaterLap, self.boat)
         base.audio3d.attachSoundToObject(self.soundDockCreak, self.boat)
+
+        self.soundWaterLap.setLoop(True)
+        self.soundWaterLap.play()
+
         self.generated()
 
     def generated(self):
@@ -157,6 +147,7 @@ class DistributedBoat(DistributedObject):
         del self.fsm
         del self.soundFogHorn
         del self.soundShipBell
+        self.soundWaterLap.stop()
         del self.soundWaterLap
         del self.soundDockCreak
         self.fogHorn = None

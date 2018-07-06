@@ -12,6 +12,8 @@ from src.coginvasion.holiday.HolidayManager import HolidayType
 import SafeZoneLoader
 import DDPlayground
 
+from src.coginvasion.globals import CIGlobals
+
 class DDSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
 
     def __init__(self, hood, parentFSM, doneEvent):
@@ -41,6 +43,14 @@ class DDSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
 
         self.geom.find("**/top_surface").removeNode()
         self.geom.find("**/bottom_surface").removeNode()
+
+        boatMdl = self.geom.find('**/*donalds_boat*')
+        boatMdl.setMaterial(CIGlobals.getShinyMaterial())
+        boat = boatMdl.getParent().attachNewNode('ddBoatRoot')
+        boat.setTransform(boatMdl.getTransform())
+        boatMdl1 = boat.attachNewNode('ddBoatMdl1')
+        boatMdl.clearTransform()
+        boatMdl.reparentTo(boatMdl1)
 
     def enter(self, requestStatus):
         SafeZoneLoader.SafeZoneLoader.enter(self, requestStatus)

@@ -8,14 +8,14 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import NodePath
+from panda3d.core import NodePath, TransformState, Point3
 from panda3d.bullet import BulletRigidBodyNode, BulletCylinderShape, ZUp
 
 from direct.distributed.DistributedNode import DistributedNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, LerpScaleInterval, Func
 
-from src.coginvasion.globals.CIGlobals import WorldGroup, SPRender
+from src.coginvasion.globals.CIGlobals import WallGroup, SPRender
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.gags import GagGlobals
 
@@ -51,12 +51,10 @@ class DistributedRestockBarrel(DistributedNode):
         self.collSphere = BulletCylinderShape(self.radius, self.height, ZUp)
         self.collNode = BulletRigidBodyNode(self.uniqueName('barrelSphere'))
         self.collNode.setKinematic(True)
-        self.collNode.setMass(10.0)
-        self.collNode.addShape(self.collSphere)
+        self.collNode.addShape(self.collSphere, TransformState.makePos(Point3(0, 0, self.height / 2)))
+        self.collNode.setIntoCollideMask(WallGroup)
         self.collNodePath = self.attachNewNode(self.collNode)
-        self.collNodePath.setCollideMask(WorldGroup)
-        self.collNodePath.setZ(2.0)
-        base.physicsWorld.attachRigidBody(self.collNodePath.node())
+        base.physicsWorld.attach(self.collNodePath.node())
         self.accept('enter' + self.collNodePath.getName(), self.__handleCollision)
         
         self.setParent(SPRender)

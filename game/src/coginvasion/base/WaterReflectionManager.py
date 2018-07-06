@@ -20,6 +20,7 @@ from direct.gui.DirectGui import OnscreenImage
 from direct.filter.FilterManager import FilterManager
 
 import math
+import random
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.base.Lighting import LightingConfig, OutdoorLightingConfig
@@ -35,6 +36,9 @@ class WaterNode(NodePath):
         NodePath.__init__(self, 'waterNode')
         self.setPos(pos)
 
+        self.pos = pos
+        self.depth = depth
+        self.size = size
         self.height = pos[2]
 
         topCard = CardMaker('waterTop')
@@ -55,6 +59,69 @@ class WaterNode(NodePath):
         self.aabb = BoundingBox(Point3(-size, -size, -depth), Point3(size, size, 0))
         self.aabb.xform(self.getMat(render))
 
+    def setup(self):
+        self.reparentTo(render)
+        self.hide(REFL_CAM_BITMASK)
+        self.setLightOff(1)
+        self.setMaterialOff(1)
+        self.setTransparency(1)
+
+    def disableEffects(self):
+        self.topNP.clearShader()
+        self.botNP.clearShader()
+
+    def enableFakeEffect(self):
+        self.disableEffects()
+
+        staticTex = loader.loadTexture("phase_13/maps/water3.jpg")
+        self.topNP.setTexture(staticTex, 1)
+        self.botNP.setTexture(staticTex, 1)
+
+    def disableFakeEffect(self):
+        self.topNP.clearTexture()
+        self.botNP.clearTexture()
+
+    def enableEffects(self, reflScene, refrScene, underwaterRefrScene):
+        self.disableFakeEffect()
+
+        dudv = loader.loadTexture("phase_14/maps/water_surface_dudv_old.png")
+
+        self.topNP.setShader(loader.loadShader("phase_14/models/shaders/water.sha"))
+        self.topNP.setShaderInput("dudv", dudv)
+        self.topNP.setShaderInput("dudv_tile", 0.02)
+        self.topNP.setShaderInput("dudv_strength", 0.05)
+        self.topNP.setShaderInput("move_factor", 0.0)
+        self.topNP.setShaderInput("near", CIGlobals.DefaultCameraNear)
+        self.topNP.setShaderInput("far", CIGlobals.DefaultCameraFar)
+        self.topNP.setShaderInput("reflectivity", 1.0)
+        self.topNP.setShaderInput("shine_damper", 1.5)
+        self.topNP.setShaderInput("normal", loader.loadTexture("phase_14/maps/water_surface_normal.png"))
+
+        currCfg = OutdoorLightingConfig.ActiveConfig
+        if currCfg is not None and isinstance(currCfg, OutdoorLightingConfig):
+            dir = CIGlobals.anglesToVector(currCfg.sunAngle)
+            col = currCfg.sun
+        else:
+            dir = CIGlobals.anglesToVector(base.loader.envConfig.defaultSunAngle)
+            col = base.loader.envConfig.defaultSunColor
+        self.topNP.setShaderInput("lightdir", dir)
+        self.topNP.setShaderInput("lightcol", col)
+
+        self.botNP.setShader(loader.loadShader("phase_14/models/shaders/water_bottom.sha"))
+        self.botNP.setShaderInput("dudv", dudv)
+        self.botNP.setShaderInput("dudv_tile", 0.02)
+        self.botNP.setShaderInput("dudv_strength", 0.05)
+        self.botNP.setShaderInput("move_factor", 0.0)
+
+        self.setTextureInputs(reflScene, refrScene, underwaterRefrScene)
+
+    def setTextureInputs(self, reflScene, refrScene, underwaterRefrScene):
+        self.topNP.setShaderInput("refl", reflScene.texture)
+        self.topNP.setShaderInput("refr", refrScene.texture)
+        self.topNP.setShaderInput("refr_depth", refrScene.depthTex)
+
+        self.botNP.setShaderInput("refr", underwaterRefrScene.texture)
+
     def isInWater(self, bottom, top):
         return self.aabb.contains(bottom, top)
 
@@ -68,6 +135,9 @@ class WaterNode(NodePath):
         del self.botNP
         del self.aabb
         del self.height
+        del self.pos
+        del self.size
+        del self.depth
         NodePath.removeNode(self)
 
 class WaterScene:
@@ -162,12 +232,17 @@ class WaterReflectionManager:
 
         self.underwaterSound = base.loadSfx("phase_14/audio/sfx/AV_ambient_water.ogg")
         self.underwaterSound.setLoop(True)
+
+        self.wadeSounds = []
+        wades = 4
+        for i in xrange(wades):
+            self.wadeSounds.append(base.loadSfx("phase_14/audio/sfx/wade{0}.ogg".format(i + 1)))
         
         sMgr = CIGlobals.getSettingsMgr()
         self.reso = sMgr.ReflectionQuality[sMgr.getSetting("refl")]
-        if self.reso == 0:
-            self.enabled = False
-            return
+
+    def hasWaterEffects(self):
+        return self.reso > 0
 
     def getHoodOLC(self):
         pg = base.cr.playGame
@@ -179,12 +254,15 @@ class WaterReflectionManager:
         return None
 
     def setupScene(self, height):
-        self.reflScene = WaterScene("reflection", self.reso, height, Vec3(0, 0, 1), True)
-        self.reflScene.enable()
-        self.refrScene = WaterScene("refraction", self.reso, height, Vec3(0, 0, -1), needDepth = True)
-        self.refrScene.enable()
-        self.underwaterRefrScene = WaterScene("underwaterRefraction", self.reso, height, Vec3(0, 0, 1))
-        self.underwaterRefrScene.disable()
+        if self.hasWaterEffects():
+            self.reflScene = WaterScene("reflection", self.reso, height, Vec3(0, 0, 1), True)
+            self.reflScene.enable()
+            self.refrScene = WaterScene("refraction", self.reso, height, Vec3(0, 0, -1), needDepth = True)
+            self.refrScene.enable()
+            self.underwaterRefrScene = WaterScene("underwaterRefraction", self.reso, height, Vec3(0, 0, 1))
+            self.underwaterRefrScene.disable()
+
+        self.startUpdateTask()
 
     def isTouchingAnyWater(self, bottom, top):
         for waterNode in self.waterNodes:
@@ -207,52 +285,14 @@ class WaterReflectionManager:
             # The shader will then take these 2 textures, do fancy effects,
             # and project a combined version of the 2 onto the water nodes.
             self.setupScene(pos[2])
-            taskMgr.add(self.update, "waterRefl-update", sort = 45)
 
         node = WaterNode(size, pos, 50)
+        node.setup()
 
-        node.reparentTo(render)
-        node.hide(REFL_CAM_BITMASK)
-        node.setTextureOff(1)
-        node.setLightOff(1)
-        node.setMaterialOff(1)
-        node.setTransparency(1)
-
-        node.topNP.setShader(loader.loadShader("phase_14/models/shaders/water.sha"))
-        node.topNP.setShaderInput("refl", self.reflScene.texture)
-        node.topNP.setShaderInput("refr", self.refrScene.texture)
-        node.topNP.setShaderInput("dudv", self.dudv)
-        node.topNP.setShaderInput("refr_depth", self.refrScene.depthTex)
-        node.topNP.setShaderInput("dudv_tile", 0.02)
-        node.topNP.setShaderInput("dudv_strength", 0.05)
-        node.topNP.setShaderInput("move_factor", 0.0)
-        node.topNP.setShaderInput("near", CIGlobals.DefaultCameraNear)
-        node.topNP.setShaderInput("far", CIGlobals.DefaultCameraFar)
-        node.topNP.setShaderInput("reflectivity", 1.0)
-        node.topNP.setShaderInput("shine_damper", 1.5)
-        node.topNP.setShaderInput("normal", loader.loadTexture("phase_14/maps/water_surface_normal.png"))
-
-        currCfg = OutdoorLightingConfig.ActiveConfig
-        if currCfg is not None and isinstance(currCfg, OutdoorLightingConfig):
-            print "yes, we have an active config"
-            dir = CIGlobals.anglesToVector(currCfg.sunAngle)
-            col = currCfg.sun
+        if self.hasWaterEffects():
+            node.enableEffects(self.reflScene, self.refrScene, self.underwaterRefrScene)
         else:
-            print "no, no active config"
-            dir = CIGlobals.anglesToVector(base.loader.envConfig.defaultSunAngle)
-            col = base.loader.envConfig.defaultSunColor
-
-        print dir, col
-
-        node.topNP.setShaderInput("lightdir", dir)
-        node.topNP.setShaderInput("lightcol", col)
-
-        node.botNP.setShader(loader.loadShader("phase_14/models/shaders/water_bottom.sha"))
-        node.botNP.setShaderInput("refr", self.underwaterRefrScene.texture)
-        node.botNP.setShaderInput("dudv", self.dudv)
-        node.botNP.setShaderInput("dudv_tile", 0.02)
-        node.botNP.setShaderInput("dudv_strength", 0.05)
-        node.botNP.setShaderInput("move_factor", 0.0)
+            node.enableFakeEffect()
 
         self.waterNodes.append(node)
 
@@ -279,6 +319,9 @@ class WaterReflectionManager:
             self.underwaterRefrScene.cleanup()
             del self.underwaterRefrScene
 
+    def startUpdateTask(self):
+        taskMgr.add(self.update, "waterRefl-update", sort = 45)
+
     def stopUpdateTask(self):
         taskMgr.remove("waterRefl-update")
 
@@ -291,7 +334,6 @@ class WaterReflectionManager:
     def handleResolutionUpdate(self, newResolution):
         # We need to cleanup the scenes and generate new ones.
         self.reso = newResolution
-        self.enabled = (self.reso > 0)
         
         self.cleanupScenes()
         
@@ -300,33 +342,26 @@ class WaterReflectionManager:
             self.setupScene(firstNode.height)
             
             for node in self.waterNodes:
-                # Let's update the textures on the shader inputs.
-                node.topNP.setShaderInput("refl", self.reflScene.texture)
-                node.topNP.setShaderInput("refr", self.refrScene.texture)
-                node.topNP.setShaderInput("refr_depth", self.refrScene.depthTex)
-                node.botNP.setShaderInput("refr", self.underwaterRefrScene.texture)
-                
-                if self.reso == 0:
-                    node.hide()
+                if self.hasWaterEffects():
+                    # Let's update the textures on the shader inputs.
+                    node.enableEffects(self.reflScene, self.refrScene, self.underwaterRefrScene)
                 else:
-                    node.show()
-            
-            if self.enabled:
-                taskMgr.add(self.update, "waterRefl-update", sort = 45)
+                    node.enableFakeEffect()
 
     def update(self, task):
         if not self.enabled:
             return task.done
 
-        self.reflScene.camera.setMat(base.cam.getMat(render) * self.reflScene.plane.getReflectionMat())
-        self.refrScene.camera.setMat(base.cam.getMat(render))
-        self.underwaterRefrScene.camera.setMat(base.cam.getMat(render))
+        if self.hasWaterEffects():
+            self.reflScene.camera.setMat(base.cam.getMat(render) * self.reflScene.plane.getReflectionMat())
+            self.refrScene.camera.setMat(base.cam.getMat(render))
+            self.underwaterRefrScene.camera.setMat(base.cam.getMat(render))
 
-        time = globalClock.getFrameTime()
-        moveFactor = 0.02 * time
+            time = globalClock.getFrameTime()
+            moveFactor = 0.02 * time
 
-        if self.uwFilterQuad:
-            self.uwFilterQuad.setShaderInput("move_factor", moveFactor * 0.8)
+            if self.uwFilterQuad:
+                self.uwFilterQuad.setShaderInput("move_factor", moveFactor * 0.8)
 
         foundCamSubmerged = False
         foundLocalAvTouching = WaterNode.Nothing
@@ -346,15 +381,19 @@ class WaterReflectionManager:
                     foundLocalAvTouching = test
                     waterLocalAvIsTouching = waterNode
 
-            waterNode.topNP.setShaderInput("move_factor", moveFactor)
-            waterNode.botNP.setShaderInput("move_factor", moveFactor)
+            if self.hasWaterEffects():
+                waterNode.topNP.setShaderInput("move_factor", moveFactor)
+                waterNode.botNP.setShaderInput("move_factor", moveFactor)
 
         if foundCamSubmerged != self.cameraSubmerged:
             if foundCamSubmerged:
-                self.reflScene.disable()
-                self.refrScene.disable()
-                self.underwaterRefrScene.enable()
 
+                if self.hasWaterEffects():
+                    self.reflScene.disable()
+                    self.refrScene.disable()
+                    self.underwaterRefrScene.enable()
+
+                random.choice(self.wadeSounds).play()
                 self.underwaterSound.play()
                 olc = self.getHoodOLC()
                 if olc:
@@ -374,10 +413,12 @@ class WaterReflectionManager:
 
                 #self.uwFilterMgr.cleanup()
 
-                self.underwaterRefrScene.disable()
-                self.reflScene.enable()
-                self.refrScene.enable()
+                if self.hasWaterEffects():
+                    self.underwaterRefrScene.disable()
+                    self.reflScene.enable()
+                    self.refrScene.enable()
 
+                random.choice(self.wadeSounds).play()
                 self.underwaterSound.stop()
                 olc = self.getHoodOLC()
                 if olc:
@@ -386,14 +427,17 @@ class WaterReflectionManager:
         if self.localAvTouching != foundLocalAvTouching:
             if foundLocalAvTouching & WaterNode.Submerged:
                 base.localAvatar.walkControls.setCurrentSurface('swim')
+                base.localAvatar.walkControls.setControlScheme(base.localAvatar.walkControls.SSwim)
                 if waterLocalAvIsTouching:
                     base.localAvatar.b_splash(base.localAvatar.getX(render),
                                               base.localAvatar.getY(render),
                                               waterLocalAvIsTouching.height)
             elif foundLocalAvTouching & WaterNode.Touching:
-                base.localAvatar.walkControls.setCurrentSurface('ttslosh')
+                base.localAvatar.walkControls.setCurrentSurface('ttsloshnew')
+                base.localAvatar.walkControls.setControlScheme(base.localAvatar.walkControls.SDefault)
             else:
                 base.localAvatar.walkControls.setCurrentSurface('hardsurface')
+                base.localAvatar.walkControls.setControlScheme(base.localAvatar.walkControls.SDefault)
 
         self.cameraSubmerged = foundCamSubmerged
         self.localAvTouching = foundLocalAvTouching

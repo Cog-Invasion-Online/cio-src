@@ -21,9 +21,15 @@ class LocalControls(DirectObject):
     FootstepIval = 0.6
     FootstepVolumeMod = 1.0
 
+    SwimGravityMod = 0.5
+
     # Mode
     MThirdPerson = 0
     MFirstPerson = 1
+
+    # Scheme
+    SDefault = 0
+    SSwim = 1
 
     def __init__(self):
         DirectObject.__init__(self)
@@ -64,6 +70,7 @@ class LocalControls(DirectObject):
         self.setCurrentSurface('hardsurface')
 
         self.mode = LocalControls.MThirdPerson
+        self.scheme = LocalControls.SDefault
         self.fpsCam = FPSCamera()
 
         self.movementTokens = []
@@ -77,6 +84,24 @@ class LocalControls(DirectObject):
 
     def exitOff(self):
         pass
+
+    def setControlScheme(self, scheme):
+        self.scheme = scheme
+        if scheme == LocalControls.SSwim:
+            self.controller.movementState = "swimming"
+            self.controller.gravity = base.physicsWorld.getGravity()[2] * LocalControls.SwimGravityMod
+            self.staticFriction = 0.15
+            self.dynamicFriction = 0.08
+            self.allowCrouch = False
+            self.allowJump = False
+        else:
+            if self.controller.movementState == "swimming":
+                self.controller.movementState = "ground"
+            self.controller.gravity = base.physicsWorld.getGravity()[2]
+            self.staticFriction = 0.8
+            self.dynamicFriction = 0.3
+            self.allowCrouch = True
+            self.allowJump = True
         
     def attachCamera(self):
         if self.mode == LocalControls.MFirstPerson:
@@ -252,6 +277,8 @@ class LocalControls(DirectObject):
         base.localAvatar.assign(self.controller.movementParent)
         base.cr.doId2do[base.localAvatar.doId] = base.localAvatar
 
+        self.setControlScheme(LocalControls.SDefault)
+
         inputState.watchWithModifiers('jump', 'space', inputSource = inputState.WASD)
         inputState.watchWithModifiers('crouch', 'control', inputSource = inputState.WASD)
         inputState.watchWithModifiers('walk', 'shift', inputSource = inputState.WASD)
@@ -330,8 +357,11 @@ class LocalControls(DirectObject):
     def __handleFootsteps(self, task):
         time = globalClock.getFrameTime()
         speeds = self.speeds.length()
-        if speeds > 0.1 and self.isOnGround():
+        if speeds > 0.1 and (self.isOnGround() or self.scheme == LocalControls.SSwim):
             self.footstepIval = 1 / (min(speeds, self.idealFwd) / 6.0)
+
+            if self.scheme == LocalControls.SSwim:
+                self.footstepIval *= 6.0
                 
             if time - self.lastFootstepTime >= self.footstepIval:
                 self.playFootstep(min(1, speeds / 15.0))
@@ -412,12 +442,20 @@ class LocalControls(DirectObject):
             self.speeds.setY(0)
         if abs(self.speeds.getZ()) < 0.1:
             self.speeds.setZ(0)
+
+        linearSpeed = Vec3(self.speeds[0], self.speeds[1], 0.0)
         
-        self.controller.setLinearMovement(Vec3(self.speeds.getX(), self.speeds.getY(), 0))
+        if self.scheme == LocalControls.SSwim and self.mode == LocalControls.MFirstPerson:
+            # When swimming in first person, move in the direction we are looking, like flying.
+            linearSpeed = self.fpsCam.camRoot.getQuat(render).xform(linearSpeed)
+        else:
+            linearSpeed = base.localAvatar.getQuat(render).xform(linearSpeed)
+
+        self.controller.setLinearMovement(linearSpeed)
         self.controller.setAngularMovement(self.speeds.getZ())
 
         onGround = self.isOnGround()
-        if jump and onGround and not self.airborne:
+        if jump and onGround and not self.airborne and self.allowJump:
             self.controller.startJump(5.0)
             self.playFootstep(1.5)
             self.airborne = True
@@ -433,7 +471,7 @@ class LocalControls(DirectObject):
             self.fwdSpeed = self.idealFwd
             self.revSpeed = self.idealRev
             
-        if crouch and not self.crouching:
+        if crouch and not self.crouching and self.allowCrouch:
             fctr = LocalControls.CrouchSpeedFactor
             self.fwdSpeed = self.idealFwd * fctr
             self.revSpeed = self.idealRev * fctr

@@ -63,7 +63,7 @@ class BulletCharacterController(DirectObject):
             "ground": ["ground", "jumping", "falling"],
             "jumping": ["ground", "falling"],
             "falling": ["ground"],
-            "flying": [],
+            "swimming": [],
         }
         
         # Prevent the KCC from moving when there's not enough room for it in the next frame
@@ -198,7 +198,7 @@ class BulletCharacterController(DirectObject):
             "ground": self.__processGround,
             "jumping": self.__processJumping,
             "falling": self.__processFalling,
-            "flying": self.__processFlying,
+            "swimming": self.__processSwimming,
         }
 
         self.__currentPos = self.movementParent.getPos(render)
@@ -330,6 +330,8 @@ class BulletCharacterController(DirectObject):
         
         if self.isOnGround():
             self.__land()
+            # Put the avatar on the ground right now instead of waiting until next frame.
+            self.__targetPos.z = self.__footContact[0].z
             if self.__fallCallback[0] is not None:
                 self.__fallCallback[0](self.__fallStartPos - newPos.z, *self.__fallCallback[1], **self.__fallCallback[2])
     
@@ -353,15 +355,15 @@ class BulletCharacterController(DirectObject):
         if round(self.__targetPos.z, 2) >= self.jumpMaxHeight:
             self.__fall()
     
-    def __processFlying(self):
-        if self.__footContact and self.__targetPos.z - 0.1 < self.__footContact[0].z and self.__linearVelocity.z < 0.0:
-            self.__targetPos.z = self.__footContact[0].z
-            self.__linearVelocity.z = 0.0
+    def __processSwimming(self):
+        if self.__footContact:
+            absSlopeDot = round(self.__footContact[2].dot(Vec3.up()), 2)
+            if self.__targetPos.z - 0.1 < self.__footContact[0].z and (self.__linearVelocity.z < 0.0 or absSlopeDot < 1):
+                self.__targetPos.z = self.__footContact[0].z
+                self.__linearVelocity.z = 0.0
         
         if self.__headContact and self.__capsuleTop >= self.__headContact[0].z and self.__linearVelocity.z > 0.0:
             self.__linearVelocity.z = 0.0
-    
-    
     
     def __checkFutureSpace(self, globalVel):
         globalVel = globalVel * self.futureSpacePredictionDistance
@@ -448,12 +450,12 @@ class BulletCharacterController(DirectObject):
         self.__capsuleTop = self.__targetPos.z + self.__levitation + self.__capsuleH * 2.0
     
     def __applyLinearVelocity(self):
-        globalVel = self.movementParent.getQuat(render).xform(self.__linearVelocity) * self.__timeStep
+        globalVel = self.__linearVelocity * self.__timeStep
         
         if self.predictFutureSpace and not self.__checkFutureSpace(globalVel):
             return
         
-        if self.__footContact is not None and self.minSlopeDot and self.movementState != "flying":
+        if self.__footContact is not None and self.minSlopeDot and self.movementState != "swimming":
             normalVel = Vec3(globalVel)
             normalVel.normalize()
             
@@ -481,6 +483,9 @@ class BulletCharacterController(DirectObject):
             
             elif self.__slopeAffectsSpeed and globalVel != Vec3():
                 applyGravity()
+
+        elif self.movementState == "swimming" and not self.isOnGround():
+            self.__targetPos -= Vec3(0, 0, -self.gravity * self.__timeStep * 0.1)
         
         self.__targetPos += globalVel
 
@@ -532,7 +537,7 @@ class BulletCharacterController(DirectObject):
                         collisions += collDir * distance
                 
             maxIter -= 1
-            
+           
         collisions.z = 0.0
 
         if collisions.length() != 0 and self.__spam:

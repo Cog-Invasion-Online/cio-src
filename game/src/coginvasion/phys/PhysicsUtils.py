@@ -138,6 +138,9 @@ def makeBulletCollFromPandaColl(rootNode, exclusions = []):
         else:
             rbnode = BulletRigidBodyNode(pCollNp.getName())
         rbnode.addShapesFromCollisionSolids(pCollNp.node())
+        for shape in rbnode.getShapes():
+            if shape.isOfType(BulletTriangleMeshShape.getClassType()):
+                shape.setMargin(0.1)
         rbnode.setKinematic(True)
         rbnodeNp = NodePath(rbnode)
         rbnodeNp.reparentTo(pCollNp.getParent())
