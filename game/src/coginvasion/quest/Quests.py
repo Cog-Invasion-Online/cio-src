@@ -75,7 +75,7 @@ Quests = {
     20: {objectives: [
             {objType: CogBuildingObjective, args: [Any, Any, 1, ZoneUtil.DaisyGardensId]}
         ],
-        rewards: [(GagSlot, 2)],
+        rewards: [(Jellybeans, 50)],
         tier: Tiers.TT,
         requiredQuests: [0],
         name: 'Pick 1, Pick Anyone!'},

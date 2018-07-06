@@ -884,9 +884,6 @@ MaxedTrackExperiences = {
     Drop   : getTrackHighestExperience(Drop)
 }
 
-MaxGagSlots = 4
-InitGagSlots = 2
-
 # Cupcake, squirt flower
 InitLoadout = [13, 35]
 

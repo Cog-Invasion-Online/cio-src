@@ -276,20 +276,10 @@ class AdminPage(BookPage):
             text_scale = 0.04,
             relief = None,
             scale = 1.0,
-            text = "Unlock All Gags",
+            text = "Restock All Gags",
             pos = (0.45, 0.15, 0.2),
             text_pos = (0, -0.01),
             command = SEND_REQ_UNLOCK_GAGS
-        )
-        self.allSlotsBtn = DirectButton(
-            geom = geom,
-            text_scale = 0.0375,
-            relief = None,
-            scale = 1.0,
-            text = "Unlock All Gag Slots",
-            pos = (0.45, 0.15, 0.1),
-            text_pos = (0, -0.01),
-            command = SEND_REQ_GAG_SLOTS
         )
         self.physDbgBtn = DirectButton(
             geom = geom,
@@ -297,7 +287,7 @@ class AdminPage(BookPage):
             relief = None,
             scale = 1.0,
             text = "Toggle Physics Debug",
-            pos = (0.45, 0.15, 0.0),
+            pos = (0.45, 0.15, 0.1),
             text_pos = (0, -0.01),
             command = self.togglePhysDbg
         )
@@ -307,7 +297,7 @@ class AdminPage(BookPage):
             relief = None,
             scale = 1.0,
             text = "Analyze Scene",
-            pos = (0.45, 0.15, -0.1),
+            pos = (0.45, 0.15, 0.0),
             text_pos = (0, -0.01),
             command = self.doAnalyzeScene
         )
@@ -317,7 +307,7 @@ class AdminPage(BookPage):
             relief = None,
             scale = 1.0,
             text = "List Scene",
-            pos = (0.45, 0.15, -0.2),
+            pos = (0.45, 0.15, -0.1),
             text_pos = (0, -0.01),
             command = render.ls
         )
@@ -394,8 +384,6 @@ class AdminPage(BookPage):
         del self.worldBtn
         self.allGagsBtn.destroy()
         del self.allGagsBtn
-        self.allSlotsBtn.destroy()
-        del self.allSlotsBtn
         self.physDbgBtn.destroy()
         del self.physDbgBtn
         self.analyzeBtn.destroy()

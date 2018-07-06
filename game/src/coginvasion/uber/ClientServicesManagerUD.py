@@ -84,8 +84,7 @@ class CreateToonProcess:
                 "setHoodsDiscovered": ([ZoneUtil.ToontownCentralId],),
                 "setTeleportAccess": ([],),
                 "setLastHood": (ZoneUtil.ToontownCentralId,),
-                "setDefaultShard": (0,),
-                "setNumGagSlots": (GagGlobals.InitGagSlots,)}
+                "setDefaultShard": (0,)}
         self.notify.info("Creating new toon!")
         self.avList = self.accFields["AVATAR_IDS"]
         self.avList = self.avList[:6]

@@ -24,7 +24,6 @@ from src.coginvasion.book.MapPage import MapPage
 from src.coginvasion.book.OptionsPage import OptionsPage
 from src.coginvasion.book.DistrictsPage import DistrictsPage
 from src.coginvasion.book.AdminPage import AdminPage
-from src.coginvasion.book.GagsPage import GagsPage
 from src.coginvasion.book.QuestPage import QuestPage
 from src.coginvasion.book.ArcadeModePage import ArcadeModePage
 from src.coginvasion.hood import ZoneUtil
@@ -242,7 +241,7 @@ class ShtickerBook(DirectFrame, StateData):
         self.registerPage(OptionsPage(self))
         self.registerPage(DistrictsPage(self))
         self.registerPage(MapPage(self))
-        self.registerPage(GagsPage(self))
+        #self.registerPage(GagsPage(self))
         self.registerPage(QuestPage(self))
         self.registerPage(ArcadeModePage(self))
 

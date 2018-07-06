@@ -115,14 +115,6 @@ def SEND_REQ_UNLOCK_GAGS():
 
 __builtin__.SEND_REQ_UNLOCK_GAGS = SEND_REQ_UNLOCK_GAGS
 
-def SEND_REQ_GAG_SLOTS():
-    if not precommandChecks():
-        return
-
-    base.localAvatar.sendUpdate('reqAllGagSlots')
-
-__builtin__.SEND_REQ_GAG_SLOTS = SEND_REQ_GAG_SLOTS
-
 def TOGGLE_GHOST():
     if not precommandChecks():
         return

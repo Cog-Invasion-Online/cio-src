@@ -53,7 +53,6 @@ class DistributedPlayerToonAI(DistributedToonAI):
         self.teleportAccess = []
         self.lastHood = 0
         self.defaultShard = 0
-        self.numGagSlots = 0
         self.currentGag = -1
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
         return
@@ -93,10 +92,6 @@ class DistributedPlayerToonAI(DistributedToonAI):
         if self.__requesterAuthorized():
             self.b_setTrackExperience(GagGlobals.trackExperienceToNetString(GagGlobals.MaxedTrackExperiences))
             self.backpack.refillSupply()
-
-    def reqAllGagSlots(self):
-        if self.__requesterAuthorized():
-            self.b_setNumGagSlots(GagGlobals.MaxGagSlots)
         
     def reqSetWorldAccess(self, andTP):
         if self.__requesterAuthorized():
@@ -149,16 +144,6 @@ class DistributedPlayerToonAI(DistributedToonAI):
     def reqSetAdminToken(self, token):
         if self.__requesterAuthorized(True):
             self.b_setAdminToken(token)
-
-    def setNumGagSlots(self, num):
-        self.numGagSlots = num
-
-    def b_setNumGagSlots(self, num):
-        self.sendUpdate('setNumGagSlots', [num])
-        self.setNumGagSlots(num)
-
-    def getNumGagSlots(self):
-        return self.numGagSlots
 
     def setDefaultShard(self, shardId):
         self.defaultShard = shardId
@@ -557,7 +542,6 @@ class DistributedPlayerToonAI(DistributedToonAI):
             self.teleportAccess = None
             self.lastHood = None
             self.defaultShard = None
-            self.numGagSlots = None
             self.trackExperience = None
             del self.questManager
             del self.money
@@ -578,7 +562,6 @@ class DistributedPlayerToonAI(DistributedToonAI):
             del self.teleportAccess
             del self.lastHood
             del self.defaultShard
-            del self.numGagSlots
             del self.trackExperience
             DistributedPlayerToonAI.delete(self)
         return

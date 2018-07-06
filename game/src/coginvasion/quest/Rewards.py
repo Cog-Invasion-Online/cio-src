@@ -57,16 +57,6 @@ class JellybeanReward(Reward):
     def giveReward(self, avatar):
         avatar.b_setMoney(avatar.getMoney() + self.rewardValue)
 
-class GagSlotReward(Reward):
-    Dialogue = "the %s Gag Slot"
-    CustomDialogueBase = "You have unlocked %s."
-
-    def giveReward(self, avatar):
-        avatar.b_setNumGagSlots(self.rewardValue)
-
-    def fillInDialogue(self):
-        return self.Dialogue % QuestGlobals.getOrdinal(self.rewardValue)
-
 class AccessReward(Reward):
     Dialogue = "access to %s"
 
@@ -79,6 +69,5 @@ class AccessReward(Reward):
 RewardType2RewardClass = {
     Health:     HealthReward,
     Jellybeans: JellybeanReward,
-    GagSlot:    GagSlotReward,
     Access:     AccessReward
 }

@@ -58,7 +58,6 @@ class DistributedPlayerToon(DistributedToon):
         self.defaultShard = 0
         self.dmgFadeIval = None
         self.tunnelTrack = None
-        self.numGagSlots = 0
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
         
         self.takeDmgSfx = base.audio3d.loadSfx('phase_5/audio/sfx/tt_s_ara_cfg_toonHit.ogg')
@@ -70,12 +69,6 @@ class DistributedPlayerToon(DistributedToon):
         localAvatarReachable = (hasattr(base, 'localAvatar') and base.localAvatar)
         if localAvatarReachable and self.doId != base.localAvatar.doId:
             self.resetTorsoRotation()
-    
-    def setNumGagSlots(self, num):
-        self.numGagSlots = num
-    
-    def getNumGagSlots(self):
-        return self.numGagSlots
     
     def setHealth(self, health):
         if health < self.health:
@@ -591,7 +584,6 @@ class DistributedPlayerToon(DistributedToon):
         self.teleportAccess = None
         self.lastHood = None
         self.defaultShard = None
-        self.numGagSlots = None
         self.trackExperience = None
         self.__removeHeadMeter()
         self.destroyBattleMeter()
@@ -621,7 +613,6 @@ class DistributedPlayerToon(DistributedToon):
             del self.teleportAccess
             del self.lastHood
             del self.defaultShard
-            del self.numGagSlots
             del self.trackExperience
             del self.battleMeter
             del self.headMeter
