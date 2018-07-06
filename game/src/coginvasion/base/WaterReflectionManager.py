@@ -118,6 +118,7 @@ class WaterScene:
         self.disable()
 
     def cleanup(self):
+        self.disable()
         if hasattr(self, 'planeNP'):
             del self.plane
             del self.planeNode
@@ -256,7 +257,7 @@ class WaterReflectionManager:
         self.waterNodes.append(node)
 
     def clearWaterNodes(self):
-        if not self.enabled or len(self.waterNodes) == 0:
+        if len(self.waterNodes) == 0:
             return
 
         for waterNode in self.waterNodes:
@@ -292,11 +293,7 @@ class WaterReflectionManager:
         self.reso = newResolution
         self.enabled = (self.reso > 0)
         
-        if not self.enabled:
-            self.clearWaterNodes()
-            return
-        else:
-            self.cleanupScenes()
+        self.cleanupScenes()
         
         if len(self.waterNodes) > 0:
             firstNode = self.waterNodes[0]
@@ -308,7 +305,14 @@ class WaterReflectionManager:
                 node.topNP.setShaderInput("refr", self.refrScene.texture)
                 node.topNP.setShaderInput("refr_depth", self.refrScene.depthTex)
                 node.botNP.setShaderInput("refr", self.underwaterRefrScene.texture)
-            taskMgr.add(self.update, "waterRefl-update", sort = 45)
+                
+                if self.reso == 0:
+                    node.hide()
+                else:
+                    node.show()
+            
+            if self.enabled:
+                taskMgr.add(self.update, "waterRefl-update", sort = 45)
 
     def update(self, task):
         if not self.enabled:
