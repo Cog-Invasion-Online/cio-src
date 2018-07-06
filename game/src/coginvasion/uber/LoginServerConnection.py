@@ -22,33 +22,32 @@ class LoginServerConnectionHandler(SocketServer.BaseRequestHandler):
     notify = directNotify.newCategory('LoginServerConnectionHandler')
     
     def handle(self):
-        # Java gets very upset whenever this method returns.
-        while True:
-            self.data = []
-            try:
-                for s in self.request.recv(2048).splitlines():
-                    s = s.strip()
-                    
-                    if len(self.data) == 0:
-                        s = s[-1]
-                    
-                    self.data.append(s)
+        self.data = []
+        try:
+            for s in self.request.recv(2048).splitlines():
+                s = s.strip()
                 
-                print self.data
+                if len(self.data) == 0:
+                    # The very first line is going to be the id of the datagram.
+                    # Some weird ASCII characters begin the lines, so let's just use the
+                    # last character of the first line because our ids range from [0-9].
+                    s = s[-1]
                 
-                if len(self.data) > 0:
-                    datagramId = int(self.data[0])
-                    
-                    if datagramId == SRV_CREATE_TOKEN:
-                        ipAddress = self.data[1]
-                        token = self.data[2]
-                        self.generateToken(ipAddress, token)
-                    elif datagramId == SRV_NTWK_MESSAGE:
-                        message = self.data[1]
-                        self.sendNetworkMessage(message)
-            except Exception:
-                self.notify.warning('Client disconnected while processing login token data.')
-                return
+                self.data.append(s)
+            
+            if len(self.data) > 0:
+                datagramId = int(self.data[0])
+                
+                if datagramId == SRV_CREATE_TOKEN:
+                    ipAddress = self.data[1]
+                    token = self.data[2]
+                    self.generateToken(ipAddress, token)
+                elif datagramId == SRV_NTWK_MESSAGE:
+                    message = self.data[1]
+                    self.sendNetworkMessage(message)
+        except Exception:
+            self.notify.warning('Client disconnected while processing login token data.')
+            return
     
     def generateToken(self, ipAddress, token):
         global uberRepo
