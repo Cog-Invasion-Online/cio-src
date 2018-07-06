@@ -50,12 +50,12 @@ class GeneralCategory(OptionsCategory):
         self._hideApplying()
         
     def cleanup(self):
-        if hasattr(self, 'cursor'):
-            self.cursor.cleanup()
-            del self.cursor
-            
-        if hasattr(self, 'fps'):
-            self.fps.cleanup()
-            del self.fps
+        for widget in self.widgets:
+            widget.cleanup()
+        
+        self.widgets = []
+        del self.cursor
+        del self.fps
+        del self.widgets
         
         OptionsCategory.cleanup(self)

@@ -102,21 +102,8 @@ class DisplayCategory(OptionsCategory):
         self.maspr['indicatorValue'] = self.masprChoice
 
     def cleanup(self):
-        if hasattr(self, 'reso'):
-            self.reso.cleanup()
-            del self.reso
-
-        if hasattr(self, 'fs'):
-            self.fs.cleanup()
-            del self.fs
-
-        if hasattr(self, 'aa'):
-            self.aa.cleanup()
-            del self.aa
-
-        if hasattr(self, 'af'):
-            self.af.cleanup()
-            del self.af
+        for widget in self.widgets:
+            widget.cleanup()
 
         if hasattr(self, 'masprText'):
             self.masprText.destroy()
@@ -125,12 +112,14 @@ class DisplayCategory(OptionsCategory):
         if hasattr(self, 'maspr'):
             self.maspr.destroy()
             del self.maspr
-            
-        if hasattr(self, 'vsync'):
-            self.vsync.cleanup()
-            del self.vsync
 
+        self.widgets = []
+        del self.reso
+        del self.fs
+        del self.aa
+        del self.af
+        del self.vsync
         del self.origMaspr
         del self.masprChoice
-
+        del self.widgets
         OptionsCategory.cleanup(self)

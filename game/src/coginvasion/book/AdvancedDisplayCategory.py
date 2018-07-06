@@ -49,7 +49,6 @@ class AdvancedDisplayCategory(OptionsCategory):
             
     def __updateWater(self, quality):
         resolution = CIGlobals.getSettingsMgr().ReflectionQuality.get(quality)
-        print resolution
         base.waterReflectionMgr.handleResolutionUpdate(resolution)
             
     def __updateHDR(self, hdr):
@@ -75,20 +74,15 @@ class AdvancedDisplayCategory(OptionsCategory):
         self._setDefaults()
 
     def cleanup(self):
-        if hasattr(self, 'lighting'):
-            self.lighting.cleanup()
-            del self.lighting
-            
-        if hasattr(self, 'ppl'):
-            self.ppl.cleanup()
-            del self.ppl
-            
-        if hasattr(self, 'hdr'):
-            self.hdr.cleanup()
-            del self.hdr
-            
-        if hasattr(self, 'bloom'):
-            self.bloom.destroy()
-            del self.bloom
+        for widget in self.widgets:
+            widget.cleanup()
+        
+        self.widgets = []
+        del self.lighting
+        del self.ppl
+        del self.waterRefl
+        del self.hdr
+        del self.bloom
+        del self.widgets
 
         OptionsCategory.cleanup(self)

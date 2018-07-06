@@ -102,25 +102,15 @@ class ControlsCategory(OptionsCategory):
 
     def cleanup(self):
         self.discardChanges()
-
         OptionsCategory.cleanup(self)
 
-        if hasattr(self, 'gagKey'):
-            self.gagKey.cleanup()
-            del self.gagKey
+        for widget in [self.gagKey, self.fpmsSlider, self.fpfovSlider, self.genFovSlider]:
+            widget.cleanup()
 
-        if hasattr(self, 'fpmsSlider'):
-            self.fpmsSlider.cleanup()
-            del self.fpmsSlider
-
-        if hasattr(self, 'fpfovSlider'):
-            self.fpfovSlider.cleanup()
-            del self.fpfovSlider
-
-        if hasattr(self, 'genFovSlider'):
-            self.genFovSlider.cleanup()
-            del self.genFovSlider
-
+        del self.gagKey
+        del self.fpmsSlider
+        del self.fpfovSlider
+        del self.genFovSlider
         del self.origFPms
         del self.origFPfov
         del self.origGenFov
