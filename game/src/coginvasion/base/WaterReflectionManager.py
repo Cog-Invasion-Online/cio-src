@@ -177,18 +177,6 @@ class WaterReflectionManager:
                     return hood.olc
         return None
 
-    def clearPlanes(self):
-        if hasattr(self, 'reflPlaneNP'):
-            del self.reflPlane
-            del self.reflPlaneNode
-            self.reflPlaneNP.removeNode()
-            del self.reflPlaneNP
-        if hasattr(self, 'refrPlaneNP'):
-            del self.refrPlane
-            del self.refrPlaneNode
-            self.refrPlaneNP.removeNode()
-            del self.refrPlaneNP
-
     def setupScene(self, height):
         self.reflScene = WaterScene("reflection", self.reso, height, Vec3(0, 0, 1), True)
         self.reflScene.enable()
@@ -279,13 +267,16 @@ class WaterReflectionManager:
 
     def cleanupScenes(self):
         self.stopUpdateTask()
-
-        self.reflScene.cleanup()
-        del self.reflScene
-        self.refrScene.cleanup()
-        del self.refrScene
-        self.underwaterRefrScene.cleanup()
-        del self.underwaterRefrScene
+        
+        if hasattr(self, 'reflScene') and self.reflScene:
+            self.reflScene.cleanup()
+            del self.reflScene
+        if hasattr(self, 'refrScene') and self.refrScene:
+            self.refrScene.cleanup()
+            del self.refrScene
+        if hasattr(self, 'underwaterRefrScene') and self.underwaterRefrScene:
+            self.underwaterRefrScene.cleanup()
+            del self.underwaterRefrScene
 
     def stopUpdateTask(self):
         taskMgr.remove("waterRefl-update")
@@ -295,6 +286,29 @@ class WaterReflectionManager:
             return
 
         self.clearWaterNodes()
+        
+    def handleResolutionUpdate(self, newResolution):
+        # We need to cleanup the scenes and generate new ones.
+        self.reso = newResolution
+        self.enabled = (self.reso > 0)
+        
+        if not self.enabled:
+            self.clearWaterNodes()
+            return
+        else:
+            self.cleanupScenes()
+        
+        if len(self.waterNodes) > 0:
+            firstNode = self.waterNodes[0]
+            self.setupScene(firstNode.height)
+            
+            for node in self.waterNodes:
+                # Let's update the textures on the shader inputs.
+                node.topNP.setShaderInput("refl", self.reflScene.texture)
+                node.topNP.setShaderInput("refr", self.refrScene.texture)
+                node.topNP.setShaderInput("refr_depth", self.refrScene.depthTex)
+                node.botNP.setShaderInput("refr", self.underwaterRefrScene.texture)
+            taskMgr.add(self.update, "waterRefl-update", sort = 45)
 
     def update(self, task):
         if not self.enabled:
