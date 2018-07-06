@@ -9,6 +9,8 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from direct.distributed.DistributedObjectGlobal import DistributedObjectGlobal
+from src.coginvasion.gui.WhisperPopup import WhisperPopup
+from src.coginvasion.globals import CIGlobals, ChatGlobals
 
 class ClientServicesManager(DistributedObjectGlobal):
 
@@ -60,3 +62,8 @@ class ClientServicesManager(DistributedObjectGlobal):
 
 	def setAvatarResponse(self):
 		messenger.send(self.getSetAvatarEvent())
+		
+	def networkMessage(self, message):
+		print 'I got a network message!'
+		whisper = WhisperPopup('ADMIN: ' + message, CIGlobals.getToonFont(), ChatGlobals.WTSystem)
+		whisper.manage(base.marginManager)

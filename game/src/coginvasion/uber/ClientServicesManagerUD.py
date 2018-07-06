@@ -383,6 +383,10 @@ class ClientServicesManagerUD(DistributedObjectGlobalUD):
 
     def d_loginAccepted(self, sender):
         self.sendUpdateToChannel(sender, 'loginAccepted', [])
+        
+    def d_networkMessage(self, message):
+        for avId in self.air.friendsManager.toonsOnline:
+            self.sendUpdateToAvatarId(avId, 'networkMessage', [message])
 
     def requestAvatars(self):
         accountId = self.air.getAccountIdFromSender()

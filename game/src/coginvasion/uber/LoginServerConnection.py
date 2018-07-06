@@ -15,6 +15,9 @@ import SocketServer
 
 uberRepo = None
 
+SRV_CREATE_TOKEN = 0
+SRV_NTWK_MESSAGE = 1
+
 class LoginServerConnectionHandler(SocketServer.BaseRequestHandler):
     notify = directNotify.newCategory('LoginServerConnectionHandler')
     
@@ -23,22 +26,39 @@ class LoginServerConnectionHandler(SocketServer.BaseRequestHandler):
         while True:
             self.data = []
             try:
-                for s in self.request.recv(1024).splitlines():
-                    self.data.append(s.strip())
+                for s in self.request.recv(2048).splitlines():
+                    s = s.strip()
+                    
+                    if len(self.data) == 0:
+                        s = s[-1]
+                    
+                    self.data.append(s)
                 
-                tokenIP = self.data[0][2:len(self.data[0])]
-                token = self.data[1]
-                self.request.sendall('%s %s' % (tokenIP, token))
+                print self.data
                 
-                # Let's store the token we received.
-                loginToken = LoginToken(token, tokenIP)
-                
-                global uberRepo
-                uberRepo.storeToken(loginToken)
-                self.notify.debug('Stored token %s for IP: %s' % (token, tokenIP))
+                if len(self.data) > 0:
+                    datagramId = int(self.data[0])
+                    
+                    if datagramId == SRV_CREATE_TOKEN:
+                        ipAddress = self.data[1]
+                        token = self.data[2]
+                        self.generateToken(ipAddress, token)
+                    elif datagramId == SRV_NTWK_MESSAGE:
+                        message = self.data[1]
+                        self.sendNetworkMessage(message)
             except Exception:
                 self.notify.warning('Client disconnected while processing login token data.')
                 return
+    
+    def generateToken(self, ipAddress, token):
+        global uberRepo
+        uberRepo.storeToken(LoginToken(token, ipAddress))
+        self.notify.debug('Stored token %s for IP: %s' % (token, ipAddress))
+    
+    def sendNetworkMessage(self, message):
+        global uberRepo
+        uberRepo.csm.d_networkMessage(message)
+        self.notify.debug('Sent network message!')
 
 class LoginServerConnection:
     notify = directNotify.newCategory('LoginServerConnection')
