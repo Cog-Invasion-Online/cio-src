@@ -9,13 +9,13 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import NodePath
-from panda3d.bullet import BulletGhostNode, BulletSphereShape
+from panda3d.bullet import BulletRigidBodyNode, BulletCylinderShape, ZUp
 
 from direct.distributed.DistributedNode import DistributedNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, LerpScaleInterval, Func
 
-from src.coginvasion.globals.CIGlobals import WallBitmask, SPRender
+from src.coginvasion.globals.CIGlobals import WorldGroup, SPRender
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.gags import GagGlobals
 
@@ -31,7 +31,8 @@ class DistributedRestockBarrel(DistributedNode):
         self.rejectSoundPath = 'phase_4/audio/sfx/ring_miss.ogg'
         self.animTrack = None
         self.barrelScale = 0.5
-        self.sphereRadius = 3.2
+        self.radius = 1.5
+        self.height = 4.275
         self.playSoundForRemoteToons = 1
         self.barrel = None
         self.gagNode = None
@@ -47,14 +48,15 @@ class DistributedRestockBarrel(DistributedNode):
         self.build()
         
         # Build collisions
-        self.collSphere = BulletSphereShape(self.sphereRadius)
-        self.collNode = BulletGhostNode(self.uniqueName('barrelSphere'))
+        self.collSphere = BulletCylinderShape(self.radius, self.height, ZUp)
+        self.collNode = BulletRigidBodyNode(self.uniqueName('barrelSphere'))
         self.collNode.setKinematic(True)
-        self.collNode.setIntoCollideMask(WallBitmask)
+        self.collNode.setMass(10.0)
         self.collNode.addShape(self.collSphere)
         self.collNodePath = self.attachNewNode(self.collNode)
-        self.collNodePath.hide()
-        base.physicsWorld.attach(self.collNode)
+        self.collNodePath.setCollideMask(WorldGroup)
+        self.collNodePath.setZ(2.0)
+        base.physicsWorld.attachRigidBody(self.collNodePath.node())
         self.accept('enter' + self.collNodePath.getName(), self.__handleCollision)
         
         self.setParent(SPRender)
@@ -81,7 +83,8 @@ class DistributedRestockBarrel(DistributedNode):
         del self.rejectSoundPath
         del self.animTrack
         del self.barrelScale
-        del self.sphereRadius
+        del self.radius
+        del self.height
         del self.playSoundForRemoteToons
         del self.gagModel
         del self.collNode
@@ -135,9 +138,9 @@ class DistributedRestockBarrel(DistributedNode):
             self.gagModel.reparentTo(self.gagNode)
             self.gagModel.find('**/p1_2').clearBillboard()
             self.gagModel.setScale(0.6)
-            self.gagModel.setPos(0, -0.1, -0.1 - 0.6)
+            self.gagModel.setPos(0, -0.1, -0.7)
         
-    def __handleCollision(self, entry = None):
+    def __handleCollision(self, _ = None):
         self.sendUpdate('requestGrab', [])
         
     def setGrab(self, avId):
