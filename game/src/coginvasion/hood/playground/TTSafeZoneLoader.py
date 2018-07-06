@@ -39,7 +39,7 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         ]
         self.trees = []
 
-        base.wakeWaterHeight = -0.69
+        base.wakeWaterHeight = -0.75016
 
     def load(self):
         SafeZoneLoader.SafeZoneLoader.load(self, False)
@@ -71,7 +71,7 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         #self.geom.setMaterialOff()
         
         water = self.geom.find("**/pond_water")
-        base.waterReflectionMgr.addWaterNode(water, base.wakeWaterHeight)
+        water.removeNode()
         
         normalStage = TextureStage('normal')
         normalStage.setMode(TextureStage.MNormal)

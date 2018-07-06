@@ -17,7 +17,7 @@ Where to find moved globals:
 
 from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
-from panda3d.core import TextureStage, VBase4, TransparencyAttrib
+from panda3d.core import TextureStage, VBase4, TransparencyAttrib, Vec3
 
 from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wait, Parallel, SoundInterval, ActorInterval
 
@@ -79,6 +79,11 @@ CameraShyGame = "Camera Shy"
 EagleGame = "Eagle Summit"
 DeliveryGame = "Delivery!"
 DodgeballGame = "Winter Dodgeball"
+
+def anglesToVector(angles):
+    return Vec3(math.cos(angles[0]) * math.cos(angles[1]),
+                math.sin(angles[0]) * math.cos(angles[1]),
+                math.sin(angles[1]))
 
 patterns = ('%s', 'control-%s', 'shift-control-%s', 'alt-%s',
             'control-alt-%s', 'shift-%s', 'shift-alt-%s')

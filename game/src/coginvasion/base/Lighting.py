@@ -16,6 +16,7 @@ from src.coginvasion.hood.SnowEffect import SnowEffect
 from src.coginvasion.base.ShadowCaster import ShadowCaster
 
 class LightingConfig:
+    ActiveConfig = None
 
     def __init__(self, ambient):
         self.ambient = ambient
@@ -42,12 +43,15 @@ class LightingConfig:
             render.setLight(self.ambientNP)
             #if self.shadows:
             #    self.shadows.enable()
+        LightingConfig.ActiveConfig = self
 
     def unapply(self):
         if game.uselighting and not game.usepipeline:
             render.clearLight(self.ambientNP)
             #if self.shadows:
             #    self.shadows.disable()
+        if LightingConfig.ActiveConfig == self:
+            LightingConfig.ActiveConfig = None
 
     def remove(self):
         if self.ambientNP:
@@ -61,6 +65,8 @@ class LightingConfig:
         self.ambient = None
 
 class OutdoorLightingConfig(LightingConfig):
+
+    ActiveConfig = None
 
     # Sky types:
     STNone    = 0
@@ -104,6 +110,16 @@ class OutdoorLightingConfig(LightingConfig):
         if skyType != OutdoorLightingConfig.STNone:
             self.skyData = OutdoorLightingConfig.SkyData[self.skyType]
 
+    def modifyFog(self, color, density):
+        render.clearFog()
+        self.fogNode = CIGlobals.makeFog('config', color, density)
+        render.setFog(self.fogNode)
+
+    def resetFog(self):
+        render.clearFog()
+        self.fogNode = CIGlobals.makeFog('config', self.fog, self.fogDensity)
+        render.setFog(self.fogNode)
+
     @staticmethod
     def makeDefault():
         envConfig = base.loader.envConfig
@@ -132,6 +148,8 @@ class OutdoorLightingConfig(LightingConfig):
             self.snowEffect = SnowEffect()
             self.snowEffect.load()
 
+        OutdoorLightingConfig.ActiveConfig = self
+
     def apply(self):
         if game.usepipeline:
             return
@@ -139,6 +157,7 @@ class OutdoorLightingConfig(LightingConfig):
         
         if game.uselighting:
             render.setLight(self.sunNP)
+            print self.sunNP.node().getDirection()
             #base.filters.setVolumetricLighting(self.sunNP)
             if not self.winterOverride:
                 render.setFog(self.fogNode)
@@ -194,6 +213,9 @@ class OutdoorLightingConfig(LightingConfig):
             self.skyEffect.stopSky()
             self.skyEffect.cleanup()
         self.skyEffect = None
+
+        if OutdoorLightingConfig.ActiveConfig == self:
+            OutdoorLightingConfig.ActiveConfig = None
 
     def cleanup(self):
         LightingConfig.cleanup(self)

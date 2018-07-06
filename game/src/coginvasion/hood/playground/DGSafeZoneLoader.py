@@ -44,4 +44,4 @@ class DGSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         hq.find('**/doorFrameHoleRight_1').stash()
         
         water = self.geom.find("**/water_surface")
-        base.waterReflectionMgr.addWaterNode(water, base.wakeWaterHeight)
+        water.removeNode()

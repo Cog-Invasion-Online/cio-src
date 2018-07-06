@@ -40,6 +40,10 @@ class DistributedAvatar(DistributedActor, Avatar):
         self.hood = None
         return
 
+    def b_splash(self, x, y, z):
+        self.sendUpdate('splash', [x, y, z])
+        self.splash(x, y, z)
+
     def setHood(self, hood):
         self.hood = hood
 

@@ -78,6 +78,8 @@ class CIBase(ShowBase):
         base.lifter = CollisionHandlerFloor()
         base.pusher = CollisionHandlerPusher()
         base.queue = CollisionHandlerQueue()
+
+        base.lightingCfg = None
         
         self.accept('/', self.projectShadows)
 

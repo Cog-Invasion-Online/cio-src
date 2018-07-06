@@ -27,6 +27,10 @@ class DDPlayground(Playground.Playground):
             water = self.loader.geom.find('**/water')
             water.setCollideMask(CIGlobals.FloorBitmask)
 
+    def load(self):
+        Playground.Playground.load(self)
+        base.waterReflectionMgr.addWaterNode(125, (-25, 30, base.wakeWaterHeight))
+
     def enter(self, requestStatus):
         self.startBirds()
         Playground.Playground.enter(self, requestStatus)

@@ -39,12 +39,8 @@ class DDSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         hq.find('**/doorFrameHoleLeft_1').stash()
         hq.find('**/doorFrameHoleRight_1').stash()
 
-        water = self.geom.find("**/top_surface")
-        water.setTwoSided(True)
-        #water.setTransparency(True)
-        #water.setAlphaScale(0.9)
-        self.geom.find("**/bottom_surface").stash()
-        base.waterReflectionMgr.addWaterNode(water, base.wakeWaterHeight)
+        self.geom.find("**/top_surface").removeNode()
+        self.geom.find("**/bottom_surface").removeNode()
 
     def enter(self, requestStatus):
         SafeZoneLoader.SafeZoneLoader.enter(self, requestStatus)

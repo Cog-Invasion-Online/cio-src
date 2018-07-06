@@ -324,6 +324,8 @@ class Place(StateData):
         del self.walkStateData
         del self.loader
         del self.snowEffect
+
+        base.waterReflectionMgr.clearWaterNodes()
         
         self.__ignoreEvents()
 

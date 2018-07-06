@@ -20,6 +20,8 @@ from src.coginvasion.npc import DisneyCharGlobals as DCG
 from src.coginvasion.toon import ToonTalker
 from src.coginvasion.nametag.NametagGroup import NametagGroup
 from src.coginvasion.phys.PhysicsNodePath import PhysicsNodePath
+from src.coginvasion.base.Wake import Wake
+from src.coginvasion.base.Splash import Splash
 
 notify = directNotify.newCategory("Avatar")
 
@@ -64,6 +66,13 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         self.tag = None
         self.height = 0
 
+        self.splashEffect = None
+        self.splashSound = None
+
+        self.prevPos = Point3(0)
+        self.wake = None
+        self.lastWakeTime = 0.0
+
         self.thoughtInProg = False
 
         self.shadowFloorToggle = False
@@ -71,6 +80,27 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         self.floorTask = taskMgr.add(self.__keepOnFloorTask, "Avatar.keepOnFloor", sort = 30)
 
         return
+
+    def getSplash(self):
+        if not self.splashEffect:
+            self.splashEffect = Splash(render)
+            self.splashSound = base.loadSfxOnNode("phase_5.5/audio/sfx/AV_jump_in_water.ogg", self.splashEffect)
+
+        return self.splashEffect
+
+    def getWake(self):
+        if not self.wake:
+            self.wake = Wake(render, self)
+
+        return self.wake
+
+    def splash(self, x, y, z):
+        spl = self.getSplash()
+        spl.setPos(x, y, z)
+        spl.setScale(2)
+        spl.play()
+
+        self.splashSound.play()
 
     def isLocalAvatar(self):
         if not hasattr(base, 'localAvatar'):
@@ -104,6 +134,20 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         
         if self.isEmpty():
             return task.done
+
+        # Create water ripples
+        time = globalClock.getFrameTime()
+        delta = time - self.lastWakeTime
+        dt = globalClock.getDt()
+        pos = self.getPos(render)
+        moveMag = (pos - self.prevPos).length() / dt
+        if moveMag > 5.0 and delta > 0.1:
+            if hasattr(base, 'waterReflectionMgr'):
+                result = base.waterReflectionMgr.isTouchingAnyWater(pos, pos + (0, 0, self.height))
+                if result[0]:
+                    self.getWake().createRipple(result[1], rate = 1, startFrame = 4)
+                    self.lastWakeTime = time
+        self.prevPos = pos
 
         if not self.avatarFloorToggle and not self.shadowFloorToggle:
             # Avoid unnecessary ray casting.
@@ -203,6 +247,19 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
             self.nameTag = None
             self._name = None
             self.cleanupPhysics()
+
+            self.lastWakeTime = None
+            self.prevPos = None
+
+            if self.wake:
+                self.wake.destroy()
+                self.wake = None
+
+            if self.splashEffect:
+                self.splashEffect.destroy()
+                self.splashEffect = None
+
+            self.splashSound = None
             
             self.avatarFloorToggle = None
             self.shadowFloorToggle = None

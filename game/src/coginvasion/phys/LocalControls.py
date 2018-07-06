@@ -57,6 +57,7 @@ class LocalControls(DirectObject):
         self.standingUp = True
         self.footstepIval = LocalControls.FootstepIval
         self.lastFootstepTime = 0
+        self.currentSurface = None
         self.footstepSounds = []
         self.currFootstepSound = None
         self.lastFoot = True
@@ -177,6 +178,9 @@ class LocalControls(DirectObject):
         return self.crouching
 
     def setCurrentSurface(self, surface):
+        if self.currentSurface == surface:
+            return
+
         self.currentSurface = surface
         
         self.footstepSounds = []
@@ -237,6 +241,7 @@ class LocalControls(DirectObject):
     def setupControls(self):
         self.controller = BulletCharacterController(base.physicsWorld, render, base.localAvatar.getHeight(),
                                                     base.localAvatar.getHeight() / 2.0, 0.3, 1.0)
+        self.controller.setMaxSlope(75.0, False)
         self.controller.shapeGroup = CIGlobals.LocalAvGroup
         self.controller.setCollideMask(CIGlobals.LocalAvGroup)
         self.controller.setPythonTag("localAvatar", base.localAvatar)

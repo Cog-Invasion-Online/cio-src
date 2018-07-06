@@ -18,6 +18,10 @@ class BRPlayground(Playground.Playground):
     def __init__(self, loader, parentFSM, doneEvent):
         Playground.Playground.__init__(self, loader, parentFSM, doneEvent)
         self.windSfx = None
+
+    def load(self):
+        Playground.Playground.load(self)
+        base.waterReflectionMgr.addWaterNode(20, (-58, -25, base.wakeWaterHeight))
         
     def enter(self, requestStatus):
         Playground.Playground.enter(self, requestStatus)

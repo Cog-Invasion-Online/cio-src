@@ -36,6 +36,8 @@ class TTPlayground(Playground.Playground):
             winterTxt = loader.loadTexture('winter/maps/tt_winter_ground.png')
             self.loader.geom.find('**/ground_center').setTexture(winterTxt, 1)
 
+        base.waterReflectionMgr.addWaterNode(35, (30.5, -21.4, base.wakeWaterHeight))
+
     def unload(self):
         Playground.Playground.unload(self)
 

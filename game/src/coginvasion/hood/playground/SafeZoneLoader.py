@@ -66,6 +66,8 @@ class SafeZoneLoader(StateData):
     def unload(self):
         StateData.unload(self)
 
+        base.waterReflectionMgr.clearWaterNodes()
+
         if self.animatedFish:
             self.animatedFish.cleanup()
             self.animatedFish.removeNode()

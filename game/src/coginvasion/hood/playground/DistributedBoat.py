@@ -14,7 +14,7 @@ from direct.distributed.ClockDelta import globalClockDelta
 from direct.fsm.State import State
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.directutil import Mopath
-from direct.interval.IntervalGlobal import MopathInterval, Parallel, LerpQuatInterval, SoundInterval, Sequence, Wait
+from direct.interval.IntervalGlobal import MopathInterval, Parallel, LerpQuatInterval, SoundInterval, Sequence, Wait, LerpPosInterval, LerpHprInterval
 
 from panda3d.core import CollisionSphere, CollisionNode 
 
@@ -51,6 +51,8 @@ class DistributedBoat(DistributedObject):
         self.boatPath = '*donalds_boat*'
         self.track = None
         self.state = None
+        self.animBoat1Track = None
+        self.animBoatTrack = None
         
         # Variables that handle the winter collision node.
         self.crashColl = None
@@ -62,6 +64,8 @@ class DistributedBoat(DistributedObject):
 
     def __handleOffBoat(self, entry):
         base.localAvatar.b_setParent(CIGlobals.SPRender)
+        base.localAvatar.setR(0)
+        base.localAvatar.setP(0)
         self.soundWaterLap.stop()
 
     def __pollBoat(self, task):
@@ -78,13 +82,15 @@ class DistributedBoat(DistributedObject):
         self.soundShipBell = base.audio3d.loadSfx(self.shipBell)
         self.soundWaterLap = base.audio3d.loadSfx(self.waterLap)
         self.soundDockCreak = base.audio3d.loadSfx(self.dockCreak)
-        #try:
-        #    self.boat = self.cr.playGame.hood.loader.geom.find('**/' + self.boatPath)
-        #except:
-    #        base.taskMgr.add(self.__pollBoat, self.uniqueName('__pollBoat'))
-    #        return
-        self.boat = self.cr.playGame.hood.loader.geom.find('**/' + self.boatPath)
-        self.boat.setMaterial(CIGlobals.getShinyMaterial())
+
+        self.boatMdl = self.cr.playGame.hood.loader.geom.find('**/' + self.boatPath)
+        self.boatMdl.setMaterial(CIGlobals.getShinyMaterial())
+        self.boat = self.boatMdl.getParent().attachNewNode('boatRoot')
+        self.boat.setTransform(self.boatMdl.getTransform())
+        self.boatMdl1 = self.boat.attachNewNode('boatMdl1')
+        self.boatMdl.clearTransform()
+        self.boatMdl.reparentTo(self.boatMdl1)
+
         base.audio3d.attachSoundToObject(self.soundFogHorn, self.boat)
         base.audio3d.attachSoundToObject(self.soundShipBell, self.boat)
         base.audio3d.attachSoundToObject(self.soundWaterLap, self.boat)
@@ -94,11 +100,27 @@ class DistributedBoat(DistributedObject):
     def generated(self):
         self.eastPier = self.cr.playGame.hood.loader.geom.find('**/' + self.eastPierPath)
         self.westPier = self.cr.playGame.hood.loader.geom.find('**/' + self.westPierPath)
-        base.cr.parentMgr.registerParent(CIGlobals.SPDonaldsBoat, self.boat)
+        base.cr.parentMgr.registerParent(CIGlobals.SPDonaldsBoat, self.boatMdl)
         self.accept('enterdonalds_boat_floor', self.__handleOnBoat)
         self.accept('exitdonalds_boat_floor', self.__handleOffBoat)
         self.d_requestCurrentStateAndTimestamp()
         self.fsm.enterInitialState()
+
+        speedFactor = 2
+
+        self.animBoatTrack = Sequence(
+            LerpHprInterval(self.boatMdl, duration = 1 * speedFactor, hpr = (0, 0, -1), startHpr = (0, 0, 1), blendType = 'easeInOut'),
+            LerpHprInterval(self.boatMdl, duration = 1 * speedFactor, hpr = (0, 0, 1), startHpr = (0, 0, -1), blendType = 'easeInOut')
+        )
+
+        import math
+
+        self.animBoat1Track = Sequence(
+            LerpHprInterval(self.boatMdl1, duration = math.pi * speedFactor, hpr = (0, 1, 0), startHpr = (0, -1, 0), blendType = 'easeInOut'),
+            LerpHprInterval(self.boatMdl1, duration = math.pi * speedFactor, hpr = (0, -1, 0), startHpr = (0, 1, 0), blendType = 'easeInOut')
+        )
+        self.animBoat1Track.loop()
+        self.animBoatTrack.loop()
         
         if base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
             self.boat.setPosHpr(12.73, -1.6, -4.7, 341.57, 350.0, 26.5)
@@ -119,6 +141,13 @@ class DistributedBoat(DistributedObject):
         self.ignore('enterdonalds_boat_floor')
         self.ignore('exitdonalds_boat_floor')
         self.fsm.requestFinalState()
+
+        if self.animBoat1Track:
+            self.animBoat1Track.finish()
+            self.animBoat1Track = None
+        if self.animBoatTrack:
+            self.animBoatTrack.finish()
+            self.animBoatTrack = None
         
         if self.crashCollNP:
             self.crashCollNP.removeNode()
@@ -135,6 +164,8 @@ class DistributedBoat(DistributedObject):
         self.waterLap = None
         self.dockCreak = None
         self.boat = None
+        self.boatMdl = None
+        self.boatMdl1 = None
         self.track = None
         self.pierDownP = None
         self.pierUpP = None
@@ -165,7 +196,7 @@ class DistributedBoat(DistributedObject):
     def enterEastToWest(self, ts = 0):
         moPath = Mopath.Mopath()
         moPath.loadFile(self.eastWest)
-        moIval = MopathInterval(moPath, self.boat)
+        moIval = MopathInterval(moPath, self.boat, blendType = 'easeInOut')
 
         self.track = Parallel(
             SoundInterval(self.soundShipBell, node = self.boat),
@@ -175,7 +206,8 @@ class DistributedBoat(DistributedObject):
                 self.eastPier,
                 duration = 5.0,
                 quat = (90, self.pierDownP, 0),
-                startHpr = (90, self.pierUpP, 0)
+                startHpr = (90, self.pierUpP, 0),
+                blendType = 'easeInOut'
             ),
             Sequence(
                 Wait(15.0),
@@ -184,7 +216,8 @@ class DistributedBoat(DistributedObject):
                         self.westPier,
                         duration = 5.0,
                         quat = (-90, self.pierUpP, 0),
-                        startHpr = (-90, self.pierDownP, 0)
+                        startHpr = (-90, self.pierDownP, 0),
+                        blendType = 'easeInOut'
                     ),
                     Sequence(
                         Wait(2.0),
@@ -204,7 +237,7 @@ class DistributedBoat(DistributedObject):
     def enterWestToEast(self, ts = 0):
         moPath = Mopath.Mopath()
         moPath.loadFile(self.westEast)
-        moIval = MopathInterval(moPath, self.boat)
+        moIval = MopathInterval(moPath, self.boat, blendType = 'easeInOut')
 
         self.track = Parallel(
             SoundInterval(self.soundShipBell, node = self.boat),
@@ -214,7 +247,8 @@ class DistributedBoat(DistributedObject):
                 self.westPier,
                 duration = 5.0,
                 quat = (-90, self.pierDownP, 0),
-                startHpr = (-90, self.pierUpP, 0)
+                startHpr = (-90, self.pierUpP, 0),
+                blendType = 'easeInOut'
             ),
             Sequence(
                 Wait(15.0),
@@ -223,7 +257,8 @@ class DistributedBoat(DistributedObject):
                         self.eastPier,
                         duration = 5.0,
                         quat = (90, self.pierUpP, 0),
-                        startHpr = (90, self.pierDownP, 0)
+                        startHpr = (90, self.pierDownP, 0),
+                        blendType = 'easeInOut'
                     ),
                     Sequence(
                         Wait(2.0),
