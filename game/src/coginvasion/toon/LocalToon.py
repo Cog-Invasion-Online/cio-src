@@ -117,6 +117,8 @@ class LocalToon(DistributedPlayerToon):
 
         self.invGui = None
 
+        self.isSwimming = False
+
         self.jumpHardLandIval = None
 
         # Modified by DistributedBattleZone.
@@ -615,15 +617,18 @@ class LocalToon(DistributedPlayerToon):
     def trackAnimToSpeed(self, task):
         slideSpeed, speed, rotSpeed = self.walkControls.getSpeeds()
         state = None
-        if self.getHealth() > 0:
-            state = 'Happy'
+        if self.isSwimming:
+            state = 'swim'
         else:
-            state = 'Sad'
+            if self.getHealth() > 0:
+                state = 'Happy'
+            else:
+                state = 'Sad'
         if state != self.lastState:
             self.lastState = state
             self.b_setAnimState(state)
             if base.minigame is None:
-                if state == 'Sad':
+                if state == 'Sad' and not self.isSwimming:
                     self.setWalkSpeedSlow()
                 else:
                     self.setWalkSpeedNormal()

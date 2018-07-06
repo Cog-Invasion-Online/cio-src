@@ -426,6 +426,7 @@ class WaterReflectionManager:
 
         if self.localAvTouching != foundLocalAvTouching:
             if foundLocalAvTouching & WaterNode.Submerged:
+                base.localAvatar.isSwimming = True
                 base.localAvatar.walkControls.setCurrentSurface('swim')
                 base.localAvatar.walkControls.setControlScheme(base.localAvatar.walkControls.SSwim)
                 if waterLocalAvIsTouching:
@@ -433,9 +434,11 @@ class WaterReflectionManager:
                                               base.localAvatar.getY(render),
                                               waterLocalAvIsTouching.height)
             elif foundLocalAvTouching & WaterNode.Touching:
+                base.localAvatar.isSwimming = False
                 base.localAvatar.walkControls.setCurrentSurface('ttsloshnew')
                 base.localAvatar.walkControls.setControlScheme(base.localAvatar.walkControls.SDefault)
             else:
+                base.localAvatar.isSwimming = False
                 base.localAvatar.walkControls.setCurrentSurface('hardsurface')
                 base.localAvatar.walkControls.setControlScheme(base.localAvatar.walkControls.SDefault)
 

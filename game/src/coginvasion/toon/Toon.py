@@ -11,7 +11,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.interval.IntervalGlobal import Sequence, LerpScaleInterval
-from direct.interval.IntervalGlobal import Wait, Parallel, SoundInterval
+from direct.interval.IntervalGlobal import Wait, Parallel, SoundInterval, LerpPosInterval
 from direct.interval.IntervalGlobal import ActorInterval, LerpHprInterval, Func
 from direct.distributed import DelayDelete
 
@@ -111,7 +111,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             State('deadWalk', self.enterDeadWalk, self.exitDeadWalk),
             State('squish', self.enterSquish, self.exitSquish),
             State('Happy', self.enterHappy, self.exitHappy),
-            State('Sad', self.enterSad, self.exitSad)],
+            State('Sad', self.enterSad, self.exitSad),
+            State('Swim', self.enterSwim, self.exitSwim)],
             'off', 'off')
         animStateList = self.animFSM.getStates()
         self.animFSM.enterInitialState()
@@ -1162,21 +1163,31 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
     def enterSwim(self, ts = 0, callback = None, extraArgs = []):
         self.playingAnim = 'swim'
         self.loop("swim")
-        self.getGeomNode().setP(-89.0)
-        self.getGeomNode().setZ(4.0)
-        nt = self.nametag3d
-        nt.setX(0)
-        nt.setY(-2)
-        nt.setZ(5.0)
+
+        self.resetTorsoRotation()
+
+        toon = self.getGeomNode()
+        toon.setP(-89.0)
+        
+        if self.shadow:
+            self.shadow.hide()
+
+        self.swimBobTrack = Sequence(LerpPosInterval(toon, duration = 1, pos = (0, -3, 3), startPos = (0, -3, 4), blendType = 'easeInOut'),
+                                     LerpPosInterval(toon, duration = 1, pos = (0, -3, 4), startPos = (0, -3, 3), blendType = 'easeInOut'))
+        self.swimBobTrack.loop()
+        self.nametag3d.setZ(5.0)
 
     def exitSwim(self):
+        self.swimBobTrack.finish()
+        del self.swimBobTrack
+        if self.shadow:
+            self.shadow.show()
         self.exitGeneral()
-        self.getGeomNode().setP(0.0)
-        self.getGeomNode().setZ(0.0)
+        self.getGeomNode().setPosHpr(0, 0, 0, 0, 0, 0)
         nt = self.nametag3d
         nt.setX(0)
         nt.setY(0)
-        nt.setZ(self.getHeight() + 0.3)
+        nt.setZ(self.getHeight() + 0.5)
         self.playingAnim = 'neutral'
 
     def enterDied(self, ts = 0, callback = None, extraArgs = []):
