@@ -106,7 +106,7 @@ class MapPage(BookPage, DirectFrame):
                     text_bg = Vec4(1, 1, 1, 0.4),
                     text_scale = 0.055,
                     text_wordwrap = 8,
-                    rolloverSound = None,
+                    rolloverSound = CIGlobals.getRolloverSound(),
                     clickSound = None,
                     pressEffect = 0,
                     sortOrder = 1,

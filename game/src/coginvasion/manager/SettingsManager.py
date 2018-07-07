@@ -149,6 +149,7 @@ class SettingsManager:
         gagkey = settings.get("gagkey", None)
         if gagkey is None:
             gagkey = self.updateAndWriteSetting("gagkey", "mouse1")
+        base.inputStore.updateControl('UseGag', gagkey)
 
         # Maintain aspect ratio
         maspr = settings.get("maspr", None)
