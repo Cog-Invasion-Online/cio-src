@@ -48,11 +48,6 @@ def __saveScreenshot(shot):
     return
 
 def __takeScreenshot():
-    if base.config.GetString("threading-model", "") != "":
-        # Until it's fixed don't take screenshots under multithreaded
-        # pipeline.
-        return
-
     shot = base.win.getScreenshot()
     thread = Thread(target = __saveScreenshot, args = (shot,))
     thread.start()
