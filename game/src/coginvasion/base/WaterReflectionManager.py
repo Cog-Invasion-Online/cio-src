@@ -14,7 +14,7 @@ from panda3d.core import (BitMask32, Plane, NodePath, CullFaceAttrib, Texture,
                           TextureStage, Point3, PlaneNode, VBase4, Vec3, WindowProperties,
                           FrameBufferProperties, GraphicsPipe, GraphicsOutput, TransparencyAttrib,
                           Material, WeakNodePath, RigidBodyCombiner, AntialiasAttrib, CardMaker,
-                          BoundingBox)
+                          BoundingBox, Shader)
 
 from direct.gui.DirectGui import OnscreenImage
 from direct.filter.FilterManager import FilterManager
@@ -86,7 +86,8 @@ class WaterNode(NodePath):
 
         dudv = loader.loadTexture("phase_14/maps/water_surface_dudv_old.png")
 
-        self.topNP.setShader(loader.loadShader("phase_14/models/shaders/water.sha"))
+        self.topNP.setShader(Shader.load(Shader.SL_GLSL, "phase_14/models/shaders/water_v.glsl",
+                                         "phase_14/models/shaders/water_f.glsl"))
         self.topNP.setShaderInput("dudv", dudv)
         self.topNP.setShaderInput("dudv_tile", 0.02)
         self.topNP.setShaderInput("dudv_strength", 0.05)
@@ -95,7 +96,7 @@ class WaterNode(NodePath):
         self.topNP.setShaderInput("far", CIGlobals.DefaultCameraFar)
         self.topNP.setShaderInput("reflectivity", 1.0)
         self.topNP.setShaderInput("shine_damper", 1.5)
-        self.topNP.setShaderInput("normal", loader.loadTexture("phase_14/maps/water_surface_normal.png"))
+        self.topNP.setShaderInput("normal_map", loader.loadTexture("phase_14/maps/water_surface_normal.png"))
 
         currCfg = OutdoorLightingConfig.ActiveConfig
         if currCfg is not None and isinstance(currCfg, OutdoorLightingConfig):
@@ -107,7 +108,8 @@ class WaterNode(NodePath):
         self.topNP.setShaderInput("lightdir", dir)
         self.topNP.setShaderInput("lightcol", col)
 
-        self.botNP.setShader(loader.loadShader("phase_14/models/shaders/water_bottom.sha"))
+        self.botNP.setShader(Shader.load(Shader.SL_GLSL, "phase_14/models/shaders/water_bottom_v.glsl",
+                                         "phase_14/models/shaders/water_bottom_f.glsl"))
         self.botNP.setShaderInput("dudv", dudv)
         self.botNP.setShaderInput("dudv_tile", 0.02)
         self.botNP.setShaderInput("dudv_strength", 0.05)
@@ -220,7 +222,7 @@ class WaterReflectionManager:
         self.cameraSubmerged = False
         self.localAvTouching = WaterNode.Nothing
         self.underwater = False
-        self.underwaterFog = [VBase4(0.0, 0.3, 0.7, 1.0), 0.02]
+        self.underwaterFog = [VBase4(0.0, 0.3, 0.7, 1.0), 0.008]
         self.waterNodes = []
 
         self.uwFilterMgr = FilterManager(base.win, base.cam)
