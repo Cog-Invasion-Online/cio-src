@@ -221,16 +221,8 @@ class WaterReflectionManager:
         self.enabled = True
         self.cameraSubmerged = False
         self.localAvTouching = WaterNode.Nothing
-        self.underwater = False
         self.underwaterFog = [VBase4(0.0, 0.3, 0.7, 1.0), 0.008]
         self.waterNodes = []
-
-        self.uwFilterMgr = FilterManager(base.win, base.cam)
-        self.dudv = loader.loadTexture("phase_14/maps/water_surface_dudv_old.png")
-        self.uwFilterQuad = None
-        self.colortex = Texture("filter-base-color")
-        self.colortex.setWrapU(Texture.WMClamp)
-        self.colortex.setWrapV(Texture.WMClamp)
 
         self.underwaterSound = base.loadSfx("phase_14/audio/sfx/AV_ambient_water.ogg")
         self.underwaterSound.setLoop(True)
@@ -362,9 +354,6 @@ class WaterReflectionManager:
             time = globalClock.getFrameTime()
             moveFactor = 0.02 * time
 
-            if self.uwFilterQuad:
-                self.uwFilterQuad.setShaderInput("move_factor", moveFactor * 0.8)
-
         foundCamSubmerged = False
         foundLocalAvTouching = WaterNode.Nothing
         waterLocalAvIsTouching = None
@@ -401,20 +390,7 @@ class WaterReflectionManager:
                 if olc:
                     olc.modifyFog(*self.underwaterFog)
 
-                #self.uwFilterQuad = self.uwFilterMgr.renderSceneInto(colortex = self.colortex)
-                #self.uwFilterQuad.setShader(loader.loadShader("phase_14/models/shaders/water_screen.sha"))
-                #self.uwFilterQuad.setShaderInput("src", self.colortex)
-                #self.uwFilterQuad.setShaderInput("dudv", loader.loadTexture("phase_14/maps/water_surface_dudv.png"))
-                #self.uwFilterQuad.setShaderInput("dudv_tile", 1.3)
-                #self.uwFilterQuad.setShaderInput("dudv_strength", 0.004)
-                #self.uwFilterQuad.setShaderInput("move_factor", 0.0)
             else:
-                #if self.uwFilterQuad:
-                #    self.uwFilterQuad.removeNode()
-                #    self.uwFilterQuad = None
-
-                #self.uwFilterMgr.cleanup()
-
                 if self.hasWaterEffects():
                     self.underwaterRefrScene.disable()
                     self.reflScene.enable()
