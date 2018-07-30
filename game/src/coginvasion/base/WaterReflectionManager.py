@@ -14,7 +14,7 @@ from panda3d.core import (BitMask32, Plane, NodePath, CullFaceAttrib, Texture,
                           TextureStage, Point3, PlaneNode, VBase4, Vec3, WindowProperties,
                           FrameBufferProperties, GraphicsPipe, GraphicsOutput, TransparencyAttrib,
                           Material, WeakNodePath, RigidBodyCombiner, AntialiasAttrib, CardMaker,
-                          BoundingBox, Shader)
+                          BoundingBox, Shader, Geom, GeomVertexData, GeomVertexFormat, GeomTriangles, GeomNode, GeomVertexWriter)
 
 from direct.gui.DirectGui import OnscreenImage
 from direct.filter.FilterManager import FilterManager
@@ -41,22 +41,42 @@ class WaterNode(NodePath):
         self.size = size
         self.height = pos[2]
 
-        topCard = CardMaker('waterTop')
-        topCard.setFrame(-size, size, -size, size)
-        self.topNP = self.attachNewNode(topCard.generate())
-        self.topNP.setP(-90)
-        self.topNP.clearModelNodes()
-        self.topNP.flattenStrong()
-
-        botCard = CardMaker('waterBot')
-        botCard.setFrame(-size, size, -size, size)
-        self.botNP = self.attachNewNode(botCard.generate())
-        self.botNP.setP(90)
-        self.botNP.clearModelNodes()
-        self.botNP.flattenStrong()
+        vdata = GeomVertexData('waterPlanes', GeomVertexFormat.getV3t2(), Geom.UHStatic)
+        vdata.setNumRows(4)
+        vtxWriter = GeomVertexWriter(vdata, 'vertex')
+        tcWriter = GeomVertexWriter(vdata, 'texcoord')
+        # top left corner
+        vtxWriter.addData3f(size[0], size[3], 0)
+        tcWriter.addData2f(0, 1)
+        # bottom left corner
+        vtxWriter.addData3f(size[0], size[2], 0)
+        tcWriter.addData2f(0, 0)
+        # top right corner
+        vtxWriter.addData3f(size[1], size[3], 0)
+        tcWriter.addData2f(1, 1)
+        # bottom right corner
+        vtxWriter.addData3f(size[1], size[2], 0)
+        tcWriter.addData2f(1, 0)
+        
+        topTris = GeomTriangles(Geom.UHStatic)
+        topTris.addVertices(0, 1, 2)
+        topTris.addVertices(3, 2, 1)
+        topGeom = Geom(vdata)
+        topGeom.addPrimitive(topTris)
+        self.topNP = self.attachNewNode(GeomNode('waterTop'))
+        self.topNP.node().addGeom(topGeom)
+        
+        # Reverse the winding for the bottom water plane
+        botTris = GeomTriangles(Geom.UHStatic)
+        botTris.addVertices(2, 1, 0)
+        botTris.addVertices(1, 2, 3)        
+        botGeom = Geom(vdata)
+        botGeom.addPrimitive(botTris)
+        self.botNP = self.attachNewNode(GeomNode('waterBot'))
+        self.botNP.node().addGeom(botGeom)
 
         # Create an AABB which defines the volume of this water.
-        self.aabb = BoundingBox(Point3(-size, -size, -depth), Point3(size, size, 0))
+        self.aabb = BoundingBox(Point3(size[0], size[2], -depth), Point3(size[1], size[3], 0))
         self.aabb.xform(self.getMat(render))
 
     def setup(self):
@@ -268,7 +288,7 @@ class WaterReflectionManager:
 
         return [False, 0.0]
     
-    def addWaterNode(self, size, pos):
+    def addWaterNode(self, size, pos, depth = 50):
         if not self.enabled:
             return
 
@@ -279,8 +299,10 @@ class WaterReflectionManager:
             # The shader will then take these 2 textures, do fancy effects,
             # and project a combined version of the 2 onto the water nodes.
             self.setupScene(pos[2])
-
-        node = WaterNode(size, pos, 50)
+        
+        if not isinstance(size, tuple):
+            size = (-size, size, -size, size)
+        node = WaterNode(size, pos, depth)
         node.setup()
 
         if self.hasWaterEffects():
@@ -289,6 +311,17 @@ class WaterReflectionManager:
             node.enableFakeEffect()
 
         self.waterNodes.append(node)
+
+        return node
+
+    def clearWaterNode(self, node):
+        if CIGlobals.isNodePathOk(node):
+            node.removeNode()
+        if node in self.waterNodes:
+            self.waterNodes.remove(node)
+
+        if len(self.waterNodes) == 0:
+            self.cleanupScenes()
 
     def clearWaterNodes(self):
         if len(self.waterNodes) == 0:
