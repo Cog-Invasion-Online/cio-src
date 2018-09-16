@@ -49,6 +49,7 @@ BTOffice = 1
 BTStreet = 2
 BTTutorial = 3
 BTArcade = 4
+BTSewer = 5
 
 # 20% chance of a cog taunting when attacking (it gets annoying if they taunt every time).
 AttackTauntChance = [0, 4]

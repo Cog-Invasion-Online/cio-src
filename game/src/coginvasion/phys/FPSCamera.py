@@ -1,4 +1,4 @@
-from panda3d.core import Point2, WindowProperties, ConfigVariableDouble, Point3, NodePath, CharacterJointEffect
+from panda3d.core import Point2, WindowProperties, ConfigVariableDouble, Point3, NodePath, CharacterJointEffect, BitMask32, PerspectiveLens
 
 from direct.showbase.DirectObject import DirectObject
 from direct.actor.Actor import Actor
@@ -33,6 +33,8 @@ class FPSCamera(DirectObject):
 
         self.lastEyeHeight = 0.0
 
+        # Updates to the transform of camRoot
+        self.vmRoot = NodePath('vmRoot')
         self.viewModel = Actor("phase_14/models/char/v_toon_arms.egg",
 
                                {"zero": "phase_14/models/char/v_toon_arms.egg",
@@ -61,18 +63,45 @@ class FPSCamera(DirectObject):
                                 "tnt_draw": "phase_14/models/char/v_toon_arms-tnt_draw.egg",
                                 "tnt_idle": "phase_14/models/char/v_toon_arms-tnt_idle.egg",
                                 "tnt_throw": "phase_14/models/char/v_toon_arms-tnt_throw.egg"})
-        self.viewModel.reparentTo(self.camRoot)
+        self.viewModel.reparentTo(self.vmRoot)
         self.viewModel.find("**/hands").setTwoSided(True)
         self.viewModel.hide()
+        self.viewportLens = PerspectiveLens()
+        self.viewportLens.setMinFov(CIGlobals.DefaultCameraFov / (4. / 3.))
+        # Updates to the transform of base.camera
+        self.viewportCam = base.makeCamera(base.win, clearDepth = True, camName = 'fpsViewport',
+                                           mask = CIGlobals.ViewModelCamMask, lens = self.viewportLens)
+        self.viewportCam.reparentTo(self.vmRoot)
 
+        self.vmGag = None
+        self.vmAnimTrack = None
         self.dmgFade = OnscreenImage(image = "phase_14/maps/damage_effect.png", parent = render2d)
         self.dmgFade.setBin('gui-popup', 100)
         self.dmgFade.setTransparency(1)
         self.dmgFade.setColorScale(1, 1, 1, 0)
         self.dmgFadeIval = None
 
-        self.vmGag = None
-        self.vmAnimTrack = None
+        taskMgr.add(self.__vpDebugTask, "vpdebutask", sort = -100)
+
+    def hideViewModel(self):
+        self.viewModel.hide(BitMask32.allOn())
+
+    def showViewModel(self):
+        self.viewModel.showThrough(CIGlobals.ViewModelCamMask)
+
+    def __vpDebugTask(self, task):
+        self.viewportLens.setAspectRatio(base.getAspectRatio())
+        self.viewportLens.setMinFov(CIGlobals.DefaultCameraFov / (4. / 3.))
+        self.vmRoot.setTransform(render, self.camRoot.getTransform(render))
+        self.viewportCam.setTransform(render, base.camera.getTransform(render))
+
+        # Since the viewmodel is not underneath BSPRender, it's not going to be automatically
+        # influenced by the ambient probes. We need to do this explicitly.
+        base.bspLoader.updateDynamicNode(self.vmRoot)
+
+        #self.viewportDebug.setImage(self.viewportCam.node().getDisplayRegion(0).getScreenshot())
+
+        return task.cont
 
     def handleSuitAttack(self, attack):
         print "FPSCamera handleSuitAttack:", attack
@@ -286,7 +315,7 @@ class FPSCamera(DirectObject):
 
             vmBob.set(xBob, -bob * 2, -bob / 2)
             vmRaise.set(0, abs(self.camRoot.getP()) * -0.002, self.camRoot.getP() * 0.002)
-            camBob.set(0, 0, cBob)
+            camBob.set(0, 0, 0)#cBob)
 
         # Apply bob, raise, and sway to the viewmodel.
         self.viewModel.setPos(vmBob + vmRaise + self.lastVMPos)

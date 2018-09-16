@@ -17,7 +17,7 @@ Where to find moved globals:
 
 from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
-from panda3d.core import TextureStage, VBase4, TransparencyAttrib, Vec3
+from panda3d.core import TextureStage, VBase4, TransparencyAttrib, Vec3, deg2Rad, Point2
 
 from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wait, Parallel, SoundInterval, ActorInterval
 
@@ -80,10 +80,37 @@ EagleGame = "Eagle Summit"
 DeliveryGame = "Delivery!"
 DodgeballGame = "Winter Dodgeball"
 
+MB_Moving = 1
+MB_Crouching = 2
+MB_Walking = 4
+
+def isAvatar(obj):
+    from src.coginvasion.avatar.Avatar import Avatar
+    return isinstance(obj, Avatar)
+
+def isDistributed(obj):
+    return hasattr(obj, 'doId')
+
+def getMoveIvalFromPath(np, path, speed):
+    from direct.interval.IntervalGlobal import Sequence, Func, LerpPosInterval
+    moveIval = Sequence()
+    for i in xrange(len(path)):
+        if i == 0:
+            continue
+        waypoint = path[i]
+        lastWP = path[i - 1]
+        moveIval.append(Func(np.headsUp, Point3(*waypoint)))
+        ival = LerpPosInterval(np, pos = Point3(*waypoint),
+            startPos = Point3(*lastWP),
+            fluid = 1,
+            duration = (Point2(waypoint[0], waypoint[1]) - Point2(lastWP[0], lastWP[1])).length() / speed)
+        moveIval.append(ival)
+    return moveIval
+
 def anglesToVector(angles):
-    return Vec3(math.cos(angles[0]) * math.cos(angles[1]),
-                math.sin(angles[0]) * math.cos(angles[1]),
-                math.sin(angles[1]))
+    return Vec3(math.cos(deg2Rad(angles[0])) * math.cos(deg2Rad(angles[1])),
+                math.sin(deg2Rad(angles[0])) * math.cos(deg2Rad(angles[1])),
+                math.sin(deg2Rad(angles[1])))
 
 patterns = ('%s', 'control-%s', 'shift-control-%s', 'alt-%s',
             'control-alt-%s', 'shift-%s', 'shift-alt-%s')
@@ -375,12 +402,13 @@ def getShinyMaterial(shininess = 250.0):
     return mat
 
 def getCharacterMaterial(name = "charMat", shininess = 250, rimColor = (1, 1, 1, 1), rimWidth = 0.3,
-                         specular = (1, 1, 1, 1), lightwarp = None):#"phase_3/maps/toon_lightwarp_3.jpg"):
+                         specular = (1, 1, 1, 1), lightwarp = None):#"phase_3/maps/toon_lightwarp.jpg"):
     mat = Material(name)
     mat.setRimColor(rimColor)
     mat.setRimWidth(rimWidth)
     mat.setSpecular(specular)
     mat.setShininess(shininess)
+    mat.setShadeModel(Material.SMHalfLambert)
     if lightwarp and hasattr(mat, 'setLightwarpTexture'):
         mat.setLightwarpTexture(loader.loadTexture(lightwarp))
     return mat
@@ -582,6 +610,7 @@ ShadowCameraBitmask = BitMask32.bit(5)
 WeaponGroup = BitMask32.bit(6)
 LocalAvGroup = BitMask32.bit(7)
 StreetVisGroup = BitMask32.bit(8)
+ViewModelCamMask = BitMask32.bit(15)
 
 # For just colliding with the general world.
 WorldGroup = WallGroup | FloorGroup | StreetVisGroup
@@ -592,6 +621,35 @@ PositiveTextColor = (0, 1, 0, 1)
 NegativeTextColor = (1, 0, 0, 1)
 OrangeTextColor = (1, 0.5, 0, 1)
 YellowTextColor = (1, 1, 0, 1)
+
+def getHeadsUpAngle(fromNP, to):
+    _oldHpr = fromNP.getHpr()
+    fromNP.headsUp(to)
+    _newHpr = fromNP.getHpr()
+    fromNP.setHpr(_oldHpr)
+    return _newHpr
+
+def getLookAtAngle(fromNP, to, offset):
+    _oldHpr = fromNP.getHpr()
+    fromNP.lookAt(to, offset)
+    _newHpr = fromNP.getHpr()
+    fromNP.setHpr(_oldHpr)
+    return _newHpr
+
+def getHeadsUpQuat(fromNP, to):
+    _oldHpr = fromNP.getQuat()
+    fromNP.headsUp(to)
+    _newHpr = fromNP.getQuat()
+    fromNP.setQuat(_oldHpr)
+    return _newHpr
+
+def getHeadsUpDistance(fromNP, to):
+    _oldHpr = fromNP.getHpr()
+    fromNP.headsUp(to)
+    _newHpr = fromNP.getHpr()
+    fromNP.setHpr(_oldHpr)
+    _distance = (_newHpr.getXy() - _oldHpr.getXy()).length()
+    return _distance
 
 # Cog classes that can be damaged by gags.
 SuitClasses = ["DistributedSuit", "DistributedTutorialSuit", "DistributedCogOfficeSuit", "DistributedTakeOverSuit"]
@@ -637,7 +695,7 @@ else:
     ToonSpeedFactor = 1.25
 ToonForwardSpeed = 16.0 * ToonSpeedFactor
 ToonJumpForce = 24.0
-ToonReverseSpeed = ToonForwardSpeed#8.0 * ToonSpeedFactor
+ToonReverseSpeed = 8.0 * ToonSpeedFactor
 ToonRotateSpeed = 80.0 * ToonSpeedFactor
 ToonForwardSlowSpeed = 6.0
 ToonJumpSlowForce = 4.0

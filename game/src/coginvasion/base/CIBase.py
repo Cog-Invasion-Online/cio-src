@@ -8,9 +8,12 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3, MemoryUsage, MemoryUsagePointers
+from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3, MemoryUsage, MemoryUsagePointers, RescaleNormalAttrib
 from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState
 from panda3d.bullet import BulletWorld, BulletDebugNode
+from panda3d.bsp import BSPLoader, BSPRender
+
+from p3recastnavigation import RNNavMeshManager
 
 from direct.showbase.ShowBase import ShowBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -44,6 +47,8 @@ class CIBase(ShowBase):
 
         #self.startTk()
 
+        render.hide()
+
         self.camLens.setNearFar(0.5, 10000)
         #self.taskMgr.setupTaskChain('fpsIndependentStuff', numThreads = 1, frameSync = False)
 
@@ -70,6 +75,25 @@ class CIBase(ShowBase):
         #self.shadowCaster = ShadowCaster(Vec3(163, -67, 0))
         #self.shadowCaster.enable()
 
+        self.bspLoader = BSPLoader.getGlobalPtr()
+        self.bspLoader.setGamma(2.2)
+        self.bspLoader.setGsg(self.win.getGsg())
+        self.bspLoader.setCamera(self.camera)
+        self.bspLoader.setRender(self.render)
+        self.bspLoader.setMaterialsFile("phase_14/etc/materials.txt")
+        self.bspLoader.setWantVisibility(True)
+        self.bspLoader.setVisualizeLeafs(False)
+        self.bspLoader.setWantLightmaps(True)
+        self.bspLevel = None
+        self.materialData = {}
+        
+        self.nmMgr = RNNavMeshManager.get_global_ptr()
+        self.nmMgr.set_root_node_path(self.render)
+        self.nmMgr.get_reference_node_path().reparentTo(self.render)
+        self.nmMgr.start_default_update()
+        self.nmMgr.get_reference_node_path_debug().reparentTo(self.render)
+        self.navMeshNp = None
+
         # Setup 3d audio                                 run before igLoop so 3d positioning doesn't lag behind
         base.audio3d = CIAudio3DManager(base.sfxManagerList[0], camera, taskPriority = 40)
         base.audio3d.setDropOffFactor(0.1)
@@ -81,7 +105,7 @@ class CIBase(ShowBase):
 
         base.lightingCfg = None
         
-        self.accept('/', self.projectShadows)
+        #self.accept('/', self.projectShadows)
 
         uis = UserInputStorage()
         self.inputStore = uis
@@ -102,6 +126,8 @@ class CIBase(ShowBase):
 
         self.music = None
         self.currSongName = None
+        
+        self.avatars = []
 
         """
         print 'TPM START'
@@ -121,6 +147,84 @@ class CIBase(ShowBase):
         print 'SLANT SET'
         print 'TPM END'
         """
+        
+    def convertHammerAngles(self, angles):
+        """
+        (pitch, yaw + 90, roll) -> (yaw, pitch, roll)
+        """
+        temp = angles[0]
+        angles[0] = angles[1] - 90
+        angles[1] = temp
+        return angles
+        
+    def planPath(self, startPos, endPos):
+        """Uses recast/detour to find a path from the generated nav mesh from the BSP file."""
+
+        if not self.navMeshNp:
+            return [startPos, endPos]
+        result = []
+        valueList = self.navMeshNp.node().path_find_follow(startPos, endPos)
+        for i in xrange(valueList.get_num_values()):
+            result.append(valueList.get_value(i))
+        return result
+        
+    def getBSPLevelLightEnvironmentData(self):
+        #    [has data, angles, color]
+        data = [0, Vec3(0), Vec4(0)]
+        
+        if not self.bspLoader.hasActiveLevel():
+            return data
+        
+        for i in xrange(self.bspLoader.getNumEntities()):
+            classname = self.bspLoader.getEntityValue(i, "classname")
+            if classname == "light_environment":
+                data[0] = 1
+                data[1] = self.convertHammerAngles(
+                    self.bspLoader.getEntityValueVector(i, "angles"))
+                data[2] = self.bspLoader.getEntityValueColor(i, "_light")
+                break
+                
+        return data
+        
+    def cleanupNavMesh(self):
+        if self.navMeshNp:
+            self.navMeshNp.removeNode()
+            self.navMeshNp = None
+        
+    def setupNavMesh(self, node):
+        self.cleanupNavMesh()
+        
+        nmMgr = RNNavMeshManager.get_global_ptr()
+        self.navMeshNp = nmMgr.create_nav_mesh()
+        self.navMeshNp.node().set_owner_node_path(node)
+        self.navMeshNp.node().setup()
+        
+        if 0:
+            self.navMeshNp.node().enable_debug_drawing(self.camera)
+            self.navMeshNp.node().toggle_debug_drawing(True)
+        
+    def setupRender(self):
+        """
+        Creates the render scene graph, the primary scene graph for
+        rendering 3-d geometry.
+        """
+        ## This is the root of the 3-D scene graph.
+        ## Make it a BSPRender node to automatically cull
+        ## nodes against the BSP leafs if there is a loaded
+        ## BSP level.
+        self.render = NodePath(BSPRender('render', BSPLoader.getGlobalPtr()))
+        self.render.setAttrib(RescaleNormalAttrib.makeDefault())
+        self.render.setTwoSided(0)
+        self.backfaceCullingEnabled = 1
+        self.textureEnabled = 1
+        self.wireframeEnabled = 0
+
+    def doNextFrame(self, func, extraArgs = []):
+        taskMgr.add(self.__doNextFrameTask, "doNextFrame" + str(id(func)), extraArgs = [func, extraArgs], appendTask = True)
+
+    def __doNextFrameTask(self, func, extraArgs, task):
+        func(*extraArgs)
+        return task.done
 
     def loadSfxOnNode(self, sndFile, node):
         """ Loads up a spatialized sound and attaches it to the specified node. """
@@ -267,7 +371,7 @@ class CIBase(ShowBase):
 
     def __physicsUpdate(self, task):
         dt = globalClock.getDt()
-        try: self.physicsWorld.doPhysics(dt, 0)
+        try: self.physicsWorld.doPhysics(dt, 1, 0.016)
         except: pass
         return task.cont
      

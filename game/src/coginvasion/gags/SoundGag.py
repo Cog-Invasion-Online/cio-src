@@ -62,18 +62,17 @@ class SoundGag(Gag):
         if not radius:
             radius = self.soundRange
         suits = []
-        for obj in base.cr.doId2do.values():
-            if obj.__class__.__name__ in CIGlobals.SuitClasses:
-                if obj.getPlace() == base.localAvatar.zoneId:
-                    if obj.getDistance(self.avatar) <= radius:
-                        if self.avatar.doId == base.localAvatar.doId:
-                            suits.append(obj)
+        for obj in base.avatars:
+            if CIGlobals.isAvatar(obj):
+                if obj.getDistance(self.avatar) <= radius:
+                    if self.avatar.doId == base.localAvatar.doId:
+                        suits.append(obj)
         def shouldContinue(suit, track):
             if suit.isDead():
                 track.finish()
         for suit in suits:
             if self.name != GagGlobals.Opera:
-                suit.sendUpdate('hitByGag', [self.getID()])
+                suit.handleHitByToon(self.avatar, self.getID(), obj.getDistance(self.avatar))
             else:
                 breakEffect = CIParticleEffect()
                 breakEffect.loadConfig('phase_5/etc/soundBreak.ptf')
@@ -89,7 +88,7 @@ class SoundGag(Gag):
                 suitTrack.append(Func(shouldContinue, suit, suitTrack))
                 suitTrack.append(Func(self.setPosFromOther, breakEffect, suit, Point3(0, 0, 0)))
                 suitTrack.append(SoundInterval(self.hitSfx, node=suit))
-                suitTrack.append(Func(suit.sendUpdate, 'hitByGag', [self.getID()]))
+                suitTrack.append(Func(suit.handleHitByToon, self.avatar, self.getID(), obj.getDistance(self.avatar)))
                 suitTrack.start()
         suits = None
 

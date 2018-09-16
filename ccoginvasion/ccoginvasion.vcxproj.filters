@@ -42,6 +42,9 @@
     <ClInclude Include="source\audioclip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\smartcamera_bullet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\suitpathfinder_ai.cpp">
@@ -75,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ccoginvasion_module.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\smartcamera_bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

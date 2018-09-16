@@ -7,7 +7,7 @@
     <ProjectHome />
     <StartupFile>
     </StartupFile>
-    <SearchPath>..\Panda3D-CI\</SearchPath>
+    <SearchPath>..\Panda3D-CI\;..\cio-panda3d\built_x64</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
@@ -80,6 +80,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\coginvasion\base\PositionExaminer.py" />
+    <Compile Include="src\coginvasion\base\Ripples.py" />
     <Compile Include="src\coginvasion\base\ScreenshotHandler.py" />
     <Compile Include="src\coginvasion\base\SectionedSound.py" />
     <Compile Include="src\coginvasion\base\ShadowCaster.py" />
@@ -87,6 +88,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\base\ShadowPlacer.py" />
     <Compile Include="src\coginvasion\base\ShakeCamera.py" />
     <Compile Include="src\coginvasion\base\SpeedHackChecker.py" />
+    <Compile Include="src\coginvasion\base\Splash.py" />
     <Compile Include="src\coginvasion\base\ToontownIntervals.py" />
     <Compile Include="src\coginvasion\base\Wake.py" />
     <Compile Include="src\coginvasion\base\WaterManager.py" />
@@ -116,7 +118,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\battle\__init__.py" />
     <Compile Include="src\coginvasion\book\AboutCategory.py" />
     <Compile Include="src\coginvasion\book\AdminPage.py" />
-    <Compile Include="src\coginvasion\book\AdvancedCategory.py" />
+    <Compile Include="src\coginvasion\book\AdvancedDisplayCategory.py" />
     <Compile Include="src\coginvasion\book\ArcadeModePage.py" />
     <Compile Include="src\coginvasion\book\BookPage.py" />
     <Compile Include="src\coginvasion\book\CategoryTab.py" />
@@ -191,6 +193,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\cog\SpawnMode.py" />
     <Compile Include="src\coginvasion\cog\Suit.py" />
     <Compile Include="src\coginvasion\cog\SuitAttackBehaviorAI.py" />
+    <Compile Include="src\coginvasion\cog\SuitAttackGlobals.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\cog\SuitAttacks.py" />
     <Compile Include="src\coginvasion\cog\SuitAttackTurretBehaviorAI.py" />
     <Compile Include="src\coginvasion\cog\SuitBank.py" />
@@ -283,6 +288,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\gags\Megaphone.py" />
     <Compile Include="src\coginvasion\gags\Opera.py" />
     <Compile Include="src\coginvasion\gags\PixieDust.py" />
+    <Compile Include="src\coginvasion\gags\PowerBar.py" />
     <Compile Include="src\coginvasion\gags\Quicksand.py" />
     <Compile Include="src\coginvasion\gags\Safe.py" />
     <Compile Include="src\coginvasion\gags\Sandbag.py" />
@@ -333,6 +339,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\gui\Viewfinder.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\gui\WaterBar.py" />
     <Compile Include="src\coginvasion\gui\Whisper.py" />
     <Compile Include="src\coginvasion\gui\WhisperPopup.py" />
     <Compile Include="src\coginvasion\gui\WorldAccessDialog.py" />
@@ -574,6 +581,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\nametag\__init__.py" />
     <Compile Include="src\coginvasion\npc\Char.py" />
     <Compile Include="src\coginvasion\npc\DisneyCharGlobals.py" />
+    <Compile Include="src\coginvasion\npc\DisneyChars.py" />
     <Compile Include="src\coginvasion\npc\DistributedChar.py" />
     <Compile Include="src\coginvasion\npc\DistributedDisneyChar.py" />
     <Compile Include="src\coginvasion\npc\DistributedDisneyCharAI.py" />
@@ -610,6 +618,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\phys\PhysicsUtils.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\phys\Ragdoll.py" />
     <Compile Include="src\coginvasion\phys\TestBananaPeel.py">
       <SubType>Code</SubType>
     </Compile>
@@ -654,6 +663,38 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\standalone\Standalone.py" />
     <Compile Include="src\coginvasion\standalone\StandaloneToon.py" />
     <Compile Include="src\coginvasion\standalone\__init__.py" />
+    <Compile Include="src\coginvasion\szboss\AmbientGeneric.py" />
+    <Compile Include="src\coginvasion\szboss\DistributedEntity.py" />
+    <Compile Include="src\coginvasion\szboss\DistributedEntityAI.py" />
+    <Compile Include="src\coginvasion\szboss\DistributedFuncDoor.py" />
+    <Compile Include="src\coginvasion\szboss\DistributedFuncDoorAI.py" />
+    <Compile Include="src\coginvasion\szboss\DistributedGoon.py" />
+    <Compile Include="src\coginvasion\szboss\DistributedGoonAI.py" />
+    <Compile Include="src\coginvasion\szboss\DistributedTrigger.py" />
+    <Compile Include="src\coginvasion\szboss\DistributedTriggerAI.py" />
+    <Compile Include="src\coginvasion\szboss\Entity.py" />
+    <Compile Include="src\coginvasion\szboss\FuncButton.py" />
+    <Compile Include="src\coginvasion\szboss\FuncPhysics.py" />
+    <Compile Include="src\coginvasion\szboss\FuncWater.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\szboss\Goon.py" />
+    <Compile Include="src\coginvasion\szboss\GoonAI.py" />
+    <Compile Include="src\coginvasion\szboss\Ropes.py" />
+    <Compile Include="src\coginvasion\szboss\sewer\DistributedSewer.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\szboss\sewer\DistributedSewerAI.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\szboss\sewer\__init__.py" />
+    <Compile Include="src\coginvasion\szboss\SZBossSuit.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\szboss\TriggerGeneric.py" />
+    <Compile Include="src\coginvasion\szboss\Useable.py" />
+    <Compile Include="src\coginvasion\szboss\UseableObject.py" />
+    <Compile Include="src\coginvasion\szboss\__init__.py" />
     <Compile Include="src\coginvasion\toon\AccessoryGlobals.py" />
     <Compile Include="src\coginvasion\toon\ChatBalloon.py" />
     <Compile Include="src\coginvasion\toon\ChatBalloonOld.py" />
@@ -676,6 +717,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\toon\NameTag.py" />
     <Compile Include="src\coginvasion\toon\ParticleLoader.py" />
     <Compile Include="src\coginvasion\toon\SmartCamera.py" />
+    <Compile Include="src\coginvasion\toon\SmartCamera_bullet.py" />
     <Compile Include="src\coginvasion\toon\SmoothWalker.py" />
     <Compile Include="src\coginvasion\toon\TooltipManager.py">
       <SubType>Code</SubType>
@@ -770,6 +812,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Folder Include="src\coginvasion\margins\" />
     <Folder Include="src\coginvasion\minigame\" />
     <Folder Include="src\coginvasion\nametag\" />
+    <Folder Include="src\coginvasion\szboss\" />
     <Folder Include="src\coginvasion\npc\" />
     <Folder Include="src\coginvasion\pet\" />
     <Folder Include="src\coginvasion\phys\" />
@@ -778,6 +821,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Folder Include="src\coginvasion\resourcepack\" />
     <Folder Include="src\coginvasion\shop\" />
     <Folder Include="src\coginvasion\standalone\" />
+    <Folder Include="src\coginvasion\szboss\sewer\" />
     <Folder Include="src\coginvasion\toon\" />
     <Folder Include="src\coginvasion\tutorial\" />
     <Folder Include="src\coginvasion\uber\" />

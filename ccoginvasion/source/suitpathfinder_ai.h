@@ -15,6 +15,8 @@
 #include <lvector2.h>
 #include <lmatrix.h>
 
+using namespace std;
+
 class AStarVertex : public ReferenceCount
 {
 public:

@@ -57,6 +57,14 @@ class DistributedPlayerToonAI(DistributedToonAI):
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
         return
 
+    def reqMakeSewer(self):
+        # TEMPORARY
+        from src.coginvasion.szboss.sewer.DistributedSewerAI import DistributedSewerAI
+        zoneId = self.air.allocateZone()
+        sewer = DistributedSewerAI(self.air, self.doId)
+        sewer.generateWithRequired(zoneId)
+        self.sendUpdate('sewerHeadOff', [zoneId])
+
     def setCurrentGag(self, gagId):
         self.currentGag = gagId
 

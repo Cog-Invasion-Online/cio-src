@@ -10,9 +10,10 @@ aux-display pandagl
 #clock-frame-rate 10
 
 # Logging...
-notify-level info
+notify-level warning
+notify-level-egg2pg warning
 notify-timestamp #f
-default-directnotify-level info
+default-directnotify-level warning
 
 # Filenames...
 cursor-filename resources/toonmono.cur
@@ -20,9 +21,9 @@ icon-filename resources/icon.ico
 
 default-model-extension .egg
 
-model-cache-dir
-model-cache-model #f
-model-cache-textures #f
+#model-cache-dir ./cache
+model-cache-model #t
+model-cache-textures #t
 
 physics-debug #f
 
@@ -31,10 +32,10 @@ model-path .
 # Audio...
 
 # Woo-hoo!!!! Miles!!
-#audio-library-name p3fmod_audio
+audio-library-name p3openal_audio
 #miles-audio-expand-mp3-threshold 10000000
 #miles-audio-panda-threads #t
-audio-library-name p3openal_audio
+#audio-library-name p3openal_audio
 
 # Virtual file system...
 vfs-mount resourcepack/phase_3 phase_3
@@ -66,6 +67,7 @@ framebuffer-stencil 0
 support-stencil 0
 framebuffer-srgb 0
 multisamples 0
+#garbage-collect-states-rate 0.5
 
 audio-dls-file resources/gm.dls
 
@@ -86,11 +88,13 @@ want-real-shadows #f
 load-stuff #f
 want-playground-gags #t
 gsg-want-hlsounds #f
-explosion-hlsounds #f
+explosion-hlsounds #t
 
 ctmusic-numsongs 1
 
 want-pstats 0
+
+allow-incomplete-render 0
 
 egg-load-old-curves 0
 
@@ -104,11 +108,12 @@ gl-coordinate-system default
 gl-force-fbo-color 0
 garbage-collect-states 1
 allow-flatten-color 1
+gl-debug 0
 
 text-flatten 1
 text-dynamic-merge 1
 
 interpolate-frames 1
 
-#threading-model App/Cull/Draw # experimental
+threading-model App/Cull/Draw # experimental
 assert-abort 0

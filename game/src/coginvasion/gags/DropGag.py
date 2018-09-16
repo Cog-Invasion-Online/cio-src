@@ -209,15 +209,14 @@ class DropGag(Gag, LocationGag):
         soundTrack.pause()
         shrinkTrack = Sequence()
         if self.avatar.doId == base.localAvatar.doId:
-            for key in base.cr.doId2do.keys():
-                obj = base.cr.doId2do[key]
-                if obj.__class__.__name__ in CIGlobals.SuitClasses:
-                    if obj.getKey() == avNP.getKey():
-                        dist = (obj.getPos(render).getXy() - entity.getPos(render).getXy()).length()
-                        print dist
-                        obj.sendUpdate('hitByGag', [self.getID(), dist * 4])
-                        self.avatar.b_trapActivate(self.getID(), self.avatar.doId, 0, obj.doId)
-                        hitCog = True
+            for obj in base.avatars:
+                if CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey():
+                    dist = (obj.getPos(render).getXy() - entity.getPos(render).getXy()).length()
+                    print dist
+                    obj.handleHitByToon(self.avatar, self.getID(), dist * 4)
+                    doId = 0 if not obj.isDistributed() else obj.doId
+                    self.avatar.b_trapActivate(self.getID(), self.avatar.doId, 0, doId)
+                    hitCog = True
 
         if hitCog:
             base.audio3d.attachSoundToObject(self.hitSfx, entity)

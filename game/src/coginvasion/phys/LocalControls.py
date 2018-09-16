@@ -67,7 +67,7 @@ class LocalControls(DirectObject):
         self.footstepSounds = []
         self.currFootstepSound = None
         self.lastFoot = True
-        self.setCurrentSurface('hardsurface')
+        self.setCurrentSurface('dirt')
 
         self.mode = LocalControls.MThirdPerson
         self.scheme = LocalControls.SDefault
@@ -114,6 +114,8 @@ class LocalControls(DirectObject):
 
         if self.controlsEnabled:
             self.fp_enable()
+            
+        self.revSpeed = CIGlobals.ToonForwardSpeed
 
     def fp_enable(self, wantMouse = 0):
         if wantMouse:
@@ -131,6 +133,8 @@ class LocalControls(DirectObject):
             base.localAvatar.b_setLookMode(base.localAvatar.LMCage)
         else:
             base.localAvatar.b_setLookMode(base.localAvatar.LMHead)
+
+        base.camLens.setMinFov(70.0 / (4. / 3.))
             
         base.localAvatar.enableGagKeys()
 
@@ -144,6 +148,7 @@ class LocalControls(DirectObject):
         self.tp_attachCamera()
         base.localAvatar.hideCrosshair()
         self.fpsCam.getViewModel().hide()
+        self.revSpeed = CIGlobals.ToonReverseSpeed
         
         base.localAvatar.enableGagKeys()
 
@@ -151,6 +156,7 @@ class LocalControls(DirectObject):
         camera.reparentTo(base.localAvatar)
         camera.setPos(base.localAvatar.smartCamera.getIdealCameraPos())
         camera.lookAt(base.localAvatar.smartCamera.getLookAtPoint())
+        base.camLens.setMinFov(CIGlobals.DefaultCameraFov / (4. / 3.))
 
     def exitThirdPerson(self):
         pass
@@ -206,6 +212,9 @@ class LocalControls(DirectObject):
         if self.currentSurface == surface:
             return
 
+        if surface == "default":
+            surface = "concrete"
+            
         self.currentSurface = surface
         
         self.footstepSounds = []
@@ -213,7 +222,7 @@ class LocalControls(DirectObject):
         vfs = VirtualFileSystem.getGlobalPtr()
         for vFile in vfs.scanDirectory("phase_14/audio/sfx/footsteps/"):
             fullPath = vFile.getFilename().getFullpath()
-            if 'footstep_' + self.currentSurface in fullPath:
+            if self.currentSurface == vFile.getFilename().getBasenameWoExtension()[:len(self.currentSurface)]:
                 sound = base.loadSfx(fullPath)
                 self.footstepSounds.append(sound)
 
@@ -227,7 +236,7 @@ class LocalControls(DirectObject):
         base.taskMgr.add(self.__handlePlayerControls, "LocalControls.handlePlayerControls")
         base.taskMgr.add(self.__handleFootsteps, "LocalControls.handleFootsteps", taskChain = "fpsIndependentStuff")
 
-        #self.accept('alt', self.__throwTestBPeel)
+        self.accept('alt', self.__throwTestBPeel)
         self.accept('tab', self.switchMode)
 
         if self.mode == LocalControls.MFirstPerson:
@@ -272,7 +281,7 @@ class LocalControls(DirectObject):
         self.controller.setPythonTag("localAvatar", base.localAvatar)
         self.controller.setStandUpCallback(self.__handleStandUp)
         self.controller.setFallCallback(self.__handleLand)
-        #self.controller.enableSpam()
+        self.controller.enableSpam()
         base.localAvatar.reparentTo(self.controller.movementParent)
         base.localAvatar.assign(self.controller.movementParent)
         base.cr.doId2do[base.localAvatar.doId] = base.localAvatar
@@ -358,7 +367,11 @@ class LocalControls(DirectObject):
         time = globalClock.getFrameTime()
         speeds = self.speeds.length()
         if speeds > 0.1 and (self.isOnGround() or self.scheme == LocalControls.SSwim):
-            self.footstepIval = 1 / (min(speeds, self.idealFwd) / 6.0)
+            # 8 frames in between footsteps in run animation
+            if base.localAvatar.playingAnim == 'run':
+                self.footstepIval = 8 / 24.0
+            elif base.localAvatar.playingAnim == 'walk':
+                self.footstepIval = 11 / 24.0
 
             if self.scheme == LocalControls.SSwim:
                 self.footstepIval *= 6.0
@@ -414,25 +427,29 @@ class LocalControls(DirectObject):
             speed.setZ(0)
             
         self.speeds = Vec3(speed)
-            
-        sFriction = 1 - math.pow(1 - self.staticFriction, dt * 30.0)
-        dFriction = 1 - math.pow(1 - self.dynamicFriction, dt * 30.0)
-        
-        # Apply friction to the goal speeds
-        if abs(self.speeds.getX()) < abs(self.lastSpeeds.getX()):
-            self.lastSpeeds.setX(self.speeds.getX() * dFriction + self.lastSpeeds.getX() * (1 - dFriction))
-        else:
-            self.lastSpeeds.setX(self.speeds.getX() * sFriction + self.lastSpeeds.getX() * (1 - sFriction))
-            
-        if abs(self.speeds.getY()) < abs(self.lastSpeeds.getY()):
-            self.lastSpeeds.setY(self.speeds.getY() * dFriction + self.lastSpeeds.getY() * (1 - dFriction))
-        else:
-            self.lastSpeeds.setY(self.speeds.getY() * sFriction + self.lastSpeeds.getY() * (1 - sFriction))
+        if base.localAvatar.isFirstPerson():
+            # Apply smoothed out movement in first person.
 
-        if abs(self.speeds.getZ()) < abs(self.lastSpeeds.getZ()):
-            self.lastSpeeds.setZ(self.speeds.getZ() * dFriction + self.lastSpeeds.getZ() * (1 - dFriction))
+            sFriction = 1 - math.pow(1 - self.staticFriction, dt * 30.0)
+            dFriction = 1 - math.pow(1 - self.dynamicFriction, dt * 30.0)
+            
+            # Apply friction to the goal speeds
+            if abs(self.speeds.getX()) < abs(self.lastSpeeds.getX()):
+                self.lastSpeeds.setX(self.speeds.getX() * dFriction + self.lastSpeeds.getX() * (1 - dFriction))
+            else:
+                self.lastSpeeds.setX(self.speeds.getX() * sFriction + self.lastSpeeds.getX() * (1 - sFriction))
+                
+            if abs(self.speeds.getY()) < abs(self.lastSpeeds.getY()):
+                self.lastSpeeds.setY(self.speeds.getY() * dFriction + self.lastSpeeds.getY() * (1 - dFriction))
+            else:
+                self.lastSpeeds.setY(self.speeds.getY() * sFriction + self.lastSpeeds.getY() * (1 - sFriction))
+
+            if abs(self.speeds.getZ()) < abs(self.lastSpeeds.getZ()):
+                self.lastSpeeds.setZ(self.speeds.getZ() * dFriction + self.lastSpeeds.getZ() * (1 - dFriction))
+            else:
+                self.lastSpeeds.setZ(self.speeds.getZ() * sFriction + self.lastSpeeds.getZ() * (1 - sFriction))
         else:
-            self.lastSpeeds.setZ(self.speeds.getZ() * sFriction + self.lastSpeeds.getZ() * (1 - sFriction))
+            self.lastSpeeds = self.speeds
 
         self.speeds = Vec3(self.lastSpeeds)
         
@@ -484,5 +501,17 @@ class LocalControls(DirectObject):
                 self.fwdSpeed = self.idealFwd
                 self.revSpeed = self.idealRev
                 self.crouching = False
+
+        moveBits = 0
+
+        if self.isMoving():
+            moveBits |= CIGlobals.MB_Moving
+        if self.crouching:
+            moveBits |= CIGlobals.MB_Crouching
+        if walk:
+            moveBits |= CIGlobals.MB_Walking
+
+        if moveBits != base.localAvatar.moveBits:
+            base.localAvatar.b_setMoveBits(moveBits)
         
         return task.cont

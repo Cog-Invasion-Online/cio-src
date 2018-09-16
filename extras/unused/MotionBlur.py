@@ -3,12 +3,10 @@
 # Created by: blach (07Feb15)
 ########################################
 
-from pandac.PandaModules import *
+from panda3d.core import *
 from direct.task import Task
 
 class MotionBlur:
-	# The effect looks horrible under 30 fps
-	MIN_FPS = 30.0
 	
 	def __init__(self):
 		self.tex = Texture()
@@ -43,16 +41,7 @@ class MotionBlur:
 		self.nextclick = 0
 
 	def takeSnapShot(self, task):
-		self.fcard.show()
-		if globalClock.getAverageFrameRate() < self.MIN_FPS:
-			self.tex.clear()
-			self.fcard.hide()
-			return Task.cont
-		if (task.time > self.nextclick):
-			self.nextclick += 1.0 / self.clickrate * globalClock.getDt()
-			if (self.nextclick < task.time):
-				self.nextclick = task.time * globalClock.getDt()
-			base.win.triggerCopy()
+        base.win.triggerCopy()
 		return Task.cont
 		
 	def cleanup(self):

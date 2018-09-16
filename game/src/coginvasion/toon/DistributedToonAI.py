@@ -10,14 +10,13 @@ Revamped on June 15, 2018
 
 """
 
-from direct.distributed.DistributedSmoothNodeAI import DistributedSmoothNodeAI
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from src.coginvasion.globals import CIGlobals
 import ToonDNA
 
-class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.ToonDNA):
+class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
     notify = directNotify.newCategory('DistributedToonAI')
 
     def __init__(self, air):
@@ -27,7 +26,6 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         except:
             self.DistributedToonAI_initialized = 1
         DistributedAvatarAI.__init__(self, air)
-        DistributedSmoothNodeAI.__init__(self, air)
         ToonDNA.ToonDNA.__init__(self)
         self.avatarType = CIGlobals.Toon
         self.anim = "neutral"
@@ -86,7 +84,6 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
 
     def announceGenerate(self):
         DistributedAvatarAI.announceGenerate(self)
-        DistributedSmoothNodeAI.announceGenerate(self)
 
     def delete(self):
         try:
@@ -94,7 +91,6 @@ class DistributedToonAI(DistributedAvatarAI, DistributedSmoothNodeAI, ToonDNA.To
         except:
             self.DistributedToonAI_deleted = 1
             DistributedAvatarAI.delete(self)
-            DistributedSmoothNodeAI.delete(self)
             self.avatarType = None
             self.anim = None
             self.chat = None

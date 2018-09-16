@@ -10,7 +10,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import Point3, VBase4
 
-from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
 from direct.distributed.DelayDeletable import DelayDeletable
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import SoundInterval, LerpPosInterval, ProjectileInterval, LerpHprInterval
@@ -38,13 +37,12 @@ import SuitAttacks
 
 import types, random
 
-class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDeletable):
+class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
     notify = directNotify.newCategory('DistributedSuit')
 
     def __init__(self, cr):
         Suit.__init__(self)
         DistributedAvatar.__init__(self, cr)
-        DistributedSmoothNode.__init__(self, cr)
 
         self.anim = None
         self._state = SuitState.ALIVE
@@ -74,6 +72,9 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         self.stateIndex2suitState = {}
         self.suitFSM.enterInitialState()
         self.makeStateDict()
+        
+    def handleHitByToon(self, player, gagId, distance):
+        self.sendUpdate('hitByGag', [gagId, distance])
 
     def setChaseTarget(self, avId):
         self.chaseTarget = avId
@@ -474,7 +475,6 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
 
     def generate(self):
         DistributedAvatar.generate(self)
-        DistributedSmoothNode.generate(self)
 
     def disable(self):
         # Picked up by DistributedBattleZone:
@@ -503,4 +503,3 @@ class DistributedSuit(Suit, DistributedAvatar, DistributedSmoothNode, DelayDelet
         del self.suitPlan
         del self.moveIval
         DistributedAvatar.delete(self)
-        DistributedSmoothNode.delete(self)

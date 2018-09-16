@@ -218,7 +218,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
 
         moveVector.normalize()
         x, y = currPos + (moveVector * self.DivertDistance)
-        if not self.createPath(pos = (x, y)):
+        if not self.createPath(pos = (x, y, self.suit.getZ(render))):
             self.resetNextFrame()
 
     def walkDone(self):
@@ -257,7 +257,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         myLevel = self.suit.getLevel()
 
         for suit in data:
-            if suit == self.suit:
+            if suit == self.suit or not suit.suitPlan:
                 continue
 
             theirClass = suit.suitPlan.getCogClass()

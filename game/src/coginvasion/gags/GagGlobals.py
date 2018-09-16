@@ -272,8 +272,8 @@ gagData = {
     'track' : Throw},
     TNT : {'minDamage' : 90, 
         'maxDamage': 180, 
-        'maxSupply': 2, 
-        'supply': 2, 
+        'maxSupply': 10, 
+        'supply': 10, 
     'track' : Trap},
     FireHose : {'health': 6,
         'minDamage' : 3,
@@ -617,7 +617,10 @@ def calculateMaxSupply(avatar, name, data):
 
 def calculateDamage(avId, name, data):
     """ This calculates the damage a gag will do on a Cog (This is an AI-side method) """
-    avatar = base.air.doId2do.get(avId, None)
+    if type(avId) is int:
+        avatar = base.air.doId2do.get(avId, None)
+    else:
+        avatar = avId
 
     baseDmg = 0
     

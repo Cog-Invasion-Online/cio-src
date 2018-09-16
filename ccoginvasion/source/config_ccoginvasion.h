@@ -16,6 +16,8 @@
 #include <configVariableString.h>
 #include <configVariableInt.h>
 
+using namespace std;
+
 #ifdef BUILDING_CCOGINVASION
 #define EXPCL_CCOGINVASION __declspec(dllexport)
 #define EXPTP_CCOGINVASION __declspec(dllexport)

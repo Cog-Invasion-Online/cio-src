@@ -40,29 +40,23 @@ class SuitPathBehaviorAI(SuitBehaviorBaseAI):
 
     def createPath(self, node = None, durationFactor = 0.2, fromCurPos = False, pos = None):
         if node is not None and pos is None:
-            x1, y1 = node.getX(render), node.getY(render)
-            z = node.getZ(render)
-        elif pos is not None and node is None:
-            x1, y1 = pos
-            z = self.suit.getZ(render)
-        x2, y2 = self.suit.getX(render), self.suit.getY(render)
-        if x2 == x1 and y2 == y1:
+            pos = node.getPos(render)
+        if pos is None:
             return 0
-        path = self.pathFinder.planPath((x2, y2), (x1, y1))
+        startPos = self.suit.getPos(render)
+        if startPos == pos:
+            return 0
+        path = self.pathFinder.planPath(startPos, pos)
         if path is None:
             return 0
         if len(path) < 2:
-            path.insert(0, (x2, y2))
-        self.startPath(path, z, durationFactor)
+            path.insert(0, startPos)
+        self.startPath(path, durationFactor)
         return 1
 
-    def startPath(self, path, z, durationFactor):
-        correctedPath = []
-        for i in xrange(len(path)):
-            waypoint = path[i]
-            correctedPath.append([waypoint[0], waypoint[1], z])
-        self.suit.d_setWalkPath(correctedPath)
-        self.path = correctedPath
+    def startPath(self, path, durationFactor):
+        self.suit.d_setWalkPath(path)
+        self.path = path
         self._doWalk(durationFactor)
 
     def _doWalk(self, durationFactor):

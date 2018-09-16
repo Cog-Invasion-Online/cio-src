@@ -1,5 +1,6 @@
 from panda3d.core import Vec3, Point3, TransformState, GeomNode, CollisionNode, NodePath, BitMask32
 from panda3d.bullet import BulletBoxShape, BulletRigidBodyNode, BulletTriangleMesh, BulletTriangleMeshShape, BulletGhostNode
+from panda3d.bsp import BSPFaceAttrib
 
 from src.coginvasion.globals import CIGlobals
 
@@ -58,7 +59,7 @@ def makeBulletCollFromGeoms(rootNode, exclusions = []):
     """
     Creates and attaches bullet triangle mesh nodes underneath each GeomNode
     of `rootNode`, which contains the same mesh as the Geoms.
-    This can be expensive if the geometry contains lots of triangles.
+    This can be expensive if the geometry contains lots of triangles or GeomNodes.
     """
 
     # BulletRigidBodyNode -> triangle index -> material
@@ -70,18 +71,33 @@ def makeBulletCollFromGeoms(rootNode, exclusions = []):
             continue
         if faceNp.node().getType() != GeomNode.getClassType():
             continue
-        data = {}
-        numGeoms = 0
-        mesh = BulletTriangleMesh()
-        ts = faceNp.getTransform(render)
+
+        # Create a separate list of geoms for each possible face type
+        # ( a wall or floor )
+        type2geoms = {}
         for i in xrange(faceNp.node().getNumGeoms()):
             geom = faceNp.node().getGeom(i)
             state = faceNp.node().getGeomState(i)
             if not geom.getPrimitive(0).isIndexed():
                 continue
-            mesh.addGeom(faceNp.node().getGeom(i), True)
-            if state.hasAttrib(BSPCullAttrib.getClassSlot()):
-                bca = state.getAttrib(BSPCullAttrib.getClassSlot())
+            if state.hasAttrib(BSPFaceAttrib.getClassSlot()):
+                bca = state.getAttrib(BSPFaceAttrib.getClassSlot())
+                facetype = bca.getFaceType()
+                if not type2geoms.has_key(facetype):
+                    type2geoms[facetype] = [(geom, state)]
+                else:
+                    type2geoms[facetype].append((geom, state))
+
+        # Now create a separate body node to group each face type,
+        # and assign the correct bit
+        for facetype, geoms in type2geoms.items():
+            data = {}
+            numGeoms = 0
+            mesh = BulletTriangleMesh()
+            for i in xrange(len(geoms)):
+                geom, state = geoms[i]
+                mesh.addGeom(geom, True)
+                bca = state.getAttrib(BSPFaceAttrib.getClassSlot())
                 mat = bca.getMaterial()
                 for j in xrange(geom.getNumPrimitives()):
                     prim = geom.getPrimitive(j)
@@ -90,15 +106,18 @@ def makeBulletCollFromGeoms(rootNode, exclusions = []):
                     for tidx in xrange(tris):
                         data[numGeoms] = mat
                         numGeoms += 1
-        shape = BulletTriangleMeshShape(mesh, False)
-        rbnode = BulletRigidBodyNode(faceNp.getName() + "_bullet")
-        rbnode.setKinematic(True)
-        rbnode.addShape(shape)
-        rbnodeNp = NodePath(rbnode)
-        rbnodeNp.reparentTo(faceNp)
-        rbnodeNp.setCollideMask(CIGlobals.WallBitmask)
-        base.physicsWorld.attachRigidBody(rbnode)
-        result[rbnode] = data
+            shape = BulletTriangleMeshShape(mesh, False)
+            rbnode = BulletRigidBodyNode(faceNp.getName() + "_bullet_type" + str(facetype))
+            rbnode.setKinematic(True)
+            rbnode.addShape(shape)
+            rbnodeNp = NodePath(rbnode)
+            rbnodeNp.reparentTo(faceNp)
+            if facetype == BSPFaceAttrib.FACETYPE_WALL:
+                rbnodeNp.setCollideMask(CIGlobals.WallGroup)
+            elif facetype == BSPFaceAttrib.FACETYPE_FLOOR:
+                rbnodeNp.setCollideMask(CIGlobals.FloorGroup)
+            base.physicsWorld.attachRigidBody(rbnode)
+            result[rbnode] = data
 
     return result
 

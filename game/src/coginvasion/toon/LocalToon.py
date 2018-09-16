@@ -118,6 +118,7 @@ class LocalToon(DistributedPlayerToon):
         self.invGui = None
 
         self.isSwimming = False
+        self.touchingWater = False
 
         self.jumpHardLandIval = None
 
@@ -866,9 +867,10 @@ class LocalToon(DistributedPlayerToon):
                 self.b_setAnimState("neutral")
             elif self.animFSM.getCurrentState().getName() == 'deadWalk':
                 self.b_setAnimState("run")
-
-        if hp < self.getHealth() and self.isFirstPerson():
-            self.getFPSCam().doDamageFade(1, 0, 0, (self.getHealth() - hp) / 30.0)
+        
+        if self.walkControls:
+            if hp < self.getHealth() and self.isFirstPerson():
+                self.getFPSCam().doDamageFade(1, 0, 0, (self.getHealth() - hp) / 30.0)
         DistributedPlayerToon.setHealth(self, hp)
 
     def reparentTo(self, parent):
@@ -878,6 +880,10 @@ class LocalToon(DistributedPlayerToon):
     def wrtReparentTo(self, parent):
         print "Local toon wrt reparent to", parent.node().getName()
         DistributedPlayerToon.wrtReparentTo(self, parent)
+        
+    def loadAvatar(self):
+        DistributedPlayerToon.loadAvatar(self)
+        base.avatars.remove(self)
 
     def diedStateDone(self, requestStatus):
         hood = self.cr.playGame.hood.id
@@ -1070,6 +1076,17 @@ class LocalToon(DistributedPlayerToon):
             self.invGui.cleanup()
             self.invGui = None
 
+    def sewerHeadOff(self, zoneId):
+        # TEMPORARY
+        requestStatus = {'zoneId': zoneId,
+                    'hoodId': 0,
+                    'where': 'sewer',
+                    'avId': self.doId,
+                    'loader': 'sewer',
+                    'shardId': None,
+                    'wantLaffMeter': 1}
+        self.cr.playGame.getPlace().fsm.request('teleportOut', [requestStatus])
+
     def announceGenerate(self):
         DistributedPlayerToon.announceGenerate(self)
         self.setupControls()
@@ -1078,6 +1095,8 @@ class LocalToon(DistributedPlayerToon):
         self.accept("gotLookSpot", self.handleLookSpot)
         self.accept("clickedWhisper", self.handleClickedSentWhisper)
         self.accept(base.inputStore.ToggleAspect2D, self.toggleAspect2d)
+
+        self.acceptOnce('m', self.sendUpdate, ['reqMakeSewer'])
 
         #self.accept('c', self.walkControls.setCollisionsActive, [0])
 

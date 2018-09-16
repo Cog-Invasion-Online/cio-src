@@ -9,6 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import Vec3
+from panda3d.bsp import IgnorePVSAttrib
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
@@ -17,6 +18,7 @@ class SkyUtil:
     notify = directNotify.newCategory("SkyUtil")
     
     def startSky(self, sky):
+        sky.setAttrib(IgnorePVSAttrib.make())
         sky.setScale(6)
         if not sky.find('**/cloud1').isEmpty() and not sky.find('**/cloud2').isEmpty():
             sky.find('**/cloud1').setScale(0.6)

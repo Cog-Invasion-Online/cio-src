@@ -127,7 +127,7 @@ class CogInvasionClientRepository(AstronClientRepository):
         self.shardListHandle = None
         self.uberZoneInterest = None
         self.isShowingPlayerIds = False
-        self.doBetaInform = True
+        self.doBetaInform = False
         self.dTutorial = None
         self.requestedName = None
         self.whisperNoise = base.loadSfx('phase_3.5/audio/sfx/GUI_whisper_3.ogg')

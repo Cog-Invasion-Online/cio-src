@@ -18,9 +18,9 @@
 class AudioClip
 {
 PUBLISHED:
-        static const string get_clip_done_event();
-        static const string get_part_done_event();
-        string &get_clip_name();
+        static const std::string get_clip_done_event();
+        static const std::string get_part_done_event();
+        std::string &get_clip_name();
 
 public:
         struct TickParams
@@ -30,7 +30,7 @@ public:
         };
 
         AudioClip();
-        AudioClip( vector<PT( AudioSound )> chunks, string &clip_name );
+        AudioClip( std::vector<PT( AudioSound )> chunks, std::string &clip_name );
         ~AudioClip();
 
         AsyncTask::DoneStatus play_audio_tick( GenericAsyncTask *task, PT( AudioSound ) sound, int index );
@@ -54,8 +54,8 @@ private:
         PT( GenericAsyncTask ) _ticktask;
         PT( AsyncTaskManager ) _taskmgr;
         PT( AudioSound ) _current_sound;
-        vector<PT( AudioSound )> _chunks;
-        string _clip_name;
+        std::vector<PT( AudioSound )> _chunks;
+        std::string _clip_name;
 
         TickParams _curr_sound_tick_params;
 

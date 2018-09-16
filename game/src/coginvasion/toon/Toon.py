@@ -174,7 +174,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
     def enterHappy(self, ts = 0, callback = None, extraArgs = []):
         self.playingAnim = None
-        self.standWalkRunReverse = (('neutral', 1.0), ('run', 1.0), ('run', 1.0), ('run', -1.0),
+        self.standWalkRunReverse = (('neutral', 1.0), ('walk', 1.0), ('run', 1.0), ('walk', -1.0),
                                     ('strafe', 1.0), ('strafe', -1.0))
         self.setSpeed(self.forwardSpeed, self.rotateSpeed)
 

@@ -40,6 +40,7 @@ vfs.mount(Filename("resources/phase_10.mf"), ".", VirtualFileSystem.MFReadOnly)
 vfs.mount(Filename("resources/phase_11.mf"), ".", VirtualFileSystem.MFReadOnly)
 vfs.mount(Filename("resources/phase_12.mf"), ".", VirtualFileSystem.MFReadOnly)
 vfs.mount(Filename("resources/phase_13.mf"), ".", VirtualFileSystem.MFReadOnly)
+vfs.mount(Filename("resources/phase_14.mf"), ".", VirtualFileSystem.MFReadOnly)
 
 import argparse
 
@@ -75,6 +76,15 @@ loadPrcFileData('', 'audio-library-name none')
 from direct.showbase.ShowBase import ShowBase
 base = ShowBase()
 base.setSleep(0.015)
+
+from p3recastnavigation import RNNavMeshManager
+
+nmMgr = RNNavMeshManager.get_global_ptr()
+nmMgr.set_root_node_path(render)
+nmMgr.get_reference_node_path().reparentTo(render)
+nmMgr.start_default_update()
+nmMgr.get_reference_node_path_debug().reparentTo(render)
+base.nmMgr = nmMgr
 
 from src.coginvasion.ai.CogInvasionAIRepository import CogInvasionAIRepository as CIAIR
 base.air = CIAIR(config.GetInt('air-base-channel', 401000000), config.GetInt('air-stateserver', 10000))

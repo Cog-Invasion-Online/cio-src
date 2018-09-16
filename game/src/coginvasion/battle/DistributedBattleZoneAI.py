@@ -8,6 +8,9 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.bsp import BSPLoader
+from panda3d.core import Vec3
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 from direct.distributed.ClockDelta import globalClockDelta
@@ -37,6 +40,64 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         
         # List of avatars that have acknowledged that they've completed the reward panel sequence.
         self.avReadyToContinue = []
+        
+        self.bspLoader = None
+        self.svEntities = []
+        self.navMeshNp = None
+        
+    def deadSuit(self, doId):
+        pass
+        
+    def suitHPAtZero(self, doId):
+        pass
+        
+    def announceGenerate(self):
+        DistributedObjectAI.announceGenerate(self)
+        self.bspLoader = BSPLoader()
+        self.bspLoader.setAi(True)
+        self.bspLoader.setMaterialsFile("phase_14/etc/materials.txt")
+        self.bspLoader.setServerEntityDispatcher(self)
+        
+    def cleanupNavMesh(self):
+        if self.navMeshNp:
+            self.navMeshNp.removeNode()
+            self.navMeshNp = None
+        
+    def setupNavMesh(self, node):
+        self.cleanupNavMesh()
+        
+        nmMgr = base.nmMgr
+        self.navMeshNp = nmMgr.create_nav_mesh()
+        self.navMeshNp.node().set_owner_node_path(node)
+        self.navMeshNp.node().setup()
+        
+    def planPath(self, startPos, endPos):
+        """Uses recast/detour to find a path from the generated nav mesh from the BSP file."""
+
+        if not self.navMeshNp:
+            return [startPos, endPos]
+        result = []
+        valueList = self.navMeshNp.node().path_find_follow(startPos, endPos)
+        currDir = Vec3(0)
+        for i in xrange(valueList.get_num_values()):
+            if i > 0 and i < valueList.get_num_values() - 1:
+                dir = (valueList.get_value(i - 1) - valueList.get_value(i)).normalized()
+                if dir.almostEqual(currDir, 0.05):
+                    continue
+                currDir = dir
+            result.append(valueList.get_value(i))
+        return result
+        
+    def createServerEntity(self, cls, entnum):
+        """
+        Called by BSPLoader when it encounters a networked entity that we have to generate.
+        """
+        dobj = cls(self.air, self)
+        dobj.entnum = entnum
+        dobj.bspLoader = self.bspLoader
+        dobj.zoneId = self.zoneId
+        self.svEntities.append(dobj)
+        return dobj
 
     def getBattleType(self):
         return self.battleType
@@ -85,6 +146,14 @@ class DistributedBattleZoneAI(DistributedObjectAI):
     def delete(self):
         self.ignoreAvatarDeleteEvents()
         self.resetStats()
+        
+        self.cleanupNavMesh()
+        for ent in self.svEntities:
+            ent.requestDelete()
+        self.svEntities = None
+        if self.bspLoader:
+            self.bspLoader.cleanup()
+            self.bspLoader = None
 
         self.avId2suitsTargeting = None
         self.avIds = None

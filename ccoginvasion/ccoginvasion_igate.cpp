@@ -124,8 +124,8 @@ SuitPathFinderAI *Dtool_Coerce_SuitPathFinderAI(PyObject *args, SuitPathFinderAI
 #ifndef LINK_ALL_STATIC
 static struct Dtool_PyTypedObject *Dtool_Ptr_LPoint3f;
 inline static LPoint3f *Dtool_Coerce_LPoint3f(PyObject *args, LPoint3f &coerced) {
-  nassertr(Dtool_Ptr_LPoint3f != NULL, NULL);
-  nassertr(Dtool_Ptr_LPoint3f->_Dtool_Coerce != NULL, NULL);
+  nassertr(Dtool_Ptr_LPoint3f != nullptr, nullptr);
+  nassertr(Dtool_Ptr_LPoint3f->_Dtool_Coerce != nullptr, nullptr);
   return ((LPoint3f *(*)(PyObject *, LPoint3f &))Dtool_Ptr_LPoint3f->_Dtool_Coerce)(args, coerced);
 }
 #else
@@ -148,7 +148,7 @@ static PyObject *Dtool_AudioClip_get_clip_done_event_2(PyObject *, PyObject *) {
   // 1-static std::string const AudioClip::get_clip_done_event(void)
   std::string const return_value = AudioClip::get_clip_done_event();
   if (Dtool_CheckErrorOccurred()) {
-    return NULL;
+    return nullptr;
   }
   return Dtool_WrapValue(return_value);
 }
@@ -158,7 +158,7 @@ static const char *Dtool_AudioClip_get_clip_done_event_2_comment =
   "C++ Interface:\n"
   "get_clip_done_event()\n";
 #else
-static const char *Dtool_AudioClip_get_clip_done_event_2_comment = NULL;
+static const char *Dtool_AudioClip_get_clip_done_event_2_comment = nullptr;
 #endif
 
 /**
@@ -169,7 +169,7 @@ static PyObject *Dtool_AudioClip_get_part_done_event_3(PyObject *, PyObject *) {
   // 1-static std::string const AudioClip::get_part_done_event(void)
   std::string const return_value = AudioClip::get_part_done_event();
   if (Dtool_CheckErrorOccurred()) {
-    return NULL;
+    return nullptr;
   }
   return Dtool_WrapValue(return_value);
 }
@@ -179,7 +179,7 @@ static const char *Dtool_AudioClip_get_part_done_event_3_comment =
   "C++ Interface:\n"
   "get_part_done_event()\n";
 #else
-static const char *Dtool_AudioClip_get_part_done_event_3_comment = NULL;
+static const char *Dtool_AudioClip_get_part_done_event_3_comment = nullptr;
 #endif
 
 /**
@@ -187,7 +187,7 @@ static const char *Dtool_AudioClip_get_part_done_event_3_comment = NULL;
  * inline AudioClip::AudioClip(AudioClip const &) = default
  */
 static int Dtool_Init_AudioClip(PyObject *self, PyObject *args, PyObject *kwds) {
-  if (kwds != NULL && PyDict_Size(kwds) > 0) {
+  if (kwds != nullptr && PyDict_Size(kwds) > 0) {
 #ifdef NDEBUG
     Dtool_Raise_TypeError("function takes no keyword arguments");
     return -1;
@@ -201,9 +201,9 @@ static int Dtool_Init_AudioClip(PyObject *self, PyObject *args, PyObject *kwds) 
   if (PyTuple_GET_SIZE(args) == 1) {
     param0 = PyTuple_GET_ITEM(args, 0);
     AudioClip const *param0_this = (AudioClip *)DTOOL_Call_GetPointerThisClass(param0, Dtool_Ptr_AudioClip, 0, "AudioClip.AudioClip", true, true);
-    if (param0_this != NULL) {
+    if (param0_this != nullptr) {
       AudioClip *return_value = new AudioClip(*param0_this);
-      if (return_value == NULL) {
+      if (return_value == nullptr) {
         PyErr_NoMemory();
         return -1;
       }
@@ -224,25 +224,25 @@ static int Dtool_Init_AudioClip(PyObject *self, PyObject *args, PyObject *kwds) 
 static void *Dtool_UpcastInterface_AudioClip(PyObject *self, Dtool_PyTypedObject *requested_type) {
   Dtool_PyTypedObject *type = DtoolInstance_TYPE(self);
   if (type != &Dtool_AudioClip) {
-    printf("AudioClip ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(NULL);
-    return NULL;
+    printf("AudioClip ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(nullptr);
+    return nullptr;
   }
 
   AudioClip *local_this = (AudioClip *)DtoolInstance_VOID_PTR(self);
   if (requested_type == &Dtool_AudioClip) {
     return local_this;
   }
-  return NULL;
+  return nullptr;
 }
 
 static void *Dtool_DowncastInterface_AudioClip(void *from_this, Dtool_PyTypedObject *from_type) {
-  if (from_this == NULL || from_type == NULL) {
-    return NULL;
+  if (from_this == nullptr || from_type == nullptr) {
+    return nullptr;
   }
   if (from_type == Dtool_Ptr_AudioClip) {
     return from_this;
   }
-  return (void *) NULL;
+  return nullptr;
 }
 
 /**
@@ -253,14 +253,14 @@ static void *Dtool_DowncastInterface_AudioClip(void *from_this, Dtool_PyTypedObj
  * void CNametag::set_chatballoon_size(double width, double height)
  */
 static PyObject *Dtool_CNametag_set_chatballoon_size_9(PyObject *self, PyObject *args, PyObject *kwds) {
-  CNametag *local_this = NULL;
+  CNametag *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_CNametag, (void **)&local_this, "CNametag.set_chatballoon_size")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void CNametag::set_chatballoon_size(double width, double height)
   double param1;
   double param2;
-  static const char *keyword_list[] = {"width", "height", NULL};
+  static const char *keyword_list[] = {"width", "height", nullptr};
   if (PyArg_ParseTupleAndKeywords(args, kwds, "dd:set_chatballoon_size", (char **)keyword_list, &param1, &param2)) {
     (*local_this).set_chatballoon_size((double)param1, (double)param2);
     return Dtool_Return_None();
@@ -269,7 +269,7 @@ static PyObject *Dtool_CNametag_set_chatballoon_size_9(PyObject *self, PyObject 
     return Dtool_Raise_BadArgumentsError(
       "set_chatballoon_size(const CNametag self, double width, double height)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -277,7 +277,7 @@ static const char *Dtool_CNametag_set_chatballoon_size_9_comment =
   "C++ Interface:\n"
   "set_chatballoon_size(const CNametag self, double width, double height)\n";
 #else
-static const char *Dtool_CNametag_set_chatballoon_size_9_comment = NULL;
+static const char *Dtool_CNametag_set_chatballoon_size_9_comment = nullptr;
 #endif
 
 /**
@@ -285,14 +285,14 @@ static const char *Dtool_CNametag_set_chatballoon_size_9_comment = NULL;
  * void CNametag::set_panel_size(double width, double height)
  */
 static PyObject *Dtool_CNametag_set_panel_size_10(PyObject *self, PyObject *args, PyObject *kwds) {
-  CNametag *local_this = NULL;
+  CNametag *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_CNametag, (void **)&local_this, "CNametag.set_panel_size")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void CNametag::set_panel_size(double width, double height)
   double param1;
   double param2;
-  static const char *keyword_list[] = {"width", "height", NULL};
+  static const char *keyword_list[] = {"width", "height", nullptr};
   if (PyArg_ParseTupleAndKeywords(args, kwds, "dd:set_panel_size", (char **)keyword_list, &param1, &param2)) {
     (*local_this).set_panel_size((double)param1, (double)param2);
     return Dtool_Return_None();
@@ -301,7 +301,7 @@ static PyObject *Dtool_CNametag_set_panel_size_10(PyObject *self, PyObject *args
     return Dtool_Raise_BadArgumentsError(
       "set_panel_size(const CNametag self, double width, double height)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -309,7 +309,7 @@ static const char *Dtool_CNametag_set_panel_size_10_comment =
   "C++ Interface:\n"
   "set_panel_size(const CNametag self, double width, double height)\n";
 #else
-static const char *Dtool_CNametag_set_panel_size_10_comment = NULL;
+static const char *Dtool_CNametag_set_panel_size_10_comment = nullptr;
 #endif
 
 /**
@@ -317,9 +317,9 @@ static const char *Dtool_CNametag_set_panel_size_10_comment = NULL;
  * void CNametag::get_chatballoon_region(PyObject *list)
  */
 static PyObject *Dtool_CNametag_get_chatballoon_region_12(PyObject *self, PyObject *arg) {
-  CNametag *local_this = NULL;
+  CNametag *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_CNametag, (void **)&local_this, "CNametag.get_chatballoon_region")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void CNametag::get_chatballoon_region(PyObject *list)
   (*local_this).get_chatballoon_region(arg);
@@ -328,7 +328,7 @@ static PyObject *Dtool_CNametag_get_chatballoon_region_12(PyObject *self, PyObje
     return Dtool_Raise_BadArgumentsError(
       "get_chatballoon_region(const CNametag self, object list)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -336,7 +336,7 @@ static const char *Dtool_CNametag_get_chatballoon_region_12_comment =
   "C++ Interface:\n"
   "get_chatballoon_region(const CNametag self, object list)\n";
 #else
-static const char *Dtool_CNametag_get_chatballoon_region_12_comment = NULL;
+static const char *Dtool_CNametag_get_chatballoon_region_12_comment = nullptr;
 #endif
 
 /**
@@ -345,7 +345,7 @@ static const char *Dtool_CNametag_get_chatballoon_region_12_comment = NULL;
  * inline CNametag::CNametag(CNametag const &) = default
  */
 static int Dtool_Init_CNametag(PyObject *self, PyObject *args, PyObject *kwds) {
-  if (kwds != NULL && PyDict_Size(kwds) > 0) {
+  if (kwds != nullptr && PyDict_Size(kwds) > 0) {
 #ifdef NDEBUG
     Dtool_Raise_TypeError("function takes no keyword arguments");
     return -1;
@@ -360,7 +360,7 @@ static int Dtool_Init_CNametag(PyObject *self, PyObject *args, PyObject *kwds) {
     {
       // 1-CNametag::CNametag(void)
       CNametag *return_value = new CNametag();
-      if (return_value == NULL) {
+      if (return_value == nullptr) {
         PyErr_NoMemory();
         return -1;
       }
@@ -376,9 +376,9 @@ static int Dtool_Init_CNametag(PyObject *self, PyObject *args, PyObject *kwds) {
       PyObject *arg = PyTuple_GET_ITEM(args, 0);
       // 1-inline CNametag::CNametag(CNametag const &) = default
       CNametag const *arg_this = (CNametag *)DTOOL_Call_GetPointerThisClass(arg, Dtool_Ptr_CNametag, 0, "CNametag.CNametag", true, true);
-      if (arg_this != NULL) {
+      if (arg_this != nullptr) {
         CNametag *return_value = new CNametag(*arg_this);
-        if (return_value == NULL) {
+        if (return_value == nullptr) {
           PyErr_NoMemory();
           return -1;
         }
@@ -409,25 +409,25 @@ static int Dtool_Init_CNametag(PyObject *self, PyObject *args, PyObject *kwds) {
 static void *Dtool_UpcastInterface_CNametag(PyObject *self, Dtool_PyTypedObject *requested_type) {
   Dtool_PyTypedObject *type = DtoolInstance_TYPE(self);
   if (type != &Dtool_CNametag) {
-    printf("CNametag ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(NULL);
-    return NULL;
+    printf("CNametag ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(nullptr);
+    return nullptr;
   }
 
   CNametag *local_this = (CNametag *)DtoolInstance_VOID_PTR(self);
   if (requested_type == &Dtool_CNametag) {
     return local_this;
   }
-  return NULL;
+  return nullptr;
 }
 
 static void *Dtool_DowncastInterface_CNametag(void *from_this, Dtool_PyTypedObject *from_type) {
-  if (from_this == NULL || from_type == NULL) {
-    return NULL;
+  if (from_this == nullptr || from_type == nullptr) {
+    return nullptr;
   }
   if (from_type == Dtool_Ptr_CNametag) {
     return from_this;
   }
-  return (void *) NULL;
+  return nullptr;
 }
 
 /**
@@ -438,19 +438,19 @@ static void *Dtool_DowncastInterface_CNametag(void *from_this, Dtool_PyTypedObje
  * void CNametag3d::get_chatballoon_region(LPoint3f const &center, double height_3d, PyObject *list)
  */
 static PyObject *Dtool_CNametag3d_get_chatballoon_region_15(PyObject *self, PyObject *args, PyObject *kwds) {
-  CNametag3d *local_this = NULL;
+  CNametag3d *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_CNametag3d, (void **)&local_this, "CNametag3d.get_chatballoon_region")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void CNametag3d::get_chatballoon_region(LPoint3f const &center, double height_3d, PyObject *list)
   PyObject *param1;
   double param2;
   PyObject *param3;
-  static const char *keyword_list[] = {"center", "height_3d", "list", NULL};
+  static const char *keyword_list[] = {"center", "height_3d", "list", nullptr};
   if (PyArg_ParseTupleAndKeywords(args, kwds, "OdO:get_chatballoon_region", (char **)keyword_list, &param1, &param2, &param3)) {
     LPoint3f param1_local;
     LPoint3f const *param1_this = Dtool_Coerce_LPoint3f(param1, param1_local);
-    if (!(param1_this != NULL)) {
+    if (!(param1_this != nullptr)) {
       return Dtool_Raise_ArgTypeError(param1, 1, "CNametag3d.get_chatballoon_region", "LPoint3f");
     }
     (*local_this).get_chatballoon_region(*param1_this, (double)param2, param3);
@@ -460,7 +460,7 @@ static PyObject *Dtool_CNametag3d_get_chatballoon_region_15(PyObject *self, PyOb
     return Dtool_Raise_BadArgumentsError(
       "get_chatballoon_region(const CNametag3d self, const LPoint3f center, double height_3d, object list)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -468,7 +468,7 @@ static const char *Dtool_CNametag3d_get_chatballoon_region_15_comment =
   "C++ Interface:\n"
   "get_chatballoon_region(const CNametag3d self, const LPoint3f center, double height_3d, object list)\n";
 #else
-static const char *Dtool_CNametag3d_get_chatballoon_region_15_comment = NULL;
+static const char *Dtool_CNametag3d_get_chatballoon_region_15_comment = nullptr;
 #endif
 
 /**
@@ -476,18 +476,18 @@ static const char *Dtool_CNametag3d_get_chatballoon_region_15_comment = NULL;
  * double CNametag3d::get_scale(double distance, double scale_factor)
  */
 static PyObject *Dtool_CNametag3d_get_scale_16(PyObject *self, PyObject *args, PyObject *kwds) {
-  CNametag3d *local_this = NULL;
+  CNametag3d *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_CNametag3d, (void **)&local_this, "CNametag3d.get_scale")) {
-    return NULL;
+    return nullptr;
   }
   // 1-double CNametag3d::get_scale(double distance, double scale_factor)
   double param1;
   double param2;
-  static const char *keyword_list[] = {"distance", "scale_factor", NULL};
+  static const char *keyword_list[] = {"distance", "scale_factor", nullptr};
   if (PyArg_ParseTupleAndKeywords(args, kwds, "dd:get_scale", (char **)keyword_list, &param1, &param2)) {
     double return_value = (*local_this).get_scale((double)param1, (double)param2);
     if (Dtool_CheckErrorOccurred()) {
-      return NULL;
+      return nullptr;
     }
     return Dtool_WrapValue(return_value);
   }
@@ -495,7 +495,7 @@ static PyObject *Dtool_CNametag3d_get_scale_16(PyObject *self, PyObject *args, P
     return Dtool_Raise_BadArgumentsError(
       "get_scale(const CNametag3d self, double distance, double scale_factor)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -503,7 +503,7 @@ static const char *Dtool_CNametag3d_get_scale_16_comment =
   "C++ Interface:\n"
   "get_scale(const CNametag3d self, double distance, double scale_factor)\n";
 #else
-static const char *Dtool_CNametag3d_get_scale_16_comment = NULL;
+static const char *Dtool_CNametag3d_get_scale_16_comment = nullptr;
 #endif
 
 /**
@@ -512,7 +512,7 @@ static const char *Dtool_CNametag3d_get_scale_16_comment = NULL;
  * inline CNametag3d::CNametag3d(CNametag3d const &) = default
  */
 static int Dtool_Init_CNametag3d(PyObject *self, PyObject *args, PyObject *kwds) {
-  if (kwds != NULL && PyDict_Size(kwds) > 0) {
+  if (kwds != nullptr && PyDict_Size(kwds) > 0) {
 #ifdef NDEBUG
     Dtool_Raise_TypeError("function takes no keyword arguments");
     return -1;
@@ -527,7 +527,7 @@ static int Dtool_Init_CNametag3d(PyObject *self, PyObject *args, PyObject *kwds)
     {
       // 1-inline CNametag3d::CNametag3d(void) = default
       CNametag3d *return_value = new CNametag3d();
-      if (return_value == NULL) {
+      if (return_value == nullptr) {
         PyErr_NoMemory();
         return -1;
       }
@@ -543,9 +543,9 @@ static int Dtool_Init_CNametag3d(PyObject *self, PyObject *args, PyObject *kwds)
       PyObject *arg = PyTuple_GET_ITEM(args, 0);
       // 1-inline CNametag3d::CNametag3d(CNametag3d const &) = default
       CNametag3d const *arg_this = (CNametag3d *)DTOOL_Call_GetPointerThisClass(arg, Dtool_Ptr_CNametag3d, 0, "CNametag3d.CNametag3d", true, true);
-      if (arg_this != NULL) {
+      if (arg_this != nullptr) {
         CNametag3d *return_value = new CNametag3d(*arg_this);
-        if (return_value == NULL) {
+        if (return_value == nullptr) {
           PyErr_NoMemory();
           return -1;
         }
@@ -576,8 +576,8 @@ static int Dtool_Init_CNametag3d(PyObject *self, PyObject *args, PyObject *kwds)
 static void *Dtool_UpcastInterface_CNametag3d(PyObject *self, Dtool_PyTypedObject *requested_type) {
   Dtool_PyTypedObject *type = DtoolInstance_TYPE(self);
   if (type != &Dtool_CNametag3d) {
-    printf("CNametag3d ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(NULL);
-    return NULL;
+    printf("CNametag3d ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(nullptr);
+    return nullptr;
   }
 
   CNametag3d *local_this = (CNametag3d *)DtoolInstance_VOID_PTR(self);
@@ -587,12 +587,12 @@ static void *Dtool_UpcastInterface_CNametag3d(PyObject *self, Dtool_PyTypedObjec
   if (requested_type == Dtool_Ptr_CNametag) {
     return (CNametag *) local_this;
   }
-  return NULL;
+  return nullptr;
 }
 
 static void *Dtool_DowncastInterface_CNametag3d(void *from_this, Dtool_PyTypedObject *from_type) {
-  if (from_this == NULL || from_type == NULL) {
-    return NULL;
+  if (from_this == nullptr || from_type == nullptr) {
+    return nullptr;
   }
   if (from_type == Dtool_Ptr_CNametag3d) {
     return from_this;
@@ -601,7 +601,7 @@ static void *Dtool_DowncastInterface_CNametag3d(void *from_this, Dtool_PyTypedOb
     CNametag* other_this = (CNametag*)from_this;
     return (CNametag3d*)other_this;
   }
-  return (void *) NULL;
+  return nullptr;
 }
 
 /**
@@ -622,7 +622,7 @@ static const char *Dtool_CTMusicData_initialize_chunk_data_22_comment =
   "C++ Interface:\n"
   "initialize_chunk_data()\n";
 #else
-static const char *Dtool_CTMusicData_initialize_chunk_data_22_comment = NULL;
+static const char *Dtool_CTMusicData_initialize_chunk_data_22_comment = nullptr;
 #endif
 
 /**
@@ -640,7 +640,7 @@ static const char *Dtool_CTMusicData_stop_am_update_task_23_comment =
   "C++ Interface:\n"
   "stop_am_update_task()\n";
 #else
-static const char *Dtool_CTMusicData_stop_am_update_task_23_comment = NULL;
+static const char *Dtool_CTMusicData_stop_am_update_task_23_comment = nullptr;
 #endif
 
 /**
@@ -649,7 +649,7 @@ static const char *Dtool_CTMusicData_stop_am_update_task_23_comment = NULL;
  * inline CTMusicData::CTMusicData(CTMusicData const &) = default
  */
 static int Dtool_Init_CTMusicData(PyObject *self, PyObject *args, PyObject *kwds) {
-  if (kwds != NULL && PyDict_Size(kwds) > 0) {
+  if (kwds != nullptr && PyDict_Size(kwds) > 0) {
 #ifdef NDEBUG
     Dtool_Raise_TypeError("function takes no keyword arguments");
     return -1;
@@ -664,7 +664,7 @@ static int Dtool_Init_CTMusicData(PyObject *self, PyObject *args, PyObject *kwds
     {
       // 1-CTMusicData::CTMusicData(void)
       CTMusicData *return_value = new CTMusicData();
-      if (return_value == NULL) {
+      if (return_value == nullptr) {
         PyErr_NoMemory();
         return -1;
       }
@@ -680,9 +680,9 @@ static int Dtool_Init_CTMusicData(PyObject *self, PyObject *args, PyObject *kwds
       PyObject *arg = PyTuple_GET_ITEM(args, 0);
       // 1-inline CTMusicData::CTMusicData(CTMusicData const &) = default
       CTMusicData const *arg_this = (CTMusicData *)DTOOL_Call_GetPointerThisClass(arg, Dtool_Ptr_CTMusicData, 0, "CTMusicData.CTMusicData", true, true);
-      if (arg_this != NULL) {
+      if (arg_this != nullptr) {
         CTMusicData *return_value = new CTMusicData(*arg_this);
-        if (return_value == NULL) {
+        if (return_value == nullptr) {
           PyErr_NoMemory();
           return -1;
         }
@@ -713,25 +713,25 @@ static int Dtool_Init_CTMusicData(PyObject *self, PyObject *args, PyObject *kwds
 static void *Dtool_UpcastInterface_CTMusicData(PyObject *self, Dtool_PyTypedObject *requested_type) {
   Dtool_PyTypedObject *type = DtoolInstance_TYPE(self);
   if (type != &Dtool_CTMusicData) {
-    printf("CTMusicData ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(NULL);
-    return NULL;
+    printf("CTMusicData ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(nullptr);
+    return nullptr;
   }
 
   CTMusicData *local_this = (CTMusicData *)DtoolInstance_VOID_PTR(self);
   if (requested_type == &Dtool_CTMusicData) {
     return local_this;
   }
-  return NULL;
+  return nullptr;
 }
 
 static void *Dtool_DowncastInterface_CTMusicData(void *from_this, Dtool_PyTypedObject *from_type) {
-  if (from_this == NULL || from_type == NULL) {
-    return NULL;
+  if (from_this == nullptr || from_type == nullptr) {
+    return nullptr;
   }
   if (from_type == Dtool_Ptr_CTMusicData) {
     return from_this;
   }
-  return (void *) NULL;
+  return nullptr;
 }
 
 /**
@@ -752,7 +752,7 @@ static const char *Dtool_CTMusicManager_spawn_load_tournament_music_task_27_comm
   "C++ Interface:\n"
   "spawn_load_tournament_music_task()\n";
 #else
-static const char *Dtool_CTMusicManager_spawn_load_tournament_music_task_27_comment = NULL;
+static const char *Dtool_CTMusicManager_spawn_load_tournament_music_task_27_comment = nullptr;
 #endif
 
 /**
@@ -760,21 +760,21 @@ static const char *Dtool_CTMusicManager_spawn_load_tournament_music_task_27_comm
  * void CTMusicManager::set_clip_request(std::string const &clip)
  */
 static PyObject *Dtool_CTMusicManager_set_clip_request_28(PyObject *self, PyObject *arg) {
-  CTMusicManager *local_this = NULL;
+  CTMusicManager *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_CTMusicManager, (void **)&local_this, "CTMusicManager.set_clip_request")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void CTMusicManager::set_clip_request(std::string const &clip)
-  const char *param1_str = NULL;
+  const char *param1_str = nullptr;
   Py_ssize_t param1_len;
 #if PY_MAJOR_VERSION >= 3
   param1_str = PyUnicode_AsUTF8AndSize(arg, &param1_len);
 #else
   if (PyString_AsStringAndSize(arg, (char **)&param1_str, &param1_len) == -1) {
-    param1_str = NULL;
+    param1_str = nullptr;
   }
 #endif
-  if (param1_str != NULL) {
+  if (param1_str != nullptr) {
     (*local_this).set_clip_request(std::string(param1_str, param1_len));
     return Dtool_Return_None();
   }
@@ -782,7 +782,7 @@ static PyObject *Dtool_CTMusicManager_set_clip_request_28(PyObject *self, PyObje
     return Dtool_Raise_BadArgumentsError(
       "set_clip_request(const CTMusicManager self, str clip)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -790,7 +790,7 @@ static const char *Dtool_CTMusicManager_set_clip_request_28_comment =
   "C++ Interface:\n"
   "set_clip_request(const CTMusicManager self, str clip)\n";
 #else
-static const char *Dtool_CTMusicManager_set_clip_request_28_comment = NULL;
+static const char *Dtool_CTMusicManager_set_clip_request_28_comment = nullptr;
 #endif
 
 /**
@@ -798,14 +798,14 @@ static const char *Dtool_CTMusicManager_set_clip_request_28_comment = NULL;
  * std::string CTMusicManager::get_clip_request(void) const
  */
 static PyObject *Dtool_CTMusicManager_get_clip_request_29(PyObject *self, PyObject *) {
-  CTMusicManager *local_this = NULL;
+  CTMusicManager *local_this = nullptr;
   if (!DtoolInstance_GetPointer(self, local_this, Dtool_CTMusicManager)) {
-    return NULL;
+    return nullptr;
   }
   // 1-std::string CTMusicManager::get_clip_request(void) const
   std::string return_value = (*(const CTMusicManager*)local_this).get_clip_request();
   if (Dtool_CheckErrorOccurred()) {
-    return NULL;
+    return nullptr;
   }
   return Dtool_WrapValue(return_value);
 }
@@ -815,7 +815,7 @@ static const char *Dtool_CTMusicManager_get_clip_request_29_comment =
   "C++ Interface:\n"
   "get_clip_request(CTMusicManager self)\n";
 #else
-static const char *Dtool_CTMusicManager_get_clip_request_29_comment = NULL;
+static const char *Dtool_CTMusicManager_get_clip_request_29_comment = nullptr;
 #endif
 
 /**
@@ -823,21 +823,21 @@ static const char *Dtool_CTMusicManager_get_clip_request_29_comment = NULL;
  * void CTMusicManager::start_music(std::string const &base_or_orc)
  */
 static PyObject *Dtool_CTMusicManager_start_music_30(PyObject *self, PyObject *arg) {
-  CTMusicManager *local_this = NULL;
+  CTMusicManager *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_CTMusicManager, (void **)&local_this, "CTMusicManager.start_music")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void CTMusicManager::start_music(std::string const &base_or_orc)
-  const char *param1_str = NULL;
+  const char *param1_str = nullptr;
   Py_ssize_t param1_len;
 #if PY_MAJOR_VERSION >= 3
   param1_str = PyUnicode_AsUTF8AndSize(arg, &param1_len);
 #else
   if (PyString_AsStringAndSize(arg, (char **)&param1_str, &param1_len) == -1) {
-    param1_str = NULL;
+    param1_str = nullptr;
   }
 #endif
-  if (param1_str != NULL) {
+  if (param1_str != nullptr) {
     (*local_this).start_music(std::string(param1_str, param1_len));
     return Dtool_Return_None();
   }
@@ -845,7 +845,7 @@ static PyObject *Dtool_CTMusicManager_start_music_30(PyObject *self, PyObject *a
     return Dtool_Raise_BadArgumentsError(
       "start_music(const CTMusicManager self, str base_or_orc)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -853,7 +853,7 @@ static const char *Dtool_CTMusicManager_start_music_30_comment =
   "C++ Interface:\n"
   "start_music(const CTMusicManager self, str base_or_orc)\n";
 #else
-static const char *Dtool_CTMusicManager_start_music_30_comment = NULL;
+static const char *Dtool_CTMusicManager_start_music_30_comment = nullptr;
 #endif
 
 /**
@@ -861,9 +861,9 @@ static const char *Dtool_CTMusicManager_start_music_30_comment = NULL;
  * void CTMusicManager::stop_clip(void)
  */
 static PyObject *Dtool_CTMusicManager_stop_clip_31(PyObject *self, PyObject *) {
-  CTMusicManager *local_this = NULL;
+  CTMusicManager *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_CTMusicManager, (void **)&local_this, "CTMusicManager.stop_clip")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void CTMusicManager::stop_clip(void)
   (*local_this).stop_clip();
@@ -875,7 +875,7 @@ static const char *Dtool_CTMusicManager_stop_clip_31_comment =
   "C++ Interface:\n"
   "stop_clip(const CTMusicManager self)\n";
 #else
-static const char *Dtool_CTMusicManager_stop_clip_31_comment = NULL;
+static const char *Dtool_CTMusicManager_stop_clip_31_comment = nullptr;
 #endif
 
 /**
@@ -893,7 +893,7 @@ static const char *Dtool_CTMusicManager_is_loaded_32_comment =
   "C++ Interface:\n"
   "is_loaded()\n";
 #else
-static const char *Dtool_CTMusicManager_is_loaded_32_comment = NULL;
+static const char *Dtool_CTMusicManager_is_loaded_32_comment = nullptr;
 #endif
 
 /**
@@ -901,21 +901,21 @@ static const char *Dtool_CTMusicManager_is_loaded_32_comment = NULL;
  * void CTMusicManager::set_song_name(std::string const &name)
  */
 static PyObject *Dtool_CTMusicManager_set_song_name_33(PyObject *self, PyObject *arg) {
-  CTMusicManager *local_this = NULL;
+  CTMusicManager *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_CTMusicManager, (void **)&local_this, "CTMusicManager.set_song_name")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void CTMusicManager::set_song_name(std::string const &name)
-  const char *param1_str = NULL;
+  const char *param1_str = nullptr;
   Py_ssize_t param1_len;
 #if PY_MAJOR_VERSION >= 3
   param1_str = PyUnicode_AsUTF8AndSize(arg, &param1_len);
 #else
   if (PyString_AsStringAndSize(arg, (char **)&param1_str, &param1_len) == -1) {
-    param1_str = NULL;
+    param1_str = nullptr;
   }
 #endif
-  if (param1_str != NULL) {
+  if (param1_str != nullptr) {
     (*local_this).set_song_name(std::string(param1_str, param1_len));
     return Dtool_Return_None();
   }
@@ -923,7 +923,7 @@ static PyObject *Dtool_CTMusicManager_set_song_name_33(PyObject *self, PyObject 
     return Dtool_Raise_BadArgumentsError(
       "set_song_name(const CTMusicManager self, str name)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -931,7 +931,7 @@ static const char *Dtool_CTMusicManager_set_song_name_33_comment =
   "C++ Interface:\n"
   "set_song_name(const CTMusicManager self, str name)\n";
 #else
-static const char *Dtool_CTMusicManager_set_song_name_33_comment = NULL;
+static const char *Dtool_CTMusicManager_set_song_name_33_comment = nullptr;
 #endif
 
 /**
@@ -939,14 +939,14 @@ static const char *Dtool_CTMusicManager_set_song_name_33_comment = NULL;
  * std::string CTMusicManager::get_song_name(void) const
  */
 static PyObject *Dtool_CTMusicManager_get_song_name_34(PyObject *self, PyObject *) {
-  CTMusicManager *local_this = NULL;
+  CTMusicManager *local_this = nullptr;
   if (!DtoolInstance_GetPointer(self, local_this, Dtool_CTMusicManager)) {
-    return NULL;
+    return nullptr;
   }
   // 1-std::string CTMusicManager::get_song_name(void) const
   std::string return_value = (*(const CTMusicManager*)local_this).get_song_name();
   if (Dtool_CheckErrorOccurred()) {
-    return NULL;
+    return nullptr;
   }
   return Dtool_WrapValue(return_value);
 }
@@ -956,7 +956,7 @@ static const char *Dtool_CTMusicManager_get_song_name_34_comment =
   "C++ Interface:\n"
   "get_song_name(CTMusicManager self)\n";
 #else
-static const char *Dtool_CTMusicManager_get_song_name_34_comment = NULL;
+static const char *Dtool_CTMusicManager_get_song_name_34_comment = nullptr;
 #endif
 
 /**
@@ -964,14 +964,14 @@ static const char *Dtool_CTMusicManager_get_song_name_34_comment = NULL;
  * std::string CTMusicManager::get_clip_name(void) const
  */
 static PyObject *Dtool_CTMusicManager_get_clip_name_35(PyObject *self, PyObject *) {
-  CTMusicManager *local_this = NULL;
+  CTMusicManager *local_this = nullptr;
   if (!DtoolInstance_GetPointer(self, local_this, Dtool_CTMusicManager)) {
-    return NULL;
+    return nullptr;
   }
   // 1-std::string CTMusicManager::get_clip_name(void) const
   std::string return_value = (*(const CTMusicManager*)local_this).get_clip_name();
   if (Dtool_CheckErrorOccurred()) {
-    return NULL;
+    return nullptr;
   }
   return Dtool_WrapValue(return_value);
 }
@@ -981,7 +981,7 @@ static const char *Dtool_CTMusicManager_get_clip_name_35_comment =
   "C++ Interface:\n"
   "get_clip_name(CTMusicManager self)\n";
 #else
-static const char *Dtool_CTMusicManager_get_clip_name_35_comment = NULL;
+static const char *Dtool_CTMusicManager_get_clip_name_35_comment = nullptr;
 #endif
 
 /**
@@ -989,14 +989,14 @@ static const char *Dtool_CTMusicManager_get_clip_name_35_comment = NULL;
  * std::string CTMusicManager::get_curr_style(void) const
  */
 static PyObject *Dtool_CTMusicManager_get_curr_style_36(PyObject *self, PyObject *) {
-  CTMusicManager *local_this = NULL;
+  CTMusicManager *local_this = nullptr;
   if (!DtoolInstance_GetPointer(self, local_this, Dtool_CTMusicManager)) {
-    return NULL;
+    return nullptr;
   }
   // 1-std::string CTMusicManager::get_curr_style(void) const
   std::string return_value = (*(const CTMusicManager*)local_this).get_curr_style();
   if (Dtool_CheckErrorOccurred()) {
-    return NULL;
+    return nullptr;
   }
   return Dtool_WrapValue(return_value);
 }
@@ -1006,7 +1006,7 @@ static const char *Dtool_CTMusicManager_get_curr_style_36_comment =
   "C++ Interface:\n"
   "get_curr_style(CTMusicManager self)\n";
 #else
-static const char *Dtool_CTMusicManager_get_curr_style_36_comment = NULL;
+static const char *Dtool_CTMusicManager_get_curr_style_36_comment = nullptr;
 #endif
 
 /**
@@ -1014,9 +1014,9 @@ static const char *Dtool_CTMusicManager_get_curr_style_36_comment = NULL;
  * void CTMusicManager::handle_part_done(int part_index)
  */
 static PyObject *Dtool_CTMusicManager_handle_part_done_37(PyObject *self, PyObject *arg) {
-  CTMusicManager *local_this = NULL;
+  CTMusicManager *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_CTMusicManager, (void **)&local_this, "CTMusicManager.handle_part_done")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void CTMusicManager::handle_part_done(int part_index)
   if (PyLongOrInt_Check(arg)) {
@@ -1035,7 +1035,7 @@ static PyObject *Dtool_CTMusicManager_handle_part_done_37(PyObject *self, PyObje
     return Dtool_Raise_BadArgumentsError(
       "handle_part_done(const CTMusicManager self, int part_index)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -1043,7 +1043,7 @@ static const char *Dtool_CTMusicManager_handle_part_done_37_comment =
   "C++ Interface:\n"
   "handle_part_done(const CTMusicManager self, int part_index)\n";
 #else
-static const char *Dtool_CTMusicManager_handle_part_done_37_comment = NULL;
+static const char *Dtool_CTMusicManager_handle_part_done_37_comment = nullptr;
 #endif
 
 /**
@@ -1052,7 +1052,7 @@ static const char *Dtool_CTMusicManager_handle_part_done_37_comment = NULL;
  * inline CTMusicManager::CTMusicManager(CTMusicManager const &) = default
  */
 static int Dtool_Init_CTMusicManager(PyObject *self, PyObject *args, PyObject *kwds) {
-  if (kwds != NULL && PyDict_Size(kwds) > 0) {
+  if (kwds != nullptr && PyDict_Size(kwds) > 0) {
 #ifdef NDEBUG
     Dtool_Raise_TypeError("function takes no keyword arguments");
     return -1;
@@ -1067,7 +1067,7 @@ static int Dtool_Init_CTMusicManager(PyObject *self, PyObject *args, PyObject *k
     {
       // 1-CTMusicManager::CTMusicManager(void)
       CTMusicManager *return_value = new CTMusicManager();
-      if (return_value == NULL) {
+      if (return_value == nullptr) {
         PyErr_NoMemory();
         return -1;
       }
@@ -1083,9 +1083,9 @@ static int Dtool_Init_CTMusicManager(PyObject *self, PyObject *args, PyObject *k
       PyObject *arg = PyTuple_GET_ITEM(args, 0);
       // 1-inline CTMusicManager::CTMusicManager(CTMusicManager const &) = default
       CTMusicManager const *arg_this = (CTMusicManager *)DTOOL_Call_GetPointerThisClass(arg, Dtool_Ptr_CTMusicManager, 0, "CTMusicManager.CTMusicManager", true, true);
-      if (arg_this != NULL) {
+      if (arg_this != nullptr) {
         CTMusicManager *return_value = new CTMusicManager(*arg_this);
-        if (return_value == NULL) {
+        if (return_value == nullptr) {
           PyErr_NoMemory();
           return -1;
         }
@@ -1116,25 +1116,25 @@ static int Dtool_Init_CTMusicManager(PyObject *self, PyObject *args, PyObject *k
 static void *Dtool_UpcastInterface_CTMusicManager(PyObject *self, Dtool_PyTypedObject *requested_type) {
   Dtool_PyTypedObject *type = DtoolInstance_TYPE(self);
   if (type != &Dtool_CTMusicManager) {
-    printf("CTMusicManager ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(NULL);
-    return NULL;
+    printf("CTMusicManager ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(nullptr);
+    return nullptr;
   }
 
   CTMusicManager *local_this = (CTMusicManager *)DtoolInstance_VOID_PTR(self);
   if (requested_type == &Dtool_CTMusicManager) {
     return local_this;
   }
-  return NULL;
+  return nullptr;
 }
 
 static void *Dtool_DowncastInterface_CTMusicManager(void *from_this, Dtool_PyTypedObject *from_type) {
-  if (from_this == NULL || from_type == NULL) {
-    return NULL;
+  if (from_this == nullptr || from_type == nullptr) {
+    return nullptr;
   }
   if (from_type == Dtool_Ptr_CTMusicManager) {
     return from_this;
   }
-  return (void *) NULL;
+  return nullptr;
 }
 
 /**
@@ -1145,15 +1145,15 @@ static void *Dtool_DowncastInterface_CTMusicManager(void *from_this, Dtool_PyTyp
  * PN_stdfloat Lerper::lerp_to_float(PN_stdfloat goal)
  */
 static PyObject *Dtool_Lerper_lerp_to_float_40(PyObject *self, PyObject *arg) {
-  Lerper *local_this = NULL;
+  Lerper *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_Lerper, (void **)&local_this, "Lerper.lerp_to_float")) {
-    return NULL;
+    return nullptr;
   }
   // 1-PN_stdfloat Lerper::lerp_to_float(PN_stdfloat goal)
   if (PyNumber_Check(arg)) {
     PN_stdfloat return_value = (*local_this).lerp_to_float((PN_stdfloat)PyFloat_AsDouble(arg));
     if (Dtool_CheckErrorOccurred()) {
-      return NULL;
+      return nullptr;
     }
     return Dtool_WrapValue(return_value);
   }
@@ -1161,7 +1161,7 @@ static PyObject *Dtool_Lerper_lerp_to_float_40(PyObject *self, PyObject *arg) {
     return Dtool_Raise_BadArgumentsError(
       "lerp_to_float(const Lerper self, float goal)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -1169,7 +1169,7 @@ static const char *Dtool_Lerper_lerp_to_float_40_comment =
   "C++ Interface:\n"
   "lerp_to_float(const Lerper self, float goal)\n";
 #else
-static const char *Dtool_Lerper_lerp_to_float_40_comment = NULL;
+static const char *Dtool_Lerper_lerp_to_float_40_comment = nullptr;
 #endif
 
 /**
@@ -1177,26 +1177,26 @@ static const char *Dtool_Lerper_lerp_to_float_40_comment = NULL;
  * LPoint3f &Lerper::lerp_to_p3(LPoint3f &goal)
  */
 static PyObject *Dtool_Lerper_lerp_to_p3_41(PyObject *self, PyObject *arg) {
-  Lerper *local_this = NULL;
+  Lerper *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_Lerper, (void **)&local_this, "Lerper.lerp_to_p3")) {
-    return NULL;
+    return nullptr;
   }
   // 1-LPoint3f &Lerper::lerp_to_p3(LPoint3f &goal)
   LPoint3f arg_local;
   LPoint3f *arg_this = Dtool_Coerce_LPoint3f(arg, arg_local);
-  if (!(arg_this != NULL)) {
+  if (!(arg_this != nullptr)) {
     return Dtool_Raise_ArgTypeError(arg, 1, "Lerper.lerp_to_p3", "LPoint3f");
   }
   LPoint3f *return_value = &((*local_this).lerp_to_p3(*arg_this));
   if (Dtool_CheckErrorOccurred()) {
-    return NULL;
+    return nullptr;
   }
   return DTool_CreatePyInstance((void *)return_value, *Dtool_Ptr_LPoint3f, false, false);
   if (!_PyErr_OCCURRED()) {
     return Dtool_Raise_BadArgumentsError(
       "lerp_to_p3(const Lerper self, LPoint3f goal)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -1204,7 +1204,7 @@ static const char *Dtool_Lerper_lerp_to_p3_41_comment =
   "C++ Interface:\n"
   "lerp_to_p3(const Lerper self, LPoint3f goal)\n";
 #else
-static const char *Dtool_Lerper_lerp_to_p3_41_comment = NULL;
+static const char *Dtool_Lerper_lerp_to_p3_41_comment = nullptr;
 #endif
 
 /**
@@ -1212,9 +1212,9 @@ static const char *Dtool_Lerper_lerp_to_p3_41_comment = NULL;
  * void Lerper::set_last_float(PN_stdfloat val)
  */
 static PyObject *Dtool_Lerper_set_last_float_42(PyObject *self, PyObject *arg) {
-  Lerper *local_this = NULL;
+  Lerper *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_Lerper, (void **)&local_this, "Lerper.set_last_float")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void Lerper::set_last_float(PN_stdfloat val)
   if (PyNumber_Check(arg)) {
@@ -1225,7 +1225,7 @@ static PyObject *Dtool_Lerper_set_last_float_42(PyObject *self, PyObject *arg) {
     return Dtool_Raise_BadArgumentsError(
       "set_last_float(const Lerper self, float val)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -1233,7 +1233,7 @@ static const char *Dtool_Lerper_set_last_float_42_comment =
   "C++ Interface:\n"
   "set_last_float(const Lerper self, float val)\n";
 #else
-static const char *Dtool_Lerper_set_last_float_42_comment = NULL;
+static const char *Dtool_Lerper_set_last_float_42_comment = nullptr;
 #endif
 
 /**
@@ -1241,14 +1241,14 @@ static const char *Dtool_Lerper_set_last_float_42_comment = NULL;
  * void Lerper::set_last_p3(LPoint3f &val)
  */
 static PyObject *Dtool_Lerper_set_last_p3_43(PyObject *self, PyObject *arg) {
-  Lerper *local_this = NULL;
+  Lerper *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_Lerper, (void **)&local_this, "Lerper.set_last_p3")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void Lerper::set_last_p3(LPoint3f &val)
   LPoint3f arg_local;
   LPoint3f *arg_this = Dtool_Coerce_LPoint3f(arg, arg_local);
-  if (!(arg_this != NULL)) {
+  if (!(arg_this != nullptr)) {
     return Dtool_Raise_ArgTypeError(arg, 1, "Lerper.set_last_p3", "LPoint3f");
   }
   (*local_this).set_last_p3(*arg_this);
@@ -1257,7 +1257,7 @@ static PyObject *Dtool_Lerper_set_last_p3_43(PyObject *self, PyObject *arg) {
     return Dtool_Raise_BadArgumentsError(
       "set_last_p3(const Lerper self, LPoint3f val)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -1265,7 +1265,7 @@ static const char *Dtool_Lerper_set_last_p3_43_comment =
   "C++ Interface:\n"
   "set_last_p3(const Lerper self, LPoint3f val)\n";
 #else
-static const char *Dtool_Lerper_set_last_p3_43_comment = NULL;
+static const char *Dtool_Lerper_set_last_p3_43_comment = nullptr;
 #endif
 
 /**
@@ -1273,14 +1273,14 @@ static const char *Dtool_Lerper_set_last_p3_43_comment = NULL;
  * LPoint3f const &Lerper::get_last_p3(void) const
  */
 static PyObject *Dtool_Lerper_get_last_p3_44(PyObject *self, PyObject *) {
-  Lerper *local_this = NULL;
+  Lerper *local_this = nullptr;
   if (!DtoolInstance_GetPointer(self, local_this, Dtool_Lerper)) {
-    return NULL;
+    return nullptr;
   }
   // 1-LPoint3f const &Lerper::get_last_p3(void) const
   LPoint3f const *return_value = &((*(const Lerper*)local_this).get_last_p3());
   if (Dtool_CheckErrorOccurred()) {
-    return NULL;
+    return nullptr;
   }
   return DTool_CreatePyInstance((void *)return_value, *Dtool_Ptr_LPoint3f, false, true);
 }
@@ -1290,7 +1290,7 @@ static const char *Dtool_Lerper_get_last_p3_44_comment =
   "C++ Interface:\n"
   "get_last_p3(Lerper self)\n";
 #else
-static const char *Dtool_Lerper_get_last_p3_44_comment = NULL;
+static const char *Dtool_Lerper_get_last_p3_44_comment = nullptr;
 #endif
 
 /**
@@ -1298,14 +1298,14 @@ static const char *Dtool_Lerper_get_last_p3_44_comment = NULL;
  * PN_stdfloat Lerper::get_last_float(void) const
  */
 static PyObject *Dtool_Lerper_get_last_float_45(PyObject *self, PyObject *) {
-  Lerper *local_this = NULL;
+  Lerper *local_this = nullptr;
   if (!DtoolInstance_GetPointer(self, local_this, Dtool_Lerper)) {
-    return NULL;
+    return nullptr;
   }
   // 1-PN_stdfloat Lerper::get_last_float(void) const
   PN_stdfloat return_value = (*(const Lerper*)local_this).get_last_float();
   if (Dtool_CheckErrorOccurred()) {
-    return NULL;
+    return nullptr;
   }
   return Dtool_WrapValue(return_value);
 }
@@ -1315,7 +1315,7 @@ static const char *Dtool_Lerper_get_last_float_45_comment =
   "C++ Interface:\n"
   "get_last_float(Lerper self)\n";
 #else
-static const char *Dtool_Lerper_get_last_float_45_comment = NULL;
+static const char *Dtool_Lerper_get_last_float_45_comment = nullptr;
 #endif
 
 /**
@@ -1323,9 +1323,9 @@ static const char *Dtool_Lerper_get_last_float_45_comment = NULL;
  * void Lerper::set_lerp_ratio(PN_stdfloat lerp_ratio)
  */
 static PyObject *Dtool_Lerper_set_lerp_ratio_46(PyObject *self, PyObject *arg) {
-  Lerper *local_this = NULL;
+  Lerper *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_Lerper, (void **)&local_this, "Lerper.set_lerp_ratio")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void Lerper::set_lerp_ratio(PN_stdfloat lerp_ratio)
   if (PyNumber_Check(arg)) {
@@ -1336,7 +1336,7 @@ static PyObject *Dtool_Lerper_set_lerp_ratio_46(PyObject *self, PyObject *arg) {
     return Dtool_Raise_BadArgumentsError(
       "set_lerp_ratio(const Lerper self, float lerp_ratio)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -1344,7 +1344,7 @@ static const char *Dtool_Lerper_set_lerp_ratio_46_comment =
   "C++ Interface:\n"
   "set_lerp_ratio(const Lerper self, float lerp_ratio)\n";
 #else
-static const char *Dtool_Lerper_set_lerp_ratio_46_comment = NULL;
+static const char *Dtool_Lerper_set_lerp_ratio_46_comment = nullptr;
 #endif
 
 /**
@@ -1352,14 +1352,14 @@ static const char *Dtool_Lerper_set_lerp_ratio_46_comment = NULL;
  * PN_stdfloat Lerper::get_lerp_ratio(void) const
  */
 static PyObject *Dtool_Lerper_get_lerp_ratio_47(PyObject *self, PyObject *) {
-  Lerper *local_this = NULL;
+  Lerper *local_this = nullptr;
   if (!DtoolInstance_GetPointer(self, local_this, Dtool_Lerper)) {
-    return NULL;
+    return nullptr;
   }
   // 1-PN_stdfloat Lerper::get_lerp_ratio(void) const
   PN_stdfloat return_value = (*(const Lerper*)local_this).get_lerp_ratio();
   if (Dtool_CheckErrorOccurred()) {
-    return NULL;
+    return nullptr;
   }
   return Dtool_WrapValue(return_value);
 }
@@ -1369,7 +1369,7 @@ static const char *Dtool_Lerper_get_lerp_ratio_47_comment =
   "C++ Interface:\n"
   "get_lerp_ratio(Lerper self)\n";
 #else
-static const char *Dtool_Lerper_get_lerp_ratio_47_comment = NULL;
+static const char *Dtool_Lerper_get_lerp_ratio_47_comment = nullptr;
 #endif
 
 /**
@@ -1380,18 +1380,18 @@ static const char *Dtool_Lerper_get_lerp_ratio_47_comment = NULL;
  */
 static int Dtool_Init_Lerper(PyObject *self, PyObject *args, PyObject *kwds) {
   int parameter_count = (int)PyTuple_Size(args);
-  if (kwds != NULL) {
+  if (kwds != nullptr) {
     parameter_count += (int)PyDict_Size(kwds);
   }
   switch (parameter_count) {
   case 1:
-    if (kwds == NULL || PyDict_GET_SIZE(kwds) == 0) {
+    if (kwds == nullptr || PyDict_GET_SIZE(kwds) == 0) {
       PyObject *arg = PyTuple_GET_ITEM(args, 0);
       // 1-inline Lerper::Lerper(Lerper const &) = default
       Lerper const *arg_this = (Lerper *)DTOOL_Call_GetPointerThisClass(arg, Dtool_Ptr_Lerper, 0, "Lerper.Lerper", true, true);
-      if (arg_this != NULL) {
+      if (arg_this != nullptr) {
         Lerper *return_value = new Lerper(*arg_this);
-        if (return_value == NULL) {
+        if (return_value == nullptr) {
           PyErr_NoMemory();
           return -1;
         }
@@ -1409,12 +1409,12 @@ static int Dtool_Init_Lerper(PyObject *self, PyObject *args, PyObject *kwds) {
         // -2 Lerper::Lerper(LPoint3f &initial_p3, PN_stdfloat lerp_ratio)
         PyObject *param0;
         float param1;
-        static const char *keyword_list[] = {"initial_p3", "lerp_ratio", NULL};
+        static const char *keyword_list[] = {"initial_p3", "lerp_ratio", nullptr};
         if (PyArg_ParseTupleAndKeywords(args, kwds, "Of:Lerper", (char **)keyword_list, &param0, &param1)) {
           LPoint3f *param0_this = (LPoint3f *)DTOOL_Call_GetPointerThisClass(param0, Dtool_Ptr_LPoint3f, 0, "Lerper.Lerper", false, false);
-          if (param0_this != NULL) {
+          if (param0_this != nullptr) {
             Lerper *return_value = new Lerper(*param0_this, (PN_stdfloat)param1);
-            if (return_value == NULL) {
+            if (return_value == nullptr) {
               PyErr_NoMemory();
               return -1;
             }
@@ -1432,10 +1432,10 @@ static int Dtool_Init_Lerper(PyObject *self, PyObject *args, PyObject *kwds) {
         // -2 Lerper::Lerper(PN_stdfloat initial_val, PN_stdfloat lerp_ratio)
         float param0;
         float param1;
-        static const char *keyword_list[] = {"initial_val", "lerp_ratio", NULL};
+        static const char *keyword_list[] = {"initial_val", "lerp_ratio", nullptr};
         if (PyArg_ParseTupleAndKeywords(args, kwds, "ff:Lerper", (char **)keyword_list, &param0, &param1)) {
           Lerper *return_value = new Lerper((PN_stdfloat)param0, (PN_stdfloat)param1);
-          if (return_value == NULL) {
+          if (return_value == nullptr) {
             PyErr_NoMemory();
             return -1;
           }
@@ -1452,13 +1452,13 @@ static int Dtool_Init_Lerper(PyObject *self, PyObject *args, PyObject *kwds) {
         // -2 Lerper::Lerper(LPoint3f &initial_p3, PN_stdfloat lerp_ratio)
         PyObject *param0;
         float param1;
-        static const char *keyword_list[] = {"initial_p3", "lerp_ratio", NULL};
+        static const char *keyword_list[] = {"initial_p3", "lerp_ratio", nullptr};
         if (PyArg_ParseTupleAndKeywords(args, kwds, "Of:Lerper", (char **)keyword_list, &param0, &param1)) {
           LPoint3f param0_local;
           LPoint3f *param0_this = Dtool_Coerce_LPoint3f(param0, param0_local);
-          if ((param0_this != NULL)) {
+          if ((param0_this != nullptr)) {
             Lerper *return_value = new Lerper(*param0_this, (PN_stdfloat)param1);
-            if (return_value == NULL) {
+            if (return_value == nullptr) {
               PyErr_NoMemory();
               return -1;
             }
@@ -1495,25 +1495,25 @@ static int Dtool_Init_Lerper(PyObject *self, PyObject *args, PyObject *kwds) {
 static void *Dtool_UpcastInterface_Lerper(PyObject *self, Dtool_PyTypedObject *requested_type) {
   Dtool_PyTypedObject *type = DtoolInstance_TYPE(self);
   if (type != &Dtool_Lerper) {
-    printf("Lerper ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(NULL);
-    return NULL;
+    printf("Lerper ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(nullptr);
+    return nullptr;
   }
 
   Lerper *local_this = (Lerper *)DtoolInstance_VOID_PTR(self);
   if (requested_type == &Dtool_Lerper) {
     return local_this;
   }
-  return NULL;
+  return nullptr;
 }
 
 static void *Dtool_DowncastInterface_Lerper(void *from_this, Dtool_PyTypedObject *from_type) {
-  if (from_this == NULL || from_type == NULL) {
-    return NULL;
+  if (from_this == nullptr || from_type == nullptr) {
+    return nullptr;
   }
   if (from_type == Dtool_Ptr_Lerper) {
     return from_this;
   }
-  return (void *) NULL;
+  return nullptr;
 }
 
 /**
@@ -1524,15 +1524,15 @@ static void *Dtool_DowncastInterface_Lerper(void *from_this, Dtool_PyTypedObject
  * PyObject *SuitPathFinderAI::plan_path(PyObject *from, PyObject *to, PN_stdfloat close_enough = 0.0)
  */
 static PyObject *Dtool_SuitPathFinderAI_plan_path_51(PyObject *self, PyObject *args, PyObject *kwds) {
-  SuitPathFinderAI *local_this = NULL;
+  SuitPathFinderAI *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_SuitPathFinderAI, (void **)&local_this, "SuitPathFinderAI.plan_path")) {
-    return NULL;
+    return nullptr;
   }
   // 1-PyObject *SuitPathFinderAI::plan_path(PyObject *from, PyObject *to, PN_stdfloat close_enough = 0.0)
   PyObject *param1;
   PyObject *param2;
   float param3 = 0.0;
-  static const char *keyword_list[] = {"from", "to", "close_enough", NULL};
+  static const char *keyword_list[] = {"from", "to", "close_enough", nullptr};
   if (PyArg_ParseTupleAndKeywords(args, kwds, "OO|f:plan_path", (char **)keyword_list, &param1, &param2, &param3)) {
     PyObject *return_value = (*local_this).plan_path(param1, param2, (PN_stdfloat)param3);
     return Dtool_Return(return_value);
@@ -1541,7 +1541,7 @@ static PyObject *Dtool_SuitPathFinderAI_plan_path_51(PyObject *self, PyObject *a
     return Dtool_Raise_BadArgumentsError(
       "plan_path(const SuitPathFinderAI self, object from, object to, float close_enough)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -1551,7 +1551,7 @@ static const char *Dtool_SuitPathFinderAI_plan_path_51_comment =
   "\n"
   "//                       tuple           tuple";
 #else
-static const char *Dtool_SuitPathFinderAI_plan_path_51_comment = NULL;
+static const char *Dtool_SuitPathFinderAI_plan_path_51_comment = nullptr;
 #endif
 
 /**
@@ -1559,9 +1559,9 @@ static const char *Dtool_SuitPathFinderAI_plan_path_51_comment = NULL;
  * void SuitPathFinderAI::add_polygon(PyObject *points)
  */
 static PyObject *Dtool_SuitPathFinderAI_add_polygon_52(PyObject *self, PyObject *arg) {
-  SuitPathFinderAI *local_this = NULL;
+  SuitPathFinderAI *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_SuitPathFinderAI, (void **)&local_this, "SuitPathFinderAI.add_polygon")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void SuitPathFinderAI::add_polygon(PyObject *points)
   (*local_this).add_polygon(arg);
@@ -1570,7 +1570,7 @@ static PyObject *Dtool_SuitPathFinderAI_add_polygon_52(PyObject *self, PyObject 
     return Dtool_Raise_BadArgumentsError(
       "add_polygon(const SuitPathFinderAI self, object points)\n");
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifndef NDEBUG
@@ -1580,7 +1580,7 @@ static const char *Dtool_SuitPathFinderAI_add_polygon_52_comment =
   "\n"
   "//      list";
 #else
-static const char *Dtool_SuitPathFinderAI_add_polygon_52_comment = NULL;
+static const char *Dtool_SuitPathFinderAI_add_polygon_52_comment = nullptr;
 #endif
 
 /**
@@ -1588,9 +1588,9 @@ static const char *Dtool_SuitPathFinderAI_add_polygon_52_comment = NULL;
  * void SuitPathFinderAI::build_neighbors(void)
  */
 static PyObject *Dtool_SuitPathFinderAI_build_neighbors_53(PyObject *self, PyObject *) {
-  SuitPathFinderAI *local_this = NULL;
+  SuitPathFinderAI *local_this = nullptr;
   if (!Dtool_Call_ExtractThisPointer_NonConst(self, Dtool_SuitPathFinderAI, (void **)&local_this, "SuitPathFinderAI.build_neighbors")) {
-    return NULL;
+    return nullptr;
   }
   // 1-void SuitPathFinderAI::build_neighbors(void)
   (*local_this).build_neighbors();
@@ -1602,7 +1602,7 @@ static const char *Dtool_SuitPathFinderAI_build_neighbors_53_comment =
   "C++ Interface:\n"
   "build_neighbors(const SuitPathFinderAI self)\n";
 #else
-static const char *Dtool_SuitPathFinderAI_build_neighbors_53_comment = NULL;
+static const char *Dtool_SuitPathFinderAI_build_neighbors_53_comment = nullptr;
 #endif
 
 /**
@@ -1612,7 +1612,7 @@ static const char *Dtool_SuitPathFinderAI_build_neighbors_53_comment = NULL;
  */
 static int Dtool_Init_SuitPathFinderAI(PyObject *self, PyObject *args, PyObject *kwds) {
   int parameter_count = (int)PyTuple_Size(args);
-  if (kwds != NULL) {
+  if (kwds != nullptr) {
     parameter_count += (int)PyDict_Size(kwds);
   }
   switch (parameter_count) {
@@ -1620,7 +1620,7 @@ static int Dtool_Init_SuitPathFinderAI(PyObject *self, PyObject *args, PyObject 
     {
       // 1-SuitPathFinderAI::SuitPathFinderAI(PyObject *polygons)
       SuitPathFinderAI *return_value = new SuitPathFinderAI();
-      if (return_value == NULL) {
+      if (return_value == nullptr) {
         PyErr_NoMemory();
         return -1;
       }
@@ -1637,11 +1637,11 @@ static int Dtool_Init_SuitPathFinderAI(PyObject *self, PyObject *args, PyObject 
         // -2 inline SuitPathFinderAI::SuitPathFinderAI(SuitPathFinderAI const &) = default
         PyObject *param0;
         if (Dtool_ExtractArg(&param0, args, kwds)) {
-          SuitPathFinderAI const *param0_this = NULL;
+          SuitPathFinderAI const *param0_this = nullptr;
           DtoolInstance_GetPointer(param0, param0_this, *Dtool_Ptr_SuitPathFinderAI);
-          if (param0_this != NULL) {
+          if (param0_this != nullptr) {
             SuitPathFinderAI *return_value = new SuitPathFinderAI(*param0_this);
-            if (return_value == NULL) {
+            if (return_value == nullptr) {
               PyErr_NoMemory();
               return -1;
             }
@@ -1659,14 +1659,14 @@ static int Dtool_Init_SuitPathFinderAI(PyObject *self, PyObject *args, PyObject 
         PyObject *param0;
         if (Dtool_ExtractArg(&param0, args, kwds, "polygons")) {
           SuitPathFinderAI *return_value = new SuitPathFinderAI(param0);
-          if (return_value == NULL) {
+          if (return_value == nullptr) {
             PyErr_NoMemory();
             return -1;
           }
           PyObject *exception = _PyErr_OCCURRED();
           if (exception == PyExc_TypeError) {
             // TypeError raised; continue to next overload type.
-          } else if (exception != (PyObject *)NULL) {
+          } else if (exception != nullptr) {
             delete return_value;
             return -1;
           } else {
@@ -1689,9 +1689,9 @@ static int Dtool_Init_SuitPathFinderAI(PyObject *self, PyObject *args, PyObject 
         if (Dtool_ExtractArg(&param0, args, kwds)) {
           SuitPathFinderAI param0_local;
           SuitPathFinderAI const *param0_this = Dtool_Coerce_SuitPathFinderAI(param0, param0_local);
-          if ((param0_this != NULL)) {
+          if ((param0_this != nullptr)) {
             SuitPathFinderAI *return_value = new SuitPathFinderAI(*param0_this);
-            if (return_value == NULL) {
+            if (return_value == nullptr) {
               PyErr_NoMemory();
               return -1;
             }
@@ -1742,37 +1742,37 @@ SuitPathFinderAI *Dtool_Coerce_SuitPathFinderAI(PyObject *args, SuitPathFinderAI
     PyObject *exception = _PyErr_OCCURRED();
     if (exception == PyExc_TypeError) {
       // TypeError raised; continue to next overload type.
-    } else if (exception != (PyObject *)NULL) {
-      return NULL;
+    } else if (exception != nullptr) {
+      return nullptr;
     } else {
       return &coerced;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 static void *Dtool_UpcastInterface_SuitPathFinderAI(PyObject *self, Dtool_PyTypedObject *requested_type) {
   Dtool_PyTypedObject *type = DtoolInstance_TYPE(self);
   if (type != &Dtool_SuitPathFinderAI) {
-    printf("SuitPathFinderAI ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(NULL);
-    return NULL;
+    printf("SuitPathFinderAI ** Bad Source Type-- Requesting Conversion from %s to %s\n", Py_TYPE(self)->tp_name, requested_type->_PyType.tp_name); fflush(nullptr);
+    return nullptr;
   }
 
   SuitPathFinderAI *local_this = (SuitPathFinderAI *)DtoolInstance_VOID_PTR(self);
   if (requested_type == &Dtool_SuitPathFinderAI) {
     return local_this;
   }
-  return NULL;
+  return nullptr;
 }
 
 static void *Dtool_DowncastInterface_SuitPathFinderAI(void *from_this, Dtool_PyTypedObject *from_type) {
-  if (from_this == NULL || from_type == NULL) {
-    return NULL;
+  if (from_this == nullptr || from_type == nullptr) {
+    return nullptr;
   }
   if (from_type == Dtool_Ptr_SuitPathFinderAI) {
     return from_this;
   }
-  return (void *) NULL;
+  return nullptr;
 }
 
 /**
@@ -1783,134 +1783,134 @@ static PyMethodDef Dtool_Methods_AudioClip[] = {
   {"getClipDoneEvent", &Dtool_AudioClip_get_clip_done_event_2, METH_NOARGS | METH_STATIC, (const char *)Dtool_AudioClip_get_clip_done_event_2_comment},
   {"get_part_done_event", &Dtool_AudioClip_get_part_done_event_3, METH_NOARGS | METH_STATIC, (const char *)Dtool_AudioClip_get_part_done_event_3_comment},
   {"getPartDoneEvent", &Dtool_AudioClip_get_part_done_event_3, METH_NOARGS | METH_STATIC, (const char *)Dtool_AudioClip_get_part_done_event_3_comment},
-  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, NULL},
-  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, NULL},
-  {NULL, NULL, 0, NULL}
+  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, nullptr},
+  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, nullptr},
+  {nullptr, nullptr, 0, nullptr}
 };
 
 static PyNumberMethods Dtool_NumberMethods_AudioClip = {
-  0, // nb_add
-  0, // nb_subtract
-  0, // nb_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_divide
+  nullptr,
 #endif
-  0, // nb_remainder
-  0, // nb_divmod
-  0, // nb_power
-  0, // nb_negative
-  0, // nb_positive
-  0, // nb_absolute
-  0, // nb_bool
-  0, // nb_invert
-  0, // nb_lshift
-  0, // nb_rshift
-  0, // nb_and
-  0, // nb_xor
-  0, // nb_or
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_coerce
+  nullptr,
 #endif
-  0, // nb_int
-  0, // nb_long
-  0, // nb_float
+  nullptr,
+  nullptr, // nb_long
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_oct
-  0, // nb_hex
+  nullptr,
+  nullptr,
 #endif
-  0, // nb_inplace_add
-  0, // nb_inplace_subtract
-  0, // nb_inplace_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_inplace_divide
+  nullptr,
 #endif
-  0, // nb_inplace_remainder
-  0, // nb_inplace_power
-  0, // nb_inplace_lshift
-  0, // nb_inplace_rshift
-  0, // nb_inplace_and
-  0, // nb_inplace_xor
-  0, // nb_inplace_or
-  0, // nb_floor_divide
-  0, // nb_true_divide
-  0, // nb_inplace_floor_divide
-  0, // nb_inplace_true_divide
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_VERSION_HEX >= 0x02050000
-  0, // nb_index
+  nullptr,
 #endif
 #if PY_VERSION_HEX >= 0x03050000
-  0, // nb_matrix_multiply
-  0, // nb_inplace_matrix_multiply
+  nullptr,
+  nullptr,
 #endif
 };
 
 struct Dtool_PyTypedObject Dtool_AudioClip = {
   {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
     "ccoginvasion.AudioClip",
     sizeof(Dtool_PyInstDef),
     0, // tp_itemsize
     &Dtool_FreeInstance_AudioClip,
-    0, // tp_print
-    0, // tp_getattr
-    0, // tp_setattr
+    nullptr,
+    nullptr,
+    nullptr,
 #if PY_VERSION_HEX >= 0x03050000
-    0, // tp_as_async
+    nullptr, // tp_as_async
 #elif PY_MAJOR_VERSION >= 3
-    0, // tp_reserved
+    nullptr, // tp_reserved
 #else
-    0, // tp_compare
+    nullptr, // tp_compare
 #endif
-    0, // tp_repr
+    nullptr,
     &Dtool_NumberMethods_AudioClip,
-    0, // tp_as_sequence
-    0, // tp_as_mapping
-    0, // tp_hash
-    0, // tp_call
-    0, // tp_str
-    0, // tp_getattro
-    0, // tp_setattro
-    0, // tp_as_buffer
+    nullptr, // tp_as_sequence
+    nullptr, // tp_as_mapping
+    nullptr, // tp_hash
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr, // tp_as_buffer
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES,
-    0, // tp_doc
-    0, // tp_traverse
-    0, // tp_clear
-    0, // tp_richcompare
+    nullptr, // tp_doc
+    nullptr, // tp_traverse
+    nullptr, // tp_clear
+    nullptr, // tp_richcompare
     0, // tp_weaklistoffset
-    0, // tp_iter
-    0, // tp_iternext
+    nullptr,
+    nullptr,
     Dtool_Methods_AudioClip,
-    0, // tp_members
-    0, // tp_getset
-    0, // tp_base
-    0, // tp_dict
-    0, // tp_descr_get
-    0, // tp_descr_set
+    nullptr, // tp_members
+    nullptr, // tp_getset
+    nullptr, // tp_base
+    nullptr, // tp_dict
+    nullptr,
+    nullptr,
     0, // tp_dictoffset
     Dtool_Init_AudioClip,
     PyType_GenericAlloc,
     Dtool_new_AudioClip,
     PyObject_Del,
-    0, // tp_is_gc
-    0, // tp_bases
-    0, // tp_mro
-    0, // tp_cache
-    0, // tp_subclasses
-    0, // tp_weaklist
-    0, // tp_del
+    nullptr, // tp_is_gc
+    nullptr, // tp_bases
+    nullptr, // tp_mro
+    nullptr, // tp_cache
+    nullptr, // tp_subclasses
+    nullptr, // tp_weaklist
+    nullptr, // tp_del
 #if PY_VERSION_HEX >= 0x02060000
     0, // tp_version_tag
 #endif
 #if PY_VERSION_HEX >= 0x03040000
-    0, // tp_finalize
+    nullptr, // tp_finalize
 #endif
   },
   TypeHandle::none(),
   Dtool_PyModuleClassInit_AudioClip,
   Dtool_UpcastInterface_AudioClip,
   Dtool_DowncastInterface_AudioClip,
-  (CoerceFunction)0,
-  (CoerceFunction)0,
+  nullptr,
+  nullptr,
 };
 
 static void Dtool_PyModuleClassInit_AudioClip(PyObject *module) {
@@ -1941,134 +1941,134 @@ static PyMethodDef Dtool_Methods_CNametag[] = {
   {"setPanelSize", (PyCFunction) &Dtool_CNametag_set_panel_size_10, METH_VARARGS | METH_KEYWORDS, (const char *)Dtool_CNametag_set_panel_size_10_comment},
   {"get_chatballoon_region", &Dtool_CNametag_get_chatballoon_region_12, METH_O, (const char *)Dtool_CNametag_get_chatballoon_region_12_comment},
   {"getChatballoonRegion", &Dtool_CNametag_get_chatballoon_region_12, METH_O, (const char *)Dtool_CNametag_get_chatballoon_region_12_comment},
-  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, NULL},
-  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, NULL},
-  {NULL, NULL, 0, NULL}
+  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, nullptr},
+  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, nullptr},
+  {nullptr, nullptr, 0, nullptr}
 };
 
 static PyNumberMethods Dtool_NumberMethods_CNametag = {
-  0, // nb_add
-  0, // nb_subtract
-  0, // nb_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_divide
+  nullptr,
 #endif
-  0, // nb_remainder
-  0, // nb_divmod
-  0, // nb_power
-  0, // nb_negative
-  0, // nb_positive
-  0, // nb_absolute
-  0, // nb_bool
-  0, // nb_invert
-  0, // nb_lshift
-  0, // nb_rshift
-  0, // nb_and
-  0, // nb_xor
-  0, // nb_or
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_coerce
+  nullptr,
 #endif
-  0, // nb_int
-  0, // nb_long
-  0, // nb_float
+  nullptr,
+  nullptr, // nb_long
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_oct
-  0, // nb_hex
+  nullptr,
+  nullptr,
 #endif
-  0, // nb_inplace_add
-  0, // nb_inplace_subtract
-  0, // nb_inplace_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_inplace_divide
+  nullptr,
 #endif
-  0, // nb_inplace_remainder
-  0, // nb_inplace_power
-  0, // nb_inplace_lshift
-  0, // nb_inplace_rshift
-  0, // nb_inplace_and
-  0, // nb_inplace_xor
-  0, // nb_inplace_or
-  0, // nb_floor_divide
-  0, // nb_true_divide
-  0, // nb_inplace_floor_divide
-  0, // nb_inplace_true_divide
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_VERSION_HEX >= 0x02050000
-  0, // nb_index
+  nullptr,
 #endif
 #if PY_VERSION_HEX >= 0x03050000
-  0, // nb_matrix_multiply
-  0, // nb_inplace_matrix_multiply
+  nullptr,
+  nullptr,
 #endif
 };
 
 struct Dtool_PyTypedObject Dtool_CNametag = {
   {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
     "ccoginvasion.CNametag",
     sizeof(Dtool_PyInstDef),
     0, // tp_itemsize
     &Dtool_FreeInstance_CNametag,
-    0, // tp_print
-    0, // tp_getattr
-    0, // tp_setattr
+    nullptr,
+    nullptr,
+    nullptr,
 #if PY_VERSION_HEX >= 0x03050000
-    0, // tp_as_async
+    nullptr, // tp_as_async
 #elif PY_MAJOR_VERSION >= 3
-    0, // tp_reserved
+    nullptr, // tp_reserved
 #else
-    0, // tp_compare
+    nullptr, // tp_compare
 #endif
-    0, // tp_repr
+    nullptr,
     &Dtool_NumberMethods_CNametag,
-    0, // tp_as_sequence
-    0, // tp_as_mapping
-    0, // tp_hash
-    0, // tp_call
-    0, // tp_str
-    0, // tp_getattro
-    0, // tp_setattro
-    0, // tp_as_buffer
+    nullptr, // tp_as_sequence
+    nullptr, // tp_as_mapping
+    nullptr, // tp_hash
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr, // tp_as_buffer
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES,
-    0, // tp_doc
-    0, // tp_traverse
-    0, // tp_clear
-    0, // tp_richcompare
+    nullptr, // tp_doc
+    nullptr, // tp_traverse
+    nullptr, // tp_clear
+    nullptr, // tp_richcompare
     0, // tp_weaklistoffset
-    0, // tp_iter
-    0, // tp_iternext
+    nullptr,
+    nullptr,
     Dtool_Methods_CNametag,
-    0, // tp_members
-    0, // tp_getset
-    0, // tp_base
-    0, // tp_dict
-    0, // tp_descr_get
-    0, // tp_descr_set
+    nullptr, // tp_members
+    nullptr, // tp_getset
+    nullptr, // tp_base
+    nullptr, // tp_dict
+    nullptr,
+    nullptr,
     0, // tp_dictoffset
     Dtool_Init_CNametag,
     PyType_GenericAlloc,
     Dtool_new_CNametag,
     PyObject_Del,
-    0, // tp_is_gc
-    0, // tp_bases
-    0, // tp_mro
-    0, // tp_cache
-    0, // tp_subclasses
-    0, // tp_weaklist
-    0, // tp_del
+    nullptr, // tp_is_gc
+    nullptr, // tp_bases
+    nullptr, // tp_mro
+    nullptr, // tp_cache
+    nullptr, // tp_subclasses
+    nullptr, // tp_weaklist
+    nullptr, // tp_del
 #if PY_VERSION_HEX >= 0x02060000
     0, // tp_version_tag
 #endif
 #if PY_VERSION_HEX >= 0x03040000
-    0, // tp_finalize
+    nullptr, // tp_finalize
 #endif
   },
   TypeHandle::none(),
   Dtool_PyModuleClassInit_CNametag,
   Dtool_UpcastInterface_CNametag,
   Dtool_DowncastInterface_CNametag,
-  (CoerceFunction)0,
-  (CoerceFunction)0,
+  nullptr,
+  nullptr,
 };
 
 static void Dtool_PyModuleClassInit_CNametag(PyObject *module) {
@@ -2097,174 +2097,174 @@ static PyMethodDef Dtool_Methods_CNametag3d[] = {
   {"getChatballoonRegion", (PyCFunction) &Dtool_CNametag3d_get_chatballoon_region_15, METH_VARARGS | METH_KEYWORDS, (const char *)Dtool_CNametag3d_get_chatballoon_region_15_comment},
   {"get_scale", (PyCFunction) &Dtool_CNametag3d_get_scale_16, METH_VARARGS | METH_KEYWORDS, (const char *)Dtool_CNametag3d_get_scale_16_comment},
   {"getScale", (PyCFunction) &Dtool_CNametag3d_get_scale_16, METH_VARARGS | METH_KEYWORDS, (const char *)Dtool_CNametag3d_get_scale_16_comment},
-  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, NULL},
-  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, NULL},
-  {NULL, NULL, 0, NULL}
+  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, nullptr},
+  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, nullptr},
+  {nullptr, nullptr, 0, nullptr}
 };
 
 static PyNumberMethods Dtool_NumberMethods_CNametag3d = {
-  0, // nb_add
-  0, // nb_subtract
-  0, // nb_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_divide
+  nullptr,
 #endif
-  0, // nb_remainder
-  0, // nb_divmod
-  0, // nb_power
-  0, // nb_negative
-  0, // nb_positive
-  0, // nb_absolute
-  0, // nb_bool
-  0, // nb_invert
-  0, // nb_lshift
-  0, // nb_rshift
-  0, // nb_and
-  0, // nb_xor
-  0, // nb_or
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_coerce
+  nullptr,
 #endif
-  0, // nb_int
-  0, // nb_long
-  0, // nb_float
+  nullptr,
+  nullptr, // nb_long
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_oct
-  0, // nb_hex
+  nullptr,
+  nullptr,
 #endif
-  0, // nb_inplace_add
-  0, // nb_inplace_subtract
-  0, // nb_inplace_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_inplace_divide
+  nullptr,
 #endif
-  0, // nb_inplace_remainder
-  0, // nb_inplace_power
-  0, // nb_inplace_lshift
-  0, // nb_inplace_rshift
-  0, // nb_inplace_and
-  0, // nb_inplace_xor
-  0, // nb_inplace_or
-  0, // nb_floor_divide
-  0, // nb_true_divide
-  0, // nb_inplace_floor_divide
-  0, // nb_inplace_true_divide
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_VERSION_HEX >= 0x02050000
-  0, // nb_index
+  nullptr,
 #endif
 #if PY_VERSION_HEX >= 0x03050000
-  0, // nb_matrix_multiply
-  0, // nb_inplace_matrix_multiply
+  nullptr,
+  nullptr,
 #endif
 };
 
 static PySequenceMethods Dtool_SequenceMethods_CNametag3d = {
-  0, // sq_length
-  0, // sq_concat
-  0, // sq_repeat
-  0, // sq_item
-  0, // sq_slice
-  0, // sq_ass_item
-  0, // sq_ass_slice
-  0, // sq_contains
-  0, // sq_inplace_concat
-  0, // sq_inplace_repeat
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr, // sq_slice
+  nullptr,
+  nullptr, // sq_ass_slice
+  nullptr,
+  nullptr,
+  nullptr,
 };
 
 static PyMappingMethods Dtool_MappingMethods_CNametag3d = {
-  0, // mp_length
-  0, // mp_subscript
-  0, // mp_ass_subscript
+  nullptr,
+  nullptr,
+  nullptr,
 };
 
 static PyBufferProcs Dtool_BufferProcs_CNametag3d = {
 #if PY_MAJOR_VERSION < 3
-  0, // bf_getreadbuffer
-  0, // bf_getwritebuffer
-  0, // bf_getsegcount
-  0, // bf_getcharbuffer
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #endif
 #if PY_VERSION_HEX >= 0x02060000
-  0, // bf_getbuffer
-  0, // bf_releasebuffer
+  nullptr,
+  nullptr,
 #endif
 };
 
 #if PY_VERSION_HEX >= 0x03050000
 static PyAsyncMethods Dtool_AsyncMethods_CNametag3d = {
-  0, // am_await
-  0, // am_aiter
-  0, // am_anext
+  nullptr,
+  nullptr,
+  nullptr,
 };
 #endif
 
 struct Dtool_PyTypedObject Dtool_CNametag3d = {
   {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
     "ccoginvasion.CNametag3d",
     sizeof(Dtool_PyInstDef),
     0, // tp_itemsize
     &Dtool_FreeInstance_CNametag3d,
-    0, // tp_print
-    0, // tp_getattr
-    0, // tp_setattr
+    nullptr,
+    nullptr,
+    nullptr,
 #if PY_VERSION_HEX >= 0x03050000
     &Dtool_AsyncMethods_CNametag3d,
 #elif PY_MAJOR_VERSION >= 3
-    0, // tp_reserved
+    nullptr, // tp_reserved
 #else
-    0, // tp_compare
+    nullptr, // tp_compare
 #endif
-    0, // tp_repr
+    nullptr,
     &Dtool_NumberMethods_CNametag3d,
     &Dtool_SequenceMethods_CNametag3d,
     &Dtool_MappingMethods_CNametag3d,
-    0, // tp_hash
-    0, // tp_call
-    0, // tp_str
-    0, // tp_getattro
-    0, // tp_setattro
+    nullptr, // tp_hash
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
     &Dtool_BufferProcs_CNametag3d,
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES,
-    0, // tp_doc
-    0, // tp_traverse
-    0, // tp_clear
-    0, // tp_richcompare
+    nullptr, // tp_doc
+    nullptr, // tp_traverse
+    nullptr, // tp_clear
+    nullptr, // tp_richcompare
     0, // tp_weaklistoffset
-    0, // tp_iter
-    0, // tp_iternext
+    nullptr,
+    nullptr,
     Dtool_Methods_CNametag3d,
-    0, // tp_members
-    0, // tp_getset
-    0, // tp_base
-    0, // tp_dict
-    0, // tp_descr_get
-    0, // tp_descr_set
+    nullptr, // tp_members
+    nullptr, // tp_getset
+    nullptr, // tp_base
+    nullptr, // tp_dict
+    nullptr,
+    nullptr,
     0, // tp_dictoffset
     Dtool_Init_CNametag3d,
     PyType_GenericAlloc,
     Dtool_new_CNametag3d,
     PyObject_Del,
-    0, // tp_is_gc
-    0, // tp_bases
-    0, // tp_mro
-    0, // tp_cache
-    0, // tp_subclasses
-    0, // tp_weaklist
-    0, // tp_del
+    nullptr, // tp_is_gc
+    nullptr, // tp_bases
+    nullptr, // tp_mro
+    nullptr, // tp_cache
+    nullptr, // tp_subclasses
+    nullptr, // tp_weaklist
+    nullptr, // tp_del
 #if PY_VERSION_HEX >= 0x02060000
     0, // tp_version_tag
 #endif
 #if PY_VERSION_HEX >= 0x03040000
-    0, // tp_finalize
+    nullptr, // tp_finalize
 #endif
   },
   TypeHandle::none(),
   Dtool_PyModuleClassInit_CNametag3d,
   Dtool_UpcastInterface_CNametag3d,
   Dtool_DowncastInterface_CNametag3d,
-  (CoerceFunction)0,
-  (CoerceFunction)0,
+  nullptr,
+  nullptr,
 };
 
 static void Dtool_PyModuleClassInit_CNametag3d(PyObject *module) {
@@ -2273,7 +2273,7 @@ static void Dtool_PyModuleClassInit_CNametag3d(PyObject *module) {
   if (!initdone) {
     initdone = true;
     // Dependent objects
-    Dtool_PyModuleClassInit_CNametag(NULL);
+    Dtool_PyModuleClassInit_CNametag(nullptr);
     Dtool_CNametag3d._PyType.tp_bases = PyTuple_Pack(1, (PyTypeObject *)&Dtool_CNametag);
     PyObject *dict = PyDict_New();
     Dtool_CNametag3d._PyType.tp_dict = dict;
@@ -2294,134 +2294,134 @@ static PyMethodDef Dtool_Methods_CTMusicData[] = {
   {"initializeChunkData", &Dtool_CTMusicData_initialize_chunk_data_22, METH_NOARGS | METH_STATIC, (const char *)Dtool_CTMusicData_initialize_chunk_data_22_comment},
   {"stop_am_update_task", &Dtool_CTMusicData_stop_am_update_task_23, METH_NOARGS | METH_STATIC, (const char *)Dtool_CTMusicData_stop_am_update_task_23_comment},
   {"stopAmUpdateTask", &Dtool_CTMusicData_stop_am_update_task_23, METH_NOARGS | METH_STATIC, (const char *)Dtool_CTMusicData_stop_am_update_task_23_comment},
-  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, NULL},
-  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, NULL},
-  {NULL, NULL, 0, NULL}
+  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, nullptr},
+  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, nullptr},
+  {nullptr, nullptr, 0, nullptr}
 };
 
 static PyNumberMethods Dtool_NumberMethods_CTMusicData = {
-  0, // nb_add
-  0, // nb_subtract
-  0, // nb_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_divide
+  nullptr,
 #endif
-  0, // nb_remainder
-  0, // nb_divmod
-  0, // nb_power
-  0, // nb_negative
-  0, // nb_positive
-  0, // nb_absolute
-  0, // nb_bool
-  0, // nb_invert
-  0, // nb_lshift
-  0, // nb_rshift
-  0, // nb_and
-  0, // nb_xor
-  0, // nb_or
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_coerce
+  nullptr,
 #endif
-  0, // nb_int
-  0, // nb_long
-  0, // nb_float
+  nullptr,
+  nullptr, // nb_long
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_oct
-  0, // nb_hex
+  nullptr,
+  nullptr,
 #endif
-  0, // nb_inplace_add
-  0, // nb_inplace_subtract
-  0, // nb_inplace_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_inplace_divide
+  nullptr,
 #endif
-  0, // nb_inplace_remainder
-  0, // nb_inplace_power
-  0, // nb_inplace_lshift
-  0, // nb_inplace_rshift
-  0, // nb_inplace_and
-  0, // nb_inplace_xor
-  0, // nb_inplace_or
-  0, // nb_floor_divide
-  0, // nb_true_divide
-  0, // nb_inplace_floor_divide
-  0, // nb_inplace_true_divide
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_VERSION_HEX >= 0x02050000
-  0, // nb_index
+  nullptr,
 #endif
 #if PY_VERSION_HEX >= 0x03050000
-  0, // nb_matrix_multiply
-  0, // nb_inplace_matrix_multiply
+  nullptr,
+  nullptr,
 #endif
 };
 
 struct Dtool_PyTypedObject Dtool_CTMusicData = {
   {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
     "ccoginvasion.CTMusicData",
     sizeof(Dtool_PyInstDef),
     0, // tp_itemsize
     &Dtool_FreeInstance_CTMusicData,
-    0, // tp_print
-    0, // tp_getattr
-    0, // tp_setattr
+    nullptr,
+    nullptr,
+    nullptr,
 #if PY_VERSION_HEX >= 0x03050000
-    0, // tp_as_async
+    nullptr, // tp_as_async
 #elif PY_MAJOR_VERSION >= 3
-    0, // tp_reserved
+    nullptr, // tp_reserved
 #else
-    0, // tp_compare
+    nullptr, // tp_compare
 #endif
-    0, // tp_repr
+    nullptr,
     &Dtool_NumberMethods_CTMusicData,
-    0, // tp_as_sequence
-    0, // tp_as_mapping
-    0, // tp_hash
-    0, // tp_call
-    0, // tp_str
-    0, // tp_getattro
-    0, // tp_setattro
-    0, // tp_as_buffer
+    nullptr, // tp_as_sequence
+    nullptr, // tp_as_mapping
+    nullptr, // tp_hash
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr, // tp_as_buffer
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES,
-    0, // tp_doc
-    0, // tp_traverse
-    0, // tp_clear
-    0, // tp_richcompare
+    nullptr, // tp_doc
+    nullptr, // tp_traverse
+    nullptr, // tp_clear
+    nullptr, // tp_richcompare
     0, // tp_weaklistoffset
-    0, // tp_iter
-    0, // tp_iternext
+    nullptr,
+    nullptr,
     Dtool_Methods_CTMusicData,
-    0, // tp_members
-    0, // tp_getset
-    0, // tp_base
-    0, // tp_dict
-    0, // tp_descr_get
-    0, // tp_descr_set
+    nullptr, // tp_members
+    nullptr, // tp_getset
+    nullptr, // tp_base
+    nullptr, // tp_dict
+    nullptr,
+    nullptr,
     0, // tp_dictoffset
     Dtool_Init_CTMusicData,
     PyType_GenericAlloc,
     Dtool_new_CTMusicData,
     PyObject_Del,
-    0, // tp_is_gc
-    0, // tp_bases
-    0, // tp_mro
-    0, // tp_cache
-    0, // tp_subclasses
-    0, // tp_weaklist
-    0, // tp_del
+    nullptr, // tp_is_gc
+    nullptr, // tp_bases
+    nullptr, // tp_mro
+    nullptr, // tp_cache
+    nullptr, // tp_subclasses
+    nullptr, // tp_weaklist
+    nullptr, // tp_del
 #if PY_VERSION_HEX >= 0x02060000
     0, // tp_version_tag
 #endif
 #if PY_VERSION_HEX >= 0x03040000
-    0, // tp_finalize
+    nullptr, // tp_finalize
 #endif
   },
   TypeHandle::none(),
   Dtool_PyModuleClassInit_CTMusicData,
   Dtool_UpcastInterface_CTMusicData,
   Dtool_DowncastInterface_CTMusicData,
-  (CoerceFunction)0,
-  (CoerceFunction)0,
+  nullptr,
+  nullptr,
 };
 
 static void Dtool_PyModuleClassInit_CTMusicData(PyObject *module) {
@@ -2468,134 +2468,134 @@ static PyMethodDef Dtool_Methods_CTMusicManager[] = {
   {"getCurrStyle", &Dtool_CTMusicManager_get_curr_style_36, METH_NOARGS, (const char *)Dtool_CTMusicManager_get_curr_style_36_comment},
   {"handle_part_done", &Dtool_CTMusicManager_handle_part_done_37, METH_O, (const char *)Dtool_CTMusicManager_handle_part_done_37_comment},
   {"handlePartDone", &Dtool_CTMusicManager_handle_part_done_37, METH_O, (const char *)Dtool_CTMusicManager_handle_part_done_37_comment},
-  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, NULL},
-  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, NULL},
-  {NULL, NULL, 0, NULL}
+  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, nullptr},
+  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, nullptr},
+  {nullptr, nullptr, 0, nullptr}
 };
 
 static PyNumberMethods Dtool_NumberMethods_CTMusicManager = {
-  0, // nb_add
-  0, // nb_subtract
-  0, // nb_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_divide
+  nullptr,
 #endif
-  0, // nb_remainder
-  0, // nb_divmod
-  0, // nb_power
-  0, // nb_negative
-  0, // nb_positive
-  0, // nb_absolute
-  0, // nb_bool
-  0, // nb_invert
-  0, // nb_lshift
-  0, // nb_rshift
-  0, // nb_and
-  0, // nb_xor
-  0, // nb_or
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_coerce
+  nullptr,
 #endif
-  0, // nb_int
-  0, // nb_long
-  0, // nb_float
+  nullptr,
+  nullptr, // nb_long
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_oct
-  0, // nb_hex
+  nullptr,
+  nullptr,
 #endif
-  0, // nb_inplace_add
-  0, // nb_inplace_subtract
-  0, // nb_inplace_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_inplace_divide
+  nullptr,
 #endif
-  0, // nb_inplace_remainder
-  0, // nb_inplace_power
-  0, // nb_inplace_lshift
-  0, // nb_inplace_rshift
-  0, // nb_inplace_and
-  0, // nb_inplace_xor
-  0, // nb_inplace_or
-  0, // nb_floor_divide
-  0, // nb_true_divide
-  0, // nb_inplace_floor_divide
-  0, // nb_inplace_true_divide
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_VERSION_HEX >= 0x02050000
-  0, // nb_index
+  nullptr,
 #endif
 #if PY_VERSION_HEX >= 0x03050000
-  0, // nb_matrix_multiply
-  0, // nb_inplace_matrix_multiply
+  nullptr,
+  nullptr,
 #endif
 };
 
 struct Dtool_PyTypedObject Dtool_CTMusicManager = {
   {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
     "ccoginvasion.CTMusicManager",
     sizeof(Dtool_PyInstDef),
     0, // tp_itemsize
     &Dtool_FreeInstance_CTMusicManager,
-    0, // tp_print
-    0, // tp_getattr
-    0, // tp_setattr
+    nullptr,
+    nullptr,
+    nullptr,
 #if PY_VERSION_HEX >= 0x03050000
-    0, // tp_as_async
+    nullptr, // tp_as_async
 #elif PY_MAJOR_VERSION >= 3
-    0, // tp_reserved
+    nullptr, // tp_reserved
 #else
-    0, // tp_compare
+    nullptr, // tp_compare
 #endif
-    0, // tp_repr
+    nullptr,
     &Dtool_NumberMethods_CTMusicManager,
-    0, // tp_as_sequence
-    0, // tp_as_mapping
-    0, // tp_hash
-    0, // tp_call
-    0, // tp_str
-    0, // tp_getattro
-    0, // tp_setattro
-    0, // tp_as_buffer
+    nullptr, // tp_as_sequence
+    nullptr, // tp_as_mapping
+    nullptr, // tp_hash
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr, // tp_as_buffer
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES,
-    0, // tp_doc
-    0, // tp_traverse
-    0, // tp_clear
-    0, // tp_richcompare
+    nullptr, // tp_doc
+    nullptr, // tp_traverse
+    nullptr, // tp_clear
+    nullptr, // tp_richcompare
     0, // tp_weaklistoffset
-    0, // tp_iter
-    0, // tp_iternext
+    nullptr,
+    nullptr,
     Dtool_Methods_CTMusicManager,
-    0, // tp_members
-    0, // tp_getset
-    0, // tp_base
-    0, // tp_dict
-    0, // tp_descr_get
-    0, // tp_descr_set
+    nullptr, // tp_members
+    nullptr, // tp_getset
+    nullptr, // tp_base
+    nullptr, // tp_dict
+    nullptr,
+    nullptr,
     0, // tp_dictoffset
     Dtool_Init_CTMusicManager,
     PyType_GenericAlloc,
     Dtool_new_CTMusicManager,
     PyObject_Del,
-    0, // tp_is_gc
-    0, // tp_bases
-    0, // tp_mro
-    0, // tp_cache
-    0, // tp_subclasses
-    0, // tp_weaklist
-    0, // tp_del
+    nullptr, // tp_is_gc
+    nullptr, // tp_bases
+    nullptr, // tp_mro
+    nullptr, // tp_cache
+    nullptr, // tp_subclasses
+    nullptr, // tp_weaklist
+    nullptr, // tp_del
 #if PY_VERSION_HEX >= 0x02060000
     0, // tp_version_tag
 #endif
 #if PY_VERSION_HEX >= 0x03040000
-    0, // tp_finalize
+    nullptr, // tp_finalize
 #endif
   },
   TypeHandle::none(),
   Dtool_PyModuleClassInit_CTMusicManager,
   Dtool_UpcastInterface_CTMusicManager,
   Dtool_DowncastInterface_CTMusicManager,
-  (CoerceFunction)0,
-  (CoerceFunction)0,
+  nullptr,
+  nullptr,
 };
 
 static void Dtool_PyModuleClassInit_CTMusicManager(PyObject *module) {
@@ -2636,134 +2636,134 @@ static PyMethodDef Dtool_Methods_Lerper[] = {
   {"setLerpRatio", &Dtool_Lerper_set_lerp_ratio_46, METH_O, (const char *)Dtool_Lerper_set_lerp_ratio_46_comment},
   {"get_lerp_ratio", &Dtool_Lerper_get_lerp_ratio_47, METH_NOARGS, (const char *)Dtool_Lerper_get_lerp_ratio_47_comment},
   {"getLerpRatio", &Dtool_Lerper_get_lerp_ratio_47, METH_NOARGS, (const char *)Dtool_Lerper_get_lerp_ratio_47_comment},
-  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, NULL},
-  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, NULL},
-  {NULL, NULL, 0, NULL}
+  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, nullptr},
+  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, nullptr},
+  {nullptr, nullptr, 0, nullptr}
 };
 
 static PyNumberMethods Dtool_NumberMethods_Lerper = {
-  0, // nb_add
-  0, // nb_subtract
-  0, // nb_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_divide
+  nullptr,
 #endif
-  0, // nb_remainder
-  0, // nb_divmod
-  0, // nb_power
-  0, // nb_negative
-  0, // nb_positive
-  0, // nb_absolute
-  0, // nb_bool
-  0, // nb_invert
-  0, // nb_lshift
-  0, // nb_rshift
-  0, // nb_and
-  0, // nb_xor
-  0, // nb_or
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_coerce
+  nullptr,
 #endif
-  0, // nb_int
-  0, // nb_long
-  0, // nb_float
+  nullptr,
+  nullptr, // nb_long
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_oct
-  0, // nb_hex
+  nullptr,
+  nullptr,
 #endif
-  0, // nb_inplace_add
-  0, // nb_inplace_subtract
-  0, // nb_inplace_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_inplace_divide
+  nullptr,
 #endif
-  0, // nb_inplace_remainder
-  0, // nb_inplace_power
-  0, // nb_inplace_lshift
-  0, // nb_inplace_rshift
-  0, // nb_inplace_and
-  0, // nb_inplace_xor
-  0, // nb_inplace_or
-  0, // nb_floor_divide
-  0, // nb_true_divide
-  0, // nb_inplace_floor_divide
-  0, // nb_inplace_true_divide
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_VERSION_HEX >= 0x02050000
-  0, // nb_index
+  nullptr,
 #endif
 #if PY_VERSION_HEX >= 0x03050000
-  0, // nb_matrix_multiply
-  0, // nb_inplace_matrix_multiply
+  nullptr,
+  nullptr,
 #endif
 };
 
 struct Dtool_PyTypedObject Dtool_Lerper = {
   {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
     "ccoginvasion.Lerper",
     sizeof(Dtool_PyInstDef),
     0, // tp_itemsize
     &Dtool_FreeInstance_Lerper,
-    0, // tp_print
-    0, // tp_getattr
-    0, // tp_setattr
+    nullptr,
+    nullptr,
+    nullptr,
 #if PY_VERSION_HEX >= 0x03050000
-    0, // tp_as_async
+    nullptr, // tp_as_async
 #elif PY_MAJOR_VERSION >= 3
-    0, // tp_reserved
+    nullptr, // tp_reserved
 #else
-    0, // tp_compare
+    nullptr, // tp_compare
 #endif
-    0, // tp_repr
+    nullptr,
     &Dtool_NumberMethods_Lerper,
-    0, // tp_as_sequence
-    0, // tp_as_mapping
-    0, // tp_hash
-    0, // tp_call
-    0, // tp_str
-    0, // tp_getattro
-    0, // tp_setattro
-    0, // tp_as_buffer
+    nullptr, // tp_as_sequence
+    nullptr, // tp_as_mapping
+    nullptr, // tp_hash
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr, // tp_as_buffer
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES,
-    0, // tp_doc
-    0, // tp_traverse
-    0, // tp_clear
-    0, // tp_richcompare
+    nullptr, // tp_doc
+    nullptr, // tp_traverse
+    nullptr, // tp_clear
+    nullptr, // tp_richcompare
     0, // tp_weaklistoffset
-    0, // tp_iter
-    0, // tp_iternext
+    nullptr,
+    nullptr,
     Dtool_Methods_Lerper,
-    0, // tp_members
-    0, // tp_getset
-    0, // tp_base
-    0, // tp_dict
-    0, // tp_descr_get
-    0, // tp_descr_set
+    nullptr, // tp_members
+    nullptr, // tp_getset
+    nullptr, // tp_base
+    nullptr, // tp_dict
+    nullptr,
+    nullptr,
     0, // tp_dictoffset
     Dtool_Init_Lerper,
     PyType_GenericAlloc,
     Dtool_new_Lerper,
     PyObject_Del,
-    0, // tp_is_gc
-    0, // tp_bases
-    0, // tp_mro
-    0, // tp_cache
-    0, // tp_subclasses
-    0, // tp_weaklist
-    0, // tp_del
+    nullptr, // tp_is_gc
+    nullptr, // tp_bases
+    nullptr, // tp_mro
+    nullptr, // tp_cache
+    nullptr, // tp_subclasses
+    nullptr, // tp_weaklist
+    nullptr, // tp_del
 #if PY_VERSION_HEX >= 0x02060000
     0, // tp_version_tag
 #endif
 #if PY_VERSION_HEX >= 0x03040000
-    0, // tp_finalize
+    nullptr, // tp_finalize
 #endif
   },
   TypeHandle::none(),
   Dtool_PyModuleClassInit_Lerper,
   Dtool_UpcastInterface_Lerper,
   Dtool_DowncastInterface_Lerper,
-  (CoerceFunction)0,
-  (CoerceFunction)0,
+  nullptr,
+  nullptr,
 };
 
 static void Dtool_PyModuleClassInit_Lerper(PyObject *module) {
@@ -2794,133 +2794,133 @@ static PyMethodDef Dtool_Methods_SuitPathFinderAI[] = {
   {"addPolygon", &Dtool_SuitPathFinderAI_add_polygon_52, METH_O, (const char *)Dtool_SuitPathFinderAI_add_polygon_52_comment},
   {"build_neighbors", &Dtool_SuitPathFinderAI_build_neighbors_53, METH_NOARGS, (const char *)Dtool_SuitPathFinderAI_build_neighbors_53_comment},
   {"buildNeighbors", &Dtool_SuitPathFinderAI_build_neighbors_53, METH_NOARGS, (const char *)Dtool_SuitPathFinderAI_build_neighbors_53_comment},
-  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, NULL},
-  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, NULL},
-  {NULL, NULL, 0, NULL}
+  {"__copy__", &copy_from_copy_constructor, METH_NOARGS, nullptr},
+  {"__deepcopy__", &map_deepcopy_to_copy, METH_VARARGS, nullptr},
+  {nullptr, nullptr, 0, nullptr}
 };
 
 static PyNumberMethods Dtool_NumberMethods_SuitPathFinderAI = {
-  0, // nb_add
-  0, // nb_subtract
-  0, // nb_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_divide
+  nullptr,
 #endif
-  0, // nb_remainder
-  0, // nb_divmod
-  0, // nb_power
-  0, // nb_negative
-  0, // nb_positive
-  0, // nb_absolute
-  0, // nb_bool
-  0, // nb_invert
-  0, // nb_lshift
-  0, // nb_rshift
-  0, // nb_and
-  0, // nb_xor
-  0, // nb_or
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_coerce
+  nullptr,
 #endif
-  0, // nb_int
-  0, // nb_long
-  0, // nb_float
+  nullptr,
+  nullptr, // nb_long
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_oct
-  0, // nb_hex
+  nullptr,
+  nullptr,
 #endif
-  0, // nb_inplace_add
-  0, // nb_inplace_subtract
-  0, // nb_inplace_multiply
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_MAJOR_VERSION < 3
-  0, // nb_inplace_divide
+  nullptr,
 #endif
-  0, // nb_inplace_remainder
-  0, // nb_inplace_power
-  0, // nb_inplace_lshift
-  0, // nb_inplace_rshift
-  0, // nb_inplace_and
-  0, // nb_inplace_xor
-  0, // nb_inplace_or
-  0, // nb_floor_divide
-  0, // nb_true_divide
-  0, // nb_inplace_floor_divide
-  0, // nb_inplace_true_divide
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
 #if PY_VERSION_HEX >= 0x02050000
-  0, // nb_index
+  nullptr,
 #endif
 #if PY_VERSION_HEX >= 0x03050000
-  0, // nb_matrix_multiply
-  0, // nb_inplace_matrix_multiply
+  nullptr,
+  nullptr,
 #endif
 };
 
 struct Dtool_PyTypedObject Dtool_SuitPathFinderAI = {
   {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(nullptr, 0)
     "ccoginvasion.SuitPathFinderAI",
     sizeof(Dtool_PyInstDef),
     0, // tp_itemsize
     &Dtool_FreeInstance_SuitPathFinderAI,
-    0, // tp_print
-    0, // tp_getattr
-    0, // tp_setattr
+    nullptr,
+    nullptr,
+    nullptr,
 #if PY_VERSION_HEX >= 0x03050000
-    0, // tp_as_async
+    nullptr, // tp_as_async
 #elif PY_MAJOR_VERSION >= 3
-    0, // tp_reserved
+    nullptr, // tp_reserved
 #else
-    0, // tp_compare
+    nullptr, // tp_compare
 #endif
-    0, // tp_repr
+    nullptr,
     &Dtool_NumberMethods_SuitPathFinderAI,
-    0, // tp_as_sequence
-    0, // tp_as_mapping
-    0, // tp_hash
-    0, // tp_call
-    0, // tp_str
-    0, // tp_getattro
-    0, // tp_setattro
-    0, // tp_as_buffer
+    nullptr, // tp_as_sequence
+    nullptr, // tp_as_mapping
+    nullptr, // tp_hash
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr, // tp_as_buffer
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_CHECKTYPES,
-    0, // tp_doc
-    0, // tp_traverse
-    0, // tp_clear
-    0, // tp_richcompare
+    nullptr, // tp_doc
+    nullptr, // tp_traverse
+    nullptr, // tp_clear
+    nullptr, // tp_richcompare
     0, // tp_weaklistoffset
-    0, // tp_iter
-    0, // tp_iternext
+    nullptr,
+    nullptr,
     Dtool_Methods_SuitPathFinderAI,
-    0, // tp_members
-    0, // tp_getset
-    0, // tp_base
-    0, // tp_dict
-    0, // tp_descr_get
-    0, // tp_descr_set
+    nullptr, // tp_members
+    nullptr, // tp_getset
+    nullptr, // tp_base
+    nullptr, // tp_dict
+    nullptr,
+    nullptr,
     0, // tp_dictoffset
     Dtool_Init_SuitPathFinderAI,
     PyType_GenericAlloc,
     Dtool_new_SuitPathFinderAI,
     PyObject_Del,
-    0, // tp_is_gc
-    0, // tp_bases
-    0, // tp_mro
-    0, // tp_cache
-    0, // tp_subclasses
-    0, // tp_weaklist
-    0, // tp_del
+    nullptr, // tp_is_gc
+    nullptr, // tp_bases
+    nullptr, // tp_mro
+    nullptr, // tp_cache
+    nullptr, // tp_subclasses
+    nullptr, // tp_weaklist
+    nullptr, // tp_del
 #if PY_VERSION_HEX >= 0x02060000
     0, // tp_version_tag
 #endif
 #if PY_VERSION_HEX >= 0x03040000
-    0, // tp_finalize
+    nullptr, // tp_finalize
 #endif
   },
   TypeHandle::none(),
   Dtool_PyModuleClassInit_SuitPathFinderAI,
   Dtool_UpcastInterface_SuitPathFinderAI,
   Dtool_DowncastInterface_SuitPathFinderAI,
-  (CoerceFunction)0,
+  nullptr,
   (CoerceFunction)Dtool_Coerce_SuitPathFinderAI,
 };
 
@@ -3005,20 +3005,19 @@ void Dtool_ccoginvasion_BuildInstants(PyObject *module) {
 static PyMethodDef python_simple_funcs[] = {
   // Support Function For Dtool_types ... for now in each module ??
   {"Dtool_BorrowThisReference", &Dtool_BorrowThisReference, METH_VARARGS, "Used to borrow 'this' pointer (to, from)\nAssumes no ownership."},
-  {"Dtool_AddToDictionary", &Dtool_AddToDictionary, METH_VARARGS, "Used to add items into a tp_dict"},
-  {NULL, NULL, 0, NULL}
+  {nullptr, nullptr, 0, nullptr}
 };
 
 struct LibraryDef ccoginvasion_moddef = {python_simple_funcs};
 static InterrogateModuleDef _in_module_def = {
-  1527781252,  /* file_identifier */
+  1531158517,  /* file_identifier */
   "ccoginvasion",  /* library_name */
   "_5Dz",  /* library_hash_name */
   "ccoginvasion",  /* module_name */
   "ccoginvasion.in",  /* database_filename */
-  (InterrogateUniqueNameDef *)0,  /* unique_names */
+  nullptr,  /* unique_names */
   0,  /* num_unique_names */
-  (void **)0,  /* fptrs */
+  nullptr,  /* fptrs */
   0,  /* num_fptrs */
   1,  /* first_index */
   139  /* next_index */

@@ -32,10 +32,10 @@ extern "C" void initccoginvasion();
 static struct PyModuleDef py_ccoginvasion_module = {
   PyModuleDef_HEAD_INIT,
   "ccoginvasion",
-  NULL,
+  nullptr,
   -1,
-  NULL,
-  NULL, NULL, NULL, NULL
+  nullptr,
+  nullptr, nullptr, nullptr, nullptr
 };
 
 PyObject *PyInit_ccoginvasion() {
@@ -43,10 +43,10 @@ PyObject *PyInit_ccoginvasion() {
   Dtool_ccoginvasion_RegisterTypes();
   Dtool_ccoginvasion_ResolveExternals();
 
-  LibraryDef *defs[] = {&ccoginvasion_moddef, NULL};
+  LibraryDef *defs[] = {&ccoginvasion_moddef, nullptr};
 
   PyObject *module = Dtool_PyModuleInitHelper(defs, &py_ccoginvasion_module);
-  if (module != NULL) {
+  if (module != nullptr) {
     Dtool_ccoginvasion_BuildInstants(module);
   }
   return module;
@@ -64,10 +64,10 @@ void initccoginvasion() {
   Dtool_ccoginvasion_RegisterTypes();
   Dtool_ccoginvasion_ResolveExternals();
 
-  LibraryDef *defs[] = {&ccoginvasion_moddef, NULL};
+  LibraryDef *defs[] = {&ccoginvasion_moddef, nullptr};
 
   PyObject *module = Dtool_PyModuleInitHelper(defs, "ccoginvasion");
-  if (module != NULL) {
+  if (module != nullptr) {
     Dtool_ccoginvasion_BuildInstants(module);
   }
 }
@@ -75,7 +75,7 @@ void initccoginvasion() {
 #ifndef NDEBUG
 PyObject *PyInit_ccoginvasion() {
   PyErr_SetString(PyExc_ImportError, "ccoginvasion was compiled for Python " PY_VERSION ", which is incompatible with Python 3");
-  return (PyObject *)NULL;
+  return nullptr;
 }
 #endif
 #endif

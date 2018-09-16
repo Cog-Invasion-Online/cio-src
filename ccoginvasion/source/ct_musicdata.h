@@ -31,8 +31,8 @@ class CTMusicData
 public:
 
         // song name -> chunk name -> file range (list of numbers)
-        typedef map<string, vector<int>> ChunkDataMap;
-        typedef map<string, ChunkDataMap> MusicDataMap;
+        typedef std::map<std::string, std::vector<int>> ChunkDataMap;
+        typedef std::map<std::string, ChunkDataMap> MusicDataMap;
 
         static MusicDataMap data;
 

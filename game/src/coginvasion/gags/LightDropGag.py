@@ -45,6 +45,8 @@ class LightDropGag(DropGag):
             dropShadow = CIGlobals.makeDropShadow(1.0)
             dropShadow.reparentTo(hidden)
             dropShadow.setPos(self.dropLoc)
+            if self.name == GagGlobals.FlowerPot:
+                dropShadow.setZ(dropShadow.getZ() - 3.5)
             dropShadow.setScale(0.01)
             shadowTrack = Sequence(Func(dropShadow.reparentTo, render), LerpScaleInterval(dropShadow, self.fallDuration + 0.1, self.getShadowScale(),
                                 startScale=Point3(0.01, 0.01, 0.01)), Wait(0.8), Func(dropShadow.removeNode))

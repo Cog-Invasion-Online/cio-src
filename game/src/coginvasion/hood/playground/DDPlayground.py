@@ -29,7 +29,8 @@ class DDPlayground(Playground.Playground):
 
     def load(self):
         Playground.Playground.load(self)
-        base.waterReflectionMgr.addWaterNode(125, (-25, 30, base.wakeWaterHeight))
+        base.waterReflectionMgr.addWaterNode(125, (-25, 30, base.wakeWaterHeight),
+                                             spec = base.waterReflectionMgr.getDefaultSpec('ddPond'))
 
     def enter(self, requestStatus):
         self.startBirds()

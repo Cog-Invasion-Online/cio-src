@@ -10,7 +10,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import ConfigVariableBool
 
-from direct.distributed.DistributedSmoothNodeAI import DistributedSmoothNodeAI
 from direct.distributed.ClockDelta import globalClockDelta
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
@@ -41,13 +40,12 @@ import GagEffects
 import types
 import random
 
-class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
+class DistributedSuitAI(DistributedAvatarAI):
     notify = directNotify.newCategory('DistributedSuitAI')
     dropItems = ConfigVariableBool('want-suit-drops', True)
 
     def __init__(self, air):
         DistributedAvatarAI.__init__(self, air)
-        DistributedSmoothNodeAI.__init__(self, air)
         self.anim = 'neutral'
         self.brain = None
         self.track = None
@@ -520,11 +518,7 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
 
         toon = self.air.doId2do.get(avId, None)
         if toon:
-            hp = toon.getHealth() - dmg
-            if hp < 0:
-                hp = 0
-            toon.b_setHealth(hp)
-            toon.d_announceHealth(0, -dmg)
+            toon.takeDamage(dmg)
             self.handleAvatarDefeat(toon)
 
     def turretHitByWeapon(self, weaponId, avId):
@@ -614,7 +608,6 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
 
     def generate(self):
         DistributedAvatarAI.generate(self)
-        DistributedSmoothNodeAI.generate(self)
 
     def announceGenerate(self):
         DistributedAvatarAI.announceGenerate(self)
@@ -703,7 +696,6 @@ class DistributedSuitAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         del self.damagers
         del self.stunned
         DistributedAvatarAI.delete(self)
-        DistributedSmoothNodeAI.delete(self)
 
     def printPos(self, task):
         self.notify.info('%s\n%s' % (self.getPos(render), self.getHpr(render)))

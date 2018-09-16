@@ -14,7 +14,6 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.interval.IntervalGlobal import Sequence, Func, ActorInterval
-from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
 from direct.distributed.ClockDelta import globalClockDelta
 
 from src.coginvasion.avatar.DistributedAvatar import DistributedAvatar
@@ -27,12 +26,11 @@ from DisneyCharGlobals import *
 
 import random
 
-class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
+class DistributedDisneyChar(DistributedAvatar):
     notify = directNotify.newCategory('DistributedDisneyChar')
 
     def __init__(self, cr):
         DistributedAvatar.__init__(self, cr)
-        DistributedSmoothNode.__init__(self, cr)
 
         self.fsm = ClassicFSM('DDisneyChar',
                               [State('off', self.enterOff, self.exitOff),
@@ -407,11 +405,9 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
 
     def generate(self):
         DistributedAvatar.generate(self)
-        DistributedSmoothNode.generate(self)
 
     def announceGenerate(self):
         DistributedAvatar.announceGenerate(self)
-        DistributedSmoothNode.announceGenerate(self)
         self.loadChar()
         self.startBlink()
         base.taskMgr.add(self.__monitorRange, self.uniqueName('monitorRange'))
@@ -460,4 +456,3 @@ class DistributedDisneyChar(DistributedAvatar, DistributedSmoothNode):
         self.eyesClosed = None
         DistributedAvatar.disable(self)
         Avatar.disable(self)
-        DistributedSmoothNode.disable(self)

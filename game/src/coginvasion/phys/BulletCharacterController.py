@@ -95,6 +95,7 @@ class BulletCharacterController(DirectObject):
     def setCollideMask(self, *args):
         self.__walkCapsuleNP.setCollideMask(*args)
         self.__crouchCapsuleNP.setCollideMask(*args)
+        self.eventSphereNP.setCollideMask(*args)
     
     def setFallCallback(self, method, args=[], kwargs={}):
         """
@@ -415,13 +416,11 @@ class BulletCharacterController(DirectObject):
             if type(hit.getNode()) is BulletGhostNode:
                 continue
             
-            if self.__spam and False:
-                dat = base.materialData.get(hit.getNode(), None)
-                if dat:
-                    mat = dat.get(hit.getTriangleIndex(), None)
-                    if mat:
-                        if base.player.getCurrentSurface() != mat:
-                            base.player.setCurrentSurface(mat)
+            if self.__spam and self.movementState != "swimming" and not base.localAvatar.touchingWater:
+                dat = base.materialData.get(hit.getNode(), {})
+                mat = dat.get(hit.getTriangleIndex(), "dirt")
+                if base.localAvatar.walkControls.getCurrentSurface() != mat:
+                    base.localAvatar.walkControls.setCurrentSurface(mat)
             self.__footContact = [hit.getHitPos(), hit.getNode(), hit.getHitNormal()]
             break
     
@@ -504,10 +503,10 @@ class BulletCharacterController(DirectObject):
         maxIter = 10
         fraction = 1.0
 
-        if self.__spam:
-            lines = LineSegs()
-            lines.setColor(1, 0, 0, 1)
-            lines.setThickness(2)
+        #if self.__spam:
+        #    lines = LineSegs()
+        #    lines.setColor(1, 0, 0, 1)
+        #    lines.setThickness(2)
         
         collisions = Vec3(0)
         
@@ -531,20 +530,20 @@ class BulletCharacterController(DirectObject):
                         reflDir = self.__computeReflectionDirection(direction, normal)
                         reflDir.normalize()
                         collDir = self.__parallelComponent(reflDir, normal)
-                        if self.__spam:
-                            lines.moveTo(result.getFromPos())
-                            lines.drawTo(result.getHitPos())
+                        #if self.__spam:
+                        #    lines.moveTo(result.getFromPos())
+                        #    lines.drawTo(result.getHitPos())
                         collisions += collDir * distance
                 
             maxIter -= 1
            
         collisions.z = 0.0
 
-        if collisions.length() != 0 and self.__spam:
-            if self.currLineSegsGeom:
-                self.currLineSegsGeom.removeNode()
-                self.currLineSegsGeom = None
-            self.currLineSegsGeom = render.attachNewNode(lines.create())
+        #if collisions.length() != 0 and self.__spam:
+        #    if self.currLineSegsGeom:
+        #        self.currLineSegsGeom.removeNode()
+        #        self.currLineSegsGeom = None
+        #    self.currLineSegsGeom = render.attachNewNode(lines.create())
 
         self.__targetPos += collisions
     

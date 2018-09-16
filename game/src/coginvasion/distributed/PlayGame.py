@@ -241,30 +241,32 @@ class PlayGame(StateData):
 
     def handleEnteredQuietZone(self, requestStatus):
         hoodId = requestStatus['hoodId']
-        hoodClass = self.Hood2HoodClass[hoodId]
-        base.transitions.noTransitions()
-        loader.beginBulkLoad('hood', hoodId, 100)
-        self.loadDNAStore()
-        self.hood = hoodClass(self.fsm, self.hoodDoneEvent, self.dnaStore, hoodId)
-        self.hood.load()
+        if self.Hood2HoodClass.has_key(hoodId):
+            hoodClass = self.Hood2HoodClass[hoodId]
+            base.transitions.noTransitions()
+            loader.beginBulkLoad('hood', hoodId, 100)
+            self.loadDNAStore()
+            self.hood = hoodClass(self.fsm, self.hoodDoneEvent, self.dnaStore, hoodId)
+            self.hood.load()
 
-        hoodId = requestStatus['hoodId']
-        hoodState = self.Hood2HoodState[hoodId]
-        self.fsm.request(hoodState, [requestStatus], exitCurrent = 0)
+            hoodState = self.Hood2HoodState[hoodId]
+            self.fsm.request(hoodState, [requestStatus], exitCurrent = 0)
         self.quietZoneStateData.fsm.request('waitForSetZoneResponse')
 
     def handleQuietZoneDone(self, requestStatus):
-        self.hood.enterTheLoader(requestStatus)
-        self.hood.loader.enterThePlace(requestStatus)
-        loader.endBulkLoad('hood')
+        if self.hood:
+            self.hood.enterTheLoader(requestStatus)
+            self.hood.loader.enterThePlace(requestStatus)
+            loader.endBulkLoad('hood')
         self.exitQuietZone()
 
     def exitQuietZone(self):
-        self.ignore('enteredQuietZone')
-        self.ignore(self.quietZoneDoneEvent)
-        self.quietZoneStateData.exit()
-        self.quietZoneStateData.unload()
-        self.quietZoneStateData = None
+        if self.quietZoneStateData:
+            self.ignore('enteredQuietZone')
+            self.ignore(self.quietZoneDoneEvent)
+            self.quietZoneStateData.exit()
+            self.quietZoneStateData.unload()
+            self.quietZoneStateData = None
 
     def setPlace(self, place):
         self.place = place

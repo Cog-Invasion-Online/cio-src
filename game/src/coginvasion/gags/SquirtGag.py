@@ -222,7 +222,7 @@ class SquirtGag(Gag):
         self.loadParticle()
         self.sprayParticle.start(self.waterStreamParent, self.sprayParticleRoot)
 
-        self.spRootUpdateTask = taskMgr.add(self.__updateParticleParent, "FH.uPP", sort = -100)
+        self.spRootUpdateTask = taskMgr.add(self.__updateParticleParent, "FH.uPP", sort = -10)
 
     def throw(self):
         Gag.throw(self)
@@ -244,15 +244,9 @@ class SquirtGag(Gag):
         avNP = intoNP.getParent()
         
         if base.localAvatarReachable() and self.isLocal():
-            for key in base.cr.doId2do.keys():
-                obj = base.cr.doId2do[key]
-                if obj.__class__.__name__ in CIGlobals.SuitClasses:
-                    if obj.getKey() == avNP.getKey():
-                        obj.sendUpdate('hitByGag', [self.getID(), distance])
-                elif obj.__class__.__name__ == "DistributedPlayerToon":
-                    if obj.getKey() == avNP.getKey():
-                        if obj.getHealth() < obj.getMaxHealth():
-                            self.avatar.sendUpdate('toonHitByPie', [obj.doId, self.getID()])
+            for obj in base.avatars:
+                if CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey():
+                    obj.handleHitByToon(self.avatar, self.getID(), distance)
 
             self.splatPos = hitPos
             self.splatDist = distance

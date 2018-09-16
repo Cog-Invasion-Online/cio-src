@@ -62,12 +62,11 @@ class DistributedTNTOV(DistributedTNT, DistributedObjectOV):
         self.explode()
         self.sendUpdate('explode')
 
-        for obj in self.cr.doId2do.values():
-            if obj.__class__.__name__ in CIGlobals.SuitClasses:
-                if obj.getPlace() == base.localAvatar.zoneId:
-                    dist = obj.getDistance(self)
-                    if dist <= GagGlobals.TNT_RANGE:
-                        obj.sendUpdate('hitByGag', [GagGlobals.gagIdByName[GagGlobals.TNT], dist])
+        for obj in base.avatars:
+            if CIGlobals.isAvatar(obj):
+                dist = obj.getDistance(self)
+                if dist <= GagGlobals.TNT_RANGE:
+                    obj.handleHitByToon(base.localAvatar, GagGlobals.gagIdByName[GagGlobals.TNT], dist)
 
     def getPhysBody(self):
         body = DistributedTNT.getPhysBody(self)

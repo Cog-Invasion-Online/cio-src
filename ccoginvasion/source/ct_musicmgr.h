@@ -15,6 +15,8 @@
 #include "audioclip.h"
 #include "ct_musicdata.h"
 
+using namespace std;
+
 NotifyCategoryDeclNoExport(ctmusicmanager);
 
 class CTMusicManager

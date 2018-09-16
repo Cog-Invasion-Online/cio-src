@@ -22,7 +22,7 @@ from src.coginvasion.toon import Toon
 import random
 import types
 
-class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, DelayDeletable):
+class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
     notify = directNotify.newCategory('DistributedToon')
 
     LMHead = 0
@@ -49,6 +49,13 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DistributedSmoothNode, Delay
         self.lookTask = None
 
         return
+        
+    def handleHitByToon(self, player, gagId, distance):
+        # I was hit by another toon.
+        # This is a little strange because this function is called on the toon that got hit
+        # but we send an update on the toon that did the hitting.
+        #player.sendUpdate('toonHitByGag', [self.doId, gagId])
+        pass
 
     def setupNameTag(self, tempName = None):
         Toon.Toon.setupNameTag(self, tempName)

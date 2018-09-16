@@ -227,19 +227,9 @@ class ThrowGag(Gag):
         if fromNP.isEmpty():
             return
 
-        for key in base.cr.doId2do.keys():
-            obj = base.cr.doId2do[key]
-            if obj.__class__.__name__ in CIGlobals.SuitClasses:
-                if obj.getKey() == avNP.getKey():
-                    obj.sendUpdate('hitByGag', [self.getID(), self.avatar.getDistance(obj)])
-            elif obj.__class__.__name__ == "DistributedPlayerToon":
-                if obj.getKey() == avNP.getKey():
-                    if obj.getHealth() < obj.getMaxHealth():
-                        if obj != self.avatar:
-                            self.avatar.sendUpdate('toonHitByPie', [obj.doId, self.getID()])
-                        else:
-                            self.avatar.acceptOnce('gagSensor-into', self.onCollision)
-                            return
+        for obj in base.avatars:
+            if CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey():
+                obj.handleHitByToon(self.avatar, self.getID(), self.avatar.getDistance(obj))
             elif obj.__class__.__name__ == "DistributedPieTurret":
                 if obj.getKey() == avNP.getKey():
                     if obj.getHealth() < obj.getMaxHealth():

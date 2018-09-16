@@ -141,7 +141,7 @@ class DistributedCogOfficeSuitAI(DistributedSuitAI):
 
     def spawn(self):
         self.brain = SuitBrain(self)
-        pursue = SuitPursueToonBehaviorAI(self, getPathFinder(self.battle.currentRoom))
+        pursue = SuitPursueToonBehaviorAI(self, self.getManager())
         pursue.setSuitList(self.getManager().guardSuits)
         pursue.battle = self.battle
         self.brain.addBehavior(pursue, priority = 1)

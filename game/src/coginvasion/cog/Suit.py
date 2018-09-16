@@ -24,7 +24,7 @@ from direct.actor.Actor import Actor
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.task.Task import Task
-from panda3d.core import Vec4, VBase4, Texture
+from panda3d.core import Vec4, VBase4, Texture, TextureStage, TexGenAttrib
 import random
 
 class Suit(Avatar):
@@ -455,6 +455,14 @@ class Suit(Avatar):
 
         mat = CIGlobals.getCharacterMaterial(shininess = 50.0, specular = (0.4, 0.4, 0.4, 1))
         self.setMaterial(mat)
+        
+        ts = TextureStage('shiny')
+        ts.setMode(TextureStage.MAdd)
+        #ts.setRgbScale(2)
+        #tex = loader.loadCubeMap('phase_14/maps/cubemap/defaultcubemap_#.png')
+        tex = loader.loadTexture('phase_14/maps/envmap001a_cog.png')
+        self.setTexGen(ts, TexGenAttrib.MEyeSphereMap)
+        self.setTexture(ts, tex)
         
         self.initializeBodyCollisions()
 

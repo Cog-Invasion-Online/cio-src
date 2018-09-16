@@ -24,7 +24,7 @@ class FlowerPot(LightDropGag):
         self.colliderRadius = 0.75
         self.colliderOfs = Point3(0, 0, -3.5)
 
-    def startDrop(self):
+    def startDrop(self, entity):
         if self.dropLoc:
             self.dropLoc.setZ(self.dropLoc.getZ() + 3.5)
-        LightDropGag.startDrop(self)
+        LightDropGag.startDrop(self, entity)

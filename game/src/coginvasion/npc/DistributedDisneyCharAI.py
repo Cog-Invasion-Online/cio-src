@@ -4,7 +4,6 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
-from direct.distributed.DistributedSmoothNodeAI import DistributedSmoothNodeAI
 from direct.distributed.ClockDelta import globalClockDelta
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
@@ -13,12 +12,11 @@ from DisneyCharGlobals import *
 
 import random
 
-class DistributedDisneyCharAI(DistributedAvatarAI, DistributedSmoothNodeAI):
+class DistributedDisneyCharAI(DistributedAvatarAI):
     notify = directNotify.newCategory('DistributedDisneyCharAI')
 
     def __init__(self, air, charId):
         DistributedAvatarAI.__init__(self, air)
-        DistributedSmoothNodeAI.__init__(self, air)
         self.fsm = ClassicFSM('DDCharAI',
                               [State('off', self.enterOff, self.exitOff),
                                State('neutral', self.enterNeutral, self.exitNeutral),

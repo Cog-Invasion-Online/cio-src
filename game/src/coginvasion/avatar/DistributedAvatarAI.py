@@ -9,9 +9,9 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.distributed import DistributedNodeAI
+from direct.distributed import DistributedSmoothNodeAI
 
-class DistributedAvatarAI(DistributedNodeAI.DistributedNodeAI):
+class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI):
     notify = directNotify.newCategory("DistributedAvatarAI")
 
     def __init__(self, air):
@@ -20,14 +20,28 @@ class DistributedAvatarAI(DistributedNodeAI.DistributedNodeAI):
             return
         except:
             self.DistributedAvatarAI_initialized = 1
-        DistributedNodeAI.DistributedNodeAI.__init__(self, air)
+        DistributedSmoothNodeAI.DistributedSmoothNodeAI.__init__(self, air)
         self.health = 0
         self.maxHealth = 0
+        self.moveBits = 0
         self._name = ""
         self.place = 0
         self.hood = ""
         self.battleZone = None
         return
+
+    def setMoveBits(self, bits):
+        self.moveBits = bits
+
+    def getMoveBits(self):
+        return self.moveBits
+        
+    def takeDamage(self, dmg):
+        hp = self.getHealth() - dmg
+        if hp < 0:
+            hp = 0
+        self.b_setHealth(hp)
+        self.d_announceHealth(0, -dmg)
 
     def setHood(self, hood):
         self.hood = hood

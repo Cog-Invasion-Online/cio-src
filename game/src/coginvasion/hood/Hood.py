@@ -100,7 +100,7 @@ class Hood(StateData):
         seq = Sequence(
             Wait(0.1), Wait(6.0),
             self.titleText.colorScaleInterval(0.5, Vec4(1.0, 1.0, 1.0, 0.0)),
-            Func(self.titleText.hide)
+            Func(self.hideTitleText)
         )
         seq.start()
 
