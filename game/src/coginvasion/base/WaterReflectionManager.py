@@ -78,10 +78,10 @@ defaultWaterSpecs = {
     'pond': WaterSpec(),
     'lake': WaterSpec(),
     
-    'ttcPond': WaterSpec(dudvTile = 0.1, fog = FogSpec(density = 0.0), reflectFactor = 0.5,
-                         reflectivity = 0.7, shineDamper = 3.0, dudvStrength = 0.05),
+    'ttcPond': WaterSpec(dudvTile = 0.2, fog = FogSpec(density = 0.0), reflectFactor = 0.5,
+                         reflectivity = 0.7, shineDamper = 3.0),
     'ddPond': WaterSpec(fog = FogSpec((38 / 255.0, 69 / 255.0, 166 / 255.0, 1), 0.04),
-                        reflectFactor = 0.4, dudvStrength = 0.2)
+                        reflectFactor = 0.4, dudvStrength = 0.2, dudvTile = 0.15)
 }
 
 class WaterNode(NodePath):

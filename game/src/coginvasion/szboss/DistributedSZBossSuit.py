@@ -12,11 +12,11 @@ class DistributedSZBossSuit(DistributedSuit, DistributedEntity):
         self.reparentTo(render)
         self.setPos(self.cEntity.getOrigin())
         self.setHpr(self.cEntity.getAngles())
-        print "Loaded suit"
         
     def announceGenerate(self):
         DistributedEntity.announceGenerate(self)
         DistributedSuit.announceGenerate(self)
+        self.show()
         
     def disable(self):
         DistributedEntity.disable(self)

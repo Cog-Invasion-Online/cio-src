@@ -44,6 +44,12 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         self.bspLoader = None
         self.svEntities = []
         self.navMeshNp = None
+
+    def traceLine(self, start, end):
+        if not self.bspLoader.hasActiveLevel():
+            return True
+        
+        return self.bspLoader.traceLine(start, end)
         
     def deadSuit(self, doId):
         pass

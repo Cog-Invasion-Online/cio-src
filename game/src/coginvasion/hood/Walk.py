@@ -29,30 +29,13 @@ class Walk(StateData):
         del self.fsm
 
     def enter(self, wantMouse = 0):
-        base.localAvatar.startPosHprBroadcast()
-        base.localAvatar.d_broadcastPositionNow()
-        base.localAvatar.startBlink()
-        #base.localAvatar.attachCamera()
-        #base.localAvatar.startSmartCamera()
-        base.localAvatar.collisionsOn()
-        if not base.localAvatar.walkControls.getCollisionsActive():
-            base.localAvatar.walkControls.setCollisionsActive(1)
-        base.localAvatar.enableAvatarControls(wantMouse)
+        base.localAvatar.startPlay(wantMouse = wantMouse)
 
     def exit(self):
         if base.localAvatarReachable():
             base.localAvatar.lastState = None
             self.fsm.request('off')
-            if hasattr(base.localAvatar, 'walkControls') and (not base.localAvatar.walkControls is None) \
-                    and base.localAvatar.walkControls.getCollisionsActive():
-                base.localAvatar.walkControls.setCollisionsActive(0)
-            base.localAvatar.disableAvatarControls()
-            #base.localAvatar.detachCamera()
-            #base.localAvatar.stopSmartCamera()
-            base.localAvatar.stopPosHprBroadcast()
-            base.localAvatar.stopBlink()
-            #base.localAvatar.collisionsOff()
-            #base.localAvatar.controlManager.placeOnFloor()
+            base.localAvatar.stopPlay()
         
 
     def enterOff(self):

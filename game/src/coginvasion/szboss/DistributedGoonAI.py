@@ -71,6 +71,12 @@ class DistributedGoonAI(DistributedEntityAI, DistributedAvatarAI):
         else:
             self.brain.enterBehavior(GBPatrol)
             
+    def Wakeup(self):
+        self.brain.enterBehavior(GBWakeUp)
+        
+    def Patrol(self):
+        self.brain.enterBehavior(GBPatrol)
+            
     def hitByGag(self, gagId, distance):
         if self.isDead():
             return
@@ -88,6 +94,7 @@ class DistributedGoonAI(DistributedEntityAI, DistributedAvatarAI):
         self.b_setHealth(hp)
         self.d_announceHealth(0, baseDmg, -1)
         if self.isDead():
+            self.dispatchOutput("OnDie")
             self.brain.stop()
             self.d_doRagdollMode()
         

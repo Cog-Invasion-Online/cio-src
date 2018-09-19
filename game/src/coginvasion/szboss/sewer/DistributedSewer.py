@@ -58,37 +58,14 @@ class DistributedSewer(DistributedBattleZone):
         self.sendUpdate('mapLoaded')
 
     def stopPlayer(self):
-        base.localAvatar.disableLaffMeter()
-        base.localAvatar.disableGags()
-        base.localAvatar.hideBookButton()
-        base.localAvatar.hideFriendButton()
-        base.localAvatar.disableChatInput()
-
-        base.localAvatar.collisionsOff()
-        if base.localAvatar.walkControls.getCollisionsActive():
-            base.localAvatar.walkControls.setCollisionsActive(0)
-        base.localAvatar.disableAvatarControls()
-        base.localAvatar.stopTrackAnimToSpeed()
-        base.localAvatar.stopPosHprBroadcast()
+        base.localAvatar.stopPlay()
 
     def startPlayer(self):
         #render.setRenderModeWireframe()
         
         #base.bspLevel.writeBamFile("bspLevel.bam")
     
-        base.localAvatar.createLaffMeter()
-        base.localAvatar.enableGags(1)
-        base.localAvatar.hideBookButton()
-        base.localAvatar.hideFriendButton()
-        base.localAvatar.disableChatInput()
-
-        base.localAvatar.collisionsOn()
-        if not base.localAvatar.walkControls.getCollisionsActive():
-            base.localAvatar.walkControls.setCollisionsActive(1)
-        base.localAvatar.enableAvatarControls(1)
-        base.localAvatar.startPosHprBroadcast()
-        base.localAvatar.d_broadcastPositionNow()
-        base.localAvatar.startTrackAnimToSpeed()
+        base.localAvatar.startPlay(gags = True, laff = True)
 
     def startLevel(self):
         base.bspLevel.reparentTo(render)

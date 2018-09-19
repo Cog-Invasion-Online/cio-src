@@ -11,13 +11,12 @@ class DistributedEntity(DistributedObject, Entity):
         
     def announceGenerate(self):
         DistributedObject.announceGenerate(self)
-        print "DistributedEntity.announceGenerate:", self.__class__.__name__
         
     def setEntnum(self, entnum):
-        print "DistributedEntity.setEntnum:", self.__class__.__name__
         self.entnum = entnum
         
         self.cEntity = base.bspLoader.getCEntity(self.entnum)
+        base.bspLoader.linkCentToPyent(self.entnum, self)
         self.load()
         
     def getEntnum(self):

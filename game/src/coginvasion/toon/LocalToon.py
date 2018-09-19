@@ -130,6 +130,54 @@ class LocalToon(DistributedPlayerToon):
         
         # This is used by the animation traverser.
         self.__traverseGUI = None
+
+        self.playState = False
+
+    def stopPlay(self):
+        if not self.playState:
+            self.notify.warning("Redundant call to stopPlay()")
+            return
+
+        self.disableLaffMeter()
+        self.disableGags()
+        self.hideBookButton()
+        self.hideFriendButton()
+        self.disableChatInput()
+
+        self.collisionsOff()
+        if self.walkControls.getCollisionsActive():
+            self.walkControls.setCollisionsActive(0)
+        self.disableAvatarControls()
+        self.stopTrackAnimToSpeed()
+        self.stopPosHprBroadcast()
+
+        self.playState = False
+
+    def startPlay(self, gags = False, book = False, friends = False, laff = False, chat = False, wantMouse = 1):
+        if self.playState:
+            self.notify.warning("Redundant call to startPlay()")
+            return
+
+        if laff:
+            self.createLaffMeter()
+        if gags:
+            self.enableGags(1)
+        if book:
+            self.showBookButton()
+        if friends:
+            self.showFriendButton()
+        if chat:
+            self.createChatInput()
+
+        self.collisionsOn()
+        if not self.walkControls.getCollisionsActive():
+            self.walkControls.setCollisionsActive(1)
+        self.enableAvatarControls(wantMouse)
+        self.startPosHprBroadcast()
+        self.d_broadcastPositionNow()
+        self.startTrackAnimToSpeed()
+
+        self.playState = True
         
     def startSmooth(self):
         self.notify.warning("Tried to call startSmooth() on LocalToon!")
@@ -566,7 +614,7 @@ class LocalToon(DistributedPlayerToon):
         self.isMoving_jump = False
 
     def __jump(self):
-        if base.localAvatar.getHealth() > 0:
+        if self.getHealth() > 0:
             if self.playingAnim in ['run', 'walk']:
                 self.b_setAnimState("leap")
             else:
@@ -579,7 +627,7 @@ class LocalToon(DistributedPlayerToon):
     def __neutral(self):
         self.resetHeadHpr()
         self.startLookAround()
-        if base.localAvatar.getHealth() > 0:
+        if self.getHealth() > 0:
             self.setAnimState("neutral")
         else:
             self.setPlayRate(1.0, 'dneutral')
@@ -1048,6 +1096,7 @@ class LocalToon(DistributedPlayerToon):
         self.inTutorial = None
         self.avatarChoice = None
         self.chatInputState = None
+        self.playState = None
         self.endTraverseAnimationControls()
         self.ignore("gotLookSpot")
         self.ignore("clickedWhisper")

@@ -88,7 +88,7 @@ want-real-shadows #f
 load-stuff #f
 want-playground-gags #t
 gsg-want-hlsounds #f
-explosion-hlsounds #t
+explosion-hlsounds #f
 
 ctmusic-numsongs 1
 

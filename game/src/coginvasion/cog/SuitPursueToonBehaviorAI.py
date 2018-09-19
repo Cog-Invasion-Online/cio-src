@@ -98,6 +98,8 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
             elif av is not None and av.isDead():
                 # Don't target dead toons.
                 avIds.remove(avId)
+            elif av is not None and (not self.isPlayerVisible(av)):
+                avIds.remove(avId)
 
         # Make sure we found some avatars to pursue.
         if len(avIds) == 0:
@@ -164,7 +166,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
                     extraArgs = [useSafeDistance], appendTask = True)
 
     def _attackTask(self, useSafeDistance, task):
-        if not self.isAvatarReachable(self.target):
+        if not self.isAvatarReachable(self.target) or not self.isPlayerVisible(self.target, checkVisionAngle = False):
             self.resetNextFrame()
             return task.done
 
@@ -236,7 +238,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
             
         self.lastCheckedPos = self.target.getPos(render)
         
-        if not self.createPath(self.target):
+        if not self.isPlayerVisible(self.target, checkVisionAngle = False) or not self.createPath(self.target):
             # We couldn't figure out a good path to this target.
             # Try again in a little bit.
             self.resetNextFrame()

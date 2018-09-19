@@ -62,8 +62,6 @@ class DistributedFuncDoor(DistributedEntity, UseableObject, FSM):
         if self.moveIval:
             self.moveIval.finish()
             self.moveIval = None
-            
-        print "Opening"
         
         posDelta, openPos, closedPos, duration = self.getDoorData()
             
@@ -108,7 +106,6 @@ class DistributedFuncDoor(DistributedEntity, UseableObject, FSM):
         pass
         
     def setDoorState(self, state):
-        print "setDoorState:", state
         self.state = state
         if state == DOORSTATE_CLOSED:
             self.request('Closed')

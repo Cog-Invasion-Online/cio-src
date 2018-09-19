@@ -24,24 +24,5 @@ class PublicWalk(Walk.Walk):
         self.parentFSM = parentFSM
 
     def enter(self, wantMouse = 0):
-        Walk.Walk.enter(self, wantMouse)
-        base.localAvatar.showBookButton()
-        base.localAvatar.createLaffMeter()
-
-        if base.localAvatar.inBattle or base.config.GetBool("want-playground-gags", False):
-            base.localAvatar.enableGags(1)
-        
-        #if not base.localAvatar.GTAControls:
-            #self.acceptOnce('escape-up', base.localAvatar.bookButtonClicked)
-
-    def exit(self):
-        Walk.Walk.exit(self)
-        
-        #if not base.localAvatar.GTAControls:
-            #self.ignore('escape-up')
-            
-        base.localAvatar.hideBookButton()
-        base.localAvatar.disableLaffMeter()
-
-        if base.localAvatar.inBattle or base.config.GetBool("want-playground-gags", False):
-            base.localAvatar.disableGags()
+        base.localAvatar.startPlay(gags = base.localAvatar.inBattle or base.config.GetBool("want-playground-gags", False),
+                                   book = True, laff = True, friends = True, chat = True, wantMouse = wantMouse)

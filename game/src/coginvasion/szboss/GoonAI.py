@@ -5,6 +5,7 @@ from direct.fsm.StateData import StateData
 from direct.interval.IntervalGlobal import Func, LerpHprInterval
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.cog.BaseBehaviorAI import BaseBehaviorAI
 
 import random
 
@@ -17,13 +18,15 @@ GBFlee = 4
 GBScan = 5
 GBPatrol = 6
 
-class Behavior(StateData):
+class Behavior(StateData, BaseBehaviorAI):
     ID = GBInvalid # Must be overridden in each behavior
 
     def __init__(self, brain):
         StateData.__init__(self, 'behaviorDone')
         self.brain = brain
         self.goon = self.brain.goon
+        self.suit = self.goon
+        self.battle = self.goon.dispatch
         self.bspLoader = self.goon.cEntity.getLoader()
         self.air = self.goon.air
         self.behaviorStartTime = 0
@@ -50,35 +53,6 @@ class Behavior(StateData):
         """Called each frame when this behavior is running.
         It is the job of the current behavior to decide which one to do next."""
         return self.ID
-
-    def isPlayerAlive(self, plyr):
-        return not plyr.isDead()
-
-    def isSameLeafAsPlayer(self, plyr):
-        plLeaf = self.bspLoader.findLeaf(plyr)
-        myLeaf = self.bspLoader.findLeaf(self.brain.goon)
-        return plLeaf == myLeaf
-
-    def isPlayerInPVS(self, plyr):
-        plLeaf = self.bspLoader.findLeaf(plyr)
-        myLeaf = self.bspLoader.findLeaf(self.brain.goon)
-        return self.bspLoader.isClusterVisible(myLeaf, plLeaf)
-
-    def isPlayerAudible(self, plyr):
-        return self.isPlayerInPVS(plyr) and self.goon.getDistance(plyr) < 50.0
-
-    def isPlayerVisible(self, plyr):
-        # Check if player is potentially visible from my leaf.
-        if not self.isPlayerInPVS(plyr):
-            return False
-
-        # Is the player in my angle of vision?
-        angle = CIGlobals.getHeadsUpDistance(self.goon, plyr)
-        if abs(angle) > 130:
-            return False
-
-        # Is the player occluded by any BSP faces?
-        return self.bspLoader.traceLine(self.goon.getPos(render) + (0, 0, 3.5 / 2), plyr.getPos(render) + (0, 0, 2.0))
 
 class SleepBehavior(Behavior):
     ID = GBSleep

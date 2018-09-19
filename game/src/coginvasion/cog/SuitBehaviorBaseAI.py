@@ -10,7 +10,9 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.showbase.DirectObject import DirectObject
 
-class SuitBehaviorBaseAI(DirectObject):
+from BaseBehaviorAI import BaseBehaviorAI
+
+class SuitBehaviorBaseAI(DirectObject, BaseBehaviorAI):
     
     def __init__(self, suit, doneEvent = None):
         if doneEvent is None:
