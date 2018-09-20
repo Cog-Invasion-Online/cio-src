@@ -20,6 +20,13 @@ class TestCutscene:
         boss.cleanupPropeller()
         boss.animFSM.request('neutral')
         camera.reparentTo(boss)
+
+        def __pingpongboss_speak():
+            boss.pingpong("speak", fromFrame = 95, toFrame = 100)
+            
+        def __localavplay_duck():
+            base.localAvatar.setAnimState('off')
+            base.localAvatar.play("duck", fromFrame = 19)
         
         numGoons = 6
         
@@ -32,21 +39,26 @@ class TestCutscene:
         bdoor = base.bspLoader.getPyEntityByTargetName("to_groom_botdoor")
         tdoor = base.bspLoader.getPyEntityByTargetName("to_groom_topdoor")
         
-        bossTrack = Parallel(#Sequence(ActorInterval(boss, "pie"), Func(boss.loop, "neutral")),
-                             Sequence(Func(boss.setChat, "This sewer has no room in its budget for Toons."), 
-                                      Wait(5.5), Func(boss.setChat, "Goons, ATTACK!!!")))
+        bossTrack = Parallel(Sequence(Wait(4.7), ActorInterval(boss, "speak", startFrame=55, endFrame = 105, playRate=1.5),
+                                      #Func(__pingpongboss_speak),
+                                      Wait(2.0), Func(boss.loop, "neutral")),
+                             Sequence(Func(boss.play, "speak"), Func(boss.setChat, "This sewer has no room in its budget for Toons."), 
+                                      Wait(5.6), Func(boss.setChat, "Goons, ATTACK!!!")))
         camTrack = Sequence(Func(camera.setPos, 2.5, 14, 7), Func(camera.lookAt, boss, 0, 0, 4), Wait(3.0),
                             Func(camera.reparentTo, render), Func(camera.setPosHpr, 4.351, 126.686, 5.5, -154.16, 16.11, 0),
                             Wait(0.3),
                             Func(bdoor.request, 'Closing'),
                             Func(tdoor.request, 'Closing'),
-                            Wait(1.7),
+                            Func(__localavplay_duck),
+                            Wait(0.9),
+                            Func(base.doCamShake, 0.5, 0.35),
+                            Wait(0.9),
                             Func(camera.reparentTo, boss),
                             Func(camera.setPos, 2.5, 17, 7), Func(camera.lookAt, boss, 0, 0, 4),
                             LerpPosHprInterval(camera, duration = 0.75, blendType = 'easeOut', pos = (1, 5, 4), hpr = (165, 20, 0)),
                             Wait(1.75),
                             Func(camera.reparentTo, render), Func(camera.setPosHpr, 88 / 16.0, 2746 / 16.0, 127 / 16.0, 71 - 90, -10, 0))
-        goonTrack = Sequence(Wait(7.5), goonWakeup)
+        goonTrack = Sequence(Wait(7.6), goonWakeup)
         
         self.ival = Parallel(camTrack, bossTrack, goonTrack)
         self.ival.start()

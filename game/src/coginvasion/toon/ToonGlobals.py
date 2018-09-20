@@ -75,7 +75,8 @@ ANIMATIONS = {
     "shrug" :   [3.5, "shrug"],
     "bored" :   [4, "bored"],
     "start-dig" : [5.5, "into_dig"],
-    "loop-dig" : [5.5, "loop_dig"]
+    "loop-dig" : [5.5, "loop_dig"],
+    "duck"      :       [3.5, "duck"]
 }
 
 HeadScales = {
