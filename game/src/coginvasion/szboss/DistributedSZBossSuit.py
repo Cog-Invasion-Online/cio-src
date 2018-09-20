@@ -12,11 +12,20 @@ class DistributedSZBossSuit(DistributedSuit, DistributedEntity):
         self.reparentTo(render)
         self.setPos(self.cEntity.getOrigin())
         self.setHpr(self.cEntity.getAngles())
+     
+    def generateSuit(self, suitPlan, variant, voice = None, hideFirst = True):
+        DistributedSuit.generateSuit(self, suitPlan, variant, voice = voice, hideFirst = True)
+        print self
+        self.ls()
         
     def announceGenerate(self):
         DistributedEntity.announceGenerate(self)
         DistributedSuit.announceGenerate(self)
-        self.show()
+        #self.show()
+        print self
+        self.ls()
+        #self.cleanupPropeller()
+        #self.animFSM.request('neutral')
         
     def disable(self):
         DistributedEntity.disable(self)

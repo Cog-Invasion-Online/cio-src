@@ -46,9 +46,11 @@ class WaterSpec:
     def __init__(self, waterTint = (1, 1, 1, 0.0), fog = FogSpec(), dudv = AnimatedTexture('phase_14/maps/water_surface_dudv', 20),
                  staticTex = 'phase_13/maps/water3.jpg', normal = AnimatedTexture('phase_14/maps/water_surface_normal', 20),
                  dudvTile = 0.1, dudvStrength = 0.1, moveFactor = (0.05, 0.05), reflectivity = 1.0, shineDamper = 1.5,
-                 reflectFactor = 0.9):
+                 reflectFactor = 0.9, envMap = "phase_14/maps/envmap001a.png"):
         self.tint = waterTint
         self.fog = fog
+		
+        self.envMap = envMap
 
         self.dudv = dudv
         self.dudv.shaderInput = "dudv"
@@ -99,22 +101,27 @@ class WaterNode(NodePath):
         self.size = size
         self.height = pos[2]
 
-        vdata = GeomVertexData('waterPlanes', GeomVertexFormat.getV3t2(), Geom.UHStatic)
+        vdata = GeomVertexData('waterPlanes', GeomVertexFormat.getV3n3t2(), Geom.UHStatic)
         vdata.setNumRows(4)
         vtxWriter = GeomVertexWriter(vdata, 'vertex')
         tcWriter = GeomVertexWriter(vdata, 'texcoord')
+        normWriter = GeomVertexWriter(vdata, 'normal')
         # top left corner
         vtxWriter.addData3f(size[0], size[3], 0)
         tcWriter.addData2f(0, 1)
+        normWriter.addData3f(0, 0, 1)
         # bottom left corner
         vtxWriter.addData3f(size[0], size[2], 0)
         tcWriter.addData2f(0, 0)
+        normWriter.addData3f(0, 0, 1)
         # top right corner
         vtxWriter.addData3f(size[1], size[3], 0)
         tcWriter.addData2f(1, 1)
+        normWriter.addData3f(0, 0, 1)
         # bottom right corner
         vtxWriter.addData3f(size[1], size[2], 0)
         tcWriter.addData2f(1, 0)
+        normWriter.addData3f(0, 0, 1)
         
         topTris = GeomTriangles(Geom.UHStatic)
         topTris.addVertices(0, 1, 2)
@@ -181,6 +188,7 @@ class WaterNode(NodePath):
         self.topNP.setShaderInput("fog_color", self.spec.fog.color)
         self.topNP.setShaderInput("water_tint", self.spec.tint)
         self.topNP.setShaderInput("reflect_factor", self.spec.reflectFactor)
+        self.topNP.setShaderInput("env_map", loader.loadTexture(self.spec.envMap))
         
         hasSunData = False
         currCfg = OutdoorLightingConfig.ActiveConfig
@@ -196,9 +204,6 @@ class WaterNode(NodePath):
                 dir = CIGlobals.anglesToVector(data[1])
                 col = data[2]
                 hasSunData = True
-                print "Found BSP light_environment:"
-                print "\tdir:", dir
-                print "\tcol:", col
                 
         if not hasSunData:
             # No lighting config or BSP light_environment entity.
@@ -324,6 +329,9 @@ class WaterReflectionManager:
         self.localAvTouching = WaterNode.Nothing
         self.underwaterFog = [VBase4(0.0, 0.3, 0.7, 1.0), 0.008]
         self.waterNodes = []
+        self.hasScenes = False
+        
+        self.waterNodesQueue = []
 
         # name to list of textures for each frame
         self.dudvs = {}
@@ -358,6 +366,13 @@ class WaterReflectionManager:
                 if hasattr(hood, 'olc') and hood.olc:
                     return hood.olc
         return None
+        
+    def areScenesReady(self):
+        if not self.hasWaterEffects():
+            return True
+            
+        return (self.reflScene.buffer.isValid() and self.refrScene.buffer.isValid()
+                and self.underwaterRefrScene.buffer.isValid())
 
     def setupScene(self, height):
         if self.hasWaterEffects():
@@ -367,6 +382,7 @@ class WaterReflectionManager:
             self.refrScene.enable()
             self.underwaterRefrScene = WaterScene("underwaterRefraction", self.reso, height, Vec3(0, 0, 1))
             self.underwaterRefrScene.disable()
+            self.hasScenes = True
 
         self.startUpdateTask()
 
@@ -384,14 +400,20 @@ class WaterReflectionManager:
         if not self.enabled:
             return
 
-        if len(self.waterNodes) == 0:
+        if not self.hasScenes:
             # We will have to do 2 extra render passes to create the water.
             # One pass viewing only stuff that is above the water (reflection)
             # and another for viewing only what's underneath the water (refraction).
             # The shader will then take these 2 textures, do fancy effects,
             # and project a combined version of the 2 onto the water nodes.
             self.setupScene(pos[2])
-
+        
+        self.waterNodesQueue.append([size, pos, depth, spec])
+        
+    def __addWaterNodeNow(self, size, pos, depth, spec):
+        if not self.enabled:
+            return
+            
         for animTex in spec.animatedTextures:
             if animTex.texPath not in self.dudvs.keys():
                 frames = []
@@ -420,7 +442,7 @@ class WaterReflectionManager:
         if node in self.waterNodes:
             self.waterNodes.remove(node)
 
-        if len(self.waterNodes) == 0:
+        if len(self.waterNodes) == 0 and self.hasScenes:
             self.cleanupScenes()
 
     def clearWaterNodes(self):
@@ -445,6 +467,8 @@ class WaterReflectionManager:
         if hasattr(self, 'underwaterRefrScene') and self.underwaterRefrScene:
             self.underwaterRefrScene.cleanup()
             del self.underwaterRefrScene
+        
+        self.hasScenes = False
 
     def startUpdateTask(self):
         taskMgr.add(self.update, "waterRefl-update", sort = 45)
@@ -478,6 +502,12 @@ class WaterReflectionManager:
     def update(self, task):
         if not self.enabled:
             return task.done
+           
+        if self.areScenesReady():
+            for data in self.waterNodesQueue:
+                size, pos, depth, spec = data
+                self.__addWaterNodeNow(size, pos, depth, spec)
+                self.waterNodesQueue.remove(data)
 
         if self.hasWaterEffects():
             self.reflScene.camera.setMat(base.cam.getMat(render) * self.reflScene.plane.getReflectionMat())
@@ -555,7 +585,7 @@ class WaterReflectionManager:
             else:
                 base.localAvatar.isSwimming = False
                 base.localAvatar.touchingWater = False
-                base.localAvatar.walkControls.setCurrentSurface('dirt')
+                base.localAvatar.walkControls.setCurrentSurface('default')
                 base.localAvatar.walkControls.setControlScheme(base.localAvatar.walkControls.SDefault)
                 self.playWadeSound()
 

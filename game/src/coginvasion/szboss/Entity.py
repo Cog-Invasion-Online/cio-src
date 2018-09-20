@@ -16,8 +16,8 @@ class Entity(NodePath):
         
     def task_dispatchOutput(self, target, op, task):
         param = op['parameter']
-        args = [param] if len(param) > 0 else []
-        getattr(target, op['input']).__call__(*args)
+        params = param.split(';') if len(param) > 0 else []
+        getattr(target, op['input']).__call__(*params)
         return task.done
         
     def dispatchOutput(self, outputName):
@@ -48,6 +48,8 @@ class Entity(NodePath):
             self.outputs.append({'output': k, 'target': data[0], 'input': data[1],
                                  'parameter': data[2], 'delay': float(data[3]),
                                  'once': bool(int(data[4])), 'active': True})
+                                 
+        self.dispatchOutput("OnSpawn")
                                      
     def unload(self):
         self.loaded = False

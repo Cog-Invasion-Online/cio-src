@@ -443,7 +443,7 @@ class Suit(Avatar):
 
     # END STATES
 
-    def generate(self, suitPlan, variant, voice = None, hideFirst = True):
+    def generateSuit(self, suitPlan, variant, voice = None, hideFirst = True):
         self.suitPlan = suitPlan
         self.suit = suitPlan.getSuitType()
         self.head = suitPlan.getHead()

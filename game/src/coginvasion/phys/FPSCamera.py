@@ -68,6 +68,7 @@ class FPSCamera(DirectObject):
         self.viewModel.hide()
         self.viewportLens = PerspectiveLens()
         self.viewportLens.setMinFov(CIGlobals.DefaultCameraFov / (4. / 3.))
+        self.viewportLens.setNear(0.3)
         # Updates to the transform of base.camera
         self.viewportCam = base.makeCamera(base.win, clearDepth = True, camName = 'fpsViewport',
                                            mask = CIGlobals.ViewModelCamMask, lens = self.viewportLens)

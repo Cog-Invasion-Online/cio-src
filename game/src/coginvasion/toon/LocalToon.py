@@ -451,7 +451,8 @@ class LocalToon(DistributedPlayerToon):
 
     def d_broadcastPositionNow(self):
         self.d_clearSmoothing()
-        self.d_broadcastPosHpr()
+        if self.d_broadcastPosHpr:
+            self.d_broadcastPosHpr()
 
     def b_setAnimState(self, anim, callback = None, extraArgs = []):
         if self.anim != anim:
@@ -489,6 +490,11 @@ class LocalToon(DistributedPlayerToon):
     def printPos(self):
         x, y, z = self.getPos(render)
         h, p, r = self.getHpr(render)
+        print "Pos: (%s, %s, %s), Hpr: (%s, %s, %s)" % (x, y, z, h, p, r)
+        
+    def printPos_cam(self):
+        x, y, z = camera.getPos(render)
+        h, p, r = camera.getHpr(render)
         print "Pos: (%s, %s, %s), Hpr: (%s, %s, %s)" % (x, y, z, h, p, r)
 
     def enableAvatarControls(self, wantMouse = 0):
@@ -1153,6 +1159,7 @@ class LocalToon(DistributedPlayerToon):
 
         # Unused developer methods.
         self.accept('/', self.printPos)
+        self.accept('\\', self.printPos_cam)
         #self.accept('p', self.enterPictureMode)
         #self.accept('c', self.teleportToCT)
         #posBtn = DirectButton(text = "Get Pos", scale = 0.08, pos = (0.3, 0, 0), parent = base.a2dLeftCenter, command = self.printAvPos)

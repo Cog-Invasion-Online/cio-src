@@ -354,7 +354,7 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
         if plan.getForcedVoice():
             voice = plan.getForcedVoice()
 
-        Suit.generate(self,
+        self.generateSuit(
             plan,
             variant,
             voice = voice

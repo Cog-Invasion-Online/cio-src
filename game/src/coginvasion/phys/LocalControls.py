@@ -67,7 +67,10 @@ class LocalControls(DirectObject):
         self.footstepSounds = []
         self.currFootstepSound = None
         self.lastFoot = True
-        self.setCurrentSurface('dirt')
+        self.setCurrentSurface('default')
+		
+        self.defaultSounds = [base.loadSfx("phase_14/audio/sfx/footsteps/default1.ogg"),
+                              base.loadSfx("phase_14/audio/sfx/footsteps/default2.ogg")]
 
         self.mode = LocalControls.MThirdPerson
         self.scheme = LocalControls.SDefault
@@ -212,8 +215,12 @@ class LocalControls(DirectObject):
         if self.currentSurface == surface:
             return
 
-        if surface == "default":
-            surface = "concrete"
+        #if surface == "default":
+        #    surface = "concrete"
+        #if surface == "concrete":
+        #    surface = "default"
+        if surface == "dirt":
+            surface = "default"
             
         self.currentSurface = surface
         
@@ -360,6 +367,12 @@ class LocalControls(DirectObject):
             sound = random.choice(choices)
             sound.setVolume(volume * LocalControls.FootstepVolumeMod)
             sound.play()
+            if self.currentSurface != "default":
+                # if it's not the default footstep sound, put the default toon step sound behind it
+                # to sound more like feet running
+                default = self.defaultSounds[int(self.lastFoot)]
+                default.setVolume(volume * LocalControls.FootstepVolumeMod)
+                default.play()
             self.currFootstepSound = sound
         self.lastFootstepTime = globalClock.getFrameTime()
         
