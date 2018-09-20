@@ -94,7 +94,7 @@ ctmusic-numsongs 1
 
 want-pstats 0
 
-allow-incomplete-render 0
+allow-incomplete-render 1
 
 egg-load-old-curves 0
 
