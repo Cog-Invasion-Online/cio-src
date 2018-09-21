@@ -24,6 +24,7 @@ from src.coginvasion.gui.LaffOMeter import LaffOMeter
 from src.coginvasion.hood import LinkTunnel
 from src.coginvasion.globals import ChatGlobals
 from src.coginvasion.quest.QuestGlobals import QUEST_DATA_UPDATE_EVENT
+from src.coginvasion.phys import PhysicsUtils
 
 class DistributedPlayerToon(DistributedToon):
     notify = directNotify.newCategory('DistributedPlayerToon')
@@ -119,11 +120,19 @@ class DistributedPlayerToon(DistributedToon):
             pivotPointNode.setPos(pivotPoint)
             pivotPointNode.setHpr(linkTunnel.inPivotStartHpr)
                 
-            avPos = self.getPos(render)
+            x, y, z = self.getPos(render)
+            surfZ = PhysicsUtils.getNearestGroundSurfaceZ(self, self.getHeight() + self.getHeight() / 2.0)
+            
+            if not surfZ == -1:
+                # Let's use the ray-tested surface z-point instead so we don't come out of the tunnel hovering.
+                # This is just in case the user jumped into the tunnel, which in that case would mean that they are
+                # airborne and we can't depend on their current Z value.
+                z = surfZ
+            
             if base.localAvatar.doId == self.doId:
                 doneMethod = self._handleWentInTunnel
                 extraArgs = [requestStatus]
-                base.localAvatar.walkControls.setCollisionsActive(0)
+                base.localAvatar.walkControls.setCollisionsActive(0, andPlaceOnGround=1)
                 self.resetHeadHpr(override = True)
                 camera.wrtReparentTo(linkTunnel.tunnel)
                 currCamPos = camera.getPos()
@@ -149,7 +158,7 @@ class DistributedPlayerToon(DistributedToon):
             else:
                 self.stopSmooth()
             self.wrtReparentTo(pivotPointNode)
-            self.setPos(avPos)
+            self.setPos(x, y, z)
             self.resetTorsoRotation()
             self.stopLookAround()
             
@@ -186,7 +195,7 @@ class DistributedPlayerToon(DistributedToon):
             exitSeq = Sequence()
             
             if base.localAvatar.doId == self.doId:
-                base.localAvatar.walkControls.setCollisionsActive(0)
+                base.localAvatar.walkControls.setCollisionsActive(0, andPlaceOnGround=1)
                 base.localAvatar.detachCamera()
                 camera.reparentTo(linkTunnel.tunnel)
                 tunnelCamPos = linkTunnel.camPos

@@ -196,9 +196,17 @@ class LocalControls(DirectObject):
         self.revSpeed = rev
         self.turnSpeed = rot
 
-    def setCollisionsActive(self, flag):
+    def setCollisionsActive(self, flag, andPlaceOnGround=0):
         if not flag:
-            self.stopControllerUpdate()
+            
+            # There may be times when we need to return the avatar to the
+            # ground so they don't break the laws of physics. Such as
+            # when we disable collisions when moving a player through
+            # a tunnel.
+            if andPlaceOnGround:
+                self.exitControlsWhenGrounded = True
+            else:
+                self.stopControllerUpdate()
         else:
             self.startControllerUpdate()
 
@@ -252,6 +260,7 @@ class LocalControls(DirectObject):
             self.tp_attachCamera()
 
         self.controlsEnabled = True
+        self.exitControlsWhenGrounded = False
 
     def __throwTestBPeel(self):
         cls = random.choice([TestBananaPeel, TestCan, TestSafe])
@@ -353,6 +362,10 @@ class LocalControls(DirectObject):
             #    self.fpsCam.handleJumpHardLand()
         else:
             base.localAvatar.handleJumpLand()
+            
+        if self.exitControlsWhenGrounded:
+            self.stopControllerUpdate()
+            self.exitControlsWhenGrounded = False
 
     def playFootstep(self, volume = 1.0):
         if len(self.footstepSounds) > 0:
