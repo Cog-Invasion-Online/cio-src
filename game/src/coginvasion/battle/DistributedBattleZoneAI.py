@@ -62,6 +62,7 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         self.bspLoader = BSPLoader()
         self.bspLoader.setAi(True)
         self.bspLoader.setMaterialsFile("phase_14/etc/materials.txt")
+        self.bspLoader.setTextureContentsFile("phase_14/etc/texturecontents.txt")
         self.bspLoader.setServerEntityDispatcher(self)
         
     def cleanupNavMesh(self):
