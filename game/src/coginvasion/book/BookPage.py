@@ -31,7 +31,7 @@ class BookPage(StateData):
         self.header = None
         self.wantHeader = wantHeader
 
-        # The required admin token(s) to view this page.
+        # The required access level(s) to view this page.
         self.restriction = []
 
     def load(self):
@@ -73,11 +73,11 @@ class BookPage(StateData):
                 self.header.hide()
         StateData.exit(self)
 
-    # Sets the required admin tokens to view this page.
+    # Sets the required access levels to view this page.
     def setRestriction(self, levels):
         self.restriction = levels
 
-    # Returns the required admin tokens to view this page.
+    # Returns the required access levels to view this page.
     def getRestriction(self):
         return self.restriction
 

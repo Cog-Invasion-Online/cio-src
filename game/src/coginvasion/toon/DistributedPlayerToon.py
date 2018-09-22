@@ -25,6 +25,7 @@ from src.coginvasion.hood import LinkTunnel
 from src.coginvasion.globals import ChatGlobals
 from src.coginvasion.quest.QuestGlobals import QUEST_DATA_UPDATE_EVENT
 from src.coginvasion.phys import PhysicsUtils
+from src.coginvasion.distributed import AdminCommands
 
 class DistributedPlayerToon(DistributedToon):
     notify = directNotify.newCategory('DistributedPlayerToon')
@@ -36,7 +37,7 @@ class DistributedPlayerToon(DistributedToon):
         except:
             self.DistributedPlayerToon_initialized = 1
         DistributedToon.__init__(self, cr)
-        self.token = -1
+        self.role = None
         self.ghost = 0
         self.puInventory = []
         self.equippedPU = -1
@@ -554,16 +555,16 @@ class DistributedPlayerToon(DistributedToon):
     def getMoney(self):
         return self.money
 
-    def setAdminToken(self, value):
-        self.token = value
-        if value > -1:
-            # Put an icon over my head.
-            DistributedToon.setAdminToken(self, value)
+    def setAccessLevel(self, value):
+        self.role = AdminCommands.Roles.get(value, None)
+        if self.role:
+            # Put an admin token above my head.
+            DistributedToon.setAdminToken(self, self.role.token)
         else:
             DistributedToon.removeAdminToken(self)
 
-    def getAdminToken(self):
-        return self.token
+    def getAccessLevel(self):
+        return AdminCommands.NoAccess if not self.role else self.role.accessLevel
     
     def disable(self):
         base.audio3d.detachSound(self.takeDmgSfx)
@@ -575,7 +576,7 @@ class DistributedPlayerToon(DistributedToon):
         if self.dmgFadeIval:
             self.dmgFadeIval.finish()
             self.dmgFadeIval = None
-        self.token = None
+        self.role = None
         self.ghost = None
         self.puInventory = None
         self.equippedPU = None
@@ -606,7 +607,7 @@ class DistributedPlayerToon(DistributedToon):
             del self.takeDmgSfx
             del self.tunnelTrack
             del self.dmgFadeIval
-            del self.token
+            del self.role
             del self.ghost
             del self.puInventory
             del self.equippedPU

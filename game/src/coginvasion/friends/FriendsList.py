@@ -115,17 +115,17 @@ class FriendsList(DirectFrame):
             self.backBtn['state'] = DGG.DISABLED
 
 
-    def handleFriendsList(self, friendIdArray, nameArray, flags, adminTokens):
+    def handleFriendsList(self, friendIdArray, nameArray, flags, accessLevels):
         self.friends = {}
         self.onlineFriends = {}
         for i in xrange(len(friendIdArray)):
             avatarId = friendIdArray[i]
             name = nameArray[i]
-            adminToken = adminTokens[i]
-            self.friends[avatarId] = [name, adminToken]
+            accessLevel = accessLevels[i]
+            self.friends[avatarId] = [name, accessLevel]
             if flags[i] == 1:
                 # This friend is online
-                self.onlineFriends[avatarId] = [name, adminToken]
+                self.onlineFriends[avatarId] = [name, accessLevel]
 
     def enterOff(self):
         self.hide()
@@ -133,8 +133,8 @@ class FriendsList(DirectFrame):
     def exitOff(self):
         self.show()
 
-    def addFriend(self, name, avatarId, adminToken):
-        text_fg = AdminCommands.TextColorByAdminToken[adminToken]
+    def addFriend(self, name, avatarId, accessLevel):
+        text_fg = AdminCommands.Roles.get(accessLevel).token.color if accessLevel > AdminCommands.NoAccess else (0, 0, 0, 1)
         self.frameForNames.addItem(
             DirectButton(
                 text = name,
@@ -170,8 +170,8 @@ class FriendsList(DirectFrame):
         self.headingText.setText("ALL\nFRIENDS")
         for friendId, data in self.friends.items():
             name = data[0]
-            adminToken = data[1]
-            self.addFriend(name, friendId, adminToken)
+            accessLevel = data[1]
+            self.addFriend(name, friendId, accessLevel)
         self.sortListItems()
         self.setButtons(None, 'onlineFriendsList')
 
@@ -182,8 +182,8 @@ class FriendsList(DirectFrame):
         self.headingText.setText("ONLINE\nFRIENDS")
         for friendId, data in self.onlineFriends.items():
             name = data[0]
-            adminToken = data[1]
-            self.addFriend(name, friendId, adminToken)
+            accessLevel = data[1]
+            self.addFriend(name, friendId, accessLevel)
         self.sortListItems()
         self.setButtons('allFriendsList', None)
 

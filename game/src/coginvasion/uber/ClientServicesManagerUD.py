@@ -75,7 +75,7 @@ class CreateToonProcess:
                 "setBackpackAmmo": (GagGlobals.getDefaultBackpack().toNetString(),),
                 "setLoadout": (GagGlobals.InitLoadout,), # Start with cupcake and squirting flower.
                 "setTrackExperience": (GagGlobals.trackExperienceToNetString(GagGlobals.DefaultTrackExperiences),),
-                "setAdminToken": (AdminCommands.NoToken,),
+                "setAccessLevel": (AdminCommands.NoAccess,),
                 "setQuests": ("",),
                 "setQuestHistory": ([],),
                 "setTier": (13,),

@@ -254,7 +254,7 @@ class AdminPage(BookPage):
 			text_scale = 0.04,
 			relief = None,
 			scale = 1.0,
-			text = "Modify Admin Token",
+			text = "Modify Access Level",
 			pos = (0.45, 0.15, 0.4),
 			text_pos = (0, -0.01),
 			command = self.book.finishedResume,

@@ -38,7 +38,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
         self.money = 0
         self.portal = None
         self.book = None
-        self.token = -1
+        self.role = None
         self.ghost = 0
         self.attackers = []
         self.puInventory = []
@@ -90,9 +90,9 @@ class DistributedPlayerToonAI(DistributedToonAI):
     def __requesterAuthorized(self, notDev = False):
         requester = self.air.doId2do.get(self.air.getAvatarIdFromSender())
         if requester:
-            hasToken = requester.getAdminToken() > AdminCommands.NoToken
-            if ((not notDev and hasToken) or
-                (notDev and hasToken and self.getAdminToken() != AdminCommands.DevToken)):
+            hasAccess = requester.getAccessLevel() > AdminCommands.NoAccess
+            if ((not notDev and hasAccess) or
+                (notDev and hasAccess and self.getAccessLevel() != AdminCommands.RoleIdByName.get("Developer"))):
                 return True
         return False
 
@@ -114,7 +114,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
         if self.__requesterAuthorized():
             if flag:
                 # Apply the TSA uniform to this toon.
-                if self.getAdminToken() != AdminCommands.DevToken:
+                if self.getAccessLevel() != AdminCommands.RoleIdByName.get("Developer"):
                     if self.gender == 'girl':
                         self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][0]
                         self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['43'][0]
@@ -149,9 +149,9 @@ class DistributedPlayerToonAI(DistributedToonAI):
             self.generateDNAStrandWithCurrentStyle()
             self.d_setDNAStrand(self.getDNAStrand())
         
-    def reqSetAdminToken(self, token):
+    def reqSetAccessLevel(self, accessLevel):
         if self.__requesterAuthorized(True):
-            self.b_setAdminToken(token)
+            self.b_setAccessLevel(accessLevel)
 
     def setDefaultShard(self, shardId):
         self.defaultShard = shardId
@@ -358,7 +358,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
                 {"BANNED": 1}
             )
 
-        if self.getAdminToken() > AdminCommands.NoToken:
+        if self.getAccessLevel() > AdminCommands.NoAccess:
             if andBan:
                 self.air.dbInterface.queryObject(
                     self.air.dbId,
@@ -372,7 +372,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
             self.ejectSelf("This player did not have administrator rights, but was trying to eject someone.")
 
     def setGhost(self, value):
-        if not self.getAdminToken() > AdminCommands.NoToken and value > 0:
+        if not self.getAccessLevel() > AdminCommands.NoAccess and value > 0:
             self.ejectSelf("This player did not have administrator rights, but was trying to set ghost.")
             return
         self.ghost = value
@@ -412,15 +412,15 @@ class DistributedPlayerToonAI(DistributedToonAI):
     def getMoney(self):
         return self.money
 
-    def setAdminToken(self, token):
-        self.token = token
+    def setAccessLevel(self, accessLevel):
+        self.role = AdminCommands.Roles.get(accessLevel, None)
         
-    def b_setAdminToken(self, token):
-        self.sendUpdate('setAdminToken', [token])
-        self.setAdminToken(token)
+    def b_setAccessLevel(self, accessLevel):
+        self.sendUpdate('setAccessLevel', [accessLevel])
+        self.setAccessLevel(accessLevel)
 
-    def getAdminToken(self):
-        return self.token
+    def getAccessLevel(self):
+        return AdminCommands.NoAccess if not self.role else self.role.accessLevel
 
     def usedGag(self, gagId):
         supply = self.backpack.getSupply(gagId)
@@ -533,7 +533,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
             self.money = None
             self.portal = None
             self.book = None
-            self.token = None
+            self.role = None
             self.ghost = None
             self.attackers = None
             self.puInventory = None
@@ -555,7 +555,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
             del self.money
             del self.portal
             del self.book
-            del self.token
+            del self.role
             del self.ghost
             del self.attackers
             del self.puInventory

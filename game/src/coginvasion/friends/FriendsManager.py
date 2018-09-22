@@ -39,8 +39,8 @@ class FriendsManager(DistributedObjectGlobal):
     def d_requestFriendsList(self):
         self.sendUpdate('requestFriendsList', [])
 
-    def friendsList(self, idArray, nameArray, flags, adminTokens):
-        messenger.send('gotFriendsList', [idArray, nameArray, flags, adminTokens])
+    def friendsList(self, idArray, nameArray, flags, accessLevels):
+        messenger.send('gotFriendsList', [idArray, nameArray, flags, accessLevels])
 
     def teleportNotify(self, name):
         whisper = WhisperPopup(self.TeleportNotify % name, CIGlobals.getToonFont(), ChatGlobals.WTSystem)
@@ -71,8 +71,8 @@ class FriendsManager(DistributedObjectGlobal):
             whisper.manage(base.marginManager)
             self.d_requestFriendsList()
 
-    def avatarInfo(self, name, dna, maxHP, hp, zoneId, shardId, isOnline, adminToken):
-        messenger.send('avatarInfoResponse', [name, dna, maxHP, hp, zoneId, shardId, isOnline, adminToken])
+    def avatarInfo(self, name, dna, maxHP, hp, zoneId, shardId, isOnline, accessLevel):
+        messenger.send('avatarInfoResponse', [name, dna, maxHP, hp, zoneId, shardId, isOnline, accessLevel])
 
     def friendRequest(self, sender, name, dna):
         messenger.send('newFriendRequest', [sender, name, dna])

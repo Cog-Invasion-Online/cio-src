@@ -69,7 +69,7 @@ class ShtickerBook(DirectFrame, StateData):
 
     def registerPage(self, page):
         # Only add the page if we pass the restriction.
-        if not len(page.getRestriction()) or base.localAvatar.getAdminToken() in page.getRestriction():
+        if not len(page.getRestriction()) or base.localAvatar.getAccessLevel() in page.getRestriction():
             page.load()
             self.pages.append(page)
 
@@ -245,7 +245,7 @@ class ShtickerBook(DirectFrame, StateData):
         self.registerPage(QuestPage(self))
         self.registerPage(ArcadeModePage(self))
 
-        if base.localAvatar.getAdminToken() != AdminCommands.NoToken:
+        if base.localAvatar.getAccessLevel() != AdminCommands.NoAccess:
             self.registerPage(AdminPage(self))
 
     def unload(self):

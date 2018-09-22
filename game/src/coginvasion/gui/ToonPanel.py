@@ -340,7 +340,7 @@ class ToonPanel(DirectFrame):
         self.acceptOnce('avatarInfoResponse', self.handleAvatarInfoResponse)
         base.cr.friendsManager.d_requestAvatarInfo(self.avatarInfo[0])
 
-    def handleAvatarInfoResponse(self, name, dna, maxHealth, health, zoneId, shardId, isOnline, adminToken):
+    def handleAvatarInfoResponse(self, name, dna, maxHealth, health, zoneId, shardId, isOnline, accessLevel):
         if self.avatarInfo:
             self.avatarInfo.append(name)
             self.avatarInfo.append(dna)
@@ -349,7 +349,7 @@ class ToonPanel(DirectFrame):
             self.avatarInfo.append(zoneId)
             self.avatarInfo.append(shardId)
             self.avatarInfo.append(isOnline)
-            self.avatarInfo.append(adminToken)
+            self.avatarInfo.append(accessLevel)
             self.fsm.request('panel')
 
     def exitWaitOnAvatarInfoResponse(self):
@@ -385,8 +385,8 @@ class ToonPanel(DirectFrame):
         self.avatarInfo = None
 
     def enterPanel(self):
-        adminToken = self.avatarInfo[8]
-        text_color = AdminCommands.TextColorByAdminToken[adminToken]
+        accessLevel = self.avatarInfo[8]
+        text_color = AdminCommands.Roles.get(accessLevel).token.color if accessLevel > AdminCommands.NoAccess else (0, 0, 0, 1)
         self.nameText = OnscreenText(text = self.avatarInfo[1], parent = self,
             pos = (0, 0.2), scale = 0.035, wordwrap = 8, fg = text_color)
         self.nameText.setBin('gui-popup', 60)

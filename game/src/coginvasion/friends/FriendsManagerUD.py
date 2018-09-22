@@ -45,13 +45,13 @@ class RequestFriendsListProcess:
             return
 
         name = fields['setName'][0]
-        adminToken = fields['setAdminToken'][0]
+        accessLevel = fields['setAccessLevel'][0]
         avatarId = self.avatarFriendsList[self.friendIndex]
         self.realFriendsList[0].append(avatarId)
         self.realFriendsList[1].append(name)
         isOnline = int(avatarId in self.csm.toonsOnline)
         self.realFriendsList[2].append(isOnline)
-        self.realFriendsList[3].append(adminToken)
+        self.realFriendsList[3].append(accessLevel)
         if self.friendIndex >= len(self.avatarFriendsList) - 1:
             # Done, send it out
             self.csm.sendUpdateToAvatarId(self.sender, 'friendsList', self.realFriendsList)
@@ -189,10 +189,10 @@ class FriendsManagerUD(DistributedObjectGlobalUD):
                 shardId = fields['setDefaultShard'][0]
             except:
                 shardId = 0
-            adminToken = fields['setAdminToken'][0]
+            accessLevel = fields['setAccessLevel'][0]
             isOnline = int(avId in self.toonsOnline)
 
-            self.sendUpdateToAvatarId(sender, 'avatarInfo', [name, dna, maxHP, hp, zoneId, shardId, isOnline, adminToken])
+            self.sendUpdateToAvatarId(sender, 'avatarInfo', [name, dna, maxHP, hp, zoneId, shardId, isOnline, accessLevel])
 
         self.air.dbInterface.queryObject(
             self.air.dbId,
