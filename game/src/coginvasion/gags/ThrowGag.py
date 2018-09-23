@@ -219,7 +219,7 @@ class ThrowGag(Gag):
                     closestPie.cleanup()
                 closestPie.removeNode()
 
-    def onCollision(self, frNp, intoNP):
+    def onCollision(self, contact, frNp, intoNP):
         print "onCollision:", frNp, "->", intoNP
         avNP = intoNP.getParent()
         fromNP = frNp.getParent()
@@ -240,7 +240,7 @@ class ThrowGag(Gag):
         self.handleSplat()
 
     def buildCollisions(self, entity):
-        collider = WorldCollider.WorldCollider('gagSensor', 1, 'throwGagCollide', needSelfInArgs = True)
+        collider = WorldCollider.WorldCollider('gagSensor', 1, 'throwGagCollide', needSelfInArgs = True, resultInArgs = True)
         collider.reparentTo(entity)
         self.avatar.acceptOnce('throwGagCollide', self.onCollision)
         return collider

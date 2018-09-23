@@ -81,7 +81,7 @@ class CIBase(ShowBase):
         self.bspLoader.setCamera(self.camera)
         self.bspLoader.setRender(self.render)
         self.bspLoader.setMaterialsFile("phase_14/etc/materials.txt")
-        self.bspLoader.setTextureContentsFile("phase_14/etc/texturecontents.txt")
+        #self.bspLoader.setTextureContentsFile("phase_14/etc/texturecontents.txt")
         self.bspLoader.setWantVisibility(True)
         self.bspLoader.setVisualizeLeafs(False)
         self.bspLoader.setWantLightmaps(True)

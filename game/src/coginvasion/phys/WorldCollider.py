@@ -9,11 +9,12 @@ class WorldCollider(NodePath):
                  mask = CIGlobals.WorldGroup,
                  offset = Point3(0), needSelfInArgs = False,
                  startNow = True, myMask = CIGlobals.EventGroup,
-                 exclusions = []):
+                 exclusions = [], resultInArgs = False):
 
         NodePath.__init__(self, BulletGhostNode(name))
 
         self.needSelfInArgs = needSelfInArgs
+        self.resultInArgs = resultInArgs
         self.event = collideEvent
         self.mask = mask
         self.exclusions = exclusions
@@ -83,6 +84,8 @@ class WorldCollider(NodePath):
                 args = [NodePath(intoNode)]
                 if self.needSelfInArgs:
                     args.insert(0, self)
+                if self.resultInArgs:
+                    args.insert(0, contact)
                 messenger.send(self.getCollideEvent(), args)
                 return task.done
 

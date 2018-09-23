@@ -62,6 +62,6 @@ class UseableObject(PhysicsNodePath, Useable):
         PhysicsNodePath.removeNode(self)
         
     #def canUse(self):
-    #    return base.player.getDistance(self) <= self.maxDistance
+    #    return base.localAvatar.getDistance(self) <= self.maxDistance
         
         

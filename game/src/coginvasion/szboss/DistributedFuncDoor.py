@@ -90,6 +90,11 @@ class DistributedFuncDoor(DistributedEntity, UseableObject, FSM):
         self.moveIval.append(Func(self.stopMoveSound))
         self.moveIval.append(Func(self.playStopSound))
         self.moveIval.start()
+        
+    def exitClosing(self):
+        if self.moveIval:
+            self.moveIval.finish()
+            self.moveIval = None
             
     def enterOpened(self):
         openPos = self.getDoorData()[1]

@@ -1,4 +1,4 @@
-from panda3d.core import Vec3, VirtualFileSystem
+from panda3d.core import Vec3, VirtualFileSystem, BitMask32
 from direct.showbase.InputStateGlobal import inputState
 from direct.showbase.DirectObject import DirectObject
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -9,6 +9,7 @@ from src.coginvasion.phys.BulletCharacterController import BulletCharacterContro
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.phys.TestBananaPeel import TestBananaPeel, TestCan, TestSafe
 from src.coginvasion.phys.FPSCamera import FPSCamera
+from src.coginvasion.phys import PhysicsUtils
 
 import math
 import random
@@ -68,6 +69,9 @@ class LocalControls(DirectObject):
         self.currFootstepSound = None
         self.lastFoot = True
         self.setCurrentSurface('default')
+        
+        self.currentObjectUsing = None
+        self.lastUseObjectTime = 0.0
 		
         self.defaultSounds = [base.loadSfx("phase_14/audio/sfx/footsteps/default1.ogg"),
                               base.loadSfx("phase_14/audio/sfx/footsteps/default2.ogg")]
@@ -81,6 +85,8 @@ class LocalControls(DirectObject):
         self.active = False
 
         self.charUpdateTaskName = "controllerUpdateTask-" + str(id(self))
+        
+        self.useInvalidSound = base.loadSfx("phase_4/audio/sfx/ring_miss.ogg")
 
     def enterOff(self):
         pass
@@ -242,6 +248,7 @@ class LocalControls(DirectObject):
         
         base.taskMgr.add(self.__handlePlayerControls, "LocalControls.handlePlayerControls")
         base.taskMgr.add(self.__handleFootsteps, "LocalControls.handleFootsteps", taskChain = "fpsIndependentStuff")
+        base.taskMgr.add(self.__handleUse, "LocalControls.handleUse", taskChain = "fpsIndependentStuff")
 
         self.accept('alt', self.__throwTestBPeel)
         self.accept('tab', self.switchMode)
@@ -338,6 +345,7 @@ class LocalControls(DirectObject):
         inputState.set('use', False, inputSource = inputState.WASD)
         base.taskMgr.remove("LocalControls.handlePlayerControls")
         base.taskMgr.remove("LocalControls.handleFootsteps")
+        base.taskMgr.remove("LocalControls.handleUse")
         self.controller.setLinearMovement(Vec3(0))
         self.controller.setAngularMovement(0)
         self.controlsEnabled = False
@@ -391,6 +399,48 @@ class LocalControls(DirectObject):
                 
             if time - self.lastFootstepTime >= self.footstepIval:
                 self.playFootstep(min(1, speeds / 15.0))
+        return task.cont
+        
+    def __handleUse(self, task):
+        if self.mode == LocalControls.MThirdPerson:
+            return task.cont
+            
+        time = globalClock.getFrameTime()
+        use = inputState.isSet('use')
+        if use:
+            # see if there is anything for us to use.
+
+            distance = 5
+            start = base.camera.getPos(render)
+            stop = start + base.camera.getQuat(render).xform(Vec3.forward()) * distance
+            hit = PhysicsUtils.rayTestClosestNotMe(base.localAvatar, start, stop, BitMask32.allOn())
+            
+            somethingToUse = False
+            if hit is not None:
+                node = hit.getNode()
+                if node.hasPythonTag("useableObject"):
+                    somethingToUse = True
+                    obj = node.getPythonTag("useableObject")
+                    if obj.canUse():
+                        if self.currentObjectUsing != obj:
+                            if self.currentObjectUsing is not None:
+                                self.currentObjectUsing.stopUse()
+                            obj.startUse()
+                            self.lastUseObjectTime = time
+                        elif time - self.lastUseObjectTime >= obj.useIval:
+                            obj.use()
+                            self.lastUseObjectTime = time
+                        
+                        self.currentObjectUsing = obj
+            
+            if not somethingToUse and not self.lastUse:
+                self.useInvalidSound.play()
+        else:
+            if self.currentObjectUsing is not None:
+                self.currentObjectUsing.stopUse()
+                self.currentObjectUsing = None
+            
+        self.lastUse = use
         return task.cont
 
     def __handlePlayerControls(self, task):

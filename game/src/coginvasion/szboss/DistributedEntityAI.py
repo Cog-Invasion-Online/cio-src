@@ -10,9 +10,9 @@ class DistributedEntityAI(DistributedObjectAI, Entity):
         self.dispatch = dispatch
         self.entnum = 0
         self.bspLoader = None
+        self.spawnflags = 0
         
     def getEntnum(self):
-        print "DistributedEntityAI.getEntnum():", str(self.entnum)
         return self.entnum
         
     def loadEntityValues(self):

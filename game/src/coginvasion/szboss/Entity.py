@@ -1,4 +1,4 @@
-from panda3d.core import NodePath
+from panda3d.core import NodePath, ModelNode
 
 from direct.showbase.DirectObject import DirectObject
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -7,7 +7,7 @@ class Entity(NodePath):
     notify = directNotify.newCategory("Entity")
     
     def __init__(self):
-        NodePath.__init__(self, "entity")
+        NodePath.__init__(self, ModelNode("entity"))
         #DirectObject.__init__(self)
         self.loaded = False
         self.cEntity = None
