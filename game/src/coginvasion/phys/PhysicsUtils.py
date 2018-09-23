@@ -248,6 +248,20 @@ def enableLocalAvatarTriggerEvents(ghostNode, extraArgs = []):
         return
 
     GhostNodeLocalAvBroadcaster(ghostNode, extraArgs)
+    
+def getNearestGroundSurfaceZ(rootNode, height):
+    """ Uses a ray test to find the nearest ground surface. Returns the found surface's Z value or -1 if no surface is found. """
+    
+    if isinstance(rootNode, NodePath) and not rootNode.isEmpty():
+        pFrom = Point3(rootNode.getPos(render))
+        pDown = Point3(pFrom - Point3(0, 0, height))
+        downTest = base.physicsWorld.rayTestClosest(pFrom, pDown, CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
+        
+        return downTest.getHitPos().z
+    else:
+        raise Exception("#getNearestGroundSurfaceZ(): Requires a non-empty NodePath to ray test on!")
+    
+    return -1
 
 class GhostNodeLocalAvBroadcaster:
     """Fires events when the local avatar enters and leaves the ghost node."""

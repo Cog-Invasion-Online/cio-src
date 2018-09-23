@@ -408,7 +408,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         alpha = 1.0 if not flag else 0.25
         local = self == base.localAvatar
         if flag:
-            if self.getAdminToken() >= base.localAvatar.getAdminToken():
+            if self.getAccessLevel() >= base.localAvatar.getAccessLevel():
                 # Other staff members at this access level or higher should
                 # be able to see this avatar still.
                 alpha = 0.25
@@ -601,10 +601,10 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.clearPythonData()
         self.flush()
 
-    def setAdminToken(self, tokenId):
-        if tokenId in AdminCommands.STAFF_TOKENS.keys():
+    def setAdminToken(self, tokenInstance):
+        if tokenInstance and tokenInstance.assetId > -1:
             icons = loader.loadModel("phase_3/models/props/gm_icons.bam")
-            self.tokenIcon = icons.find('**/access_level_%s' % (AdminCommands.STAFF_TOKENS[tokenId]))
+            self.tokenIcon = icons.find('**/access_level_%s' % (tokenInstance.assetId))
             self.tokenIcon.reparentTo(self)
             x = self.nametag3d.getX()
             y = self.nametag3d.getY()

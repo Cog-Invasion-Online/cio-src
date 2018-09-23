@@ -146,7 +146,7 @@ class LocalToon(DistributedPlayerToon):
 
         self.collisionsOff()
         if self.walkControls.getCollisionsActive():
-            self.walkControls.setCollisionsActive(0)
+            self.walkControls.setCollisionsActive(0, andPlaceOnGround=1)
         self.disableAvatarControls()
         self.stopTrackAnimToSpeed()
         self.stopPosHprBroadcast()
@@ -928,11 +928,11 @@ class LocalToon(DistributedPlayerToon):
         DistributedPlayerToon.setHealth(self, hp)
 
     def reparentTo(self, parent):
-        print "Local toon reparent to", parent.node().getName()
+        self.notify.debug("Local toon reparent to {0}".format(parent.node().getName()))
         DistributedPlayerToon.reparentTo(self, parent)
 
     def wrtReparentTo(self, parent):
-        print "Local toon wrt reparent to", parent.node().getName()
+        self.notify.debug("Local toon wrtReparent to {0}".format(parent.node().getName()))
         DistributedPlayerToon.wrtReparentTo(self, parent)
         
     def loadAvatar(self):

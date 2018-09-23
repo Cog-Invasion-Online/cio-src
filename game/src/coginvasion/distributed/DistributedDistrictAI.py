@@ -12,8 +12,6 @@ from direct.distributed.DistributedObjectAI import DistributedObjectAI
 from direct.directnotify.DirectNotifyGlobal import directNotify
 import time
 
-from src.coginvasion.distributed.AdminCommands import STAFF_TOKENS
-
 class DistributedDistrictAI(DistributedObjectAI):
     notify = directNotify.newCategory('DistributedDistrictAI')
     
@@ -102,14 +100,11 @@ class DistributedDistrictAI(DistributedObjectAI):
         task.delayTime = 0.5
         return task.again
 
-    def systemMessageCommand(self, adminToken, message):
+    def systemMessageCommand(self, accessLevel, message):
         avId = self.air.getAvatarIdFromSender()
-        tokens = STAFF_TOKENS.keys()
         av = self.air.doId2do.get(avId, None)
         if av:
-            if (adminToken in tokens and
-            av.getAdminToken() in tokens and
-            av.getAdminToken() == adminToken):
+            if (accessLevel == av.getAccessLevel()):
                 self.notify.info("Sending update 'systemMessage' with message: " + message)
                 self.sendUpdate('systemMessage', [message])
         else:
