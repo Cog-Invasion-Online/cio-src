@@ -32,7 +32,7 @@ class DistributedSewerAI(DistributedBattleZoneAI):
         # Link up networked entities
         from src.coginvasion.szboss import (DistributedTriggerAI, DistributedFuncDoorAI, DistributedIndicatorLightAI,
                                             DistributedSZBossSuitAI, DistributedCutsceneAI, DistributedGoonAI,
-                                            DistributedButtonAI, DistributedGeneratorAI, DistributedFuncRotatingAI)
+                                            DistributedButtonAI, DistributedGeneratorAI, DistributedFuncRotatingAI, LogicCounter)
         self.bspLoader.linkServerEntityToClass("trigger_once",          DistributedTriggerAI.DistributedTriggerOnceAI)
         self.bspLoader.linkServerEntityToClass("trigger_multiple",      DistributedTriggerAI.DistributedTriggerMultipleAI)
         self.bspLoader.linkServerEntityToClass("func_door",             DistributedFuncDoorAI.DistributedFuncDoorAI)
@@ -43,6 +43,7 @@ class DistributedSewerAI(DistributedBattleZoneAI):
         self.bspLoader.linkServerEntityToClass("func_button",           DistributedButtonAI.DistributedButtonAI)
         self.bspLoader.linkServerEntityToClass("func_generator",        DistributedGeneratorAI.DistributedGeneratorAI)
         self.bspLoader.linkServerEntityToClass("func_rotating",         DistributedFuncRotatingAI.DistributedFuncRotatingAI)
+        self.bspLoader.linkServerEntityToClass("logic_counter",         LogicCounter.LogicCounter)
         
     def delete(self):
         self.avId = None

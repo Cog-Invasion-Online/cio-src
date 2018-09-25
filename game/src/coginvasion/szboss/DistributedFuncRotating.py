@@ -67,7 +67,7 @@ class DistributedFuncRotating(DistributedEntity, FSM):
     def enterRotating(self):
         print self.__getRot()
         print "We are rotating"
-        self.spinTrack = LerpHprInterval(self.cEntity.getModelNp(), 60.0 / self.speed, self.__getRot())
+        self.spinTrack = LerpHprInterval(self.cEntity.getModelNp(), 60.0 / self.speed, self.__getRot(), startHpr = (0, 0, 0))
         self.spinTrack.loop()
         
     def exitRotating(self):
@@ -78,11 +78,11 @@ class DistributedFuncRotating(DistributedEntity, FSM):
         taskMgr.add(self.__startRotatingTask, self.uniqueName('srot'))
         
     def __startRotatingTask(self, task):
-        currHpr = self.cEntity.getModelNp().getHpr() % 360
+        currHpr = self.cEntity.getModelNp().getHpr()
         elapsed = globalClock.getFrameTime() - self.startTime
-        speed = self.speed * (elapsed / self.timeToFull)
-        newHpr = currHpr + ((self.axis[2] * speed, self.axis[1] * speed, 0) * globalClock.getDt())
-        self.cEntity.getModelNp().setHpr(newHpr % 360)
+        speed = min(self.speed, self.speed * (elapsed / self.timeToFull))
+        newHpr = currHpr + Vec3(self.axis[2] * speed, self.axis[1] * speed, 0)
+        self.cEntity.getModelNp().setHpr(newHpr)
         
         return task.cont
         
@@ -95,11 +95,11 @@ class DistributedFuncRotating(DistributedEntity, FSM):
         taskMgr.add(self.__stopRotatingTask, self.uniqueName('strot'))
         
     def __stopRotatingTask(self, task):
-        currHpr = self.cEntity.getModelNp().getHpr() % 360
+        currHpr = self.cEntity.getModelNp().getHpr()
         elapsed = globalClock.getFrameTime() - self.startTime
-        speed = self.speed - (self.speed * (elapsed / self.timeToFull))
-        newHpr = currHpr + ((self.axis[2] * speed, self.axis[1] * speed, 0) * globalClock.getDt())
-        self.cEntity.getModelNp().setHpr(newHpr % 360)
+        speed = max(0, self.speed - (self.speed * (elapsed / self.timeToFull)))
+        newHpr = currHpr + Vec3(self.axis[2] * speed, self.axis[1] * speed, 0)
+        self.cEntity.getModelNp().setHpr(newHpr)
         
         return task.cont
         
