@@ -42,17 +42,19 @@ class DistributedIndicatorLight(DistributedEntity):
         self.lightMdl = loader.loadModel("phase_14/models/props/indicator_light.bam")
         self.lightMdl.find("**/__lightsrc__").setTransparency(1)
         self.lightMdl.reparentTo(self)
-        self.lightMdl.setBin("fixed", 0)
+        #self.lightMdl.setBin("fixed", 0)
         self.lightGlow = loader.loadModel("phase_14/models/props/light_glow.bam")
         self.lightGlow.reparentTo(self)
         self.lightGlow.setTwoSided(True)
         self.lightGlow.setDepthOffset(2)
         self.lightGlow.setY(1.5)
-        self.lightGlow.setScale(1.5)
+        self.lightGlow.setScale(1.3)
         #self.lightGlow.setBillboardPointEye()
         #self.lightGlow.setScale()
         
         self.reparentTo(render)
         self.setPos(self.cEntity.getOrigin())
         self.setHpr(self.cEntity.getAngles())
+        
+        self.setScale(base.bspLoader.getEntityValueFloat(self.entnum, "scale"))
         

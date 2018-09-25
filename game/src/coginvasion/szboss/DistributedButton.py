@@ -26,6 +26,9 @@ class DistributedButton(DistributedEntity, UseableObject, FSM):
         
     def startUse(self):
         UseableObject.startUse(self)
+        self.d_requestPress()
+        
+    def d_requestPress(self):
         self.sendUpdate('requestPress')
         
     def load(self):

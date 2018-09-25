@@ -30,16 +30,19 @@ class DistributedSewerAI(DistributedBattleZoneAI):
         DistributedBattleZoneAI.announceGenerate(self)
         
         # Link up networked entities
-        from src.coginvasion.szboss import DistributedTriggerAI, DistributedFuncDoorAI, DistributedGoonAI, DistributedSZBossSuitAI, DistributedCutsceneAI, DistributedIndicatorLightAI, DistributedButtonAI, DistributedGeneratorAI
-        self.bspLoader.linkServerEntityToClass("trigger_once", DistributedTriggerAI.DistributedTriggerOnceAI)
-        self.bspLoader.linkServerEntityToClass("trigger_multiple", DistributedTriggerAI.DistributedTriggerMultipleAI)
-        self.bspLoader.linkServerEntityToClass("func_door", DistributedFuncDoorAI.DistributedFuncDoorAI)
-        self.bspLoader.linkServerEntityToClass("npc_goon", DistributedGoonAI.DistributedGoonAI)
-        self.bspLoader.linkServerEntityToClass("npc_suit", DistributedSZBossSuitAI.DistributedSZBossSuitAI)
-        self.bspLoader.linkServerEntityToClass("info_cutscene", DistributedCutsceneAI.DistributedCutsceneAI)
-        self.bspLoader.linkServerEntityToClass("info_indicator_light", DistributedIndicatorLightAI.DistributedIndicatorLightAI)
-        self.bspLoader.linkServerEntityToClass("func_button", DistributedButtonAI.DistributedButtonAI)
-        self.bspLoader.linkServerEntityToClass("func_generator", DistributedGeneratorAI.DistributedGeneratorAI)
+        from src.coginvasion.szboss import (DistributedTriggerAI, DistributedFuncDoorAI, DistributedIndicatorLightAI,
+                                            DistributedSZBossSuitAI, DistributedCutsceneAI, DistributedGoonAI,
+                                            DistributedButtonAI, DistributedGeneratorAI, DistributedFuncRotatingAI)
+        self.bspLoader.linkServerEntityToClass("trigger_once",          DistributedTriggerAI.DistributedTriggerOnceAI)
+        self.bspLoader.linkServerEntityToClass("trigger_multiple",      DistributedTriggerAI.DistributedTriggerMultipleAI)
+        self.bspLoader.linkServerEntityToClass("func_door",             DistributedFuncDoorAI.DistributedFuncDoorAI)
+        self.bspLoader.linkServerEntityToClass("npc_goon",              DistributedGoonAI.DistributedGoonAI)
+        self.bspLoader.linkServerEntityToClass("npc_suit",              DistributedSZBossSuitAI.DistributedSZBossSuitAI)
+        self.bspLoader.linkServerEntityToClass("info_cutscene",         DistributedCutsceneAI.DistributedCutsceneAI)
+        self.bspLoader.linkServerEntityToClass("info_indicator_light",  DistributedIndicatorLightAI.DistributedIndicatorLightAI)
+        self.bspLoader.linkServerEntityToClass("func_button",           DistributedButtonAI.DistributedButtonAI)
+        self.bspLoader.linkServerEntityToClass("func_generator",        DistributedGeneratorAI.DistributedGeneratorAI)
+        self.bspLoader.linkServerEntityToClass("func_rotating",         DistributedFuncRotatingAI.DistributedFuncRotatingAI)
         
     def delete(self):
         self.avId = None
