@@ -263,8 +263,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.setState(state)
 
     def setAvatars(self, avatars):
-        DistributedBattleZoneAI.setAvatars(self, avatars)
-        DistributedBattleZoneAI.d_setAvatars(self, avatars)
+        DistributedBattleZoneAI.b_setAvatars(self, avatars)
         self.toonId2suitsTargeting = {avId: [] for avId in self.avIds}
 
         for avId in self.avIds:

@@ -20,6 +20,9 @@ class ArcadeMatchData:
         # This is the avatar id of the host of this match.
         self.hostId = hostId
         
+        # This is the district id of where the match will be hosted.
+        self.districtId = -1
+        
         # Let's default to the very first arcade arena.
         self.arena = BattleGlobals.ArcadeId2Arena.values()[0]
         

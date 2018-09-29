@@ -149,7 +149,7 @@ elif audio == 'openal':
 notify.info('Using %s audio library.' % audio)
 
 # Define all of the admin commands.
-from src.coginvasion.distributed.AdminCommands import *
+import src.coginvasion.distributed.AdminCommands
 
 from direct.gui import DirectGuiGlobals
 
