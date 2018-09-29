@@ -6,7 +6,7 @@ Copyright (c) CIO Team. All rights reserved.
 @author Brian Lach
 @date September 05, 2016
 
-@desc For the UI that shows when we are changing someone's admin token.
+@desc For the UI that shows when we are changing someone's access level.
 
 """
 
@@ -23,7 +23,7 @@ class AdminTokenDialog(Dialog.GlobalDialog):
     notify = directNotify.newCategory("AdminTokenDialog")
     
     def __init__(self):
-        Dialog.GlobalDialog.__init__(self, "Click on the Toon who you want to modify the Admin Token of...",
+        Dialog.GlobalDialog.__init__(self, "Click on the Toon who you want to modify the Access Level of...",
                                      "adminTokenCancel", Dialog.Cancel, CIGlobals.DialogOk, CIGlobals.DialogCancel,
                                      [], text_align = TextNode.ACenter, pos = (0, 0, 0.8), scale = 0.7)
         self.acceptOnce("adminTokenCancel", self.__handleCancel)
@@ -67,15 +67,15 @@ class AdminTokenDialog(Dialog.GlobalDialog):
         if not toon:
             return
         
-        if toon.getAdminToken() == AdminCommands.DevToken:
-            self.choiceDialog = Dialog.GlobalDialog("You cannot set the Admin Token of a {0}.".format(
-                                                    AdminCommands.TextByAdminToken[AdminCommands.DevToken]), "invalidToonAck",
+        if toon.getAccessLevel() > base.localAvatar.getAccessLevel():
+            self.choiceDialog = Dialog.GlobalDialog("You cannot set the Access Level of a {0}.".format(
+                                                    AdminCommands.Roles.get(toon.getAccessLevel()).name), "invalidToonAck",
                                                     Dialog.Ok)
             self.choiceDialog.show()
             self.acceptOnce("invalidToonAck", self.__handleInvalidToonAck)
             return
         
-        self.choiceDialog = Dialog.GlobalDialog("Set the Admin Token of {0}:".format(toon.getName()), "", Dialog.NoButtons,
+        self.choiceDialog = Dialog.GlobalDialog("Set the Access Level of {0}:".format(toon.getName()), "", Dialog.NoButtons,
                              CIGlobals.DialogOk, CIGlobals.DialogCancel,
                              [], text_align = TextNode.ACenter)
         #self.choiceDialog['text_align']  = TextNode.ACenter
@@ -91,7 +91,9 @@ class AdminTokenDialog(Dialog.GlobalDialog):
 
         self.tokBtns = []
 
-        for tId, tName in AdminCommands.TextByAdminToken.items():
+        for role in AdminCommands.Roles.values():
+            tName = role.name
+            tId = role.accessLevel
             btn = DirectButton(
                         relief=None, text = tName, text_scale=0.06,
                         text_align=TextNode.ALeft, text1_bg=textDownColor, text2_bg=textRolloverColor,
@@ -132,23 +134,23 @@ class AdminTokenDialog(Dialog.GlobalDialog):
                     parent = self.choiceDialog
         )
         
-    def __handleClickToken(self, avId, token):
-        REQ_SET_ADMIN_TOKEN(avId, token)
+    def __handleClickToken(self, avId, accessLevel):
+        REQ_SET_ACCESS_LEVEL(avId, accessLevel)
         pref = "Give"
-        if token == AdminCommands.NoToken:
+        if accessLevel == AdminCommands.NoAccess:
             pref = "Remove"
         self.choiceDialog.cleanup()
         self.choiceDialog = Dialog.GlobalDialog(pref + " TSA uniform?", "tsaChoice", Dialog.YesNo)
         self.choiceDialog.show()
-        self.acceptOnce("tsaChoice", self.__handleTSAChoice, [avId, token])
+        self.acceptOnce("tsaChoice", self.__handleTSAChoice, [avId, accessLevel])
         
-    def __handleTSAChoice(self, avId, token):
+    def __handleTSAChoice(self, avId, accessLevel):
         toon = base.cr.doId2do.get(avId)
         val = self.choiceDialog.getValue()
-        if token > AdminCommands.NoToken:
+        if accessLevel > AdminCommands.NoAccess:
             if val:
                 REQ_SET_TSA_UNI(avId, 1)
-        elif token == AdminCommands.NoToken:
+        elif accessLevel == AdminCommands.NoAccess:
             if val and toon.hasTSASuit():
                 REQ_SET_TSA_UNI(avId, 0)
         self.__handleCancel()

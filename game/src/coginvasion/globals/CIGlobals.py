@@ -973,9 +973,9 @@ def getExitButton(cmd = None, extraArgs = [], pos = (0, 0, 0)):
                               image_color = (1, 0, 0, 1))
     return exitButton
 
-ShadowScales = {Suit: 0.4,
-                Toon: 0.4,
-                CChar: 0.55}
+ShadowScales = {Suit: 0.375,
+                Toon: 0.375,
+                CChar: 0.425}
 
 def __fetchGagKey():
     gagKey = None
