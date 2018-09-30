@@ -71,10 +71,14 @@ class DistributedNPCToonAI(DistributedToonAI):
             self.startWatchingCurrentAvatar()
             self.sendUpdateToAvatarId(avId, 'enterAccepted', [])
             self.sendUpdate('lookAtAvatar', [avId])
-            
-            if av and self.currentAvatarQuestOfMe:
-                objective = self.currentAvatarQuestOfMe[2]
-                objective.handleVisitAI()
+            self.doQuestStuffWithThisAvatar()
+                
+    def doQuestStuffWithThisAvatar(self):
+        av = self.air.doId2do.get(self.currentAvatar)
+        
+        if av and self.currentAvatarQuestOfMe:
+            objective = self.currentAvatarQuestOfMe[2]
+            objective.handleVisitAI()
 
     def hasValidReasonToEnter(self, avId):
         av = self.air.doId2do.get(avId)

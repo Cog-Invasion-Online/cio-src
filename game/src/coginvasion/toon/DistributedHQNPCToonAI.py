@@ -44,6 +44,7 @@ class DistributedHQNPCToonAI(DistributedNPCToonAI.DistributedNPCToonAI):
         if av:
             chat = None
             needToVisitMe = av.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId)
+            
             if not needToVisitMe:
                 pickableQuestList = av.questManager.getPickableQuestList(self)
                 # We don't need to visit this NPC and we're full on quests.
