@@ -50,14 +50,14 @@ class QuestManagerBase:
             
             for objective in accObjs: 
                 if objective.type == Objectives.VisitNPC and objective.npcId == npcId:
-                    return [questId, quest]
+                    return [questId, quest, objective]
                 elif objective.type == Objectives.VisitHQOfficer and isHQ:
-                    return [questId, quest]
+                    return [questId, quest, objective]
                 elif objective.isComplete():
                     if isHQ and objective.assigner == 0:
-                        return [questId, quest]
+                        return [questId, quest, objective]
                     elif objective.assigner == npcId:
-                        return [questId, quest]
+                        return [questId, quest, objective]
 
         # We have no quest with an objective to visit the NPC specified.
         return None
@@ -103,7 +103,7 @@ class QuestManagerBase:
         return False
 
     def hasAnObjectiveToVisit(self, npcId, zoneId):
-        """Returns whether or not we have an objective to visit the NPC provided."""
+        """ Checks if we have an objective to visit the specified NPC at the specified location. If so, return that objective. """
 
         for quest in self.quests.values():
             objectives = quest.accessibleObjectives
@@ -115,16 +115,18 @@ class QuestManagerBase:
                 mustVisitOfficer = objective.assigner is 0
                 if objective.type == Objectives.VisitNPC:
                     # Make sure the npcIds and zones match.
-                    return (objective.npcId == npcId) and (objective.npcZone == zoneId)
+                    if objective.npcId == npcId and objective.npcZone == zoneId:
+                        return objective
                 elif objective.type == Objectives.VisitHQOfficer or (isHQ and complete and mustVisitOfficer):
                     # When the objective is to visit an HQ officer, we can visit any HQ officer.
                     # Just make sure that the NPC is an HQ Officer.
-                    return isHQ
+                    if isHQ:
+                        return objective
                 elif objectives.isComplete() and (objective.assigner == npcId):
-                    return True
+                    return objective
 
         # I guess we have no objective to visit this npc.
-        return False
+        return None
     
     def getPickableQuestList(self, npc):
         """

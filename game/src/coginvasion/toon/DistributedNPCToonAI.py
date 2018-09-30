@@ -74,19 +74,10 @@ class DistributedNPCToonAI(DistributedToonAI):
             self.startWatchingCurrentAvatar()
             self.sendUpdateToAvatarId(avId, 'enterAccepted', [])
             self.sendUpdate('lookAtAvatar', [avId])
-            self.doQuestStuffWithThisAvatar()
-
-    def doQuestStuffWithThisAvatar(self):
-        av = self.air.doId2do.get(self.currentAvatar)
-        if av:
-            if self.currentAvatarQuestOfMe != None:
-                quest = self.currentAvatarQuestOfMe[1]
-                questId = self.currentAvatarQuestOfMe[0]
-                if av.questManager.isOnLastObjectiveOfQuest(questId):
-                    if quest.isComplete():
-                        av.questManager.completedQuest(questId)
-                else:
-                    av.questManager.incrementQuestObjective(questId)
+            
+            if av and self.currentAvatarQuestOfMe:
+                objective = self.currentAvatarQuestOfMe[2]
+                objective.handleVisitAI()
 
     def hasValidReasonToEnter(self, avId):
         av = self.air.doId2do.get(avId)
@@ -97,7 +88,7 @@ class DistributedNPCToonAI(DistributedToonAI):
             if (len(av.questManager.quests.values()) == 0 or (not needsToVisit and not lastVisited)):
                 # This avatar entered for no reason. They either have no quests or no objective to visit me.
                 chatArray = NPCGlobals.NPCEnter_Pointless_Dialogue
-            elif lastVisited:
+            elif lastVisited or (needsToVisit and not needsToVisit.isPreparedToVisit()):
                 # This avatar entered, but still has to complete the objective I gave him/her.
                 chatArray = NPCGlobals.NPCEnter_MFCO_Dialogue
 

@@ -86,7 +86,7 @@ class Objective:
         return ""
 
     def isComplete(self):
-        return self.progress >= self.goal
+        return (self.HasProgress and self.progress >= self.goal)
 
 class VisitNPCObjective(Objective):
     """
@@ -100,8 +100,8 @@ class VisitNPCObjective(Objective):
         Objective.__init__(self, goal, area)
 
         self.npcId = npcId
-
         self.showAsComplete = showAsComplete
+        self.completedVisit = 0
 
         if npcId == 0:
             # Providing 0 as the npcId makes it an HQ officer.
@@ -110,9 +110,26 @@ class VisitNPCObjective(Objective):
         else:
             self.npcZone = NPCGlobals.NPCToonDict[npcId][0]
             self.area = self.npcZone 
+            
+    def handleVisitAI(self):
+        # This is called on the AI when an avatar visits the correct NPC
+        # and we need to do the correct operations on it.
+        
+        questMgr = self.quest.questMgr
+        
+        if not self.showAsComplete and self.isPreparedToVisit():
+            self.completedVisit = 1
+            
+            if not questMgr.isOnLastObjectiveOfQuest(self.quest.id):
+                questMgr.checkIfObjectiveIsComplete()
+            elif self.quest.isComplete():
+                questMgr.completedQuest(self.quest.id)
 
+    def isPreparedToVisit(self):
+        return 1
+    
     def isComplete(self):
-        return False
+        return self.completedVisit
 
 class DefeatObjective(Objective):
     Header = QuestGlobals.DEFEAT
@@ -239,6 +256,27 @@ class DeliverItemObjective(ItemObjective, VisitNPCObjective):
                  itemIcon = QuestGlobals.getPackageIcon(), showAsComplete = 0):
         ItemObjective.__init__(self, itemName, itemIcon)
         VisitNPCObjective.__init__(self, npcId, goal, showAsComplete = showAsComplete)
+        
+    def handleVisitAI(self):
+        # Let's check if we're delivering a quantity of gags.
+        if self.itemName in GagGlobals.gagIds.values():
+            # Yes, we are. Let's subtract the quantity from our backpack.
+            avatar = self.quest.questMgr.avatar
+            gagId = GagGlobals.getIDByName(self.itemName)
+            
+            avatar.backpack.setSupply(gagId, (avatar.backpack.getSupply(gagId) - self.goal))
+
+        VisitNPCObjective.handleVisitAI(self)
+        
+    def isPreparedToVisit(self):
+        if not self.itemName in GagGlobals.gagIds.values():
+            return VisitNPCObjective.isPreparedToVisit(self)
+        else:
+            # We need to deliver a certain quantity of a gag to the NPC this objective pertains to.
+            avatar = self.quest.questMgr.avatar
+            gagId = GagGlobals.getIDByName(self.itemName)
+            
+            return avatar and avatar.backpack.getSupply(gagId) >= self.goal
     
 class RecoverItemObjective(ItemObjective, CogObjective):
     """ [itemName, goal, area, recoverChance (0 <= n <= 100), itemIcon = QuestGlobals.getPackageIcon(),

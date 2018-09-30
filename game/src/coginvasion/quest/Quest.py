@@ -134,7 +134,7 @@ class Quest:
         return QuestNPCDialogue.get(self.id).get(self.currentObjectiveIndex)
         
     def isComplete(self):
-        # Returns if all accessible objectives are done and we don't have a next objective or
+        # Returns if all accessible objectives are done and we don't have a next objective, or
         # checks if we're on the very last objective of the quest and it's a "safe end" objective.
 
         isSafeEndObjective = False
