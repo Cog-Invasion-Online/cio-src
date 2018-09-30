@@ -82,7 +82,7 @@ class DistributedNPCToonAI(DistributedToonAI):
             chatArray = None
             needsToVisit = av.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId)
             lastVisited = av.questManager.wasLastObjectiveToVisit(self.npcId)
-            if (len(av.questManager.quests.values()) == 0 or (not needsToVisit and not lastVisited)):
+            if (len(av.questManager.quests.values()) == 0 or (not needsToVisit and not lastVisited) or (needsToVisit and needsToVisit.isComplete())):
                 # This avatar entered for no reason. They either have no quests or no objective to visit me.
                 chatArray = NPCGlobals.NPCEnter_Pointless_Dialogue
             elif lastVisited or (needsToVisit and not needsToVisit.isPreparedToVisit()):

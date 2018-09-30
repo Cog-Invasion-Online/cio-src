@@ -101,7 +101,6 @@ class VisitNPCObjective(Objective):
 
         self.npcId = npcId
         self.showAsComplete = showAsComplete
-        self.completedVisit = 0
 
         if npcId == 0:
             # Providing 0 as the npcId makes it an HQ officer.
@@ -118,18 +117,22 @@ class VisitNPCObjective(Objective):
         questMgr = self.quest.questMgr
         
         if not self.showAsComplete and self.isPreparedToVisit():
-            self.completedVisit = 1
+            
+            questMgr.incrementQuestObjectiveProgress(self.quest.id, 
+                questMgr.getObjectiveIndex(self.quest.id, self))
             
             if not questMgr.isOnLastObjectiveOfQuest(self.quest.id):
                 questMgr.checkIfObjectiveIsComplete()
             elif self.quest.isComplete():
                 questMgr.completedQuest(self.quest.id)
+                
+            questMgr.updateQuestData()
 
     def isPreparedToVisit(self):
         return 1
     
     def isComplete(self):
-        return self.completedVisit
+        return (self.progress == 1)
 
 class DefeatObjective(Objective):
     Header = QuestGlobals.DEFEAT
