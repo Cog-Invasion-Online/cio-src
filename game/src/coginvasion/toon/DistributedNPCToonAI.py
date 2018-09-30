@@ -27,10 +27,7 @@ class DistributedNPCToonAI(DistributedToonAI):
         npcData = NPCGlobals.NPCToonDict.get(npcId)
         self.dnaStrand = npcData[2]
         self.setName(npcData[1])
-        self.backpack = 0
         self.place = 0
-
-        self.ammo = [[1, 2, 3, 4], [1, 2, 3, 4]]
 
         self.currentAvatar = None
         # The id of the quest where the current objective is to visit me.
