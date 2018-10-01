@@ -426,14 +426,14 @@ class MinigameObjective(Objective):
         taskInfo = taskInfo % self.minigame
         return taskInfo
     
-class InspectLocation(Objective):
+class InspectLocationObjective(Objective):
     
     Header = QuestGlobals.INSPECT
     HasProgress = True
     
-    def __init__(self, inspectionSiteId):
-        
+    def __init__(self, siteId):
         Objective.__init__(self, goal = 1)
+        self.siteId = siteId
     
 # The objectives listed below require the double frame poster style.
 DoubleFrameObjectives = [RecoverItemObjective, DeliverItemObjective]

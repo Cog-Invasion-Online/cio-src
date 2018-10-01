@@ -62,6 +62,20 @@ class QuestManagerBase:
         # We have no quest with an objective to visit the NPC specified.
         return None
     
+    def getInspectionQuest(self, siteId, zoneId):
+        """ Returns the quest instance, quest id, and the objective where we have an objective to inspect the site specified. """
+        
+        for questId, quest in self.quests.items():
+            accObjs = quest.accessibleObjectives
+            
+            for objective in accObjs:
+                if objective.type == Objectives.InspectLocationObjective:
+                    if objective.siteId == siteId and objective.area == zoneId:
+                        return [quest, questId, objective]
+                
+        # We don't have a quest where we have to inspect the specified site.
+        return None
+    
     def wasLastObjectiveToVisit(self, npcId, checkCurrentCompleted = False):
         """
         If checkCurrentCompleted is True, the method will check if the last objective
