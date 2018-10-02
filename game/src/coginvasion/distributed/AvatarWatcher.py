@@ -29,7 +29,7 @@ REASON_ID_2_REASON = {
 class AvatarWatcher(DirectObject):
     """ Utility class that listens for when an avatar is deleted or changes health or zone. """
     
-    STOP_TRACKING_WHEN_DEAD = 1
+    STOP_TRACKING_WHEN_DEAD = 0
     
     def __init__(self, air, zoneId=None):
         DirectObject.__init__(self)
@@ -72,8 +72,7 @@ class AvatarWatcher(DirectObject):
             self.ignore(avatar.getHealthChangeEvent())
             self.watchingAvatarIds.remove(avId)
         else:
-            self.notify.debug('Avatar ID {0} is not currently being tracked and/or'
-            / + 'the avatar assigned to it has regressed.'.format(avId))
+            self.notify.debug('Avatar ID {0} is not currently being tracked and/or the avatar assigned to it has regressed.'.format(avId))
             
     def stopTrackingAll(self):
         """ This method will stop tracking each avatar id and clear our `watchingAvatarIds`

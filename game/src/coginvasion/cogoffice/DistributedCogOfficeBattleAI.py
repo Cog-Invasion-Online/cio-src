@@ -104,8 +104,8 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                 # Activate this guard!
                 guard.activate()
 
-    def handleAvatarLeave(self, avatar, _):
-        DistributedBattleZoneAI.handleAvatarLeave(self, avatar)
+    def handleAvatarLeave(self, avatar, reason):
+        DistributedBattleZoneAI.handleAvatarLeave(self, avatar, reason)
         avId = avatar.doId
 
         if avId in self.toonId2suitsTargeting.keys():
