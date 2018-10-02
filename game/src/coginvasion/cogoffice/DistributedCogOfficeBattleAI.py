@@ -104,10 +104,6 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                 # Activate this guard!
                 guard.activate()
 
-    def iAmDead(self):
-        avId = self.air.getAvatarIdFromSender()
-        self.handleToonLeft(avId, 1)
-
     def handleAvatarLeave(self, avatar, _):
         DistributedBattleZoneAI.handleAvatarLeave(self, avatar)
         avId = avatar.doId
@@ -262,7 +258,8 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.setState(state)
 
     def setAvatars(self, avIds):
-        DistributedBattleZoneAI.b_setAvatars(self, avIds)
+        DistributedBattleZoneAI.d_setAvatars(self, avIds)
+        DistributedBattleZoneAI.setAvatars(self, avIds)
         self.toonId2suitsTargeting = {avId: [] for avId in self.watchingAvatarIds}
 
     def getCurrentFloor(self):
