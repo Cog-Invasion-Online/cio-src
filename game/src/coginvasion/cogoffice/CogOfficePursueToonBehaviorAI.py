@@ -28,7 +28,7 @@ class CogOfficePursueToonBehaviorAI(SuitPursueToonBehaviorAI):
 
     def pickTarget(self):
         # Pick a new toon target
-        avIds = list(self.suit.battle.avIds)
+        avIds = list(self.suit.battle.getAvatars())
         # We need to target the toon who has the least amount of attackers.
         avIds.sort(key = lambda avId: len(self.suit.battle.toonId2suitsTargeting[avId]))
         # The toon to target is the avId at the top of the list since it's been sorted.

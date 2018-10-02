@@ -56,7 +56,6 @@ class AvatarWatcher(DirectObject):
         if not self.isTrackingAvatarId(avId) and self.idPointsToValidAvatar(avId):
             avatar = self.air.doId2do.get(avId, None)
             self.accept(avatar.getDeleteEvent(), self.__avatarPredeleteEvent, [avId])
-            self.accept(avatar.getZoneChangeEvent(), self.__avatarSwitchZonesEvent, [avId])
             self.accept(avatar.getLogicalZoneChangeEvent(), self.__avatarSwitchZonesEvent, [avId])
             self.accept(avatar.getHealthChangeEvent(), self.__avatarChangeHealthEvent, [avId])
             self.watchingAvatarIds.append(avId)
@@ -67,7 +66,6 @@ class AvatarWatcher(DirectObject):
         if self.isTrackingAvatarId(avId) and self.idPointsToValidAvatar(avId):
             avatar = self.air.doId2do.get(avId, None)
             self.ignore(avatar.getDeleteEvent())
-            self.ignore(avatar.getZoneChangeEvent())
             self.ignore(avatar.getLogicalZoneChangeEvent())
             self.ignore(avatar.getHealthChangeEvent())
             self.watchingAvatarIds.remove(avId)

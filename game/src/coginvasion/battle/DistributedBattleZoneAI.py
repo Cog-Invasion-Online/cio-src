@@ -174,10 +174,12 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.avatarData = {}
         self.avId2suitsTargeting = {}
 
-    def addAvatar(self, avId):
+    def addAvatar(self, avId, andUpdateAvatars=0):
         self.setupAvatarData(avId)
         self.startTrackingAvatarId(avId)
-        self.b_setAvatars(self.watchingAvatarIds)
+        
+        if andUpdateAvatars:
+            self.b_setAvatars(self.watchingAvatarIds)
 
     def setupAvatarData(self, avId):
         self.avatarData.update({avId : [{}, []]})
@@ -223,11 +225,10 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         # Let's make sure we're only listening to the avatars
         # we intend to listen to.
         for avId in itertools.chain(self.watchingAvatarIds, avIds):
-            if not avId in avIds:
-                self.removeAvatar(avId, andUpdateAvatars=0)
+            if avId in avIds:
+                self.addAvatar(avId)
             else:
-                self.setupAvatarData(avId)
-                self.startTrackingAvatarId(avId)
+                self.removeAvatar(avId, andUpdateAvatars=0)
         self.watchingAvatarIds = avIds
 
     # Get the avatar ids.

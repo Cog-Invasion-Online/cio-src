@@ -70,20 +70,20 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
     def pickTarget(self):
         if not self.battle:
             return
-        if len(self.battle.avIds) == 0:
+        if len(self.battle.getAvatars()) == 0:
             # We have nothing to do.
             return
 
         # Choose the toon with the least amount of attackers to target (a maximum of two attackers per target).
-        avIds = list(self.battle.avIds)
+        avIds = list(self.battle.getAvatars())
         avIds.sort(key = lambda avId: self.battle.getNumSuitsTargeting(avId))
 
         leastAmt = self.battle.getNumSuitsTargeting(avIds[0])
-        for avId in self.battle.avIds:
+        for avId in self.battle.getAvatars():
             if self.battle.getNumSuitsTargeting(avId) != leastAmt and avId in avIds:
                 avIds.remove(avId)
 
-        #for avId in self.battle.avIds:
+        #for avId in self.battle.getAvatars():
         #    numAttackers = len(self.suit.battle.getSuitsTargetingAvId(avId))
         #    if numAttackers  >= self.MaxAttackersPerTarget:
         #        # This toon has too many attackers already.
@@ -91,7 +91,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         #        avIds.remove(avId)
 
         # Temporary fix for district resets. TODO: Actually correct this.
-        for avId in self.battle.avIds:
+        for avId in self.battle.getAvatars():
             av = self.air.doId2do.get(avId)
             if av is None and avId in avIds:
                 avIds.remove(avId)
