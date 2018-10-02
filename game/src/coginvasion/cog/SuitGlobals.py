@@ -488,7 +488,6 @@ FaceoffTaunts = {Bloodsucker: ['Do you have a donation for me?',
 }
 
 # These are names for events.
-healthChangeEvent = 'suit%s-hpChangeEvt'
 animStateChangeEvent = 'suit%s-animStateChangeEvt'
 suitSpawnedEvent = 'suit%s-spawnedEvt'
 suitDespawnedEvent = 'suit%s-despawnedEvt'

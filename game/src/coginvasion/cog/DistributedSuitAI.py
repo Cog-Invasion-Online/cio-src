@@ -63,7 +63,6 @@ class DistributedSuitAI(DistributedAvatarAI):
         self.level = 0
         self.lateX = 0
         self.lateY = 0
-        self.healthChangeEvent = SuitGlobals.healthChangeEvent
         self.animStateChangeEvent = SuitGlobals.animStateChangeEvent
         self.requestedBehaviors = []
 
@@ -261,7 +260,6 @@ class DistributedSuitAI(DistributedAvatarAI):
     def setHealth(self, health):
         prevHealth = self.health
         DistributedAvatarAI.setHealth(self, health)
-        messenger.send(self.healthChangeEvent, [health, prevHealth])
 
         if not self.isDead() or self.isDead() and self.deathTimeLeft > 0:
             self.d_announceHealth(0, prevHealth - self.health)
@@ -650,7 +648,6 @@ class DistributedSuitAI(DistributedAvatarAI):
         self.endPoint = None
         self.level = None
         self.suitMgr = None
-        self.healthChangeEvent = None
         self.animStateChangeEvent = None
         self.requestedBehaviors = None
         self.deathAnim = None
@@ -681,7 +678,6 @@ class DistributedSuitAI(DistributedAvatarAI):
         del self.endPoint
         del self.level
         del self.suitMgr
-        del self.healthChangeEvent
         del self.animStateChangeEvent
         del self.requestedBehaviors
         del self.track

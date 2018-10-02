@@ -102,6 +102,9 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI):
         #if health > self.maxHealth:
             #base.air.logServerEvent("suspicious", "self.health is greater than self.maxHealth: avId %s" % self.doId)
             #base.air.sendKickMessage(self.doId)
+        # Let's send out an event to let listeners know that our health changed.
+        # The new health and the previous health are sent out in that order.
+        messenger.send(self.getHealthChangeEvent(), [health, self.health])
         self.health = health
 
     def d_setHealth(self, health):
@@ -118,6 +121,12 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI):
         # There's no need to announce when the avatar's health doesn't change.
         if hp != 0:
             self.sendUpdate('announceHealth', [level, hp, extraId])
+            
+    def getHealthChangeEvent(self):
+        # This is sent once our health changes.
+        if hasattr(self, 'doId'):
+            return 'DAvatarAI-healthChanged-{0}'.format(self.doId)
+        return None
 
     def disable(self):
         self.health = None
