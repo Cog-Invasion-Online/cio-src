@@ -456,13 +456,13 @@ class Suit(Avatar):
         mat = CIGlobals.getCharacterMaterial(shininess = 50.0, specular = (0.4, 0.4, 0.4, 1))
         self.setMaterial(mat)
         
-        ts = TextureStage('shiny')
-        ts.setMode(TextureStage.MAdd)
+        #ts = TextureStage('shiny')
+        #ts.setMode(TextureStage.MAdd)
         #ts.setRgbScale(2)
         #tex = loader.loadCubeMap('phase_14/maps/cubemap/defaultcubemap_#.png')
-        tex = loader.loadTexture('phase_14/maps/envmap001a_cog.png')
-        self.setTexGen(ts, TexGenAttrib.MEyeSphereMap)
-        self.setTexture(ts, tex)
+        #tex = loader.loadTexture('phase_14/maps/envmap001a_cog.png')
+        #self.setTexGen(ts, TexGenAttrib.MEyeSphereMap)
+        #self.setTexture(ts, tex)
         
         self.initializeBodyCollisions()
 
@@ -680,23 +680,45 @@ class Suit(Avatar):
             tie.setMagfilter(Texture.FTLinear)
             self.find('**/tie').setTexture(tie, 1)
         else:
+            bumpPrefix = None
             prefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_%s.jpg'
+            #bumpPrefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_%s_NRM.jpg'
             if self.variant == Variant.WAITER:
                 prefix = 'phase_3.5/maps/waiter_m_%s.jpg'
+                #prefix = 'phase_3.5/maps/waiter_m_%s_NRM.jpg'
             elif self.variant == Variant.CORRODED:
                 prefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_rust_%s.jpg'
+                bumpPrefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_rust_%s_NRM.jpg'
+                
+            hasBump = bumpPrefix is not None
 
             legTex = loader.loadTexture(prefix % 'leg')
             armTex = loader.loadTexture(prefix % 'sleeve')
             blazTex = loader.loadTexture(prefix % 'blazer')
+            
+            if hasBump:
+                b_legTex = loader.loadTexture(bumpPrefix % 'leg')
+                b_armTex = loader.loadTexture(bumpPrefix % 'sleeve')
+                b_blazTex = loader.loadTexture(bumpPrefix % 'blazer')
+                
+            texs = [legTex, armTex, blazTex]
+            if hasBump:
+                texs += [b_legTex, b_armTex, b_blazTex]
 
-            for texture in [legTex, armTex, blazTex]:
+            for texture in texs:
                 texture.setMinfilter(Texture.FTLinearMipmapLinear)
                 texture.setMagfilter(Texture.FTLinear)
 
             self.find('**/legs').setTexture(legTex, 1)
             self.find('**/arms').setTexture(armTex, 1)
             self.find('**/torso').setTexture(blazTex, 1)
+            
+            if hasBump:
+                bStage = TextureStage('cogbump')
+                bStage.setMode(TextureStage.MNormal)
+                self.find('**/legs').setTexture(bStage, b_legTex, 1)
+                self.find('**/arms').setTexture(bStage, b_armTex, 1)
+                self.find('**/torso').setTexture(bStage, b_blazTex, 1)
             
             if not self.variant == Variant.CORRODED:
                 self.find('**/hands').setColor(self.handColor)
