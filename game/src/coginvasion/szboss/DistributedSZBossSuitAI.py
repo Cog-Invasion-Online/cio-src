@@ -7,6 +7,9 @@ from src.coginvasion.cog.SuitPursueToonBehaviorAI import SuitPursueToonBehaviorA
 from src.coginvasion.globals import CIGlobals
 
 class DistributedSZBossSuitAI(DistributedSuitAI, DistributedEntityAI):
+    
+    GuardSuit = 4
+    StartsActive = 8
 
     def __init__(self, air, dispatch):
         DistributedEntityAI.__init__(self, air, dispatch)
@@ -38,6 +41,12 @@ class DistributedSZBossSuitAI(DistributedSuitAI, DistributedEntityAI):
         taskMgr.add(self.monitorHealth, self.uniqueName('monitorHealth'))
         self.startPosHprBroadcast()
         
+        spawnflags = self.bspLoader.getEntityValueInt(self.entnum, "spawnflags")
+        if spawnflags & self.StartsActive:
+            self.Activate()
+        elif spawnflags & self.GuardSuit:
+            self.b_setAnimState('neutral')
+        
     def delete(self):
         taskMgr.remove(self.uniqueName('monitorHealth'))
         DistributedEntityAI.delete(self)
@@ -49,8 +58,9 @@ class DistributedSZBossSuitAI(DistributedSuitAI, DistributedEntityAI):
         suitId = self.bspLoader.getEntityValueInt(entnum, "suitPlan")
         suitPlan = SuitBank.getSuitById(suitId)
         level = self.bspLoader.getEntityValueInt(entnum, "level")
+        variant = self.bspLoader.getEntityValueInt(entnum, "variant")
         self.b_setLevel(level)
-        self.b_setSuit(suitPlan, Variant.CORRODED)
+        self.b_setSuit(suitPlan, variant)
         self.b_setPlace(self.zoneId)
         self.b_setName(suitPlan.getName())
         

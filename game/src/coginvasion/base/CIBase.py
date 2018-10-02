@@ -9,7 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3, MemoryUsage, MemoryUsagePointers, RescaleNormalAttrib
-from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState, Vec4
+from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState, Vec4, Point3
 from panda3d.bullet import BulletWorld, BulletDebugNode
 from panda3d.bsp import BSPLoader, BSPRender
 
@@ -77,7 +77,7 @@ class CIBase(ShowBase):
 
         self.bspLoader = BSPLoader.getGlobalPtr()
         self.bspLoader.setGamma(2.2)
-        self.bspLoader.setGsg(self.win.getGsg())
+        self.bspLoader.setWin(self.win)
         self.bspLoader.setCamera(self.camera)
         self.bspLoader.setRender(self.render)
         self.bspLoader.setMaterialsFile("phase_14/etc/materials.txt")
@@ -85,6 +85,8 @@ class CIBase(ShowBase):
         self.bspLoader.setWantVisibility(True)
         self.bspLoader.setVisualizeLeafs(False)
         self.bspLoader.setWantLightmaps(True)
+        self.bspLoader.setShadowCamPos(Point3(-15, 5, 40))
+        self.bspLoader.setShadowResolution(60 * 2, 1024 * 1)
         self.bspLevel = None
         self.materialData = {}
         

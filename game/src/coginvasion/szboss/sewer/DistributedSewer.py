@@ -40,16 +40,15 @@ class DistributedSewer(DistributedBattleZone):
         for entnum in xrange(base.bspLoader.getNumEntities()):
             classname = base.bspLoader.getEntityValue(entnum, "classname")
             if classname == "worldspawn":
-                skyType = 1#base.bspLoader.getEntityValueInt(entnum, "skytype")
+                skyType = 5#base.bspLoader.getEntityValueInt(entnum, "skytype")
                 if True:#skyType != OutdoorLightingConfig.STNone:
                     self.skyNP = loader.loadModel(OutdoorLightingConfig.SkyData[skyType][0])
                     self.skyNP.reparentTo(camera)
-                    self.skyNP.setZ(-100)
                     self.skyNP.setHpr(0, 0, 0)
-                    self.skyNP.setLightOff()
-                    self.skyNP.setFogOff()
-                    self.skyNP.setShaderOff()
-                    self.skyNP.setMaterialOff()
+                    self.skyNP.setLightOff(1)
+                    self.skyNP.setFogOff(1)
+                    self.skyNP.setShaderOff(1)
+                    self.skyNP.setMaterialOff(1)
                     self.skyNP.setCompass()
                     if OutdoorLightingConfig.SkyData[skyType][1]:
                         self.skyEffect = SkyUtil()
@@ -66,6 +65,7 @@ class DistributedSewer(DistributedBattleZone):
         #base.bspLevel.writeBamFile("bspLevel.bam")
     
         base.localAvatar.startPlay(gags = True, laff = True)
+        base.localAvatar.startBlink()
 
     def startLevel(self):
         base.bspLevel.reparentTo(render)
