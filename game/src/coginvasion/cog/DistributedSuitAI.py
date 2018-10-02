@@ -93,7 +93,7 @@ class DistributedSuitAI(DistributedAvatarAI):
         # This variable stores what avatarIds have damaged us.
         self.damagers = []
 
-    def handleToonThreat(self, toon, hasBeenHit):
+    def handleToonThreat(self, toon, hasBeenHit, gagId=None):
         if not hasattr(self, 'brain') or self.brain is None:
             return
 

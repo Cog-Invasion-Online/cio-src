@@ -115,7 +115,8 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
         if avId in self.toonId2suitsTargeting.keys():
             del self.toonId2suitsTargeting[avId]
-
+        
+        toon = self.air.doId2do.get(avId)
         if len(self.avIds) > 0:
             allSuits = self.guardSuits + self.chairSuits
             for suit in allSuits:
@@ -125,8 +126,10 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                         # Uh oh, this cog was targeting this toon.
                         # We have to make them pick a new target.
                         suit.brain.currentBehavior.pickTarget()
-        
-        toon = self.air.doId2do.get(avId)
+                
+                # We don't care if this toon starts using a gag anymore.
+                suit.ignore(toon.getGagStartEvent())
+
         if died and toon:
             self.ignore(toon.getDeleteEvent())
 
@@ -421,6 +424,13 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         suit.d_setHood(suit.hood)
         suit.b_setLevel(level)
         suit.battleZone = self
+        
+        for avId in self.avIds:
+            avatar = self.air.doId2do.get(avId, None)
+            
+            if avatar and avatar.getGagStartEvent():
+                suit.accept(avatar.getGagStartEvent(), suit.handleToonThreat, [avatar, False])
+        
         variant = Variant.NORMAL
         hood = self.hood
         if self.hood == ZoneUtil.ToontownCentral:
