@@ -42,6 +42,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
     def __init__(self, air, numFloors, dept, hood, bldg, exteriorZoneId):
         DistributedBattleZoneAI.__init__(self, air)
+        self.STOP_TRACKING_WHEN_DEAD = 0
         self.fsm = ClassicFSM.ClassicFSM('DistributedCogOfficeBattleAI', [State.State('off', self.enterOff, self.exitOff),
          State.State('floorIntermission', self.enterFloorIntermission, self.exitFloorIntermission),
          State.State('bldgComplete', self.enterBldgComplete, self.exitBldgComplete),
@@ -107,17 +108,15 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         avId = self.air.getAvatarIdFromSender()
         self.handleToonLeft(avId, 1)
 
-    def handleToonLeft(self, avId, died = 0):
-        if self.avIds is None:
-            return
-
-        DistributedBattleZoneAI.removeAvatar(self, avId)
+    def handleAvatarLeave(self, avatar, _):
+        DistributedBattleZoneAI.handleAvatarLeave(self, avatar)
+        avId = avatar.doId
 
         if avId in self.toonId2suitsTargeting.keys():
             del self.toonId2suitsTargeting[avId]
         
         toon = self.air.doId2do.get(avId)
-        if len(self.avIds) > 0:
+        if len(self.watchingAvatarIds) > 0:
             allSuits = self.guardSuits + self.chairSuits
             for suit in allSuits:
                 if suit.isActivated():
@@ -130,10 +129,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                 # We don't care if this toon starts using a gag anymore.
                 suit.ignore(toon.getGagStartEvent())
 
-        if died and toon:
-            self.ignore(toon.getDeleteEvent())
-
-        if len(self.avIds) == 0:
+        if len(self.watchingAvatarIds) == 0:
             self.resetEverything()
             self.bldg.elevator.b_setState('opening')
 
@@ -159,16 +155,16 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
     def enterVictory(self):
         DistributedBattleZoneAI.battleComplete(self)
         
-        for avId in self.avIds:
+        for avId in self.watchingAvatarIds:
             avatar = self.air.doId2do.get(avId)
             if avatar:
                 # Let this avatar's quest manager know that they have defeated a cog building.
                 avatar.questManager.cogBuildingDefeated(self.hood, self.deptClass, self.numFloors)
 
     def victoryTask(self, task):
-        while len(self.avIds) < 4:
-            self.avIds.append(None)
-        self.bldg.fsm.request('waitForVictors', [self.avIds])
+        while len(self.watchingAvatarIds) < 4:
+            self.watchingAvatarIds.append(None)
+        self.bldg.fsm.request('waitForVictors', [self.watchingAvatarIds])
         return task.done
 
     def exitVictory(self):
@@ -229,7 +225,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         avId = self.air.getAvatarIdFromSender()
         if not avId in self.readyAvatars:
             self.readyAvatars.append(avId)
-        if len(self.readyAvatars) == len(self.avIds):
+        if len(self.readyAvatars) == len(self.watchingAvatarIds):
             floors = numFloors2roomsVisited[self.numFloors]
             newFloor = floors[self.currentFloor + 1]
             if newFloor == RANDOM_FLOOR:
@@ -265,15 +261,9 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.d_setState(state)
         self.setState(state)
 
-    def setAvatars(self, avatars):
-        DistributedBattleZoneAI.b_setAvatars(self, avatars)
-        self.toonId2suitsTargeting = {avId: [] for avId in self.avIds}
-
-        for avId in self.avIds:
-            toon = self.air.doId2do.get(avId)
-            if toon:
-                self.ignore(toon.getDeleteEvent())
-                self.acceptOnce(toon.getDeleteEvent(), self.handleToonLeft, [avId])
+    def setAvatars(self, avIds):
+        DistributedBattleZoneAI.b_setAvatars(self, avIds)
+        self.toonId2suitsTargeting = {avId: [] for avId in self.watchingAvatarIds}
 
     def getCurrentFloor(self):
         return self.currentFloor
@@ -425,7 +415,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         suit.b_setLevel(level)
         suit.battleZone = self
         
-        for avId in self.avIds:
+        for avId in self.watchingAvatarIds:
             avatar = self.air.doId2do.get(avId, None)
             
             if avatar and avatar.getGagStartEvent():
@@ -579,13 +569,13 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         avId = self.air.getAvatarIdFromSender()
         if not avId in self.readyAvatars:
             self.readyAvatars.append(avId)
-        if len(self.readyAvatars) == len(self.avIds):
+        if len(self.readyAvatars) == len(self.watchingAvatarIds):
             # Let's ride!
             self.b_setState('rideElevator')
 
     def readyToStart(self):
         avId = self.air.getAvatarIdFromSender()
         self.readyAvatars.append(avId)
-        if len(self.readyAvatars) == len(self.avIds):
+        if len(self.readyAvatars) == len(self.watchingAvatarIds):
             # We're ready to go!
             self.startFloor(0, numFloors2roomsVisited[self.numFloors][0])
