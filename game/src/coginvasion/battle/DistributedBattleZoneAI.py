@@ -15,20 +15,22 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 from direct.distributed.ClockDelta import globalClockDelta
 
+from src.coginvasion.distributed.AvatarWatcher import AvatarWatcher
 from src.coginvasion.battle.RPToonData import RPToonData
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.quest.Objectives import DefeatCog, DefeatCogBuilding
 
 import BattleGlobals
+import itertools
 
-class DistributedBattleZoneAI(DistributedObjectAI):
+class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
     notify = directNotify.newCategory('DistributedBattleZoneAI')
 
     battleType = BattleGlobals.BTBattle
 
     def __init__(self, air):
         DistributedObjectAI.__init__(self, air)
-        self.avIds = []
+        AvatarWatcher.__init__(self, air)
 
         # Stores the Cogs each avatar kills.
         # Key (Avatar Id)
@@ -62,8 +64,9 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         self.bspLoader = BSPLoader()
         self.bspLoader.setAi(True)
         self.bspLoader.setMaterialsFile("phase_14/etc/materials.txt")
-        #self.bspLoader.setTextureContentsFile("phase_14/etc/texturecontents.txt")
+        self.bspLoader.setTextureContentsFile("phase_14/etc/texturecontents.txt")
         self.bspLoader.setServerEntityDispatcher(self)
+        AvatarWatcher.zoneId = self.zoneId
         
     def cleanupNavMesh(self):
         if self.navMeshNp:
@@ -133,10 +136,10 @@ class DistributedBattleZoneAI(DistributedObjectAI):
     def acknowledgeAvatarReady(self):
         avId = self.air.getAvatarIdFromSender()
         
-        if avId in self.avIds and avId not in self.avReadyToContinue:
+        if avId in self.watchingAvatarIds and avId not in self.avReadyToContinue:
             self.avReadyToContinue.append(avId)
         
-        if len(self.avReadyToContinue) == len(self.avIds):
+        if len(self.avReadyToContinue) == len(self.watchingAvatarIds):
             self.b_rewardSequenceComplete()
             
     def b_rewardSequenceComplete(self):
@@ -151,7 +154,6 @@ class DistributedBattleZoneAI(DistributedObjectAI):
         pass
 
     def delete(self):
-        self.ignoreAvatarDeleteEvents()
         self.resetStats()
         
         self.cleanupNavMesh()
@@ -163,45 +165,47 @@ class DistributedBattleZoneAI(DistributedObjectAI):
             self.bspLoader = None
 
         self.avId2suitsTargeting = None
-        self.avIds = None
+        self.watchingAvatarIds = None
         self.avatarData = None
         DistributedObjectAI.delete(self)
 
     def resetStats(self):
-        self.avIds = []
+        self.stopTrackingAll()
         self.avatarData = {}
         self.avId2suitsTargeting = {}
 
-    def ignoreAvatarDeleteEvents(self):
-        for avId in self.avIds:
-            toon = self.air.doId2do.get(avId)
-            if toon:
-                self.ignore(toon.getDeleteEvent())
-
     def addAvatar(self, avId):
-        self.avIds.append(avId)
         self.setupAvatarData(avId)
-        self.b_setAvatars(self.avIds)
+        self.startTrackingAvatarId(avId)
+        self.b_setAvatars(self.watchingAvatarIds)
 
     def setupAvatarData(self, avId):
         self.avatarData.update({avId : [{}, []]})
         self.avId2suitsTargeting[avId] = []
+        
+    def handleAvatarLeave(self, avatar, _):
+        self.removeAvatar(avatar.doId)
+        
+    def handleAvatarChangeHealth(self, avatar, newHealth, prevHealth):
+        pass
 
-    def removeAvatar(self, avId):
-        if avId in self.avIds:
-            self.avIds.remove(avId)
-            self.sendUpdate('clearAvatarDebris', [avId])
+    def removeAvatar(self, avId, andUpdateAvatars=1):
+        if self.watchingAvatarIds != None:
+            if avId in self.watchingAvatarIds:
+                self.stopTrackingAvatarId(avId)
+                self.sendUpdate('clearAvatarDebris', [avId])
+                
+            if avId in self.avReadyToContinue:
+                self.avReadyToContinue.remove(avId)
+    
+            if avId in self.avId2suitsTargeting.keys():
+                del self.avId2suitsTargeting[avId]
+    
+            if avId in self.avatarData.keys():
+                self.avatarData.pop(avId)
             
-        if avId in self.avReadyToContinue:
-            self.avReadyToContinue.remove(avId)
-
-        if avId in self.avId2suitsTargeting.keys():
-            del self.avId2suitsTargeting[avId]
-
-        if avId in self.avatarData.keys():
-            self.avatarData.pop(avId)
-            
-        self.b_setAvatars(self.avIds)
+            if andUpdateAvatars:
+                self.b_setAvatars(self.watchingAvatarIds)
 
     # Send the distributed message and
     # set the avatars on here.
@@ -216,13 +220,19 @@ class DistributedBattleZoneAI(DistributedObjectAI):
     # Set the avatar ids array to a list of
     # avatar ids.
     def setAvatars(self, avIds):
-        self.avIds = avIds
-        for avId in avIds:
-            self.setupAvatarData(avId)
+        # Let's make sure we're only listening to the avatars
+        # we intend to listen to.
+        for avId in itertools.chain(self.watchingAvatarIds, avIds):
+            if not avId in avIds:
+                self.removeAvatar(avId, andUpdateAvatars=0)
+            else:
+                self.setupAvatarData(avId)
+                self.startTrackingAvatarId(avId)
+        self.watchingAvatarIds = avIds
 
     # Get the avatar ids.
     def getAvatars(self):
-        return self.avIds
+        return self.watchingAvatarIds
     
     def handleGagUse(self, gagId, user):
         gagUses = {}

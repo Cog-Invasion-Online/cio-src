@@ -27,10 +27,7 @@ class DistributedNPCToonAI(DistributedToonAI):
         npcData = NPCGlobals.NPCToonDict.get(npcId)
         self.dnaStrand = npcData[2]
         self.setName(npcData[1])
-        self.backpack = 0
         self.place = 0
-
-        self.ammo = [[1, 2, 3, 4], [1, 2, 3, 4]]
 
         self.currentAvatar = None
         # The id of the quest where the current objective is to visit me.
@@ -74,10 +71,14 @@ class DistributedNPCToonAI(DistributedToonAI):
             self.startWatchingCurrentAvatar()
             self.sendUpdateToAvatarId(avId, 'enterAccepted', [])
             self.sendUpdate('lookAtAvatar', [avId])
-            
-            if av and self.currentAvatarQuestOfMe:
-                objective = self.currentAvatarQuestOfMe[2]
-                objective.handleVisitAI()
+            self.doQuestStuffWithThisAvatar()
+                
+    def doQuestStuffWithThisAvatar(self):
+        av = self.air.doId2do.get(self.currentAvatar)
+        
+        if av and self.currentAvatarQuestOfMe:
+            objective = self.currentAvatarQuestOfMe[2]
+            objective.handleVisitAI()
 
     def hasValidReasonToEnter(self, avId):
         av = self.air.doId2do.get(avId)
@@ -85,7 +86,7 @@ class DistributedNPCToonAI(DistributedToonAI):
             chatArray = None
             needsToVisit = av.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId)
             lastVisited = av.questManager.wasLastObjectiveToVisit(self.npcId)
-            if (len(av.questManager.quests.values()) == 0 or (not needsToVisit and not lastVisited)):
+            if (len(av.questManager.quests.values()) == 0 or (not needsToVisit and not lastVisited) or (needsToVisit and needsToVisit.isComplete())):
                 # This avatar entered for no reason. They either have no quests or no objective to visit me.
                 chatArray = NPCGlobals.NPCEnter_Pointless_Dialogue
             elif lastVisited or (needsToVisit and not needsToVisit.isPreparedToVisit()):

@@ -649,20 +649,9 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         base.localAvatar.walkControls.setCollisionsActive(1)
         self.cr.playGame.getPlace().fsm.request('walk')
         base.localAvatar.hideBookButton()
-        taskMgr.add(self.monitorHP, self.uniqueName('monitorHP'))
 
         for path in self.getRoomData('room_sections'):
             self.accept('enter' + path, self.__handleEnteredRoomSection)
-
-    def monitorHP(self, task):
-        if base.localAvatar.getHealth() < 1:
-            taskMgr.doMethodLater(7.0, self.diedTask, self.uniqueName('diedTask'))
-            return task.done
-        return task.cont
-
-    def diedTask(self, task):
-        self.sendUpdate('iAmDead')
-        return task.done
 
     def exitBattle(self):
         for path in self.getRoomData('room_sections'):
@@ -685,8 +674,6 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.loadElevators()
 
     def disable(self):
-        taskMgr.remove(self.uniqueName('diedTask'))
-        taskMgr.remove(self.uniqueName('monitorHP'))
         self.fsm.requestFinalState()
         del self.fsm
         #if self.cr.playGame.hood is not None:

@@ -22,6 +22,9 @@ class DistributedInspectionSiteAI(DistributedNodeAI):
         self.zoneId = zoneId
         self.siteData = None
         
+        # This is the id of the avatar currently using this site.
+        self.currentAvatarId = None
+        
     def setSiteId(self, _id):
         self.siteId = _id
         
@@ -41,3 +44,32 @@ class DistributedInspectionSiteAI(DistributedNodeAI):
         if self.siteData:
             position = self.siteData.inspectionLoc
             self.b_setPosHpr(position.getX(), position.getY(), position.getZ(), 0, 0, 0)
+            
+    def requestEnter(self):
+        avId = self.air.getAvatarIdFromSender()
+        avatar = self.air.doId2do.get(avId, None)
+        
+        if self.currentAvatarId == None and avatar:
+            data = avatar.questManager.getInspectionQuest()
+            
+            if data and not data[2].isComplete():
+                # Let's verify that the user has an incomplete objective to inspect this site.
+                self.currentAvatarId = avId
+                self.sendUpdateToAvatarId(avId, 'enterAccepted', [])
+                return
+            
+        # There aren't any other circumstances where we should accept this user. Reject their entry.
+        self.sendUpdateToAvatarId(avId, 'enterRejected', [])
+        
+    def requestExit(self):
+        avId = self.air.getAvatarIdFromSender()
+        avatar = self.air.doId2do.get(avId, None)
+        
+        if self.currentAvatarId == avId:
+            # Great, this is the avatar we're working with! Let's stop working with them.
+            self.currentAvatarId = None
+            self.sendUpdateToAvatarId(avId, 'exitAccepted', [])
+            return
+        
+        self.notify.warning("Suspicious: Avatar we're not working with tried to request exit! AvId: {0}".format(avId))
+        self.sendUpdateToAvatarId(avId, 'exitRejected', [])

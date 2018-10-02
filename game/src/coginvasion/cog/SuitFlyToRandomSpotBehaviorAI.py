@@ -46,7 +46,7 @@ class SuitFlyToRandomSpotBehaviorAI(SuitHabitualBehaviorAI):
         if not hasattr(self, 'suit') or not self.suit or self.suit.isEmpty():
             self.exit()
             return
-        self.accept(self.suit.healthChangeEvent, self.__healthChange)
+        self.accept(self.suit.getHealthChangeEvent(), self.__healthChange)
         pathKeys = CogBattleGlobals.SuitSpawnPoints[self.suit.getHood()].keys()
         pathKey = random.choice(pathKeys)
         endIndex = pathKeys.index(pathKey)
@@ -67,7 +67,7 @@ class SuitFlyToRandomSpotBehaviorAI(SuitHabitualBehaviorAI):
             self.flyIval.pause()
             self.flyIval = None
         if hasattr(self, 'suit') and not hasattr(self.suit, 'DELETED') and self.suit and not self.suit.isEmpty():
-            self.ignore(self.suit.healthChangeEvent)
+            self.ignore(self.suit.getHealthChangeEvent())
             self.standSuit()
 
     def unload(self):

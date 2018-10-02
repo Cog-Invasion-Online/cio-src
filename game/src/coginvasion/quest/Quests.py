@@ -112,7 +112,14 @@ Quests = {
          assignSpeech: ("Hey there! It would be great if you could test those Cog offices.\x07This quest will reward you handsomely.\x07"),
          finishSpeech: ("Thank you for testing Cog Invasion Online!\x07"),
          name: "Grind Invasion Online"
-    }
+    },
+    
+    29 : {objectives : [{objType : DeliverItemObjective, args: [GagGlobals.WholeFruitPie, 4, 2302]}],
+          rewards: [(Jellybeans, 250)],
+          tier: Tiers.TT,
+          assignSpeech: ("Hi there! Professors sure get hungry!\x07Please deliver 4 Whole Fruit Pies to Professor Wiggle.\x07"),
+          finishSpeech: ("Thank you very much! Boy am I hungry!\x07"),
+          name: "Fruity Tootie"}
 }
 
 QuestNPCDialogue = {
