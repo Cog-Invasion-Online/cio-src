@@ -286,7 +286,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
 
     def _pursueTask(self, task):
         if self.target:
-            if self.target.isDead():
+            if self.target.isDead() or not hasattr(self, 'attackSafeDistance'):
                 self.resetNextFrame()
                 return task.done
             currPos = self.target.getPos(render)

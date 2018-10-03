@@ -146,7 +146,9 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
     
     def rewardSequenceComplete(self, timestamp):
         DistributedBattleZoneAI.rewardSequenceComplete(self, timestamp)
-        base.taskMgr.doMethodLater(0.1, self.victoryTask, self.uniqueName('victoryTask'))
+        self.stopTrackingAll()
+        base.taskMgr.doMethodLater(0.1, self.victoryTask, self.uniqueName('victoryTask'), 
+                                   extraArgs = [self.avReadyToContinue], appendTask = True)
 
     def enterVictory(self):
         DistributedBattleZoneAI.battleComplete(self)
@@ -157,10 +159,10 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                 # Let this avatar's quest manager know that they have defeated a cog building.
                 avatar.questManager.cogBuildingDefeated(self.hood, self.deptClass, self.numFloors)
 
-    def victoryTask(self, task):
-        while len(self.watchingAvatarIds) < 4:
-            self.watchingAvatarIds.append(None)
-        self.bldg.fsm.request('waitForVictors', [self.watchingAvatarIds])
+    def victoryTask(self, victorIds, task):
+        while len(victorIds) < 4:
+            victorIds.append(None)
+        self.bldg.fsm.request('waitForVictors', [victorIds])
         return task.done
 
     def exitVictory(self):

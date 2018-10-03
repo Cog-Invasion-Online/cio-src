@@ -143,7 +143,7 @@ class AvatarWatcher(DirectObject):
         
         avatar = self.air.doId2do.get(avId, None)
         
-        self.handleAvatarHealthChange(avatar, newHealth, prevHealth)
+        self.handleAvatarChangeHealth(avatar, newHealth, prevHealth)
         if avatar.isDead() and self.STOP_TRACKING_WHEN_DEAD:
             self.handleAvatarLeave(avatar, DIED)
             self.stopTrackingAvatarId(avId)
