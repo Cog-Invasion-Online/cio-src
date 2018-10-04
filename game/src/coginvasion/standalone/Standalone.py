@@ -15,6 +15,9 @@ import __builtin__
 
 class game:
     process = 'client'
+    usepipeline = False
+    uselighting = False
+    userealshadows = False
 
 __builtin__.game = game()
 
@@ -32,8 +35,10 @@ cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
 cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
 cbm.addBin('gui-popup', CullBinManager.BTUnsorted, 60)
 
-from direct.showbase.ShowBase import ShowBase
-base = ShowBase()
+from src.coginvasion.base.CIBase import CIBase
+base = CIBase()
+render.show()
+render.clearShader()
 
 from src.coginvasion.base.CIAudio3DManager import CIAudio3DManager
 base.audio3d = CIAudio3DManager(base.sfxManagerList[0], camera)
