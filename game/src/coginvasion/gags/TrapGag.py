@@ -20,7 +20,7 @@ class TrapGag(Gag):
         self.hitSfx = None
         self.entity = None
         self.timeout = 3.0
-        if game.process == 'client':
+        if metadata.PROCESS == 'client':
             self.hitSfx = base.audio3d.loadSfx(hitSfx)
 
     def build(self):

@@ -710,7 +710,9 @@ def getCanonicalZoneId(zoneId):
 def getTrueZoneId(zoneId, currentZoneId):
     hoodId = getHoodId(zoneId, street = 1)
     offset = currentZoneId - currentZoneId % 2000
-    if hoodId == ToontownCentral and game.process != 'client' or game.process == 'client' and hoodId == ToontownCentral:
+    
+    isClient = (metadata.PROCESS == 'client')
+    if hoodId == ToontownCentral and not isClient or isClient and hoodId == ToontownCentral:
         return zoneId - ToontownCentralId + offset
     elif hoodId == GoofySpeedway:
         return zoneId - GoofySpeedwayId + offset + 1000

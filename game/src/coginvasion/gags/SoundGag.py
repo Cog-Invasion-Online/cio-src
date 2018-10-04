@@ -30,7 +30,7 @@ class SoundGag(Gag):
         self.tracks = None
         self.timeout = 5.0
 
-        if game.process == 'client':
+        if metadata.PROCESS == 'client':
             self.appearSfx = base.audio3d.loadSfx(appearSfx)
             self.soundSfx = base.audio3d.loadSfx(soundSfx)
 

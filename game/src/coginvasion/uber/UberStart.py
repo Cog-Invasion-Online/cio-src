@@ -79,10 +79,10 @@ else:
     # Let's default to no holiday.
     args.holiday = 0
 
-class game:
-    name = 'uberDog'
-    process = 'server'
-__builtins__.game = game
+from src.coginvasion.base.Metadata import Metadata
+__builtins__.metadata = Metadata()
+metadata.PROCESS_NAME = 'uberDog'
+metadata.PROCESS = 'server'
 
 loadPrcFileData('', 'window-type none')
 loadPrcFileData('', 'audio-library-name none')

@@ -50,7 +50,7 @@ class BackpackBase:
             if curSupply is None:
                 curSupply = maxSupply
             
-            if game.process == 'server':
+            if metadata.PROCESS == 'server':
                 self.gags.update({gagId: [curSupply, maxSupply]})
                 return True
             elif hasattr(self, 'gagManager'):
@@ -76,7 +76,7 @@ class BackpackBase:
             values = self.gags.get(gagId)
             supply = -1
             
-            if game.process == 'server':
+            if metadata.PROCESS == 'server':
                 supply = values[0]
                 self.gags.update({gagId : [supply, maxSupply]})
             else:
@@ -90,7 +90,7 @@ class BackpackBase:
     # -1 if the gag isn't in the backpack.
     def getMaxSupply(self, gagId):
         if self.hasGag(gagId):
-            if game.process == 'server':
+            if metadata.PROCESS == 'server':
                 return self.gags.get(gagId)[1]
             else:
                 return self.gags.get(gagId)[2]
@@ -115,7 +115,7 @@ class BackpackBase:
             
             # If we're updating the supply of a gag on the AI,
             # we need to do this a little bit differently.
-            if game.process == 'server':
+            if metadata.PROCESS == 'server':
                 currSupply = values[0]
                 if currSupply == supply:
                     # No change in supply.
@@ -137,7 +137,7 @@ class BackpackBase:
     # If gagId is not in the backpack, -1 is returned.
     def getSupply(self, gagId):
         if self.hasGag(gagId):
-            if game.process == 'server':
+            if metadata.PROCESS == 'server':
                 return self.gags.get(gagId)[0]
             else:
                 return self.gags.get(gagId)[1]
@@ -156,7 +156,7 @@ class BackpackBase:
         
         # On the server side, the supply of the current gag is first
         # in the list of data assigned to each gagId.
-        if game.process == 'server':
+        if metadata.PROCESS == 'server':
             supplyIndex = 0
         
         for gagId in self.gags.keys():

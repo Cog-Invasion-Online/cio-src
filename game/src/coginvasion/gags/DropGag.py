@@ -44,7 +44,7 @@ class DropGag(Gag, LocationGag):
         self.fallDuration = 0.75
         self.isDropping = False
         self.timeout = 3.0
-        if game.process == 'client':
+        if metadata.PROCESS == 'client':
             self.missSfx = base.audio3d.loadSfx(missSfx)
             self.fallSfx = base.audio3d.loadSfx(self.fallSoundPath)
 
@@ -167,7 +167,7 @@ class DropGag(Gag, LocationGag):
     def completeDrop(self):
         LocationGag.complete(self)
         self.isDropping = False
-        if game.process != 'client':
+        if metadata.PROCESS != 'client':
             return
         self.reset()
 

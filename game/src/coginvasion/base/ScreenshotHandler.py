@@ -47,7 +47,7 @@ def __saveScreenshot(shot):
     shot.write(Filename(now + '.jpeg'))
     return
 
-def __takeScreenshot():
+def takeScreenshot():
     shot = base.win.getScreenshot()
     thread = Thread(target = __saveScreenshot, args = (shot,))
     thread.start()

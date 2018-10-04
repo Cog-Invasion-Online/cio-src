@@ -42,7 +42,7 @@ class CILoadingScreen:
 		"""
 		base.graphicsEngine.renderFrame()
 		base.graphicsEngine.renderFrame()
-		self.version_lbl = OnscreenText(text="Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype), scale=0.06,
+		self.version_lbl = OnscreenText(text=metadata.getBuildInformation(), scale=0.06,
                                         pos=(-1.32, -0.97, -0.97), align=TextNode.ALeft, fg = loader.progressScreen.Color)
 		
 	def beginLoadGame(self):

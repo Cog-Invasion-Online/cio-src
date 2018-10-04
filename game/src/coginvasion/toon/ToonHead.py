@@ -20,7 +20,7 @@ import random
 class ToonHead(Actor.Actor):
     notify = directNotify.newCategory('ToonHead')
 
-    if game.process == 'client':
+    if metadata.PROCESS == 'client':
         EyesOpen = loader.loadTexture('phase_3/maps/eyes.jpg', 'phase_3/maps/eyes_a.rgb')
         EyesOpen.setMinfilter(Texture.FTLinearMipmapLinear)
         EyesOpen.setMagfilter(Texture.FTLinear)

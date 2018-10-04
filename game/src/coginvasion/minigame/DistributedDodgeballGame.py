@@ -22,7 +22,7 @@ from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.toon import ParticleLoader
 from src.coginvasion.toon.ToonDNA import ToonDNA
 
-if game.process == 'client':
+if metadata.PROCESS == 'client':
     from src.coginvasion.base import ToontownIntervals
 
 from DistributedMinigame import getAlertText, getAlertPulse

@@ -60,7 +60,7 @@ class Gag(object, DirectObject):
         # The elapsed time of the current recharge. Should be a float
         self.rechargeElapsedTime = 0
 
-        if game.process == 'client':
+        if metadata.PROCESS == 'client':
             if gagType == GagType.THROW:
                 self.woosh = base.audio3d.loadSfx(GagGlobals.PIE_WOOSH_SFX)
             self.hitSfx = base.audio3d.loadSfx(hitSfx)
@@ -334,7 +334,7 @@ class Gag(object, DirectObject):
 
     @abc.abstractmethod
     def unEquip(self):
-        if game.process != 'client':
+        if metadata.PROCESS != 'client':
             return
         if self.equipped and self.handJoint:
             inHand = self.handJoint.getChildren()

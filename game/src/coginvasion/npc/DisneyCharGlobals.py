@@ -51,7 +51,7 @@ def getBam(num, mdl):
     return "phase_{0}/models/char/{1}.bam".format(num, mdl)
 
 def getDial(num, name):
-    if game.process == 'client':
+    if metadata.PROCESS == 'client':
         return base.audio3d.loadSfx('phase_{0}/audio/dial/{1}.ogg'.format(num, name))
 
 HOOD2CHAR = {

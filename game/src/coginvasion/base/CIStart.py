@@ -25,28 +25,13 @@ notify.setInfo(True)
 
 notify.info("Starting the game.")
 
-import os, sys
-import datetime
-
-class game:
-    name = 'coginvasion'
-    process = 'client'
-    serverAddress = os.environ.get("GAME_SERVER")
-    resourceEncryptionPwd = "cio-03-06-16_lsphases"
-    build = 0
-    buildtype = "Dev"
-    version = "0.0.0"
-    builddate = "{:%B %d, %Y}".format(datetime.datetime.now())
-    production = False
-    phasedir = './resources/'
-    usepipeline = False
-    uselighting = True
-    userealshadows = False
-   
+from src.coginvasion.base.Metadata import Metadata
 import __builtin__
-__builtin__.game = game
+__builtin__.metadata = Metadata()
 
-try:
+import sys
+
+if metadata.IS_PRODUCTION:
     import aes
     import config
     # Config
@@ -57,34 +42,16 @@ try:
         line = line.strip()
         if line:
             loadPrcFileData('coginvasion config', line)
-    
-    import builddata
-    game.build = int(builddata.BUILDNUM)
-    game.buildtype = builddata.BUILDTYPE
-    game.version = builddata.BUILDVER
-    game.builddate = builddata.BUILDDATE
-    
-    # Load phases from root dir in production
-    game.phasedir = './'
-    game.production = True
-    
-    notify.info("Running production")
-    
-except:
+    notify.info('Running Production')
+else:
     loadPrcFile('config/Confauto.prc')
     loadPrcFile('config/config_client.prc')
-
-    if game.usepipeline:
-        sys.path.insert(0, "./renderpipeline")
     
-    # Load phases from resoures folder in dev mode
-    loadPrcFileData("", "model-path ./resources") # Don't require mounting of phases
-    game.phasedir = './resources/'
-    game.production = False
-    notify.info("Running dev")
-
-notify.info("Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype))
-notify.info("Phase dir: " + game.phasedir)
+    loadPrcFileData('', 'model-path ./resources') # Don't require mounting of phases
+    notify.info('Running Development Environment')
+    
+notify.info(metadata.getBuildInformation())
+notify.info('Phase directory: {0}'.format(metadata.PHASE_DIRECTORY))
 
 from src.coginvasion.manager.SettingsManager import SettingsManager
 jsonfile = "settings.json"
@@ -98,14 +65,10 @@ sm.applyPreSettings()
 
 from CIBase import CIBase
 base = CIBase()
-base.loader.destroy()
+__builtin__.loader = base.loader
 
 notify.info("Applying post settings")
 sm.applySettings()
-
-from CogInvasionLoader import CogInvasionLoader
-base.loader = CogInvasionLoader(base)
-__builtin__.loader = base.loader
 
 # Let's load up our multifiles
 base.loader.mountMultifiles(sm.getSetting("resourcepack"))
@@ -122,8 +85,6 @@ base.setFrameRateMeter(sm.getSetting("fps"))
 #import ccoginvasion
 #shGen = ccoginvasion.CIShaderGenerator(base.win.getGsg(), base.win)
 #base.win.getGsg().setShaderGenerator(shGen)
-
-base.cTrav = CollisionTraverser()
 
 #import AnisotropicFiltering
 #AnisotropicFiltering.startApplying()
@@ -152,23 +113,6 @@ notify.info('Using %s audio library.' % audio)
 import src.coginvasion.distributed.AdminCommands
 
 from direct.gui import DirectGuiGlobals
-
-from src.coginvasion.base import ScreenshotHandler
-
-base.graphicsEngine.setDefaultLoader(base.loader.loader)
-cbm = CullBinManager.getGlobalPtr()
-cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
-if not game.userealshadows:
-    cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
-cbm.addBin('gui-popup', CullBinManager.BTUnsorted, 60)
-cbm.addBin('gsg-popup', CullBinManager.BTFixed, 70)
-base.setBackgroundColor(CIGlobals.DefaultBackgroundColor)
-base.disableMouse()
-base.enableParticles()
-base.camLens.setNearFar(CIGlobals.DefaultCameraNear, CIGlobals.DefaultCameraFar)
-base.transitions.IrisModelName = "phase_3/models/misc/iris.bam"
-base.transitions.FadeModelName = "phase_3/models/misc/fade.bam"
-base.accept(base.inputStore.TakeScreenshot, ScreenshotHandler.__takeScreenshot)
 
 if base.win is None:
     notify.warning("Unable to open window; aborting.")
@@ -205,30 +149,6 @@ NametagGlobals.setRolloverSound(soundRlvr)
 soundClick = DirectGuiGlobals.getDefaultClickSound()
 NametagGlobals.setClickSound(soundClick)
 
-base.marginManager = MarginManager()
-base.margins = aspect2d.attachNewNode(base.marginManager, DirectGuiGlobals.MIDGROUND_SORT_INDEX + 1)
-base.leftCells = [
-    base.marginManager.addCell(0.1, -0.6, base.a2dTopLeft),
-    base.marginManager.addCell(0.1, -1.0, base.a2dTopLeft),
-    base.marginManager.addCell(0.1, -1.4, base.a2dTopLeft)
-]
-base.bottomCells = [
-    base.marginManager.addCell(0.4, 0.1, base.a2dBottomCenter),
-    base.marginManager.addCell(-0.4, 0.1, base.a2dBottomCenter),
-    base.marginManager.addCell(-1.0, 0.1, base.a2dBottomCenter),
-    base.marginManager.addCell(1.0, 0.1, base.a2dBottomCenter)
-]
-base.rightCells = [
-    base.marginManager.addCell(-0.1, -0.6, base.a2dTopRight),
-    base.marginManager.addCell(-0.1, -1.0, base.a2dTopRight),
-    base.marginManager.addCell(-0.1, -1.4, base.a2dTopRight)
-]
-
-base.mouseWatcherNode.setEnterPattern('mouse-enter-%r')
-base.mouseWatcherNode.setLeavePattern('mouse-leave-%r')
-base.mouseWatcherNode.setButtonDownPattern('button-down-%r')
-base.mouseWatcherNode.setButtonUpPattern('button-up-%r')
-
 def maybeDoSomethingWithMusic(condition):
     # 0 = paused
     # 1 = restarted
@@ -250,7 +170,7 @@ base.accept('MusicEnabled', handleMusicEnabled)
 def doneInitLoad():
     notify.info("Initial game load finished.")
     from src.coginvasion.distributed import CogInvasionClientRepository
-    base.cr = CogInvasionClientRepository.CogInvasionClientRepository("ver-" + game.version)
+    base.cr = CogInvasionClientRepository.CogInvasionClientRepository("ver-" + metadata.VERSION)
 
 notify.info("Starting initial game load...")
 from InitialLoad import InitialLoad

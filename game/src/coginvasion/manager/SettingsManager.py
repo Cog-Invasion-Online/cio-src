@@ -16,7 +16,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 import json
 
 class SettingsManager:
-    MouseCursors = {"Toontown": game.phasedir + "toonmono.cur", "None": ""}
+    MouseCursors = {"Toontown": metadata.PHASE_DIRECTORY + "toonmono.cur", "None": ""}
     ReflectionQuality = {"Off": 0, "Low": 256, "Medium": 512, "High": 1024, "Ultra": 2048}
     notify = directNotify.newCategory('SettingsManager')
 
@@ -191,7 +191,7 @@ class SettingsManager:
         
         from src.coginvasion.globals import CIGlobals
         
-        game.uselighting = lighting
+        metadata.USE_LIGHTING = lighting
         if lighting:
             #render.show(CIGlobals.ShadowCameraBitmask)
             if ppl:

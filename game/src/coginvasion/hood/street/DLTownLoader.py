@@ -35,7 +35,7 @@ class DLTownLoader(TownLoader.TownLoader):
         dnaFile = 'phase_8/dna/donalds_dreamland_' + zone4File + '.pdna'
         self.createHood(dnaFile, 1, False)
         
-        if game.uselighting:
+        if metadata.USE_LIGHTING:
             for lamp in self.geom.findAllMatches("**/*light_DNARoot*"):
                 lightNP = self.hood.makeLampLight(lamp)
                 lightNP.wrtReparentTo(lamp)

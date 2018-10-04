@@ -10,6 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3, MemoryUsage, MemoryUsagePointers, RescaleNormalAttrib
 from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState, Vec4, Point3
+from panda3d.core import CollisionTraverser, CullBinManager
 from panda3d.bullet import BulletWorld, BulletDebugNode
 from panda3d.bsp import BSPLoader, BSPRender
 
@@ -18,11 +19,16 @@ from p3recastnavigation import RNNavMeshManager
 from direct.showbase.ShowBase import ShowBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.filter.CommonFilters import CommonFilters
+from direct.gui import DirectGuiGlobals
 
 from src.coginvasion.manager.UserInputStorage import UserInputStorage
+from src.coginvasion.margins.MarginManager import MarginManager
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.base.CogInvasionLoader import CogInvasionLoader
 from src.coginvasion.base.ShadowCaster import ShadowCaster
+from src.coginvasion.base import ScreenshotHandler
 from src.coginvasion.base import MusicCache
+
 from CIAudio3DManager import CIAudio3DManager
 from ShakeCamera import ShakeCamera
 from CubeMapManager import CubeMapManager
@@ -32,18 +38,19 @@ from src.coginvasion.phys import PhysicsUtils
 import __builtin__
 import random
 
-if game.usepipeline:
-    from rpcore import RenderPipeline
-
 class CIBase(ShowBase):
     notify = directNotify.newCategory("CIBase")
 
     def __init__(self):
-        if game.usepipeline:
+        if metadata.USE_RENDER_PIPELINE:
+            from rpcore import RenderPipeline
             self.pipeline = RenderPipeline()
             self.pipeline.create(self)
         else:
             ShowBase.__init__(self)
+            self.loader.destroy()
+            self.loader = CogInvasionLoader(self)
+            self.graphicsEngine.setDefaultLoader(self.loader.loader)
 
         #self.startTk()
 
@@ -102,6 +109,7 @@ class CIBase(ShowBase):
         base.audio3d.setDropOffFactor(0.1)
 
         # Setup collision handlers
+        base.cTrav = CollisionTraverser()
         base.lifter = CollisionHandlerFloor()
         base.pusher = CollisionHandlerPusher()
         base.queue = CollisionHandlerQueue()
@@ -109,7 +117,8 @@ class CIBase(ShowBase):
         base.lightingCfg = None
         
         #self.accept('/', self.projectShadows)
-
+        
+        # Let's setup the user input storage system
         uis = UserInputStorage()
         self.inputStore = uis
         self.userInputStorage = uis
@@ -131,6 +140,46 @@ class CIBase(ShowBase):
         self.currSongName = None
         
         self.avatars = []
+        
+        # Let's setup our margins
+        base.marginManager = MarginManager()
+        base.margins = aspect2d.attachNewNode(base.marginManager, DirectGuiGlobals.MIDGROUND_SORT_INDEX + 1)
+        base.leftCells = [
+            base.marginManager.addCell(0.1, -0.6, base.a2dTopLeft),
+            base.marginManager.addCell(0.1, -1.0, base.a2dTopLeft),
+            base.marginManager.addCell(0.1, -1.4, base.a2dTopLeft)
+        ]
+        base.bottomCells = [
+            base.marginManager.addCell(0.4, 0.1, base.a2dBottomCenter),
+            base.marginManager.addCell(-0.4, 0.1, base.a2dBottomCenter),
+            base.marginManager.addCell(-1.0, 0.1, base.a2dBottomCenter),
+            base.marginManager.addCell(1.0, 0.1, base.a2dBottomCenter)
+        ]
+        base.rightCells = [
+            base.marginManager.addCell(-0.1, -0.6, base.a2dTopRight),
+            base.marginManager.addCell(-0.1, -1.0, base.a2dTopRight),
+            base.marginManager.addCell(-0.1, -1.4, base.a2dTopRight)
+        ]
+        
+        base.mouseWatcherNode.setEnterPattern('mouse-enter-%r')
+        base.mouseWatcherNode.setLeavePattern('mouse-leave-%r')
+        base.mouseWatcherNode.setButtonDownPattern('button-down-%r')
+        base.mouseWatcherNode.setButtonUpPattern('button-up-%r')
+        
+        cbm = CullBinManager.getGlobalPtr()
+        cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
+        if not metadata.USE_REAL_SHADOWS:
+            cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
+        cbm.addBin('gui-popup', CullBinManager.BTUnsorted, 60)
+        cbm.addBin('gsg-popup', CullBinManager.BTFixed, 70)
+        self.setBackgroundColor(CIGlobals.DefaultBackgroundColor)
+        self.disableMouse()
+        self.enableParticles()
+        base.camLens.setNearFar(CIGlobals.DefaultCameraNear, CIGlobals.DefaultCameraFar)
+        base.transitions.IrisModelName = "phase_3/models/misc/iris.bam"
+        base.transitions.FadeModelName = "phase_3/models/misc/fade.bam"
+
+        self.accept(self.inputStore.TakeScreenshot, ScreenshotHandler.takeScreenshot)
 
         """
         print 'TPM START'
@@ -437,7 +486,7 @@ class CIBase(ShowBase):
         base.localAvatar.startSmooth()
 
     def setTimeOfDay(self, time):
-        if game.usepipeline:
+        if self.metadata.USE_RENDER_PIPELINE:
             self.pipeline.daytime_mgr.time = time
 
     def doOldToontownRatio(self):

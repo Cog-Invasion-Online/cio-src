@@ -38,7 +38,7 @@ class HolidayManager(DistributedObjectGlobal):
         if holiday == HolidayType.CHRISTMAS:
             # Load the winter multifile.
             vfs = VirtualFileSystem.getGlobalPtr()
-            vfs.mount(Filename(game.phasedir + 'winter.mf'), '.', VirtualFileSystem.MFReadOnly)
+            vfs.mount(Filename(metadata.PHASE_DIRECTORY + 'winter.mf'), '.', VirtualFileSystem.MFReadOnly)
 
     def getHoliday(self):
         return self.holiday

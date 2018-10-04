@@ -111,13 +111,13 @@ class DistributedToonHQInterior(DistributedToonInterior.DistributedToonInterior)
         
         # Let's generate the Build Version text node.
         _, self.currentBuild = self.__generateTextNodeAndNodePath('currentBuildVersion', 'Current Build: {0} v{1}'
-            .format(game.build, game.version))
+            .format(metadata.BUILD_NUMBER, metadata.VERSION))
         self.currentBuild.reparentTo(self.buildData)
         self.currentBuild.setScale(0.75)
         self.currentBuild.setZ(-9.25)
         
         # Let's generate the Build Date text node
-        _, self.buildDate = self.__generateTextNodeAndNodePath('currentBuildDate', 'Build Date: {0}'.format(game.builddate))
+        _, self.buildDate = self.__generateTextNodeAndNodePath('currentBuildDate', 'Build Date: {0}'.format(metadata.BUILD_DATE))
         self.buildDate.reparentTo(self.buildData)
         self.buildDate.setScale(0.75)
         self.buildDate.setZ(-10.25)

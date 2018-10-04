@@ -65,10 +65,9 @@ if args.astron_ip: localconfig += 'air-connect %s\n' % args.astron_ip
 if args.eventlogger_ip: localconfig += 'eventlog-host %s\n' % args.eventlogger_ip
 loadPrcFileData('Command-line', localconfig)
 
-class game:
-	name = 'coginvasion'
-	process = 'server'
-__builtins__.game = game
+from src.coginvasion.base.Metadata import Metadata
+__builtins__.metadata = Metadata()
+metadata.PROCESS = 'server'
 
 loadPrcFileData('', 'window-type none')
 loadPrcFileData('', 'audio-library-name none')

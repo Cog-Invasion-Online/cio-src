@@ -75,7 +75,7 @@ class Credits(DirectObject):
                 message = '%s%s\n' % (message, name)
             return message
 
-        message = 'Cog Invasion Online\nVersion {0} (Build {1} : {2})\n'.format(game.version, game.build, game.buildtype)
+        message = 'Cog Invasion Online\n{0}\n'.format(metadata.getBuildInformation())
         message += '\nCREDITS\n\n'
         
         # Write the game developers' names

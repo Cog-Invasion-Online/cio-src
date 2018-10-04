@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.directnotify.DirectNotify import DirectNotify
 from direct.gui.DirectGui import OnscreenImage, DirectWaitBar, DirectLabel, DirectFrame, OnscreenText
-from panda3d.core import TextNode, TextureStage
+from panda3d.core import TextNode
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.nametag import NametagGlobals
@@ -79,6 +79,10 @@ class CIProgressScreen:
         self.progress_bar['barColor'] = self.BarColor
         self.progress_bar['range'] = range
         self.bgm.reparentTo(aspect2d)
+        
+        print hood
+        
+        ZoneUtil.Hood2ZoneId.keys()
         
         # We only want to show special loading screens for actual in-game locations.
         if hood in ZoneUtil.Hood2ZoneId.keys():

@@ -126,7 +126,7 @@ class StormCloud(SquirtGag, LocationGag):
         LocationGag.start(self, self.avatar)
 
     def completeSquirt(self):
-        if game.process == 'client':
+        if metadata.PROCESS == 'client':
             LocationGag.complete(self)
             self.reset()
 

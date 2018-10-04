@@ -23,7 +23,7 @@ class BananaPeel(ActivateTrapGag):
         self.slipSfx = None
         self.setImage('phase_3.5/maps/banana-peel.png')
 
-        if game.process == 'client':
+        if metadata.PROCESS == 'client':
             self.slipSfx = base.audio3d.loadSfx(GagGlobals.PIE_WOOSH_SFX)
 
     def onActivate(self, entity, suit):

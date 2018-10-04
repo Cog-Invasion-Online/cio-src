@@ -13,13 +13,8 @@ from panda3d.core import CollisionTraverser, AntialiasAttrib, loadPrcFile, loadP
 from panda3d.core import CullBinManager
 import __builtin__
 
-class game:
-    process = 'client'
-    usepipeline = False
-    uselighting = False
-    userealshadows = False
-
-__builtin__.game = game()
+from src.coginvasion.base.Metadata import Metadata
+__builtin__.metadata = Metadata()
 
 loadPrcFile('config/config_client.prc')
 loadPrcFileData('', 'framebuffer-multisample 0')
@@ -70,10 +65,6 @@ from src.coginvasion.login.AvChoice import AvChoice
 class Standalone:
     
     def __init__(self):
-        self.process = 'client'
-        __builtin__.game = self
-        print __builtin__.game
-        
         base.cr = ClientRepository(['phase_3/etc/direct.dc', 'phase_3/etc/toon.dc'])
         base.cr.isShowingPlayerIds = None
         base.shadowTrav = CollisionTraverser()
@@ -96,8 +87,8 @@ class Standalone:
         base.localAvatar.doId = base.cr.localAvChoice.getAvId()
         base.localAvatar.generate()
         base.localAvatar.setName(base.cr.localAvChoice.getName())
-        base.localAvatar.maxHealth = 137
-        base.localAvatar.health = 137
+        base.localAvatar.maxHealth = health
+        base.localAvatar.health = health
         base.localAvatar.setDNAStrand(base.cr.localAvChoice.getDNA())
         base.localAvatar.announceGenerate()
         base.localAvatar.reparentTo(base.render)

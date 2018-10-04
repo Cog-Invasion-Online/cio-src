@@ -45,7 +45,7 @@ class ActivateTrapGag(TrapGag, LocationGag):
 
         self.entityTrack = None
 
-        if game.process == 'client':
+        if metadata.PROCESS == 'client':
             if activateSfx:
                 self.activateSfx = base.audio3d.loadSfx(activateSfx)
 

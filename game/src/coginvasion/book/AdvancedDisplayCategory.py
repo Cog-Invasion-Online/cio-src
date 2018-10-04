@@ -39,7 +39,7 @@ class AdvancedDisplayCategory(OptionsCategory):
         self.discardChanges()
         
     def __updateLighting(self, useLighting):
-        game.uselighting = useLighting
+        metadata.USE_LIGHTING = useLighting
         
     def __updatePPL(self, ppl):
         if ppl:

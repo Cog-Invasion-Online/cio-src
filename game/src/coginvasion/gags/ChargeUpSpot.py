@@ -38,7 +38,7 @@ class ChargeUpSpot(LocationSeeker):
         self.cleanedUp = False
         self.dropShadow = None
 
-        if game.process == 'client':
+        if metadata.PROCESS == 'client':
             self.chargingSfx = base.audio3d.loadSfx(self.chargingSfxPath)
             self.tickSfx = base.audio3d.loadSfx(self.tickSfxPath)
 

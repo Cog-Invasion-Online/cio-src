@@ -39,14 +39,14 @@ class LightingConfig:
         self.ambientNP = CIGlobals.makeAmbientLight('config', self.ambient)
 
     def apply(self):
-        if game.uselighting and not game.usepipeline:
+        if metadata.USE_LIGHTING and not metadata.USE_RENDER_PIPELINE:
             render.setLight(self.ambientNP)
             #if self.shadows:
             #    self.shadows.enable()
         LightingConfig.ActiveConfig = self
 
     def unapply(self):
-        if game.uselighting and not game.usepipeline:
+        if metadata.USE_LIGHTING and not metadata.USE_RENDER_PIPELINE:
             render.clearLight(self.ambientNP)
             #if self.shadows:
             #    self.shadows.disable()
@@ -151,11 +151,11 @@ class OutdoorLightingConfig(LightingConfig):
         OutdoorLightingConfig.ActiveConfig = self
 
     def apply(self):
-        if game.usepipeline:
+        if metadata.USE_RENDER_PIPELINE:
             return
         LightingConfig.apply(self)
         
-        if game.uselighting:
+        if metadata.USE_LIGHTING:
             render.setLight(self.sunNP)
             print self.sunNP.node().getDirection()
             #base.filters.setVolumetricLighting(self.sunNP)
@@ -180,11 +180,11 @@ class OutdoorLightingConfig(LightingConfig):
             self.snowEffect.start()
 
     def unapply(self):
-        if game.usepipeline:
+        if metadata.USE_RENDER_PIPELINE:
             return
         #base.filters.delVolumetricLighting()
         LightingConfig.unapply(self)
-        if game.uselighting:
+        if metadata.USE_LIGHTING:
             render.clearLight(self.sunNP)
             if not self.winterOverride:
                 render.clearFog()
@@ -262,18 +262,18 @@ class IndoorLightingConfig(LightingConfig):
                 vis.reparentTo(light)
 
     def apply(self):
-        if game.usepipeline:
+        if metadata.USE_RENDER_PIPELINE:
             return
         LightingConfig.apply(self)
-        if game.uselighting:
+        if metadata.USE_LIGHTING:
             for light in self.lightNPs:
                 render.setLight(light)
 
     def unapply(self):
-        if game.usepipeline:
+        if metadata.USE_RENDER_PIPELINE:
             return
         LightingConfig.unapply(self)
-        if game.uselighting:
+        if metadata.USE_LIGHTING:
             for light in self.lightNPs:
                 render.clearLight(light)
 

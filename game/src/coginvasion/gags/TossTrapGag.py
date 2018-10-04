@@ -24,7 +24,7 @@ class TossTrapGag(TrapGag):
         self.idleSfx = None
         self.timeout = 5.0
 
-        if game.process == 'client':
+        if metadata.PROCESS == 'client':
             if idleSfx:
                 self.idleSfx = base.audio3d.loadSfx(idleSfx)
 

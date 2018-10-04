@@ -23,31 +23,8 @@ loadPrcFileData('', 'window-title Panda')
 #loadPrcFileData('', 'win-size 1920 1080')
 
 import __builtin__
-class game:
-    process = 'client'
-    usepipeline = False
-    uselighting = True
-    userealshadows = False
-    phasedir = './resources/'
-    resourceEncryptionPwd = 'cio-03-06-16_lsphases'
-__builtin__.game = game
-
-vfs = VirtualFileSystem.getGlobalPtr()
-vfs.mount(Filename("resources/phase_0.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_3.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_3.5.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_4.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_5.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_5.5.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_6.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_7.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_8.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_9.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_10.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_11.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_12.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_13.mf"), ".", VirtualFileSystem.MFReadOnly)
-vfs.mount(Filename("resources/phase_14.mf"), ".", VirtualFileSystem.MFReadOnly)
+from src.coginvasion.base.Metadata import Metadata
+__builtin__.metadata = Metadata()
 
 cbm = CullBinManager.getGlobalPtr()
 cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
@@ -63,10 +40,6 @@ sm.maybeFixAA()
 
 from src.coginvasion.base.CIBase import CIBase
 base = CIBase()
-
-from src.coginvasion.base.CogInvasionLoader import CogInvasionLoader
-base.loader = CogInvasionLoader(base)
-__builtin__.loader = base.loader
 base.loader.mountMultifiles(None)
 
 sm.applySettings()
@@ -79,8 +52,6 @@ base.audio3d.setDropOffFactor(0.025)
 from direct.distributed.ClientRepository import ClientRepository
 
 from src.coginvasion.nametag import NametagGlobals
-from src.coginvasion.margins.MarginManager import MarginManager
-from src.coginvasion.margins import MarginGlobals
 from direct.gui import DirectGuiGlobals
 
 
@@ -106,51 +77,10 @@ NametagGlobals.setRolloverSound(soundRlvr)
 soundClick = DirectGuiGlobals.getDefaultClickSound()
 NametagGlobals.setClickSound(soundClick)
 
-base.marginManager = MarginManager()
-base.margins = aspect2d.attachNewNode(base.marginManager, DirectGuiGlobals.MIDGROUND_SORT_INDEX + 1)
-base.leftCells = [
-    base.marginManager.addCell(0.1, -0.6, base.a2dTopLeft),
-    base.marginManager.addCell(0.1, -1.0, base.a2dTopLeft),
-    base.marginManager.addCell(0.1, -1.4, base.a2dTopLeft)
-]
-base.bottomCells = [
-    base.marginManager.addCell(0.4, 0.1, base.a2dBottomCenter),
-    base.marginManager.addCell(-0.4, 0.1, base.a2dBottomCenter),
-    base.marginManager.addCell(-1.0, 0.1, base.a2dBottomCenter),
-    base.marginManager.addCell(1.0, 0.1, base.a2dBottomCenter)
-]
-base.rightCells = [
-    base.marginManager.addCell(-0.1, -0.6, base.a2dTopRight),
-    base.marginManager.addCell(-0.1, -1.0, base.a2dTopRight),
-    base.marginManager.addCell(-0.1, -1.4, base.a2dTopRight)
-]
-
-# HACK: I don't feel like making a new file that inherits from ShowBase so I'm just going to do this...
-def setCellsActive(cells, active):
-    for cell in cells:
-        cell.setActive(active)
-    base.marginManager.reorganize()
-base.setCellsActive = setCellsActive
-
-def windowEvent(win):
-    ShowBase.windowEvent(base, win)
-    base.marginManager.updateMarginVisibles()
-base.windowEvent = windowEvent
-
-
-base.mouseWatcherNode.setEnterPattern('mouse-enter-%r')
-base.mouseWatcherNode.setLeavePattern('mouse-leave-%r')
-base.mouseWatcherNode.setButtonDownPattern('button-down-%r')
-base.mouseWatcherNode.setButtonUpPattern('button-up-%r')
-
 from src.coginvasion.toon import LocalToon
 from src.coginvasion.login.AvChoice import AvChoice
 
-base.cTrav = CollisionTraverser()
 base.shadowTrav = CollisionTraverser()
-base.lifter = CollisionHandlerFloor()
-base.pusher = CollisionHandlerPusher()
-base.queue = CollisionHandlerQueue()
 base.cr = ClientRepository(['phase_3/etc/direct.dc', 'phase_3/etc/toon.dc'])
 base.cr.isShowingPlayerIds = False
 
@@ -182,10 +112,8 @@ if False:
         mov = TPMouseMovement()
         mov.initialize()
 
-base.enableParticles()
-
 render.setAntialias(AntialiasAttrib.MMultisample)
 
-if game.uselighting:
+if metadata.USE_LIGHTING:
     #render.setAttrib(LightRampAttrib.makeHdr0())
     render.setShaderAuto()

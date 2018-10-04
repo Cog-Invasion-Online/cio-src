@@ -498,7 +498,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         return None
 
     def initShadow(self):
-        if game.userealshadows:
+        if metadata.USE_REAL_SHADOWS:
             self.shadow = self.attachNewNode("fakeShadow")
         else:
             self.shadow = loader.loadModel("phase_3/models/props/drop_shadow.bam")

@@ -449,7 +449,7 @@ def makeDirectionalLight(name, color, angle):
     directional = camera.attachNewNode(dir)
     directional.setCompass()
     directional.setHpr(angle)
-    if game.userealshadows and False:
+    if metadata.USE_REAL_SHADOWS and False:
         dir.setShadowCaster(True, 1024 * 4, 1024 * 4)
         dir.getLens().setFilmSize(60, 60)
         dir.getLens().setNearFar(0.1, 10000)
@@ -477,7 +477,7 @@ def makeFog(name, color, expDensity):
 def makeSpotlight(name, color, pos, hpr):
     spot = Spotlight(name + "-spotlight")
     spot.setColor(color)
-    if game.userealshadows:
+    if metadata.USE_REAL_SHADOWS:
         spot.setShadowCaster(True, 512, 512)
     snp = render.attachNewNode(spot)
     snp.setHpr(hpr)

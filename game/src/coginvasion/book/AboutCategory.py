@@ -37,11 +37,9 @@ class AboutCategory(OptionsCategory, DirectObject):
         
         font = CIGlobals.getToonLogoFont()
 
-        self.gVersionText = OnscreenText(text = "Version {0} (Build {1} : {2})".format(game.version,
-                                                                                      game.build, 
-                                                                                      game.buildtype),
+        self.gVersionText = OnscreenText(metadata.getBuildInformation(),
                                         parent = self.page.book, pos = (0, 0.15, 0.15), font = font, fg = (1, 1, 1, 1))
-        self.gBuildDate = OnscreenText(text = game.builddate, parent = self.page.book, pos = (0, 0.085, 0.085), scale = 0.06, font = font, fg = (1, 1, 1, 1))
+        self.gBuildDate = OnscreenText(text = metadata.BUILD_DATE, parent = self.page.book, pos = (0, 0.085, 0.085), scale = 0.06, font = font, fg = (1, 1, 1, 1))
 
         self.eVersionText = OnscreenText(text = "Engine Version {0}".format(PandaSystem.getVersionString()), parent = self.page.book, pos = (0, -0.05), font = font, fg = (1, 1, 1, 1))
         self.eBuildDate = OnscreenText(text = PandaSystem.getBuildDate(), parent = self.page.book, pos = (0, -0.115), scale = 0.06, font = font, fg = (1, 1, 1, 1))

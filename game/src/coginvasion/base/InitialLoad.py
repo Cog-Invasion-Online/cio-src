@@ -31,7 +31,7 @@ class InitialLoad(LoadUtility):
         self.clouds = None
 
     def createGui(self):
-        self.version_lbl = OnscreenText(text="Version {0} (Build {1} : {2})".format(game.version, game.build, game.buildtype),
+        self.version_lbl = OnscreenText(text="Version {0} (Build {1} : {2})".format(metadata.VERSION, metadata.BUILD_NUMBER, metadata.BUILD_TYPE),
                                         scale=0.06, pos=(-1.32, -0.97, -0.97), align=TextNode.ALeft,
                                         fg = (1, 1, 1, 1), shadow = (0, 0, 0, 0),
                                         font = CIGlobals.getToonLogoFont())

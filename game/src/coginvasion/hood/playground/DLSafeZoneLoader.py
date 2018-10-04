@@ -44,7 +44,7 @@ class DLSafeZoneLoader(SafeZoneLoader):
     def load(self):
         SafeZoneLoader.load(self, False)
         
-        if game.uselighting:
+        if metadata.USE_LIGHTING:
             for lamp in self.geom.findAllMatches("**/*light_DNARoot*"):
                 self.lampLights.append(self.hood.makeLampLight(lamp))
 

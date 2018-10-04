@@ -11,7 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.showbase import Loader
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from panda3d.core import Multifile, Filename, VirtualFileSystem
+from panda3d.core import Multifile, Filename, VirtualFileSystem, TransparencyAttrib, GeomNode
 
 from src.coginvasion.gui.CIProgressScreen import CIProgressScreen
 from src.coginvasion.resourcepack.EnvironmentConfiguration import EnvironmentConfiguration
@@ -73,8 +73,8 @@ class CogInvasionLoader(Loader.Loader):
         
         for phase in self.Phases:
             mf = Multifile()
-            mf.setEncryptionPassword(game.resourceEncryptionPwd)
-            mf.openReadWrite(Filename(game.phasedir + phase + '.mf'))
+            mf.setEncryptionPassword(metadata.RESOURCE_ENCRYPTION_PASSWORD)
+            mf.openReadWrite(Filename(metadata.PHASE_DIRECTORY + phase + '.mf'))
             
             # Let's handle the mounting of certain file types from resource packs.
             rsPackMf = None
@@ -115,7 +115,7 @@ class CogInvasionLoader(Loader.Loader):
                 
                 if phase == 'phase_3':
                     self.notify.info('Loading Default Environment Configuration...')
-                    # Make a IO stream to the environment.yaml file.
+                    # Make an IO stream to the environment.yaml file.
                     self.envConfigStream = io.BytesIO(vfs.readFile('phase_3/etc/environment.yaml', False))
                     
                     # Create a new EnvironmentConfiguration object and read the data.
@@ -171,6 +171,26 @@ class CogInvasionLoader(Loader.Loader):
     def loadModel(self, *args, **kw):
         ret = Loader.Loader.loadModel(self, *args, **kw)
         CIGlobals.fixGrayscaleTextures(ret)
+        
+        #corrections = 0
+
+        def processChildren(collection):
+            for node in collection:
+                if node.node().isOfType(GeomNode.getClassType()):
+                    geomNode = node.node()
+                    for i in xrange(geomNode.getNumGeoms()):
+                        geom = geomNode.getGeom(i)
+                        state = geomNode.getGeomState(i)
+                        if state.hasAttrib(TransparencyAttrib.getClassType()):
+                            newState = state.addAttrib(TransparencyAttrib.make(TransparencyAttrib.M_multisample))
+                            geomNode.setGeomState(i, newState)
+                            node.setDepthOffset(1, 1)
+                            node.clearModelNodes()
+                            print 'Applied fix'
+
+        #processChildren(ret.findAllMatches('**'))
+        
+        #print 'Corrected {0} transparency nodes.'.format(corrections)
         self.tick()
         return ret
 
