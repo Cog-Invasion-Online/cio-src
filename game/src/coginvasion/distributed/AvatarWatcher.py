@@ -97,14 +97,11 @@ class AvatarWatcher(DirectObject):
         """ If given an avatar id currently being tracked, let's stop tracking it,
         stop listening to events emitted by the avatar, and remove it from our cache. """
         if self.isTrackingAvatarId(avId) and self.idPointsToValidAvatar(avId):
-            avatar = self.air.doId2do.get(avId, None)
-            self.ignore(avatar.getDeleteEvent())
-            self.ignore(avatar.getLogicalZoneChangeEvent())
-            self.ignore(avatar.getHealthChangeEvent())
-            self.watchingAvatarIds.remove(avId)
+            # Let's clean up the AvatarInstance we're storing first.
             inst = self.avId2instance[avId]
             inst.cleanup()
             del self.avId2instance[avId]
+            self.watchingAvatarIds.remove(avId)
         else:
             self.notify.debug('Avatar ID {0} is not currently being tracked and/or the avatar assigned to it has regressed.'.format(avId))
             
@@ -112,16 +109,8 @@ class AvatarWatcher(DirectObject):
         """ This method will stop tracking each avatar id and clear our `watchingAvatarIds`
         cache. """
         
-        unaccountedForAvatars = 0
         for avId in self.watchingAvatarIds:
-            if not self.idPointsToValidAvatar(avId):
-                unaccountedForAvatars += 1
             self.stopTrackingAvatarId(avId)
-        
-        if unaccountedForAvatars > 0:
-            # This is not good, it means that the pointer to the avatar an ID represents has regressed without
-            # us having a chance to ignore its events.
-            self.notify.warning("Could not account for and ignore the events of {0} avatars!".format(unaccountedForAvatars))
             
         self.watchingAvatarIds = []
         self.avId2instance = {}
