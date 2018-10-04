@@ -26,6 +26,34 @@ REASON_ID_2_REASON = {
     DIED : "Died"
 }
 
+class AvatarInstance(DirectObject):
+    
+    def __init__(self, av, watcher):
+        DirectObject.__init__(self)
+        
+        self.avatar = av
+        self.avId = av.doId
+        self.watcher = watcher
+        
+        self.accept(av.getDeleteEvent(), self.__onPreDelete)
+        self.accept(av.getLogicalZoneChangeEvent(), self.__onZoneChange)
+        self.accept(av.getHealthChangeEvent(), self.__onHealthChange)
+        
+    def __onHealthChange(self, newHealth, oldHealth):
+        self.watcher._avatarChangeHealthEvent(self, newHealth, oldHealth)
+        
+    def __onZoneChange(self, newZone, oldZone):
+        self.watcher._avatarSwitchZonesEvent(self, newZone, oldZone)
+        
+    def __onPreDelete(self):
+        self.watcher._avatarPredeleteEvent(self)
+        
+    def cleanup(self):
+        self.ignoreAll()
+        self.avatar = None
+        self.avId = None
+        self.watcher = None
+
 class AvatarWatcher(DirectObject):
     """ Utility class that listens for when an avatar is deleted or changes health or zone. """
     
@@ -40,25 +68,30 @@ class AvatarWatcher(DirectObject):
 
         # This is a list of the avatar ids we're watching.
         self.watchingAvatarIds = []
+        self.avId2instance = {}
         
         # This is the zone ID we're working in.
         self.zoneId = zoneId
         
         assert self.air != None, "Must have a valid pointer to AI!"
+        
+    def getAvatarInstance(self, avId):
+        return self.avId2instance.get(avId, None)
     
     def isTrackingAvatarId(self, avId):
         """ Checks if we're currently tracking or watching the avatar id provided """
-        return (avId != None and avId in self.watchingAvatarIds)
+        return (avId != None and avId in self.watchingAvatarIds and self.avId2instance.has_key(avId))
     
     def startTrackingAvatarId(self, avId):
         """ If given an avatar id not already being tracked, it will add it to
         `watchingAvatarIds` and start listening to events emitted by the avatar """
         if not self.isTrackingAvatarId(avId) and self.idPointsToValidAvatar(avId):
             avatar = self.air.doId2do.get(avId, None)
-            self.accept(avatar.getDeleteEvent(), self.__avatarPredeleteEvent, [avId])
-            self.accept(avatar.getLogicalZoneChangeEvent(), self.__avatarSwitchZonesEvent, [avId])
-            self.accept(avatar.getHealthChangeEvent(), self.__avatarChangeHealthEvent, [avId])
+            
             self.watchingAvatarIds.append(avId)
+            
+            inst = AvatarInstance(avatar, self)
+            self.avId2instance[avId] = inst
             
     def stopTrackingAvatarId(self, avId):
         """ If given an avatar id currently being tracked, let's stop tracking it,
@@ -69,6 +102,9 @@ class AvatarWatcher(DirectObject):
             self.ignore(avatar.getLogicalZoneChangeEvent())
             self.ignore(avatar.getHealthChangeEvent())
             self.watchingAvatarIds.remove(avId)
+            inst = self.avId2instance[avId]
+            inst.cleanup()
+            del self.avId2instance[avId]
         else:
             self.notify.debug('Avatar ID {0} is not currently being tracked and/or the avatar assigned to it has regressed.'.format(avId))
             
@@ -88,6 +124,7 @@ class AvatarWatcher(DirectObject):
             self.notify.warning("Could not account for and ignore the events of {0} avatars!".format(unaccountedForAvatars))
             
         self.watchingAvatarIds = []
+        self.avId2instance = {}
             
     def handleAvatarLeave(self, avatar, reason):
         """ This method is called whenever an avatar leaves our sphere of influence and
@@ -108,24 +145,26 @@ class AvatarWatcher(DirectObject):
         
         raise NotImplementedError("Subclasses should override this method to be alerted when a tracked avatar changes health.")
             
-    def __avatarPredeleteEvent(self, avId):
+    def _avatarPredeleteEvent(self, inst):
         """ This function is called when one of the avatars we're tracking has
         let us know it is about to be deleted. This function will automatically stop
         tracking the avatar in question as well. """
         
-        avatar = self.air.doId2do.get(avId, None)
+        avatar = inst.avatar
+        avId = inst.avId
         
         self.handleAvatarLeave(avatar, DELETED)
         self.stopTrackingAvatarId(avId)
         self.notify.debug('Avatar ID {0} is about to be deleted.'.format(avId))
         
-    def __avatarSwitchZonesEvent(self, avId, newZoneId, oldZoneId):
+    def _avatarSwitchZonesEvent(self, inst, newZoneId, oldZoneId):
         """ This function is called when one of the avatars we're tracking has
         let us know that it is switching zones. This function will automatically stop
         tracking the avatar in question if the zoneId differs from ours or a zoneId
         hasn't been specified in this class. """
         
-        avatar = self.air.doId2do.get(avId, None)
+        avatar = inst.avatar
+        avId = inst.avId
 
         self.notify.debug('Avatar ID {0} is switching from ZoneId {1} -> ZoneId {2}.'
                           .format(avId, oldZoneId, newZoneId))
@@ -134,14 +173,15 @@ class AvatarWatcher(DirectObject):
             self.handleAvatarLeave(avatar, ZONE_CHANGE)
             self.stopTrackingAvatarId(avId)
             
-    def __avatarChangeHealthEvent(self, avId, newHealth, prevHealth):
+    def _avatarChangeHealthEvent(self, inst, newHealth, prevHealth):
         """ This function is called when one of the avatars we're tracking has
         let us know that it has changed health. This is useful when a subclass needs
         to know whenever an avatar has died or if their health reaches a certain quantity.
         Default behavior is that once an avatar has died, we stop tracking them and say that the player
         has left our sphere of influence. """
         
-        avatar = self.air.doId2do.get(avId, None)
+        avatar = inst.avatar
+        avId = inst.avId
         
         self.handleAvatarChangeHealth(avatar, newHealth, prevHealth)
         if avatar.isDead() and self.STOP_TRACKING_WHEN_DEAD:
