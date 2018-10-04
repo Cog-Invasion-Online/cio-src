@@ -55,4 +55,4 @@ class Entity(NodePath):
         self.loaded = False
         self.outputs = None
         self.cEntity = None
-        self.ignoreAll()
+        #self.ignoreAll()

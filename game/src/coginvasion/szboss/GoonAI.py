@@ -30,7 +30,7 @@ class Behavior(StateData, BaseBehaviorAI):
         self.bspLoader = self.goon.cEntity.getLoader()
         self.air = self.goon.air
         self.behaviorStartTime = 0
-        self.avIds = self.goon.dispatch.avIds
+        self.avIds = self.goon.dispatch.getAvatars()
 
     def enter(self):
         self.behaviorStartTime = globalClock.getFrameTime()
