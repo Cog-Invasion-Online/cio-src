@@ -11,6 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import loadPrcFile, loadPrcFileData
 from panda3d.core import CullBinManager, AntialiasAttrib
+from panda3d.core import UniqueIdAllocator
 import __builtin__
 
 from src.coginvasion.base.Metadata import Metadata
@@ -61,6 +62,7 @@ else:
 from direct.distributed.ClientRepository import ClientRepository
 base.cr = ClientRepository(['phase_3/etc/direct.dc', 'phase_3/etc/toon.dc'])
 base.cr.isShowingPlayerIds = None
+base.cr.doIdAllocator = UniqueIdAllocator(0, 999)
 
 def isChristmas():
     return 0
