@@ -9,8 +9,8 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import VBase4, Point4, Point3
-from src.coginvasion.npc.DisneyCharGlobals import Mickey, Goofy, Pluto, Donald
 from src.coginvasion.gags.GagType import GagType
+from src.coginvasion.npc.DisneyCharGlobals import Mickey, Goofy, Pluto, Donald
 from src.coginvasion.globals.CIGlobals import calcAttackDamage
 
 from direct.distributed.PyDatagram import PyDatagram
