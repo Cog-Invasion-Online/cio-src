@@ -20,7 +20,7 @@ class GagShop(Shop):
     def __init__(self, distShop, doneEvent, wantFullShop = False):
         Shop.__init__(self, distShop, doneEvent, wantFullShop = wantFullShop)
         self.distShop = distShop
-        self.backpack = base.localAvatar.getBackpack()
+        self.backpack = None
         self.setup()
 
     def setup(self):
@@ -90,6 +90,7 @@ class GagShop(Shop):
     def enter(self):
         Shop.enter(self)
         self.originalSupply = base.localAvatar.getBackpackAmmo()
+        self.backpack = base.localAvatar.getBackpack()
 
     def exit(self):
         Shop.exit(self)

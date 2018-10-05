@@ -35,7 +35,7 @@ class Shop(StateData):
         StateData.__init__(self, doneEvent)
         self.distShop = distShop
         self.origHealth = None
-        self.avMoney = base.localAvatar.getMoney()
+        self.avMoney = 0
         self.healCooldownDoneSoundPath = 'phase_3.5/audio/sfx/tt_s_gui_sbk_cdrSuccess.ogg'
         self.healCooldownDoneSfx = None
         self.requestedHp = None
