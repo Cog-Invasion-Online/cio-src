@@ -12,7 +12,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.actor.Actor import Actor
 from src.coginvasion.shop.DistributedShop import DistributedShop
 from src.coginvasion.shop.GagShop import GagShop
-from src.coginvasion.npc.Char import Char
+from src.coginvasion.avatar.Avatar import Avatar
 from src.coginvasion.npc import DisneyCharGlobals
 
 class DistributedGagShop(DistributedShop):
@@ -26,12 +26,14 @@ class DistributedGagShop(DistributedShop):
 
     def setupClerk(self):
         DistributedShop.setupClerk(self)
-        self.clerk = Char()
-        self.clerk.generateChar(DisneyCharGlobals.Goofy)
-        self.clerk.setName(DisneyCharGlobals.Goofy)
-        self.clerk.setupNameTag()
-        self.clerk.reparentTo(self)
-        self.clerk.animFSM.request('neutral')
+        charData = DisneyCharGlobals.CHAR_DATA[DisneyCharGlobals.GOOFY]
+        self.clerk = loader.loadModel('smiley.egg')
+        #self.clerk.charName = charData[3]
+        #self.clerk.loadModel(charData[0])
+        #self.clerk.loadAnims(charData[1])
+        #self.clerk.loadAvatar()
+        #self.clerk.reparentTo(render)
+        #self.clerk.loop('neutral')
         self.barrel = loader.loadModel('phase_5.5/models/estate/wheelbarrel.bam')
         self.barrel.find('**/dirt').removeNode()
         self.barrel.reparentTo(self.clerk)
