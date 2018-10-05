@@ -9,7 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import VBase4, Point4, Point3
-from src.coginvasion.npc.DisneyChars import MickeyMouse, Goofy, Pluto, Donald
+from src.coginvasion.npc.DisneyCharGlobals import Mickey, Goofy, Pluto, Donald
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.globals.CIGlobals import calcAttackDamage
 
@@ -237,7 +237,7 @@ ToonHealJokes = [['What goes TICK-TICK-TICK-WOOF?', 'A watchdog! '],
  ['What do you get if you cross a railway engine with a stick of gum?', 'A chew-chew train.'],
  ['What would you get if you crossed an elephant with a computer?', 'A big know-it-all.'],
  ['What would you get if you crossed an elephant with a skunk?', 'A big stinker.'],
- ['Why did ' + MickeyMouse + ' take a trip to outer space?', 'He wanted to find ' + Pluto + '.']]
+ ['Why did ' + Mickey + ' take a trip to outer space?', 'He wanted to find ' + Pluto + '.']]
 
 # These ids are sent on the wire to capture gags.
 gagIds = {0 : WholeCreamPie, 1 : CreamPieSlice, 2 : BirthdayCake, 3 : TNT,
