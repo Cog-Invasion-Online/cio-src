@@ -50,6 +50,7 @@ class CIBase(ShowBase):
             ShowBase.__init__(self)
             self.loader.destroy()
             self.loader = CogInvasionLoader(self)
+            __builtin__.loader = self.loader
             self.graphicsEngine.setDefaultLoader(self.loader.loader)
 
         #self.startTk()

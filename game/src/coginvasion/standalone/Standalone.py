@@ -9,12 +9,13 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import CollisionTraverser, AntialiasAttrib, loadPrcFile, loadPrcFileData
-from panda3d.core import CullBinManager
+from panda3d.core import loadPrcFile, loadPrcFileData
+from panda3d.core import CullBinManager, AntialiasAttrib
 import __builtin__
 
 from src.coginvasion.base.Metadata import Metadata
 __builtin__.metadata = Metadata()
+metadata.USE_LIGHTING = 0
 
 loadPrcFile('config/config_client.prc')
 loadPrcFileData('', 'framebuffer-multisample 0')
@@ -23,8 +24,6 @@ loadPrcFileData('', 'tk-main-loop 0')
 loadPrcFileData('', 'egg-load-old-curves 0')
 loadPrcFileData('', 'model-path resources')
 
-from direct.distributed.ClientRepository import ClientRepository
-
 cbm = CullBinManager.getGlobalPtr()
 cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
 cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
@@ -32,8 +31,22 @@ cbm.addBin('gui-popup', CullBinManager.BTUnsorted, 60)
 
 from src.coginvasion.base.CIBase import CIBase
 base = CIBase()
+render.setAntialias(AntialiasAttrib.MMultisample)
 render.show()
-render.clearShader()
+
+if metadata.USE_LIGHTING:
+    render.setShaderAuto()
+else:
+    render.clearShader()
+
+from direct.distributed.ClientRepository import ClientRepository
+base.cr = ClientRepository(['phase_3/etc/direct.dc', 'phase_3/etc/toon.dc'])
+base.cr.isShowingPlayerIds = None
+
+def isChristmas():
+    return 0
+
+base.cr.isChristmas = isChristmas
 
 from src.coginvasion.base.CIAudio3DManager import CIAudio3DManager
 base.audio3d = CIAudio3DManager(base.sfxManagerList[0], camera)
@@ -59,43 +72,10 @@ NametagGlobals.setRolloverSound(soundRlvr)
 soundClick = DirectGuiGlobals.getDefaultClickSound()
 NametagGlobals.setClickSound(soundClick)
 
-from src.coginvasion.toon.LocalToon import LocalToon
-from src.coginvasion.login.AvChoice import AvChoice
-
-class Standalone:
-    
-    def __init__(self):
-        base.cr = ClientRepository(['phase_3/etc/direct.dc', 'phase_3/etc/toon.dc'])
-        base.cr.isShowingPlayerIds = None
-        base.shadowTrav = CollisionTraverser()
-        base.cTrav = CollisionTraverser()
-        
-        # Let's enable particles.
-        base.enableParticles()
-        
-        # Let's set our AntialiasAttrib level.
-        render.setAntialias(AntialiasAttrib.MMultisample)
-        
-    def startAvatar(self, dnaStrand, name, health):
-        # Let's set the DNA Strand.
-        base.cr.localAvChoice = AvChoice(dnaStrand, name, 0, 0)
-        
-        # Let's start the avatar.
-        dclass = base.cr.dclassesByName['DistributedPlayerToon']
-        base.localAvatar = LocalToon(base.cr)
-        base.localAvatar.dclass = dclass
-        base.localAvatar.doId = base.cr.localAvChoice.getAvId()
-        base.localAvatar.generate()
-        base.localAvatar.setName(base.cr.localAvChoice.getName())
-        base.localAvatar.maxHealth = health
-        base.localAvatar.health = health
-        base.localAvatar.setDNAStrand(base.cr.localAvChoice.getDNA())
-        base.localAvatar.announceGenerate()
-        base.localAvatar.reparentTo(base.render)
-        base.localAvatar.enableAvatarControls()
-        
-    def startDirect(self):
-        base.startDirect()
-        
-    def hasAvatar(self):
-        return hasattr(base, 'localAvatar')
+from src.coginvasion.manager.SettingsManager import SettingsManager
+jsonfile = "settings.json"
+sm = SettingsManager()
+from src.coginvasion.globals import CIGlobals
+CIGlobals.SettingsMgr = sm
+sm.loadFile(jsonfile)
+sm.applyPreSettings()

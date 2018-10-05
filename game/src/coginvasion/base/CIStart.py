@@ -65,7 +65,6 @@ sm.applyPreSettings()
 
 from CIBase import CIBase
 base = CIBase()
-__builtin__.loader = base.loader
 
 notify.info("Applying post settings")
 sm.applySettings()
