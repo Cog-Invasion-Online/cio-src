@@ -66,6 +66,8 @@ class FPSCamera(DirectObject):
         self.viewModel.reparentTo(self.vmRoot)
         self.viewModel.find("**/hands").setTwoSided(True)
         self.viewModel.hide()
+        self.viewModel.clearMaterial()
+        self.viewModel.setMaterial(CIGlobals.getCharacterMaterial(specular = (0, 0, 0, 1)), 1)
         self.viewportLens = PerspectiveLens()
         self.viewportLens.setMinFov(CIGlobals.DefaultCameraFov / (4. / 3.))
         self.viewportLens.setNear(0.3)
