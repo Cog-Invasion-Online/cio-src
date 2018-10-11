@@ -205,9 +205,9 @@ class BulletCharacterController(DirectObject):
         self.__currentPos = self.movementParent.getPos(render)
         self.__targetPos = Vec3(self.__currentPos)
         
-        pFrom = self.capsuleNP.getPos(render)
+        pFrom = self.capsuleNP.getPos(render) + (0, 0, 0.1)
         pTo = pFrom - (0, 0, 2000)
-        result = base.physicsWorld.rayTestClosest(pFrom, pTo, CIGlobals.WallGroup | CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
+        result = base.physicsWorld.rayTestClosest(pFrom, pTo, CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
         # Only fall if there is a ground for us to fall onto.
         # Prevents the character from falling out of the world.
         self.__aboveGround = result.hasHit()
@@ -395,7 +395,7 @@ class BulletCharacterController(DirectObject):
         if not self.__aboveGround:
             pFrom = self.capsuleNP.getPos(render)
             pTo = pFrom + (0, 0, 2000)
-            result = base.physicsWorld.rayTestClosest(pFrom, pTo, CIGlobals.WallGroup | CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
+            result = base.physicsWorld.rayTestClosest(pFrom, pTo, CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
             if result.hasHit():
                 self.__footContact = [result.getHitPos(), result.getNode(), result.getHitNormal()]
                 self.__targetPos.z = self.__footContact[0].z
