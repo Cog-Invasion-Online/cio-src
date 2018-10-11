@@ -64,7 +64,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.bspLoader = BSPLoader()
         self.bspLoader.setAi(True)
         self.bspLoader.setMaterialsFile("phase_14/etc/materials.txt")
-        self.bspLoader.setTextureContentsFile("phase_14/etc/texturecontents.txt")
+        #self.bspLoader.setTextureContentsFile("phase_14/etc/texturecontents.txt")
         self.bspLoader.setServerEntityDispatcher(self)
         AvatarWatcher.zoneId = self.zoneId
         

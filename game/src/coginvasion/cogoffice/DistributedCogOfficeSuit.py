@@ -31,21 +31,17 @@ class DistributedCogOfficeSuit(DistributedSuit):
         self.fsm.enterInitialState()
         self.battleDoId = None
         self.battle = None
-        self.hangoutIndex = -1
-        self.guardPoint = None
-        #self.taunter = 0
+        self.hangoutPoint = [0, (0, 0, 0), 0]
+        self.guardPoint = self.chairPoint = [(0, 0, 0), 0]
 
-    #def setTaunter(self, taunter):
-    #    self.taunter = taunter
+    def setHangoutPoint(self, hasHangout, pos, h):
+        self.hangoutPoint = [hasHangout, pos, h]
 
-    #def isTaunter(self):
-    #    return self.taunter
+    def setGuardPoint(self, pos, h):
+        self.guardPoint = [pos, h]
 
-    def setHangoutIndex(self, index):
-        self.hangoutIndex = index
-
-    def getHangoutIndex(self):
-        return self.hangoutIndex
+    def setChairPoint(self, pos, h):
+        self.chairPoint = [pos, h]
 
     def setBattleDoId(self, doId):
         self.battleDoId = doId
@@ -75,37 +71,36 @@ class DistributedCogOfficeSuit(DistributedSuit):
     def exitOff(self):
         pass
 
-    def enterGuard(self, extraArgs, ts):
+    def enterGuard(self, ts):
         self.show()
         self.cleanupPropeller()
         points = self.getPoints('guard')
-
-        self.guardPoint = points[extraArgs[0]][1]
         
-        if self.hangoutIndex > -1:
+        if self.hangoutPoint[0]:
             # This cog is going to be at a hangout point.
-            pointsH = self.getPoints('hangout')
-            self.setPosHpr(*pointsH[self.hangoutIndex])
+            self.setPosHpr(self.hangoutPoint[1][0], self.hangoutPoint[1][1], self.hangoutPoint[1][2],
+                           self.hangoutPoint[2], 0, 0)
         else:
             # This cog will be in regular guard position.
-            self.setPosHpr(*self.guardPoint)
+            self.setPosHpr(self.guardPoint[0][0], self.guardPoint[0][1], self.guardPoint[0][2],
+                           self.guardPoint[1], 0, 0)
 
         self.setAnimState('neutral')
 
     def exitGuard(self):
         pass
 
-    def enterThink(self, extraArgs, ts):
+    def enterThink(self, ts):
         pass
 
     def exitThink(self):
         pass
 
-    def enterChair(self, extraArgs, ts):
+    def enterChair(self, ts):
         self.show()
         self.cleanupPropeller()
         points = self.getPoints('chairs')
-        self.setPosHpr(*points[extraArgs[0]][1])
+        self.setPosHpr(self.chairPoint[0][0], self.chairPoint[0][1], self.chairPoint[0][2], self.chairPoint[1], 0, 0)
         self.setAnimState('sit')
         self.disableRay()
 
@@ -113,10 +108,8 @@ class DistributedCogOfficeSuit(DistributedSuit):
         pass
 
     def enterChair2Battle(self, extraArgs, ts):
-        points = self.getPoints('chairs')
-        pointIndex = extraArgs[0]
-        point = points[pointIndex][2]
-        self.startProjInterval(self.getX(), self.getY(), self.getZ(), point[0], point[1], point[2], 5.0, 0.05, ts)
+        pos = self.guardPoint[0]
+        self.startProjInterval(self.getX(), self.getY(), self.getZ(), pos[0], pos[1], pos[2], 5.0, 0.05, ts)
 
     def exitChair2Battle(self):
         if self.moveIval:
@@ -124,5 +117,5 @@ class DistributedCogOfficeSuit(DistributedSuit):
             self.moveIval.finish()
             self.moveIval = None
 
-    def setState(self, state, extraArgs, timestamp):
-        self.fsm.request(state, [extraArgs, globalClockDelta.localElapsedTime(timestamp)])
+    def setState(self, state, timestamp):
+        self.fsm.request(state, [globalClockDelta.localElapsedTime(timestamp)])

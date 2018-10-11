@@ -111,8 +111,8 @@ class WaterManager:
             return
         for node in self.waterNodes:
             if not node.isEmpty():
-                node.setShaderOff()
-                node.setTextureOff()
+                node.setShaderOff(1)
+                node.setTextureOff(1)
         self.waterNodes = []
         self.clearPlane()
 

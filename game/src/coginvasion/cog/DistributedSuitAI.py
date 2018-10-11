@@ -403,14 +403,14 @@ class DistributedSuitAI(DistributedAvatarAI):
             else:
                 return 'squirt-small'
 
-    def stopStun(self):
+    def stopStun(self, restart = False):
         taskMgr.remove(self.taskName('stunTask'))
         self.stunned = False
+        if restart and not self.isDead():
+            self.restartSuit()
 
     def __stunTask(self, task):
-        self.stunned = False
-        if not self.isDead():
-            self.restartSuit()
+        self.stopStun(restart = True)
         return task.done
 
     # The new method for handling gags.
@@ -467,6 +467,10 @@ class DistributedSuitAI(DistributedAvatarAI):
                 self.stunned = True
 
             else:
+                # Sound will wake me up.
+                if self.stunned and track == GagType.SOUND:
+                    self.stopStun(restart = True)
+
                 # I've been hit! Take appropriate actions.
                 self.handleToonThreat(avatar, True)
 

@@ -23,9 +23,13 @@ class DistributedEntityAI(DistributedObjectAI, Entity):
         Entity.load(self)
         self.loadEntityValues()
         self.generateWithRequired(self.zoneId)
+
+    def unload(self):
+        self.requestDelete()
+        Entity.unload(self)
         
     def delete(self):
-        self.unload()
+        Entity.unload(self)
         self.entnum = None
         self.bspLoader = None
         DistributedObjectAI.delete(self)

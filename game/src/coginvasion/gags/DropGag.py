@@ -192,7 +192,7 @@ class DropGag(Gag, LocationGag):
 
     def buildCollisions(self, entity):
         dropCollider = WorldCollider('dropGagCollider', self.colliderRadius, 'gagSensor-into',
-                                          offset = self.colliderOfs)
+                                          offset = self.colliderOfs, mask = CIGlobals.CharacterGroup | CIGlobals.FloorMask)
         dropCollider.reparentTo(entity)
         self.avatar.acceptOnce('gagSensor-into', self.onCollision, extraArgs = [entity])
 
@@ -202,8 +202,6 @@ class DropGag(Gag, LocationGag):
         
         dropMdl = entity.find('**/DropMdl')
         soundTrack = entity.getPythonTag(SoundTrackName)
-        print entity.getName()
-        print "DropGag.onCollision:", intoNP
         avNP = intoNP.getParent()
         hitCog = False
         soundTrack.pause()
@@ -212,7 +210,6 @@ class DropGag(Gag, LocationGag):
             for obj in base.avatars:
                 if CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey():
                     dist = (obj.getPos(render).getXy() - entity.getPos(render).getXy()).length()
-                    print dist
                     obj.handleHitByToon(self.avatar, self.getID(), dist * 4)
                     doId = 0 if not obj.isDistributed() else obj.doId
                     self.avatar.b_trapActivate(self.getID(), self.avatar.doId, 0, doId)
@@ -251,7 +248,6 @@ class DropGag(Gag, LocationGag):
             entity.removeNode()
 
     def release(self):
-        print "release that bitch"
         if self.isLocal():
             self.startTimeout()
             self.resetCrashEffect()

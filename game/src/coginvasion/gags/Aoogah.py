@@ -19,7 +19,7 @@ class Aoogah(SoundGag):
         SoundGag.__init__(self, GagGlobals.Aoogah, 'phase_5/models/props/aoogah.bam',
                           16, GagGlobals.AOOGAH_APPEAR_SFX, GagGlobals.AOOGAH_SFX, soundRange = 30, hitSfx = None)
         self.setImage('phase_3.5/maps/aoogah.png')
-        self.setRechargeTime(5.5)
+        #self.setRechargeTime(5.5)
 
     def start(self):
         SoundGag.start(self)

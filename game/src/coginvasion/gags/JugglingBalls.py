@@ -30,7 +30,7 @@ class JugglingBalls(ToonUpGag):
         self.soundInterval = self.getSoundTrack(0.7, self.gag, 7.7)
         
         # Fix per-pixel lighting crash on the balls:
-        self.gag.setShaderOff()
+        self.gag.setShaderOff(1)
         
         propInterval = Sequence()
         propInterval.append(ActorInterval(self.gag, 'chan'))

@@ -25,19 +25,18 @@ CHAIR_2_BATTLE_TIME = 9.0
 class DistributedCogOfficeSuitAI(DistributedSuitAI):
     notify = directNotify.newCategory('DistributedSuitAI')
 
-    def __init__(self, air, battle, initPointData, hangoutIndex, isChair, hood):
+    def __init__(self, air, battle, spawnData, hangoutData, isChair, hood):
         DistributedSuitAI.__init__(self, air)
         self.hood = hood
         self.battle = battle
         self.battleDoId = self.battle.doId
         self.flyToPoint = None
-        self.initPointIndex = initPointData[0]
-        initPoint = initPointData[1]
-        self.hangoutIndex = hangoutIndex
-        self.floorSection = initPoint[0]
-        self.initPoint = initPoint[1]
+        self.hangoutData = hangoutData
+        self.floorSection = spawnData[0]
+        self.initPoint = spawnData[1]
         if isChair:
-            self.flyToPoint = initPoint[2]
+            self.flyToPoint = spawnData[2]
+            flyToPoint = spawnData[2]
         self.isChair = isChair
         self.fsm = ClassicFSM.ClassicFSM('DistributedCogOfficeSuitAI', [State.State('off', self.enterOff, self.exitOff),
          State.State('guard', self.enterGuard, self.exitGuard, ['think']),
@@ -47,8 +46,29 @@ class DistributedCogOfficeSuitAI(DistributedSuitAI):
         self.fsm.enterInitialState()
         self.stateExtraArgs = []
 
-    def getHangoutIndex(self):
-        return self.hangoutIndex
+        if isChair:
+            self.chairPoint = [(self.initPoint[0], self.initPoint[1], self.initPoint[2]), self.initPoint[3]]
+        else:
+            self.chairPoint = [(0, 0, 0), 0]
+
+        if isChair:
+            self.guardPoint = [(flyToPoint[0], flyToPoint[1], flyToPoint[2]), flyToPoint[3]]
+        else:
+            self.guardPoint = [(self.initPoint[0], self.initPoint[1], self.initPoint[2]), self.initPoint[3]]
+
+        if hangoutData[0]:
+            self.hangoutPoint = [1, (hangoutData[1][0], hangoutData[1][1], hangoutData[1][2]), hangoutData[2]]
+        else:
+            self.hangoutPoint = [0, (0, 0, 0), 0]
+
+    def getChairPoint(self):
+        return self.chairPoint
+
+    def getGuardPoint(self):
+        return self.guardPoint
+
+    def getHangoutPoint(self):
+        return self.hangoutPoint
 
     def monitorHealth(self, task):
         if not hasattr(self, 'battle') or hasattr(self, 'battle') and self.battle is None:
@@ -107,7 +127,7 @@ class DistributedCogOfficeSuitAI(DistributedSuitAI):
 
     def allStandSuitsDead(self):
         if self.fsm.getCurrentState().getName() == 'chair':
-            self.b_setState('chair2battle', [self.initPointIndex])
+            self.b_setState('chair2battle')
 
     def exitChair(self):
         pass
@@ -134,10 +154,10 @@ class DistributedCogOfficeSuitAI(DistributedSuitAI):
 
     def d_setState(self, state, extraArgs):
         timestamp = globalClockDelta.getRealNetworkTime()
-        self.sendUpdate('setState', [state, extraArgs, timestamp])
+        self.sendUpdate('setState', [state, timestamp])
 
     def getState(self):
-        return [self.fsm.getCurrentState().getName(), self.stateExtraArgs, globalClockDelta.getRealNetworkTime()]
+        return [self.fsm.getCurrentState().getName(), globalClockDelta.getRealNetworkTime()]
 
     def spawn(self):
         self.brain = SuitBrain(self)
@@ -146,9 +166,9 @@ class DistributedCogOfficeSuitAI(DistributedSuitAI):
         pursue.battle = self.battle
         self.brain.addBehavior(pursue, priority = 1)
         if not self.isChair:
-            self.b_setState('guard', [self.initPointIndex])
+            self.b_setState('guard')
         else:
-            self.b_setState('chair', [self.initPointIndex])
+            self.b_setState('chair')
         self.b_setParent(CIGlobals.SPRender)
         taskMgr.add(self.monitorHealth, self.uniqueName('monitorHealth'))
 

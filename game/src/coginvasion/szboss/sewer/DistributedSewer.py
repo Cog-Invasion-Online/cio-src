@@ -40,10 +40,11 @@ class DistributedSewer(DistributedBattleZone):
         for entnum in xrange(base.bspLoader.getNumEntities()):
             classname = base.bspLoader.getEntityValue(entnum, "classname")
             if classname == "worldspawn":
-                skyType = 5#base.bspLoader.getEntityValueInt(entnum, "skytype")
+                skyType = 1#base.bspLoader.getEntityValueInt(entnum, "skytype")
                 if True:#skyType != OutdoorLightingConfig.STNone:
                     self.skyNP = loader.loadModel(OutdoorLightingConfig.SkyData[skyType][0])
                     self.skyNP.reparentTo(camera)
+                    self.skyNP.setZ(-300)
                     self.skyNP.setHpr(0, 0, 0)
                     self.skyNP.setLightOff(1)
                     self.skyNP.setFogOff(1)

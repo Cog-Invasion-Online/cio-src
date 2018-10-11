@@ -909,4 +909,5 @@ tempAllowedGags = [Cupcake, FruitPieSlice, CreamPieSlice, WholeFruitPie, WholeCr
                    WaterGun, FireHose,
                    FlowerPot, Sandbag, Anvil, BigWeight, Safe, GrandPiano,
                    TNT,
-                   Megaphone, Lipstick, JugglingBalls, BambooCane, PixieDust]
+                   Megaphone, Lipstick, JugglingBalls, BambooCane, PixieDust,
+                   BikeHorn, Whistle, Bugle, Aoogah, ElephantHorn, Foghorn, Opera]

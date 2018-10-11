@@ -20,9 +20,9 @@ class Nametag3d(Nametag, Clickable3d):
         Nametag.__init__(self)
         Clickable3d.__init__(self, 'Nametag3d')
 
-        self.contents.setLightOff()
-        self.contents.setMaterialOff()
-        self.contents.setShaderOff()
+        self.contents.setLightOff(1)
+        self.contents.setMaterialOff(1)
+        self.contents.setShaderOff(1)
         self.contents.hide(CIGlobals.ShadowCameraBitmask)
         CIGlobals.applyNoGlow(self.contents)
         

@@ -611,6 +611,9 @@ WeaponGroup = BitMask32.bit(6)
 LocalAvGroup = BitMask32.bit(7)
 StreetVisGroup = BitMask32.bit(8)
 ViewModelCamMask = BitMask32.bit(15)
+CharacterGroup = BitMask32.bit(9)
+
+FloorMask = FloorGroup | StreetVisGroup
 
 # For just colliding with the general world.
 WorldGroup = WallGroup | FloorGroup | StreetVisGroup

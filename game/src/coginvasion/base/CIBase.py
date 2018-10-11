@@ -28,6 +28,8 @@ from src.coginvasion.base.CogInvasionLoader import CogInvasionLoader
 from src.coginvasion.base.ShadowCaster import ShadowCaster
 from src.coginvasion.base import ScreenshotHandler
 from src.coginvasion.base import MusicCache
+from src.coginvasion.hood.SkyUtil import SkyUtil
+from Lighting import OutdoorLightingConfig
 
 from CIAudio3DManager import CIAudio3DManager
 from ShakeCamera import ShakeCamera
@@ -97,6 +99,8 @@ class CIBase(ShowBase):
         self.bspLoader.setShadowResolution(60 * 2, 1024 * 1)
         self.bspLevel = None
         self.materialData = {}
+        self.skyBox = None
+        self.skyBoxUtil = None
         
         self.nmMgr = RNNavMeshManager.get_global_ptr()
         self.nmMgr.set_root_node_path(self.render)
@@ -238,6 +242,24 @@ class CIBase(ShowBase):
                 break
                 
         return data
+
+    def cleanupSkyBox(self):
+        if self.skyBoxUtil:
+            self.skyBoxUtil.stopSky()
+            self.skyBoxUtil.cleanup()
+            self.skyBoxUtil = None
+        if self.skyBox:
+            self.skyBox.removeNode()
+            self.skyBox = None
+        
+    def cleanupBSPLevel(self):
+        self.cleanupSkyBox()
+        self.cleanupNavMesh()
+        if self.bspLevel:
+            self.bspLevel.removeNode()
+            self.bspLevel = None
+        self.bspLoader.cleanup()
+        base.materialData = {}
         
     def cleanupNavMesh(self):
         if self.navMeshNp:
@@ -271,6 +293,30 @@ class CIBase(ShowBase):
         self.backfaceCullingEnabled = 1
         self.textureEnabled = 1
         self.wireframeEnabled = 0
+
+    def loadSkyBox(self, skyType):
+        if skyType != OutdoorLightingConfig.STNone:
+            self.skyBox = loader.loadModel(OutdoorLightingConfig.SkyData[skyType][0])
+            self.skyBox.reparentTo(camera)
+            self.skyBox.setCompass()
+            self.skyBox.setZ(0)
+            self.skyBoxUtil = SkyUtil()
+            self.skyBoxUtil.startSky(self.skyBox)
+        
+    def loadBSPLevel(self, mapFile):
+        self.cleanupBSPLevel()
+        
+        base.bspLoader.read(mapFile)
+        base.bspLevel = base.bspLoader.getResult()
+        base.bspLoader.doOptimizations()
+        base.materialData = PhysicsUtils.makeBulletCollFromGeoms(base.bspLevel.find("**/model-0"))
+        for prop in base.bspLevel.findAllMatches("**/+BSPProp"):
+            base.createAndEnablePhysicsNodes(prop)
+        #base.setupNavMesh(base.bspLevel.find("**/model-0"))
+        base.bspLevel.prepareScene(base.win.getGsg())
+
+        skyType = 5#self.bspLoader.getEntityValueInt(0, "skytype")
+        self.loadSkyBox(skyType)
 
     def doNextFrame(self, func, extraArgs = []):
         taskMgr.add(self.__doNextFrameTask, "doNextFrame" + str(id(func)), extraArgs = [func, extraArgs], appendTask = True)

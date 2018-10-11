@@ -51,57 +51,6 @@ PROPS = {'photo_frame':     'phase_7/models/props/photo_frame.egg',
         'tv_on_wall':       'phase_7/models/props/cogtv.egg',
         'light_panel':      '~phase_7/models/props/ceiling_light_panel.egg'}
 
-class Elevator:
-
-    BLDG = 0
-    COGDO = 1
-
-    def __init__(self, elevatorMdl, cogdoElev):
-        self.elevatorMdl = elevatorMdl
-        self.cogdoElev = cogdoElev
-        self.activeElev = None
-        self.leftDoor = None
-        self.rightDoor = None
-
-    def setActiveElev(self, index):
-
-        if self.activeElev is not None:
-            base.disablePhysicsNodes(self.activeElev)
-            self.activeElev.reparentTo(hidden)
-
-        if index == Elevator.BLDG:
-            self.activeElev = self.elevatorMdl
-        elif index == Elevator.COGDO:
-            self.activeElev = self.cogdoElev
-
-        self.activeElev.reparentTo(render)
-        base.enablePhysicsNodes(self.activeElev)
-
-        self.leftDoor = getLeftDoor(self.activeElev)
-        self.rightDoor = getRightDoor(self.activeElev)
-
-    def getRightDoor(self):
-        return self.rightDoor
-
-    def getLeftDoor(self):
-        return self.leftDoor
-
-    def getElevatorModel(self):
-        return self.activeElev
-
-    def cleanup(self):
-        base.disableAndRemovePhysicsNodes(self.elevatorMdl)
-        self.elevatorMdl.removeNode()
-        del self.elevatorMdl
-        
-        base.disableAndRemovePhysicsNodes(self.cogdoElev)
-        self.cogdoElev.removeNode()
-        del self.cogdoElev
-        
-        del self.rightDoor
-        del self.leftDoor
-        del self.activeElev
-
 class CogTV(NodePath):
 
     def __init__(self):
@@ -376,7 +325,7 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         # Use the same text from eagle summit
         self.floorNameText = DistributedMinigame.getAlertText((0.75, 0.75, 0.75, 1.0), 0.15)
         self.props = []
-        self.elevators = []
+        self.elevators = [None, None]
         self.elevatorResponses = 0
         self.tauntSuitId = 0
         self.openSfx = base.loadSfx('phase_5/audio/sfx/elevator_door_open.ogg')
@@ -416,24 +365,24 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.fsm.request('faceOff', [tauntIndex, globalClockDelta.localElapsedTime(timestamp)])
 
     def openRestockDoors(self):
-        lDoorOpen = -3.9
-        rDoorOpen = 3.5
-        closed = 0.0
+        #lDoorOpen = -3.9
+        #rDoorOpen = 3.5
+        #closed = 0.0
 
-        leftDoor = self.gagDoor.find('**/left_door')
-        rightDoor = self.gagDoor.find('**/right_door')
+        #leftDoor = self.gagDoor.find('**/left_door')
+        #rightDoor = self.gagDoor.find('**/right_door')
 
         # Delete the invisible one-piece wall blocking the doorway.
         # John, fix this!
-        doorColl = self.gagDoor.find('**/door_collisions')
-        base.physicsWorld.remove(doorColl.node())
-        doorColl.removeNode()
+        #doorColl = self.gagDoor.find('**/door_collisions')
+        #base.physicsWorld.remove(doorColl.node())
+        #doorColl.removeNode()
 
-        ival = Parallel(LerpPosInterval(leftDoor, 2.0, (lDoorOpen, 0, 0),
-                                        (closed, 0, 0), blendType = 'easeOut'),
-                        LerpPosInterval(rightDoor, 2.0, (rDoorOpen, 0, 0),
-                                        (closed, 0, 0), blendType = 'easeOut'))
-        ival.start()
+        #ival = Parallel(LerpPosInterval(leftDoor, 2.0, (lDoorOpen, 0, 0),
+        #                                (closed, 0, 0), blendType = 'easeOut'),
+        #                LerpPosInterval(rightDoor, 2.0, (rDoorOpen, 0, 0),
+        #                                (closed, 0, 0), blendType = 'easeOut'))
+        #ival.start()
 
 
         loadout = base.localAvatar.backpack.loadout
@@ -481,13 +430,20 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
     # Tell the AI that we've finished loading the floor
     def d_loadedFloor(self):
         self.sendUpdate('loadedFloor')
+        
+    def getNumElevators(self):
+        elevs = 0
+        for i in xrange(len(self.elevators)):
+            if self.elevators[i] is not None:
+                elevs += 1
+        return elevs
 
-    def elevatorReady(self):
-        # We have to wait until all of our elevators are ready before
-        # telling the AI that we're ready to begin the battle.
-        self.elevatorResponses += 1
-        if self.elevatorResponses >= len(self.elevators):
-            self.sendUpdate('readyToStart')
+    #def elevatorReady(self):
+    #    # We have to wait until all of our elevators are ready before
+    #    # telling the AI that we're ready to begin the battle.
+    #    self.elevatorResponses += 1
+    #    if self.elevatorResponses >= self.getNumElevators():
+    #        self.sendUpdate('readyToStart')
 
     def setNumFloors(self, num):
         self.numFloors = num
@@ -559,6 +515,9 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.faceOffTrack.append(Func(base.camLens.setMinFov, CIGlobals.DefaultCameraFov / (4./3.)))
         self.faceOffTrack.append(Func(base.localAvatar.attachCamera))
         self.faceOffTrack.append(Func(setCamRunY))
+        
+        faceoffs = base.bspLoader.findAllEntities("cogoffice_faceoff_point")
+        
         runTrack = Parallel()
         for i in xrange(len(self.avIds)):
             avId = self.avIds[i]
@@ -566,10 +525,9 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             if toon:
                 toon.stopSmooth()
                 toon.wrtReparentTo(render)
-                points = self.getPoints('faceoff')
-                point = points[i]
-                pos = Point3(point[0], point[1], point[2])
-                hpr = Vec3(point[3], point[4], point[5])
+                faceoff = faceoffs[i]
+                pos = faceoff.cEntity.getOrigin()
+                hpr = faceoff.cEntity.getAngles()
                 toon.headsUp(pos)
                 track = Sequence(
                     Func(toon.setAnimState, 'run'),
@@ -584,12 +542,12 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                 runTrack.append(track)
 
         for suit in self.suits.values():
-            if suit.getHangoutIndex() > -1:
+            if suit.hangoutPoint[0]:
                 track = Sequence(
                     Func(suit.setAnimState, 'walk'),
                     NPCWalkInterval(
-                        suit, Point3(suit.guardPoint[0], suit.guardPoint[1], suit.guardPoint[2]), durationFactor = 0.19),
-                    Func(suit.setHpr, Vec3(suit.guardPoint[3], suit.guardPoint[4], suit.guardPoint[5])),
+                        suit, Point3(suit.guardPoint[0][0], suit.guardPoint[0][1], suit.guardPoint[0][2]), durationFactor = 0.19),
+                    Func(suit.setHpr, Vec3(suit.guardPoint[1], 0, 0)),
                     Func(suit.setAnimState, 'neutral'))
                 runTrack.append(track)
 
@@ -623,7 +581,10 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.elevatorTrack.start(ts)
 
     def __doFloorTextPulse(self):
-        self.floorNameText.setText(DistributedCogOfficeBattle.FLOOR_NAMES[self.currentRoom])
+        # worldspawn `message` property
+        floorTitle = base.bspLoader.getEntityValue(0, "message")
+
+        self.floorNameText.setText(floorTitle)
         ival = DistributedMinigame.getAlertPulse(self.floorNameText, 0.17, 0.15)
         ival.start()
 
@@ -634,14 +595,14 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         base.stopMusic()
         base.camLens.setMinFov(CIGlobals.DefaultCameraFov / (4./3.))
 
-    def __handleEnteredRoomSection(self, collNp):
-        name = collNp.getName()
-        index = self.getRoomData('room_sections').index(name)
+    #def __handleEnteredRoomSection(self, collNp):
+    #    name = collNp.getName()
+    #    index = self.getRoomData('room_sections').index(name)
 
         # Tell the AI we've entered this section.
         # Maybe activate some cogs?
-        print "Entered room section:", index
-        self.sendUpdate('enterSection', [index])
+    #    print "Entered room section:", index
+    #    self.sendUpdate('enterSection', [index])
 
     def enterBattle(self, ts):
         NametagGlobals.setWant2dNametags(True)
@@ -650,12 +611,12 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.cr.playGame.getPlace().fsm.request('walk')
         base.localAvatar.hideBookButton()
 
-        for path in self.getRoomData('room_sections'):
-            self.accept('enter' + path, self.__handleEnteredRoomSection)
+        #for path in self.getRoomData('room_sections'):
+        #    self.accept('enter' + path, self.__handleEnteredRoomSection)
 
     def exitBattle(self):
-        for path in self.getRoomData('room_sections'):
-            self.ignore('enter' + path)
+        #for path in self.getRoomData('room_sections'):
+        #    self.ignore('enter' + path)
         base.stopMusic()
         taskMgr.remove(self.uniqueName('monitorHP'))
 
@@ -669,17 +630,21 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
     def announceGenerate(self):
         DistributedBattleZone.announceGenerate(self)
         base.setBackgroundColor(self.CEILING_COLOR)
-        #self.cr.playGame.hood.sky.hide()
-        #self.cr.playGame.hood.setNoFog()
-        self.loadElevators()
+
+        import Entities
+        base.bspLoader.linkEntityToClass("cogoffice_faceoff_point", Entities.FaceOffPoint)
+
+        self.sendUpdate('readyToStart')
 
     def disable(self):
+        base.cleanupBSPLevel()
+        
         self.fsm.requestFinalState()
         del self.fsm
         #if self.cr.playGame.hood is not None:
         #    self.cr.playGame.hood.sky.show()
-        self.cleanupFloor()
-        self.cleanupElevators()
+        #self.cleanupFloor()
+        #self.cleanupElevators()
         if self.floorNameText:
             self.floorNameText.destroy()
             self.floorNameText = None
@@ -702,178 +667,137 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
 
     def loadFloor(self, floorNum, room):
         base.transitions.fadeScreen(1.0)
-        self.cleanupFloor()
+        #self.cleanupFloor()
         self.currentFloor = floorNum
         self.currentRoom = room
-        self.loadRoom()
-        self.loadProps()
+        #self.loadRoom()
+        #self.loadProps()
+        
+        print "Loading BSP level for office floor {0}".format(room)
+        base.loadBSPLevel("phase_14/etc/{0}/{0}.bsp".format(room))
+        base.bspLevel.reparentTo(render)
+        
         self.repositionElevators()
 
-        if self.getRoomData('gagdoor') is not None:
-            posHpr = self.getRoomData('gagdoor')
-            self.gagDoor = loader.loadModel('phase_7/models/modules/gagroom_door.bam')
-            self.gagDoor.reparentTo(render)
-            self.gagDoor.setPosHpr(*posHpr)
-        elif self.currentRoom != EXECUTIVE_FLOOR:
-            self.gagDoor = render.attachNewNode("gagDoor")
-            flr = self.floorModel
-            items = ['frame', 'trim', 'trim1', 'trim2', 'trim3', 'frame1', 'left_door', 'right_door', 'door_collisions']
-            for item in items:
-                node = flr.find('**/' + item)
-                node.wrtReparentTo(self.gagDoor)
+        #if self.getRoomData('gagdoor') is not None:
+        #    posHpr = self.getRoomData('gagdoor')
+        #    self.gagDoor = loader.loadModel('phase_7/models/modules/gagroom_door.bam')
+        #    self.gagDoor.reparentTo(render)
+        #    self.gagDoor.setPosHpr(*posHpr)
+        #elif self.currentRoom != EXECUTIVE_FLOOR:
+        #    self.gagDoor = render.attachNewNode("gagDoor")
+        #    flr = self.floorModel
+        #    items = ['frame', 'trim', 'trim1', 'trim2', 'trim3', 'frame1', 'left_door', 'right_door', 'door_collisions']
+        #    for item in items:
+        #        node = flr.find('**/' + item)
+        #        node.wrtReparentTo(self.gagDoor)
                 
-        if self.gagDoor is not None:
-            base.createAndEnablePhysicsNodes(self.gagDoor)
+        #if self.gagDoor is not None:
+        #    base.createAndEnablePhysicsNodes(self.gagDoor)
                 
-        base.createAndEnablePhysicsNodes(self.floorModel)
+        #base.createAndEnablePhysicsNodes(self.floorModel)
 
-        self.floorModel.flattenStrong()
+        #self.floorModel.flattenStrong()
 
         # Tell the AI that we've finished loading the floor
         self.d_loadedFloor()
 
-    def cleanupFloor(self):
-        if self.ilc:
-            self.ilc.unapply()
-            self.ilc.cleanup()
-            self.ilc = None
-        for prop in self.props:
-            base.disableAndRemovePhysicsNodes(prop)
-            prop.removeNode()
-        self.props = []
-        if self.floorModel:
-            base.disableAndRemovePhysicsNodes(self.floorModel)
-            self.floorModel.removeNode()
-            self.floorModel = None
-        if self.gagDoor:
-            base.disableAndRemovePhysicsNodes(self.gagDoor)
-            self.gagDoor.removeNode()
-            self.gagDoor = None
-        base.cubeMapMgr.clearCubeMaps()
+    #def cleanupFloor(self):
+    #    if self.ilc:
+    #        self.ilc.unapply()
+    #        self.ilc.cleanup()
+    #        self.ilc = None
+    #    for prop in self.props:
+    #        base.disableAndRemovePhysicsNodes(prop)
+    #        prop.removeNode()
+    #    self.props = []
+    #    if self.floorModel:
+    #        base.disableAndRemovePhysicsNodes(self.floorModel)
+    #        self.floorModel.removeNode()
+    #        self.floorModel = None
+    #    if self.gagDoor:
+    #        base.disableAndRemovePhysicsNodes(self.gagDoor)
+    #        self.gagDoor.removeNode()
+    #        self.gagDoor = None
+    #    base.cubeMapMgr.clearCubeMaps()
 
     def cleanupElevators(self):
-        for elevator in self.elevators:
-            elevator.cleanup()
-        self.elevators = []
+        self.elevators = [None, None]
 
-    def getRoomData(self, name):
-        if self.currentRoom in self.UNIQUE_FLOORS:
-            dataList = self.ROOM_DATA[self.deptClass][self.currentRoom].get(name)
-        else:
-            dataList = self.ROOM_DATA[self.currentRoom].get(name)
-        return dataList
+    #def getRoomData(self, name):
+    #    if self.currentRoom in self.UNIQUE_FLOORS:
+    #        dataList = self.ROOM_DATA[self.deptClass][self.currentRoom].get(name)
+    #    else:
+    #        dataList = self.ROOM_DATA[self.currentRoom].get(name)
+    #    return dataList
 
-    def loadRoom(self):
-        path = self.getRoomData('room_mdl')
-        grounds = self.getRoomData('grounds')
-        self.floorModel = loader.loadModel(path)
-        self.floorModel.setMaterialOff()
-        self.floorModel.reparentTo(render)
-        for ground in grounds:
-            self.floorModel.find(ground).setBin('ground', 18)
+    #def loadRoom(self):
+        #path = self.getRoomData('room_mdl')
+        #grounds = self.getRoomData('grounds')
+        #self.floorModel = loader.loadModel(path)
+        #self.floorModel.setMaterialOff()
+        #self.floorModel.reparentTo(render)
+        #for ground in grounds:
+        #    self.floorModel.find(ground).setBin('ground', 18)
 
-        cubemaps = self.getRoomData('cubemaps')
-        for cubemap in cubemaps:
-            baseFile = cubemap[0]
-            x, y, z = cubemap[1], cubemap[2], cubemap[3]
-            base.cubeMapMgr.addCubeMap(baseFile, Point3(x, y, z))
+        #cubemaps = self.getRoomData('cubemaps')
+        #for cubemap in cubemaps:
+        #    baseFile = cubemap[0]
+        #    x, y, z = cubemap[1], cubemap[2], cubemap[3]
+        #    base.cubeMapMgr.addCubeMap(baseFile, Point3(x, y, z))
         
-        lights = self.getRoomData('lights')
-        self.ilc = IndoorLightingConfig.makeDefault()
-        self.ilc.lights = lights
-        self.ilc.setup()
-        self.ilc.apply()
+        #lights = self.getRoomData('lights')
+        #self.ilc = IndoorLightingConfig.makeDefault()
+        #self.ilc.lights = lights
+        #self.ilc.setup()
+        #self.ilc.apply()
 
-    def loadProps(self):
-        dataList = self.getRoomData('props')
-        for propData in dataList:
-            name = propData[0]
-            otherProps = []
-            if isinstance(PROPS[name], list):
-                for i in xrange(len(PROPS[name])):
-                    if i == 0:
-                        continue
-                    path = PROPS[name][i]
-                    otherProps.append(path)
-            x, y, z = propData[1], propData[2], propData[3]
-            h, p, r = propData[4], propData[5], propData[6]
-            scale = propData[7]
-            
-            mdl = PROPS[name] if not isinstance(PROPS[name], list) else PROPS[name][0]
-            twoSided = False
-            if mdl[0] == '~':
-                # Two sided
-                twoSided = True
-                mdl = mdl[1:]
-                
-            if name == 'tv_on_wall':
-                # This is a tv with a movie texture.
-                propMdl = CogTV()
-            else:
-                propMdl = loader.loadModel(mdl)
-                
-            propMdl.reparentTo(render)
-            propMdl.setTwoSided(twoSided)
-            propMdl.setPosHpr(x, y, z, h, p, r)
-            propMdl.setScale(scale)
-            propMdl.setMaterialOff()
-            if name == 'photo_frame':
-                painting = random.choice(self.DEPT_2_PAINTING[self.deptClass])
-                propMdl.find('**/photo').setTexture(loader.loadTexture(painting), 1)
-            for oPropPath in otherProps:
-                oPropMdl = loader.loadModel(oPropPath)
-                oPropMdl.reparentTo(propMdl)
-            propMdl.wrtReparentTo(self.floorModel)
-            self.props.append(propMdl)
-
-    def loadElevators(self):
-        for _ in xrange(2):
-            elevMdl = loader.loadModel('phase_4/models/modules/elevator.bam')
-            cogdoElevMdl = loader.loadModel('phase_7/models/modules/cogoffice_elevator.bam')
-            
-            base.createPhysicsNodes(elevMdl)
-            base.createPhysicsNodes(cogdoElevMdl)
-            
-            elevator = Elevator(elevMdl, cogdoElevMdl)
-            elevator.setActiveElev(Elevator.BLDG)
-            self.elevators.append(elevator)
+    #def loadProps(self):
+    #    dataList = self.getRoomData('props')
+    #    for propData in dataList:
+    #        name = propData[0]
+    #        otherProps = []
+    #        if isinstance(PROPS[name], list):
+    #            for i in xrange(len(PROPS[name])):
+    #                if i == 0:
+    #                    continue
+    #                path = PROPS[name][i]
+    #                otherProps.append(path)
+    #        x, y, z = propData[1], propData[2], propData[3]
+    #        h, p, r = propData[4], propData[5], propData[6]
+    #        scale = propData[7]
+    #        
+    #        mdl = PROPS[name] if not isinstance(PROPS[name], list) else PROPS[name][0]
+    #        twoSided = False
+    #        if mdl[0] == '~':
+    #            # Two sided
+    #            twoSided = True
+    #            mdl = mdl[1:]
+    #            
+    #        if name == 'tv_on_wall':
+    #            # This is a tv with a movie texture.
+    #            propMdl = CogTV()
+    #        else:
+    #            propMdl = loader.loadModel(mdl)
+    #            
+    #        propMdl.reparentTo(render)
+    #        propMdl.setTwoSided(twoSided)
+    #        propMdl.setPosHpr(x, y, z, h, p, r)
+    #        propMdl.setScale(scale)
+    #        propMdl.setMaterialOff()
+    #        if name == 'photo_frame':
+    #            painting = random.choice(self.DEPT_2_PAINTING[self.deptClass])
+    #            propMdl.find('**/photo').setTexture(loader.loadTexture(painting), 1)
+    #        for oPropPath in otherProps:
+    #            oPropMdl = loader.loadModel(oPropPath)
+    #            oPropMdl.reparentTo(propMdl)
+    #        propMdl.wrtReparentTo(self.floorModel)
+    #        self.props.append(propMdl)
 
     def repositionElevators(self):
-        dataList = self.getRoomData('elevators')
-
-        if self.currentFloor == 0:
-            # Make the entrance elevator be a BLDG elevator for continuity.
-            if not self.isTopFloor():
-                self.elevators[0].setActiveElev(Elevator.BLDG)
-                self.elevators[1].setActiveElev(Elevator.COGDO)
-            else:
-                # This is the only floor in the building, make both elevators a BLDG.
-                self.elevators[0].setActiveElev(Elevator.BLDG)
-                self.elevators[1].setActiveElev(Elevator.BLDG)
-        elif self.currentFloor > 0 and self.isTopFloor():
-            # Make the exit elevator be a BLDG elevator for the last floor.
-            self.elevators[0].setActiveElev(Elevator.COGDO)
-            self.elevators[1].setActiveElev(Elevator.BLDG)
-        else:
-            # We're in one the middle floors, make both elevators cogdo.
-            self.elevators[0].setActiveElev(Elevator.COGDO)
-            self.elevators[1].setActiveElev(Elevator.COGDO)
 
         # Make our DistributedElevator friends reparent the countdown text
         # and collision sphere to the new active elevator.
-        messenger.send(self.uniqueName('prepareElevator'))
+        #messenger.send(self.uniqueName('prepareElevator'))
 
-        for i in xrange(len(dataList)):
-            x, y, z, h, p, r = dataList[i]
-            elevMdl = self.elevators[i].getElevatorModel()
-            elevMdl.setPosHpr(x, y, z, h, p, r)
-            npc = elevMdl.findAllMatches('**/floor_light_?;+s')
-            for i in xrange(npc.getNumPaths()):
-                np = npc.getPath(i)
-                floor = int(np.getName()[-1:]) - 1
-                if floor < self.numFloors:
-                    np.setColor(LIGHT_OFF_COLOR)
-                else:
-                    np.hide()
-                if self.currentFloor == floor:
-                    np.setColor(LIGHT_ON_COLOR)
+        pass

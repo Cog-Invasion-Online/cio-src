@@ -309,6 +309,14 @@ class Gag(object, DirectObject):
         if self.avatar:
             self.handJoint = self.avatar.find('**/def_joint_right_hold')
 
+    def setupViewModel(self):
+
+        if self.gag:
+            cam = base.localAvatar.getFPSCam()
+            cam.setVMGag(self.gag)
+        if base.localAvatar.isFirstPerson():
+            base.localAvatar.getViewModel().show()
+
     def equip(self):
         if not self.avatar or not self.avatar.getBackpack() or self.avatar.getBackpack() and self.avatar.getBackpack().getSupply(self.getID()) == 0 or self.state == GagState.RECHARGING:
             return
@@ -323,14 +331,10 @@ class Gag(object, DirectObject):
             entity.reparentTo(self.handJoint)
         self.equipped = True
 
-        self.avatar.getBackpack().setActiveGag(self.getID())
-
         if self.isLocal():
-            cam = base.localAvatar.getFPSCam()
-            cam.setVMGag(entity)
-            if base.localAvatar.isFirstPerson():
-                base.localAvatar.getViewModel().show()
-            #self.drawSfx.play()
+            self.setupViewModel()
+
+        self.avatar.getBackpack().setActiveGag(self.getID())
 
     @abc.abstractmethod
     def unEquip(self):

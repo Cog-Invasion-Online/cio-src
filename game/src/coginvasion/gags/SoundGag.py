@@ -14,7 +14,7 @@ from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.base.CIParticleEffect import CIParticleEffect
-from direct.interval.IntervalGlobal import Sequence, Wait, Func, SoundInterval
+from direct.interval.IntervalGlobal import Sequence, Wait, Func, SoundInterval, ActorInterval
 from panda3d.core import Point3
 import random
 
@@ -25,7 +25,7 @@ class SoundGag(Gag):
         self.appearSfx = None
         self.soundSfx = None
         self.soundRange = soundRange
-        self.megaphonePath = 'phase_5/models/props/megaphone.bam'
+        self.megaphonePath = 'phase_14/models/props/megaphone.egg'
         self.megaphone = None
         self.tracks = None
         self.timeout = 5.0
@@ -45,6 +45,11 @@ class SoundGag(Gag):
         base.audio3d.attachSoundToObject(self.soundSfx, self.avatar)
         base.audio3d.attachSoundToObject(self.appearSfx, self.avatar)
         if self.isLocal():
+            vm = base.localAvatar.getViewModel()
+            #vm.setY(5.0)
+            fpsCam = base.localAvatar.getFPSCam()
+            fpsCam.setVMAnimTrack(Sequence(Func(fpsCam.vmRoot2.setY, 0.5), Wait(0.75), Func(vm.show), ActorInterval(vm, "sound"), Func(fpsCam.vmRoot2.setY, 0.0), Func(vm.hide)))
+            self.gag.instanceTo(fpsCam.vmGag)
             base.localAvatar.sendUpdate('usedGag', [self.id])
 
     def finish(self):
@@ -99,11 +104,21 @@ class SoundGag(Gag):
         dest.setPos(pos)
         dest.reparentTo(render)
 
+    def setupViewModel(self):
+        if self.isLocal():
+            cam = base.localAvatar.getFPSCam()
+            cam.setVMGag(self.megaphone, pos = (0.21, 0.04, -0.04), hpr = (95, 102.99, 85.43))
+            #base.oobe()
+            #cam.vmGag.place()
+            base.localAvatar.getViewModel().hide()
+            #cam.viewModel.pose("sound", 47)
+
     def build(self):
-        Gag.build(self)
         self.megaphone = loader.loadModel(self.megaphonePath)
+        return Gag.build(self)
 
     def cleanupGag(self):
+        print "cleanupGag"
         if self.state == GagState.LOADED or self.state == GagState.RECHARGING:
             Gag.cleanupGag(self)
             if CIGlobals.isNodePathOk(self.megaphone):

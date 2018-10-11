@@ -19,7 +19,7 @@ class ElephantHorn(SoundGag):
         SoundGag.__init__(self, GagGlobals.ElephantHorn, 'phase_5/models/props/elephant.bam', 21,
                           GagGlobals.ELEPHANT_APPEAR_SFX, GagGlobals.ELEPHANT_SFX, soundRange = 35, hitSfx = None)
         self.setImage('phase_3.5/maps/elephant-horn.png')
-        self.setRechargeTime(6.5)
+        #self.setRechargeTime(6.5)
 
     def start(self):
         SoundGag.start(self)

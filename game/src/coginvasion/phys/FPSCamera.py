@@ -1,4 +1,5 @@
 from panda3d.core import Point2, WindowProperties, ConfigVariableDouble, Point3, NodePath, CharacterJointEffect, BitMask32, PerspectiveLens
+from panda3d.bsp import BSPRender
 
 from direct.showbase.DirectObject import DirectObject
 from direct.actor.Actor import Actor
@@ -35,6 +36,8 @@ class FPSCamera(DirectObject):
 
         # Updates to the transform of camRoot
         self.vmRoot = NodePath('vmRoot')
+        self.vmRoot.setShaderAuto()
+        self.vmRoot2 = self.vmRoot.attachNewNode('vmRoot2')
         self.viewModel = Actor("phase_14/models/char/v_toon_arms.egg",
 
                                {"zero": "phase_14/models/char/v_toon_arms.egg",
@@ -62,8 +65,10 @@ class FPSCamera(DirectObject):
                                 
                                 "tnt_draw": "phase_14/models/char/v_toon_arms-tnt_draw.egg",
                                 "tnt_idle": "phase_14/models/char/v_toon_arms-tnt_idle.egg",
-                                "tnt_throw": "phase_14/models/char/v_toon_arms-tnt_throw.egg"})
-        self.viewModel.reparentTo(self.vmRoot)
+                                "tnt_throw": "phase_14/models/char/v_toon_arms-tnt_throw.egg",
+                                
+                                "sound": "phase_14/models/char/v_toon_arms-sound.egg"})
+        self.viewModel.reparentTo(self.vmRoot2)
         self.viewModel.find("**/hands").setTwoSided(True)
         self.viewModel.hide()
         self.viewModel.clearMaterial()
@@ -83,6 +88,8 @@ class FPSCamera(DirectObject):
         self.dmgFade.setTransparency(1)
         self.dmgFade.setColorScale(1, 1, 1, 0)
         self.dmgFadeIval = None
+
+        base.bspLoader.addDynamicNode(self.vmRoot)
 
         taskMgr.add(self.__vpDebugTask, "vpdebutask", sort = -100)
 

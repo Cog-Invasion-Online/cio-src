@@ -45,7 +45,7 @@ class AdvancedDisplayCategory(OptionsCategory):
         if ppl:
             render.setShaderAuto()
         else:
-            render.setShaderOff()
+            render.setShaderOff(1)
             
     def __updateWater(self, quality):
         resolution = CIGlobals.getSettingsMgr().ReflectionQuality.get(quality)

@@ -14,15 +14,54 @@ from src.coginvasion.hood import ZoneUtil
 from ElevatorConstants import *
 from ElevatorUtils import *
 from DistributedElevator import DistributedElevator
+from src.coginvasion.szboss.DistributedEntity import DistributedEntity
 
-class DistributedCogOfficeElevator(DistributedElevator):
+from ElevatorConstants import LIGHT_ON_COLOR, LIGHT_OFF_COLOR
+
+class Elevator:
+
+    BLDG = 0
+    COGDO = 1
+
+    def __init__(self, etype):
+        if etype == Elevator.BLDG:
+            self.elevatorMdl = loader.loadModel("phase_4/models/modules/elevator.bam")
+        elif etype == Elevator.COGDO:
+            self.elevatorMdl = loader.loadModel('phase_7/models/modules/cogoffice_elevator.bam')
+            
+        self.elevatorMdl.reparentTo(render)
+        base.enablePhysicsNodes(self.elevatorMdl)
+        self.leftDoor = getLeftDoor(self.elevatorMdl)
+        self.rightDoor = getRightDoor(self.elevatorMdl)
+
+    def getRightDoor(self):
+        return self.rightDoor
+
+    def getLeftDoor(self):
+        return self.leftDoor
+
+    def getElevatorModel(self):
+        return self.elevatorMdl
+
+    def cleanup(self):
+        base.disableAndRemovePhysicsNodes(self.elevatorMdl)
+        self.elevatorMdl.removeNode()
+        del self.elevatorMdl
+        
+        del self.rightDoor
+        del self.leftDoor
+
+class DistributedCogOfficeElevator(DistributedElevator, DistributedEntity):
     notify = directNotify.newCategory('DistributedCogOfficeElevator')
 
     # In this class, self.thebldg is the DistributedCogOfficeBattle associated with this elevator.
 
     def __init__(self, cr):
+        DistributedEntity.__init__(self, cr)
         DistributedElevator.__init__(self, cr)
         self.index = None
+        self.type = None
+        self.elev = None
 
     def setIndex(self, index):
         self.index = index
@@ -31,19 +70,50 @@ class DistributedCogOfficeElevator(DistributedElevator):
         return self.index
 
     def getLeftDoor(self):
-        return self.thebldg.elevators[self.index].getLeftDoor()
+        return self.elev.getLeftDoor()
 
     def getRightDoor(self):
-        return self.thebldg.elevators[self.index].getRightDoor()
+        return self.elev.getRightDoor()
+        
+    def announceGenerate(self):
+        DistributedEntity.announceGenerate(self)
+
+        self.elev = Elevator(base.bspLoader.getEntityValueInt(self.entnum, "type"))
+        self.elev.elevatorMdl.setPos(self.cEntity.getOrigin())
+        self.elev.elevatorMdl.setHpr(self.cEntity.getAngles())
+        if self.index == 1:
+            self.elev.elevatorMdl.hide()
+
+        DistributedElevator.announceGenerate(self)
 
     def postAnnounceGenerate(self):
         DistributedElevator.postAnnounceGenerate(self, makeIvals = False)
+
+        npc = self.elev.elevatorMdl.findAllMatches('**/floor_light_?;+s')
+        for i in xrange(npc.getNumPaths()):
+            np = npc.getPath(i)
+            floor = int(np.getName()[-1:]) - 1
+            if floor < self.thebldg.numFloors:
+                np.setColor(LIGHT_OFF_COLOR)
+            else:
+                np.hide()
+            if self.thebldg.currentFloor == floor:
+                np.setColor(LIGHT_ON_COLOR)
+
+        self.thebldg.elevators[self.index] = self.elev
         # We've polled the building and found it, tell the building that this elevator is ready.
-        self.thebldg.elevatorReady()
-        self.accept(self.thebldg.uniqueName('prepareElevator'), self.__prepareElevator)
+        #self.thebldg.elevatorReady()
+        #self.accept(self.thebldg.uniqueName('prepareElevator'), self.__prepareElevator)
+        self.__prepareElevator()
 
     def disable(self):
         self.ignore(self.thebldg.uniqueName('prepareElevator'))
+        self.elev.cleanup()
+        del self.elev
+        if self.thebldg:
+            if self.thebldg.elevators:
+                self.thebldg.elevators[self.index] = None
+        DistributedEntity.disable(self)
         DistributedElevator.disable(self)
 
     def __prepareElevator(self):
@@ -89,4 +159,4 @@ class DistributedCogOfficeElevator(DistributedElevator):
                 messenger.send(self.cr.playGame.getPlace().doneEvent)
 
     def getElevatorModel(self):
-        return self.thebldg.elevators[self.index].getElevatorModel()
+        return self.elev.getElevatorModel()

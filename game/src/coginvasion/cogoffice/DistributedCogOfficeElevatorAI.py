@@ -11,16 +11,22 @@ Copyright (c) CIO Team. All rights reserved.
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from DistributedElevatorAI import DistributedElevatorAI
+from src.coginvasion.szboss.DistributedEntityAI import DistributedEntityAI
 from ElevatorConstants import *
 
-class DistributedCogOfficeElevatorAI(DistributedElevatorAI):
+class DistributedCogOfficeElevatorAI(DistributedElevatorAI, DistributedEntityAI):
     notify = directNotify.newCategory('DistributedCogOfficeElevatorAI')
 
     # In this class, self.bldg is the DistributedCogOfficeBattleAI associated with this elevator.
 
-    def __init__(self, air, battle, index, eType = ELEVATOR_NORMAL):
+    def __init__(self, air, battle, eType = ELEVATOR_NORMAL):
         DistributedElevatorAI.__init__(self, air, battle, 0, eType)
-        self.index = index
+        DistributedEntityAI.__init__(self, air, battle)
+        self.index = 0
+        
+    def loadEntityValues(self):
+        self.index = self.bspLoader.getEntityValueInt(self.entnum, "index")
+        self.type = self.index
         
     def enterClosing(self):
         base.taskMgr.doMethodLater(ElevatorData[self.type]['closeTime'], self.closingTask, self.uniqueName('closingTask'))
@@ -37,5 +43,7 @@ class DistributedCogOfficeElevatorAI(DistributedElevatorAI):
         return self.index
 
     def delete(self):
+        base.taskMgr.remove(self.uniqueName('closingTask'))
         self.index = None
         DistributedElevatorAI.delete(self)
+        DistributedEntityAI.delete(self)

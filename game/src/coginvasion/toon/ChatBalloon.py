@@ -29,9 +29,9 @@ class ChatBalloon(NodePath):
         # We don't want chat bubbles to glow from the bloom filter, it looks terrible.
         CIGlobals.applyNoGlow(self)
 
-        self.setLightOff()
-        self.setShaderOff()
-        self.setMaterialOff()
+        self.setLightOff(1)
+        self.setShaderOff(1)
+        self.setMaterialOff(1)
         self.hide(CIGlobals.ShadowCameraBitmask)
 
         self.model = model

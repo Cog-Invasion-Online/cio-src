@@ -136,7 +136,7 @@ class ActivateTrapGag(TrapGag, LocationGag):
             cloudName = '**/cloud' + str(cloudNum)
             cloud = dust.find(cloudName)
             cloud.setBin('fixed', objBin)
-            cloud.setShaderOff()
+            cloud.setShaderOff(1)
             objBin -= 10
         return dust
 

@@ -126,7 +126,7 @@ class DistributedElevator(DistributedObject):
         self.countdownTrack.finish()
         del self.countdownTrack
 
-    def enterOff(self):
+    def enterOff(self, ts = 0):
         pass
 
     def exitOff(self):
