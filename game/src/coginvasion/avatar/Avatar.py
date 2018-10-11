@@ -41,6 +41,8 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         PhysicsNodePath.__init__(self)
         Actor.__init__(self, None, None, None, flattenable=0, setFinal=1)
 
+        self.shapeGroup = CIGlobals.WallGroup | CIGlobals.CharacterGroup
+
         self.getGeomNode().showThrough(CIGlobals.ShadowCameraBitmask)
 
         self.mat = mat
