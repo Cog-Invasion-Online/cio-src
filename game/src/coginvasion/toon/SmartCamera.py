@@ -9,12 +9,13 @@ from panda3d.core import CollisionTraverser, Point3, Vec3, CollisionNode
 from panda3d.core import CollisionSegment, CollisionHandlerPusher
 from panda3d.core import CollisionSphere, BitMask32, CollisionHandlerQueue
 from panda3d.core import CollisionRay, CollisionHandlerFloor
-from panda3d.core import deg2Rad
+from panda3d.core import deg2Rad, TransformState
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.task import Task
 from src.coginvasion.globals import CIGlobals
 from direct.interval.IntervalGlobal import LerpFunctionInterval
+from src.coginvasion.phys import PhysicsUtils
 import math
 
 class SmartCamera:
@@ -37,6 +38,11 @@ class SmartCamera:
         self.ccRay2BitMask = None
         self.ccRay2MoveNodePath = None
         self.camFloorCollisionBroadcaster = None
+        self.pointA = Point3(0)
+        self.pointB = Point3(0)
+
+        self.floorLineStart = Point3(0)
+        self.camRadiusPoint = Point3(0)
 
         self.notify.debug("SmartCamera initialized!")
 
@@ -236,8 +242,10 @@ class SmartCamera:
         vectorAB = Vec3(pointB - pointA)
         lengthAB = vectorAB.length()
         if lengthAB > 0.001:
-            self.ccLine.setPointA(pointA)
-            self.ccLine.setPointB(pointB)
+            self.pointA = pointA
+            self.pointB = pointB
+            #self.ccLine.setPointA(pointA)
+            #self.ccLine.setPointB(pointB)
 
     def initializeSmartCamera(self):
         self.__idealCameraObstructed = 0
@@ -270,10 +278,12 @@ class SmartCamera:
         self.start_smartcamera()
 
     def putCameraFloorRayOnAvatar(self):
-        self.camFloorRayNode.setPos(base.localAvatar, 0, 0, 5)
+        self.floorLineStart = Point3(0, 0, 5)
+        #self.camFloorRayNode.setPos(base.localAvatar, 0, 0, 5)
 
     def putCameraFloorRayOnCamera(self):
-        self.camFloorRayNode.setPos(self.ccSphereNodePath, 0, 0, 0)
+        self.floorLineStart = self.getIdealCameraPos() + (0, 0, 10)
+        #self.camFloorRayNode.setPos(self.ccSphereNodePath, 0, 0, 0)
 
     def recalcCameraSphere(self):
         nearPlaneDist = base.camLens.getNear()
@@ -298,9 +308,10 @@ class SmartCamera:
                 sphereRadius = dist
 
         avgPnt = Point3(avgPnt)
-        self.ccSphereNodePath.setPos(avgPnt)
-        self.ccSphereNodePath2.setPos(avgPnt)
-        self.ccSphere.setRadius(sphereRadius)
+        self.camRadiusPoint = avgPnt
+        #self.ccSphereNodePath.setPos(avgPnt)
+        #self.ccSphereNodePath2.setPos(avgPnt)
+        #self.ccSphere.setRadius(sphereRadius)
 
     def setGeom(self, geom):
         self.__geom = geom
@@ -315,65 +326,66 @@ class SmartCamera:
         #self.cam_coll_np.set_collide_mask(BitMask32(0))
         #self.cam_coll_np.node().set_from_collide_mask(CIGlobals.WallBitmask | CIGlobals.FloorBitmask)
 
-        self.ccTrav = CollisionTraverser('LocalAvatar.ccTrav')
-        self.ccLine = CollisionSegment(0.0, 0.0, 0.0, 1.0, 0.0, 0.0)
-        self.ccLineNode = CollisionNode('ccLineNode')
-        self.ccLineNode.addSolid(self.ccLine)
-        self.ccLineNodePath = base.localAvatar.attachNewNode(self.ccLineNode)
-        self.ccLineBitMask = CIGlobals.CameraBitmask
-        self.ccLineNode.setFromCollideMask(self.ccLineBitMask)
-        self.ccLineNode.setIntoCollideMask(BitMask32.allOff())
-        self.camCollisionQueue = CollisionHandlerQueue()
-        self.ccTrav.addCollider(self.ccLineNodePath, self.camCollisionQueue)
-        self.ccSphere = CollisionSphere(0, 0, 0, 1)
-        self.ccSphereNode = CollisionNode('ccSphereNode')
-        self.ccSphereNode.addSolid(self.ccSphere)
-        self.ccSphereNodePath = base.camera.attachNewNode(self.ccSphereNode)
-        self.ccSphereNode.setFromCollideMask(CIGlobals.CameraBitmask)
-        self.ccSphereNode.setIntoCollideMask(BitMask32.allOff())
-        self.camPusher = CollisionHandlerPusher()
-        self.camPusher.addCollider(self.ccSphereNodePath, base.camera)
-        self.camPusher.setCenter(base.localAvatar)
-        self.ccPusherTrav = CollisionTraverser('LocalAvatar.ccPusherTrav')
-        self.ccSphere2 = self.ccSphere
-        self.ccSphereNode2 = CollisionNode('ccSphereNode2')
-        self.ccSphereNode2.addSolid(self.ccSphere2)
-        self.ccSphereNodePath2 = base.camera.attachNewNode(self.ccSphereNode2)
-        self.ccSphereNode2.setFromCollideMask(CIGlobals.CameraBitmask)
-        self.ccSphereNode2.setIntoCollideMask(BitMask32.allOff())
-        self.camPusher2 = CollisionHandlerPusher()
-        self.ccPusherTrav.addCollider(self.ccSphereNodePath2, self.camPusher2)
-        self.camPusher2.addCollider(self.ccSphereNodePath2, base.camera)
-        self.camPusher2.setCenter(base.localAvatar)
-        self.camFloorRayNode = base.localAvatar.attachNewNode('camFloorRayNode')
-        self.ccRay = CollisionRay(0.0, 0.0, 0.0, 0.0, 0.0, -1.0)
-        self.ccRayNode = CollisionNode('ccRayNode')
-        self.ccRayNode.addSolid(self.ccRay)
-        self.ccRayNodePath = self.camFloorRayNode.attachNewNode(self.ccRayNode)
-        self.ccRayBitMask = CIGlobals.FloorBitmask
-        self.ccRayNode.setFromCollideMask(self.ccRayBitMask)
-        self.ccRayNode.setIntoCollideMask(BitMask32.allOff())
-        self.ccTravFloor = CollisionTraverser('LocalAvatar.ccTravFloor')
-        self.camFloorCollisionQueue = CollisionHandlerQueue()
-        self.ccTravFloor.addCollider(self.ccRayNodePath, self.camFloorCollisionQueue)
-        self.ccTravOnFloor = CollisionTraverser('LocalAvatar.ccTravOnFloor')
-        self.ccRay2 = CollisionRay(0.0, 0.0, 0.0, 0.0, 0.0, -1.0)
-        self.ccRay2Node = CollisionNode('ccRay2Node')
-        self.ccRay2Node.addSolid(self.ccRay2)
-        self.ccRay2NodePath = self.camFloorRayNode.attachNewNode(self.ccRay2Node)
-        self.ccRay2BitMask = CIGlobals.FloorBitmask
-        self.ccRay2Node.setFromCollideMask(self.ccRay2BitMask)
-        self.ccRay2Node.setIntoCollideMask(BitMask32.allOff())
-        self.ccRay2MoveNodePath = hidden.attachNewNode('ccRay2MoveNode')
-        self.camFloorCollisionBroadcaster = CollisionHandlerFloor()
-        self.camFloorCollisionBroadcaster.setInPattern('on-floor')
-        self.camFloorCollisionBroadcaster.setOutPattern('off-floor')
-        self.camFloorCollisionBroadcaster.addCollider(self.ccRay2NodePath, self.ccRay2MoveNodePath)
+        #self.ccTrav = CollisionTraverser('LocalAvatar.ccTrav')
+        #self.ccLine = CollisionSegment(0.0, 0.0, 0.0, 1.0, 0.0, 0.0)
+        #self.ccLineNode = CollisionNode('ccLineNode')
+        #self.ccLineNode.addSolid(self.ccLine)
+        #self.ccLineNodePath = base.localAvatar.attachNewNode(self.ccLineNode)
+        #self.ccLineBitMask = CIGlobals.CameraBitmask
+        #self.ccLineNode.setFromCollideMask(self.ccLineBitMask)
+        #self.ccLineNode.setIntoCollideMask(BitMask32.allOff())
+        #self.camCollisionQueue = CollisionHandlerQueue()
+        #self.ccTrav.addCollider(self.ccLineNodePath, self.camCollisionQueue)
+        #self.ccSphere = CollisionSphere(0, 0, 0, 1)
+        #self.ccSphereNode = CollisionNode('ccSphereNode')
+        #self.ccSphereNode.addSolid(self.ccSphere)
+        #self.ccSphereNodePath = base.camera.attachNewNode(self.ccSphereNode)
+        #self.ccSphereNode.setFromCollideMask(CIGlobals.CameraBitmask)
+        #self.ccSphereNode.setIntoCollideMask(BitMask32.allOff())
+        #self.camPusher = CollisionHandlerPusher()
+        #self.camPusher.addCollider(self.ccSphereNodePath, base.camera)
+        #self.camPusher.setCenter(base.localAvatar)
+        #self.ccPusherTrav = CollisionTraverser('LocalAvatar.ccPusherTrav')
+        #self.ccSphere2 = self.ccSphere
+        #self.ccSphereNode2 = CollisionNode('ccSphereNode2')
+        #self.ccSphereNode2.addSolid(self.ccSphere2)
+        #self.ccSphereNodePath2 = base.camera.attachNewNode(self.ccSphereNode2)
+        #self.ccSphereNode2.setFromCollideMask(CIGlobals.CameraBitmask)
+        #self.ccSphereNode2.setIntoCollideMask(BitMask32.allOff())
+        #self.camPusher2 = CollisionHandlerPusher()
+        #self.ccPusherTrav.addCollider(self.ccSphereNodePath2, self.camPusher2)
+        #self.camPusher2.addCollider(self.ccSphereNodePath2, base.camera)
+        #self.camPusher2.setCenter(base.localAvatar)
+        #self.camFloorRayNode = base.localAvatar.attachNewNode('camFloorRayNode')
+        #self.ccRay = CollisionRay(0.0, 0.0, 0.0, 0.0, 0.0, -1.0)
+        #self.ccRayNode = CollisionNode('ccRayNode')
+        #self.ccRayNode.addSolid(self.ccRay)
+        #self.ccRayNodePath = self.camFloorRayNode.attachNewNode(self.ccRayNode)
+        #self.ccRayBitMask = CIGlobals.FloorBitmask
+        #self.ccRayNode.setFromCollideMask(self.ccRayBitMask)
+        #self.ccRayNode.setIntoCollideMask(BitMask32.allOff())
+        #self.ccTravFloor = CollisionTraverser('LocalAvatar.ccTravFloor')
+        #self.camFloorCollisionQueue = CollisionHandlerQueue()
+        #self.ccTravFloor.addCollider(self.ccRayNodePath, self.camFloorCollisionQueue)
+        #self.ccTravOnFloor = CollisionTraverser('LocalAvatar.ccTravOnFloor')
+        #self.ccRay2 = CollisionRay(0.0, 0.0, 0.0, 0.0, 0.0, -1.0)
+        #self.ccRay2Node = CollisionNode('ccRay2Node')
+        #self.ccRay2Node.addSolid(self.ccRay2)
+        #self.ccRay2NodePath = self.camFloorRayNode.attachNewNode(self.ccRay2Node)
+        #self.ccRay2BitMask = CIGlobals.FloorBitmask
+        #self.ccRay2Node.setFromCollideMask(self.ccRay2BitMask)
+        #self.ccRay2Node.setIntoCollideMask(BitMask32.allOff())
+        #self.ccRay2MoveNodePath = hidden.attachNewNode('ccRay2MoveNode')
+        #self.camFloorCollisionBroadcaster = CollisionHandlerFloor()
+        #self.camFloorCollisionBroadcaster.setInPattern('on-floor')
+        #self.camFloorCollisionBroadcaster.setOutPattern('off-floor')
+        #self.camFloorCollisionBroadcaster.addCollider(self.ccRay2NodePath, self.ccRay2MoveNodePath)
 
-        self.cTrav.addCollider(self.ccRay2NodePath, self.camFloorCollisionBroadcaster)
+        #self.cTrav.addCollider(self.ccRay2NodePath, self.camFloorCollisionBroadcaster)
         self.initialized = True
 
     def deleteSmartCameraCollisions(self):
+        """
         del self.ccTrav
         del self.ccLine
         del self.ccLineNode
@@ -405,6 +417,7 @@ class SmartCamera:
         self.ccSphereNodePath2.removeNode()
         del self.ccSphereNodePath2
         del self.camPusher2
+        """
         self.initialized = False
         return
 
@@ -415,19 +428,20 @@ class SmartCamera:
         self.__cameraHasBeenMoved = 1
         self.recalcCameraSphere()
         self.__instantaneousCamPos = camera.getPos()
-        self.cTrav.addCollider(self.ccSphereNodePath, self.camPusher)
-        self.ccTravOnFloor.addCollider(self.ccRay2NodePath, self.camFloorCollisionBroadcaster)
+        #self.cTrav.addCollider(self.ccSphereNodePath, self.camPusher)
+        #self.ccTravOnFloor.addCollider(self.ccRay2NodePath, self.camFloorCollisionBroadcaster)
         self.__disableSmartCam = 0
         self.__lastPosWrtRender = camera.getPos(render) + 1
         self.__lastHprWrtRender = camera.getHpr(render) + 1
+        self.updateSmartCameraCollisionLineSegment()
         taskName = base.localAvatar.taskName('updateSmartCamera')
         taskMgr.remove(taskName)
         taskMgr.add(self.updateSmartCamera, taskName, priority=47)
         self.started = True
 
     def stopUpdateSmartCamera(self):
-        self.cTrav.removeCollider(self.ccSphereNodePath)
-        self.ccTravOnFloor.removeCollider(self.ccRay2NodePath)
+        #self.cTrav.removeCollider(self.ccSphereNodePath)
+        #self.ccTravOnFloor.removeCollider(self.ccRay2NodePath)
         #if not base.localAvatar.isEmpty():
         #    self.putCameraFloorRayOnAvatar()
         taskName = base.localAvatar.taskName('updateSmartCamera')
@@ -436,6 +450,9 @@ class SmartCamera:
         self.started = False
 
     def updateSmartCamera(self, task):
+        if not base.localAvatar.isThirdPerson():
+            return Task.cont
+
         if not self.__camCollCanMove and not self.__cameraHasBeenMoved:
             if self.__lastPosWrtRender == camera.getPos(render):
                 if self.__lastHprWrtRender == camera.getHpr(render):
@@ -448,32 +465,41 @@ class SmartCamera:
         #pitch = base.localAvatar.mouseMov.player_node.getP(render)
         offsetY = 0#abs(pitch) * 0.1
         offsetZ = 0#min(0, pitch * 0.2)
-        camera.setPos(self.getIdealCameraPos() + (0, offsetY, offsetZ))
-        camera.lookAt(self.getLookAtPoint())
+        #camera.setPos(self.getIdealCameraPos() + (0, offsetY, offsetZ))
+        #camera.lookAt(self.getLookAtPoint())
 
-        """
+        
         if not self.__disableSmartCam:
-            self.ccTrav.traverse(self.__geom)
-            if self.camCollisionQueue.getNumEntries() > 0:
-                try:
-                    self.camCollisionQueue.sortEntries()
-                    self.handleCameraObstruction(self.camCollisionQueue.getEntry(0))
-                except AssertionError:
-                    pass
-            #if not self.__onLevelGround:
-            #    self.handleCameraFloorInteraction()
+
+            pointA = render.getRelativePoint(base.localAvatar, self.pointA)
+            pointB = render.getRelativePoint(base.localAvatar, self.pointB)
+
+            result = PhysicsUtils.rayTestClosestNotMe(base.localAvatar, pointA, pointB, CIGlobals.WallGroup | CIGlobals.CameraGroup)
+            if result:
+                self.handleCameraObstruction(result)
+
+            #self.ccTrav.traverse(self.__geom)
+            #if self.camCollisionQueue.getNumEntries() > 0:
+            #    try:
+            #        self.camCollisionQueue.sortEntries()
+            #        self.handleCameraObstruction(self.camCollisionQueue.getEntry(0))
+            #    except AssertionError:
+            #        pass
+
+            if not self.__onLevelGround:
+                self.handleCameraFloorInteraction()
         if not self.__idealCameraObstructed:
             self.nudgeCamera()
-        if not self.__disableSmartCam:
-            self.ccPusherTrav.traverse(self.__geom)
-            self.putCameraFloorRayOnCamera()
-        self.ccTravOnFloor.traverse(self.__geom)
-        """
+        #if not self.__disableSmartCam:
+        #    self.ccPusherTrav.traverse(self.__geom)
+            #self.putCameraFloorRayOnCamera()
+        #self.ccTravOnFloor.traverse(self.__geom)
+        
         return Task.cont
 
     def positionCameraWithPusher(self, pos, lookAt):
         camera.setPos(pos)
-        self.ccPusherTrav.traverse(self.__geom)
+        #self.ccPusherTrav.traverse(self.__geom)
         camera.lookAt(lookAt)
 
     def nudgeCamera(self):
@@ -511,23 +537,30 @@ class SmartCamera:
         self.__instantaneousCamPos = camera.getPos()
 
     def handleCameraObstruction(self, camObstrCollisionEntry):
-        collisionPoint = camObstrCollisionEntry.getSurfacePoint(self.ccLineNodePath)
-        collisionVec = Vec3(collisionPoint - self.ccLine.getPointA())
+
+        # Convert world space hit position to avatar space.
+        collisionPoint = base.localAvatar.getRelativePoint(render, camObstrCollisionEntry.getHitPos())
+
+        collisionVec = Vec3(collisionPoint - self.pointA)
         distance = collisionVec.length()
         self.__idealCameraObstructed = 1
         self.closestObstructionDistance = distance
         self.popCameraToDest()
 
     def handleCameraFloorInteraction(self):
-        self.putCameraFloorRayOnCamera()
-        self.ccTravFloor.traverse(self.__geom)
         if self.__onLevelGround:
             return
-        if self.camFloorCollisionQueue.getNumEntries() == 0:
+
+        self.putCameraFloorRayOnCamera()
+
+        pointA = render.getRelativePoint(base.localAvatar, self.floorLineStart)
+        pointB = pointA + (Vec3.down() * 1000)
+        result = PhysicsUtils.rayTestClosestNotMe(base.localAvatar, pointA, pointB, CIGlobals.FloorGroup)
+        if not result:
             return
-        self.camFloorCollisionQueue.sortEntries()
-        camObstrCollisionEntry = self.camFloorCollisionQueue.getEntry(0)
-        camHeightFromFloor = camObstrCollisionEntry.getSurfacePoint(self.ccRayNodePath)[2]
+
+        camObstrCollisionEntry = result
+        camHeightFromFloor = (camera.getRelativePoint(render, camObstrCollisionEntry.getHitPos())).getZ()
         heightOfFloorUnderCamera = (camera.getPos()[2] - CIGlobals.FloorOffset) + camHeightFromFloor
         self.cameraZOffset = camera.getPos()[2] + camHeightFromFloor
         if self.cameraZOffset < 0:

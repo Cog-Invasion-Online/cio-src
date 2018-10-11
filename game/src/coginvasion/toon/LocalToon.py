@@ -150,6 +150,7 @@ class LocalToon(DistributedPlayerToon):
         self.disableAvatarControls()
         self.stopTrackAnimToSpeed()
         self.stopPosHprBroadcast()
+        self.stopSmartCamera()
 
         self.playState = False
 
@@ -176,6 +177,7 @@ class LocalToon(DistributedPlayerToon):
         self.startPosHprBroadcast()
         self.d_broadcastPositionNow()
         self.startTrackAnimToSpeed()
+        self.startSmartCamera()
 
         self.playState = True
         
@@ -468,18 +470,18 @@ class LocalToon(DistributedPlayerToon):
 
     def startSmartCamera(self):
         #self.notify.info("Starting camera...")
-        #self.smartCamera.startUpdateSmartCamera()
+        self.smartCamera.startUpdateSmartCamera()
         pass
 
     def resetSmartCamera(self):
         #self.notify.info("Resetting camera...")
-        #self.stopSmartCamera()
-        #self.startSmartCamera()
+        self.stopSmartCamera()
+        self.startSmartCamera()
         pass
 
     def stopSmartCamera(self):
         #self.notify.info("Stopping camera...")
-        #self.smartCamera.stopUpdateSmartCamera()
+        self.smartCamera.stopUpdateSmartCamera()
         pass
 
     def detachCamera(self):
