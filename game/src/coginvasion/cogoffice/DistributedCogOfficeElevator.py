@@ -81,8 +81,8 @@ class DistributedCogOfficeElevator(DistributedElevator, DistributedEntity):
         self.elev = Elevator(base.bspLoader.getEntityValueInt(self.entnum, "type"))
         self.elev.elevatorMdl.setPos(self.cEntity.getOrigin())
         self.elev.elevatorMdl.setHpr(self.cEntity.getAngles())
-        if self.index == 1:
-            self.elev.elevatorMdl.hide()
+        #if self.index == 1:
+        #    self.elev.elevatorMdl.hide()
 
         DistributedElevator.announceGenerate(self)
 
