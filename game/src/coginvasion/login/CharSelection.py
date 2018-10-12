@@ -167,15 +167,18 @@ class CharSelection(DirectObject):
                 for tree in trees:
                     tree.wrtReparentTo(self.szGeom)
                 
-                gsg = base.win.getGsg()
-                if gsg:
-                    self.szGeom.prepareScene(gsg)
+                
             else:
                 loader.loadDNAFile(self.dnaStore, dnaFile)
 
         self.olc = ZoneUtil.getOutdoorLightingConfig(self.choice.lastHood)
         self.olc.setup()
         self.olc.apply()
+
+        gsg = base.win.getGsg()
+        if gsg:
+            self.szGeom.premungeScene(gsg)
+            self.szGeom.prepareScene(gsg)
 
         self.asyncSZLoadStatus = True
 
@@ -192,7 +195,9 @@ class CharSelection(DirectObject):
         self.notify.info("Polling for SZ to load")
         self.asyncSZLoadStatus = False
         self.__async_loadSZTask()
-        self.stageFSM.request('onStage')
+
+
+        base.doNextFrame(self.stageFSM.request, ['onStage'])
 
     def exitLoadSZ(self):
         if hasattr(self, 'loadingDlg'):

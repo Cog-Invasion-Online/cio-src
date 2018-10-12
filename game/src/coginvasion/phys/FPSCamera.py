@@ -18,6 +18,7 @@ class FPSCamera(DirectObject):
     MaxP = 90.0
     MinP = -90.0
     PitchUpdateEpsilon = 0.1
+    ViewModelFOV = 70.0
 
     def __init__(self):
         DirectObject.__init__(self)
@@ -74,7 +75,7 @@ class FPSCamera(DirectObject):
         self.viewModel.clearMaterial()
         self.viewModel.setMaterial(CIGlobals.getCharacterMaterial(specular = (0, 0, 0, 1)), 1)
         self.viewportLens = PerspectiveLens()
-        self.viewportLens.setMinFov(CIGlobals.DefaultCameraFov / (4. / 3.))
+        self.viewportLens.setMinFov(self.ViewModelFOV / (4. / 3.))
         self.viewportLens.setNear(0.3)
         # Updates to the transform of base.camera
         self.viewportCam = base.makeCamera(base.win, clearDepth = True, camName = 'fpsViewport',
@@ -101,7 +102,7 @@ class FPSCamera(DirectObject):
 
     def __vpDebugTask(self, task):
         self.viewportLens.setAspectRatio(base.getAspectRatio())
-        self.viewportLens.setMinFov(CIGlobals.DefaultCameraFov / (4. / 3.))
+        self.viewportLens.setMinFov(self.ViewModelFOV / (4. / 3.))
         self.vmRoot.setTransform(render, self.camRoot.getTransform(render))
         self.viewportCam.setTransform(render, base.camera.getTransform(render))
 

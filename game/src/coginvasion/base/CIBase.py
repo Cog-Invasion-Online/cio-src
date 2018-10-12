@@ -95,6 +95,7 @@ class CIBase(ShowBase):
         self.bspLoader.setWantVisibility(True)
         self.bspLoader.setVisualizeLeafs(False)
         self.bspLoader.setWantLightmaps(True)
+        self.bspLoader.setWantShadows(metadata.USE_REAL_SHADOWS)
         self.bspLoader.setShadowCamPos(Point3(-15, 5, 40))
         self.bspLoader.setShadowResolution(60 * 2, 1024 * 1)
         self.bspLevel = None
@@ -256,6 +257,8 @@ class CIBase(ShowBase):
         self.cleanupSkyBox()
         self.cleanupNavMesh()
         if self.bspLevel:
+            # Cleanup any physics meshes for the level.
+            self.disableAndRemovePhysicsNodes(self.bspLevel)
             self.bspLevel.removeNode()
             self.bspLevel = None
         self.bspLoader.cleanup()
