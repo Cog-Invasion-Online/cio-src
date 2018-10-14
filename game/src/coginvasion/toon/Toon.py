@@ -241,15 +241,23 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
             rotateCutOff = CIGlobals.RotateCutOff if not self.isLocalAvatar() else CIGlobals.WalkCutOff
         
-            if strafeSpeed < CIGlobals.WalkCutOff and strafeSpeed > -CIGlobals.WalkCutOff:
+            if strafeSpeed < CIGlobals.StrafeCutOff and strafeSpeed > -CIGlobals.StrafeCutOff:
                 self.resetTorsoRotation()
 
-            if (forwardSpeed >= CIGlobals.RunCutOff and
-                strafeSpeed < CIGlobals.StafeCutOff and
-                strafeSpeed > -CIGlobals.StafeCutOff):
+            if forwardSpeed >= CIGlobals.RunCutOff:
                 action = CIGlobals.RUN_INDEX
+            elif forwardSpeed > CIGlobals.WalkCutOff:
+                action = CIGlobals.WALK_INDEX
+            elif forwardSpeed < -CIGlobals.WalkCutOff:
+                action = CIGlobals.REVERSE_INDEX
+            elif abs(rotateSpeed) > rotateCutOff:
+                action = CIGlobals.WALK_INDEX
+            elif abs(strafeSpeed) > CIGlobals.StrafeCutOff:
+                action = CIGlobals.RUN_INDEX
+            else:
+                action = CIGlobals.STAND_INDEX
 
-            elif strafeSpeed > CIGlobals.StafeCutOff or strafeSpeed < -CIGlobals.StafeCutOff:
+            if abs(strafeSpeed) >= CIGlobals.StrafeCutOff:
                 spine = self.find("**/def_spineB")
 
                 if spine.isEmpty():
@@ -258,37 +266,12 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                 movementVec = Vec3(strafeSpeed, forwardSpeed, 0)
                 movementVec.normalize()
                 movementAngle = rad2Deg(math.atan2(movementVec[1], movementVec[0])) - 90.0
-
-                if strafeSpeed > CIGlobals.StafeCutOff and (forwardSpeed < CIGlobals.WalkCutOff and forwardSpeed > -CIGlobals.WalkCutOff):
-                    action = CIGlobals.RUN_INDEX
-                elif strafeSpeed < -CIGlobals.StafeCutOff and (forwardSpeed < CIGlobals.WalkCutOff and forwardSpeed > -CIGlobals.WalkCutOff):
-                    action = CIGlobals.RUN_INDEX
-                elif strafeSpeed > CIGlobals.StafeCutOff and forwardSpeed > CIGlobals.RunCutOff:
-                    action = CIGlobals.RUN_INDEX
-                elif strafeSpeed > CIGlobals.StafeCutOff and forwardSpeed < -CIGlobals.WalkCutOff:
-                    action = CIGlobals.REVERSE_INDEX
-                elif strafeSpeed < -CIGlobals.StafeCutOff and forwardSpeed < -CIGlobals.WalkCutOff:
-                    action = CIGlobals.REVERSE_INDEX
-                elif strafeSpeed < -CIGlobals.StafeCutOff and forwardSpeed > CIGlobals.RunCutOff:
-                    action = CIGlobals.RUN_INDEX
-                else:
-                    action = CIGlobals.STAND_INDEX
-
                 
                 if action == CIGlobals.REVERSE_INDEX:
                     movementAngle -= 180
                 
                 spine.setH(-movementAngle)
                 self.getPart('legs').setH(movementAngle)
-
-            elif forwardSpeed > CIGlobals.WalkCutOff:
-                action = CIGlobals.WALK_INDEX
-            elif forwardSpeed < -CIGlobals.WalkCutOff:
-                action = CIGlobals.REVERSE_INDEX
-            elif abs(rotateSpeed) > rotateCutOff:
-                action = CIGlobals.WALK_INDEX
-            else:
-                action = CIGlobals.STAND_INDEX
             
             anim, rate = self.standWalkRunReverse[action]
             if anim != self.playingAnim or rate != self.playingRate or self.forcedTorsoAnim != self.lastForcedTorsoAnim:
