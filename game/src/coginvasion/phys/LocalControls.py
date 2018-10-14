@@ -385,13 +385,17 @@ class LocalControls(DirectObject):
         self.standingUp = True
 
     def __handleLand(self, fallDistance):
-        self.playFootstep(1.5)
-        if fallDistance > 8:
-            base.localAvatar.handleJumpHardLand()
-            #if self.mode == LocalControls.MFirstPerson:
-            #    self.fpsCam.handleJumpHardLand()
-        else:
-            base.localAvatar.handleJumpLand()
+        
+        
+        if self.controlsEnabled:
+            self.playFootstep(1.5)
+            
+            if fallDistance > 8:
+                base.localAvatar.handleJumpHardLand()
+                #if self.mode == LocalControls.MFirstPerson:
+                #    self.fpsCam.handleJumpHardLand()
+            else:
+                base.localAvatar.handleJumpLand()
             
         if self.exitControlsWhenGrounded:
             self.stopControllerUpdate()
