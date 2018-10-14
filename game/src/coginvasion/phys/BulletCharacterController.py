@@ -637,9 +637,9 @@ class BulletCharacterController(DirectObject):
 
         # Make the event sphere a tiny bit bigger than the capsule
         # so our capsule doesn't block the event sphere from entering triggers.
-        eventSphere = BulletSphereShape(self.__walkCapsuleR * 1.06)
+        eventSphere = BulletSphereShape(self.__walkCapsuleR * 1.5)
         self.eventSphereNP = self.movementParent.attachNewNode(BulletGhostNode('eventSphere'))
-        self.eventSphereNP.node().addShape(eventSphere, TransformState.makePos(Point3(0, 0, self.__walkCapsuleR - 0.1)))
+        self.eventSphereNP.node().addShape(eventSphere, TransformState.makePos(Point3(0, 0, self.__walkCapsuleR * 1.5)))
         self.eventSphereNP.node().setKinematic(True)
         self.eventSphereNP.setCollideMask(CIGlobals.EventGroup)
         self.__world.attach(self.eventSphereNP.node())
