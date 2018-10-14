@@ -153,7 +153,9 @@ class SquirtGag(Gag):
 
     def loadParticle(self):
         self.stopParticle()
-        gag = self.gag if not self.isLocal() else self.getVMGag()
+        gag = self.gag
+        if self.isLocal() and base.localAvatar.isFirstPerson():
+            gag = self.getVMGag()
         self.waterStreamParent = gag.find("**/" + self.sprayJoint).attachNewNode("particleParent")
         self.sprayParticle = ParticleLoader.loadParticleEffect(self.sprayParticleFile)
         # Update now to prevent one particle spraying out the side when we begin.

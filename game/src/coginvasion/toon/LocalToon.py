@@ -132,6 +132,13 @@ class LocalToon(DistributedPlayerToon):
         self.__traverseGUI = None
 
         self.playState = False
+        self.battleControls = False
+        
+    def setBattleControls(self, flag):
+        self.battleControls = flag
+        if self.playState:
+            self.disableAvatarControls()
+            self.enableAvatarControls(1)
 
     def stopPlay(self):
         if not self.playState:
@@ -150,7 +157,6 @@ class LocalToon(DistributedPlayerToon):
         self.disableAvatarControls()
         self.stopTrackAnimToSpeed()
         self.stopPosHprBroadcast()
-        self.stopSmartCamera()
 
         self.playState = False
 
@@ -177,7 +183,6 @@ class LocalToon(DistributedPlayerToon):
         self.startPosHprBroadcast()
         self.d_broadcastPositionNow()
         self.startTrackAnimToSpeed()
-        self.startSmartCamera()
 
         self.playState = True
         
@@ -199,16 +204,16 @@ class LocalToon(DistributedPlayerToon):
                                blendType = 'easeInOut').start()
 
     def areGagsAllowed(self):
-        state = (self.isFirstPerson() and self.getFPSCam().mouseEnabled) or self.isThirdPerson()
+        state = (self.isFirstPerson() and self.getFPSCam().mouseEnabled) or (self.isThirdPerson() and base.localAvatar.battleControls)
         return (self.avatarMovementEnabled and self.walkControls.controlsEnabled and
                 (self.chatInput is not None and self.chatInput.fsm.getCurrentState().getName() == 'idle') and
                 (self.invGui is not None and self.invGui.getCurrentOrNextState() != 'Select') and state)
 
     def isFirstPerson(self):
-        return self.walkControls.mode == self.walkControls.MFirstPerson
+        return self.walkControls.mode == self.walkControls.MFirstPerson and base.localAvatar.battleControls
 
     def isThirdPerson(self):
-        return self.walkControls.mode == self.walkControls.MThirdPerson
+        return self.walkControls.mode == self.walkControls.MThirdPerson or not base.localAvatar.battleControls
 
     def getViewModel(self):
         return self.walkControls.fpsCam.viewModel
@@ -226,7 +231,7 @@ class LocalToon(DistributedPlayerToon):
     def setCurrentGag(self, gagId):
         DistributedPlayerToon.setCurrentGag(self, gagId)
         if gagId != -1:
-            if self.walkControls.mode == self.walkControls.MFirstPerson:
+            if self.battleControls:
                 self.crosshair.setCrosshair(self.backpack.getGagByID(gagId).crosshair)
                 self.crosshair.show()
                 self.b_setLookMode(self.LMCage)
@@ -234,7 +239,7 @@ class LocalToon(DistributedPlayerToon):
             # We've unequipped
             if not self.walkControls:
                 return
-            if self.walkControls.mode == self.walkControls.MFirstPerson:
+            if self.battleControls:
                 self.crosshair.hide()
                 self.b_setLookMode(self.LMHead)
             else:
@@ -403,7 +408,7 @@ class LocalToon(DistributedPlayerToon):
     def setupControls(self):
         self.walkControls = LocalControls()
         self.walkControls.setupControls()
-        self.walkControls.setMode(self.walkControls.MFirstPerson)
+        self.walkControls.setMode(self.walkControls.MThirdPerson)
 
     def destroyControls(self):
         self.walkControls.disableControls()

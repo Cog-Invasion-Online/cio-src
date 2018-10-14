@@ -98,6 +98,9 @@ class FPSCamera(DirectObject):
         self.viewModel.hide(BitMask32.allOn())
 
     def showViewModel(self):
+        if not base.localAvatar.isFirstPerson():
+            return
+
         self.viewModel.showThrough(CIGlobals.ViewModelCamMask)
 
     def __vpDebugTask(self, task):
@@ -178,7 +181,14 @@ class FPSCamera(DirectObject):
             self.camRoot.setHpr(0, 0, 0)
             
         base.camera.reparentTo(self.camRoot)
-        base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
+
+        if base.localAvatar.isFirstPerson():
+            base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
+        elif base.localAvatar.isThirdPerson():
+            camHeight = max(base.localAvatar.getHeight(), 3.0)
+            heightScaleFactor = camHeight * 0.3333333333
+            base.localAvatar.smartCamera.setIdealCameraPos((1, -7 * heightScaleFactor, 0))
+            base.localAvatar.smartCamera.setLookAtPoint((1, 10, 0))
 
     def getViewModelLeftHand(self):
         return self.viewModel.find("**/def_left_hold")
@@ -202,7 +212,8 @@ class FPSCamera(DirectObject):
         base.win.requestProperties(props)
 
         self.attachCamera(False)
-        base.localAvatar.getGeomNode().hide()
+        if base.localAvatar.isFirstPerson():
+            base.localAvatar.getGeomNode().hide()
         
         base.win.movePointer(0, base.win.getXSize() / 2, base.win.getYSize() / 2)
         
@@ -227,7 +238,7 @@ class FPSCamera(DirectObject):
             self.acceptEngageKeys()
         else:
             self.ignoreEngageKeys()
-            if showAvatar:
+            if showAvatar or base.localAvatar.isThirdPerson():
                 base.localAvatar.getGeomNode().show()
             else:
                 base.localAvatar.getGeomNode().hide()
@@ -251,11 +262,12 @@ class FPSCamera(DirectObject):
         dt = globalClock.getDt()
         time = globalClock.getFrameTime()
 
-        eyePoint = base.localAvatar.getEyePoint()
-        if base.localAvatar.walkControls.crouching:
-            eyePoint[2] = eyePoint[2] / 2.0
-        eyePoint[2] = CIGlobals.lerpWithRatio(eyePoint[2], self.lastEyeHeight, 0.4)
-        self.lastEyeHeight = eyePoint[2]
+        if base.localAvatar.isFirstPerson():
+            eyePoint = base.localAvatar.getEyePoint()
+            if base.localAvatar.walkControls.crouching:
+                eyePoint[2] = eyePoint[2] / 2.0
+            eyePoint[2] = CIGlobals.lerpWithRatio(eyePoint[2], self.lastEyeHeight, 0.4)
+            self.lastEyeHeight = eyePoint[2]
         
         # Mouse look around
         mw = base.mouseWatcherNode
@@ -279,58 +291,60 @@ class FPSCamera(DirectObject):
                 yDist = 0
                 self.camRoot.setP(FPSCamera.MinP)
 
-            maxSway = 0.55
-            minSway = 0.1
-            swayXFactor = 0.0015 * sens
-            swayYFactor = swayXFactor
-            swayRatio = 0.2
-            swayX = (xDist * swayXFactor) / dt
-            swayY = (yDist * swayYFactor) / dt
+            if base.localAvatar.isFirstPerson():
+                maxSway = 0.55
+                minSway = 0.1
+                swayXFactor = 0.0015 * sens
+                swayYFactor = swayXFactor
+                swayRatio = 0.2
+                swayX = (xDist * swayXFactor) / dt
+                swayY = (yDist * swayYFactor) / dt
             
-            if abs(swayX) < minSway:
-                swayX = 0.0
-            elif swayX < 0:
-                swayX = swayX + minSway
-            elif swayX > 0:
-                swayX = swayX - minSway
-            if swayX < -maxSway:
-                swayX = -maxSway
-            elif swayX > maxSway:
-                swayX = maxSway
+                if abs(swayX) < minSway:
+                    swayX = 0.0
+                elif swayX < 0:
+                    swayX = swayX + minSway
+                elif swayX > 0:
+                    swayX = swayX - minSway
+                if swayX < -maxSway:
+                    swayX = -maxSway
+                elif swayX > maxSway:
+                    swayX = maxSway
 
-            if abs(swayY) < minSway:
-                swayY = 0.0
-            elif swayY < 0:
-                swayY = swayY + minSway
-            elif swayX > 0:
-                swayY = swayY - minSway
-            if swayY < -maxSway:
-                swayY = -maxSway
-            elif swayY > maxSway:
-                swayY = maxSway
+                if abs(swayY) < minSway:
+                    swayY = 0.0
+                elif swayY < 0:
+                    swayY = swayY + minSway
+                elif swayX > 0:
+                    swayY = swayY - minSway
+                if swayY < -maxSway:
+                    swayY = -maxSway
+                elif swayY > maxSway:
+                    swayY = maxSway
 
-            vmGoal = Point3(-swayX, 0, swayY)
-            self.lastVMPos = CIGlobals.lerpWithRatio(vmGoal, self.lastVMPos, swayRatio)
+                vmGoal = Point3(-swayX, 0, swayY)
+                self.lastVMPos = CIGlobals.lerpWithRatio(vmGoal, self.lastVMPos, swayRatio)
                 
             base.win.movePointer(0, int(center.getX()), int(center.getY()))
         
-        # Camera / viewmodel bobbing
-        vmBob = Point3(0)
-        vmRaise = Point3(0)
-        camBob = Point3(0)
-        if base.localAvatar.walkControls.controller.isOnGround():
-            amplitude = base.localAvatar.walkControls.speeds.length() * 0.005
-            bob = math.cos(time * 10) * (amplitude * 0.4)
-            cBob = math.cos(time * 10) * (amplitude)
-            xBob = math.sin(time * 5) * (amplitude * 0.65)
+        if base.localAvatar.isFirstPerson():
+            # Camera / viewmodel bobbing
+            vmBob = Point3(0)
+            vmRaise = Point3(0)
+            camBob = Point3(0)
+            if base.localAvatar.walkControls.controller.isOnGround():
+                amplitude = base.localAvatar.walkControls.speeds.length() * 0.005
+                bob = math.cos(time * 10) * (amplitude * 0.4)
+                cBob = math.cos(time * 10) * (amplitude)
+                xBob = math.sin(time * 5) * (amplitude * 0.65)
 
-            vmBob.set(xBob, -bob * 2, -bob / 2)
-            vmRaise.set(0, abs(self.camRoot.getP()) * -0.002, self.camRoot.getP() * 0.002)
-            camBob.set(0, 0, 0)#cBob)
+                vmBob.set(xBob, -bob * 2, -bob / 2)
+                vmRaise.set(0, abs(self.camRoot.getP()) * -0.002, self.camRoot.getP() * 0.002)
+                camBob.set(0, 0, 0)#cBob)
 
-        # Apply bob, raise, and sway to the viewmodel.
-        self.viewModel.setPos(vmBob + vmRaise + self.lastVMPos)
-        self.camRoot.setPos(eyePoint + camBob)
+            # Apply bob, raise, and sway to the viewmodel.
+            self.viewModel.setPos(vmBob + vmRaise + self.lastVMPos)
+            self.camRoot.setPos(eyePoint + camBob)
 
         newPitch = self.camRoot.getP()
 

@@ -384,6 +384,8 @@ class ToonHead(Actor.Actor):
                 pass
 
     def startLookAround(self):
+        return
+        
         if not self.eyeLensNP:
             lens = PerspectiveLens()
             lens.setMinFov(180.0 / (4./3.))

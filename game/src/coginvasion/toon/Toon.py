@@ -26,8 +26,8 @@ import AccessoryGlobals
 
 from panda3d.core import VBase3, VBase4, Point3, Vec3, ConfigVariableBool
 from panda3d.core import BitMask32, CollisionHandlerPusher
-from panda3d.core import Material, NodePath
-import ToonDNA, random
+from panda3d.core import Material, NodePath, rad2Deg
+import ToonDNA, random, math
 
 import types
 
@@ -195,6 +195,14 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         #        if base.localAvatar.doId == self.doId:
         #            self.controlManager.enableAvatarJump()
         
+    def setPlayRate(self, rate, animName, partName = None):
+        if partName or not self.forcedTorsoAnim:
+            Actor.setPlayRate(self, rate, animName, partName)
+        else:
+            parts = self.__getLowerHalfPartNames() + self.__getUpperHalfPartNames()
+            for part in parts:
+                Actor.setPlayRate(self, rate, animName, part)
+        
     def play(self, animName, partName=None, fromFrame=None, toFrame=None):
         lowerHalfNames = self.__getLowerHalfPartNames()
         if self.forcedTorsoAnim is None or (not (partName in lowerHalfNames)):
@@ -207,17 +215,13 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             
     def loop(self, animName, restart=1, partName=None, fromFrame=None, toFrame=None):
         lowerHalfNames = self.__getLowerHalfPartNames()
-        if self.forcedTorsoAnim is None or (not (partName in lowerHalfNames)):
+        if self.forcedTorsoAnim is None:
             return Actor.loop(self, animName, restart=restart, partName=partName, fromFrame=fromFrame, toFrame=toFrame)
         else:
             # The torso and the head must stay in its current animation.
             # Let's only update the pants and the legs animation.
             for index, part in enumerate(lowerHalfNames):
                 output = Actor.loop(self, animName, restart=restart, partName=part, fromFrame=fromFrame, toFrame=toFrame)
-                
-                # Let's print out the output when we update the last part.
-                if index == (len(lowerHalfNames) - 1):
-                    return output
                 
                     
     def __getUpperHalfPartNames(self):
@@ -251,32 +255,31 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                 if spine.isEmpty():
                     spine = self.controlJoint(None, "torso", "def_spineB")
 
-                if strafeSpeed > CIGlobals.StafeCutOff and (forwardSpeed < CIGlobals.RunCutOff and forwardSpeed > -CIGlobals.RunCutOff):
+                movementVec = Vec3(strafeSpeed, forwardSpeed, 0)
+                movementVec.normalize()
+                movementAngle = rad2Deg(math.atan2(movementVec[1], movementVec[0])) - 90.0
+
+                if strafeSpeed > CIGlobals.StafeCutOff and (forwardSpeed < CIGlobals.WalkCutOff and forwardSpeed > -CIGlobals.WalkCutOff):
                     action = CIGlobals.RUN_INDEX
-                    self.getPart("legs").setH(-90)
-                    spine.setH(90)
-                elif strafeSpeed < -CIGlobals.StafeCutOff and (forwardSpeed < CIGlobals.RunCutOff and forwardSpeed > -CIGlobals.RunCutOff):
+                elif strafeSpeed < -CIGlobals.StafeCutOff and (forwardSpeed < CIGlobals.WalkCutOff and forwardSpeed > -CIGlobals.WalkCutOff):
                     action = CIGlobals.RUN_INDEX
-                    self.getPart("legs").setH(90)
-                    spine.setH(-90)
                 elif strafeSpeed > CIGlobals.StafeCutOff and forwardSpeed > CIGlobals.RunCutOff:
                     action = CIGlobals.RUN_INDEX
-                    self.getPart("legs").setH(-45)
-                    spine.setH(45)
-                elif strafeSpeed > CIGlobals.StafeCutOff and forwardSpeed < -CIGlobals.RunCutOff:
+                elif strafeSpeed > CIGlobals.StafeCutOff and forwardSpeed < -CIGlobals.WalkCutOff:
                     action = CIGlobals.REVERSE_INDEX
-                    self.getPart('legs').setH(45)
-                    spine.setH(-45)
-                elif strafeSpeed < -CIGlobals.StafeCutOff and forwardSpeed < -CIGlobals.RunCutOff:
+                elif strafeSpeed < -CIGlobals.StafeCutOff and forwardSpeed < -CIGlobals.WalkCutOff:
                     action = CIGlobals.REVERSE_INDEX
-                    self.getPart("legs").setH(-45)
-                    spine.setH(45)
                 elif strafeSpeed < -CIGlobals.StafeCutOff and forwardSpeed > CIGlobals.RunCutOff:
                     action = CIGlobals.RUN_INDEX
-                    self.getPart('legs').setH(45)
-                    spine.setH(-45)
                 else:
                     action = CIGlobals.STAND_INDEX
+
+                
+                if action == CIGlobals.REVERSE_INDEX:
+                    movementAngle -= 180
+                
+                spine.setH(-movementAngle)
+                self.getPart('legs').setH(movementAngle)
 
             elif forwardSpeed > CIGlobals.WalkCutOff:
                 action = CIGlobals.WALK_INDEX
@@ -293,28 +296,9 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                 self.playingRate = rate
                 self.lastForcedTorsoAnim = self.forcedTorsoAnim
                 
-                """
-                doingGagAnim = False
-                if self.backpack:
-                    if self.backpack.getCurrentGag():
-                        if self.backpack.getCurrentGag().getState() in [GagState.START, GagState.RELEASED]:
-                            doingGagAnim = True
-                            
-                            
-                            torsoAnim = self.getCurrentAnim('torso')
-                            torsoAnimFrame = self.getCurrentFrame(torsoAnim, partName = 'torso')
-                            self.play(torsoAnim, partName = "torso-top", fromFrame = torsoAnimFrame)
-                            
-                            self.loop(anim, partName = "legs")
-                            self.loop(anim, partName = "torso-pants")
-                            self.loop(anim, partName = "head")
-                """
-                #if not doingGagAnim:
                 if self.forcedTorsoAnim is None:
                     self.loop(anim)
                 else:
-                    #self.loop(self.forcedTorsoAnim, partName = 'head')
-                    #self.loop(self.forcedTorsoAnim, partName = 'torso-top')
 
                     # Whatever happens to the legs should also happen on the pants.
                     self.loop(anim, partName = 'torso-pants')

@@ -29,6 +29,7 @@ class SoundGag(Gag):
         self.megaphone = None
         self.tracks = None
         self.timeout = 5.0
+        self.holdGag = False
 
         if metadata.PROCESS == 'client':
             self.appearSfx = base.audio3d.loadSfx(appearSfx)
@@ -45,11 +46,11 @@ class SoundGag(Gag):
         base.audio3d.attachSoundToObject(self.soundSfx, self.avatar)
         base.audio3d.attachSoundToObject(self.appearSfx, self.avatar)
         if self.isLocal():
-            vm = base.localAvatar.getViewModel()
-            #vm.setY(5.0)
-            fpsCam = base.localAvatar.getFPSCam()
-            fpsCam.setVMAnimTrack(Sequence(Func(fpsCam.vmRoot2.setY, 0.5), Wait(0.75), Func(vm.show), ActorInterval(vm, "sound"), Func(fpsCam.vmRoot2.setY, 0.0), Func(vm.hide)))
-            self.gag.instanceTo(fpsCam.vmGag)
+            if base.localAvatar.isFirstPerson():
+                vm = base.localAvatar.getViewModel()
+                fpsCam = base.localAvatar.getFPSCam()
+                fpsCam.setVMAnimTrack(Sequence(Func(fpsCam.vmRoot2.setY, 0.5), Wait(0.75), Func(vm.show), ActorInterval(vm, "sound"), Func(fpsCam.vmRoot2.setY, 0.0), Func(vm.hide)))
+                self.gag.instanceTo(fpsCam.vmGag)
             base.localAvatar.sendUpdate('usedGag', [self.id])
 
     def finish(self):

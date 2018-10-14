@@ -78,7 +78,8 @@ class DistributedBattleZone(DistributedObject):
         base.localAvatar.setMyBattle(self)
         self.lastCameraIndex = base.localAvatar.smartCamera.cameraIndex
         # Change to over the shoulder mode
-        base.localAvatar.smartCamera.setCameraPositionByIndex(base.localAvatar.smartCamera.OTSIndex)
+        #base.localAvatar.smartCamera.setCameraPositionByIndex(base.localAvatar.smartCamera.OTSIndex)
+        base.localAvatar.battleControls = True
 
     def __handleSuitCreate(self, obj):
         self.suits[obj.doId] = obj
@@ -92,7 +93,8 @@ class DistributedBattleZone(DistributedObject):
         self.ignore('suitCreate')
         self.ignore('suitDelete')
         base.localAvatar.setMyBattle(None)
-        base.localAvatar.smartCamera.setCameraPositionByIndex(self.lastCameraIndex)
+        #base.localAvatar.smartCamera.setCameraPositionByIndex(self.lastCameraIndex)
+        base.localAvatar.battleControls = False
         self.lastCameraIndex = None
         DistributedObject.disable(self)
         

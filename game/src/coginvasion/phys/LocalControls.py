@@ -113,10 +113,7 @@ class LocalControls(DirectObject):
             self.allowJump = True
         
     def attachCamera(self):
-        if self.mode == LocalControls.MFirstPerson:
-            self.fpsCam.attachCamera()
-        elif self.mode == LocalControls.MThirdPerson:
-            self.tp_attachCamera()
+        self.fpsCam.attachCamera()
 
     def enterFirstPerson(self):
         self.fpsCam.setup()
@@ -138,7 +135,8 @@ class LocalControls(DirectObject):
         bp = base.localAvatar.getBackpack()
         if bp and bp.getCurrentGag():
             base.localAvatar.showCrosshair()
-            self.fpsCam.getViewModel().show()
+            if base.localAvatar.isFirstPerson():
+                self.fpsCam.getViewModel().show()
             base.localAvatar.b_setLookMode(base.localAvatar.LMCage)
         else:
             base.localAvatar.b_setLookMode(base.localAvatar.LMHead)
@@ -152,23 +150,30 @@ class LocalControls(DirectObject):
         base.localAvatar.hideCrosshair()
 
     def enterThirdPerson(self):
-        base.localAvatar.b_setLookMode(base.localAvatar.LMOff)
-        base.localAvatar.getGeomNode().show()
-        self.tp_attachCamera()
-        base.localAvatar.hideCrosshair()
-        self.fpsCam.getViewModel().hide()
-        self.revSpeed = CIGlobals.ToonReverseSpeed
+        #base.localAvatar.b_setLookMode(base.localAvatar.LMOff)
+        #base.localAvatar.getGeomNode().show()
+        #self.tp_attachCamera()
+        #base.localAvatar.hideCrosshair()
+        #self.fpsCam.getViewModel().hide()
+        #self.revSpeed = CIGlobals.ToonReverseSpeed
+
+        self.fpsCam.setup()
         
-        base.localAvatar.enableGagKeys()
+        if self.controlsEnabled:
+            self.fp_enable()
+            base.localAvatar.startSmartCamera()
+
+        self.revSpeed = CIGlobals.ToonForwardSpeed
 
     def tp_attachCamera(self):
         camera.reparentTo(base.localAvatar)
-        camera.setPos(base.localAvatar.smartCamera.getIdealCameraPos())
-        camera.lookAt(base.localAvatar.smartCamera.getLookAtPoint())
+        base.localAvatar.smartCamera.setCameraPositionByIndex(base.localAvatar.smartCamera.cameraIndex)
+        #camera.setPos(base.localAvatar.smartCamera.getIdealCameraPos())
+        #camera.lookAt(base.localAvatar.smartCamera.getLookAtPoint())
         base.camLens.setMinFov(CIGlobals.DefaultCameraFov / (4. / 3.))
 
     def exitThirdPerson(self):
-        pass
+        base.localAvatar.stopSmartCamera()
 
     def setMode(self, mode):
         self.mode = mode
@@ -184,6 +189,7 @@ class LocalControls(DirectObject):
         self.watchMovementInputs()
 
     def switchMode(self):
+        print "SwitchMode"
         if self.mode == LocalControls.MFirstPerson:
             self.setMode(LocalControls.MThirdPerson)
         elif self.mode == LocalControls.MThirdPerson:
@@ -256,15 +262,24 @@ class LocalControls(DirectObject):
         
         base.taskMgr.add(self.__handlePlayerControls, "LocalControls.handlePlayerControls")
         base.taskMgr.add(self.__handleFootsteps, "LocalControls.handleFootsteps", taskChain = "fpsIndependentStuff")
-        base.taskMgr.add(self.__handleUse, "LocalControls.handleUse", taskChain = "fpsIndependentStuff")
 
-        self.accept('alt', self.__throwTestBPeel)
-        self.accept('tab', self.switchMode)
+        self.watchMovementInputs()
 
-        if self.mode == LocalControls.MFirstPerson:
-            self.fp_enable(wantMouse)
-        elif self.mode == LocalControls.MThirdPerson:
+        if base.localAvatar.battleControls:
+            base.taskMgr.add(self.__handleUse, "LocalControls.handleUse", taskChain = "fpsIndependentStuff")
+            #self.accept(base.inputStore.NextCameraPosition, self.switchMode)
+
+            if self.mode == LocalControls.MFirstPerson:
+                self.fp_enable(wantMouse)
+            elif self.mode == LocalControls.MThirdPerson:
+                self.fp_enable(wantMouse)
+                base.localAvatar.startSmartCamera()
+                
+        else:
             self.tp_attachCamera()
+            base.localAvatar.startSmartCamera()
+            self.accept(base.inputStore.NextCameraPosition, base.localAvatar.smartCamera.nextCameraPos, [1])
+            self.accept(base.inputStore.PreviousCameraPosition, base.localAvatar.smartCamera.nextCameraPos, [0])
 
         self.controlsEnabled = True
         self.exitControlsWhenGrounded = False
@@ -311,10 +326,7 @@ class LocalControls(DirectObject):
 
         self.setControlScheme(LocalControls.SDefault)
 
-        inputState.watchWithModifiers('jump', 'space', inputSource = inputState.WASD)
-        inputState.watchWithModifiers('crouch', 'control', inputSource = inputState.WASD)
-        inputState.watchWithModifiers('walk', 'shift', inputSource = inputState.WASD)
-        inputState.watchWithModifiers('use', 'e', inputSource = inputState.WASD)
+        
 
     def releaseMovementInputs(self):
         for tok in self.movementTokens:
@@ -323,26 +335,36 @@ class LocalControls(DirectObject):
 
     def watchMovementInputs(self):
         self.releaseMovementInputs()
-
-        if self.mode == LocalControls.MFirstPerson:
+        
+        if base.localAvatar.battleControls:
             self.movementTokens.append(inputState.watchWithModifiers('forward', 'w', inputSource = inputState.WASD))
             self.movementTokens.append(inputState.watchWithModifiers('reverse', 's', inputSource = inputState.WASD))
             self.movementTokens.append(inputState.watchWithModifiers('slideLeft', 'a', inputSource = inputState.WASD))
             self.movementTokens.append(inputState.watchWithModifiers('slideRight', 'd', inputSource = inputState.WASD))
-        elif self.mode == LocalControls.MThirdPerson:
+            self.movementTokens.append(inputState.watchWithModifiers('jump', 'space', inputSource = inputState.WASD))
+            self.movementTokens.append(inputState.watchWithModifiers('crouch', 'control', inputSource = inputState.WASD))
+            self.movementTokens.append(inputState.watchWithModifiers('walk', 'shift', inputSource = inputState.WASD))
+            self.movementTokens.append(inputState.watchWithModifiers('use', 'e', inputSource = inputState.WASD))
+        else:
             self.movementTokens.append(inputState.watchWithModifiers('forward', 'arrow_up', inputSource = inputState.WASD))
             self.movementTokens.append(inputState.watchWithModifiers('reverse', 'arrow_down', inputSource = inputState.WASD))
             self.movementTokens.append(inputState.watchWithModifiers('turnLeft', 'arrow_left', inputSource = inputState.WASD))
             self.movementTokens.append(inputState.watchWithModifiers('turnRight', 'arrow_right', inputSource = inputState.WASD))
+            self.movementTokens.append(inputState.watchWithModifiers('jump', 'control', inputSource = inputState.WASD))
 
     def disableControls(self, chat = False):
         if not self.controlsEnabled:
             return
 
-        if self.mode == LocalControls.MFirstPerson:
+        if base.localAvatar.battleControls:
             self.fpsCam.disableMouseMovement(False, not chat)
 
         self.ignore('alt')
+        self.ignore(base.inputStore.NextCameraPosition)
+        self.ignore(base.inputStore.PreviousCameraPosition)
+        
+        if base.localAvatar.isThirdPerson() or not base.localAvatar.battleControls:
+            base.localAvatar.stopSmartCamera()
         
         inputState.set('forward', False, inputSource = inputState.WASD)
         inputState.set('reverse', False, inputSource = inputState.WASD)
@@ -503,8 +525,8 @@ class LocalControls(DirectObject):
             speed.setZ(0)
             
         self.speeds = Vec3(speed)
-        if base.localAvatar.isFirstPerson():
-            # Apply smoothed out movement in first person.
+        if base.localAvatar.battleControls:
+            # Apply smoothed out movement in battle controls.
 
             sFriction = 1 - math.pow(1 - self.staticFriction, dt * 30.0)
             dFriction = 1 - math.pow(1 - self.dynamicFriction, dt * 30.0)

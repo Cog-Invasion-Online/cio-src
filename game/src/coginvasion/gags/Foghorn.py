@@ -47,7 +47,7 @@ class Foghorn(SoundGag):
         attackTrack = Parallel(Sequence(Wait(0.2), spinInstr), Sequence(stretchInstr, Wait(0.5), backInstr))
         megaphoneTrack = Sequence(megaphoneSh, Wait(delayUntilAppearSound), SoundInterval(self.appearSfx, node=self.avatar), Wait(delayTime + 1.0), instrumentAppear)
         tracks.append(megaphoneTrack)
-        tracks.append(ActorInterval(self.avatar, 'sound'))
+        tracks.append(Sequence(Func(self.avatar.setForcedTorsoAnim, 'sound'), self.getAnimationTrack('sound'), Func(self.avatar.clearForcedTorsoAnim)))
         soundTrack = Sequence(Wait(delayTime), Parallel(attackTrack, SoundInterval(self.soundSfx, node=self.avatar), Func(self.damageCogsNearby), Wait(2.0), Func(self.finish)))
         tracks.append(soundTrack)
         tracks.start()

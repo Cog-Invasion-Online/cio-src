@@ -24,7 +24,8 @@ from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wa
 import math
 
 RotateCutOff = 65.0 # for remote avatars only, local avatar uses WalkCutOff
-StafeCutOff = 1.0
+StafeCutOff = 2.0
+StafeCutOff = 2.0
 WalkCutOff = 0.5
 RunCutOff = 8.0
 STAND_INDEX = 0
