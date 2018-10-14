@@ -37,7 +37,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
             self.DistributedToon_initialized = 1
         Toon.Toon.__init__(self, cr)
         DistributedAvatar.__init__(self, cr)
-        DistributedSmoothNode.__init__(self, cr)
         self.animState2animId = {}
         for index in range(len(self.animFSM.getStates())):
             self.animState2animId[self.animFSM.getStates()[index].getName()] = index
@@ -245,7 +244,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
 
     def generate(self):
         DistributedAvatar.generate(self)
-        DistributedSmoothNode.generate(self)
         self.startSmooth()
 
     def disable(self):
@@ -266,7 +264,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
         self.stopSmooth()
         Toon.Toon.disable(self)
         DistributedAvatar.disable(self)
-        DistributedSmoothNode.disable(self)
 
     def delete(self):
         try:
@@ -278,5 +275,4 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
             del self.track
             Toon.Toon.delete(self)
             DistributedAvatar.delete(self)
-            DistributedSmoothNode.delete(self)
         return
