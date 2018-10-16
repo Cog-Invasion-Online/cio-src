@@ -45,8 +45,9 @@ class DistributedTNTOV(DistributedTNT, DistributedObjectOV):
         # Make sure to start the TNT out in front of our capsule to prevent weird physics
         extrude = base.localAvatar.getQuat(render).xform(Vec3(0, 1.0 + 0.3925, base.localAvatar.getHeight() / 2.0))
         self.setPos(pos + extrude)
-        
-        self.lookAt(render, PhysicsUtils.getHitPosFromCamera())
+
+        push = ((pos + (0, 0, base.localAvatar.getHeight() / 2.0)) - camera.getPos(render)).length()
+        self.lookAt(render, PhysicsUtils.getHitPosFromCamera(push = push))
         self.d_clearSmoothing()
         self.d_broadcastPosHpr()
         

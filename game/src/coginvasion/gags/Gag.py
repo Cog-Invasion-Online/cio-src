@@ -75,6 +75,8 @@ class Gag(object, DirectObject):
                 holdCallback()
             self.setAnimTrack(self.getBobSequence(drawAnim, bobStart, bobEnd, bobSpeed), startNow = True, looping = True)
 
+        print self.avatar.getForcedTorsoAnim()
+
         self.setAnimTrack(Sequence(Func(self.avatar.setForcedTorsoAnim, drawAnim),
                                    self.getAnimationTrack(drawAnim, drawAnimStart, drawAnimEnd, drawAnimSpeed),
                                    Func(__doHold)), startNow = True)
@@ -122,20 +124,24 @@ class Gag(object, DirectObject):
         if self.avatar:
             self.avatar.loop(self.avatar.playingAnim)
             
-    def getAnimationTrack(self, animName, startFrame = None, endFrame = None, playRate = 1.0):
+    def getAnimationTrack(self, animName, startFrame = None, endFrame = None, playRate = 1.0, startTime = None, endTime = None):
         return Parallel(
             ActorInterval(self.avatar, 
                 animName, 
                 startFrame = startFrame, 
                 endFrame = endFrame,
                 partName = 'head',
-                playRate = playRate),
+                playRate = playRate,
+                startTime = startTime,
+                endTime = endTime),
             ActorInterval(self.avatar, 
                 animName, 
                 startFrame = startFrame, 
                 endFrame = endFrame,
                 partName = 'torso-top',
-                playRate = playRate)
+                playRate = playRate,
+                startTime = startTime,
+                endTime = endTime)
         )
             
     def getBobSequence(self, animName, startFrame, endFrame, playRate):
@@ -309,6 +315,9 @@ class Gag(object, DirectObject):
         if self.avatar:
             self.handJoint = self.avatar.find('**/def_joint_right_hold')
 
+    def getSingularAnimTrack(self, anim):
+        return Sequence(Func(self.avatar.setForcedTorsoAnim, anim), self.getAnimationTrack(anim), Func(self.avatar.clearForcedTorsoAnim))
+
     def setupViewModel(self):
 
         if self.gag:
@@ -429,12 +438,13 @@ class Gag(object, DirectObject):
         return track
 
     def getSoundTrack(self, delay, node, duration = None):
+        base.audio3d.attachSoundToObject(self.hitSfx, node)
         soundTrack = Sequence()
         soundTrack.append(Wait(delay))
         if duration:
-            soundTrack.append(SoundInterval(self.hitSfx, duration = duration, node = node))
+            soundTrack.append(SoundInterval(self.hitSfx, duration = duration))
         else:
-            soundTrack.append(SoundInterval(self.hitSfx, node = node))
+            soundTrack.append(SoundInterval(self.hitSfx))
         return soundTrack
 
     def getScaleIntervals(self, props, duration, startScale, endScale):

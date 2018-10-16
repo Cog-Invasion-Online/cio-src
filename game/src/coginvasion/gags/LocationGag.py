@@ -43,6 +43,7 @@ class LocationGag:
         return self.shadowScale
 
     def equip(self):
+        print "equip again"
         self.cleanupLocationSeeker()
         self.buildButton()
         self.button.reparentTo(self.avatar.find('**/def_joint_left_hold'))
@@ -78,8 +79,7 @@ class LocationGag:
     def complete(self):
         if self.button:
             numFrames = base.localAvatar.getNumFrames(self.buttonAnim)
-            ActorInterval(self.avatar, self.buttonAnim, startFrame = self.completeFrame, endFrame = numFrames,
-                          playRate = self.playRate).start()
+            self.getAnimationTrack(self.buttonAnim, startFrame = self.completeFrame, playRate = self.playRate).start()
 
         self.cleanupButton()
 
@@ -88,7 +88,7 @@ class LocationGag:
             return
         self.cleanupTracks()
         if mode == 0:
-            self.actorTrack = Sequence(ActorInterval(self.avatar, self.buttonAnim, startFrame = self.hitStartFrame,
+            self.actorTrack = Sequence(self.getAnimationTrack(self.buttonAnim, startFrame = self.hitStartFrame,
                                endFrame = self.completeFrame, playRate = self.playRate))
             self.soundTrack = Sequence(Wait(self.buttonHold), SoundInterval(self.buttonSfx, node = self.avatar))
 

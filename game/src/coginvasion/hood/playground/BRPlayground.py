@@ -21,7 +21,7 @@ class BRPlayground(Playground.Playground):
 
     def load(self):
         Playground.Playground.load(self)
-        base.waterReflectionMgr.addWaterNode(20, (-58, -25, base.wakeWaterHeight))
+        base.waterReflectionMgr.addWaterNode(20, (-58, -25, base.wakeWaterHeight), depth = 2.06)
         
     def enter(self, requestStatus):
         Playground.Playground.enter(self, requestStatus)

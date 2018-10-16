@@ -17,7 +17,7 @@ class DLPlayground(Playground):
 
     def load(self):
         Playground.load(self)
-        base.waterReflectionMgr.addWaterNode(20, (160, 0.35, base.wakeWaterHeight))
+        base.waterReflectionMgr.addWaterNode(20, (160, 0.35, base.wakeWaterHeight), depth = 2.1)
 
     def enter(self, requestStatus):
         for lamp in self.loader.lampLights:

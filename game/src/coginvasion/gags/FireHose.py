@@ -68,11 +68,11 @@ class FireHose(SquirtGag):
         self.hydrant = loader.loadModel('phase_5/models/props/battle_hydrant.bam')
         self.gag.reparentTo(self.hydrant)
         self.gag.pose('chan', 2)
-        self.gag.listJoints()
         self.hoseJoint = self.gag.controlJoint(None, "modelRoot", "joint_x")
 
         self.hydrantNode = self.avatar.attachNewNode('hydrantNode')
         self.hydrantNode.clearTransform(self.avatar.getGeomNode().getChild(0))
+        self.hydrantNode.setHpr(0, 0, 0)
         self.hydrantScale = self.hydrantNode.attachNewNode('hydrantScale')
         self.hydrant.reparentTo(self.hydrantScale)
         self.avatar.pose('firehose', 30)
@@ -100,7 +100,7 @@ class FireHose(SquirtGag):
         track = Parallel()
         toonTrack = Sequence(Wait(tAppearDelay),
                              Func(self.avatar.setForcedTorsoAnim, 'firehose'),
-                             ActorInterval(self.avatar, 'firehose', endFrame = 30),
+                             self.getAnimationTrack('firehose', endFrame = 30),
                              Func(self.__doBob))
         propTrack = Sequence(Func(self.hydrantNode.reparentTo, self.avatar), LerpScaleInterval(self.hydrantScale, tAppearDelay * 0.5, Point3(1, 1, 1.4),
             startScale=Point3(1, 1, 0.01)), LerpScaleInterval(self.hydrantScale, tAppearDelay * 0.3, Point3(1, 1, 0.8), startScale=Point3(1, 1, 1.4)),

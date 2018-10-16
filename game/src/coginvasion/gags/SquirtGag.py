@@ -110,8 +110,11 @@ class SquirtGag(Gag):
                 base.localAvatar.b_gagThrow(self.id)
                 return task.done
 
+            camQuat = camera.getQuat(render)
             pFrom = camera.getPos(render)
-            pTo = pFrom + camera.getQuat(render).xform(Vec3.forward()) * (self.sprayParticleDist + (pFrom - streamPos).length())
+            push = (streamPos - pFrom).length()
+            pFrom += camQuat.xform(Vec3.forward()) * push
+            pTo = pFrom + camQuat.xform(Vec3.forward()) * (self.sprayParticleDist + (pFrom - streamPos).length())
             hitPos = Point3(pTo)
             result = base.physicsWorld.rayTestClosest(pFrom, pTo, CIGlobals.WorldGroup)
             if result.hasHit():
@@ -127,7 +130,7 @@ class SquirtGag(Gag):
                 self.lastSprayTime = time
 
         else:
-            pFrom = self.avatar.getPos(render) + self.avatar.getEyePoint()
+            pFrom = self.avatar.getPos(render) + self.avatar.getEyePoint() + (1, 0, 0)
             quat = Quat()
             quat.setHpr(self.avatar.getHpr(render) + (0, self.avatar.lookPitch, 0))
             pTo = pFrom + quat.xform(Vec3.forward()) * (self.sprayParticleDist + (pFrom - streamPos).length())

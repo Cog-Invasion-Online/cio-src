@@ -56,6 +56,6 @@ class Bugle(SoundGag):
         megaphoneTrack = Parallel(Sequence(Wait(1.7), SoundInterval(self.soundSfx, node=self.avatar)), Sequence(megaphoneShow, Wait(1.7), instrumentAppear, Wait(1),
                                            Func(self.damageCogsNearby), instrumentshrink, Wait(0.4), Func(self.finish)))
         tracks.append(megaphoneTrack)
-        tracks.append(ActorInterval(self.avatar, 'sound'))
+        tracks.append(self.getSingularAnimTrack('sound'))
         tracks.start()
         self.tracks = tracks

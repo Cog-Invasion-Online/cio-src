@@ -81,7 +81,7 @@ class DistributedBattleTrolley(DistributedObject):
         if self.index == 0:
             hoodAbbr = hood.abbr
         elif self.index == 1:
-            hoodAbbr = 'DG' #ZoneUtil.ZoneId2HoodAbbr[self.toZone]
+            hoodAbbr = 'TT' #ZoneUtil.ZoneId2HoodAbbr[self.toZone]
         self.hoodAbbr = hoodAbbr
         
         findStr = '**/prop_trolley_station_' + hoodAbbr + '_DNARoot'

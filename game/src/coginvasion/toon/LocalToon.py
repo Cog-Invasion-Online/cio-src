@@ -782,7 +782,7 @@ class LocalToon(DistributedPlayerToon):
         self.b_setCurrentGag(-1)
 
     def resetHeadHpr(self, override = False):
-        if self.walkControls.mode == self.walkControls.MThirdPerson or not self.walkControls.controlsEnabled or override:
+        if self.lookMode == self.LMOff or not self.walkControls.controlsEnabled or override:
             self.b_lookAtObject(0, 0, 0, blink = 0)
 
     def canUseGag(self, preActive):

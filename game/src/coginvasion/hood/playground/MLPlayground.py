@@ -17,4 +17,4 @@ class MLPlayground(Playground):
 
     def load(self):
         Playground.load(self)
-        base.waterReflectionMgr.addWaterNode(20, (-0.5, -20, base.wakeWaterHeight))
+        base.waterReflectionMgr.addWaterNode(20, (-0.5, -20, base.wakeWaterHeight), depth = 2.0)

@@ -30,10 +30,12 @@ class Opera(SoundGag):
         sprayEffect.setDepthTest(0)
         sprayEffect.setTwoSided(1)
         I1 = 2.8
-        track.append(ActorInterval(self.avatar, 'sound', playRate = 1.0, startTime = 0.0, endTime = I1))
+        track.append(Func(self.avatar.setForcedTorsoAnim, 'sound'))
+        track.append(self.getAnimationTrack('sound', startTime = 0.0, endTime = I1))
         track.append(Func(self.setPosFromOther, sprayEffect, self.gag, Point3(0, 1.6, -0.18)))
         track.append(self.__getPartTrack(sprayEffect, 0.0, 6.0, [sprayEffect, self.avatar, 0], softStop=-3.5))
-        track.append(ActorInterval(self.avatar, 'sound', playRate = 1.0, startTime = I1))
+        track.append(self.getAnimationTrack('sound', startTime = I1))
+        track.append(Func(self.avatar.clearForcedTorsoAnim))
         return track
 
     def __getPartTrack(self, particleEffect, startDelay, durationDelay, partExtraArgs, softStop = 0):

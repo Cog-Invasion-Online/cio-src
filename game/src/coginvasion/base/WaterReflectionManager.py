@@ -15,7 +15,7 @@ from panda3d.core import (BitMask32, Plane, NodePath, CullFaceAttrib, Texture,
                           FrameBufferProperties, GraphicsPipe, GraphicsOutput, TransparencyAttrib,
                           Material, WeakNodePath, RigidBodyCombiner, AntialiasAttrib, CardMaker,
                           BoundingBox, Shader, Geom, GeomVertexData, GeomVertexFormat, GeomTriangles, GeomNode, GeomVertexWriter,
-                          VirtualFileSystem)
+                          VirtualFileSystem, DirectionalLight, GeomVertexArrayFormat, InternalName)
 
 from direct.gui.DirectGui import OnscreenImage
 from direct.filter.FilterManager import FilterManager
@@ -65,9 +65,7 @@ class WaterSpec:
         self.moveFactor = moveFactor
         self.reflectivity = reflectivity
         self.shineDamper = shineDamper
-        if reflectFactor <= 0:
-            reflectFactor = 0.001
-        self.reflectFactor = 1.0 / reflectFactor
+        self.reflectFactor = reflectFactor
 
         self.animatedTextures = [self.dudv, self.normal]
 
@@ -80,10 +78,9 @@ defaultWaterSpecs = {
     'pond': WaterSpec(),
     'lake': WaterSpec(),
     
-    'ttcPond': WaterSpec(dudvTile = 0.2, fog = FogSpec(density = 0.0), reflectFactor = 0.5,
-                         reflectivity = 0.7, shineDamper = 3.0),
+    'ttcPond': WaterSpec(dudvTile = 0.1, fog = FogSpec(density = 0.0), reflectFactor = 0.5, reflectivity = 0.3),
     'ddPond': WaterSpec(fog = FogSpec((38 / 255.0, 69 / 255.0, 166 / 255.0, 1), 0.04),
-                        reflectFactor = 0.4, dudvStrength = 0.2, dudvTile = 0.15)
+                        reflectFactor = 0.3, dudvStrength = 0.2, dudvTile = 0.15)
 }
 
 class WaterNode(NodePath):
@@ -100,28 +97,55 @@ class WaterNode(NodePath):
         self.depth = depth
         self.size = size
         self.height = pos[2]
+        
+        normal = (0, 0, 1)
+        tangent = (normal[0], normal[2], -normal[1])
+        binormal = (normal[2], normal[1], -normal[0])
+        
+        # Build array for new format.
+        array = GeomVertexArrayFormat()
+        array.addColumn(InternalName.make('vertex'), 3, Geom.NTFloat32, Geom.CPoint)
+        array.addColumn(InternalName.make('texcoord'), 2, Geom.NTFloat32, Geom.CTexcoord)
+        array.addColumn(InternalName.make('normal'), 3, Geom.NTFloat32, Geom.CVector)
+        array.addColumn(InternalName.make('binormal'), 3, Geom.NTFloat32, Geom.CVector)
+        array.addColumn(InternalName.make('tangent'), 3, Geom.NTFloat32, Geom.CVector)
 
-        vdata = GeomVertexData('waterPlanes', GeomVertexFormat.getV3n3t2(), Geom.UHStatic)
+        # Create and register format.
+        format = GeomVertexFormat()
+        format.addArray(array)
+        format = GeomVertexFormat.registerFormat(format)
+
+        vdata = GeomVertexData('waterPlanes', format, Geom.UHStatic)
         vdata.setNumRows(4)
         vtxWriter = GeomVertexWriter(vdata, 'vertex')
         tcWriter = GeomVertexWriter(vdata, 'texcoord')
+        tnWriter = GeomVertexWriter(vdata, 'tangent')
+        bnWriter = GeomVertexWriter(vdata, 'binormal')
         normWriter = GeomVertexWriter(vdata, 'normal')
         # top left corner
         vtxWriter.addData3f(size[0], size[3], 0)
         tcWriter.addData2f(0, 1)
-        normWriter.addData3f(0, 0, 1)
+        normWriter.addData3f(*normal)
+        tnWriter.addData3f(*tangent)
+        bnWriter.addData3f(*binormal)
         # bottom left corner
         vtxWriter.addData3f(size[0], size[2], 0)
         tcWriter.addData2f(0, 0)
-        normWriter.addData3f(0, 0, 1)
+        normWriter.addData3f(*normal)
+        tnWriter.addData3f(*tangent)
+        bnWriter.addData3f(*binormal)
         # top right corner
         vtxWriter.addData3f(size[1], size[3], 0)
         tcWriter.addData2f(1, 1)
-        normWriter.addData3f(0, 0, 1)
+        normWriter.addData3f(*normal)
+        tnWriter.addData3f(*tangent)
+        bnWriter.addData3f(*binormal)
         # bottom right corner
         vtxWriter.addData3f(size[1], size[2], 0)
         tcWriter.addData2f(1, 0)
-        normWriter.addData3f(0, 0, 1)
+        normWriter.addData3f(*normal)
+        tnWriter.addData3f(*tangent)
+        bnWriter.addData3f(*binormal)
         
         topTris = GeomTriangles(Geom.UHStatic)
         topTris.addVertices(0, 1, 2)
@@ -174,7 +198,7 @@ class WaterNode(NodePath):
         static = loader.loadTexture(self.spec.staticTex)
 
         self.topNP.setShader(Shader.load(Shader.SL_GLSL, "phase_14/models/shaders/water_v.glsl",
-                                         "phase_14/models/shaders/water_f.glsl"))
+                                         "phase_14/models/shaders/water_f.glsl"), 2)
         self.topNP.setShaderInput("dudv", static)
         self.topNP.setShaderInput("dudv_tile", self.spec.dudvTile)
         self.topNP.setShaderInput("dudv_strength", self.spec.dudvStrength)
@@ -189,6 +213,7 @@ class WaterNode(NodePath):
         self.topNP.setShaderInput("water_tint", self.spec.tint)
         self.topNP.setShaderInput("reflect_factor", self.spec.reflectFactor)
         self.topNP.setShaderInput("env_map", loader.loadTexture(self.spec.envMap))
+        self.topNP.setShaderInput("static_depth", self.depth)
         
         hasSunData = False
         currCfg = OutdoorLightingConfig.ActiveConfig
@@ -210,11 +235,14 @@ class WaterNode(NodePath):
             # Use default config.
             dir = CIGlobals.anglesToVector(base.loader.envConfig.defaultSunAngle)
             col = base.loader.envConfig.defaultSunColor
-        self.topNP.setShaderInput("lightdir", dir)
-        self.topNP.setShaderInput("lightcol", col)
+
+        light = DirectionalLight('waterdlight')
+        light.setColor(col)
+        light.setDirection(dir)
+        self.topNP.setShaderInput("light", NodePath(light))
 
         self.botNP.setShader(Shader.load(Shader.SL_GLSL, "phase_14/models/shaders/water_bottom_v.glsl",
-                                         "phase_14/models/shaders/water_bottom_f.glsl"))
+                                         "phase_14/models/shaders/water_bottom_f.glsl"), 2)
         self.botNP.setShaderInput("dudv", static)
         self.botNP.setShaderInput("dudv_tile", self.spec.dudvTile)
         self.botNP.setShaderInput("dudv_strength", self.spec.dudvStrength)
@@ -396,7 +424,7 @@ class WaterReflectionManager:
 
         return [False, 0.0]
     
-    def addWaterNode(self, size, pos, depth = 50, spec = defaultWaterSpecs['sewer']):
+    def addWaterNode(self, size, pos, depth = 50, spec = defaultWaterSpecs['ttcPond']):
         if not self.enabled:
             return
 

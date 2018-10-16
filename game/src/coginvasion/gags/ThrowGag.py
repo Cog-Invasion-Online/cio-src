@@ -127,7 +127,10 @@ class ThrowGag(Gag):
         throwRoot = render.attachNewNode('throwRoot')
         throwRoot.setPos(self.avatar.getPos(render))
         throwRoot.setHpr(self.avatar.getHpr(render))
-        if self.isLocal() and base.localAvatar.isFirstPerson():
+        if self.isLocal() and base.localAvatar.battleControls:
+            push = 0.0
+            if base.localAvatar.isThirdPerson():
+                push = (self.handJoint.getPos(render) - camera.getPos(render)).length()
             hitPos = PhysicsUtils.getHitPosFromCamera()
             throwRoot.headsUp(hitPos)
             throwRoot.setP(render, camera.getP(render))

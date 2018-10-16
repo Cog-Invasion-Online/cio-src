@@ -311,6 +311,16 @@ class AdminPage(BookPage):
             text_pos = (0, -0.01),
             command = render.ls
         )
+        self.noClipBtn = DirectButton(
+            geom = geom,
+            text_scale = 0.04,
+            relief = None,
+            scale = 1.0,
+            text = "Toggle No Clip",
+            pos = (0.45, 0.15, -0.2),
+            text_pos = (0, -0.01),
+            command = self.toggleNoClip
+        )
         base.cr.playGame.getPlace().maybeUpdateAdminPage()
         del geom
 
@@ -337,6 +347,15 @@ class AdminPage(BookPage):
     def __handleAnalyzeDone(self):
         self.analyzeDlg.cleanup()
         del self.analyzeDlg
+        
+    def toggleNoClip(self):
+        ncl = not base.localAvatar.walkControls.controller.noClip
+        base.localAvatar.walkControls.controller.noClip = ncl
+        
+        if ncl:
+            base.cr.myDistrict.systemMessage("No Clip Enabled")
+        else:
+            base.cr.myDistrict.systemMessage("No Clip Disabled")
 
     def togglePhysDbg(self):
         base.setPhysicsDebug(not base.physicsDbgFlag)
@@ -366,6 +385,8 @@ class AdminPage(BookPage):
         self.fsm.request('sysMsgSection')
 
     def exitBasePage(self):
+        self.noClipBtn.destroy()
+        del self.noClipBtn
         self.systemMsgBtn.destroy()
         del self.systemMsgBtn
         self.idBtn.destroy()

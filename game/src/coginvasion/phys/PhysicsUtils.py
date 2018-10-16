@@ -7,9 +7,12 @@ from src.coginvasion.globals import CIGlobals
 def isLocalAvatar(collider):
     return collider.hasPythonTag("localAvatar")
 
-def getHitPosFromCamera(mask = CIGlobals.WallGroup | CIGlobals.FloorGroup | CIGlobals.StreetVisGroup, dist = 1000.0):
+def getHitPosFromCamera(mask = CIGlobals.WallGroup | CIGlobals.FloorGroup | CIGlobals.StreetVisGroup, dist = 1000.0, push = 0.0):
+    camQuat = base.camera.getQuat(render)
+    forward = camQuat.xform(Vec3.forward())
     pFrom = base.camera.getPos(render)
-    pTo = pFrom + (base.camera.getQuat(render).xform(Vec3.forward()) * dist)
+    pFrom += forward * push
+    pTo = pFrom + (forward * dist)
     result = base.physicsWorld.rayTestClosest(pFrom, pTo, mask)
     if result.hasHit():
         return result.getHitPos()

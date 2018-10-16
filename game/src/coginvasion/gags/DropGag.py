@@ -183,9 +183,9 @@ class DropGag(Gag, LocationGag):
         if self.isLocal():
             self.resetCrashEffect()
         LocationGag.cleanup(self)
-        Gag.unEquip(self)
         if self.state != GagState.LOADED:
             self.completeDrop()
+        Gag.unEquip(self)
 
     def onActivate(self, ignore, suit):
         pass
@@ -254,6 +254,7 @@ class DropGag(Gag, LocationGag):
         LocationGag.release(self)
         entity = self.build()
         self.isDropping = True
+        self.buildTracks()
         actorTrack = LocationGag.getActorTrack(self)
         soundTrack = LocationGag.getSoundTrack(self)
         if actorTrack:

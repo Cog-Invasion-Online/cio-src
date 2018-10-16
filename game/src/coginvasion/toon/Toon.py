@@ -252,12 +252,14 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
                 action = CIGlobals.REVERSE_INDEX
             elif abs(rotateSpeed) > rotateCutOff:
                 action = CIGlobals.WALK_INDEX
-            elif abs(strafeSpeed) > CIGlobals.StrafeCutOff:
+            elif abs(strafeSpeed) > CIGlobals.RunCutOff:
                 action = CIGlobals.RUN_INDEX
+            elif abs(strafeSpeed) > CIGlobals.WalkCutOff:
+                action = CIGlobals.WALK_INDEX
             else:
                 action = CIGlobals.STAND_INDEX
 
-            if abs(strafeSpeed) >= CIGlobals.StrafeCutOff:
+            if abs(strafeSpeed) > CIGlobals.WalkCutOff:
                 spine = self.find("**/def_spineB")
 
                 if spine.isEmpty():

@@ -24,7 +24,7 @@ class DGPlayground(Playground.Playground):
 
     def load(self):
         Playground.Playground.load(self)
-        base.waterReflectionMgr.addWaterNode(21, (51, 46, base.wakeWaterHeight))
+        base.waterReflectionMgr.addWaterNode(21, (51, 46, base.wakeWaterHeight), depth = 1.0)
 
     def enter(self, requestStatus):
         self.startBirds()

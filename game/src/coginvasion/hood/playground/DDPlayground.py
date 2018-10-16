@@ -29,7 +29,7 @@ class DDPlayground(Playground.Playground):
 
     def load(self):
         Playground.Playground.load(self)
-        base.waterReflectionMgr.addWaterNode(125, (-25, 30, base.wakeWaterHeight),
+        base.waterReflectionMgr.addWaterNode(125, (-25, 30, base.wakeWaterHeight), depth = 14.0,
                                              spec = base.waterReflectionMgr.getDefaultSpec('ddPond'))
 
     def enter(self, requestStatus):

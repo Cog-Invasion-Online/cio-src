@@ -30,32 +30,30 @@ class MGSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         self.invasionMusicFiles = None
         self.tournamentMusicFiles = None
         self.bossBattleMusicFile = None
-        self.dnaFile = 'phase_13/dna/minigame_area_sz.pdna'
+        self.dnaFile = 'phase_13/dna/party_sz.pdna'#minigame_area_sz.pdna'
         self.szStorageDNAFile = ['phase_4/dna/storage_TT.pdna',
 								 'phase_4/dna/storage_TT_sz.pdna',
 								 
-								 'phase_6/dna/storage_MM.pdna',
-								 'phase_6/dna/storage_MM_sz.pdna',
+								 #'phase_6/dna/storage_MM.pdna',
+								 #'phase_6/dna/storage_MM_sz.pdna',
 								 
-								 'phase_6/dna/storage_DD.pdna',
-								 'phase_6/dna/storage_DD_sz.pdna',
+								 #'phase_6/dna/storage_DD.pdna',
+								 #'phase_6/dna/storage_DD_sz.pdna',
 								 
-								 'phase_8/dna/storage_DG.pdna',
-								 'phase_8/dna/storage_DG_sz.pdna',
-                                 'phase_8/dna/storage_DG_town.pdna'
+								 #'phase_8/dna/storage_DG.pdna',
+								 #'phase_8/dna/storage_DG_sz.pdna',
+                                 #'phase_8/dna/storage_DG_town.pdna'
 								 
-								 'phase_8/dna/storage_DL.pdna',
-								 'phase_8/dna/storage_DL_sz.pdna',
+								 #'phase_8/dna/storage_DL.pdna',
+								 #'phase_8/dna/storage_DL_sz.pdna',
 								 
-								 'phase_8/dna/storage_BR.pdna',
-								 'phase_8/dna/storage_BR_sz.pdna',
+								 #'phase_8/dna/storage_BR.pdna',
+								 #'phase_8/dna/storage_BR_sz.pdna',
 								 
-								 'phase_13/dna/storage_party_sz.pdna', 
-                                 'phase_13/dna/storage_mg_sz.pdna']
-                                 
-                                 
-    def load(self):
-        SafeZoneLoader.SafeZoneLoader.load(self)
-        
-        base.waterReflectionMgr.addWaterNode(self.geom.find("**/Water.001"), 18.58082)
-        base.waterReflectionMgr.addWaterNode(self.geom.find("**/Water"), 24.37695)
+								 'phase_13/dna/storage_party_sz.pdna']
+                                 #'phase_13/dna/storage_mg_sz.pdna']
+
+    #def load(self):
+    #    SafeZoneLoader.SafeZoneLoader.load(self)
+    #    self.geom.find("**/Water").removeNode()
+    #    self.geom.find("**/Water.001").removeNode()

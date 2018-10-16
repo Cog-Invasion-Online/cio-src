@@ -47,6 +47,8 @@ class BulletCharacterController(DirectObject):
         self.__spam = False
         self.__aboveGround = True
         self.__prevOverlapping = []
+        
+        self.noClip = False
 
         self.currLineSegsGeom = None
         
@@ -500,6 +502,9 @@ class BulletCharacterController(DirectObject):
         return dir - self.__parallelComponent(dir, normal)
     
     def __preventPenetration(self):
+        if self.noClip:
+            return
+            
         maxIter = 10
         fraction = 1.0
 

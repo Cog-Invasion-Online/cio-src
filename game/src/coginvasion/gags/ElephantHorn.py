@@ -53,7 +53,7 @@ class ElephantHorn(SoundGag):
         delayUntilAppearSound = 1.0
         megaphoneTrack = Sequence(megaphoneShow, Wait(delayUntilAppearSound), SoundInterval(self.appearSfx, node=self.avatar), Wait(delayTime + 1.0), instrumentAppear)
         tracks.append(megaphoneTrack)
-        tracks.append(ActorInterval(self.avatar, 'sound'))
+        tracks.append(self.getSingularAnimTrack('sound'))
         instrumentshrink = self.getScaleIntervals(self.gag, duration=0.1, startScale=instrMax2, endScale=instrMin)
         soundTrack = Sequence(Wait(delayTime), Parallel(attackTrack, SoundInterval(self.soundSfx, node=self.avatar), Sequence(Wait(1.5), instrumentshrink), Func(self.damageCogsNearby), Wait(0.4), Func(self.finish)))
         tracks.append(soundTrack)

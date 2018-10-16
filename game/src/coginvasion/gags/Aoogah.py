@@ -114,10 +114,7 @@ class Aoogah(SoundGag):
             Wait(delayTime + 1.0), 
         instrumentAppear)
         tracks.append(megaphoneTrack)
-        tracks.append(Parallel(
-            Func(self.avatar.setForcedTorsoAnim, 'sound'), 
-            self.getAnimationTrack('sound', playRate = self.playRate))
-        )
+        tracks.append(self.getSingularAnimTrack('sound'))
         instrumentshrink = self.getScaleIntervals(self.gag, 
             duration=0.1, 
             startScale=instrMax, 

@@ -78,10 +78,7 @@ class AvChooser(StateData):
 
     def enterAvChoose(self):
         if base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
-            base.cr.music.stop()
-            base.cr.music = base.loadMusic(CIGlobals.getHolidayTheme())
-            base.cr.music.setLoop(True)
-            base.cr.music.play()
+            base.playMusic(CIGlobals.getHolidayTheme())
 
             # Create message.
             whisper = WhisperPopup(HolidayGlobals.CHRISTMAS_TIME, CIGlobals.getToonFont(), ChatGlobals.WTSystem)
