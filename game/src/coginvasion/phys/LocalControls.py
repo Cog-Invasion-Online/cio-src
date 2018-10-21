@@ -280,6 +280,8 @@ class LocalControls(DirectObject):
             base.localAvatar.startSmartCamera()
             self.accept(base.inputStore.NextCameraPosition, base.localAvatar.smartCamera.nextCameraPos, [1])
             self.accept(base.inputStore.PreviousCameraPosition, base.localAvatar.smartCamera.nextCameraPos, [0])
+            self.accept(base.inputStore.LookUp, base.localAvatar.smartCamera.pageUp)
+            self.accept(base.inputStore.LookDown, base.localAvatar.smartCamera.pageDown)
 
         self.controlsEnabled = True
         self.exitControlsWhenGrounded = False
