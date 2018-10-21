@@ -18,7 +18,6 @@ from p3recastnavigation import RNNavMeshManager
 
 from direct.showbase.ShowBase import ShowBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.filter.CommonFilters import CommonFilters
 from direct.gui import DirectGuiGlobals
 
 from src.coginvasion.manager.UserInputStorage import UserInputStorage
@@ -32,6 +31,7 @@ from src.coginvasion.hood.SkyUtil import SkyUtil
 from Lighting import OutdoorLightingConfig
 
 from CIAudio3DManager import CIAudio3DManager
+from CICommonFilters import CommonFilters
 from ShakeCamera import ShakeCamera
 from CubeMapManager import CubeMapManager
 from WaterReflectionManager import WaterReflectionManager
