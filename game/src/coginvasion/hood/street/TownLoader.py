@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import ModelPool, TexturePool, NodePath, Vec4
+from panda3d.core import ModelPool, TexturePool, NodePath, Vec4, DecalEffect, ModelNode
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.StateData import StateData
@@ -272,7 +272,50 @@ class TownLoader(StateData):
                 else:
                     groupName = '%s' % zoneId
                 groupNode.setName(groupName)
-            groupNode.flattenMedium()
+            #group all the flat walls
+            
+            block2flatwall = {}
+            flatwalls = groupNode.findAllMatches("**/tb*:*_DNARoot;+s")
+            for flatwall in flatwalls:
+                if "toon_landmark" in flatwall.getName():
+                    print "Skipping", flatwall.getName()
+                if flatwall.hasTag("DNACode") and flatwall.hasMat():
+                    continue
+                block = int(flatwall.getName().split(":")[0][2:])
+                if not block2flatwall.has_key(block):
+                    block2flatwall[block] = groupNode.attachNewNode(ModelNode('toonBuildingsBlock' + str(block)))
+                flatwall.wrtReparentTo(block2flatwall[block])
+                
+            for node in block2flatwall.values():
+                for child in node.findAllMatches("**"):
+                    child.clearEffect(DecalEffect.getClassType())
+                    child.clearTag("DNACode")
+                    child.clearTag("cam")
+                for child in node.getChildren():
+                    child.clearModelNodes()
+                    child.flattenStrong()
+            
+            flattenGroup = groupNode.attachNewNode('optim')
+            flattens = ['street*_DNARoot']
+            removes = ['interactive_prop*_DNARoot']
+            for remove in removes:
+                for np in groupNode.findAllMatches("**/" + remove):
+                    np.removeNode()
+            for flatten in flattens:
+                for np in groupNode.findAllMatches("**/" + flatten):
+                    if np.hasTag("DNACode") and np.hasMat():
+                        continue
+                    for child in np.findAllMatches("**"):
+                        child.clearEffect(DecalEffect.getClassType())
+                        child.clearTag("DNACode")
+                        child.clearTag("cam")
+                    np.wrtReparentTo(flattenGroup)
+            flattenGroup.clearModelNodes()
+            flattenGroup.flattenStrong()
+            
+            CIGlobals.replaceDecalEffectsWithDepthOffsetAttrib(groupNode)
+            groupNode.flattenStrong()
+            
             self.nodeDict[zoneId] = []
             self.nodeList.append(groupNode)
             self.zoneDict[zoneId] = groupNode

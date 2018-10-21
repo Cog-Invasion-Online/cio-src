@@ -189,6 +189,7 @@ class DistributedBuilding(DistributedObject):
     def getNodePaths(self):
         nodePath = []
         npc = self.townTopLevel.findAllMatches('**/?b' + str(self.block) + ':*_DNARoot;+s')
+        npc.addPathsFrom(self.townTopLevel.findAllMatches("**/toonBuildingsBlock" + str(self.block) + ";+s"))
         for i in xrange(npc.getNumPaths()):
             nodePath.append(npc.getPath(i))
         return nodePath
