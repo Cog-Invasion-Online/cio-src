@@ -281,7 +281,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
             # Avoid unnecessary ray casting.
             return task.cont
 
-        pFrom = self.getPos(render) + (0, 0, 0.05)
+        pFrom = self.getPos(render) + (0, 0, 0.1)
 
         z = None
 
