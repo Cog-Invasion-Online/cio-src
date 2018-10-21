@@ -8,6 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.core import Point3
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed import DistributedObject, ClockDelta, DelayDelete
 from direct.fsm.ClassicFSM import ClassicFSM
@@ -331,13 +333,13 @@ class DistributedDoor(DistributedObject.DistributedObject):
                     av,
                     duration = 0.5,
                     blendType = 'easeInOut',
-                    pos = self.enterDoorWalkBackNode.getPos(render),
+                    pos = self.enterWalkBackPos,
                     startPos = av.getPos(render)
                 ),
                 LerpQuatInterval(
                     av,
                     duration = 0.5,
-                    quat = self.enterDoorWalkInNode.getHpr(render),
+                    hpr = self.doorNode.getHpr(render),
                     startHpr = av.getHpr(render)
                 )
             )
@@ -352,8 +354,8 @@ class DistributedDoor(DistributedObject.DistributedObject):
                 av,
                 duration = 1.0,
                 blendType = 'easeInOut',
-                pos = self.enterDoorWalkInNode.getPos(render),
-                startPos = self.enterDoorWalkBackNode.getPos(render)
+                pos = self.enterWalkInPos,
+                startPos = self.enterWalkBackPos
             )
         )
         if base.localAvatar.doId == av.doId:
@@ -379,14 +381,14 @@ class DistributedDoor(DistributedObject.DistributedObject):
         track = Sequence(name = av.uniqueName('avatarExitDoorTrack'))
         track.append(Wait(1.3))
         track.append(Func(av.setAnimState, 'walk'))
-        av.setPos(self.exitDoorWalkFromNode.getPos(render))
-        av.headsUp(self.exitDoorWalkToNode)
+        av.setPos(self.exitWalkFromPos)
+        av.headsUp(self.exitWalkToPos)
         track.append(
             LerpPosInterval(
                 av,
                 duration = 1.2,
                 blendType = 'easeInOut',
-                pos = self.exitDoorWalkToNode.getPos(render),
+                pos = self.exitWalkToPos,
                 startPos = av.getPos(render)
             )
         )
@@ -457,15 +459,12 @@ class DistributedDoor(DistributedObject.DistributedObject):
         self.leftDoor = self.findDoorNode('leftDoor')
         self.toggleDoorHole('Right', show = False)
         self.toggleDoorHole('Left', show = False)
+        
+        self.enterWalkBackPos = render.getRelativePoint(self.doorNode, Point3(1.6, -5.5, 0.0))
+        self.enterWalkInPos = render.getRelativePoint(self.doorNode, Point3(1.6, 3.0, 0.0))
+        self.exitWalkFromPos = render.getRelativePoint(self.doorNode, Point3(-1.6, 3.0, 0.0))
+        self.exitWalkToPos = render.getRelativePoint(self.doorNode, Point3(-1.6, -5.5, 0.0))
 
-        self.enterDoorWalkBackNode = self.doorNode.attachNewNode(self.uniqueName('enterWalkBackNode'))
-        self.enterDoorWalkBackNode.setPos(1.6, -5.5, 0.0)
-        self.enterDoorWalkInNode = self.doorNode.attachNewNode(self.uniqueName('enterWalkInNode'))
-        self.enterDoorWalkInNode.setPos(1.6, 3.0, 0.0)
-        self.exitDoorWalkFromNode = self.doorNode.attachNewNode(self.uniqueName('exitWalkFromNode'))
-        self.exitDoorWalkFromNode.setPos(-1.6, 3.0, 0.0)
-        self.exitDoorWalkToNode = self.doorNode.attachNewNode(self.uniqueName('exitWalkToNode'))
-        self.exitDoorWalkToNode.setPos(-1.6, -5.5, 0.0)
         self.doorOpenSound = base.audio3d.loadSfx('phase_3.5/audio/sfx/Door_Open_1.ogg')
         self.doorShutSound = base.audio3d.loadSfx('phase_3.5/audio/sfx/Door_Close_1.ogg')
         base.audio3d.attachSoundToObject(self.doorOpenSound, self.doorNode)

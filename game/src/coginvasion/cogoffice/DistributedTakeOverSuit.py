@@ -96,22 +96,22 @@ class DistributedTakeOverSuit(DistributedSuit):
                 Func(self.setAnimState, 'neutral'),
                 Wait(0.5),
                 Func(self.setAnimState, 'walk'),
-                LerpPosInterval(self, duration = 2.0, pos = DistributedTakeOverSuit.AtDoorPos,
-                                startPos = DistributedTakeOverSuit.StartPosFromDoor),
+                LerpPosInterval(self, duration = 2.0, pos = render.getRelativePoint(self.door.doorNode, self.AtDoorPos),
+                                startPos = render.getRelativePoint(self.door.doorNode, self.StartPosFromDoor)),
                 Func(self.setAnimState, 'neutral'),
                 Wait(0.3),
                 Func(self.setAnimState, 'walk'),
-                LerpPosInterval(self, duration = 0.5, pos = self.door.enterDoorWalkBackNode.getPos(),
-                                startPos = DistributedTakeOverSuit.AtDoorPos),
+                LerpPosInterval(self, duration = 0.5, pos = self.door.enterWalkBackPos,
+                                startPos = self.AtDoorPos),
                 Func(self.setAnimState, 'neutral'),
                 Wait(1.0),
                 Func(self.setAnimState, 'walk'),
-                LerpPosInterval(self, duration = 1.0, pos = self.door.enterDoorWalkInNode.getPos(),
-                                startPos = self.door.enterDoorWalkBackNode.getPos())),
+                LerpPosInterval(self, duration = 1.0, pos = self.door.enterWalkInPos,
+                                startPos = self.door.enterWalkBackPos)),
             LerpPosInterval(self,
                             duration = 4.375,
-                            pos = DistributedTakeOverSuit.StartPosFromDoor,
-                            startPos = DistributedTakeOverSuit.StartPosFromDoor + (0, 0, 6.5 * 4.8))
+                            pos = render.getRelativePoint(self.door.doorNode, self.StartPosFromDoor),
+                            startPos = render.getRelativePoint(self.door.doorNode, self.StartPosFromDoor) + (0, 0, 6.5 * 4.8))
         )
         self.takeOverTrack.start(ts)
 
