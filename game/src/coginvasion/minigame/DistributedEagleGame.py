@@ -378,6 +378,21 @@ class DistributedEagleGame(DistributedMinigame):
         self.world.reparentTo(base.render)
         self.world.setZ(-5.0)
         
+        plane1 = loader.loadModel("phase_14/models/props/plane.egg")
+        plane1.reparentTo(self.world)
+        plane1.setP(90)
+        plane1.setColor(self.bgColor[0], self.bgColor[1], self.bgColor[2], 1.0, 1)
+        plane1.setScale(1000)
+        plane1.setPos(0, 300, 0)
+        
+        plane2 = plane1.copyTo(self.world)
+        plane2.setP(-90)
+        plane2.setPos(0, -300, 0)
+        plane2.wrtReparentTo(plane1)
+        
+        plane1.clearModelNodes()
+        plane1.flattenStrong()
+        
         self.world2 = self.world.copyTo(base.render)
         self.world2.setH(180)
         self.world2.setY(-10)
@@ -393,9 +408,11 @@ class DistributedEagleGame(DistributedMinigame):
             platform.setPos(*self.platformPositions[i])
             self.platforms.append(platform)
             
+        base.createAndEnablePhysicsNodes(self.world)
+            
         for triggerName in self.triggers:
             trigger = self.world.find('**/' + triggerName)
-            trigger.setCollideMask(CIGlobals.WallBitmask)
+            trigger.setCollideMask(CIGlobals.WallGroup)
             self.accept('enter' + triggerName, self.__handleHitWall)
         
         self.olc = OutdoorLightingConfig.makeDefault()
@@ -578,7 +595,7 @@ class DistributedEagleGame(DistributedMinigame):
 
     def playMinigameMusic(self):
         DistributedMinigame.playMinigameMusic(self)
-        self.music.setVolume(0.3)
+        #self.music.setVolume(0.3)
 
     def announceGenerate(self):
         DistributedMinigame.announceGenerate(self)
@@ -604,6 +621,7 @@ class DistributedEagleGame(DistributedMinigame):
         self.cannons = None
         self.cannon = None
         if self.world:
+            base.disableAndRemovePhysicsNodes(self.world)
             self.world.removeNode()
             self.world = None
         if self.world2:

@@ -110,7 +110,7 @@ class DistributedEagleGameAI(DistributedMinigameAI):
         eagle.setMinigame(self)
         eagle.generateWithRequired(self.zoneId)
         eagle.b_setLevel(0)
-        eagle.b_setSuit(SuitBank.getIdFromSuit(SuitBank.LegalEagle), 3)
+        eagle.b_setSuit(SuitBank.LegalEagle, 3)
         eagle.b_setName(SuitBank.LegalEagle.getName())
         eagle.b_setPlace(self.zoneId)
         self.eagleId2eagle[eagle.doId] = eagle
