@@ -9,7 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from src.coginvasion.globals import CIGlobals
-from ChoiceWidget import ChoiceWidget
+from ChoiceWidget import ChoiceWidget, INDEX
 from OptionsCategory import OptionsCategory
 
 class AdvancedDisplayCategory(OptionsCategory):
@@ -29,7 +29,7 @@ class AdvancedDisplayCategory(OptionsCategory):
         
         self.hdr = ChoiceWidget(page, ["None", "Ver. 1", "Ver. 2", "Ver. 3"], (0, 0, -0.22),
             self.__updateHDR, "HDR Tone Mapping", desc = 'Increases range of colors on screen.\nRequires Per-Pixel Lighting to be enabled.',
-            settingKeyName = 'hdr')
+            settingKeyName = 'hdr', mode = INDEX)
         
         self.bloom = ChoiceWidget(page, ["Off", "On"], (0, 0, -0.45), self.__updateBloom, "Bloom Filter",
             desc = "Increases range of brightness by glowing objects that are very bright.\nAffects performance.", settingKeyName = 'bloom')
@@ -52,7 +52,7 @@ class AdvancedDisplayCategory(OptionsCategory):
         base.waterReflectionMgr.handleResolutionUpdate(resolution)
             
     def __updateHDR(self, hdr):
-        versionIndex = self.hdr.options.index(hdr)
+        versionIndex = hdr
         CIGlobals.getSettingsMgr().applyHdr(versionIndex)
             
     def __updateBloom(self, flag):

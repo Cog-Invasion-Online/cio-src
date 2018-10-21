@@ -224,7 +224,7 @@ class SettingsManager:
         elif hdr == 2:
             render.setAttrib(LightRampAttrib.makeHdr1())
         elif hdr == 3:
-            render.setAttrib(LightRampAttrib.makeHdr2())
+            render.setAttrib(LightRampAttrib.makeIdentity())
         else:
             render.clearAttrib(LightRampAttrib.getClassType())
 

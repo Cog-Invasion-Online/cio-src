@@ -20,6 +20,7 @@ DESC_BACKGROUND_COLOR = (0.70, 0.70, 0.70, 1.0)
 AUTO = 1
 MULTICHOICE = 2
 DEGREE = 3
+INDEX = 4
 
 class ChoiceWidget(DirectFrame):
     notify = directNotify.newCategory("ChoiceWidget")
@@ -205,6 +206,8 @@ class ChoiceWidget(DirectFrame):
             if self.mode == AUTO and len(self.options) == 2:
                 # If we only have two options, we must be working with on/off choices.
                 self.userChoice = bool(self.currentChoiceIndex)
+            elif self.mode == INDEX:
+                self.userChoice = self.currentChoiceIndex
             elif self.mode == DEGREE or 'x' in self.choiceText.getText():
                 # We're working with either a degree based option or a resolution option.
                 data = self.options[self.currentChoiceIndex].split('x')
