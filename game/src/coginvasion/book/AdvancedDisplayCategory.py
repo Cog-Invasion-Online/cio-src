@@ -9,6 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.gui.Dialog import GlobalDialog, Ok
 from ChoiceWidget import ChoiceWidget, INDEX
 from OptionsCategory import OptionsCategory
 
@@ -23,16 +24,16 @@ class AdvancedDisplayCategory(OptionsCategory):
         
         self.ppl = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.24), self.__updatePPL, "Per-Pixel Lighting",
             desc = 'Toggles more advanced per-pixel shaders.\nRequires Lighting to be enabled.\nAffects performance.', settingKeyName = 'ppl')
+
+        self.hdr = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.01),
+            self.__updateHDR, "HDR Lighting", desc = 'Increases perceived range of colors and brightness on screen.\nRequires Per-Pixel Lighting to be enabled.\nRequires at least OpenGL 4.3.',
+            settingKeyName = 'hdr', requirement = base.hdr.isSupported)
+
+        self.bloom = ChoiceWidget(page, ["Off", "On"], (0, 0, -0.22), self.__updateBloom, "Bloom Filter",
+            desc = "Increases perceived brightness by glowing objects that are very bright.\nAffects performance.", settingKeyName = 'bloom')
         
-        self.waterRefl = ChoiceWidget(page, ["Off", "Low", "Medium", "High", "Ultra"], (0, 0, 0.01), self.__updateWater, "Water Reflections",
-            desc = 'Sets the resolution of water reflection textures around the game.\nMay affect performance.', settingKeyName = 'refl')
-        
-        self.hdr = ChoiceWidget(page, ["None", "Ver. 1", "Ver. 2", "Ver. 3"], (0, 0, -0.22),
-            self.__updateHDR, "HDR Tone Mapping", desc = 'Increases range of colors on screen.\nRequires Per-Pixel Lighting to be enabled.',
-            settingKeyName = 'hdr', mode = INDEX)
-        
-        self.bloom = ChoiceWidget(page, ["Off", "On"], (0, 0, -0.45), self.__updateBloom, "Bloom Filter",
-            desc = "Increases range of brightness by glowing objects that are very bright.\nAffects performance.", settingKeyName = 'bloom')
+        self.waterRefl = ChoiceWidget(page, ["Off", "Low", "Medium", "High", "Ultra"], (0, 0, -0.45), self.__updateWater, "Water Reflections",
+            desc = 'Sets the resolution of water reflection textures around the game.\Affects performance.', settingKeyName = 'refl')
         
         self.widgets = [self.lighting, self.ppl, self.waterRefl, self.hdr, self.bloom]
 
@@ -50,10 +51,25 @@ class AdvancedDisplayCategory(OptionsCategory):
     def __updateWater(self, quality):
         resolution = CIGlobals.getSettingsMgr().ReflectionQuality.get(quality)
         base.waterReflectionMgr.handleResolutionUpdate(resolution)
+
+    def __handleBadHdrAck(self, value):
+        self.cleanupBadHdrDlg()
             
     def __updateHDR(self, hdr):
-        versionIndex = hdr
-        CIGlobals.getSettingsMgr().applyHdr(versionIndex)
+        #if hdr and not base.hdr.isSupported():
+        #    self.cleanupBadHdrDlg()
+
+        #    self.badHdrDlg = GlobalDialog(
+        #        ("Sorry, but HDR is not supported by your graphics hardware.\n\n" +
+        #         "Minimum OpenGL requirement: 4.3\n" +
+        #         "Your OpenGL version: {0}".format(base.win.getGsg().getDriverVersion())),
+        #         style = Ok, doneEvent = 'badHdrAck')
+        #    self.acceptOnce('badHdrAck', self.__handleBadHdrAck)
+        #    self.badHdrDlg.show()
+
+        #    return
+
+        CIGlobals.getSettingsMgr().applyHdr(hdr)
             
     def __updateBloom(self, flag):
         base.setBloom(flag)
@@ -73,7 +89,15 @@ class AdvancedDisplayCategory(OptionsCategory):
         OptionsCategory.discardChanges(self)
         self._setDefaults()
 
+    def cleanupBadHdrDlg(self):
+        self.ignore('badHdrAck')
+        if hasattr(self, 'badHdrDlg'):
+            self.badHdrDlg.cleanup()
+            del self.badHdrDlg
+
     def cleanup(self):
+        self.cleanupBadHdrDlg()
+
         for widget in self.widgets:
             widget.cleanup()
         

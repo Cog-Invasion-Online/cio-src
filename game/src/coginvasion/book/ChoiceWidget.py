@@ -27,7 +27,7 @@ class ChoiceWidget(DirectFrame):
 
     def __init__(self, parent, options, pos = (0, 0, 0), command = None, 
             widgetName = "", choiceTextScale = 0.08, desc = "",
-            settingKeyName = None, mode = AUTO):
+            settingKeyName = None, mode = AUTO, requirement = None):
         """ 
         Generates an ordered choice widget with the specified parameters.
         
@@ -66,6 +66,7 @@ class ChoiceWidget(DirectFrame):
                 - be stripped away when selecting choices. This is used for the antialiasing choice widget.
         
         """
+        self.requirement = requirement
         self.options = options
         self.command = command
         self.currentChoiceIndex = 0
@@ -191,6 +192,7 @@ class ChoiceWidget(DirectFrame):
         del self.origChoice
         del self.userChoice
         del self.mode
+        del self.requirement
         self.destroy()
 
     def goto(self, index):
@@ -225,6 +227,14 @@ class ChoiceWidget(DirectFrame):
                 self.userChoice = self.options[self.currentChoiceIndex]
 
     def updateDirectionalBtns(self):
+        if self.requirement and callable(self.requirement):
+            if not self.requirement():
+                # The requirement to modify this choice widget was not met.
+                for btn in [self.fwdBtn, self.bckBtn]:
+                    btn['state'] = DGG.DISABLED
+                    btn.setColorScale(DISABLED_COLOR)
+                return
+
         self.fwdBtn['state'] = DGG.NORMAL
         self.bckBtn['state'] = DGG.NORMAL
         self.fwdBtn.setColorScale(1, 1, 1, 1)

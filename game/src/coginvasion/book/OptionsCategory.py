@@ -8,10 +8,12 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from direct.showbase.DirectObject import DirectObject
+
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gui.Dialog import GlobalDialog
 
-class OptionsCategory:
+class OptionsCategory(DirectObject):
     AppendOptions = True
     ApplyCancelButtons = True
     WantTitle = True

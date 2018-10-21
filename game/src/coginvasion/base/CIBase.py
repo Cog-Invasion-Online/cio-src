@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3, MemoryUsage, MemoryUsagePointers, RescaleNormalAttrib
 from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState, Vec4, Point3
-from panda3d.core import CollisionTraverser, CullBinManager
+from panda3d.core import CollisionTraverser, CullBinManager, LightRampAttrib
 from panda3d.bullet import BulletWorld, BulletDebugNode
 from panda3d.bsp import BSPLoader, BSPRender
 
@@ -32,6 +32,7 @@ from Lighting import OutdoorLightingConfig
 
 from CIAudio3DManager import CIAudio3DManager
 from CICommonFilters import CommonFilters
+from HDR import HDR
 from ShakeCamera import ShakeCamera
 from CubeMapManager import CubeMapManager
 from WaterReflectionManager import WaterReflectionManager
@@ -141,6 +142,7 @@ class CIBase(ShowBase):
         self.wakeWaterHeight = -30.0
 
         self.bloomToggle = False
+        self.hdrToggle = False
 
         self.music = None
         self.currSongName = None
@@ -504,7 +506,23 @@ class CIBase(ShowBase):
         #self.shadowCaster.turnOnShadows()
 
         self.filters = CommonFilters(self.win, self.cam)
+        self.hdr = HDR()
+        self.setHDR(self.hdrToggle)
         self.setBloom(self.bloomToggle)
+
+    def setHDR(self, toggle):
+        self.hdrToggle = toggle
+
+        if not hasattr(self, 'hdr'):
+            return
+
+        if toggle:
+            # Don't clamp lighting calculations with hdr.
+            render.setAttrib(LightRampAttrib.makeIdentity())
+            self.hdr.enable()
+        else:
+            render.setAttrib(LightRampAttrib.makeDefault())
+            self.hdr.disable()
         
     def setCellsActive(self, cells, active):
         for cell in cells:

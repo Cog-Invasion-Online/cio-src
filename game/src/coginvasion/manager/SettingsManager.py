@@ -133,7 +133,7 @@ class SettingsManager:
         # General gameplay FOV
         genfov = settings.get("genfov", None)
         if genfov is None:
-            genfov = self.updateAndWriteSetting("genfov", 70.0) # 52.0
+            genfov = self.updateAndWriteSetting("genfov", 52.0) # 52.0
 
         # First person minigame FOV
         fpmgfov = settings.get("fpmgfov", None)
@@ -164,7 +164,7 @@ class SettingsManager:
         # Hdr
         hdr = settings.get("hdr", None)
         if hdr is None:
-            hdr = self.updateAndWriteSetting("hdr", 0)
+            hdr = self.updateAndWriteSetting("hdr", False)
             
         # Per pixel lighting
         ppl = settings.get("ppl", None)
@@ -219,14 +219,7 @@ class SettingsManager:
         CIGlobals.GunGameFov = fpmgfov
         
     def applyHdr(self, hdr):
-        if hdr == 1:
-            render.setAttrib(LightRampAttrib.makeHdr0())
-        elif hdr == 2:
-            render.setAttrib(LightRampAttrib.makeHdr1())
-        elif hdr == 3:
-            render.setAttrib(LightRampAttrib.makeIdentity())
-        else:
-            render.clearAttrib(LightRampAttrib.getClassType())
+        base.setHDR(hdr)
 
     def maybeFixAA(self):
         if self.getSetting("aa") == 0:
