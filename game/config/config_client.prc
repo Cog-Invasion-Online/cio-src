@@ -58,7 +58,7 @@ server-port 7032
 server-address gameserver.coginvasion.com
 
 # Performance...
-hardware-animated-vertices #t
+hardware-animated-vertices #f
 sync-video #f
 smooth-lag 0.4
 basic-shaders-only #f
@@ -89,6 +89,11 @@ load-stuff #f
 want-playground-gags #t
 gsg-want-hlsounds #f
 explosion-hlsounds #f
+
+hdr-min-avglum 3.0
+hdr-percent-bright-pixels 5.0
+hdr-percent-target 60.0
+hdr-debug-histogram #f
 
 ctmusic-numsongs 1
 
