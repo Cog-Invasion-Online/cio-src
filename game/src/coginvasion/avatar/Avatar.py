@@ -352,7 +352,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         
     def loadAvatar(self):
         self.setupHealthLabel()
-        self.setBlend(frameBlend = True)
+        self.setBlend(frameBlend = False)
         base.avatars.append(self)
 
     def disable(self):

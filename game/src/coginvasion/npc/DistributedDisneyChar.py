@@ -416,7 +416,7 @@ class DistributedDisneyChar(DistributedAvatar):
             self.disableRay()
             self.cleanupPhysics()
             boat = self.cr.playGame.hood.loader.geom.find('**/*donalds_boat*')
-            boat.find('**/wheel').hide()
+            boat.find('**/wheelNode').stash()
             self.setPos(0, -1, 3.95)
             self.reparentTo(boat)
             self.loop('wheel')

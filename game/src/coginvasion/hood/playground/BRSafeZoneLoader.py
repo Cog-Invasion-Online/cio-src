@@ -12,6 +12,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.holiday.HolidayManager import HolidayType
 from src.coginvasion.toon import ParticleLoader
+from src.coginvasion.globals import CIGlobals
 import SafeZoneLoader
 import BRPlayground
 
@@ -36,6 +37,22 @@ class BRSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         hq.find('**/doorFrameHoleRight_0').stash()
         hq.find('**/doorFrameHoleLeft_1').stash()
         hq.find('**/doorFrameHoleRight_1').stash()
+        
+    def doFlatten(self):
+        self.geom.find("**/the_burrrgh_anchor").flattenStrong()
+        
+        brprops = self.geom.attachNewNode('brprops')
+        CIGlobals.moveNodes(self.geom, "*snow_pile*_DNARoot", brprops)
+        CIGlobals.moveNodes(self.geom, "prop_three*_DNARoot", brprops)
+        CIGlobals.moveNodes(self.geom, "*icecube*_DNARoot", brprops)
+        CIGlobals.moveNodes(self.geom, "prop_post_three*_DNARoot", brprops)
+        CIGlobals.moveNodes(self.geom, "prop_snow_tree*_DNARoot", brprops)
+        CIGlobals.moveNodes(self.geom, "prop_stovepipe*_DNARoot", brprops)
+        CIGlobals.removeDNACodes(brprops)
+        brprops.clearModelNodes()
+        brprops.flattenStrong()
+    
+        SafeZoneLoader.SafeZoneLoader.doFlatten(self)
 
     def unload(self):
         SafeZoneLoader.SafeZoneLoader.unload(self)

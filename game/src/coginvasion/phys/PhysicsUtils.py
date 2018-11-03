@@ -1,4 +1,4 @@
-from panda3d.core import Vec3, Point3, TransformState, GeomNode, CollisionNode, NodePath, BitMask32
+from panda3d.core import Vec3, Point3, TransformState, GeomNode, CollisionNode, NodePath, BitMask32, NodePathCollection
 from panda3d.bullet import BulletBoxShape, BulletRigidBodyNode, BulletTriangleMesh, BulletTriangleMeshShape, BulletGhostNode
 from panda3d.bsp import BSPFaceAttrib
 
@@ -123,6 +123,28 @@ def makeBulletCollFromGeoms(rootNode, exclusions = []):
             result[rbnode] = data
 
     return result
+    
+def optimizePhys(root):
+    colls = 0
+    npc = NodePathCollection()
+    for child in root.getChildren():
+        if child.node().isOfType(CollisionNode.getClassType()):
+            colls += 1
+            npc.addPath(child)
+    
+    if colls > 1:
+        collide = root.attachNewNode("__collide__")
+        npc.wrtReparentTo(collide)
+        collide.clearModelNodes()
+        collide.flattenStrong()
+        
+        # Move the possibly combined collisionNodes back to the root.
+        collide.getChildren().wrtReparentTo(root)
+        collide.removeNode()
+        
+    for child in root.getChildren():
+        if child.getName() != '__collide__':
+            optimizePhys(child)
 
 def makeBulletCollFromPandaColl(rootNode, exclusions = []):
     """
@@ -135,6 +157,9 @@ def makeBulletCollFromPandaColl(rootNode, exclusions = []):
     If the Panda CollisionNode is intangible, a BulletGhostNode is created.
     Else, a BulletRigidBodyNode is created.
     """
+    
+    # First combine any redundant CollisionNodes.
+    optimizePhys(rootNode)
 
     for pCollNp in rootNode.findAllMatches("**"):
         if pCollNp.getName() in exclusions:

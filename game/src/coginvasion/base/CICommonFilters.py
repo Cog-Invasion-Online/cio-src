@@ -41,49 +41,140 @@ result = lerp(result, k_cartooncolor, cartoon_thresh);
 #
 SSAO_BODY="""//Cg
 
+#define SAMPLES             8
+#define RADIUS              4
+#define BIAS                0.005
+#define BIAS_OFFSET         0.0001
+#define ILLUM_INFLUENCE     0.05
+#define ZFAR                3.0
+#define ZNEAR               1.0
+#define CONTRAST            1.0
+
+#define PI                  3.14159265
+
 void vshader(float4 vtx_position : POSITION,
              out float4 l_position : POSITION,
-             out float2 l_texcoord : TEXCOORD0,
-             out float2 l_texcoordD : TEXCOORD1,
-             out float2 l_texcoordN : TEXCOORD2,
+             out float2 l_texcoordD : TEXCOORD0,
              uniform float4 texpad_depth,
-             uniform float4 texpad_normal,
              uniform float4x4 mat_modelproj)
 {
   l_position = mul(mat_modelproj, vtx_position);
-  l_texcoord = vtx_position.xz;
   l_texcoordD = (vtx_position.xz * texpad_depth.xy) + texpad_depth.xy;
-  l_texcoordN = (vtx_position.xz * texpad_normal.xy) + texpad_normal.xy;
 }
 
-float3 sphere[16] = float3[](float3(0.53812504, 0.18565957, -0.43192),float3(0.13790712, 0.24864247, 0.44301823),float3(0.33715037, 0.56794053, -0.005789503),float3(-0.6999805, -0.04511441, -0.0019965635),float3(0.06896307, -0.15983082, -0.85477847),float3(0.056099437, 0.006954967, -0.1843352),float3(-0.014653638, 0.14027752, 0.0762037),float3(0.010019933, -0.1924225, -0.034443386),float3(-0.35775623, -0.5301969, -0.43581226),float3(-0.3169221, 0.106360726, 0.015860917),float3(0.010350345, -0.58698344, 0.0046293875),float3(-0.08972908, -0.49408212, 0.3287904),float3(0.7119986, -0.0154690035, -0.09183723),float3(-0.053382345, 0.059675813, -0.5411899),float3(0.035267662, -0.063188605, 0.54602677),float3(-0.47761092, 0.2847911, -0.0271716));
+float2 rand(float2 coord, float2 size)
+{
+    float noiseX = frac(sin(dot(coord, float2(12.9898,78.233))) * 43758.5453) * 2.0f-1.0f;
+	float noiseY = frac(sin(dot(coord, float2(12.9898,78.233)*2.0)) * 43758.5453) * 2.0f-1.0f;
+
+	return float2(noiseX,noiseY)*0.001;
+}
+
+float readDepth(in float2 coord, sampler2D tex)
+{
+	return tex2Dlod(tex, float4(coord, 0, 0)).a * (ZNEAR / ZFAR);
+}
+
+float compareDepths(in float depth1, in float depth2, inout int far)
+{
+	float garea = 1.0; //gauss bell width    
+	float diff = (depth1 - depth2)*100.0; //depth difference (0-100)
+
+	//reduce left bell width to avoid self-shadowing
+	if ( diff < BIAS + BIAS_OFFSET )
+	{
+		garea = BIAS;
+	}
+	else
+	{
+		far = 1;
+	}
+	
+	float gauss = pow(2.7182,-2.0*(diff-BIAS)*(diff-BIAS)/(garea*garea));
+	return gauss;
+}
+
+float calcAO(float2 uv, float depth, float dw, float dh, sampler tex)
+{
+	float dd = (1.0-depth)*RADIUS;
+
+	float temp = 0.0;
+	float temp2 = 0.0;
+	float coordw = uv.x + dw*dd;
+	float coordh = uv.y + dh*dd;
+	float coordw2 = uv.x - dw*dd;
+	float coordh2 = uv.y - dh*dd;
+	
+	float2 coord = float2(coordw , coordh);
+	float2 coord2 = float2(coordw2, coordh2);
+	
+	int far = 0;
+	temp = compareDepths(depth, readDepth(coord,tex),far);
+	//DEPTH EXTRAPOLATION:
+	if (far > 0)
+	{
+		temp2 = compareDepths(readDepth(coord2,tex),depth,far);
+		temp += (1.0-temp)*temp2;
+	}
+	
+	return temp;
+}
+
+float DoSSAO( in float2 uv, in float2 texelSize, in sampler color_depth )
+{
+    float ao_out = 0.0;
+    
+	float2 size = 1.0f / texelSize;
+	float2 noise = rand(uv,size);
+	float depth = readDepth(uv, color_depth);
+	
+	float w = texelSize.x/clamp(depth, 0.25f, 1.0)+(noise.x*(1.0f-noise.x));
+	float h = texelSize.y/clamp(depth, 0.25f, 1.0)+(noise.y*(1.0f-noise.y));
+	
+	float pw;
+	float ph;
+	
+	float ao = 0;
+
+	float dl = PI*(3.0-sqrt(5.0));
+	float dz = 1.0/float( SAMPLES );
+	float z = 1.0 - dz/1.0;
+	float l = 0.0;
+	
+	for (int i = 1; i <= SAMPLES; i++)
+	{
+		float r = sqrt(1.0-z);
+
+		pw = cos(l)*r;
+		ph = sin(l)*r;
+		ao += calcAO( uv, depth, pw*w, ph*h, color_depth );     
+		z = z - dz;
+		l = l + dl;
+	}
+	ao /= float( SAMPLES );
+	ao = 1.0-ao;
+
+	float3 color = tex2D(color_depth,uv).rgb;
+	
+	float3 lumcoeff = float3( 0.2126f, 0.7152f, 0.0722f );
+	float lum = dot( color.rgb, lumcoeff );
+
+	ao_out = lerp( ao, 1.0f, lum*ILLUM_INFLUENCE );
+	ao_out = ((ao_out - 0.5f) * max(CONTRAST, 0.0)) + 0.5f;
+    return ao_out;
+}
 
 void fshader(out float4 o_color : COLOR,
-             uniform float4 k_params1,
-             uniform float4 k_params2,
-             float2 l_texcoord : TEXCOORD0,
-             float2 l_texcoordD : TEXCOORD1,
-             float2 l_texcoordN : TEXCOORD2,
-             uniform sampler2D k_random : TEXUNIT0,
-             uniform sampler2D k_depth : TEXUNIT1,
-             uniform sampler2D k_normal : TEXUNIT2)
+             uniform float4 texpix_depth,
+             in float2 l_texcoordD : TEXCOORD0,
+             uniform sampler2D k_depth : TEXUNIT0)
 {
-  float pixel_depth = tex2D(k_depth, l_texcoordD).a;
-  float3 pixel_normal = (tex2D(k_normal, l_texcoordN).xyz * 2.0 - 1.0);
-  float3 random_vector = normalize((tex2D(k_random, l_texcoord * 18.0 + pixel_depth + pixel_normal.xy).xyz * 2.0) - float3(1.0)).xyz;
-  float occlusion = 0.0;
-  float radius = k_params1.z / pixel_depth;
-  float depth_difference;
-  float3 sample_normal;
-  float3 ray;
-  for(int i = 0; i < %d; ++i) {
-   ray = radius * reflect(sphere[i], random_vector);
-   sample_normal = (tex2D(k_normal, l_texcoordN + ray.xy).xyz * 2.0 - 1.0);
-   depth_difference =  (pixel_depth - tex2D(k_depth,l_texcoordD + ray.xy).r);
-   occlusion += step(k_params2.y, depth_difference) * (1.0 - dot(sample_normal.xyz, pixel_normal)) * (1.0 - smoothstep(k_params2.y, k_params2.x, depth_difference));
-  }
-  o_color.rgb = 1.0 + (occlusion * k_params1.y);
-  o_color.a = 1.0;
+    float ssao_out = DoSSAO(l_texcoordD, texpix_depth.xy, k_depth);
+    
+    float3 out_col = ssao_out;
+    out_col *= 2.0;
+    
+    o_color = float4(out_col, 1.0);
 }
 """
 
@@ -122,18 +213,34 @@ class CommonFilters:
         self.bloom = []
         self.blur = []
         self.ssao = []
+        self.fxaa = None
+        self.textures = {}
+        # always have a color texture available
+        self.makeTexture("color")
         self.cleanup()
 
     def loadShader(self, name):
         return Shader.load(name)
+		
+	def fullCleanup(self):
+		self.cleanup()
+		self.textures = {}
 
     def cleanup(self):
         self.manager.cleanup()
-        self.textures = {}
+		
+        for tex in self.textures.keys():
+            # Preserve color texture
+            if tex != "color":
+                del self.textures[tex]
         
         if self.finalQuad:
             self.finalQuad.removeNode()
         self.finalQuad = None
+
+        if self.fxaa:
+            self.fxaa.removeNode()
+        self.fxaa = None
         
         for bloom in self.bloom:
             bloom.removeNode()
@@ -150,6 +257,11 @@ class CommonFilters:
         if self.task != None:
           taskMgr.remove(self.task)
           self.task = None
+		  
+    def makeTexture(self, tex):
+        self.textures[tex] = Texture("scene-" + tex)
+        self.textures[tex].setWrapU(Texture.WMClamp)
+        self.textures[tex].setWrapV(Texture.WMClamp)
 
     def reconfigure(self, fullrebuild, changed):
         """ Reconfigure is called whenever any configuration change is made. """
@@ -167,7 +279,9 @@ class CommonFilters:
                 return False
 
             auxbits = 0
-            needtex = set(["color"])
+			# Color texture is already created at init,
+			# we don't need to make it.
+            needtex = set()
             needtexcoord = set(["color"])
 
             if ("CartoonInk" in configuration):
@@ -184,10 +298,16 @@ class CommonFilters:
                 auxbits |= AuxBitplaneAttrib.ABOAuxNormal
                 needtexcoord.add("ssao2")
 
-            if ("BlurSharpen" in configuration):
+            if ("BlurSharpen" in configuration or "DOF" in configuration):
                 needtex.add("blur0")
                 needtex.add("blur1")
                 needtexcoord.add("blur1")
+
+            if ("DOF" in configuration):
+                needtex.add("depth")
+
+            if ("FXAA" in configuration):
+                needtex.add("fxaa")
 
             if ("Bloom" in configuration):
                 needtex.add("bloom0")
@@ -204,16 +324,20 @@ class CommonFilters:
                 needtex.add(configuration["VolumetricLighting"].source)
 
             for tex in needtex:
-                self.textures[tex] = Texture("scene-" + tex)
-                self.textures[tex].setWrapU(Texture.WMClamp)
-                self.textures[tex].setWrapV(Texture.WMClamp)
+                self.makeTexture(tex)
 
             self.finalQuad = self.manager.renderSceneInto(textures = self.textures, auxbits=auxbits)
             if (self.finalQuad == None):
                 self.cleanup()
                 return False
 
-            if ("BlurSharpen" in configuration):
+            if ("FXAA" in configuration):
+                fxaa=self.textures["fxaa"]
+                self.fxaa = self.manager.renderQuadInto(colortex=fxaa)
+                self.fxaa.setShader(Shader.load(Shader.SL_GLSL, "phase_14/models/shaders/fxaa.vert.glsl", "phase_14/models/shaders/fxaa.frag.glsl"))
+                self.fxaa.setShaderInput("sceneTexture", self.textures["color"])
+
+            if ("BlurSharpen" in configuration or "DOF" in configuration):
                 blur0=self.textures["blur0"]
                 blur1=self.textures["blur1"]
                 self.blur.append(self.manager.renderQuadInto(colortex=blur0,div=2))
@@ -233,7 +357,7 @@ class CommonFilters:
                 self.ssao[0].setShaderInput("depth", self.textures["depth"])
                 self.ssao[0].setShaderInput("normal", self.textures["aux"])
                 self.ssao[0].setShaderInput("random", loader.loadTexture("maps/random.rgb"))
-                self.ssao[0].setShader(Shader.make(SSAO_BODY % configuration["AmbientOcclusion"].numsamples, Shader.SL_Cg))
+                self.ssao[0].setShader(Shader.make(SSAO_BODY, Shader.SL_Cg))
                 self.ssao[1].setShaderInput("src", ssao0)
                 self.ssao[1].setShader(self.loadShader("phase_3/models/shaders/filter-blurx.sha"))
                 self.ssao[2].setShaderInput("src", ssao1)
@@ -329,6 +453,9 @@ class CommonFilters:
             if ("BlurSharpen" in configuration):
                 text += "  uniform float4 k_blurval,\n"
 
+            if ("DOF" in configuration):
+                text += "  uniform float4 k_dofParams,\n"
+
             if ("VolumetricLighting" in configuration):
                 text += "  uniform float4 k_casterpos,\n"
                 text += "  uniform float4 k_vlparams,\n"
@@ -338,7 +465,10 @@ class CommonFilters:
                 
             text += "  out float4 o_color : COLOR)\n"
             text += "{\n"
-            text += "  float4 result = tex2D(k_txcolor, %s);\n" % (texcoords["color"])
+            if ("FXAA" in configuration):
+                text += "  float4 result = tex2D(k_txfxaa, %s);\n" % (texcoords["color"])
+            else:
+                text += "  float4 result = tex2D(k_txcolor, %s);\n" % (texcoords["color"])
             if ("Exposure" in configuration):
                 #text += "  result = saturate(result);\n"
                 text += "  float exposure = tex1D(k_exposuretex, 0).r;result.rgb *= exposure;\n"
@@ -346,8 +476,21 @@ class CommonFilters:
                 text += CARTOON_BODY % {"texcoord" : texcoords["aux"]}
             if ("AmbientOcclusion" in configuration):
                 text += "  result *= tex2D(k_txssao2, %s).r;\n" % (texcoords["ssao2"])
-            if ("BlurSharpen" in configuration):
-                text += "  result = lerp(tex2D(k_txblur1, %s), result, k_blurval.x);\n" % (texcoords["blur1"])
+            if ("BlurSharpen" in configuration or "DOF" in configuration):
+                text += "  float blurFactor;\n"
+                if ("DOF" in configuration):
+                    text += "  float distance = k_dofParams.x;\n"
+                    text += "  float range = k_dofParams.y;\n"
+                    text += "  float near = k_dofParams.z;\n"
+                    text += "  float far = k_dofParams.w;\n"
+                    text += "  float depth = tex2D(k_txdepth, l_texcoord).r;\n"
+                    text += "  float sceneZ = (-near * far) / (depth - far);\n"
+                    text += "  blurFactor = 1 - saturate(abs(sceneZ - distance) / range);\n"
+                    if ("BlurSharpen" in configuration):
+                            text += "  blurFactor *= k_blurval.x;\n"
+                elif ("BlurSharpen" in configuration):
+                    text += "  blurFactor = k_blurval.x;\n"
+                text += "  result = lerp(tex2D(k_txblur1, %s), result, blurFactor);\n" % (texcoords["blur1"])
             if ("Bloom" in configuration):
                 #text += "  result = saturate(result);\n";
                 text += "  float4 bloom = 0.5 * tex2D(k_txbloom3, %s);\n" % (texcoords["bloom3"])
@@ -398,6 +541,8 @@ class CommonFilters:
                 self.finalQuad.setShaderInput("tx"+tex, self.textures[tex])
 
             self.task = taskMgr.add(self.update, "common-filters-update")
+			
+            messenger.send("CICommonFilters_reconfigure")
 
         if (changed == "CartoonInk") or fullrebuild:
             if ("CartoonInk" in configuration):
@@ -409,6 +554,11 @@ class CommonFilters:
             if ("BlurSharpen" in configuration):
                 blurval = configuration["BlurSharpen"]
                 self.finalQuad.setShaderInput("blurval", LVecBase4(blurval, blurval, blurval, blurval))
+
+        if (changed == "DOF") or fullrebuild:
+            if ("DOF" in configuration):
+                conf = configuration["DOF"]
+                self.finalQuad.setShaderInput("dofParams", LVecBase4(conf.distance, conf.range, conf.near, conf.far))
 
         if (changed == "Bloom") or fullrebuild:
             if ("Bloom" in configuration):
@@ -428,8 +578,12 @@ class CommonFilters:
         if (changed == "AmbientOcclusion") or fullrebuild:
             if ("AmbientOcclusion" in configuration):
                 config = configuration["AmbientOcclusion"]
-                self.ssao[0].setShaderInput("params1", config.numsamples, -float(config.amount) / config.numsamples, config.radius, 0)
-                self.ssao[0].setShaderInput("params2", config.strength, config.falloff, 0, 0)
+                self.ssao[0].setShaderInput("totalStrength", config.totalStrength)
+                self.ssao[0].setShaderInput("base", config.base)
+                self.ssao[0].setShaderInput("area", config.area)
+                self.ssao[0].setShaderInput("falloff", config.falloff)
+                self.ssao[0].setShaderInput("numSamples", config.numsamples)
+                self.ssao[0].setShaderInput("radius", config.radius)
          
         if (changed == "Exposure") or fullrebuild:
             if ("Exposure" in configuration):
@@ -449,6 +603,18 @@ class CommonFilters:
             self.finalQuad.setShaderInput("casterpos", LVecBase4(casterpos.getX() * 0.5 + 0.5, (casterpos.getY() * 0.5 + 0.5), 0, 0))
         if task != None:
             return task.cont
+
+    def setFXAA(self):
+        fullrebuild = (("FXAA" in self.configuration) == False)
+        newconfig = FilterConfig()
+        self.configuration["FXAA"] = newconfig
+        return self.reconfigure(fullrebuild, "FXAA")
+
+    def delFXAA(self):
+        if ("FXAA" in self.configuration):
+            del self.configuration["FXAA"]
+            return self.reconfigure(True, "FXAA")
+        return True
             
     def setExposure(self, exposureTex):
         fullrebuild = (("Exposure" in self.configuration) == False)
@@ -560,6 +726,22 @@ class CommonFilters:
             return self.reconfigure(True, "VolumetricLighting")
         return True
 
+    def setDepthOfField(self, distance = 20.0, range = 40.0, near = 1.0, far = 1000.0):
+        fullrebuild = (("DOF" in self.configuration) == False)
+        conf = FilterConfig()
+        conf.distance = distance
+        conf.range = range
+        conf.near = near
+        conf.far = far
+        self.configuration["DOF"] = conf
+        return self.reconfigure(fullrebuild, "DOF")
+
+    def delDepthOfField(self):
+        if ("DOF" in self.configuration):
+            del self.configuration["DOF"]
+            return self.reconfigure(True, "DOF")
+        return True
+
     def setBlurSharpen(self, amount=0.0):
         """Enables the blur/sharpen filter. If the 'amount' parameter is 1.0, it will not have effect.
         A value of 0.0 means fully blurred, and a value higher than 1.0 sharpens the image."""
@@ -573,7 +755,7 @@ class CommonFilters:
             return self.reconfigure(True, "BlurSharpen")
         return True
 
-    def setAmbientOcclusion(self, numsamples = 16, radius = 0.05, amount = 2.0, strength = 0.01, falloff = 0.000002):
+    def setAmbientOcclusion(self, numsamples = 16, area = 0.075, base = 0.2, totalStrength = 1.0, radius = 0.0002, falloff = 0.000001):
         fullrebuild = (("AmbientOcclusion" in self.configuration) == False)
 
         if (not fullrebuild):
@@ -582,9 +764,10 @@ class CommonFilters:
         newconfig = FilterConfig()
         newconfig.numsamples = numsamples
         newconfig.radius = radius
-        newconfig.amount = amount
-        newconfig.strength = strength
+        newconfig.area = area
+        newconfig.totalStrength = totalStrength
         newconfig.falloff = falloff
+        newconfig.base = base
         self.configuration["AmbientOcclusion"] = newconfig
         return self.reconfigure(fullrebuild, "AmbientOcclusion")
 

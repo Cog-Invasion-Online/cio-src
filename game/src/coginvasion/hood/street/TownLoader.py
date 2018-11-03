@@ -234,6 +234,7 @@ class TownLoader(StateData):
         gsg = base.win.getGsg()
         if gsg:
             self.geom.prepareScene(gsg)
+        base.graphicsEngine.renderFrame()
 
     def reparentLandmarkBlockNodes(self):
         bucket = self.landmarkBlocks = hidden.attachNewNode('landmarkBlocks')
@@ -272,6 +273,9 @@ class TownLoader(StateData):
                 else:
                     groupName = '%s' % zoneId
                 groupNode.setName(groupName)
+                
+            CIGlobals.replaceDecalEffectsWithDepthOffsetAttrib(groupNode)
+            
             #group all the flat walls
             
             block2flatwall = {}
@@ -279,6 +283,7 @@ class TownLoader(StateData):
             for flatwall in flatwalls:
                 if "toon_landmark" in flatwall.getName():
                     print "Skipping", flatwall.getName()
+                    continue
                 if flatwall.hasTag("DNACode") and flatwall.hasMat():
                     continue
                 block = int(flatwall.getName().split(":")[0][2:])
@@ -291,9 +296,8 @@ class TownLoader(StateData):
                     child.clearEffect(DecalEffect.getClassType())
                     child.clearTag("DNACode")
                     child.clearTag("cam")
-                for child in node.getChildren():
-                    child.clearModelNodes()
-                    child.flattenStrong()
+                CIGlobals.clearModelNodesBelow(node)
+                node.flattenStrong()
             
             flattenGroup = groupNode.attachNewNode('optim')
             flattens = ['street*_DNARoot']
@@ -313,8 +317,9 @@ class TownLoader(StateData):
             flattenGroup.clearModelNodes()
             flattenGroup.flattenStrong()
             
-            CIGlobals.replaceDecalEffectsWithDepthOffsetAttrib(groupNode)
+            CIGlobals.flattenModelNodes(groupNode)
             groupNode.flattenStrong()
+            #groupNode.ls()
             
             self.nodeDict[zoneId] = []
             self.nodeList.append(groupNode)

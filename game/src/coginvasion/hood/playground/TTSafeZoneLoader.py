@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import TextureStage, Material, TransparencyAttrib
+from panda3d.core import TextureStage, Material, TransparencyAttrib, TexGenAttrib
 
 from direct.actor.Actor import Actor
 
@@ -57,6 +57,8 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
             newShadow.setScale(1.5)
             newShadow.setBillboardAxis(2)
             newShadow.setColor(0, 0, 0, 0.5, 1)
+            #tree.clearModelNodes()
+            #tree.flattenStrong()
 
         # Fix bank door trigger
         bank = self.geom.find('**/*toon_landmark_TT_bank_DNARoot')
@@ -73,8 +75,7 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         water = self.geom.find("**/pond_water")
         water.removeNode()
         
-        normalStage = TextureStage('normal')
-        normalStage.setMode(TextureStage.MNormal)
+        normalStage = TextureStage('normalmap')
         
         fences = ["fence5", "fence11", "fence10", "fence8"]
         fenceNormal = loader.loadTexture("phase_14/maps/ttc_fence_normal.jpg")
@@ -86,10 +87,17 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         gnd = self.geom.find("**/ttc_beta/inner/terrain/ground")
         gnd.setTexture(normalStage, groundNormal)
         
-        #sidewalk = self.geom.find("**/ground_sidewalk")
-        #swNormal = loader.loadTexture
-
         self.doFlatten()
+        
+    def doFlatten(self):
+        
+        ttc = self.geom.find("**/toontown_central_beta_DNARoot")
+        ttc.flattenStrong()
+        
+        gazebo = self.geom.find("**/prop_gazebo_DNARoot")
+        gazebo.flattenStrong()
+        
+        SafeZoneLoader.SafeZoneLoader.doFlatten(self)
 
     def enter(self, requestStatus):
         SafeZoneLoader.SafeZoneLoader.enter(self, requestStatus)

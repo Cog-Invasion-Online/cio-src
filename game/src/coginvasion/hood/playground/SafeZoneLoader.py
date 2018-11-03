@@ -44,6 +44,58 @@ class SafeZoneLoader(StateData):
         self.safeZoneSong = ''
         self.interiorSong = ''
         return
+        
+    def doBaseOptimizations(self):
+        # Performs base optimizations that all playgrounds can benefit from.
+        # Combines all flat walls together, optimizes all landmark buildings,
+        # tunnels, trees, fishing docks.
+        #
+        # Any optimizations for a specific playground should be done in
+        # doFlatten() in that playground's SafeZoneLoader.
+        
+        flats = self.geom.attachNewNode('flats')
+        for np in self.geom.findAllMatches("**/sz0:*_DNARoot"):
+            np.wrtReparentTo(flats)
+        for np in self.geom.findAllMatches("**/tb0:*_DNARoot"):
+            np.wrtReparentTo(flats)
+        for np in self.geom.findAllMatches("**/*random*_DNARoot"):
+            np.wrtReparentTo(flats)
+        CIGlobals.removeDNACodes(flats)
+        flats.clearModelNodes()
+        flats.flattenStrong()
+        CIGlobals.moveChildren(flats, self.geom)
+        
+        tunnels = self.geom.findAllMatches("**/*linktunnel*")
+        for tunnel in tunnels:
+            tunnel.flattenStrong()
+            
+        for landmark in self.geom.findAllMatches("**/*toon_landmark*_DNARoot"):
+            CIGlobals.removeDNACodes(landmark)
+            landmark.flattenStrong()
+                
+        signs = self.geom.attachNewNode("signs")
+        CIGlobals.moveNodes(self.geom, "*neighborhood_sign*_DNARoot", signs)
+        #for sign in signs.getChildren():
+            #sign.clearTransform()
+        CIGlobals.removeDNACodes(signs)
+        signs.clearModelNodes()
+        signs.flattenStrong()
+        CIGlobals.moveChildren(signs, self.geom)
+        
+        fish = self.geom.attachNewNode("fishspots")
+        CIGlobals.moveNodes(self.geom, "fishing_spot_DNARoot", fish)
+        CIGlobals.removeDNACodes(fish)
+        fish.clearModelNodes()
+        fish.flattenStrong()
+        CIGlobals.moveChildren(fish, self.geom)
+        
+        trees = self.geom.attachNewNode("trees")
+        for np in self.geom.findAllMatches("**/*prop_tree*_DNARoot"):
+            np.wrtReparentTo(trees)
+        CIGlobals.removeDNACodes(trees)
+        trees.clearModelNodes()
+        trees.flattenStrong()
+        CIGlobals.moveChildren(trees, self.geom)
 
     def findAndMakeLinkTunnels(self):
         for tunnel in self.geom.findAllMatches('**/*linktunnel*'):
@@ -153,14 +205,17 @@ class SafeZoneLoader(StateData):
             self.geom.reparentTo(hidden)
         else:
             self.geom = hidden.attachNewNode(node)
-        base.createPhysicsNodes(self.geom)
+        CIGlobals.replaceDecalEffectsWithDepthOffsetAttrib(self.geom)
         if flattenNow:
             self.doFlatten()
+        base.createPhysicsNodes(self.geom)
         gsg = base.win.getGsg()
         if gsg:
             self.geom.prepareScene(gsg)
+        base.graphicsEngine.renderFrame()
 
     def doFlatten(self):
+        self.doBaseOptimizations()
         self.makeDictionaries(self.hood.dnaStore)
         self.geom.flattenMedium()
 

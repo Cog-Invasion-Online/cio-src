@@ -87,6 +87,7 @@ class DistributedBattleTrolley(DistributedObject):
         findStr = '**/prop_trolley_station_' + hoodAbbr + '_DNARoot'
         
         self.trolleyStation = hood.loader.geom.find(findStr)
+        self.trolleyStation.flattenStrong()
         self.trolleyCar = self.trolleyStation.find('**/trolley_car')
         self.trolleyKey = self.trolleyStation.find('**/key')
 

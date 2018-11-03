@@ -198,6 +198,9 @@ class SettingsManager:
                 render.setShaderAuto()
             else:
                 render.setShaderOff(1)
+        else:
+            render.setShaderOff(1)
+            render.setLightOff(1)
 
         base.musicManager.setVolume(musvol)
         base.sfxManagerList[0].setVolume(sfxvol)

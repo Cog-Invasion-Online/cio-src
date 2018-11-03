@@ -17,7 +17,7 @@ Where to find moved globals:
 
 from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
-from panda3d.core import TextureStage, VBase4, TransparencyAttrib, Vec3, deg2Rad, Point2
+from panda3d.core import TextureStage, VBase4, TransparencyAttrib, Vec3, deg2Rad, Point2, DecalEffect, ModelNode
 
 from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wait, Parallel, SoundInterval, ActorInterval
 
@@ -56,7 +56,7 @@ OriginalCameraFov = 52.0
 
 DefaultCameraFov = 52.0
 DefaultCameraFar = 2500.0
-DefaultCameraNear = 0.3
+DefaultCameraNear = 1.0
 PortalScale = 1.5
 SPInvalid = 0
 SPHidden = 1
@@ -83,6 +83,37 @@ DodgeballGame = "Winter Dodgeball"
 MB_Moving = 1
 MB_Crouching = 2
 MB_Walking = 4
+
+def replaceDecalEffectsWithDepthOffsetAttrib(node):
+    for np in node.findAllMatches("**"):
+        if np.hasEffect(DecalEffect.getClassType()):
+            np.clearEffect(DecalEffect.getClassType())
+            np.setDepthOffset(1)
+            
+def moveNodes(fromNode, search, node):
+    for np in fromNode.findAllMatches("**/" + search):
+        np.wrtReparentTo(node)
+        
+def moveChildren(fromNode, toNode, removeFrom = False):
+    for np in fromNode.getChildren():
+        np.wrtReparentTo(toNode)
+    if removeFrom:
+        fromNode.removeNode()
+        
+def removeDNACodes(node):
+    for np in node.findAllMatches("**"):
+        np.clearTag("DNACode")
+        np.clearTag("DNARoot")
+        np.clearTag("cam")
+        
+def flattenModelNodes(node):
+    for np in node.findAllMatches("**"):
+        if np.node().isOfType(ModelNode.getClassType()):
+            np.flattenStrong()
+            
+def clearModelNodesBelow(node):
+    for np in node.getChildren():
+        np.clearModelNodes()
 
 def isAvatar(obj):
     from src.coginvasion.avatar.Avatar import Avatar
@@ -446,13 +477,14 @@ def makeAmbientLight(name, color):
 def makeDirectionalLight(name, color, angle):
     dir = DirectionalLight(name + "-directional")
     dir.setColor(color)
+    dir.setDirection(anglesToVector(angle))
     directional = camera.attachNewNode(dir)
     directional.setCompass()
-    directional.setHpr(angle)
-    if metadata.USE_REAL_SHADOWS and False:
-        dir.setShadowCaster(True, 1024 * 4, 1024 * 4)
-        dir.getLens().setFilmSize(60, 60)
-        dir.getLens().setNearFar(0.1, 10000)
+    #if metadata.USE_REAL_SHADOWS:
+        #dir.setShadowCaster(True, 1, 1)
+        #dir.showFrustum()
+        #dir.getLens().setFilmSize(60, 60)
+        #dir.getLens().setNearFar(0.1, 10000)
         
     return directional
 
