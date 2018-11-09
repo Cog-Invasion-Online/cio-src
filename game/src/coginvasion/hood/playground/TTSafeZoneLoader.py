@@ -9,6 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import TextureStage, Material, TransparencyAttrib, TexGenAttrib
+from panda3d.bsp import TextureStages
 
 from direct.actor.Actor import Actor
 
@@ -75,7 +76,7 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         water = self.geom.find("**/pond_water")
         water.removeNode()
         
-        normalStage = TextureStage('normalmap')
+        normalStage = TextureStages.getNormalmap()
         
         fences = ["fence5", "fence11", "fence10", "fence8"]
         fenceNormal = loader.loadTexture("phase_14/maps/ttc_fence_normal.jpg")

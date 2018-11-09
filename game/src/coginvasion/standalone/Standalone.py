@@ -18,6 +18,7 @@ from src.coginvasion.base.Metadata import Metadata
 __builtin__.metadata = Metadata()
 metadata.USE_LIGHTING = 0
 
+loadPrcFile('config/Confauto.prc')
 loadPrcFile('config/config_client.prc')
 loadPrcFileData('', 'framebuffer-multisample 0')
 loadPrcFileData('', 'multisamples 16')
