@@ -502,6 +502,7 @@ class Suit(Avatar):
         self.healthBarGlow.setPos(-0.005, 0.01, 0.015)
         self.healthBarGlow.setColor(SuitGlobals.healthGlowColors[0])
         button.flattenLight()
+        button.setLightOff()
         self.condition = 0
         if hasattr(self, 'getHealth'):
             self.updateHealthBar(self.getHealth())

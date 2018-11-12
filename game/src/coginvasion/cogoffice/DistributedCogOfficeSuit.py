@@ -74,7 +74,7 @@ class DistributedCogOfficeSuit(DistributedSuit):
     def enterGuard(self, ts):
         self.show()
         self.cleanupPropeller()
-        points = self.getPoints('guard')
+        #points = self.getPoints('guard')
         
         if self.hangoutPoint[0]:
             # This cog is going to be at a hangout point.
@@ -99,7 +99,7 @@ class DistributedCogOfficeSuit(DistributedSuit):
     def enterChair(self, ts):
         self.show()
         self.cleanupPropeller()
-        points = self.getPoints('chairs')
+        #points = self.getPoints('chairs')
         self.setPosHpr(self.chairPoint[0][0], self.chairPoint[0][1], self.chairPoint[0][2], self.chairPoint[1], 0, 0)
         self.setAnimState('sit')
         self.disableRay()

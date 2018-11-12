@@ -22,13 +22,13 @@ ElevatorData = {ELEVATOR_NORMAL: {'openTime':   2.0,
                                   'width':      3.5,
                                   'countdown':  15.0,
                                   'sfxVolume':  1.0,
-                                  'collRadius': 10},
+                                  'collRadius': 5},
                 ELEVATOR_INT:    {'openTime':   2.0,
                                   'closeTime':  2.0,
                                   'width':      3.5,
                                   'countdown':  65.0,
                                   'sfxVolume':  1.0,
-                                  'collRadius': 10}}
+                                  'collRadius': 5}}
 
 TOON_BOARD_ELEVATOR_TIME = 1.0
 TOON_EXIT_ELEVATOR_TIME = 1.0

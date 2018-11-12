@@ -443,17 +443,29 @@ class LocalControls(DirectObject):
         return task.cont
         
     def __handleUse(self, task):
-        if self.mode == LocalControls.MThirdPerson:
-            return task.cont
+        #if self.mode == LocalControls.MThirdPerson:
+        #    return task.cont
             
         time = globalClock.getFrameTime()
         use = inputState.isSet('use')
         if use:
             # see if there is anything for us to use.
 
-            distance = 5
-            start = base.camera.getPos(render)
-            stop = start + base.camera.getQuat(render).xform(Vec3.forward()) * distance
+            distance = 7.5
+            camQuat = base.camera.getQuat(render)
+            camFwd = camQuat.xform(Vec3.forward())
+            camPos = base.camera.getPos(render)
+            if self.mode == LocalControls.MFirstPerson:
+                start = camPos
+            else:
+                # Move the line out to their character.
+                # This prevents the player from using things that
+                # are behind their character, but in front of
+                # the camera.
+                laPos = base.localAvatar.getPos(render)
+                camToPlyr = (camPos.getXy() - laPos.getXy()).length()
+                start = camPos + (camFwd * camToPlyr)
+            stop = start + (camFwd * distance)
             hit = PhysicsUtils.rayTestClosestNotMe(base.localAvatar, start, stop, BitMask32.allOn())
             
             somethingToUse = False

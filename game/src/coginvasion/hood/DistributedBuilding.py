@@ -237,7 +237,7 @@ class DistributedBuilding(DistributedObject):
         self.elevatorNodePath.reparentTo(self.suitDoorOrigin)
         base.createPhysicsNodes(self.elevatorNodePath)
         base.enablePhysicsNodes(self.elevatorNodePath)
-        self.elevatorNodePath.flattenStrong()
+        #self.elevatorNodePath.flattenStrong()
         self.normalizeElevator()
 
     def loadAnimToSuitSfx(self):
@@ -367,13 +367,13 @@ class DistributedBuilding(DistributedObject):
 
         self.loadElevator(suitBuildingNP)
         
-        CIGlobals.replaceDecalEffectsWithDepthOffsetAttrib(suitBuildingNP)
+        #CIGlobals.replaceDecalEffectsWithDepthOffsetAttrib(suitBuildingNP)
         
-        CIGlobals.flattenModelNodes(suitBuildingNP)
+        #CIGlobals.flattenModelNodes(suitBuildingNP)
         
         base.enablePhysicsNodes(suitBuildingNP)
         
-        suitBuildingNP.ls()
+        #suitBuildingNP.ls()
         
         return suitBuildingNP
 

@@ -268,7 +268,7 @@ class ChaseBehavior(MoveBehavior):
     def enter(self, target):
         MoveBehavior.enter(self)
         self.target = target
-        self.attackDistance = random.uniform(15, 30)
+        self.attackDistance = random.uniform(5, 15)
 
     def exit(self):
         MoveBehavior.exit(self)

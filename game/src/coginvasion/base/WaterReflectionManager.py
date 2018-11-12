@@ -173,7 +173,7 @@ class WaterNode(NodePath):
     def setup(self):
         self.reparentTo(render)
         self.hide(REFL_CAM_BITMASK)
-        self.setLightOff(1)
+        #self.setLightOff(1)
         self.setMaterialOff(1)
         self.setTransparency(1)
 
@@ -387,6 +387,9 @@ class WaterReflectionManager:
         return self.reso > 0
 
     def getHoodOLC(self):
+        if not hasattr(base.cr, 'playGame'):
+            return None
+            
         pg = base.cr.playGame
         if pg:
             hood = pg.hood
@@ -436,7 +439,9 @@ class WaterReflectionManager:
             # and project a combined version of the 2 onto the water nodes.
             self.setupScene(pos[2])
         
-        self.waterNodesQueue.append([size, pos, depth, spec])
+        #self.waterNodesQueue.append([size, pos, depth, spec])
+        
+        return self.__addWaterNodeNow(size, pos, depth, spec)
         
     def __addWaterNodeNow(self, size, pos, depth, spec):
         if not self.enabled:
@@ -553,14 +558,15 @@ class WaterReflectionManager:
                 if waterNode.isTouchingWater(camera.getPos(render)):
                     waterCamIsTouching = waterNode
                     foundCamSubmerged = True
-
-            # Now, let's see if local avatar is touching this water node.
-            if not foundLocalAvTouching:
-                test = waterNode.isInWater(base.localAvatar.getPos(render),
-                                           base.localAvatar.getPos(render) + (0, 0, base.localAvatar.getHeight()))
-                if test != WaterNode.Nothing:
-                    foundLocalAvTouching = test
-                    waterLocalAvIsTouching = waterNode
+            
+            if hasattr(base, 'localAvatar'):
+                # Now, let's see if local avatar is touching this water node.
+                if not foundLocalAvTouching:
+                    test = waterNode.isInWater(base.localAvatar.getPos(render),
+                                               base.localAvatar.getPos(render) + (0, 0, base.localAvatar.getHeight()))
+                    if test != WaterNode.Nothing:
+                        foundLocalAvTouching = test
+                        waterLocalAvIsTouching = waterNode
 
             if self.hasWaterEffects():
                 for animTex in waterNode.spec.animatedTextures:

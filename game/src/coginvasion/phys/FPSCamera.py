@@ -177,7 +177,10 @@ class FPSCamera(DirectObject):
     def attachCamera(self, reset = True):
         if reset:
             self.camRoot.reparentTo(base.localAvatar)
-            self.camRoot.setPos(base.localAvatar.getEyePoint())
+            if base.localAvatar.isFirstPerson():
+                self.camRoot.setPos(base.localAvatar.getEyePoint())
+            else:
+                self.camRoot.setPos(0, 0, max(base.localAvatar.getHeight(), 3.0))
             self.camRoot.setHpr(0, 0, 0)
             
         base.camera.reparentTo(self.camRoot)
@@ -187,7 +190,7 @@ class FPSCamera(DirectObject):
         elif base.localAvatar.isThirdPerson():
             camHeight = max(base.localAvatar.getHeight(), 3.0)
             heightScaleFactor = camHeight * 0.3333333333
-            base.localAvatar.smartCamera.setIdealCameraPos((1, -7 * heightScaleFactor, 0))
+            base.localAvatar.smartCamera.setIdealCameraPos((1, -5 * heightScaleFactor, 0))
             base.localAvatar.smartCamera.setLookAtPoint((1, 10, 0))
 
     def getViewModelLeftHand(self):

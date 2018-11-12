@@ -435,8 +435,8 @@ def getShinyMaterial(shininess = 250.0):
 def getCharacterMaterial(name = "charMat", shininess = 250, rimColor = (1, 1, 1, 1), rimWidth = 0.3,
                          specular = (1, 1, 1, 1), lightwarp = None):#"phase_3/maps/toon_lightwarp.jpg"):
     mat = Material(name)
-    mat.setRimColor(rimColor)
-    mat.setRimWidth(rimWidth)
+    #mat.setRimColor(rimColor)
+    #mat.setRimWidth(rimWidth)
     mat.setSpecular(specular)
     mat.setShininess(shininess)
     mat.setShadeModel(Material.SMHalfLambert)
