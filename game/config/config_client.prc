@@ -114,6 +114,7 @@ ctmusic-numsongs 1
 
 want-pstats 1
 pstats-gpu-timing 0
+pstats-host 127.0.0.1
 
 allow-incomplete-render 1
 
