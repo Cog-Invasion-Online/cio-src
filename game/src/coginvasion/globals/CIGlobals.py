@@ -53,6 +53,7 @@ NPCRunSpeed = 0.04
 
 # Use this for overriding the chosen FOV with the original Toontown FOV.
 OriginalCameraFov = 52.0
+OriginalActionFov = 70.0
 
 DefaultCameraFov = 52.0
 DefaultCameraFar = 2500.0
