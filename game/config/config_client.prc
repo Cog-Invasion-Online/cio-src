@@ -95,9 +95,9 @@ explosion-hlsounds #f
 hdr-min-avglum 3.0
 hdr-percent-bright-pixels 2.0
 hdr-percent-target 60.0
-hdr-debug-histogram #t
+hdr-debug-histogram #f
 
-want-pssm 1
+want-pssm 0
 pssm-splits 3
 pssm-size 2048
 pssm-shadow-depth-bias 0.0001
@@ -105,6 +105,10 @@ pssm-normal-offset-scale 0.1
 pssm-softness-factor 2.0
 shadow-depth-bits 32
 stencil-bits 8
+
+# Time averaged lighting in BSP levels to reduce popping
+light-average 1
+light-lerp-speed 5.0
 
 ctmusic-numsongs 1
 
@@ -140,7 +144,7 @@ text-dynamic-merge 1
 
 interpolate-frames 0
 
-#threading-model App/Cull/Draw # experimental
+threading-model App/Cull/Draw # experimental
 assert-abort 0
 
 textures-power-2 none
