@@ -25,6 +25,7 @@ from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.task.Task import Task
 from panda3d.core import Vec4, VBase4, Texture, TextureStage, TexGenAttrib
+from panda3d.bsp import TextureStages
 import random
 
 class Suit(Avatar):
@@ -715,8 +716,7 @@ class Suit(Avatar):
             self.find('**/torso').setTexture(blazTex, 1)
             
             if hasBump:
-                bStage = TextureStage('cogbump')
-                bStage.setMode(TextureStage.MNormal)
+                bStage = TextureStages.getNormalmap()
                 self.find('**/legs').setTexture(bStage, b_legTex, 1)
                 self.find('**/arms').setTexture(bStage, b_armTex, 1)
                 self.find('**/torso').setTexture(bStage, b_blazTex, 1)

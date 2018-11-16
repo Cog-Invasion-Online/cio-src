@@ -289,8 +289,12 @@ class ChaseBehavior(MoveBehavior):
             self.targetPos = plPos
             path = self.goon.dispatch.planPath(pos, self.targetPos)
             if len(path) < 2:
-                self.goon.d_doUndetectGlow()
-                return GBPatrol
+                # We can't find a good path, if they're visible, just shoot away.
+                if self.isPlayerVisible(self.target):
+                    return (GBAttack, [self.target])
+                else:
+                    self.goon.d_doUndetectGlow()
+                    return GBPatrol
             #if not self.moving and not replanPath:
             #    self.goon.playIdleAnim()
 
