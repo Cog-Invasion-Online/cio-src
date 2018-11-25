@@ -336,7 +336,7 @@ class CIBase(ShowBase):
             self.skyBox = loader.loadModel(OutdoorLightingConfig.SkyData[skyType][0])
             self.skyBox.reparentTo(camera)
             self.skyBox.setCompass()
-            self.skyBox.setZ(0)
+            self.skyBox.setZ(-350)
             self.skyBoxUtil = SkyUtil()
             self.skyBoxUtil.startSky(self.skyBox)
         
@@ -507,8 +507,16 @@ class CIBase(ShowBase):
 
     def __physicsUpdate(self, task):
         dt = globalClock.getDt()
-        try: self.physicsWorld.doPhysics(dt, 1, 0.016)
-        except: pass
+        if metadata.PHYS_FIXED_TIMESTEP:
+            try:
+                self.physicsWorld.doPhysics(dt, metadata.PHYS_SUBSTEPS, 0.016)
+            except:
+                pass
+        else:
+            try:
+                self.physicsWorld.doPhysics(dt, metadata.PHYS_SUBSTEPS, dt / (metadata.PHYS_SUBSTEPS + 1))
+            except:
+                pass
         return task.cont
      
     def projectShadows(self):

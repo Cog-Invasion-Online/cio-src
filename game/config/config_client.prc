@@ -12,6 +12,7 @@ aux-display pandagl
 # Logging...
 notify-level warning
 notify-level-egg2pg warning
+notift-level-bspfile info
 notify-timestamp #f
 default-directnotify-level warning
 
@@ -112,11 +113,16 @@ light-lerp-speed 5.0
 
 ctmusic-numsongs 1
 
-want-pstats 1
+want-pstats 0
 pstats-gpu-timing 0
 pstats-host 127.0.0.1
 
+preload-textures 0
+preload-simple-textures 1
+texture-compression 1
 allow-incomplete-render 1
+allow-async-bind 1
+restore-initial-pose 0
 
 flatten-collision-nodes 1
 
@@ -141,11 +147,10 @@ gl-force-depth-stencil 0
 glsl-preprocess 1
 
 text-flatten 1
-text-dynamic-merge 1
 
 interpolate-frames 0
 
-threading-model App/Cull/Draw # experimental
-assert-abort 0
+#threading-model App/Cull/Draw # experimental
+assert-abort 1
 
 textures-power-2 none

@@ -115,7 +115,7 @@ class DistributedSewer(DistributedBattleZone):
         # Purely client-sided entities
 
         from src.coginvasion.szboss import AmbientGeneric, FuncWater, Ropes, InfoBgm, InfoPlayerRelocate, EnvLightGlow, EnvParticleSystem
-        base.bspLoader.linkEntityToClass("ambient_generic", AmbientGeneric.AmbientGeneric)
+        #base.bspLoader.linkEntityToClass("ambient_generic", AmbientGeneric.AmbientGeneric)
         base.bspLoader.linkEntityToClass("func_water", FuncWater.FuncWater)
         base.bspLoader.linkEntityToClass("rope_begin", Ropes.RopeBegin)
         base.bspLoader.linkEntityToClass("rope_keyframe", Ropes.RopeKeyframe)

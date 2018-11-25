@@ -3,6 +3,7 @@ from panda3d.core import Point3, Vec3
 from direct.showbase.DirectObject import DirectObject
 from direct.fsm.StateData import StateData
 from direct.interval.IntervalGlobal import Func, LerpHprInterval
+from direct.showbase import PythonUtil
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cog.BaseBehaviorAI import BaseBehaviorAI
@@ -178,6 +179,7 @@ class MoveBehavior(Behavior):
 
         if turnToFirstWP:
             turnHpr = CIGlobals.getHeadsUpAngle(self.goon, path[1])
+            turnHpr[0] = PythonUtil.fitDestAngle2Src(self.goon.getHpr()[0], turnHpr[0])
             turnDist = CIGlobals.getHeadsUpDistance(self.goon, path[1])
             self.moveTrack.insert(1, LerpHprInterval(self.goon, duration = turnDist / (speed * 30), hpr = turnHpr))
 
