@@ -10,15 +10,16 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3, MemoryUsage, MemoryUsagePointers, RescaleNormalAttrib
 from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState, Vec4, Point3
-from panda3d.core import CollisionTraverser, CullBinManager, LightRampAttrib
+from panda3d.core import CollisionTraverser, CullBinManager, LightRampAttrib, Camera, OmniBoundingVolume, Texture, GraphicsOutput
 from panda3d.bullet import BulletWorld, BulletDebugNode
-from panda3d.bsp import BSPLoader, BSPRender
+from panda3d.bsp import BSPLoader, BSPRender, PSSMShaderGenerator, VertexLitGenericSpec, LightmappedGenericSpec
 
 from p3recastnavigation import RNNavMeshManager
 
 from direct.showbase.ShowBase import ShowBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui import DirectGuiGlobals
+from direct.gui.DirectGui import OnscreenImage
 
 from src.coginvasion.manager.UserInputStorage import UserInputStorage
 from src.coginvasion.margins.MarginManager import MarginManager
@@ -57,6 +58,21 @@ class CIBase(ShowBase):
             self.graphicsEngine.setDefaultLoader(self.loader.loader)
 
         #self.startTk()
+		
+		# Any ComputeNodes should be parented to this node, not render.
+		# We isolate ComputeNodes to avoid traversing the same ComputeNodes
+		# when doing multi-pass rendering.
+        self.computeRoot = NodePath('computeRoot')
+        self.computeCam = self.makeCamera(base.win)
+        self.computeCam.node().setCullBounds(OmniBoundingVolume())
+        self.computeCam.node().setFinal(True)
+        self.computeCam.reparentTo(self.computeRoot)
+
+        self.shaderGenerator = PSSMShaderGenerator(self.win.getGsg(), self.camera, self.render)
+        self.shaderGenerator.addShader(VertexLitGenericSpec())
+        self.shaderGenerator.addShader(LightmappedGenericSpec())
+        self.win.getGsg().setShaderGenerator(self.shaderGenerator)
+        self.shaderGenerator.startUpdate()
 
         render.hide()
 
@@ -146,6 +162,8 @@ class CIBase(ShowBase):
 
         self.music = None
         self.currSongName = None
+
+        render.show(CIGlobals.ShadowCameraBitmask)
         
         self.avatars = []
         
@@ -178,6 +196,8 @@ class CIBase(ShowBase):
         cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
         if not metadata.USE_REAL_SHADOWS:
             cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
+        else:
+            cbm.addBin('shadow', CullBinManager.BTFixed, -100)
         cbm.addBin('gui-popup', CullBinManager.BTUnsorted, 60)
         cbm.addBin('gsg-popup', CullBinManager.BTFixed, 70)
         self.setBackgroundColor(CIGlobals.DefaultBackgroundColor)
@@ -188,6 +208,18 @@ class CIBase(ShowBase):
         base.transitions.FadeModelName = "phase_3/models/misc/fade.bam"
 
         self.accept(self.inputStore.TakeScreenshot, ScreenshotHandler.takeScreenshot)
+        
+        #self.accept('u', render.setShaderOff)
+        #self.accept('i', render.setShaderOff, [1])
+        #self.accept('o', render.setShaderOff, [2])
+        self.accept('o', self.oobeCull)
+        self.accept('c', self.reportCam)
+        
+    def reportCam(self):
+        print self.camera
+        print self.camera.getNetTransform()
+        self.camera.setScale(render, 1)
+        self.camera.setShear(render, 0)
 
         """
         print 'TPM START'
@@ -304,7 +336,7 @@ class CIBase(ShowBase):
             self.skyBox = loader.loadModel(OutdoorLightingConfig.SkyData[skyType][0])
             self.skyBox.reparentTo(camera)
             self.skyBox.setCompass()
-            self.skyBox.setZ(0)
+            self.skyBox.setZ(-350)
             self.skyBoxUtil = SkyUtil()
             self.skyBoxUtil.startSky(self.skyBox)
         
@@ -475,8 +507,16 @@ class CIBase(ShowBase):
 
     def __physicsUpdate(self, task):
         dt = globalClock.getDt()
-        try: self.physicsWorld.doPhysics(dt, 1, 0.016)
-        except: pass
+        if metadata.PHYS_FIXED_TIMESTEP:
+            try:
+                self.physicsWorld.doPhysics(dt, metadata.PHYS_SUBSTEPS, 0.016)
+            except:
+                pass
+        else:
+            try:
+                self.physicsWorld.doPhysics(dt, metadata.PHYS_SUBSTEPS, dt / (metadata.PHYS_SUBSTEPS + 1))
+            except:
+                pass
         return task.cont
      
     def projectShadows(self):
@@ -509,6 +549,9 @@ class CIBase(ShowBase):
         self.hdr = HDR()
         self.setHDR(self.hdrToggle)
         self.setBloom(self.bloomToggle)
+        #self.filters.setAmbientOcclusion()
+        #self.filters.setDepthOfField(distance = 10.0, range = 175.0, near = 1.0, far = 1000.0 / (1000.0 - 1.0))
+        self.filters.setFXAA()
 
     def setHDR(self, toggle):
         self.hdrToggle = toggle

@@ -1159,6 +1159,7 @@ class LocalToon(DistributedPlayerToon):
         self.accept(base.inputStore.ToggleAspect2D, self.toggleAspect2d)
 
         self.acceptOnce('m', self.sendUpdate, ['reqMakeSewer'])
+        self.accept('l', render.ls)
 
         #self.accept('c', self.walkControls.setCollisionsActive, [0])
 

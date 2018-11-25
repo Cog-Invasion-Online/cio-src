@@ -632,7 +632,10 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         base.setBackgroundColor(self.CEILING_COLOR)
 
         import Entities
+        from src.coginvasion.szboss import FuncWater, EnvLightGlow
         base.bspLoader.linkEntityToClass("cogoffice_faceoff_point", Entities.FaceOffPoint)
+        base.bspLoader.linkEntityToClass("func_water", FuncWater.FuncWater)
+        base.bspLoader.linkEntityToClass("env_lightglow", EnvLightGlow.EnvLightGlow)
 
         self.sendUpdate('readyToStart')
 

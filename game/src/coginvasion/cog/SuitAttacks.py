@@ -817,6 +817,7 @@ class HangUpAttack(Attack):
         self.cord.ropeNode.setUseVertexThickness(1)
         self.cord.setup(3, ({'node': self.phone, 'point': (0.8, 0, 0.2), 'color': (0, 0, 0, 1), 'thickness': 1000}, {'node': self.phone, 'point': (2, 0, 0), 'color': (0, 0, 0, 1), 'thickness': 1000}, {'node': self.receiver, 'point': (1.1, 0.25, 0.5), 'color': (0, 0, 0, 1), 'thickness': 1000}), [])
         self.cord.setH(180)
+        self.cord.setShaderOff() # fixes crash in bsp levels
         self.phoneSfx = base.audio3d.loadSfx("phase_3.5/audio/sfx/SA_hangup.ogg")
         base.audio3d.attachSoundToObject(self.phoneSfx, self.phone)
         self.hangupSfx = base.audio3d.loadSfx("phase_3.5/audio/sfx/SA_hangup_place_down.ogg")

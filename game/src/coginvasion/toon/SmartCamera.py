@@ -221,6 +221,10 @@ class SmartCamera:
 
     def getIdealCameraPos(self):
         return Point3(self.__idealCameraPos)
+        
+    def getPushedCameraPos(self):
+        ideal = self.getIdealCameraPos()
+        return ideal + (ideal.normalized() * 0.25)
 
     def getCompromiseCameraPos(self):
         if self.__idealCameraObstructed == 0:
@@ -235,14 +239,14 @@ class SmartCamera:
             if not base.localAvatar.battleControls:
                 # Lift the camera up in classic controls.
                 # In third person battle controls, we want to just move the camera closer to the player.
-                liftMult = 1.0 - ratio * ratio
+                liftMult = max(0.0, 1.0 - ratio * ratio)
                 compromisePos = Point3(compromisePos[0], compromisePos[1], compromisePos[2] + base.localAvatar.getHeight() * 0.4 * liftMult)
         if not base.localAvatar.battleControls:
             compromisePos.setZ(compromisePos[2] + self.cameraZOffset)
         return compromisePos
 
     def updateSmartCameraCollisionLineSegment(self):
-        pointB = self.getIdealCameraPos()
+        pointB = self.getPushedCameraPos()
         pointA = self.getVisibilityPoint()
         vectorAB = Vec3(pointB - pointA)
         lengthAB = vectorAB.length()
@@ -425,7 +429,8 @@ class SmartCamera:
         collisionPoint = camera.getParent().getRelativePoint(render, camObstrCollisionEntry.getHitPos())
 
         collisionVec = Vec3(collisionPoint - self.pointA)
-        distance = collisionVec.length()
+        pushVec = Vec3(self.getIdealCameraPos() - self.getPushedCameraPos())
+        distance = collisionVec.length() - pushVec.length()
         self.__idealCameraObstructed = 1
         self.closestObstructionDistance = distance
         self.popCameraToDest()

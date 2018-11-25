@@ -47,14 +47,28 @@ class DLSafeZoneLoader(SafeZoneLoader):
         if metadata.USE_LIGHTING:
             for lamp in self.geom.findAllMatches("**/*light_DNARoot*"):
                 self.lampLights.append(self.hood.makeLampLight(lamp))
-
+                
         self.doFlatten()
-
+        
         hq = self.geom.find('**/*toon_landmark_hqDL*')
         hq.find('**/doorFrameHoleLeft_0').stash()
         hq.find('**/doorFrameHoleRight_0').stash()
         hq.find('**/doorFrameHoleLeft_1').stash()
         hq.find('**/doorFrameHoleRight_1').stash()
+        
+    def doFlatten(self):
 
         water = self.geom.find("**/DLpd_water")
         water.removeNode()
+        
+        self.geom.find("**/donalds_dreamland").flattenStrong()
+        
+        dlprops = self.geom.attachNewNode('dlprops')
+        CIGlobals.moveNodes(self.geom, "*DL_post*_DNARoot", dlprops)
+        CIGlobals.moveNodes(self.geom, "*DL_clouds*_DNARoot", dlprops)
+        CIGlobals.removeDNACodes(dlprops)
+        dlprops.clearModelNodes()
+        dlprops.flattenStrong()
+        
+        SafeZoneLoader.doFlatten(self)
+        

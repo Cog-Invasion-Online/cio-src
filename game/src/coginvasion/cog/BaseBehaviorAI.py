@@ -2,6 +2,7 @@ from src.coginvasion.globals import CIGlobals
 
 class BaseBehaviorAI:
     MaxVisionAngle = 130
+    MaxVisionDistance = 75
 
     def isPlayerAlive(self, plyr):
         return not plyr.isDead()
@@ -19,7 +20,7 @@ class BaseBehaviorAI:
     def isPlayerAudible(self, plyr):
         return self.isPlayerInPVS(plyr) and self.suit.getDistance(plyr) < 50.0
 
-    def isPlayerVisible(self, plyr, checkVisionAngle = True):
+    def isPlayerVisible(self, plyr, checkVisionAngle = True, checkVisionDistance = True):
         # Check if player is potentially visible from my leaf.
         if not self.isPlayerInPVS(plyr):
             return False
@@ -28,6 +29,11 @@ class BaseBehaviorAI:
             # Is the player in my angle of vision?
             angle = CIGlobals.getHeadsUpDistance(self.suit, plyr)
             if abs(angle) > self.MaxVisionAngle:
+                return False
+                
+        if checkVisionDistance:
+            # Is the player close enough to where I could see them?
+            if self.suit.getDistance(plyr) > self.MaxVisionDistance:
                 return False
 
         # Is the player occluded by any BSP faces?

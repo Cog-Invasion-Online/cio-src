@@ -674,7 +674,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.updateChatSoundDict()
         self.setBlend(frameBlend = True)
 
-        bodyMat = CIGlobals.getCharacterMaterial(specular = (0, 0, 0, 1))
+        bodyMat = CIGlobals.getCharacterMaterial(shininess = 0)
         self.setMaterial(bodyMat)
 
         if not hasattr(base, 'localAvatar') or base.localAvatar != self:

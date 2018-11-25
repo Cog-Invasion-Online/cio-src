@@ -158,6 +158,11 @@ class OutdoorLightingConfig(LightingConfig):
         if metadata.USE_LIGHTING:
             render.setLight(self.sunNP)
             print self.sunNP.node().getDirection()
+
+            # Maybe apply PSSM shadows with this sun light?
+            if metadata.USE_REAL_SHADOWS:
+                base.shaderGenerator.setSunLight(self.sunNP)
+
             #base.filters.setVolumetricLighting(self.sunNP)
             if not self.winterOverride:
                 render.setFog(self.fogNode)
@@ -173,8 +178,7 @@ class OutdoorLightingConfig(LightingConfig):
             self.skyNP.setCompass()
             self.skyNP.hide(CIGlobals.ShadowCameraBitmask)
 
-            if self.skyData[1]:
-                self.skyEffect.startSky(self.skyNP)
+            self.skyEffect.startSky(self.skyNP)
         
         if self.snow and self.snowEffect:
             self.snowEffect.start()
@@ -192,8 +196,7 @@ class OutdoorLightingConfig(LightingConfig):
         if self.skyType != OutdoorLightingConfig.STNone:
             self.skyNP.reparentTo(hidden)
 
-            if self.skyData[1]:
-                self.skyEffect.stopSky()
+            self.skyEffect.stopSky()
             
         if self.snow and self.snowEffect:
             self.snowEffect.stop()

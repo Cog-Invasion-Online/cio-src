@@ -68,6 +68,7 @@ class DistributedSewerAI(DistributedBattleZoneAI):
         if avId == self.avId:
             self.avReady = True
             self.b_loadMap('phase_14/etc/sewer_entrance_room_indoors/sewer_entrance_room_indoors.bsp')
+            #self.b_loadMap('phase_14/etc/estate_interior/estate_interior.bsp')
         else:
             self.notify.warning("Suspicious: avIds do not match in ready()")
 

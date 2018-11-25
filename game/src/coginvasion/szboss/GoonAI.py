@@ -3,6 +3,7 @@ from panda3d.core import Point3, Vec3
 from direct.showbase.DirectObject import DirectObject
 from direct.fsm.StateData import StateData
 from direct.interval.IntervalGlobal import Func, LerpHprInterval
+from direct.showbase import PythonUtil
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cog.BaseBehaviorAI import BaseBehaviorAI
@@ -178,6 +179,7 @@ class MoveBehavior(Behavior):
 
         if turnToFirstWP:
             turnHpr = CIGlobals.getHeadsUpAngle(self.goon, path[1])
+            turnHpr[0] = PythonUtil.fitDestAngle2Src(self.goon.getHpr()[0], turnHpr[0])
             turnDist = CIGlobals.getHeadsUpDistance(self.goon, path[1])
             self.moveTrack.insert(1, LerpHprInterval(self.goon, duration = turnDist / (speed * 30), hpr = turnHpr))
 
@@ -268,7 +270,7 @@ class ChaseBehavior(MoveBehavior):
     def enter(self, target):
         MoveBehavior.enter(self)
         self.target = target
-        self.attackDistance = random.uniform(15, 30)
+        self.attackDistance = random.uniform(5, 15)
 
     def exit(self):
         MoveBehavior.exit(self)
@@ -289,8 +291,12 @@ class ChaseBehavior(MoveBehavior):
             self.targetPos = plPos
             path = self.goon.dispatch.planPath(pos, self.targetPos)
             if len(path) < 2:
-                self.goon.d_doUndetectGlow()
-                return GBPatrol
+                # We can't find a good path, if they're visible, just shoot away.
+                if self.isPlayerVisible(self.target):
+                    return (GBAttack, [self.target])
+                else:
+                    self.goon.d_doUndetectGlow()
+                    return GBPatrol
             #if not self.moving and not replanPath:
             #    self.goon.playIdleAnim()
 

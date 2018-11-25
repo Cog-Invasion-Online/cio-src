@@ -8,6 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.core import ModelNode
+
 from src.coginvasion.holiday.HolidayManager import HolidayType
 import SafeZoneLoader
 import DDPlayground
@@ -40,17 +42,36 @@ class DDSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         hq.find('**/doorFrameHoleRight_0').stash()
         hq.find('**/doorFrameHoleLeft_1').stash()
         hq.find('**/doorFrameHoleRight_1').stash()
-
+        
+    def doFlatten(self):
         self.geom.find("**/top_surface").removeNode()
         self.geom.find("**/bottom_surface").removeNode()
 
         boatMdl = self.geom.find('**/*donalds_boat*')
         boatMdl.setMaterial(CIGlobals.getShinyMaterial())
-        boat = boatMdl.getParent().attachNewNode('ddBoatRoot')
+        wheel = boatMdl.find("**/wheel")
+        wheelMdl = wheel.getParent().attachNewNode(ModelNode('wheelNode'))
+        wheel.wrtReparentTo(wheelMdl)
+        wheelMdl.flattenStrong()
+        boat = boatMdl.getParent().attachNewNode(ModelNode('ddBoatRoot'))
         boat.setTransform(boatMdl.getTransform())
-        boatMdl1 = boat.attachNewNode('ddBoatMdl1')
+        boatMdl1 = boat.attachNewNode(ModelNode('ddBoatMdl1'))
         boatMdl.clearTransform()
         boatMdl.reparentTo(boatMdl1)
+        
+        self.geom.find("**/donalds_dock_anchor").flattenStrong()
+        
+        ddprops = self.geom.attachNewNode('ddprops')
+        CIGlobals.moveNodes(self.geom, "*streetlight_DD*_DNARoot", ddprops)
+        CIGlobals.moveNodes(self.geom, "prop_crate_DNARoot", ddprops)
+        CIGlobals.moveNodes(self.geom, "prop_stovepipe_DNARoot", ddprops)
+        CIGlobals.moveNodes(self.geom, "prop_chimney_DNARoot", ddprops)
+        CIGlobals.moveNodes(self.geom, "*palm_tree*_DNARoot", ddprops)
+        CIGlobals.removeDNACodes(ddprops)
+        ddprops.clearModelNodes()
+        ddprops.flattenStrong()
+        
+        SafeZoneLoader.SafeZoneLoader.doFlatten(self)
 
     def enter(self, requestStatus):
         SafeZoneLoader.SafeZoneLoader.enter(self, requestStatus)

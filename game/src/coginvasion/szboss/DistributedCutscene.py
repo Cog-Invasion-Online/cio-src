@@ -99,7 +99,7 @@ class DistributedCutscene(DistributedEntity):
     def __init__(self, cr):
         DistributedEntity.__init__(self, cr)
         self.cutsceneImpl = None
-        self.gui = CutsceneGUI(barDur = 1.0, fov = CIGlobals.DefaultCameraFov * 1.1)
+        self.gui = CutsceneGUI(barDur = 1.0, fov = CIGlobals.OriginalActionFov * 1.1)
 
     def disable(self):
         self.endCutscene(False)

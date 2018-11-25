@@ -119,6 +119,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         self.healthLabel.reparentTo(self)
         self.healthLabel.setBillboardPointEye()
         self.healthLabel.stash()
+        self.healthLabel.setLightOff(1)
 
     def showAndMoveHealthLabel(self, zoffset = 0.5, stashWaitTime = 1.0):
         self.unstashHpLabel()
@@ -352,7 +353,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         
     def loadAvatar(self):
         self.setupHealthLabel()
-        self.setBlend(frameBlend = True)
+        self.setBlend(frameBlend = False)
         base.avatars.append(self)
 
     def disable(self):

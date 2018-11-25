@@ -299,7 +299,10 @@ class DistributedElevator(DistributedObject):
                 track.append(Func(self.showHopOffButton))
                 base.localAvatar.stopSmartCamera()
                 base.localAvatar.walkControls.setCollisionsActive(0)
-                base.camera.wrtReparentTo(self.getElevatorModel())
+                
+                netTrans = base.camera.getNetTransform()
+                base.camera.reparentTo(self.getElevatorModel())
+                base.camera.setTransform(render, netTrans)
                 cameraBoardTrack = LerpPosHprInterval(camera, 1.5, Point3(0, -16, 5.5), Point3(0, 0, 0))
                 cameraBoardTrack.start()
             

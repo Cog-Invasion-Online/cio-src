@@ -364,7 +364,7 @@ class AdminPage(BookPage):
         if PStatClient.isConnected():
             PStatClient.disconnect()
         else:
-            PStatClient.connect()
+            PStatClient.connect("127.0.0.1")
 
     def toggleBackground(self):
         if render.isHidden():

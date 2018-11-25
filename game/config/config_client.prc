@@ -12,6 +12,7 @@ aux-display pandagl
 # Logging...
 notify-level warning
 notify-level-egg2pg warning
+notift-level-bspfile info
 notify-timestamp #f
 default-directnotify-level warning
 
@@ -66,8 +67,10 @@ framebuffer-multisample 0
 framebuffer-stencil 0
 support-stencil 0
 framebuffer-srgb 0
+default-texture-color-space sRGB
+textures-srgb 1
 multisamples 0
-#garbage-collect-states-rate 0.5
+garbage-collect-states-rate 0.5
 
 audio-dls-file resources/gm.dls
 
@@ -91,15 +94,37 @@ gsg-want-hlsounds #f
 explosion-hlsounds #f
 
 hdr-min-avglum 3.0
-hdr-percent-bright-pixels 5.0
+hdr-percent-bright-pixels 2.0
 hdr-percent-target 60.0
 hdr-debug-histogram #f
+
+want-pssm 0
+pssm-splits 3
+pssm-size 2048
+pssm-shadow-depth-bias 0.0001
+pssm-normal-offset-scale 0.1
+pssm-softness-factor 2.0
+shadow-depth-bits 32
+stencil-bits 8
+
+# Time averaged lighting in BSP levels to reduce popping
+light-average 1
+light-lerp-speed 5.0
 
 ctmusic-numsongs 1
 
 want-pstats 0
+pstats-gpu-timing 0
+pstats-host 127.0.0.1
 
+preload-textures 0
+preload-simple-textures 1
+texture-compression 1
 allow-incomplete-render 1
+allow-async-bind 1
+restore-initial-pose 0
+
+flatten-collision-nodes 1
 
 egg-load-old-curves 0
 
@@ -111,14 +136,21 @@ text-minfilter linear
 text-magfilter linear
 gl-coordinate-system default
 gl-force-fbo-color 0
-garbage-collect-states 1
+garbage-collect-states 0
 allow-flatten-color 1
 gl-debug 0
+gl-finish 0
+gl-debug-synchronous 1
+gl-debug-abort-level fatal
+gl-depth-zero-to-one 0
+gl-force-depth-stencil 0
+glsl-preprocess 1
 
 text-flatten 1
-text-dynamic-merge 1
 
-interpolate-frames 1
+interpolate-frames 0
 
-threading-model App/Cull/Draw # experimental
-assert-abort 0
+#threading-model App/Cull/Draw # experimental
+assert-abort 1
+
+textures-power-2 none
