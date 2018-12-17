@@ -187,11 +187,16 @@ class FPSCamera(DirectObject):
 
         if base.localAvatar.isFirstPerson():
             base.camera.setPosHpr(0, 0, 0, 0, 0, 0)
-        elif base.localAvatar.isThirdPerson():
-            camHeight = max(base.localAvatar.getHeight(), 3.0)
-            heightScaleFactor = camHeight * 0.3333333333
-            base.localAvatar.smartCamera.setIdealCameraPos((1, -5 * heightScaleFactor, 0))
-            base.localAvatar.smartCamera.setLookAtPoint((1, 10, 0))
+        elif base.localAvatar.isThirdPerson():            
+            pos, lookAt = self.getThirdPersonBattleCam()
+            base.localAvatar.smartCamera.setIdealCameraPos(pos)
+            base.localAvatar.smartCamera.setLookAtPoint(lookAt)
+            
+    def getThirdPersonBattleCam(self):
+        camHeight = max(base.localAvatar.getHeight(), 3.0)
+        heightScaleFactor = camHeight * 0.3333333333
+        
+        return ((1, -5 * heightScaleFactor, 0), (1, 10, 0))
 
     def getViewModelLeftHand(self):
         return self.viewModel.find("**/def_left_hold")

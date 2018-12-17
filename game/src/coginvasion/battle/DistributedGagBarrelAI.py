@@ -9,15 +9,29 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from DistributedRestockBarrelAI import DistributedRestockBarrelAI
-from src.coginvasion.gags import GagGlobals
+from src.coginvasion.gags import GagGlobals, GagType
+
+import random
 
 class DistributedGagBarrelAI(DistributedRestockBarrelAI):
     
-    def __init__(self, gagId, air, loadoutOnly = False):
-        DistributedRestockBarrelAI.__init__(self, air)
-        self.gagId = gagId
+    def __init__(self, air, dispatch):
+        DistributedRestockBarrelAI.__init__(self, air, dispatch)
+        self.track = -1
+        self.gagId = -1
         self.maxRestock = 20
-        self.loadoutOnly = loadoutOnly
+        
+    def loadEntityValues(self):
+        self.track = self.getEntityValueInt("track")
+        if self.track == -1:
+            # random track
+            self.track = random.choice(GagGlobals.TrackIdByName.values())
+
+        trackName = GagGlobals.getTrackName(self.track)
+            
+        self.gagId = self.getEntityValueInt("gag")
+        if self.gagId != -1:
+            self.gagId = GagGlobals.gagIdByName[GagGlobals.TrackGagNamesByTrackName[trackName][self.gagId]]
         
     def announceGenerate(self):
         DistributedRestockBarrelAI.announceGenerate(self)
@@ -27,19 +41,18 @@ class DistributedGagBarrelAI(DistributedRestockBarrelAI):
         DistributedRestockBarrelAI.delete(self)
         del self.gagId
         del self.maxRestock
-        del self.loadoutOnly
+        del self.track
         
     def d_setGrab(self, avId):
         DistributedRestockBarrelAI.d_setGrab(self, avId)
         avatar = self.air.doId2do.get(avId)
         backpack = avatar.backpack
-        track = GagGlobals.getTrackOfGag(self.gagId)
+        trackName = GagGlobals.getTrackName(self.track)
         availableGags = []
         restockGags = {}
         
-        if not self.loadoutOnly:
-            trackGags = GagGlobals.TrackGagNamesByTrackName.get(track)
-            
+        trackGags = GagGlobals.TrackGagNamesByTrackName.get(trackName)
+        if self.gagId == -1:
             # Gets the gag ids of gags in this gag track.
             for trackGag in trackGags:
                 gagId = GagGlobals.getIDByName(trackGag)
@@ -48,10 +61,9 @@ class DistributedGagBarrelAI(DistributedRestockBarrelAI):
             # The strongest gags should be first.
             availableGags.reverse()
         else:
-            loadout = backpack.loadout
-            for gagId in loadout:
-                if GagGlobals.getTrackOfGag(gagId) == track:
-                    availableGags.append(gagId)
+            # this barrel restocks a specific gag
+            if backpack.hasGag(self.gagId):
+                availableGags.append(self.gagId)
         
         restockLeft = int(self.maxRestock)
         

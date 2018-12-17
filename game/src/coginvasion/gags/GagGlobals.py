@@ -835,7 +835,10 @@ def getMaxExperienceValue(exp, track):
             if exp < levels[i] or (i == (len(levels) - 1) and exp >= levels[i]):
                 return levels[i]
     return -1
-
+    
+def getTrackName(tId):
+    return TrackNameById.get(tId, "not found")
+    
 def getTrackOfGag(arg, getId = False):
     if type(arg) == types.IntType:
 

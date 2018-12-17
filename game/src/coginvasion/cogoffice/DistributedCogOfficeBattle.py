@@ -490,8 +490,13 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
 
         base.camLens.setMinFov(30.0 / (4./3.))
 
-        def setCamRunY():
-            camera.setY(camera.getY() + 5)
+        #def setCamRunY():
+        #    camera.setY(camera.getY() + 5
+        
+        def posCamera_run():
+            pos, lookAt = base.localAvatar.walkControls.fpsCam.getThirdPersonBattleCam()
+            base.camera.setPos(pos)
+            base.camera.lookAt(lookAt)
 
         camera.reparentTo(tauntSuit)
         height = tauntSuit.getHeight()
@@ -514,7 +519,9 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         self.faceOffTrack.append(Func(tauntSuit.setAutoClearChat, True))
         self.faceOffTrack.append(Func(base.camLens.setMinFov, CIGlobals.DefaultCameraFov / (4./3.)))
         self.faceOffTrack.append(Func(base.localAvatar.attachCamera))
-        self.faceOffTrack.append(Func(setCamRunY))
+        self.faceOffTrack.append(Func(posCamera_run))
+        
+        #self.faceOffTrack.append(Func(setCamRunY))
         
         faceoffs = base.bspLoader.findAllEntities("cogoffice_faceoff_point")
         

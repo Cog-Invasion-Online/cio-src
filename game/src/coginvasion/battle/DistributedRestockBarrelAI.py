@@ -10,10 +10,12 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.distributed.DistributedNodeAI import DistributedNodeAI
 
-class DistributedRestockBarrelAI(DistributedNodeAI):
+from src.coginvasion.szboss.DistributedEntityAI import DistributedEntityAI
+
+class DistributedRestockBarrelAI(DistributedEntityAI):
     
-    def __init__(self, air):
-        DistributedNodeAI.__init__(self, air)
+    def __init__(self, air, dispatch):
+        DistributedEntityAI.__init__(self, air, dispatch)
         self.usedAvIds = []
         
     def d_setGrab(self, avId):

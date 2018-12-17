@@ -493,9 +493,10 @@ class CommonFilters:
                 text += "  result = lerp(tex2D(k_txblur1, %s), result, blurFactor);\n" % (texcoords["blur1"])
             if ("Bloom" in configuration):
                 #text += "  result = saturate(result);\n";
-                text += "  float4 bloom = 0.5 * tex2D(k_txbloom3, %s);\n" % (texcoords["bloom3"])
-                #if ("Exposure" in configuration):
-                #    text += "  bloom *= float4(exposure);\n"
+                if ("Exposure" in configuration):
+                    text += "  float4 bloom = saturate(exposure) * tex2D(k_txbloom3, %s);\n" % (texcoords["bloom3"])
+                else:
+                    text += "  float4 bloom = 0.5 * tex2D(k_txbloom3, %s);\n" % (texcoords["bloom3"])
                 text += "  result = 1-((1-bloom)*(1-result));\n"
             if ("ViewGlow" in configuration):
                 text += "  result.r = result.a;\n"

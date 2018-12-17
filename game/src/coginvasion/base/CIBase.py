@@ -352,7 +352,7 @@ class CIBase(ShowBase):
         #base.setupNavMesh(base.bspLevel.find("**/model-0"))
         base.bspLevel.prepareScene(base.win.getGsg())
 
-        skyType = 5#self.bspLoader.getEntityValueInt(0, "skytype")
+        skyType = 1#self.bspLoader.getEntityValueInt(0, "skytype")
         self.loadSkyBox(skyType)
 
     def doNextFrame(self, func, extraArgs = []):
@@ -551,7 +551,7 @@ class CIBase(ShowBase):
         self.setBloom(self.bloomToggle)
         #self.filters.setAmbientOcclusion()
         #self.filters.setDepthOfField(distance = 10.0, range = 175.0, near = 1.0, far = 1000.0 / (1000.0 - 1.0))
-        self.filters.setFXAA()
+        #self.filters.setFXAA()
 
     def setHDR(self, toggle):
         self.hdrToggle = toggle

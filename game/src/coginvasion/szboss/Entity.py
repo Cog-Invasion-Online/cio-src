@@ -14,20 +14,58 @@ class Entity(NodePath):
         self.outputs = []
         self.bspLoader = None
         
-    def task_dispatchOutput(self, target, op, task):
+    def entityTaskName(self, taskName):
+        return taskName + "-" + str(self.getEntnum())
+        
+    def getEntnum(self):
+        assert self.cEntity
+        return self.cEntity.getEntnum()
+        
+    def getEntityValue(self, key):
+        assert self.bspLoader
+        assert self.cEntity
+        
+        return self.bspLoader.getEntityValue(self.cEntity.getEntnum(), key)
+        
+    def getEntityValueInt(self, key):
+        assert self.bspLoader
+        assert self.cEntity
+        
+        return self.bspLoader.getEntityValueInt(self.cEntity.getEntnum(), key)
+        
+    def getEntityValueFloat(self, key):
+        assert self.bspLoader
+        assert self.cEntity
+        
+        return self.bspLoader.getEntityValueFloat(self.cEntity.getEntnum(), key)
+        
+    def getEntityValueVector(self, key):
+        assert self.bspLoader
+        assert self.cEntity
+        
+        return self.bspLoader.getEntityValueVector(self.cEntity.getEntnum(), key)
+        
+    def getEntityValueColor(self, key):
+        assert self.bspLoader
+        assert self.cEntity
+        
+        return self.bspLoader.getEntityValueColor(self.cEntity.getEntnum(), key)
+        
+    def task_dispatchOutput(self, target, op, extraArgs, task):
         param = op['parameter']
         params = param.split(';') if len(param) > 0 else []
+        params += extraArgs
         getattr(target, op['input']).__call__(*params)
         return task.done
         
-    def dispatchOutput(self, outputName):
+    def dispatchOutput(self, outputName, extraArgs = []):
         for op in self.outputs:
             if op['output'] == outputName and op['active']:
                 target = self.bspLoader.getPyEntityByTargetName(op['target'])
                 if target:
                     if hasattr(target, op['input']) and callable(getattr(target, op['input'])):
                         taskMgr.doMethodLater(op['delay'], self.task_dispatchOutput, "dispatchOutput-" + str(id(op)),
-                                              extraArgs = [target, op], appendTask = True)
+                                              extraArgs = [target, op, extraArgs], appendTask = True)
                         if op['once']:
                             op['active'] = False
         

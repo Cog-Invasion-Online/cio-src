@@ -15,14 +15,16 @@ from direct.distributed.DistributedNode import DistributedNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, LerpScaleInterval, Func
 
+from src.coginvasion.szboss.DistributedEntity import DistributedEntity
 from src.coginvasion.globals.CIGlobals import WallGroup, SPRender
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.gags import GagGlobals
 
-class DistributedRestockBarrel(DistributedNode):
+class DistributedRestockBarrel(DistributedEntity, DistributedNode):
     notify = directNotify.newCategory('DistributedRestockBarrel')
     
     def __init__(self, cr):
+        DistributedEntity.__init__(self, cr)
         DistributedNode.__init__(self, cr)
         NodePath.__init__(self, 'restock_barrel')
         self.grabSfx = None
@@ -43,7 +45,13 @@ class DistributedRestockBarrel(DistributedNode):
         self.collNode = None
         self.collNodePath = None
         
+    def load(self):
+        DistributedEntity.load(self)
+        self.setPos(self.cEntity.getOrigin())
+        self.setHpr(self.cEntity.getAngles())
+        
     def announceGenerate(self):
+        DistributedEntity.announceGenerate(self)
         DistributedNode.announceGenerate(self)
         self.build()
         
@@ -60,6 +68,7 @@ class DistributedRestockBarrel(DistributedNode):
         self.setParent(SPRender)
         
     def disable(self):
+        DistributedEntity.disable(self)
         DistributedNode.disable(self)
         self.ignoreAll()
         
@@ -89,6 +98,7 @@ class DistributedRestockBarrel(DistributedNode):
         del self.collNodePath
         del self.collSphere
         DistributedNode.delete(self)
+        DistributedEntity.delete(self)
         
     def setLabel(self, labelId):
         if labelId == 0:

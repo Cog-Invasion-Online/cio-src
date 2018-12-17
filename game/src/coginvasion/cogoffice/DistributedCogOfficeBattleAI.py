@@ -18,8 +18,6 @@ from src.coginvasion.cog import SuitBank, Variant
 from src.coginvasion.cog.SuitType import SuitType
 from src.coginvasion.cog import CogBattleGlobals, SuitGlobals
 from src.coginvasion.gags.GagType import GagType
-from src.coginvasion.battle.DistributedGagBarrelAI import DistributedGagBarrelAI
-from src.coginvasion.battle.DistributedHPBarrelAI import DistributedHPBarrelAI
 from src.coginvasion.battle import BattleGlobals
 from src.coginvasion.hood import ZoneUtil
 from DistributedCogOfficeElevatorAI import DistributedCogOfficeElevatorAI
@@ -66,9 +64,9 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.readyAvatars = []
         self.elevators = [None, None]
         self.drops = []
-        self.barrels = []
         self.entranceElevator = None
         self.exitElevator = None
+        self.infoEntity = None
         self.dept = dept
         if dept == 'c':
             self.deptClass = Dept.BOSS
@@ -78,6 +76,9 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
             self.deptClass = Dept.SALES
         elif dept == 'm':
             self.deptClass = Dept.CASH
+            
+    def getInfoEntity(self):
+        return self.infoEntity
 
     def setTauntSuitId(self, id):
         self.tauntSuitId = id
@@ -205,6 +206,8 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
             self.elevators[0].b_setState('closing')
         if self.elevators[1]:
             self.elevators[1].b_setState('closed')
+            
+        self.infoEntity.dispatch_OnFloorBegin()
 
     def exitBattle(self):
         pass
@@ -216,7 +219,8 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         pass
 
     def enterFloorIntermission(self):
-        self.sendUpdate('openRestockDoors')
+        self.infoEntity.dispatch_OnFloorEnd()
+
         if self.elevators[1]:
             self.elevators[1].b_setState('opening')
         if self.elevators[0]:
@@ -275,9 +279,18 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         DistributedBattleZoneAI.announceGenerate(self)
 
         import AIEntities
-        self.bspLoader.linkServerEntityToClass("cogoffice_suitspawn", AIEntities.SuitSpawn)
-        self.bspLoader.linkServerEntityToClass("cogoffice_hangoutpoint", AIEntities.SuitHangout)
-        self.bspLoader.linkServerEntityToClass("cogoffice_elevator", DistributedCogOfficeElevatorAI)
+        from src.coginvasion.szboss import (InfoTimer, DistributedFuncDoorAI, DistributedTriggerAI)
+        from src.coginvasion.battle import (DistributedHPBarrelAI, DistributedGagBarrelAI)
+        self.bspLoader.linkServerEntityToClass("cogoffice_suitspawn",       AIEntities.SuitSpawn)
+        self.bspLoader.linkServerEntityToClass("cogoffice_hangoutpoint",    AIEntities.SuitHangout)
+        self.bspLoader.linkServerEntityToClass("cogoffice_elevator",        DistributedCogOfficeElevatorAI)
+        self.bspLoader.linkServerEntityToClass("info_timer",                InfoTimer.InfoTimer)
+        self.bspLoader.linkServerEntityToClass("func_door",                 DistributedFuncDoorAI.DistributedFuncDoorAI)
+        self.bspLoader.linkServerEntityToClass("info_cogoffice_floor",      AIEntities.InfoCogOfficeFloor)
+        self.bspLoader.linkServerEntityToClass("item_gagbarrel",            DistributedGagBarrelAI.DistributedGagBarrelAI)
+        self.bspLoader.linkServerEntityToClass("item_laffbarrel",           DistributedHPBarrelAI.DistributedHPBarrelAI)
+        self.bspLoader.linkServerEntityToClass("trigger_multiple",          DistributedTriggerAI.DistributedTriggerMultipleAI)
+        self.bspLoader.linkServerEntityToClass("trigger_once",              DistributedTriggerAI.DistributedTriggerOnceAI)
         
         #for i in xrange(2):
         #    elevator = DistributedCogOfficeElevatorAI(self.air, self, i, i)
@@ -296,11 +309,6 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         else:
             dataList = POINTS[self.currentRoom][name]
         return dataList
-
-    def cleanupBarrels(self):
-        for barrel in self.barrels:
-            barrel.requestDelete()
-        self.barrels = []
 
     def cleanupDrops(self):
         for drop in self.drops:
@@ -332,7 +340,6 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.cleanupDrops()
         self.cleanupChairSuits()
         self.cleanupGuardSuits()
-        self.cleanupBarrels()
         self.readyAvatars = []
         for elevator in self.elevators:
             if elevator:
@@ -344,12 +351,12 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.cleanupNavMesh()
         self.fsm.requestFinalState()
         self.fsm = None
+        self.infoEntity = None
         self.currentFloor = None
         self.toonId2suitsTargeting = None
         self.spotTaken2suitId = None
         self.cleanupDrops()
         self.drops = None
-        self.cleanupBarrels()
         self.cleanupChairSuits()
         self.chairSuits = None
         self.cleanupGuardSuits()
@@ -368,6 +375,11 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.exteriorZoneId = None
         self.availableBattlePoints = None
         DistributedBattleZoneAI.delete(self)
+        
+    def activateChairSuits(self, section):
+        for suit in self.getChairsBySection(section):
+            if suit.getHealth() > 0:
+                suit.allStandSuitsDead()
 
     def suitHPAtZero(self, doId):
         foundIt = False
@@ -377,10 +389,13 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                 section = suit.floorSection
                 foundIt = True
                 break
-        if foundIt and len(self.getGuardsBySection(section, excludeIfZeroHP = 1)) <= 2:
-            for suit in self.getChairsBySection(section):
-                if suit.getHealth() > 0:
-                    suit.allStandSuitsDead()
+                
+        numInSection = len(self.getGuardsBySection(section, excludeIfZeroHP = 1))
+        if numInSection == 0:
+            self.infoEntity.dispatch_OnCogGroupDead(section)
+            
+        if foundIt and numInSection <= 2:
+            self.activateChairSuits(section)
 
     def deadSuit(self, doId):
         foundIt = False
@@ -460,7 +475,6 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
     def startFloor(self, floorNum, room):
         # Clean up barrels and drops from the last floor.
-        self.cleanupBarrels()
         self.cleanupDrops()
         self.cleanupNavMesh()
         self.bspLoader.cleanup()
@@ -478,6 +492,12 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         # Load the BSP level for this floor.
         self.bspLoader.read("phase_14/etc/{0}/{0}.bsp".format(room))
         self.setupNavMesh(self.bspLoader.getResult())
+        
+        # Get the info entity
+        infos = self.bspLoader.findAllEntities("info_cogoffice_floor")
+        assert len(infos) > 0, "No info entity found in map!"
+        assert len(infos) < 2, "More than one info entity found in map!"
+        self.infoEntity = infos[0]
 
         # Make the Cogs for this floor.
         wantBoss = (self.currentFloor == (self.numFloors - 1))
@@ -557,52 +577,6 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         guard = guards[0]
 
         self.b_setTauntSuitId(guard.doId)
-
-        if 0:
-            # Let's make the barrels.
-            barrelPoints = self.getPoints('barrels')
-            if barrelPoints:
-                barrelPoints = list(barrelPoints)
-                # This is the data for each gag track.
-                # The list inside of the dictionary value is a list of gagIds that
-                # can be chosen to represent the gag track.
-                # The second value is the percentage chance that it'll be chosen.
-                trackGags = {
-                    GagType.SOUND : [[18, 20], 20],
-                    GagType.SQUIRT : [[31, 4], 38],
-                    GagType.DROP : [[8, 30], 25]
-                }
-            
-                healBarrelChance = SuitBuildingGlobals.buildingInfo[self.hood][SuitBuildingGlobals.HEAL_BARREL_CHANCE]
-
-                maxBarrels = 3
-
-                for _ in xrange(maxBarrels):
-                    locationData = random.choice(barrelPoints)
-                    barrelPoints.remove(locationData)
-
-                    position = locationData[0]
-                    hpr = locationData[1]
-                
-                    if random.randrange(0, 100) < healBarrelChance:
-                        # Let's generate an HP restock barrel!
-                        barrel = DistributedHPBarrelAI(ZoneUtil.Hood2ZoneId.get(self.hood), self.air)
-                    else:
-                        # Let's generate a gag restock barrel!
-                        gagIcon = random.choice([0, 2])
-                        track = GagType.THROW
-    
-                        for track, data in trackGags.iteritems():
-                            if random.randrange(0, 100) <= data[1]:
-                                gagIcon = random.choice(data[0])
-                                track = track
-                                break
-                        del trackGags[track]
-    
-                        barrel = DistributedGagBarrelAI(gagIcon, self.air)
-                    barrel.generateWithRequired(self.zoneId)
-                    barrel.b_setPosHpr(position[0], position[1], position[2], hpr[0], hpr[1], hpr[2])
-                    self.barrels.append(barrel)
 
         self.elevators = [None, None]
         elevs = self.bspLoader.findAllEntities("cogoffice_elevator")
