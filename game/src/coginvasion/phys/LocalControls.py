@@ -80,7 +80,7 @@ class LocalControls(DirectObject):
         self.defaultSounds = [base.loadSfx("phase_14/audio/sfx/footsteps/default1.ogg"),
                               base.loadSfx("phase_14/audio/sfx/footsteps/default2.ogg")]
 
-        self.mode = LocalControls.MThirdPerson
+        self.mode = LocalControls.MFirstPerson
         self.scheme = LocalControls.SDefault
         self.fpsCam = FPSCamera()
 

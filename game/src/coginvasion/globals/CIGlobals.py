@@ -15,7 +15,7 @@ Where to find moved globals:
     - NPC Globals/Dialogue: src.coginvasion.npc -> NPCGlobals.py
 """
 
-from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog
+from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog, OmniBoundingVolume
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
 from panda3d.core import TextureStage, VBase4, TransparencyAttrib, Vec3, deg2Rad, Point2, DecalEffect, ModelNode
 
@@ -84,6 +84,33 @@ DodgeballGame = "Winter Dodgeball"
 MB_Moving = 1
 MB_Crouching = 2
 MB_Walking = 4
+
+def preRenderScene(np):
+    """
+    Uploads the entire scene to the graphics card immediately.
+
+    If the specified node is not part of the scene (render),
+    it will be temporarily placed in, rendered, then placed back
+    where is was before.
+    """
+
+    print "Pre-rendering scene..."
+
+    oldparent = np.getParent()
+
+    if oldparent != render and np != render:
+        np.reparentTo(render)
+    render.node().setBounds(OmniBoundingVolume())
+    render.node().setFinal(1)
+    render.premungeScene(base.win.getGsg())
+    render.prepareScene(base.win.getGsg())
+    base.graphicsEngine.renderFrame()
+    base.graphicsEngine.syncFrame()
+    render.node().setFinal(0)
+    render.node().clearBounds()
+    np.reparentTo(oldparent)
+
+    print "Done."
 
 def replaceDecalEffectsWithDepthOffsetAttrib(node):
     for np in node.findAllMatches("**"):

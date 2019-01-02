@@ -408,7 +408,7 @@ class LocalToon(DistributedPlayerToon):
     def setupControls(self):
         self.walkControls = LocalControls()
         self.walkControls.setupControls()
-        self.walkControls.setMode(self.walkControls.MThirdPerson)
+        self.walkControls.setMode(self.walkControls.MFirstPerson)
 
     def destroyControls(self):
         self.walkControls.disableControls()

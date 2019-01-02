@@ -175,10 +175,7 @@ class CharSelection(DirectObject):
         self.olc.setup()
         self.olc.apply()
 
-        gsg = base.win.getGsg()
-        if gsg:
-            self.szGeom.premungeScene(gsg)
-            self.szGeom.prepareScene(gsg)
+        CIGlobals.preRenderScene(render)
 
         self.asyncSZLoadStatus = True
 

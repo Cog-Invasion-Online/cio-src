@@ -231,10 +231,7 @@ class TownLoader(StateData):
         self.renameFloorPolys(self.nodeList)
         self.geom.flattenLight()
 
-        gsg = base.win.getGsg()
-        if gsg:
-            self.geom.prepareScene(gsg)
-        base.graphicsEngine.renderFrame()
+        CIGlobals.preRenderScene(self.geom)
 
     def reparentLandmarkBlockNodes(self):
         bucket = self.landmarkBlocks = hidden.attachNewNode('landmarkBlocks')

@@ -110,7 +110,7 @@ def makeBulletCollFromGeoms(rootNode, exclusions = []):
                     prim = prim.decompose()
                     tris = prim.getNumVertices() / 3
                     for tidx in xrange(tris):
-                        data[numGeoms] = mat
+                        data[numGeoms] = surfaceprop
                         numGeoms += 1
             shape = BulletTriangleMeshShape(mesh, False)
             rbnode = BulletRigidBodyNode(faceNp.getName() + "_bullet_type" + str(facetype))

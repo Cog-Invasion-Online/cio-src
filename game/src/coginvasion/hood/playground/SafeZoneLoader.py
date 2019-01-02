@@ -209,10 +209,7 @@ class SafeZoneLoader(StateData):
         if flattenNow:
             self.doFlatten()
         base.createPhysicsNodes(self.geom)
-        gsg = base.win.getGsg()
-        if gsg:
-            self.geom.prepareScene(gsg)
-        base.graphicsEngine.renderFrame()
+        CIGlobals.preRenderScene(self.geom)
 
     def doFlatten(self):
         self.doBaseOptimizations()

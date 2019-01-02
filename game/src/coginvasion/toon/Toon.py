@@ -121,7 +121,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.uniqueName = types.MethodType(uniqueName, self)
 
     def getEyePoint(self):
-        return Point3(0, 0, max(self.getHeight(), 3.0))
+        # middle of the head
+        return Point3(0, 0, self.getHeight() - (self.getHeadHeight() / 2.0))
             
     def setForceRunSpeed(self, flag):
         self.forceRunSpeed = flag
@@ -716,6 +717,12 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.getPart('head').reparentTo(self.getGeomNode())
         self.getPart('torso').reparentTo(self.getGeomNode())
         self.getPart('legs').reparentTo(self.getGeomNode())
+        
+    def getHeadHeight(self):
+        animal = self.getAnimal()
+        headScale = ToonGlobals.HeadScales[animal][2]
+        headHeight = ToonGlobals.HeadHeightDict[self.head] * headScale
+        return headHeight
 
     def rescaleToon(self):
         animal = self.getAnimal()

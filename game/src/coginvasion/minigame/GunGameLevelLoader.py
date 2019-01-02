@@ -365,7 +365,7 @@ class GunGameLevelLoader:
             self.dnaStore.reset_hood()
             self.dnaStore.reset_fonts()
             self.dnaStore.reset_DNA_vis_groups()
-            self.dnaStore.reset_textures()
+            self.dnaStore.reset_materials()
             self.dnaStore.reset_block_numbers()
             self.dnaStore.reset_block_zones()
             self.dnaStore.reset_suit_points()
