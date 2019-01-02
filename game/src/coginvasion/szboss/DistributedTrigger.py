@@ -23,7 +23,7 @@ class DistributedTriggerOnce(DistributedEntity):
         return task.cont
 
     def unload(self):
-        Entity.unload(self)
+        DistributedEntity.unload(self)
         if self.watchTask:
             self.watchTask.remove()
             self.watchTask = None

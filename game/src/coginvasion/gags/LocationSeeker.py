@@ -148,11 +148,12 @@ class LocationSeeker:
         cm = CardMaker('locationIndicator')
         cm.setFrame(-1, 1, -1, 1)
         indicatorNP = self.dropShadow.attachNewNode(cm.generate())
-        indicatorNP.setTexture(loader.loadTexture('phase_14/maps/crosshair_3.png'), 1)
+        indicatorNP.setBSPMaterial('phase_14/materials/crosshair_3.mat', 1)
         indicatorNP.setScale(self.shadowScale * 2.5)
         indicatorNP.setDepthOffset(16)
         indicatorNP.setTransparency(1)
         indicatorNP.setP(-90)
+        indicatorNP.flattenStrong()
 
         self.confirmIndTrack = Sequence(Parallel(LerpHprInterval(self.dropShadow, duration = 0.2, hpr = (360, 0, 0), startHpr = (0, 0, 0)),
                                                  LerpScaleInterval(self.dropShadow, duration = 0.2, scale = 0.01, startScale = 1)),

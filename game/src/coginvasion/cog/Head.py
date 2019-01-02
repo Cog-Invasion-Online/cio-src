@@ -47,10 +47,7 @@ class Head:
                 self.headMdl = Actor(self.head)
                 self.headMdl.loadAnims(self.headAnims)
         if self.headTex:
-            headTex = loader.loadTexture(self.headTex)
-            headTex.setMinfilter(Texture.FTLinearMipmapLinear)
-            headTex.setMagfilter(Texture.FTLinear)
-            self.headMdl.setTexture(headTex, 1)
+            self.headMdl.setBSPMaterial(self.headTex, 1)
         if self.headColor:
             self.headMdl.setColor(self.headColor)
         return self.headMdl

@@ -21,18 +21,10 @@ class ToonHead(Actor.Actor):
     notify = directNotify.newCategory('ToonHead')
 
     if metadata.PROCESS == 'client':
-        EyesOpen = loader.loadTexture('phase_3/maps/eyes.jpg', 'phase_3/maps/eyes_a.rgb')
-        EyesOpen.setMinfilter(Texture.FTLinearMipmapLinear)
-        EyesOpen.setMagfilter(Texture.FTLinear)
-        EyesClosed = loader.loadTexture('phase_3/maps/eyesClosed.jpg', 'phase_3/maps/eyesClosed_a.rgb')
-        EyesClosed.setMinfilter(Texture.FTLinearMipmapLinear)
-        EyesClosed.setMagfilter(Texture.FTLinear)
-        EyesOpenSad = loader.loadTexture('phase_3/maps/eyesSad.jpg', 'phase_3/maps/eyesSad_a.rgb')
-        EyesOpenSad.setMinfilter(Texture.FTLinearMipmapLinear)
-        EyesOpenSad.setMagfilter(Texture.FTLinear)
-        EyesClosedSad = loader.loadTexture('phase_3/maps/eyesSadClosed.jpg', 'phase_3/maps/eyesSadClosed_a.rgb')
-        EyesClosedSad.setMinfilter(Texture.FTLinearMipmapLinear)
-        EyesClosedSad.setMagfilter(Texture.FTLinear)
+        EyesOpen = 'phase_3/maps/eyes.mat'
+        EyesClosed = 'phase_3/maps/eyesClosed.mat'
+        EyesOpenSad = 'phase_3/maps/eyesSad.mat'
+        EyesClosedSad = 'phase_3/maps/eyesSadClosed.mat'
         
     LeftA = Point3(0.06, 0.0, 0.14)
     LeftB = Point3(-0.13, 0.0, 0.1)
@@ -346,17 +338,17 @@ class ToonHead(Actor.Actor):
         if hasattr(self, 'getHealth'):
             if self.getHealth() > 1:
                 try:
-                    self.findAllMatches('**/eyes*').setTexture(self.EyesClosed, 1)
+                    self.findAllMatches('**/eyes*').setBSPMaterial(self.EyesClosed, 1)
                 except:
                     pass
             else:
                 try:
-                    self.findAllMatches('**/eyes*').setTexture(self.EyesClosedSad, 1)
+                    self.findAllMatches('**/eyes*').setBSPMaterial(self.EyesClosedSad, 1)
                 except:
                     pass
         else:
             try:
-                self.findAllMatches('**/eyes*').setTexture(self.EyesClosed, 1)
+                self.findAllMatches('**/eyes*').setBSPMaterial(self.EyesClosed, 1)
             except:
                 pass
 
@@ -369,17 +361,17 @@ class ToonHead(Actor.Actor):
         if hasattr(self, 'getHealth'):
             if self.getHealth() > 1:
                 try:
-                    self.findAllMatches('**/eyes*').setTexture(self.EyesOpen, 1)
+                    self.findAllMatches('**/eyes*').setBSPMaterial(self.EyesOpen, 1)
                 except:
                     pass
             else:
                 try:
-                    self.findAllMatches('**/eyes*').setTexture(self.EyesOpenSad, 1)
+                    self.findAllMatches('**/eyes*').setBSPMaterial(self.EyesOpenSad, 1)
                 except:
                     pass
         else:
             try:
-                self.findAllMatches('**/eyes*').setTexture(self.EyesOpen, 1)
+                self.findAllMatches('**/eyes*').setBSPMaterial(self.EyesOpen, 1)
             except:
                 pass
 

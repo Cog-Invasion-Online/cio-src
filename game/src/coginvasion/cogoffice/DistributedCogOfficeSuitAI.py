@@ -57,7 +57,7 @@ class DistributedCogOfficeSuitAI(DistributedSuitAI):
             self.guardPoint = [(self.initPoint[0], self.initPoint[1], self.initPoint[2]), self.initPoint[3]]
 
         if hangoutData[0]:
-            self.hangoutPoint = [1, (hangoutData[1][0], hangoutData[1][1], hangoutData[1][2]), hangoutData[2]]
+            self.hangoutPoint = [1, (hangoutData[1][0], hangoutData[1][1], hangoutData[1][2]), hangoutData[2][0]]
         else:
             self.hangoutPoint = [0, (0, 0, 0), 0]
 

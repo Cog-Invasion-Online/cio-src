@@ -86,10 +86,10 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         Dept.LAW: {1: "Attorney's Floor", 2: "Paralegal Floor", 3: 'Document Management Floor'},
         Dept.CASH: {1: 'Accounting Floor', 2: 'Budgeting Floor', 3: 'Treasury Floor'}}
     DEPT_2_PAINTING = {
-        Dept.BOSS: ['phase_7/maps/Bossbot_C_E_O_oil.jpg', 'phase_7/maps/BossbotHQ_oil.jpg'],
-        Dept.LAW: ['phase_7/maps/Lawbot_C_J_oil.jpg', 'phase_7/maps/LawbotHQ_oil.jpg'],
-        Dept.CASH: ['phase_7/maps/Cashbot_C_F_O_oil.jpg', 'phase_7/maps/CashbotHQ_oil.jpg'],
-        Dept.SALES: ['phase_7/maps/Sellbot_V_P_oil.jpg', 'phase_7/maps/SellbotHQ_oil.jpg', 'phase_7/maps/SellbotBldg_oil.jpg']}
+        Dept.BOSS: ['phase_7/maps/Bossbot_C_E_O_oil.mat', 'phase_7/maps/BossbotHQ_oil.mat'],
+        Dept.LAW: ['phase_7/maps/Lawbot_C_J_oil.mat', 'phase_7/maps/LawbotHQ_oil.mat'],
+        Dept.CASH: ['phase_7/maps/Cashbot_C_F_O_oil.mat', 'phase_7/maps/CashbotHQ_oil.mat'],
+        Dept.SALES: ['phase_7/maps/Sellbot_V_P_oil.mat', 'phase_7/maps/SellbotHQ_oil.mat', 'phase_7/maps/SellbotBldg_oil.mat']}
 
     TOP_FLOOR_TAUNT = "I'm the boss."
 

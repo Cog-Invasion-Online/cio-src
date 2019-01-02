@@ -30,8 +30,6 @@ class ChatBalloon(NodePath):
         CIGlobals.applyNoGlow(self)
 
         self.setLightOff(1)
-        self.setShaderOff(1)
-        self.setMaterialOff(1)
         self.hide(CIGlobals.ShadowCameraBitmask)
 
         self.model = model

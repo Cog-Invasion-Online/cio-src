@@ -1,6 +1,6 @@
 from panda3d.core import Vec3, Point3, TransformState, GeomNode, CollisionNode, NodePath, BitMask32, NodePathCollection
 from panda3d.bullet import BulletBoxShape, BulletRigidBodyNode, BulletTriangleMesh, BulletTriangleMeshShape, BulletGhostNode
-from panda3d.bsp import BSPFaceAttrib
+from panda3d.bsp import BSPFaceAttrib, BSPMaterialAttrib
 
 from src.coginvasion.globals import CIGlobals
 
@@ -65,7 +65,7 @@ def makeBulletCollFromGeoms(rootNode, exclusions = []):
     This can be expensive if the geometry contains lots of triangles or GeomNodes.
     """
 
-    # BulletRigidBodyNode -> triangle index -> material
+    # BulletRigidBodyNode -> triangle index -> surfaceprop
     # (it's so we know which surface we are walking on)
     result = {}
 
@@ -100,8 +100,11 @@ def makeBulletCollFromGeoms(rootNode, exclusions = []):
             for i in xrange(len(geoms)):
                 geom, state = geoms[i]
                 mesh.addGeom(geom, True)
-                bca = state.getAttrib(BSPFaceAttrib.getClassSlot())
-                mat = bca.getMaterial()
+                surfaceprop = "default"
+                if state.hasAttrib(BSPMaterialAttrib.getClassSlot()):
+					mat = state.getAttrib(BSPMaterialAttrib.getClassSlot()).getMaterial()
+					if mat:
+						surfaceprop = mat.getSurfaceProp()
                 for j in xrange(geom.getNumPrimitives()):
                     prim = geom.getPrimitive(j)
                     prim = prim.decompose()

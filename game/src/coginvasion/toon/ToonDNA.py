@@ -52,89 +52,89 @@ class ToonDNA:
         (0.7, 0.7, 0.8, 1.0),
         (0.3, 0.3, 0.35, 1.0)]
     
-    shirtDNA2shirt = {'00': 'phase_3/maps/desat_shirt_1.jpg',
-                    '01': 'phase_3/maps/desat_shirt_2.jpg',
-                    '02': 'phase_3/maps/desat_shirt_3.jpg',
-                    '03': 'phase_3/maps/desat_shirt_4.jpg',
-                    '04': 'phase_3/maps/desat_shirt_5.jpg',
-                    '05': 'phase_3/maps/desat_shirt_6.jpg',
-                    '06': 'phase_3/maps/desat_shirt_7.jpg',
-                    '07': 'phase_3/maps/desat_shirt_8.jpg',
-                    '08': 'phase_3/maps/desat_shirt_9.jpg',
-                    '09': 'phase_3/maps/desat_shirt_10.jpg',
-                    '10': 'phase_3/maps/desat_shirt_11.jpg',
-                    '11': 'phase_3/maps/desat_shirt_12.jpg',
-                    '12': 'phase_3/maps/desat_shirt_13.jpg',
-                    '13': 'phase_3/maps/desat_shirt_14.jpg',
-                    '14': 'phase_3/maps/desat_shirt_15.jpg',
-                    '15': 'phase_3/maps/desat_shirt_16.jpg',
-                    '16': 'phase_3/maps/desat_shirt_17.jpg',
-                    '17': 'phase_3/maps/desat_shirt_18.jpg',
-                    '18': 'phase_3/maps/desat_shirt_19.jpg',
-                    '19': 'phase_3/maps/desat_shirt_20.jpg',
-                    '20': 'phase_3/maps/desat_shirt_21.jpg',
-                    '21': 'phase_3/maps/desat_shirt_22.jpg',
-                    '22': 'phase_3/maps/desat_shirt_23.jpg',
-                    '23': 'phase_4/maps/tt_t_chr_avt_shirt_sellbotCrusher.jpg',
-                    '24': 'phase_4/maps/tt_t_chr_shirt_scientistA.jpg',
-                    '25': 'phase_4/maps/tt_t_chr_shirt_scientistB.jpg',
-                    '26': 'phase_4/maps/tt_t_chr_shirt_scientistC.jpg',
-                    '27': 'phase_4/maps/tsashirt.jpg'}
-    sleeveDNA2sleeve = {'00': 'phase_3/maps/desat_sleeve_1.jpg',
-                        '01': 'phase_3/maps/desat_sleeve_2.jpg',
-                        '02': 'phase_3/maps/desat_sleeve_3.jpg',
-                        '03': 'phase_3/maps/desat_sleeve_4.jpg',
-                        '04': 'phase_3/maps/desat_sleeve_5.jpg',
-                        '05': 'phase_3/maps/desat_sleeve_6.jpg',
-                        '06': 'phase_3/maps/desat_sleeve_7.jpg',
-                        '07': 'phase_3/maps/desat_sleeve_8.jpg',
-                        '08': 'phase_3/maps/desat_sleeve_9.jpg',
-                        '09': 'phase_3/maps/desat_sleeve_10.jpg',
-                        '10': 'phase_3/maps/desat_sleeve_11.jpg',
-                        '11': 'phase_3/maps/desat_sleeve_12.jpg',
-                        '12': 'phase_3/maps/desat_sleeve_13.jpg',
-                        '13': 'phase_3/maps/desat_sleeve_14.jpg',
-                        '14': 'phase_3/maps/desat_sleeve_15.jpg',
-                        '15': 'phase_3/maps/desat_sleeve_16.jpg',
-                        '16': 'phase_3/maps/desat_sleeve_17.jpg',
-                        '17': 'phase_3/maps/desat_sleeve_18.jpg',
-                        '18': 'phase_3/maps/desat_sleeve_19.jpg',
-                        '19': 'phase_3/maps/desat_sleeve_20.jpg',
-                        '20': 'phase_3/maps/desat_sleeve_21.jpg',
-                        '21': 'phase_3/maps/desat_sleeve_22.jpg',
-                        '22': 'phase_3/maps/desat_sleeve_23.jpg',
-                        '23': 'phase_4/maps/tt_t_chr_avt_shirtSleeve_sellbotCrusher.jpg',
-                        '24': 'phase_4/maps/tt_t_chr_shirtSleeve_scientist.jpg',
-                        '25': 'phase_4/maps/tsasleeve.jpg',}
-    shortDNA2short = {'00': 'phase_3/maps/desat_shorts_1.jpg',
-                    '01': 'phase_3/maps/desat_shorts_2.jpg',
-                    '02': 'phase_3/maps/desat_shorts_3.jpg',
-                    '03': 'phase_3/maps/desat_shorts_4.jpg',
-                    '04': 'phase_3/maps/desat_shorts_5.jpg',
-                    '05': 'phase_3/maps/desat_shorts_6.jpg',
-                    '06': 'phase_3/maps/desat_shorts_7.jpg',
-                    '07': 'phase_3/maps/desat_shorts_8.jpg',
-                    '08': 'phase_3/maps/desat_shorts_9.jpg',
-                    '09': 'phase_3/maps/desat_shorts_10.jpg',
-                    '10': 'phase_3/maps/desat_skirt_1.jpg',
-                    '11': 'phase_3/maps/desat_skirt_2.jpg',
-                    '12': 'phase_3/maps/desat_skirt_3.jpg',
-                    '13': 'phase_3/maps/desat_skirt_4.jpg',
-                    '14': 'phase_3/maps/desat_skirt_5.jpg',
-                    '15': 'phase_3/maps/desat_skirt_6.jpg',
-                    '16': 'phase_3/maps/desat_skirt_7.jpg',
-                    '17': 'phase_4/maps/tt_t_chr_avt_shorts_sellbotCrusher.jpg',
-                    '18': 'phase_4/maps/skirtNew5.jpg',
-                    '19': 'phase_4/maps/tt_t_chr_avt_skirt_winter1.jpg',
-                    '20': 'phase_4/maps/tt_t_chr_shorts_scientistA.jpg',
-                    '21': 'phase_4/maps/tt_t_chr_shorts_scientistB.jpg',
-                    '22': 'phase_4/maps/tt_t_chr_shorts_scientistC.jpg',
-                    '23': 'phase_3/maps/desat_shorts_11.jpg',
-                    '24': 'phase_3/maps/desat_shorts_12.jpg',
-                    '25': 'phase_3/maps/desat_shorts_13.jpg',
-                    '26': 'phase_3/maps/desat_shorts_14.jpg',
-                    '27': 'phase_4/maps/tsashorts.jpg',
-                    '28': 'phase_4/maps/tsaskirt.jpg'}
+    shirtDNA2shirt = {'00': 'phase_3/maps/desat_shirt_1.mat',
+                    '01': 'phase_3/maps/desat_shirt_2.mat',
+                    '02': 'phase_3/maps/desat_shirt_3.mat',
+                    '03': 'phase_3/maps/desat_shirt_4.mat',
+                    '04': 'phase_3/maps/desat_shirt_5.mat',
+                    '05': 'phase_3/maps/desat_shirt_6.mat',
+                    '06': 'phase_3/maps/desat_shirt_7.mat',
+                    '07': 'phase_3/maps/desat_shirt_8.mat',
+                    '08': 'phase_3/maps/desat_shirt_9.mat',
+                    '09': 'phase_3/maps/desat_shirt_10.mat',
+                    '10': 'phase_3/maps/desat_shirt_11.mat',
+                    '11': 'phase_3/maps/desat_shirt_12.mat',
+                    '12': 'phase_3/maps/desat_shirt_13.mat',
+                    '13': 'phase_3/maps/desat_shirt_14.mat',
+                    '14': 'phase_3/maps/desat_shirt_15.mat',
+                    '15': 'phase_3/maps/desat_shirt_16.mat',
+                    '16': 'phase_3/maps/desat_shirt_17.mat',
+                    '17': 'phase_3/maps/desat_shirt_18.mat',
+                    '18': 'phase_3/maps/desat_shirt_19.mat',
+                    '19': 'phase_3/maps/desat_shirt_20.mat',
+                    '20': 'phase_3/maps/desat_shirt_21.mat',
+                    '21': 'phase_3/maps/desat_shirt_22.mat',
+                    '22': 'phase_3/maps/desat_shirt_23.mat',
+                    '23': 'phase_4/maps/tt_t_chr_avt_shirt_sellbotCrusher.mat',
+                    '24': 'phase_4/maps/tt_t_chr_shirt_scientistA.mat',
+                    '25': 'phase_4/maps/tt_t_chr_shirt_scientistB.mat',
+                    '26': 'phase_4/maps/tt_t_chr_shirt_scientistC.mat',
+                    '27': 'phase_4/maps/tsashirt.mat'}
+    sleeveDNA2sleeve = {'00': 'phase_3/maps/desat_sleeve_1.mat',
+                        '01': 'phase_3/maps/desat_sleeve_2.mat',
+                        '02': 'phase_3/maps/desat_sleeve_3.mat',
+                        '03': 'phase_3/maps/desat_sleeve_4.mat',
+                        '04': 'phase_3/maps/desat_sleeve_5.mat',
+                        '05': 'phase_3/maps/desat_sleeve_6.mat',
+                        '06': 'phase_3/maps/desat_sleeve_7.mat',
+                        '07': 'phase_3/maps/desat_sleeve_8.mat',
+                        '08': 'phase_3/maps/desat_sleeve_9.mat',
+                        '09': 'phase_3/maps/desat_sleeve_10.mat',
+                        '10': 'phase_3/maps/desat_sleeve_11.mat',
+                        '11': 'phase_3/maps/desat_sleeve_12.mat',
+                        '12': 'phase_3/maps/desat_sleeve_13.mat',
+                        '13': 'phase_3/maps/desat_sleeve_14.mat',
+                        '14': 'phase_3/maps/desat_sleeve_15.mat',
+                        '15': 'phase_3/maps/desat_sleeve_16.mat',
+                        '16': 'phase_3/maps/desat_sleeve_17.mat',
+                        '17': 'phase_3/maps/desat_sleeve_18.mat',
+                        '18': 'phase_3/maps/desat_sleeve_19.mat',
+                        '19': 'phase_3/maps/desat_sleeve_20.mat',
+                        '20': 'phase_3/maps/desat_sleeve_21.mat',
+                        '21': 'phase_3/maps/desat_sleeve_22.mat',
+                        '22': 'phase_3/maps/desat_sleeve_23.mat',
+                        '23': 'phase_4/maps/tt_t_chr_avt_shirtSleeve_sellbotCrusher.mat',
+                        '24': 'phase_4/maps/tt_t_chr_shirtSleeve_scientist.mat',
+                        '25': 'phase_4/maps/tsasleeve.mat',}
+    shortDNA2short = {'00': 'phase_3/maps/desat_shorts_1.mat',
+                    '01': 'phase_3/maps/desat_shorts_2.mat',
+                    '02': 'phase_3/maps/desat_shorts_3.mat',
+                    '03': 'phase_3/maps/desat_shorts_4.mat',
+                    '04': 'phase_3/maps/desat_shorts_5.mat',
+                    '05': 'phase_3/maps/desat_shorts_6.mat',
+                    '06': 'phase_3/maps/desat_shorts_7.mat',
+                    '07': 'phase_3/maps/desat_shorts_8.mat',
+                    '08': 'phase_3/maps/desat_shorts_9.mat',
+                    '09': 'phase_3/maps/desat_shorts_10.mat',
+                    '10': 'phase_3/maps/desat_skirt_1.mat',
+                    '11': 'phase_3/maps/desat_skirt_2.mat',
+                    '12': 'phase_3/maps/desat_skirt_3.mat',
+                    '13': 'phase_3/maps/desat_skirt_4.mat',
+                    '14': 'phase_3/maps/desat_skirt_5.mat',
+                    '15': 'phase_3/maps/desat_skirt_6.mat',
+                    '16': 'phase_3/maps/desat_skirt_7.mat',
+                    '17': 'phase_4/maps/tt_t_chr_avt_shorts_sellbotCrusher.mat',
+                    '18': 'phase_4/maps/skirtNew5.mat',
+                    '19': 'phase_4/maps/tt_t_chr_avt_skirt_winter1.mat',
+                    '20': 'phase_4/maps/tt_t_chr_shorts_scientistA.mat',
+                    '21': 'phase_4/maps/tt_t_chr_shorts_scientistB.mat',
+                    '22': 'phase_4/maps/tt_t_chr_shorts_scientistC.mat',
+                    '23': 'phase_3/maps/desat_shorts_11.mat',
+                    '24': 'phase_3/maps/desat_shorts_12.mat',
+                    '25': 'phase_3/maps/desat_shorts_13.mat',
+                    '26': 'phase_3/maps/desat_shorts_14.mat',
+                    '27': 'phase_4/maps/tsashorts.mat',
+                    '28': 'phase_4/maps/tsaskirt.mat'}
                     
     
     
@@ -245,148 +245,148 @@ class ToonDNA:
         '31': LVecBase4f(0.3, 0.3, 0.35, 1),
         '23': LVecBase4f(0.855469, 0.933594, 0.492188, 1)}
 
-    Sleeves = ['phase_3/maps/desat_sleeve_1.jpg',
-         'phase_3/maps/desat_sleeve_2.jpg',
-         'phase_3/maps/desat_sleeve_3.jpg',
-         'phase_3/maps/desat_sleeve_4.jpg',
-         'phase_3/maps/desat_sleeve_5.jpg',
-         'phase_3/maps/desat_sleeve_6.jpg',
-         'phase_3/maps/desat_sleeve_7.jpg',
-         'phase_3/maps/desat_sleeve_8.jpg',
-         'phase_3/maps/desat_sleeve_9.jpg',
-         'phase_3/maps/desat_sleeve_10.jpg',
-         'phase_3/maps/desat_sleeve_15.jpg',
-         'phase_3/maps/desat_sleeve_16.jpg',
-         'phase_3/maps/desat_sleeve_19.jpg',
-         'phase_3/maps/desat_sleeve_20.jpg',
-         'phase_4/maps/female_sleeve1b.jpg',
-         'phase_4/maps/female_sleeve2.jpg',
-         'phase_4/maps/female_sleeve3.jpg',
-         'phase_4/maps/male_sleeve1.jpg',
-         'phase_4/maps/male_sleeve2_palm.jpg',
-         'phase_4/maps/male_sleeve3c.jpg',
-         'phase_4/maps/shirt_Sleeve_ghost.jpg',
-         'phase_4/maps/shirt_Sleeve_pumkin.jpg',
-         'phase_4/maps/holidaySleeve1.jpg',
-         'phase_4/maps/holidaySleeve3.jpg',
-         'phase_4/maps/female_sleeve1b.jpg',
-         'phase_4/maps/female_sleeve5New.jpg',
-         'phase_4/maps/male_sleeve4New.jpg',
-         'phase_4/maps/sleeve6New.jpg',
-         'phase_4/maps/SleeveMaleNew7.jpg',
-         'phase_4/maps/female_sleeveNew6.jpg',
-         'phase_4/maps/Vday5Sleeve.jpg',
-         'phase_4/maps/Vda6Sleeve.jpg',
-         'phase_4/maps/Vday_shirt4sleeve.jpg',
-         'phase_4/maps/Vday2cSleeve.jpg',
-         'phase_4/maps/sleeveTieDye.jpg',
-         'phase_4/maps/male_sleeve1.jpg',
-         'phase_4/maps/StPats_sleeve.jpg',
-         'phase_4/maps/StPats_sleeve2.jpg',
-         'phase_4/maps/ContestfishingVestSleeve1.jpg',
-         'phase_4/maps/ContestFishtankSleeve1.jpg',
-         'phase_4/maps/ContestPawSleeve1.jpg',
-         'phase_4/maps/CowboySleeve1.jpg',
-         'phase_4/maps/CowboySleeve2.jpg',
-         'phase_4/maps/CowboySleeve3.jpg',
-         'phase_4/maps/CowboySleeve4.jpg',
-         'phase_4/maps/CowboySleeve5.jpg',
-         'phase_4/maps/CowboySleeve6.jpg',
-         'phase_4/maps/4thJulySleeve1.jpg',
-         'phase_4/maps/4thJulySleeve2.jpg',
-         'phase_4/maps/shirt_sleeveCat7_01.jpg',
-         'phase_4/maps/shirt_sleeveCat7_02.jpg',
-         'phase_4/maps/contest_backpack_sleeve.jpg',
-         'phase_4/maps/Contest_leder_sleeve.jpg',
-         'phase_4/maps/contest_mellon_sleeve2.jpg',
-         'phase_4/maps/contest_race_sleeve.jpg',
-         'phase_4/maps/PJSleeveBlue.jpg',
-         'phase_4/maps/PJSleeveRed.jpg',
-         'phase_4/maps/PJSleevePurple.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_valentine1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_valentine2.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_desat4.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_fishing1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_fishing2.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_gardening1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_gardening2.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_party1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_party2.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_racing1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_racing2.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_summer1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_summer2.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_golf1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_golf2.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween2.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_marathon1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding2.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_toonTask1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_toonTask2.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_trolley1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_trolley2.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_winter1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween3.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween4.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_valentine3.jpg',
-         'phase_4/maps/tt_t_chr_shirtSleeve_scientist.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_mailbox.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_trashcan.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_loonyLabs.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_hydrant.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_whistle.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_cogbuster.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_mostCogsDefeated01.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_victoryParty01.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_victoryParty02.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_sellbotIcon.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_sellbotVPIcon.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_sellbotCrusher.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_jellyBeans.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_doodle.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween5.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloweenTurtle.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_greentoon1.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_getConnectedMoverShaker.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_racingGrandPrix.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_bee.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_pirate.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_supertoon.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_vampire.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_dinosaur.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_fishing04.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_golf03.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_mostCogsDefeated02.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_racing03.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding3.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_trolley03.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_fishing05.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_golf04.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween06.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_winter03.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween07.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_winter02.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_fishing06.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_fishing07.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_golf05.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_racing04.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_racing05.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_mostCogsDefeated03.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_mostCogsDefeated04.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_trolley04.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_trolley05.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding4.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding05.jpg',
-         'phase_4/maps/tt_t_chr_avt_shirtSleeve_anniversary.jpg',
-         'phase_4/maps/tsasleeve.jpg',
-         'phase_4/maps/tsasleeve_dev.jpg',
-         'phase_14/maps/tt_t_chr_avt_shirtSleeve_betaoutfit.jpg']
+    Sleeves = ['phase_3/maps/desat_sleeve_1.mat',
+         'phase_3/maps/desat_sleeve_2.mat',
+         'phase_3/maps/desat_sleeve_3.mat',
+         'phase_3/maps/desat_sleeve_4.mat',
+         'phase_3/maps/desat_sleeve_5.mat',
+         'phase_3/maps/desat_sleeve_6.mat',
+         'phase_3/maps/desat_sleeve_7.mat',
+         'phase_3/maps/desat_sleeve_8.mat',
+         'phase_3/maps/desat_sleeve_9.mat',
+         'phase_3/maps/desat_sleeve_10.mat',
+         'phase_3/maps/desat_sleeve_15.mat',
+         'phase_3/maps/desat_sleeve_16.mat',
+         'phase_3/maps/desat_sleeve_19.mat',
+         'phase_3/maps/desat_sleeve_20.mat',
+         'phase_4/maps/female_sleeve1b.mat',
+         'phase_4/maps/female_sleeve2.mat',
+         'phase_4/maps/female_sleeve3.mat',
+         'phase_4/maps/male_sleeve1.mat',
+         'phase_4/maps/male_sleeve2_palm.mat',
+         'phase_4/maps/male_sleeve3c.mat',
+         'phase_4/maps/shirt_Sleeve_ghost.mat',
+         'phase_4/maps/shirt_Sleeve_pumkin.mat',
+         'phase_4/maps/holidaySleeve1.mat',
+         'phase_4/maps/holidaySleeve3.mat',
+         'phase_4/maps/female_sleeve1b.mat',
+         'phase_4/maps/female_sleeve5New.mat',
+         'phase_4/maps/male_sleeve4New.mat',
+         'phase_4/maps/sleeve6New.mat',
+         'phase_4/maps/SleeveMaleNew7.mat',
+         'phase_4/maps/female_sleeveNew6.mat',
+         'phase_4/maps/Vday5Sleeve.mat',
+         'phase_4/maps/Vda6Sleeve.mat',
+         'phase_4/maps/Vday_shirt4sleeve.mat',
+         'phase_4/maps/Vday2cSleeve.mat',
+         'phase_4/maps/sleeveTieDye.mat',
+         'phase_4/maps/male_sleeve1.mat',
+         'phase_4/maps/StPats_sleeve.mat',
+         'phase_4/maps/StPats_sleeve2.mat',
+         'phase_4/maps/ContestfishingVestSleeve1.mat',
+         'phase_4/maps/ContestFishtankSleeve1.mat',
+         'phase_4/maps/ContestPawSleeve1.mat',
+         'phase_4/maps/CowboySleeve1.mat',
+         'phase_4/maps/CowboySleeve2.mat',
+         'phase_4/maps/CowboySleeve3.mat',
+         'phase_4/maps/CowboySleeve4.mat',
+         'phase_4/maps/CowboySleeve5.mat',
+         'phase_4/maps/CowboySleeve6.mat',
+         'phase_4/maps/4thJulySleeve1.mat',
+         'phase_4/maps/4thJulySleeve2.mat',
+         'phase_4/maps/shirt_sleeveCat7_01.mat',
+         'phase_4/maps/shirt_sleeveCat7_02.mat',
+         'phase_4/maps/contest_backpack_sleeve.mat',
+         'phase_4/maps/Contest_leder_sleeve.mat',
+         'phase_4/maps/contest_mellon_sleeve2.mat',
+         'phase_4/maps/contest_race_sleeve.mat',
+         'phase_4/maps/PJSleeveBlue.mat',
+         'phase_4/maps/PJSleeveRed.mat',
+         'phase_4/maps/PJSleevePurple.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_valentine1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_valentine2.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_desat4.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_fishing1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_fishing2.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_gardening1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_gardening2.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_party1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_party2.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_racing1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_racing2.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_summer1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_summer2.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_golf1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_golf2.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween2.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_marathon1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding2.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_toonTask1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_toonTask2.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_trolley1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_trolley2.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_winter1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween3.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween4.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_valentine3.mat',
+         'phase_4/maps/tt_t_chr_shirtSleeve_scientist.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_mailbox.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_trashcan.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_loonyLabs.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_hydrant.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_whistle.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_cogbuster.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_mostCogsDefeated01.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_victoryParty01.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_victoryParty02.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_sellbotIcon.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_sellbotVPIcon.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_sellbotCrusher.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_jellyBeans.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_doodle.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween5.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloweenTurtle.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_greentoon1.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_getConnectedMoverShaker.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_racingGrandPrix.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_bee.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_pirate.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_supertoon.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_vampire.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_dinosaur.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_fishing04.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_golf03.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_mostCogsDefeated02.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_racing03.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding3.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_trolley03.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_fishing05.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_golf04.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween06.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_winter03.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_halloween07.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_winter02.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_fishing06.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_fishing07.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_golf05.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_racing04.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_racing05.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_mostCogsDefeated03.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_mostCogsDefeated04.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_trolley04.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_trolley05.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding4.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_saveBuilding05.mat',
+         'phase_4/maps/tt_t_chr_avt_shirtSleeve_anniversary.mat',
+         'phase_4/maps/tsasleeve.mat',
+         'phase_4/maps/tsasleeve_dev.mat',
+         'phase_14/maps/tt_t_chr_avt_shirtSleeve_betaoutfit.mat']
 
     maleTopDNA2maleTop = {
         "00": [
-            "phase_3/maps/desat_shirt_1.jpg", 
+            "phase_3/maps/desat_shirt_1.mat", 
             0, 
             [
                 "00", 
@@ -406,7 +406,7 @@ class ToonDNA:
             ]
         ], 
         "01": [
-            "phase_3/maps/desat_shirt_2.jpg", 
+            "phase_3/maps/desat_shirt_2.mat", 
             1, 
             [
                 "00", 
@@ -425,7 +425,7 @@ class ToonDNA:
             ]
         ], 
         "02": [
-            "phase_3/maps/desat_shirt_3.jpg", 
+            "phase_3/maps/desat_shirt_3.mat", 
             2, 
             [
                 "00", 
@@ -444,7 +444,7 @@ class ToonDNA:
             ]
         ], 
         "03": [
-            "phase_3/maps/desat_shirt_4.jpg", 
+            "phase_3/maps/desat_shirt_4.mat", 
             3, 
             [
                 "00", 
@@ -463,7 +463,7 @@ class ToonDNA:
             ]
         ], 
         "04": [
-            "phase_3/maps/desat_shirt_5.jpg", 
+            "phase_3/maps/desat_shirt_5.mat", 
             4, 
             [
                 "00", 
@@ -480,7 +480,7 @@ class ToonDNA:
             ]
         ], 
         "05": [
-            "phase_3/maps/desat_shirt_6.jpg", 
+            "phase_3/maps/desat_shirt_6.mat", 
             5, 
             [
                 "00", 
@@ -499,7 +499,7 @@ class ToonDNA:
             ]
         ], 
         "06": [
-            "phase_3/maps/desat_shirt_9.jpg", 
+            "phase_3/maps/desat_shirt_9.mat", 
             8, 
             [
                 "00", 
@@ -517,7 +517,7 @@ class ToonDNA:
             ]
         ], 
         "07": [
-            "phase_3/maps/desat_shirt_10.jpg", 
+            "phase_3/maps/desat_shirt_10.mat", 
             9, 
             [
                 "00", 
@@ -536,7 +536,7 @@ class ToonDNA:
             ]
         ], 
         "08": [
-            "phase_3/maps/desat_shirt_11.jpg", 
+            "phase_3/maps/desat_shirt_11.mat", 
             0, 
             [
                 "00", 
@@ -556,7 +556,7 @@ class ToonDNA:
             ]
         ], 
         "09": [
-            "phase_3/maps/desat_shirt_12.jpg", 
+            "phase_3/maps/desat_shirt_12.mat", 
             0, 
             [
                 "00", 
@@ -576,7 +576,7 @@ class ToonDNA:
             ]
         ], 
         "10": [
-            "phase_3/maps/desat_shirt_15.jpg", 
+            "phase_3/maps/desat_shirt_15.mat", 
             10, 
             [
                 "00", 
@@ -595,154 +595,154 @@ class ToonDNA:
             ]
         ], 
         "100": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween5.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween5.mat", 
             101, 
             [
                 "27"
             ]
         ], 
         "101": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloweenTurtle.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloweenTurtle.mat", 
             102, 
             [
                 "27"
             ]
         ], 
         "102": [
-            "phase_4/maps/tt_t_chr_avt_shirt_greentoon1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_greentoon1.mat", 
             103, 
             [
                 "27"
             ]
         ], 
         "103": [
-            "phase_4/maps/tt_t_chr_avt_shirt_getConnectedMoverShaker.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_getConnectedMoverShaker.mat", 
             104, 
             [
                 "27"
             ]
         ], 
         "104": [
-            "phase_4/maps/tt_t_chr_avt_shirt_racingGrandPrix.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_racingGrandPrix.mat", 
             105, 
             [
                 "27"
             ]
         ], 
         "105": [
-            "phase_4/maps/tt_t_chr_avt_shirt_bee.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_bee.mat", 
             106, 
             [
                 "27"
             ]
         ], 
         "106": [
-            "phase_4/maps/tt_t_chr_avt_shirt_pirate.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_pirate.mat", 
             107, 
             [
                 "27"
             ]
         ], 
         "107": [
-            "phase_4/maps/tt_t_chr_avt_shirt_supertoon.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_supertoon.mat", 
             108, 
             [
                 "27"
             ]
         ], 
         "108": [
-            "phase_4/maps/tt_t_chr_avt_shirt_vampire.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_vampire.mat", 
             109, 
             [
                 "27"
             ]
         ], 
         "109": [
-            "phase_4/maps/tt_t_chr_avt_shirt_dinosaur.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_dinosaur.mat", 
             110, 
             [
                 "27"
             ]
         ], 
         "11": [
-            "phase_3/maps/desat_shirt_17.jpg", 
+            "phase_3/maps/desat_shirt_17.mat", 
             0, 
             [
                 "27"
             ]
         ], 
         "110": [
-            "phase_4/maps/tt_t_chr_avt_shirt_fishing04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_fishing04.mat", 
             111, 
             [
                 "27"
             ]
         ], 
         "111": [
-            "phase_4/maps/tt_t_chr_avt_shirt_golf03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_golf03.mat", 
             112, 
             [
                 "27"
             ]
         ], 
         "112": [
-            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated02.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated02.mat", 
             113, 
             [
                 "27"
             ]
         ], 
         "113": [
-            "phase_4/maps/tt_t_chr_avt_shirt_racing03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_racing03.mat", 
             114, 
             [
                 "27"
             ]
         ], 
         "114": [
-            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding3.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding3.mat", 
             115, 
             [
                 "27"
             ]
         ], 
         "115": [
-            "phase_4/maps/tt_t_chr_avt_shirt_trolley03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_trolley03.mat", 
             116, 
             [
                 "27"
             ]
         ], 
         "116": [
-            "phase_4/maps/tt_t_chr_avt_shirt_fishing05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_fishing05.mat", 
             117, 
             [
                 "27"
             ]
         ], 
         "117": [
-            "phase_4/maps/tt_t_chr_avt_shirt_golf04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_golf04.mat", 
             118, 
             [
                 "27"
             ]
         ], 
         "118": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween06.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween06.mat", 
             119, 
             [
                 "27"
             ]
         ], 
         "119": [
-            "phase_4/maps/tt_t_chr_avt_shirt_winter03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_winter03.mat", 
             120, 
             [
                 "27"
             ]
         ], 
         "12": [
-            "phase_3/maps/desat_shirt_18.jpg", 
+            "phase_3/maps/desat_shirt_18.mat", 
             0, 
             [
                 "00", 
@@ -761,77 +761,77 @@ class ToonDNA:
             ]
         ], 
         "120": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween07.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween07.mat", 
             121, 
             [
                 "27"
             ]
         ], 
         "121": [
-            "phase_4/maps/tt_t_chr_avt_shirt_winter02.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_winter02.mat", 
             122, 
             [
                 "27"
             ]
         ], 
         "122": [
-            "phase_4/maps/tt_t_chr_avt_shirt_fishing06.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_fishing06.mat", 
             123, 
             [
                 "27"
             ]
         ], 
         "123": [
-            "phase_4/maps/tt_t_chr_avt_shirt_fishing07.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_fishing07.mat", 
             124, 
             [
                 "27"
             ]
         ], 
         "124": [
-            "phase_4/maps/tt_t_chr_avt_shirt_golf05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_golf05.mat", 
             125, 
             [
                 "27"
             ]
         ], 
         "125": [
-            "phase_4/maps/tt_t_chr_avt_shirt_racing04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_racing04.mat", 
             126, 
             [
                 "27"
             ]
         ], 
         "126": [
-            "phase_4/maps/tt_t_chr_avt_shirt_racing05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_racing05.mat", 
             127, 
             [
                 "27"
             ]
         ], 
         "127": [
-            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated03.mat", 
             128, 
             [
                 "27"
             ]
         ], 
         "128": [
-            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated04.mat", 
             129, 
             [
                 "27"
             ]
         ], 
         "129": [
-            "phase_4/maps/tt_t_chr_avt_shirt_trolley04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_trolley04.mat", 
             130, 
             [
                 "27"
             ]
         ], 
         "13": [
-            "phase_3/maps/desat_shirt_19.jpg", 
+            "phase_3/maps/desat_shirt_19.mat", 
             12, 
             [
                 "00", 
@@ -849,35 +849,35 @@ class ToonDNA:
             ]
         ], 
         "130": [
-            "phase_4/maps/tt_t_chr_avt_shirt_trolley05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_trolley05.mat", 
             116, 
             [
                 "27"
             ]
         ], 
         "131": [
-            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding4.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding4.mat", 
             131, 
             [
                 "27"
             ]
         ], 
         "132": [
-            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding05.mat", 
             133, 
             [
                 "27"
             ]
         ], 
         "133": [
-            "phase_4/maps/tt_t_chr_avt_shirt_anniversary.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_anniversary.mat", 
             134, 
             [
                 "27"
             ]
         ], 
         "14": [
-            "phase_3/maps/desat_shirt_20.jpg", 
+            "phase_3/maps/desat_shirt_20.mat", 
             13, 
             [
                 "00", 
@@ -897,616 +897,616 @@ class ToonDNA:
             ]
         ], 
         "15": [
-            "phase_4/maps/female_shirt3.jpg", 
+            "phase_4/maps/female_shirt3.mat", 
             16, 
             [
                 "27"
             ]
         ], 
         "16": [
-            "phase_4/maps/male_shirt1.jpg", 
+            "phase_4/maps/male_shirt1.mat", 
             17, 
             [
                 "27"
             ]
         ], 
         "17": [
-            "phase_4/maps/male_shirt2_palm.jpg", 
+            "phase_4/maps/male_shirt2_palm.mat", 
             18, 
             [
                 "27"
             ]
         ], 
         "18": [
-            "phase_4/maps/male_shirt3c.jpg", 
+            "phase_4/maps/male_shirt3c.mat", 
             19, 
             [
                 "27"
             ]
         ], 
         "19": [
-            "phase_4/maps/shirt_ghost.jpg", 
+            "phase_4/maps/shirt_ghost.mat", 
             20, 
             [
                 "27"
             ]
         ], 
         "20": [
-            "phase_4/maps/shirt_pumkin.jpg", 
+            "phase_4/maps/shirt_pumkin.mat", 
             21, 
             [
                 "27"
             ]
         ], 
         "21": [
-            "phase_4/maps/holiday_shirt1.jpg", 
+            "phase_4/maps/holiday_shirt1.mat", 
             22, 
             [
                 "27"
             ]
         ], 
         "22": [
-            "phase_4/maps/holiday_shirt2b.jpg", 
+            "phase_4/maps/holiday_shirt2b.mat", 
             22, 
             [
                 "27"
             ]
         ], 
         "23": [
-            "phase_4/maps/holidayShirt3b.jpg", 
+            "phase_4/maps/holidayShirt3b.mat", 
             23, 
             [
                 "27"
             ]
         ], 
         "24": [
-            "phase_4/maps/holidayShirt4.jpg", 
+            "phase_4/maps/holidayShirt4.mat", 
             23, 
             [
                 "27"
             ]
         ], 
         "25": [
-            "phase_4/maps/shirtMale4B.jpg", 
+            "phase_4/maps/shirtMale4B.mat", 
             26, 
             [
                 "27"
             ]
         ], 
         "26": [
-            "phase_4/maps/shirt6New.jpg", 
+            "phase_4/maps/shirt6New.mat", 
             27, 
             [
                 "27"
             ]
         ], 
         "27": [
-            "phase_4/maps/shirtMaleNew7.jpg", 
+            "phase_4/maps/shirtMaleNew7.mat", 
             28, 
             [
                 "27"
             ]
         ], 
         "28": [
-            "phase_4/maps/Vday1Shirt5.jpg", 
+            "phase_4/maps/Vday1Shirt5.mat", 
             30, 
             [
                 "27"
             ]
         ], 
         "29": [
-            "phase_4/maps/Vday1Shirt6SHD.jpg", 
+            "phase_4/maps/Vday1Shirt6SHD.mat", 
             31, 
             [
                 "27"
             ]
         ], 
         "30": [
-            "phase_4/maps/Vday1Shirt4.jpg", 
+            "phase_4/maps/Vday1Shirt4.mat", 
             32, 
             [
                 "27"
             ]
         ], 
         "31": [
-            "phase_4/maps/Vday_shirt2c.jpg", 
+            "phase_4/maps/Vday_shirt2c.mat", 
             33, 
             [
                 "27"
             ]
         ], 
         "32": [
-            "phase_4/maps/shirtTieDyeNew.jpg", 
+            "phase_4/maps/shirtTieDyeNew.mat", 
             34, 
             [
                 "27"
             ]
         ], 
         "33": [
-            "phase_4/maps/StPats_shirt1.jpg", 
+            "phase_4/maps/StPats_shirt1.mat", 
             36, 
             [
                 "27"
             ]
         ], 
         "34": [
-            "phase_4/maps/StPats_shirt2.jpg", 
+            "phase_4/maps/StPats_shirt2.mat", 
             37, 
             [
                 "27"
             ]
         ], 
         "35": [
-            "phase_4/maps/ContestfishingVestShirt2.jpg", 
+            "phase_4/maps/ContestfishingVestShirt2.mat", 
             38, 
             [
                 "27"
             ]
         ], 
         "36": [
-            "phase_4/maps/ContestFishtankShirt1.jpg", 
+            "phase_4/maps/ContestFishtankShirt1.mat", 
             39, 
             [
                 "27"
             ]
         ], 
         "37": [
-            "phase_4/maps/ContestPawShirt1.jpg", 
+            "phase_4/maps/ContestPawShirt1.mat", 
             40, 
             [
                 "27"
             ]
         ], 
         "38": [
-            "phase_4/maps/CowboyShirt1.jpg", 
+            "phase_4/maps/CowboyShirt1.mat", 
             41, 
             [
                 "27"
             ]
         ], 
         "39": [
-            "phase_4/maps/CowboyShirt2.jpg", 
+            "phase_4/maps/CowboyShirt2.mat", 
             42, 
             [
                 "27"
             ]
         ], 
         "40": [
-            "phase_4/maps/CowboyShirt3.jpg", 
+            "phase_4/maps/CowboyShirt3.mat", 
             43, 
             [
                 "27"
             ]
         ], 
         "41": [
-            "phase_4/maps/CowboyShirt4.jpg", 
+            "phase_4/maps/CowboyShirt4.mat", 
             44, 
             [
                 "27"
             ]
         ], 
         "42": [
-            "phase_4/maps/CowboyShirt5.jpg", 
+            "phase_4/maps/CowboyShirt5.mat", 
             45, 
             [
                 "27"
             ]
         ], 
         "43": [
-            "phase_4/maps/CowboyShirt6.jpg", 
+            "phase_4/maps/CowboyShirt6.mat", 
             46, 
             [
                 "27"
             ]
         ], 
         "44": [
-            "phase_4/maps/4thJulyShirt1.jpg", 
+            "phase_4/maps/4thJulyShirt1.mat", 
             47, 
             [
                 "27"
             ]
         ], 
         "45": [
-            "phase_4/maps/4thJulyShirt2.jpg", 
+            "phase_4/maps/4thJulyShirt2.mat", 
             48, 
             [
                 "27"
             ]
         ], 
         "46": [
-            "phase_4/maps/shirt_Cat7_01.jpg", 
+            "phase_4/maps/shirt_Cat7_01.mat", 
             49, 
             [
                 "27"
             ]
         ], 
         "47": [
-            "phase_4/maps/shirt_Cat7_02.jpg", 
+            "phase_4/maps/shirt_Cat7_02.mat", 
             50, 
             [
                 "27"
             ]
         ], 
         "48": [
-            "phase_4/maps/contest_backpack3.jpg", 
+            "phase_4/maps/contest_backpack3.mat", 
             51, 
             [
                 "27"
             ]
         ], 
         "49": [
-            "phase_4/maps/contest_leder.jpg", 
+            "phase_4/maps/contest_leder.mat", 
             52, 
             [
                 "27"
             ]
         ], 
         "50": [
-            "phase_4/maps/contest_mellon2.jpg", 
+            "phase_4/maps/contest_mellon2.mat", 
             53, 
             [
                 "27"
             ]
         ], 
         "51": [
-            "phase_4/maps/contest_race2.jpg", 
+            "phase_4/maps/contest_race2.mat", 
             54, 
             [
                 "27"
             ]
         ], 
         "52": [
-            "phase_4/maps/PJBlueBanana2.jpg", 
+            "phase_4/maps/PJBlueBanana2.mat", 
             55, 
             [
                 "27"
             ]
         ], 
         "53": [
-            "phase_4/maps/PJRedHorn2.jpg", 
+            "phase_4/maps/PJRedHorn2.mat", 
             56, 
             [
                 "27"
             ]
         ], 
         "54": [
-            "phase_4/maps/PJGlasses2.jpg", 
+            "phase_4/maps/PJGlasses2.mat", 
             57, 
             [
                 "27"
             ]
         ], 
         "55": [
-            "phase_4/maps/tt_t_chr_avt_shirt_valentine1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_valentine1.mat", 
             58, 
             [
                 "27"
             ]
         ], 
         "56": [
-            "phase_4/maps/tt_t_chr_avt_shirt_valentine2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_valentine2.mat", 
             59, 
             [
                 "27"
             ]
         ], 
         "57": [
-            "phase_4/maps/tt_t_chr_avt_shirt_desat4.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_desat4.mat", 
             60, 
             [
                 "27"
             ]
         ], 
         "58": [
-            "phase_4/maps/tt_t_chr_avt_shirt_fishing1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_fishing1.mat", 
             61, 
             [
                 "27"
             ]
         ], 
         "59": [
-            "phase_4/maps/tt_t_chr_avt_shirt_fishing2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_fishing2.mat", 
             62, 
             [
                 "27"
             ]
         ], 
         "60": [
-            "phase_4/maps/tt_t_chr_avt_shirt_gardening1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_gardening1.mat", 
             63, 
             [
                 "27"
             ]
         ], 
         "61": [
-            "phase_4/maps/tt_t_chr_avt_shirt_gardening2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_gardening2.mat", 
             64, 
             [
                 "27"
             ]
         ], 
         "62": [
-            "phase_4/maps/tt_t_chr_avt_shirt_party1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_party1.mat", 
             65, 
             [
                 "27"
             ]
         ], 
         "63": [
-            "phase_4/maps/tt_t_chr_avt_shirt_party2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_party2.mat", 
             66, 
             [
                 "27"
             ]
         ], 
         "64": [
-            "phase_4/maps/tt_t_chr_avt_shirt_racing1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_racing1.mat", 
             67, 
             [
                 "27"
             ]
         ], 
         "65": [
-            "phase_4/maps/tt_t_chr_avt_shirt_racing2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_racing2.mat", 
             68, 
             [
                 "27"
             ]
         ], 
         "66": [
-            "phase_4/maps/tt_t_chr_avt_shirt_summer1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_summer1.mat", 
             69, 
             [
                 "27"
             ]
         ], 
         "67": [
-            "phase_4/maps/tt_t_chr_avt_shirt_summer2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_summer2.mat", 
             70, 
             [
                 "27"
             ]
         ], 
         "68": [
-            "phase_4/maps/tt_t_chr_avt_shirt_golf1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_golf1.mat", 
             71, 
             [
                 "27"
             ]
         ], 
         "69": [
-            "phase_4/maps/tt_t_chr_avt_shirt_golf2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_golf2.mat", 
             72, 
             [
                 "27"
             ]
         ], 
         "70": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween1.mat", 
             73, 
             [
                 "27"
             ]
         ], 
         "71": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween2.mat", 
             74, 
             [
                 "27"
             ]
         ], 
         "72": [
-            "phase_4/maps/tt_t_chr_avt_shirt_marathon1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_marathon1.mat", 
             75, 
             [
                 "27"
             ]
         ], 
         "73": [
-            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding1.mat", 
             76, 
             [
                 "27"
             ]
         ], 
         "74": [
-            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding2.mat", 
             77, 
             [
                 "27"
             ]
         ], 
         "75": [
-            "phase_4/maps/tt_t_chr_avt_shirt_toonTask1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_toonTask1.mat", 
             78, 
             [
                 "27"
             ]
         ], 
         "76": [
-            "phase_4/maps/tt_t_chr_avt_shirt_toonTask2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_toonTask2.mat", 
             79, 
             [
                 "27"
             ]
         ], 
         "77": [
-            "phase_4/maps/tt_t_chr_avt_shirt_trolley1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_trolley1.mat", 
             80, 
             [
                 "27"
             ]
         ], 
         "78": [
-            "phase_4/maps/tt_t_chr_avt_shirt_trolley2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_trolley2.mat", 
             81, 
             [
                 "27"
             ]
         ], 
         "79": [
-            "phase_4/maps/tt_t_chr_avt_shirt_winter1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_winter1.mat", 
             82, 
             [
                 "27"
             ]
         ], 
         "80": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween3.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween3.mat", 
             83, 
             [
                 "27"
             ]
         ], 
         "81": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween4.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween4.mat", 
             84, 
             [
                 "27"
             ]
         ], 
         "82": [
-            "phase_4/maps/tt_t_chr_avt_shirt_valentine3.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_valentine3.mat", 
             85, 
             [
                 "27"
             ]
         ], 
         "83": [
-            "phase_4/maps/tt_t_chr_shirt_scientistC.jpg", 
+            "phase_4/maps/tt_t_chr_shirt_scientistC.mat", 
             86, 
             [
                 "27"
             ]
         ], 
         "84": [
-            "phase_4/maps/tt_t_chr_shirt_scientistA.jpg", 
+            "phase_4/maps/tt_t_chr_shirt_scientistA.mat", 
             86, 
             [
                 "27"
             ]
         ], 
         "85": [
-            "phase_4/maps/tt_t_chr_shirt_scientistB.jpg", 
+            "phase_4/maps/tt_t_chr_shirt_scientistB.mat", 
             86, 
             [
                 "27"
             ]
         ], 
         "86": [
-            "phase_4/maps/tt_t_chr_avt_shirt_mailbox.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_mailbox.mat", 
             87, 
             [
                 "27"
             ]
         ], 
         "87": [
-            "phase_4/maps/tt_t_chr_avt_shirt_trashcan.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_trashcan.mat", 
             88, 
             [
                 "27"
             ]
         ], 
         "88": [
-            "phase_4/maps/tt_t_chr_avt_shirt_loonyLabs.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_loonyLabs.mat", 
             89, 
             [
                 "27"
             ]
         ], 
         "89": [
-            "phase_4/maps/tt_t_chr_avt_shirt_hydrant.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_hydrant.mat", 
             90, 
             [
                 "27"
             ]
         ], 
         "90": [
-            "phase_4/maps/tt_t_chr_avt_shirt_whistle.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_whistle.mat", 
             91, 
             [
                 "27"
             ]
         ], 
         "91": [
-            "phase_4/maps/tt_t_chr_avt_shirt_cogbuster.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_cogbuster.mat", 
             92, 
             [
                 "27"
             ]
         ], 
         "92": [
-            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated01.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated01.mat", 
             93, 
             [
                 "27"
             ]
         ], 
         "93": [
-            "phase_4/maps/tt_t_chr_avt_shirt_victoryParty01.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_victoryParty01.mat", 
             94, 
             [
                 "27"
             ]
         ], 
         "94": [
-            "phase_4/maps/tt_t_chr_avt_shirt_victoryParty02.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_victoryParty02.mat", 
             95, 
             [
                 "27"
             ]
         ], 
         "95": [
-            "phase_4/maps/tt_t_chr_avt_shirt_sellbotIcon.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_sellbotIcon.mat", 
             96, 
             [
                 "27"
             ]
         ], 
         "96": [
-            "phase_4/maps/tt_t_chr_avt_shirt_sellbotVPIcon.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_sellbotVPIcon.mat", 
             97, 
             [
                 "27"
             ]
         ], 
         "97": [
-            "phase_4/maps/tt_t_chr_avt_shirt_sellbotCrusher.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_sellbotCrusher.mat", 
             98, 
             [
                 "27"
             ]
         ], 
         "98": [
-            "phase_4/maps/tt_t_chr_avt_shirt_jellyBeans.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_jellyBeans.mat", 
             99, 
             [
                 "27"
             ]
         ], 
         "99": [
-            "phase_4/maps/tt_t_chr_avt_shirt_doodle.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_doodle.mat", 
             100, 
             [
                 "27"
             ]
         ],
         "135": [
-            "phase_4/maps/tsashirt.jpg",
+            "phase_4/maps/tsashirt.mat",
             135,
             [
                 "27"
             ]
         ],
         "136": [
-            "phase_4/maps/tsashirt_dev.jpg",
+            "phase_4/maps/tsashirt_dev.mat",
             136,
             [
                 "27"
             ]
         ],
         "137": [
-            "phase_14/maps/tt_t_chr_avt_shirt_betaoutfit.jpg",
+            "phase_14/maps/tt_t_chr_avt_shirt_betaoutfit.mat",
             137,
             [
                 "27"
@@ -1516,7 +1516,7 @@ class ToonDNA:
 
     femaleTopDNA2femaleTop = {
         "00": [
-            "phase_3/maps/desat_shirt_1.jpg", 
+            "phase_3/maps/desat_shirt_1.mat", 
             0, 
             [
                 "00", 
@@ -1541,7 +1541,7 @@ class ToonDNA:
             ]
         ], 
         "01": [
-            "phase_3/maps/desat_shirt_2.jpg", 
+            "phase_3/maps/desat_shirt_2.mat", 
             1, 
             [
                 "00", 
@@ -1565,7 +1565,7 @@ class ToonDNA:
             ]
         ], 
         "02": [
-            "phase_3/maps/desat_shirt_3.jpg", 
+            "phase_3/maps/desat_shirt_3.mat", 
             2, 
             [
                 "00", 
@@ -1589,7 +1589,7 @@ class ToonDNA:
             ]
         ], 
         "03": [
-            "phase_3/maps/desat_shirt_4.jpg", 
+            "phase_3/maps/desat_shirt_4.mat", 
             3, 
             [
                 "00", 
@@ -1613,7 +1613,7 @@ class ToonDNA:
             ]
         ], 
         "04": [
-            "phase_3/maps/desat_shirt_6.jpg", 
+            "phase_3/maps/desat_shirt_6.mat", 
             5, 
             [
                 "00", 
@@ -1637,7 +1637,7 @@ class ToonDNA:
             ]
         ], 
         "05": [
-            "phase_3/maps/desat_shirt_7.jpg", 
+            "phase_3/maps/desat_shirt_7.mat", 
             6, 
             [
                 "00", 
@@ -1661,7 +1661,7 @@ class ToonDNA:
             ]
         ], 
         "06": [
-            "phase_3/maps/desat_shirt_8.jpg", 
+            "phase_3/maps/desat_shirt_8.mat", 
             7, 
             [
                 "00", 
@@ -1685,7 +1685,7 @@ class ToonDNA:
             ]
         ], 
         "07": [
-            "phase_3/maps/desat_shirt_10.jpg", 
+            "phase_3/maps/desat_shirt_10.mat", 
             9, 
             [
                 "00", 
@@ -1709,14 +1709,14 @@ class ToonDNA:
             ]
         ], 
         "08": [
-            "phase_3/maps/desat_shirt_13.jpg", 
+            "phase_3/maps/desat_shirt_13.mat", 
             0, 
             [
                 "27"
             ]
         ], 
         "09": [
-            "phase_3/maps/desat_shirt_14.jpg", 
+            "phase_3/maps/desat_shirt_14.mat", 
             11, 
             [
                 "00", 
@@ -1741,7 +1741,7 @@ class ToonDNA:
             ]
         ], 
         "10": [
-            "phase_3/maps/desat_shirt_16.jpg", 
+            "phase_3/maps/desat_shirt_16.mat", 
             11, 
             [
                 "00", 
@@ -1766,154 +1766,154 @@ class ToonDNA:
             ]
         ], 
         "100": [
-            "phase_4/maps/tt_t_chr_avt_shirt_doodle.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_doodle.mat", 
             100, 
             [
                 "27"
             ]
         ], 
         "101": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween5.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween5.mat", 
             101, 
             [
                 "27"
             ]
         ], 
         "102": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloweenTurtle.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloweenTurtle.mat", 
             102, 
             [
                 "27"
             ]
         ], 
         "103": [
-            "phase_4/maps/tt_t_chr_avt_shirt_greentoon1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_greentoon1.mat", 
             103, 
             [
                 "27"
             ]
         ], 
         "104": [
-            "phase_4/maps/tt_t_chr_avt_shirt_getConnectedMoverShaker.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_getConnectedMoverShaker.mat", 
             104, 
             [
                 "27"
             ]
         ], 
         "105": [
-            "phase_4/maps/tt_t_chr_avt_shirt_racingGrandPrix.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_racingGrandPrix.mat", 
             105, 
             [
                 "27"
             ]
         ], 
         "106": [
-            "phase_4/maps/tt_t_chr_avt_shirt_bee.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_bee.mat", 
             106, 
             [
                 "27"
             ]
         ], 
         "107": [
-            "phase_4/maps/tt_t_chr_avt_shirt_pirate.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_pirate.mat", 
             107, 
             [
                 "27"
             ]
         ], 
         "108": [
-            "phase_4/maps/tt_t_chr_avt_shirt_supertoon.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_supertoon.mat", 
             108, 
             [
                 "27"
             ]
         ], 
         "109": [
-            "phase_4/maps/tt_t_chr_avt_shirt_vampire.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_vampire.mat", 
             109, 
             [
                 "27"
             ]
         ], 
         "11": [
-            "phase_3/maps/desat_shirt_17.jpg", 
+            "phase_3/maps/desat_shirt_17.mat", 
             0, 
             [
                 "27"
             ]
         ], 
         "110": [
-            "phase_4/maps/tt_t_chr_avt_shirt_dinosaur.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_dinosaur.mat", 
             110, 
             [
                 "27"
             ]
         ], 
         "111": [
-            "phase_4/maps/tt_t_chr_avt_shirt_fishing04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_fishing04.mat", 
             111, 
             [
                 "27"
             ]
         ], 
         "112": [
-            "phase_4/maps/tt_t_chr_avt_shirt_golf03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_golf03.mat", 
             112, 
             [
                 "27"
             ]
         ], 
         "113": [
-            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated02.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated02.mat", 
             113, 
             [
                 "27"
             ]
         ], 
         "114": [
-            "phase_4/maps/tt_t_chr_avt_shirt_racing03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_racing03.mat", 
             114, 
             [
                 "27"
             ]
         ], 
         "115": [
-            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding3.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding3.mat", 
             115, 
             [
                 "27"
             ]
         ], 
         "116": [
-            "phase_4/maps/tt_t_chr_avt_shirt_trolley03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_trolley03.mat", 
             116, 
             [
                 "27"
             ]
         ], 
         "117": [
-            "phase_4/maps/tt_t_chr_avt_shirt_fishing05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_fishing05.mat", 
             117, 
             [
                 "27"
             ]
         ], 
         "118": [
-            "phase_4/maps/tt_t_chr_avt_shirt_golf04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_golf04.mat", 
             118, 
             [
                 "27"
             ]
         ], 
         "119": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween06.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween06.mat", 
             119, 
             [
                 "27"
             ]
         ], 
         "12": [
-            "phase_3/maps/desat_shirt_21.jpg", 
+            "phase_3/maps/desat_shirt_21.mat", 
             0, 
             [
                 "00", 
@@ -1938,77 +1938,77 @@ class ToonDNA:
             ]
         ], 
         "120": [
-            "phase_4/maps/tt_t_chr_avt_shirt_winter03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_winter03.mat", 
             120, 
             [
                 "27"
             ]
         ], 
         "121": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween07.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween07.mat", 
             121, 
             [
                 "27"
             ]
         ], 
         "122": [
-            "phase_4/maps/tt_t_chr_avt_shirt_winter02.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_winter02.mat", 
             122, 
             [
                 "27"
             ]
         ], 
         "123": [
-            "phase_4/maps/tt_t_chr_avt_shirt_fishing06.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_fishing06.mat", 
             123, 
             [
                 "27"
             ]
         ], 
         "124": [
-            "phase_4/maps/tt_t_chr_avt_shirt_fishing07.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_fishing07.mat", 
             124, 
             [
                 "27"
             ]
         ], 
         "125": [
-            "phase_4/maps/tt_t_chr_avt_shirt_golf05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_golf05.mat", 
             125, 
             [
                 "27"
             ]
         ], 
         "126": [
-            "phase_4/maps/tt_t_chr_avt_shirt_racing04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_racing04.mat", 
             126, 
             [
                 "27"
             ]
         ], 
         "127": [
-            "phase_4/maps/tt_t_chr_avt_shirt_racing05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_racing05.mat", 
             127, 
             [
                 "27"
             ]
         ], 
         "128": [
-            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated03.mat", 
             128, 
             [
                 "27"
             ]
         ], 
         "129": [
-            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated04.mat", 
             129, 
             [
                 "27"
             ]
         ], 
         "13": [
-            "phase_3/maps/desat_shirt_22.jpg", 
+            "phase_3/maps/desat_shirt_22.mat", 
             0, 
             [
                 "00", 
@@ -2033,63 +2033,63 @@ class ToonDNA:
             ]
         ], 
         "130": [
-            "phase_4/maps/tt_t_chr_avt_shirt_trolley04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_trolley04.mat", 
             130, 
             [
                 "27"
             ]
         ], 
         "131": [
-            "phase_4/maps/tt_t_chr_avt_shirt_trolley05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_trolley05.mat", 
             116, 
             [
                 "27"
             ]
         ], 
         "132": [
-            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding4.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding4.mat", 
             131, 
             [
                 "27"
             ]
         ], 
         "133": [
-            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding05.mat", 
             133, 
             [
                 "27"
             ]
         ], 
         "134": [
-            "phase_4/maps/tt_t_chr_avt_shirt_anniversary.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_anniversary.mat", 
             134, 
             [
                 "27"
             ]
         ],
         "135": [
-            "phase_4/maps/tsashirt.jpg",
+            "phase_4/maps/tsashirt.mat",
             135,
             [
                 "27"
             ]
         ],
         "136": [
-            "phase_4/maps/tsashirt_dev.jpg",
+            "phase_4/maps/tsashirt_dev.mat",
             136,
             [
                 "27"
             ]
         ],
         "137": [
-            "phase_14/maps/tt_t_chr_avt_shirt_betaoutfit.jpg",
+            "phase_14/maps/tt_t_chr_avt_shirt_betaoutfit.mat",
             137,
             [
                 "27"
             ]
         ],
         "14": [
-            "phase_3/maps/desat_shirt_23.jpg", 
+            "phase_3/maps/desat_shirt_23.mat", 
             0, 
             [
                 "00", 
@@ -2114,595 +2114,595 @@ class ToonDNA:
             ]
         ], 
         "15": [
-            "phase_4/maps/female_shirt1b.jpg", 
+            "phase_4/maps/female_shirt1b.mat", 
             24, 
             [
                 "27"
             ]
         ], 
         "16": [
-            "phase_4/maps/female_shirt2.jpg", 
+            "phase_4/maps/female_shirt2.mat", 
             15, 
             [
                 "27"
             ]
         ], 
         "17": [
-            "phase_4/maps/female_shirt3.jpg", 
+            "phase_4/maps/female_shirt3.mat", 
             16, 
             [
                 "27"
             ]
         ], 
         "18": [
-            "phase_4/maps/male_shirt1.jpg", 
+            "phase_4/maps/male_shirt1.mat", 
             35, 
             [
                 "27"
             ]
         ], 
         "19": [
-            "phase_4/maps/male_shirt2_palm.jpg", 
+            "phase_4/maps/male_shirt2_palm.mat", 
             18, 
             [
                 "27"
             ]
         ], 
         "20": [
-            "phase_4/maps/shirt_ghost.jpg", 
+            "phase_4/maps/shirt_ghost.mat", 
             20, 
             [
                 "27"
             ]
         ], 
         "21": [
-            "phase_4/maps/shirt_pumkin.jpg", 
+            "phase_4/maps/shirt_pumkin.mat", 
             21, 
             [
                 "27"
             ]
         ], 
         "22": [
-            "phase_4/maps/holiday_shirt1.jpg", 
+            "phase_4/maps/holiday_shirt1.mat", 
             22, 
             [
                 "27"
             ]
         ], 
         "23": [
-            "phase_4/maps/holiday_shirt2b.jpg", 
+            "phase_4/maps/holiday_shirt2b.mat", 
             22, 
             [
                 "27"
             ]
         ], 
         "24": [
-            "phase_4/maps/holidayShirt3b.jpg", 
+            "phase_4/maps/holidayShirt3b.mat", 
             23, 
             [
                 "27"
             ]
         ], 
         "25": [
-            "phase_4/maps/holidayShirt4.jpg", 
+            "phase_4/maps/holidayShirt4.mat", 
             23, 
             [
                 "27"
             ]
         ], 
         "26": [
-            "phase_4/maps/female_shirt5New.jpg", 
+            "phase_4/maps/female_shirt5New.mat", 
             25, 
             [
                 "27"
             ]
         ], 
         "27": [
-            "phase_4/maps/shirt6New.jpg", 
+            "phase_4/maps/shirt6New.mat", 
             27, 
             [
                 "27"
             ]
         ], 
         "28": [
-            "phase_4/maps/femaleShirtNew6.jpg", 
+            "phase_4/maps/femaleShirtNew6.mat", 
             29, 
             [
                 "27"
             ]
         ], 
         "29": [
-            "phase_4/maps/Vday1Shirt5.jpg", 
+            "phase_4/maps/Vday1Shirt5.mat", 
             30, 
             [
                 "27"
             ]
         ], 
         "30": [
-            "phase_4/maps/Vday1Shirt6SHD.jpg", 
+            "phase_4/maps/Vday1Shirt6SHD.mat", 
             31, 
             [
                 "27"
             ]
         ], 
         "31": [
-            "phase_4/maps/Vday1Shirt4.jpg", 
+            "phase_4/maps/Vday1Shirt4.mat", 
             32, 
             [
                 "27"
             ]
         ], 
         "32": [
-            "phase_4/maps/Vday_shirt2c.jpg", 
+            "phase_4/maps/Vday_shirt2c.mat", 
             33, 
             [
                 "27"
             ]
         ], 
         "33": [
-            "phase_4/maps/shirtTieDyeNew.jpg", 
+            "phase_4/maps/shirtTieDyeNew.mat", 
             34, 
             [
                 "27"
             ]
         ], 
         "34": [
-            "phase_4/maps/StPats_shirt1.jpg", 
+            "phase_4/maps/StPats_shirt1.mat", 
             36, 
             [
                 "27"
             ]
         ], 
         "35": [
-            "phase_4/maps/StPats_shirt2.jpg", 
+            "phase_4/maps/StPats_shirt2.mat", 
             37, 
             [
                 "27"
             ]
         ], 
         "36": [
-            "phase_4/maps/ContestfishingVestShirt2.jpg", 
+            "phase_4/maps/ContestfishingVestShirt2.mat", 
             38, 
             [
                 "27"
             ]
         ], 
         "37": [
-            "phase_4/maps/ContestFishtankShirt1.jpg", 
+            "phase_4/maps/ContestFishtankShirt1.mat", 
             39, 
             [
                 "27"
             ]
         ], 
         "38": [
-            "phase_4/maps/ContestPawShirt1.jpg", 
+            "phase_4/maps/ContestPawShirt1.mat", 
             40, 
             [
                 "27"
             ]
         ], 
         "39": [
-            "phase_4/maps/CowboyShirt1.jpg", 
+            "phase_4/maps/CowboyShirt1.mat", 
             41, 
             [
                 "27"
             ]
         ], 
         "40": [
-            "phase_4/maps/CowboyShirt2.jpg", 
+            "phase_4/maps/CowboyShirt2.mat", 
             42, 
             [
                 "27"
             ]
         ], 
         "41": [
-            "phase_4/maps/CowboyShirt3.jpg", 
+            "phase_4/maps/CowboyShirt3.mat", 
             43, 
             [
                 "27"
             ]
         ], 
         "42": [
-            "phase_4/maps/CowboyShirt4.jpg", 
+            "phase_4/maps/CowboyShirt4.mat", 
             44, 
             [
                 "27"
             ]
         ], 
         "43": [
-            "phase_4/maps/CowboyShirt5.jpg", 
+            "phase_4/maps/CowboyShirt5.mat", 
             45, 
             [
                 "27"
             ]
         ], 
         "44": [
-            "phase_4/maps/CowboyShirt6.jpg", 
+            "phase_4/maps/CowboyShirt6.mat", 
             46, 
             [
                 "27"
             ]
         ], 
         "45": [
-            "phase_4/maps/4thJulyShirt1.jpg", 
+            "phase_4/maps/4thJulyShirt1.mat", 
             47, 
             [
                 "27"
             ]
         ], 
         "46": [
-            "phase_4/maps/4thJulyShirt2.jpg", 
+            "phase_4/maps/4thJulyShirt2.mat", 
             48, 
             [
                 "27"
             ]
         ], 
         "47": [
-            "phase_4/maps/shirt_Cat7_01.jpg", 
+            "phase_4/maps/shirt_Cat7_01.mat", 
             49, 
             [
                 "27"
             ]
         ], 
         "48": [
-            "phase_4/maps/shirt_Cat7_02.jpg", 
+            "phase_4/maps/shirt_Cat7_02.mat", 
             50, 
             [
                 "27"
             ]
         ], 
         "49": [
-            "phase_4/maps/contest_backpack3.jpg", 
+            "phase_4/maps/contest_backpack3.mat", 
             51, 
             [
                 "27"
             ]
         ], 
         "50": [
-            "phase_4/maps/contest_leder.jpg", 
+            "phase_4/maps/contest_leder.mat", 
             52, 
             [
                 "27"
             ]
         ], 
         "51": [
-            "phase_4/maps/contest_mellon2.jpg", 
+            "phase_4/maps/contest_mellon2.mat", 
             53, 
             [
                 "27"
             ]
         ], 
         "52": [
-            "phase_4/maps/contest_race2.jpg", 
+            "phase_4/maps/contest_race2.mat", 
             54, 
             [
                 "27"
             ]
         ], 
         "53": [
-            "phase_4/maps/PJBlueBanana2.jpg", 
+            "phase_4/maps/PJBlueBanana2.mat", 
             55, 
             [
                 "27"
             ]
         ], 
         "54": [
-            "phase_4/maps/PJRedHorn2.jpg", 
+            "phase_4/maps/PJRedHorn2.mat", 
             56, 
             [
                 "27"
             ]
         ], 
         "55": [
-            "phase_4/maps/PJGlasses2.jpg", 
+            "phase_4/maps/PJGlasses2.mat", 
             57, 
             [
                 "27"
             ]
         ], 
         "56": [
-            "phase_4/maps/tt_t_chr_avt_shirt_valentine1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_valentine1.mat", 
             58, 
             [
                 "27"
             ]
         ], 
         "57": [
-            "phase_4/maps/tt_t_chr_avt_shirt_valentine2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_valentine2.mat", 
             59, 
             [
                 "27"
             ]
         ], 
         "58": [
-            "phase_4/maps/tt_t_chr_avt_shirt_desat4.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_desat4.mat", 
             60, 
             [
                 "27"
             ]
         ], 
         "59": [
-            "phase_4/maps/tt_t_chr_avt_shirt_fishing1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_fishing1.mat", 
             61, 
             [
                 "27"
             ]
         ], 
         "60": [
-            "phase_4/maps/tt_t_chr_avt_shirt_fishing2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_fishing2.mat", 
             62, 
             [
                 "27"
             ]
         ], 
         "61": [
-            "phase_4/maps/tt_t_chr_avt_shirt_gardening1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_gardening1.mat", 
             63, 
             [
                 "27"
             ]
         ], 
         "62": [
-            "phase_4/maps/tt_t_chr_avt_shirt_gardening2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_gardening2.mat", 
             64, 
             [
                 "27"
             ]
         ], 
         "63": [
-            "phase_4/maps/tt_t_chr_avt_shirt_party1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_party1.mat", 
             65, 
             [
                 "27"
             ]
         ], 
         "64": [
-            "phase_4/maps/tt_t_chr_avt_shirt_party2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_party2.mat", 
             66, 
             [
                 "27"
             ]
         ], 
         "65": [
-            "phase_4/maps/tt_t_chr_avt_shirt_racing1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_racing1.mat", 
             67, 
             [
                 "27"
             ]
         ], 
         "66": [
-            "phase_4/maps/tt_t_chr_avt_shirt_racing2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_racing2.mat", 
             68, 
             [
                 "27"
             ]
         ], 
         "67": [
-            "phase_4/maps/tt_t_chr_avt_shirt_summer1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_summer1.mat", 
             69, 
             [
                 "27"
             ]
         ], 
         "68": [
-            "phase_4/maps/tt_t_chr_avt_shirt_summer2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_summer2.mat", 
             70, 
             [
                 "27"
             ]
         ], 
         "69": [
-            "phase_4/maps/tt_t_chr_avt_shirt_golf1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_golf1.mat", 
             71, 
             [
                 "27"
             ]
         ], 
         "70": [
-            "phase_4/maps/tt_t_chr_avt_shirt_golf2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_golf2.mat", 
             72, 
             [
                 "27"
             ]
         ], 
         "71": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween1.mat", 
             73, 
             [
                 "27"
             ]
         ], 
         "72": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween2.mat", 
             74, 
             [
                 "27"
             ]
         ], 
         "73": [
-            "phase_4/maps/tt_t_chr_avt_shirt_marathon1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_marathon1.mat", 
             75, 
             [
                 "27"
             ]
         ], 
         "74": [
-            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding1.mat", 
             76, 
             [
                 "27"
             ]
         ], 
         "75": [
-            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_saveBuilding2.mat", 
             77, 
             [
                 "27"
             ]
         ], 
         "76": [
-            "phase_4/maps/tt_t_chr_avt_shirt_toonTask1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_toonTask1.mat", 
             78, 
             [
                 "27"
             ]
         ], 
         "77": [
-            "phase_4/maps/tt_t_chr_avt_shirt_toonTask2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_toonTask2.mat", 
             79, 
             [
                 "27"
             ]
         ], 
         "78": [
-            "phase_4/maps/tt_t_chr_avt_shirt_trolley1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_trolley1.mat", 
             80, 
             [
                 "27"
             ]
         ], 
         "79": [
-            "phase_4/maps/tt_t_chr_avt_shirt_trolley2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_trolley2.mat", 
             81, 
             [
                 "27"
             ]
         ], 
         "80": [
-            "phase_4/maps/tt_t_chr_avt_shirt_winter1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_winter1.mat", 
             82, 
             [
                 "27"
             ]
         ], 
         "81": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween3.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween3.mat", 
             83, 
             [
                 "27"
             ]
         ], 
         "82": [
-            "phase_4/maps/tt_t_chr_avt_shirt_halloween4.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_halloween4.mat", 
             84, 
             [
                 "27"
             ]
         ], 
         "83": [
-            "phase_4/maps/tt_t_chr_avt_shirt_valentine3.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_valentine3.mat", 
             85, 
             [
                 "27"
             ]
         ], 
         "84": [
-            "phase_4/maps/tt_t_chr_shirt_scientistC.jpg", 
+            "phase_4/maps/tt_t_chr_shirt_scientistC.mat", 
             86, 
             [
                 "27"
             ]
         ], 
         "85": [
-            "phase_4/maps/tt_t_chr_shirt_scientistA.jpg", 
+            "phase_4/maps/tt_t_chr_shirt_scientistA.mat", 
             86, 
             [
                 "27"
             ]
         ], 
         "86": [
-            "phase_4/maps/tt_t_chr_shirt_scientistB.jpg", 
+            "phase_4/maps/tt_t_chr_shirt_scientistB.mat", 
             86, 
             [
                 "27"
             ]
         ], 
         "87": [
-            "phase_4/maps/tt_t_chr_avt_shirt_mailbox.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_mailbox.mat", 
             87, 
             [
                 "27"
             ]
         ], 
         "88": [
-            "phase_4/maps/tt_t_chr_avt_shirt_trashcan.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_trashcan.mat", 
             88, 
             [
                 "27"
             ]
         ], 
         "89": [
-            "phase_4/maps/tt_t_chr_avt_shirt_loonyLabs.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_loonyLabs.mat", 
             89, 
             [
                 "27"
             ]
         ], 
         "90": [
-            "phase_4/maps/tt_t_chr_avt_shirt_hydrant.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_hydrant.mat", 
             90, 
             [
                 "27"
             ]
         ], 
         "91": [
-            "phase_4/maps/tt_t_chr_avt_shirt_whistle.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_whistle.mat", 
             91, 
             [
                 "27"
             ]
         ], 
         "92": [
-            "phase_4/maps/tt_t_chr_avt_shirt_cogbuster.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_cogbuster.mat", 
             92, 
             [
                 "27"
             ]
         ], 
         "93": [
-            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated01.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_mostCogsDefeated01.mat", 
             93, 
             [
                 "27"
             ]
         ], 
         "94": [
-            "phase_4/maps/tt_t_chr_avt_shirt_victoryParty01.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_victoryParty01.mat", 
             94, 
             [
                 "27"
             ]
         ], 
         "95": [
-            "phase_4/maps/tt_t_chr_avt_shirt_victoryParty02.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_victoryParty02.mat", 
             95, 
             [
                 "27"
             ]
         ], 
         "96": [
-            "phase_4/maps/tt_t_chr_avt_shirt_sellbotIcon.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_sellbotIcon.mat", 
             96, 
             [
                 "27"
             ]
         ], 
         "97": [
-            "phase_4/maps/tt_t_chr_avt_shirt_sellbotVPIcon.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_sellbotVPIcon.mat", 
             97, 
             [
                 "27"
             ]
         ], 
         "98": [
-            "phase_4/maps/tt_t_chr_avt_shirt_sellbotCrusher.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_sellbotCrusher.mat", 
             98, 
             [
                 "27"
             ]
         ], 
         "99": [
-            "phase_4/maps/tt_t_chr_avt_shirt_jellyBeans.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shirt_jellyBeans.mat", 
             99, 
             [
                 "27"
@@ -2712,7 +2712,7 @@ class ToonDNA:
 
     femaleBottomDNA2femaleBottom = {
         "00": [
-            "phase_3/maps/desat_skirt_1.jpg", 
+            "phase_3/maps/desat_skirt_1.mat", 
             [
                 "00", 
                 "01", 
@@ -2736,7 +2736,7 @@ class ToonDNA:
             ]
         ], 
         "01": [
-            "phase_3/maps/desat_skirt_2.jpg", 
+            "phase_3/maps/desat_skirt_2.mat", 
             [
                 "00", 
                 "01", 
@@ -2759,7 +2759,7 @@ class ToonDNA:
             ]
         ], 
         "02": [
-            "phase_3/maps/desat_skirt_3.jpg", 
+            "phase_3/maps/desat_skirt_3.mat", 
             [
                 "00", 
                 "01", 
@@ -2782,7 +2782,7 @@ class ToonDNA:
             ]
         ], 
         "03": [
-            "phase_3/maps/desat_skirt_4.jpg", 
+            "phase_3/maps/desat_skirt_4.mat", 
             [
                 "00", 
                 "01", 
@@ -2805,7 +2805,7 @@ class ToonDNA:
             ]
         ], 
         "04": [
-            "phase_3/maps/desat_skirt_5.jpg", 
+            "phase_3/maps/desat_skirt_5.mat", 
             [
                 "00", 
                 "01", 
@@ -2828,7 +2828,7 @@ class ToonDNA:
             ]
         ], 
         "05": [
-            "phase_3/maps/desat_skirt_6.jpg", 
+            "phase_3/maps/desat_skirt_6.mat", 
             [
                 "00", 
                 "01", 
@@ -2852,7 +2852,7 @@ class ToonDNA:
             ]
         ], 
         "06": [
-            "phase_3/maps/desat_skirt_7.jpg", 
+            "phase_3/maps/desat_skirt_7.mat", 
             [
                 "00", 
                 "01", 
@@ -2876,229 +2876,229 @@ class ToonDNA:
             ]
         ], 
         "07": [
-            "phase_4/maps/female_skirt1.jpg", 
+            "phase_4/maps/female_skirt1.mat", 
             [
                 "27"
             ]
         ], 
         "08": [
-            "phase_4/maps/female_skirt2.jpg", 
+            "phase_4/maps/female_skirt2.mat", 
             [
                 "27"
             ]
         ], 
         "09": [
-            "phase_4/maps/female_skirt3.jpg", 
+            "phase_4/maps/female_skirt3.mat", 
             [
                 "27"
             ]
         ], 
         "10": [
-            "phase_4/maps/VdaySkirt1.jpg", 
+            "phase_4/maps/VdaySkirt1.mat", 
             [
                 "27"
             ]
         ], 
         "11": [
-            "phase_4/maps/skirtNew5.jpg", 
+            "phase_4/maps/skirtNew5.mat", 
             [
                 "27"
             ]
         ], 
         "12": [
-            "phase_4/maps/CowboySkirt1.jpg", 
+            "phase_4/maps/CowboySkirt1.mat", 
             [
                 "27"
             ]
         ], 
         "13": [
-            "phase_4/maps/CowboySkirt2.jpg", 
+            "phase_4/maps/CowboySkirt2.mat", 
             [
                 "27"
             ]
         ], 
         "14": [
-            "phase_4/maps/4thJulySkirt1.jpg", 
+            "phase_4/maps/4thJulySkirt1.mat", 
             [
                 "27"
             ]
         ], 
         "15": [
-            "phase_4/maps/skirtCat7_01.jpg", 
+            "phase_4/maps/skirtCat7_01.mat", 
             [
                 "27"
             ]
         ], 
         "16": [
-            "phase_4/maps/tt_t_chr_avt_skirt_winter1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_winter1.mat", 
             [
                 "27"
             ]
         ], 
         "17": [
-            "phase_4/maps/tt_t_chr_avt_skirt_winter2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_winter2.mat", 
             [
                 "27"
             ]
         ], 
         "18": [
-            "phase_4/maps/tt_t_chr_avt_skirt_winter3.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_winter3.mat", 
             [
                 "27"
             ]
         ], 
         "19": [
-            "phase_4/maps/tt_t_chr_avt_skirt_winter4.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_winter4.mat", 
             [
                 "27"
             ]
         ], 
         "20": [
-            "phase_4/maps/tt_t_chr_avt_skirt_valentine1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_valentine1.mat", 
             [
                 "27"
             ]
         ], 
         "21": [
-            "phase_4/maps/tt_t_chr_avt_skirt_valentine2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_valentine2.mat", 
             [
                 "27"
             ]
         ], 
         "22": [
-            "phase_4/maps/tt_t_chr_avt_skirt_fishing1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_fishing1.mat", 
             [
                 "27"
             ]
         ], 
         "23": [
-            "phase_4/maps/tt_t_chr_avt_skirt_gardening1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_gardening1.mat", 
             [
                 "27"
             ]
         ], 
         "24": [
-            "phase_4/maps/tt_t_chr_avt_skirt_party1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_party1.mat", 
             [
                 "27"
             ]
         ], 
         "25": [
-            "phase_4/maps/tt_t_chr_avt_skirt_racing1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_racing1.mat", 
             [
                 "27"
             ]
         ], 
         "26": [
-            "phase_4/maps/tt_t_chr_avt_skirt_summer1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_summer1.mat", 
             [
                 "27"
             ]
         ], 
         "27": [
-            "phase_4/maps/tt_t_chr_avt_skirt_golf1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_golf1.mat", 
             [
                 "27"
             ]
         ], 
         "28": [
-            "phase_4/maps/tt_t_chr_avt_skirt_halloween1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_halloween1.mat", 
             [
                 "27"
             ]
         ], 
         "29": [
-            "phase_4/maps/tt_t_chr_avt_skirt_halloween2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_halloween2.mat", 
             [
                 "27"
             ]
         ], 
         "30": [
-            "phase_4/maps/tt_t_chr_avt_skirt_saveBuilding1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_saveBuilding1.mat", 
             [
                 "27"
             ]
         ], 
         "31": [
-            "phase_4/maps/tt_t_chr_avt_skirt_trolley1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_trolley1.mat", 
             [
                 "27"
             ]
         ], 
         "32": [
-            "phase_4/maps/tt_t_chr_avt_skirt_halloween3.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_halloween3.mat", 
             [
                 "27"
             ]
         ], 
         "33": [
-            "phase_4/maps/tt_t_chr_avt_skirt_halloween4.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_halloween4.mat", 
             [
                 "27"
             ]
         ], 
         "34": [
-            "phase_4/maps/tt_t_chr_avt_skirt_greentoon1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_greentoon1.mat", 
             [
                 "27"
             ]
         ], 
         "35": [
-            "phase_4/maps/tt_t_chr_avt_skirt_racingGrandPrix.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_racingGrandPrix.mat", 
             [
                 "27"
             ]
         ], 
         "36": [
-            "phase_4/maps/tt_t_chr_avt_skirt_pirate.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_pirate.mat", 
             [
                 "27"
             ]
         ], 
         "37": [
-            "phase_4/maps/tt_t_chr_avt_skirt_golf02.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_golf02.mat", 
             [
                 "27"
             ]
         ], 
         "38": [
-            "phase_4/maps/tt_t_chr_avt_skirt_racing03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_racing03.mat", 
             [
                 "27"
             ]
         ], 
         "39": [
-            "phase_4/maps/tt_t_chr_avt_skirt_golf03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_golf03.mat", 
             [
                 "27"
             ]
         ], 
         "40": [
-            "phase_4/maps/tt_t_chr_avt_skirt_golf04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_golf04.mat", 
             [
                 "27"
             ]
         ], 
         "41": [
-            "phase_4/maps/tt_t_chr_avt_skirt_racing04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_racing04.mat", 
             [
                 "27"
             ]
         ], 
         "42": [
-            "phase_4/maps/tt_t_chr_avt_skirt_racing05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_skirt_racing05.mat", 
             [
                 "27"
             ]
         ],
         "43": [
-            "phase_4/maps/tsaskirt.jpg",
+            "phase_4/maps/tsaskirt.mat",
             [
                 "27"
             ]
         ],
         "44": [
-            "phase_4/maps/tsaskirt_dev.jpg",
+            "phase_4/maps/tsaskirt_dev.mat",
             [
                 "27"
             ]
@@ -3107,7 +3107,7 @@ class ToonDNA:
 
     maleBottomDNA2maleBottom = {
         "00": [
-            "phase_3/maps/desat_shorts_1.jpg", 
+            "phase_3/maps/desat_shorts_1.mat", 
             [
                 "00", 
                 "01", 
@@ -3129,7 +3129,7 @@ class ToonDNA:
             ]
         ], 
         "01": [
-            "phase_3/maps/desat_shorts_2.jpg", 
+            "phase_3/maps/desat_shorts_2.mat", 
             [
                 "00", 
                 "01", 
@@ -3151,7 +3151,7 @@ class ToonDNA:
             ]
         ], 
         "02": [
-            "phase_3/maps/desat_shorts_4.jpg", 
+            "phase_3/maps/desat_shorts_4.mat", 
             [
                 "00", 
                 "01", 
@@ -3173,7 +3173,7 @@ class ToonDNA:
             ]
         ], 
         "03": [
-            "phase_3/maps/desat_shorts_6.jpg", 
+            "phase_3/maps/desat_shorts_6.mat", 
             [
                 "00", 
                 "01", 
@@ -3194,7 +3194,7 @@ class ToonDNA:
             ]
         ], 
         "04": [
-            "phase_3/maps/desat_shorts_7.jpg", 
+            "phase_3/maps/desat_shorts_7.mat", 
             [
                 "00", 
                 "01", 
@@ -3216,7 +3216,7 @@ class ToonDNA:
             ]
         ], 
         "05": [
-            "phase_3/maps/desat_shorts_8.jpg", 
+            "phase_3/maps/desat_shorts_8.mat", 
             [
                 "00", 
                 "01", 
@@ -3238,7 +3238,7 @@ class ToonDNA:
             ]
         ], 
         "06": [
-            "phase_3/maps/desat_shorts_9.jpg", 
+            "phase_3/maps/desat_shorts_9.mat", 
             [
                 "00", 
                 "01", 
@@ -3260,7 +3260,7 @@ class ToonDNA:
             ]
         ], 
         "07": [
-            "phase_3/maps/desat_shorts_10.jpg", 
+            "phase_3/maps/desat_shorts_10.mat", 
             [
                 "00", 
                 "01", 
@@ -3283,313 +3283,313 @@ class ToonDNA:
             ]
         ], 
         "08": [
-            "phase_4/maps/VdayShorts2.jpg", 
+            "phase_4/maps/VdayShorts2.mat", 
             [
                 "27"
             ]
         ], 
         "09": [
-            "phase_4/maps/shorts4.jpg", 
+            "phase_4/maps/shorts4.mat", 
             [
                 "27"
             ]
         ], 
         "10": [
-            "phase_4/maps/shorts1.jpg", 
+            "phase_4/maps/shorts1.mat", 
             [
                 "27"
             ]
         ], 
         "11": [
-            "phase_4/maps/shorts5.jpg", 
+            "phase_4/maps/shorts5.mat", 
             [
                 "27"
             ]
         ], 
         "12": [
-            "phase_4/maps/CowboyShorts1.jpg", 
+            "phase_4/maps/CowboyShorts1.mat", 
             [
                 "27"
             ]
         ], 
         "13": [
-            "phase_4/maps/CowboyShorts2.jpg", 
+            "phase_4/maps/CowboyShorts2.mat", 
             [
                 "27"
             ]
         ], 
         "14": [
-            "phase_4/maps/4thJulyShorts1.jpg", 
+            "phase_4/maps/4thJulyShorts1.mat", 
             [
                 "27"
             ]
         ], 
         "15": [
-            "phase_4/maps/shortsCat7_01.jpg", 
+            "phase_4/maps/shortsCat7_01.mat", 
             [
                 "27"
             ]
         ], 
         "16": [
-            "phase_4/maps/Blue_shorts_1.jpg", 
+            "phase_4/maps/Blue_shorts_1.mat", 
             [
                 "27"
             ]
         ], 
         "17": [
-            "phase_4/maps/Red_shorts_1.jpg", 
+            "phase_4/maps/Red_shorts_1.mat", 
             [
                 "27"
             ]
         ], 
         "18": [
-            "phase_4/maps/Purple_shorts_1.jpg", 
+            "phase_4/maps/Purple_shorts_1.mat", 
             [
                 "27"
             ]
         ], 
         "19": [
-            "phase_4/maps/tt_t_chr_avt_shorts_winter1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_winter1.mat", 
             [
                 "27"
             ]
         ], 
         "20": [
-            "phase_4/maps/tt_t_chr_avt_shorts_winter2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_winter2.mat", 
             [
                 "27"
             ]
         ], 
         "21": [
-            "phase_4/maps/tt_t_chr_avt_shorts_winter3.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_winter3.mat", 
             [
                 "27"
             ]
         ], 
         "22": [
-            "phase_4/maps/tt_t_chr_avt_shorts_winter4.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_winter4.mat", 
             [
                 "27"
             ]
         ], 
         "23": [
-            "phase_4/maps/tt_t_chr_avt_shorts_valentine1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_valentine1.mat", 
             [
                 "27"
             ]
         ], 
         "24": [
-            "phase_4/maps/tt_t_chr_avt_shorts_valentine2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_valentine2.mat", 
             [
                 "27"
             ]
         ], 
         "25": [
-            "phase_4/maps/tt_t_chr_avt_shorts_fishing1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_fishing1.mat", 
             [
                 "27"
             ]
         ], 
         "26": [
-            "phase_4/maps/tt_t_chr_avt_shorts_gardening1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_gardening1.mat", 
             [
                 "27"
             ]
         ], 
         "27": [
-            "phase_4/maps/tt_t_chr_avt_shorts_party1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_party1.mat", 
             [
                 "27"
             ]
         ], 
         "28": [
-            "phase_4/maps/tt_t_chr_avt_shorts_racing1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_racing1.mat", 
             [
                 "27"
             ]
         ], 
         "29": [
-            "phase_4/maps/tt_t_chr_avt_shorts_summer1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_summer1.mat", 
             [
                 "27"
             ]
         ], 
         "30": [
-            "phase_4/maps/tt_t_chr_avt_shorts_golf1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_golf1.mat", 
             [
                 "27"
             ]
         ], 
         "31": [
-            "phase_4/maps/tt_t_chr_avt_shorts_halloween1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_halloween1.mat", 
             [
                 "27"
             ]
         ], 
         "32": [
-            "phase_4/maps/tt_t_chr_avt_shorts_halloween2.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_halloween2.mat", 
             [
                 "27"
             ]
         ], 
         "33": [
-            "phase_4/maps/tt_t_chr_avt_shorts_saveBuilding1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_saveBuilding1.mat", 
             [
                 "27"
             ]
         ], 
         "34": [
-            "phase_4/maps/tt_t_chr_avt_shorts_trolley1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_trolley1.mat", 
             [
                 "27"
             ]
         ], 
         "35": [
-            "phase_4/maps/tt_t_chr_avt_shorts_halloween4.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_halloween4.mat", 
             [
                 "27"
             ]
         ], 
         "36": [
-            "phase_4/maps/tt_t_chr_avt_shorts_halloween3.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_halloween3.mat", 
             [
                 "27"
             ]
         ], 
         "37": [
-            "phase_4/maps/tt_t_chr_shorts_scientistA.jpg", 
+            "phase_4/maps/tt_t_chr_shorts_scientistA.mat", 
             [
                 "27"
             ]
         ], 
         "38": [
-            "phase_4/maps/tt_t_chr_shorts_scientistB.jpg", 
+            "phase_4/maps/tt_t_chr_shorts_scientistB.mat", 
             [
                 "27"
             ]
         ], 
         "39": [
-            "phase_4/maps/tt_t_chr_shorts_scientistC.jpg", 
+            "phase_4/maps/tt_t_chr_shorts_scientistC.mat", 
             [
                 "27"
             ]
         ], 
         "40": [
-            "phase_4/maps/tt_t_chr_avt_shorts_cogbuster.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_cogbuster.mat", 
             [
                 "27"
             ]
         ], 
         "41": [
-            "phase_4/maps/tt_t_chr_avt_shorts_sellbotCrusher.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_sellbotCrusher.mat", 
             [
                 "27"
             ]
         ], 
         "42": [
-            "phase_4/maps/tt_t_chr_avt_shorts_halloween5.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_halloween5.mat", 
             [
                 "27"
             ]
         ], 
         "43": [
-            "phase_4/maps/tt_t_chr_avt_shorts_halloweenTurtle.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_halloweenTurtle.mat", 
             [
                 "27"
             ]
         ], 
         "44": [
-            "phase_4/maps/tt_t_chr_avt_shorts_greentoon1.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_greentoon1.mat", 
             [
                 "27"
             ]
         ], 
         "45": [
-            "phase_4/maps/tt_t_chr_avt_shorts_racingGrandPrix.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_racingGrandPrix.mat", 
             [
                 "27"
             ]
         ], 
         "46": [
-            "phase_4/maps/tt_t_chr_avt_shorts_bee.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_bee.mat", 
             [
                 "27"
             ]
         ], 
         "47": [
-            "phase_4/maps/tt_t_chr_avt_shorts_pirate.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_pirate.mat", 
             [
                 "27"
             ]
         ], 
         "48": [
-            "phase_4/maps/tt_t_chr_avt_shorts_supertoon.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_supertoon.mat", 
             [
                 "27"
             ]
         ], 
         "49": [
-            "phase_4/maps/tt_t_chr_avt_shorts_vampire.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_vampire.mat", 
             [
                 "27"
             ]
         ], 
         "50": [
-            "phase_4/maps/tt_t_chr_avt_shorts_dinosaur.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_dinosaur.mat", 
             [
                 "27"
             ]
         ], 
         "51": [
-            "phase_4/maps/tt_t_chr_avt_shorts_golf03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_golf03.mat", 
             [
                 "27"
             ]
         ], 
         "52": [
-            "phase_4/maps/tt_t_chr_avt_shorts_racing03.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_racing03.mat", 
             [
                 "27"
             ]
         ], 
         "53": [
-            "phase_4/maps/tt_t_chr_avt_shorts_golf04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_golf04.mat", 
             [
                 "27"
             ]
         ], 
         "54": [
-            "phase_4/maps/tt_t_chr_avt_shorts_golf05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_golf05.mat", 
             [
                 "27"
             ]
         ], 
         "55": [
-            "phase_4/maps/tt_t_chr_avt_shorts_racing04.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_racing04.mat", 
             [
                 "27"
             ]
         ], 
         "56": [
-            "phase_4/maps/tt_t_chr_avt_shorts_racing05.jpg", 
+            "phase_4/maps/tt_t_chr_avt_shorts_racing05.mat", 
             [
                 "27"
             ]
         ],
         "57": [
-            "phase_4/maps/tsashorts.jpg",
+            "phase_4/maps/tsashorts.mat",
             [
                 "27"
             ]
         ],
         "58": [
-            "phase_4/maps/tsashorts_dev.jpg",
+            "phase_4/maps/tsashorts_dev.mat",
             [
                 "27"
             ]
         ],
         "59": [
-            "phase_14/maps/tt_t_chr_avt_shorts_betaoutfit.jpg",
+            "phase_14/maps/tt_t_chr_avt_shorts_betaoutfit.mat",
             [
                 "27"
             ]

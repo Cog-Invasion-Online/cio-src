@@ -52,9 +52,9 @@ class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
         self.shor = 1
         self.shog = 1
         self.shob = 1
-        self.shirt = "phase_3/maps/desat_shirt_1.jpg"
-        self.short = "phase_3/maps/desat_shorts_1.jpg"
-        self.sleeve = "phase_3/maps/desat_sleeve_1.jpg"
+        self.shirt = "phase_3/maps/desat_shirt_1.mat"
+        self.short = "phase_3/maps/desat_shorts_1.mat"
+        self.sleeve = "phase_3/maps/desat_sleeve_1.mat"
         self.isdying = False
         self.isdead = False
         self.toon_legs = None

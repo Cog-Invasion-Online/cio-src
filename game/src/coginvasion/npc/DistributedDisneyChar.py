@@ -227,8 +227,8 @@ class DistributedDisneyChar(DistributedAvatar):
         
         if self.cr.isChristmas():
             self.santaHat = loader.loadModel("phase_4/models/accessories/tt_m_chr_avt_acc_hat_elfhat.bam")
-            tex = loader.loadTexture("phase_4/maps/tt_t_chr_avt_acc_hat_elfhat8.jpg")
-            self.santaHat.setTexture(tex, 1)
+            tex = "phase_4/maps/tt_t_chr_avt_acc_hat_elfhat8.mat"
+            self.santaHat.setBSPMaterial(tex, 1)
 
         if self.charId in [MINNIE, MICKEY]:
             for bundle in self.getPartBundleDict().values():
@@ -268,16 +268,16 @@ class DistributedDisneyChar(DistributedAvatar):
                     if self.charId == MINNIE:
                         self.santaHat.setZ(0.25 * 1000)
 
-            self.eyesOpen = loader.loadTexture('phase_3/maps/eyes1.jpg', 'phase_3/maps/eyes1_a.rgb')
-            self.eyesClosed = loader.loadTexture('phase_3/maps/mickey_eyes_closed.jpg', 'phase_3/maps/mickey_eyes_closed_a.rgb')
+            self.eyesOpen = 'phase_3/maps/eyes1.mat'
+            self.eyesClosed = 'phase_3/maps/mickey_eyes_closed.mat'
             self.eyes = self.find('**/eyes')
             self.eyes.setBin('transparent', 0)
             self.lpupil = self.find('**/joint_pupilL')
             self.rpupil = self.find('**/joint_pupilR')
             self.drawInFront('joint_pupil?', 'eyes*', -3)
         elif self.charId == PLUTO:
-            self.eyesOpen = loader.loadTexture('phase_6/maps/plutoEyesOpen.jpg', 'phase_6/maps/plutoEyesOpen_a.rgb')
-            self.eyesClosed = loader.loadTexture('phase_6/maps/plutoEyesClosed.jpg', 'phase_6/maps/plutoEyesClosed_a.rgb')
+            self.eyesOpen = 'phase_6/maps/plutoEyesOpen.mat'
+            self.eyesClosed ='phase_6/maps/plutoEyesClosed.mat'
             self.eyes = self.find('**/eyes')
             self.lpupil = self.find('**/joint_pupilL')
             self.rpupil = self.find('**/joint_pupilR')
@@ -304,12 +304,12 @@ class DistributedDisneyChar(DistributedAvatar):
         if self.lpupil is not None:
             self.lpupil.adjustAllPriorities(1)
             self.rpupil.adjustAllPriorities(1)
-        if self.eyesOpen:
-            self.eyesOpen.setMinfilter(Texture.FTLinear)
-            self.eyesOpen.setMagfilter(Texture.FTLinear)
-        if self.eyesClosed:
-            self.eyesClosed.setMinfilter(Texture.FTLinear)
-            self.eyesClosed.setMagfilter(Texture.FTLinear)
+        #if self.eyesOpen:
+        #    self.eyesOpen.setMinfilter(Texture.FTLinear)
+        #    self.eyesOpen.setMagfilter(Texture.FTLinear)
+        #if self.eyesClosed:
+        #    self.eyesClosed.setMinfilter(Texture.FTLinear)
+        #    self.eyesClosed.setMagfilter(Texture.FTLinear)
 
         if self.charId == MICKEY:
             pupilParent = self.rpupil.getParent()
@@ -372,7 +372,7 @@ class DistributedDisneyChar(DistributedAvatar):
 
         else:
             if self.eyes:
-                self.eyes.setTexture(self.eyesOpen, 1)
+                self.eyes.setBSPMaterial(self.eyesOpen, 1)
             self.lpupil.show()
             self.rpupil.show()
 
@@ -386,7 +386,7 @@ class DistributedDisneyChar(DistributedAvatar):
 
         else:
             if self.eyes:
-                self.eyes.setTexture(self.eyesClosed, 1)
+                self.eyes.setBSPMaterial(self.eyesClosed, 1)
             self.lpupil.hide()
             self.rpupil.hide()
 

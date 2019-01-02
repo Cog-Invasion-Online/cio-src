@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import ModelNode
+from panda3d.core import ModelRoot
 
 from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
 
@@ -18,7 +18,7 @@ class DistributedPhysicsEntity(DistributedSmoothNode, PhysicsNodePath):
 
     def __init__(self, cr):
         DistributedSmoothNode.__init__(self, cr)
-        PhysicsNodePath.__init__(self, ModelNode('physEntity'))
+        PhysicsNodePath.__init__(self, ModelRoot('physEntity'))
 
     def doSetupPhysics(self):
         self.setupPhysics(self.getPhysBody(), True)

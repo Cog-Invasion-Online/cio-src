@@ -25,7 +25,7 @@ class SoundGag(Gag):
         self.appearSfx = None
         self.soundSfx = None
         self.soundRange = soundRange
-        self.megaphonePath = 'phase_14/models/props/megaphone.egg'
+        self.megaphonePath = 'phase_14/models/props/megaphone.bam'
         self.megaphone = None
         self.tracks = None
         self.timeout = 5.0

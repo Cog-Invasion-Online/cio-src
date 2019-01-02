@@ -33,8 +33,8 @@ class TTPlayground(Playground.Playground):
             self.christmasTree.setH(-183.108)
             
             # Winter ground
-            winterTxt = loader.loadTexture('winter/maps/tt_winter_ground.png')
-            self.loader.geom.find('**/ground_center').setTexture(winterTxt, 1)
+            winterTxt = 'winter/maps/tt_winter_ground.mat'
+            self.loader.geom.find('**/ground_center').setBSPMaterial(winterTxt, 1)
 
         base.waterReflectionMgr.addWaterNode(35, (30.5, -21.4, base.wakeWaterHeight), depth = 2.0,
                                              spec = base.waterReflectionMgr.getDefaultSpec('ttcPond'))

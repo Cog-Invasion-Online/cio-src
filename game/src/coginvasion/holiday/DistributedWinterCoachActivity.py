@@ -47,7 +47,7 @@ class DistributedWinterCoachActivity(DistributedNode):
         
         # Let's load up the Wheel Barrow
         self.wheelBarrow = loader.loadModel('phase_5.5/models/estate/wheelbarrel.bam')
-        self.wheelBarrow.find('**/dirt').setTexture(loader.loadTexture('winter/maps/sbhq_snow.png'), 1)
+        self.wheelBarrow.find('**/dirt').setBSPMaterial('winter/maps/sbhq_snow.mat', 1)
         self.wheelBarrow.reparentTo(self.coach)
         self.wheelBarrow.setX(-3.5)
         self.wheelBarrow.setH(90)

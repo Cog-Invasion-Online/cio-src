@@ -106,7 +106,7 @@ class DistributedInspectionSite(DistributedNode):
         self.interactCollSphereNP.setCollideMask(CIGlobals.EventBitmask)
 
     def generateIconAndMarker(self):
-        icon = loader.loadTexture('phase_5/maps/inspect_location.png')
+        icon = 'phase_5/maps/inspect_location.mat'
         self.identifierIcon = DirectFrame(parent = self, image = icon, frameColor = (0, 0, 0, 0))
         self.identifierIcon.setTransparency(TransparencyAttrib.MAlpha)
         self.identifierIcon.setTwoSided(1)
@@ -124,7 +124,7 @@ class DistributedInspectionSite(DistributedNode):
         
         cm = CardMaker('marker')
         self.floorMarker = self.attachNewNode(cm.generate())
-        self.floorMarker.setTexture(icon)
+        self.floorMarker.setBSPMaterial(icon, 1)
         self.floorMarker.setTransparency(TransparencyAttrib.MAlpha)
         self.floorMarker.setTwoSided(1)
         self.floorMarker.setPosHpr(-2.50, 2.53, -0.01, 0.0, 90.0, 0.0)

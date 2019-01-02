@@ -321,8 +321,6 @@ def makeSplat(pos, color, scale, sound = None):
     splat.reparentTo(render)
     splat.setPos(pos)
     splat.setLightOff(1)
-    splat.setShaderOff(1)
-    splat.setMaterialOff(1)
     splat.setTransparency(TransparencyAttrib.MDual)
 
     if sound:
@@ -341,8 +339,6 @@ def getParticleRender():
     if not ParticleRender:
         ParticleRender = render.attachNewNode('particleRender')
         ParticleRender.setLightOff(1)
-        ParticleRender.setShaderOff(1)
-        ParticleRender.setMaterialOff(1)
     return ParticleRender
 
 def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, duration = 1.0, soundVol = 0.5):
@@ -351,8 +347,6 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
     explosion.reparentTo(render)
     explosion.setBillboardPointEye()
     explosion.setLightOff(1)
-    explosion.setShaderOff(1)
-    explosion.setMaterialOff(1)
     explosion.setPos(pos)
 
     frames = 10.0
@@ -411,8 +405,6 @@ def makeDustCloud(pos, scale = (0.1, 0.9, 1), sound = None, color = (1, 1, 1, 1)
         cloudName = '**/cloud' + str(cloudNum)
         cloud = dust.find(cloudName)
         cloud.setBin('fixed', objBin)
-        cloud.setShaderOff(1)
-        cloud.setMaterialOff(1)
         cloud.setLightOff(1)
         cloud.setColorScale(color, 1)
         objBin -= 10
@@ -433,7 +425,7 @@ def getShinyMaterial(shininess = 250.0):
 
     return mat
 
-def getCharacterMaterial(name = "charMat", shininess = 250, rimColor = (1, 1, 1, 1.0), rimWidth = 0.05,
+def getCharacterMaterial(name = "charMat", shininess = 250, rimColor = (1, 1, 1, 1.0), rimWidth = 10,
                          specular = (1, 1, 1, 1), lightwarp = None):#"phase_3/maps/toon_lightwarp.jpg"):
     mat = Material(name)
     mat.setRimColor(rimColor)

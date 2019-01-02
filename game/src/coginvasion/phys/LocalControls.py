@@ -21,6 +21,10 @@ class LocalControls(DirectObject):
     CrouchSpeedFactor = 0.3
     FootstepIval = 0.6
     FootstepVolumeMod = 1.0
+    
+    BattleNormalSpeed = 320 / 16.0
+    BattleRunSpeed = 416 / 16.0
+    BattleWalkSpeed = 190 / 16.0
 
     SwimGravityMod = 0.5
 
@@ -155,7 +159,7 @@ class LocalControls(DirectObject):
         #self.tp_attachCamera()
         #base.localAvatar.hideCrosshair()
         #self.fpsCam.getViewModel().hide()
-        #self.revSpeed = CIGlobals.ToonReverseSpeed
+        #self.revSpeed = CIGlobals.ToonReverseSpeed\
 
         self.fpsCam.setup()
         
@@ -189,7 +193,6 @@ class LocalControls(DirectObject):
         self.watchMovementInputs()
 
     def switchMode(self):
-        print "SwitchMode"
         if self.mode == LocalControls.MFirstPerson:
             self.setMode(LocalControls.MThirdPerson)
         elif self.mode == LocalControls.MThirdPerson:
@@ -275,6 +278,11 @@ class LocalControls(DirectObject):
                 self.fp_enable(wantMouse)
                 base.localAvatar.startSmartCamera()
                 
+            base.localAvatar.setWalkSpeedNormal()
+            self.idealFwd = self.BattleNormalSpeed
+            self.idealRev = self.BattleNormalSpeed
+            self.fwdSpeed = self.idealFwd
+            self.revSpeed = self.idealRev
         else:
             self.tp_attachCamera()
             base.localAvatar.startSmartCamera()
@@ -282,6 +290,10 @@ class LocalControls(DirectObject):
             self.accept(base.inputStore.PreviousCameraPosition, base.localAvatar.smartCamera.nextCameraPos, [0])
             self.accept(base.inputStore.LookUp, base.localAvatar.smartCamera.pageUp)
             self.accept(base.inputStore.LookDown, base.localAvatar.smartCamera.pageDown)
+            if base.localAvatar.getHealth() > 0: 
+                base.localAvatar.setWalkSpeedNormal()
+            else:
+                base.localAvatar.setWalkSpeedSlow()
 
         self.controlsEnabled = True
         self.exitControlsWhenGrounded = False
@@ -328,8 +340,6 @@ class LocalControls(DirectObject):
 
         self.setControlScheme(LocalControls.SDefault)
 
-        
-
     def releaseMovementInputs(self):
         for tok in self.movementTokens:
             tok.release()
@@ -345,7 +355,8 @@ class LocalControls(DirectObject):
             self.movementTokens.append(inputState.watchWithModifiers('slideRight', 'd', inputSource = inputState.WASD))
             self.movementTokens.append(inputState.watchWithModifiers('jump', 'space', inputSource = inputState.WASD))
             self.movementTokens.append(inputState.watchWithModifiers('crouch', 'control', inputSource = inputState.WASD))
-            self.movementTokens.append(inputState.watchWithModifiers('walk', 'shift', inputSource = inputState.WASD))
+            self.movementTokens.append(inputState.watchWithModifiers('sprint', 'shift', inputSource = inputState.WASD))
+            self.movementTokens.append(inputState.watchWithModifiers('walk', 'alt', inputSource = inputState.WASD))
             self.movementTokens.append(inputState.watchWithModifiers('use', 'e', inputSource = inputState.WASD))
         else:
             self.movementTokens.append(inputState.watchWithModifiers('forward', 'arrow_up', inputSource = inputState.WASD))
@@ -375,6 +386,7 @@ class LocalControls(DirectObject):
         inputState.set('jump', False, inputSource = inputState.WASD)
         inputState.set('crouch', False, inputSource = inputState.WASD)
         inputState.set('walk', False, inputSource = inputState.WASD)
+        inputState.set('sprint', False, inputSource = inputState.WASD)
         inputState.set('use', False, inputSource = inputState.WASD)
         base.taskMgr.remove("LocalControls.handlePlayerControls")
         base.taskMgr.remove("LocalControls.handleFootsteps")
@@ -508,6 +520,7 @@ class LocalControls(DirectObject):
         turnRight = inputState.isSet('turnRight')
         jump = inputState.isSet('jump')
         crouch = inputState.isSet('crouch')
+        sprint = inputState.isSet('sprint')
         walk = inputState.isSet('walk')
     
         # Determine goal speeds
@@ -598,8 +611,11 @@ class LocalControls(DirectObject):
             
         if walk:
             fctr = 0.6
-            self.fwdSpeed = self.idealFwd * fctr
-            self.revSpeed = self.idealRev * fctr
+            self.fwdSpeed = self.BattleWalkSpeed
+            self.revSpeed = self.BattleWalkSpeed
+        elif sprint:
+            self.fwdSpeed = self.BattleRunSpeed
+            self.revSpeed = self.BattleRunSpeed
         elif not self.crouching:
             self.fwdSpeed = self.idealFwd
             self.revSpeed = self.idealRev

@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import TextNode, Vec3, VBase4, Point3, DecalEffect
+from panda3d.core import TextNode, Vec3, VBase4, Point3, DecalEffect, ShaderInput
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObject import DistributedObject
@@ -363,6 +363,7 @@ class DistributedBuilding(DistributedObject):
         frontNP.node().setEffect(DecalEffect.make())
         suitBuildingNP.setName('sb' + str(self.block) + ':_landmark__DNARoot')
         suitBuildingNP.setPosHprScale(nodePath, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
+        
         suitBuildingNP.flattenStrong()
 
         self.loadElevator(suitBuildingNP)

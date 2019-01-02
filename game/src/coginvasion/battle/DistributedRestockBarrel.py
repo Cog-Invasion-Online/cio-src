@@ -180,6 +180,7 @@ class DistributedRestockBarrel(DistributedEntity, DistributedNode):
         self.barrel = loader.loadModel('phase_4/models/cogHQ/gagTank.bam')
         self.barrel.setScale(self.barrelScale)
         self.barrel.reparentTo(self)
+        self.barrel.setH(180)
         
         # Set the label background color.
         lblBg = self.barrel.find('**/gagLabelDCS')

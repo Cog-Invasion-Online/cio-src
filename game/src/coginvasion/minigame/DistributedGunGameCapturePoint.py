@@ -179,10 +179,10 @@ class DistributedGunGameCapturePoint(DistributedNode):
         self.pointCollNode.setCollideMask(GGG.HILL_BITMASK)
         self.collNP = self.capturePoint.attachNewNode(self.pointCollNode)
         
-        self.neutralCapTexture = loader.loadTexture('phase_4/maps/neutral_capture_point.jpg')
-        self.redCapTexture = loader.loadTexture('phase_4/maps/red_capture_point.jpg')
-        self.blueCapTexture = loader.loadTexture('phase_4/maps/blue_capture_point.jpg')
-        self.defCapTexture = loader.loadTexture('phase_4/maps/captured_capture_point.jpg')
+        self.neutralCapTexture = 'phase_4/maps/neutral_capture_point.mat'
+        self.redCapTexture = 'phase_4/maps/red_capture_point.mat'
+        self.blueCapTexture = 'phase_4/maps/blue_capture_point.mat'
+        self.defCapTexture = 'phase_4/maps/captured_capture_point.mat'
         
         self.reparentTo(render)
         
@@ -196,15 +196,15 @@ class DistributedGunGameCapturePoint(DistributedNode):
             self.team = (teamId - 2)
             
             if self.team == GGG.RED:
-                textureSection.setTexture(self.redCapTexture, 1)
+                textureSection.setBSPMaterial(self.redCapTexture, 1)
             elif self.team == GGG.BLUE:
-                textureSection.setTexture(self.blueCapTexture, 1)
+                textureSection.setBSPMaterial(self.blueCapTexture, 1)
         elif (teamId - 2) == -2:
             self.team = None
-            textureSection.setTexture(self.neutralCapTexture, 1)
+            textureSection.setBSPMaterial(self.neutralCapTexture, 1)
         elif (teamId - 2) == -1:
             self.team = None
-            textureSection.setTexture(self.defCapTexture, 1)
+            textureSection.setBSPMaterial(self.defCapTexture, 1)
         self.captureCircle.setTextureOff(1)
             
     def getCaptured(self):

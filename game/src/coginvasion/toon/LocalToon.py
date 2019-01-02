@@ -689,7 +689,7 @@ class LocalToon(DistributedPlayerToon):
         if state != self.lastState:
             self.lastState = state
             self.b_setAnimState(state)
-            if base.minigame is None:
+            if base.minigame is None and not self.battleControls:
                 if state == 'Sad' and not self.isSwimming:
                     self.setWalkSpeedSlow()
                 else:

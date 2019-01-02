@@ -47,7 +47,7 @@ class Walk(StateData):
     def enterWalking(self):
         if base.localAvatar.getHealth() > 0:
             base.localAvatar.startTrackAnimToSpeed()
-            base.localAvatar.setWalkSpeedNormal()
+            #base.localAvatar.setWalkSpeedNormal()
         else:
             self.fsm.request('deadWalking')
 

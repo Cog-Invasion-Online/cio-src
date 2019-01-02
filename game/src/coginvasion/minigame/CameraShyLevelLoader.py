@@ -177,11 +177,11 @@ class CameraShyLevelLoader:
 
                     walls = model.find('**/maze_walls') 
                     walls.setSz(1.5)
-                    walls.setTexture(loader.loadTexture('phase_4/maps/DGhedge.jpg'), 1)
+                    walls.setBSPMaterial('phase_4/maps/DGhedge.mat', 1)
                     walls.setMaterial(brightenMat)
                     
                     floor = model.find('**/maze_floor')
-                    floor.setTexture(loader.loadTexture('phase_4/maps/grass.jpg'), 1)
+                    floor.setBSPMaterial('phase_4/maps/grass.mat', 1)
                     model.setShaderAuto()
                     
                 elif model.getName() == 'maze_collisions':

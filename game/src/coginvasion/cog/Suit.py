@@ -677,49 +677,30 @@ class Suit(Avatar):
             for partNum in range(0, parts.getNumPaths()):
                 bb = parts.getPath(partNum)
                 bb.setTwoSided(1)
-            tie = loader.loadTexture('phase_5/maps/cog_robot_tie_%s.jpg' % self.dept.getTie())
-            tie.setMinfilter(Texture.FTLinearMipmapLinear)
-            tie.setMagfilter(Texture.FTLinear)
-            self.find('**/tie').setTexture(tie, 1)
+            tie = 'phase_5/maps/cog_robot_tie_%s.mat' % self.dept.getTie()
+            #tie.setMinfilter(Texture.FTLinearMipmapLinear)
+            #tie.setMagfilter(Texture.FTLinear)
+            self.find('**/tie').setBSPMaterial(tie, 1)
         else:
-            bumpPrefix = None
-            prefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_%s.jpg'
-            #bumpPrefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_%s_NRM.jpg'
+            prefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_%s.mat'
             if self.variant == Variant.WAITER:
-                prefix = 'phase_3.5/maps/waiter_m_%s.jpg'
-                #prefix = 'phase_3.5/maps/waiter_m_%s_NRM.jpg'
+                prefix = 'phase_3.5/maps/waiter_m_%s.mat'
             elif self.variant == Variant.CORRODED:
-                prefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_rust_%s.jpg'
-                bumpPrefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_rust_%s_NRM.jpg'
-                
-            hasBump = bumpPrefix is not None
+                prefix = 'phase_3.5/maps/' + self.dept.getClothingPrefix() + '_rust_%s.mat'
 
-            legTex = loader.loadTexture(prefix % 'leg')
-            armTex = loader.loadTexture(prefix % 'sleeve')
-            blazTex = loader.loadTexture(prefix % 'blazer')
-            
-            if hasBump:
-                b_legTex = loader.loadTexture(bumpPrefix % 'leg')
-                b_armTex = loader.loadTexture(bumpPrefix % 'sleeve')
-                b_blazTex = loader.loadTexture(bumpPrefix % 'blazer')
+            legTex = prefix % 'leg'
+            armTex = prefix % 'sleeve'
+            blazTex = prefix % 'blazer'
                 
             texs = [legTex, armTex, blazTex]
-            if hasBump:
-                texs += [b_legTex, b_armTex, b_blazTex]
 
-            for texture in texs:
-                texture.setMinfilter(Texture.FTLinearMipmapLinear)
-                texture.setMagfilter(Texture.FTLinear)
+            #for texture in texs:
+            #    texture.setMinfilter(Texture.FTLinearMipmapLinear)
+            #    texture.setMagfilter(Texture.FTLinear)
 
-            self.find('**/legs').setTexture(legTex, 1)
-            self.find('**/arms').setTexture(armTex, 1)
-            self.find('**/torso').setTexture(blazTex, 1)
-            
-            if hasBump:
-                bStage = TextureStages.getNormalmap()
-                self.find('**/legs').setTexture(bStage, b_legTex, 1)
-                self.find('**/arms').setTexture(bStage, b_armTex, 1)
-                self.find('**/torso').setTexture(bStage, b_blazTex, 1)
+            self.find('**/legs').setBSPMaterial(legTex, 1)
+            self.find('**/arms').setBSPMaterial(armTex, 1)
+            self.find('**/torso').setBSPMaterial(blazTex, 1)
             
             if not self.variant == Variant.CORRODED:
                 self.find('**/hands').setColor(self.handColor)

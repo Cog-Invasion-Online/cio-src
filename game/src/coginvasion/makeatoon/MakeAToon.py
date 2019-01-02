@@ -45,13 +45,13 @@ class MakeAToon:
         self.currentLeg = 0
         self.currentShirt = 0
         self.currentShorts = 0
-        self.shirt1Path = "phase_3/maps/desat_shirt_1.jpg"
-        self.shirt2Path = "phase_3/maps/desat_shirt_2.jpg"
-        self.sleeve1Path = "phase_3/maps/desat_sleeve_1.jpg"
-        self.sleeve2Path = "phase_3/maps/desat_sleeve_2.jpg"
-        self.skirt1Path = "phase_3/maps/desat_skirt_1.jpg"
-        self.short1Path = "phase_3/maps/desat_shorts_1.jpg"
-        self.short2Path = "phase_3/maps/desat_shorts_2.jpg"
+        self.shirt1Path = "phase_3/maps/desat_shirt_1.mat"
+        self.shirt2Path = "phase_3/maps/desat_shirt_2.mat"
+        self.sleeve1Path = "phase_3/maps/desat_sleeve_1.mat"
+        self.sleeve2Path = "phase_3/maps/desat_sleeve_2.mat"
+        self.skirt1Path = "phase_3/maps/desat_skirt_1.mat"
+        self.short1Path = "phase_3/maps/desat_shorts_1.mat"
+        self.short2Path = "phase_3/maps/desat_shorts_2.mat"
         self.currentShirtTex = self.shirt1Path
         self.currentSleeveTex = self.sleeve1Path
         self.currentShortTex = self.short1Path
@@ -141,13 +141,6 @@ class MakeAToon:
         self.clothRoom.reparentTo(hidden)
         self.nameRoom = self.room.find('**/nameAll')
         self.nameRoom.reparentTo(hidden)
-        self.desatShirt1 = loader.loadTexture(self.shirt1Path)
-        self.desatShirt2 = loader.loadTexture(self.shirt2Path)
-        self.desatSleeve1 = loader.loadTexture(self.sleeve1Path)
-        self.desatSleeve2 = loader.loadTexture(self.sleeve2Path)
-        self.desatSkirt1 = loader.loadTexture(self.skirt1Path)
-        self.desatShorts1 = loader.loadTexture(self.short1Path)
-        self.desatShorts2 = loader.loadTexture(self.short2Path)
         self.spotlight = loader.loadModel("phase_3/models/gui/tt_m_gui_mat_spotlight.bam")
         self.spotlight.setR(90)
         self.spotlight.setScale(0.6, 0.8, 0.8)

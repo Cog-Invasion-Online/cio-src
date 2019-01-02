@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import CollisionSphere, BitMask32, CollisionNode, NodePath, CollisionHandlerEvent
+from panda3d.core import CollisionSphere, BitMask32, CollisionNode, NodePath, CollisionHandlerEvent, Vec3
 from panda3d.bullet import BulletSphereShape, BulletGhostNode
 from direct.interval.IntervalGlobal import Sequence, Func, Wait, Parallel, ProjectileInterval, ActorInterval
 from direct.gui.DirectGui import DirectWaitBar, DGG
@@ -123,42 +123,47 @@ class ThrowGag(Gag):
         Gag.release(self)
         base.audio3d.attachSoundToObject(self.woosh, self.gag)
         base.playSfx(self.woosh, node = self.gag)
-
-        throwRoot = render.attachNewNode('throwRoot')
-        throwRoot.setPos(self.avatar.getPos(render))
-        throwRoot.setHpr(self.avatar.getHpr(render))
+        
         if self.isLocal() and base.localAvatar.battleControls:
-            push = 0.0
-            if base.localAvatar.isThirdPerson():
-                push = (self.handJoint.getPos(render) - camera.getPos(render)).length()
+            if base.localAvatar.isFirstPerson():
+                startPos = camera.getPos(render) + camera.getQuat(render).xform(Vec3.right())
+                push = 0.0
+            else:
+                startPos = self.handJoint.getPos(render)
+                push = (startPos - camera.getPos(render)).length()
             hitPos = PhysicsUtils.getHitPosFromCamera()
-            throwRoot.headsUp(hitPos)
-            throwRoot.setP(render, camera.getP(render))
         else:
-            throwRoot.setP(self.avatar, self.avatar.getLookPitch())
-        throwPath = NodePath('ThrowPath')
-        throwPath.reparentTo(throwRoot)
-        throwPath.setScale(render, 1)
-        throwPath.setPos(0, self.power, -90)
-        throwPath.setHpr(0, -90, 0)
-
-        gagRoot = render.attachNewNode('gagRoot')
-        gagRoot.setPos(self.handJoint.getPos(render))
-        gagRoot.headsUp(throwPath)
+            startPos = self.handJoint.getPos(render)
+            hitPos = self.avatar.getQuat(render).xform(Vec3.forward() * self.power)
+            hit = PhysicsUtils.rayTestClosestNotMe(self.avatar, startPos,
+                hitPos,
+                CIGlobals.WorldGroup | CIGlobals.LocalAvGroup)
+            if hit is not None:
+                hitPos = hit.getHitPos()
+                
+        throwDir = (hitPos - startPos).normalized()
+        endPos = startPos + (throwDir * self.power) - (0, 0, 90)
 
         entity = self.gag
 
         if not entity:
             entity = self.build()
+            
+        gagRoot = render.attachNewNode('gagRoot')
+        gagRoot.setPos(startPos)
 
-        entity.wrtReparentTo(gagRoot)
-        entity.setHpr(render, throwPath.getHpr(render))
+        entity.reparentTo(render)
+        entity.setPos(0, 0, 0)
+        entity.headsUp(throwDir)
+        rot = entity.getHpr(render)
+        entity.reparentTo(gagRoot)
+        entity.setHpr(rot[0], -90, 0)
         self.gag = None
 
         if not self.handJoint:
             self.handJoint = self.avatar.find('**/def_joint_right_hold')
 
-        track = FlightProjectileInterval(gagRoot, startPos = self.handJoint.getPos(render), endPos = throwPath.getPos(render), gravityMult = 0.9, duration = 3)
+        track = FlightProjectileInterval(gagRoot, startPos = startPos, endPos = endPos, gravityMult = 1.07, duration = 2.5)
         event = self.avatar.uniqueName('throwIvalDone') + '-' + str(hash(entity))
         track.setDoneEvent(event)
         base.acceptOnce(event, self.__handlePieIvalDone, [entity])
@@ -171,9 +176,6 @@ class ThrowGag(Gag):
         else:
             self.entities.append([gagRoot, track, NodePath()])
         self.reset()
-
-        throwPath.removeNode()
-        throwRoot.removeNode()
 
     def __handlePieIvalDone(self, pie):
         if not pie.isEmpty():

@@ -1,5 +1,5 @@
-from panda3d.core import Point2, WindowProperties, ConfigVariableDouble, Point3, NodePath, CharacterJointEffect, BitMask32, PerspectiveLens
-from panda3d.bsp import BSPRender
+from panda3d.core import ModelRoot, Point2, WindowProperties, ConfigVariableDouble, Point3, NodePath, CharacterJointEffect, BitMask32, PerspectiveLens
+from panda3d.bsp import BSPRender, BSPLoader
 
 from direct.showbase.DirectObject import DirectObject
 from direct.actor.Actor import Actor
@@ -36,10 +36,11 @@ class FPSCamera(DirectObject):
         self.lastEyeHeight = 0.0
 
         # Updates to the transform of camRoot
-        self.vmRoot = NodePath('vmRoot')
-        self.vmRoot.setShaderAuto()
-        self.vmRoot2 = self.vmRoot.attachNewNode('vmRoot2')
-        self.viewModel = Actor("phase_14/models/char/v_toon_arms.egg",
+        self.vmRender = NodePath(BSPRender('vmRender', BSPLoader.getGlobalPtr()))
+        self.vmRender.setShaderAuto()
+        self.vmRoot = self.vmRender.attachNewNode('vmRoot')
+        self.vmRoot2 = self.vmRoot.attachNewNode(ModelRoot('vmRoot2'))
+        self.viewModel = Actor("phase_14/models/char/v_toon_arms.bam",
 
                                {"zero": "phase_14/models/char/v_toon_arms.egg",
 
@@ -72,8 +73,8 @@ class FPSCamera(DirectObject):
         self.viewModel.reparentTo(self.vmRoot2)
         self.viewModel.find("**/hands").setTwoSided(True)
         self.viewModel.hide()
-        self.viewModel.clearMaterial()
-        self.viewModel.setMaterial(CIGlobals.getCharacterMaterial(specular = (0, 0, 0, 1)), 1)
+        #self.viewModel.clearMaterial()
+        #self.viewModel.setMaterial(CIGlobals.getCharacterMaterial(specular = (0, 0, 0, 1)), 1)
         self.viewportLens = PerspectiveLens()
         self.viewportLens.setMinFov(self.ViewModelFOV / (4. / 3.))
         self.viewportLens.setNear(0.3)
@@ -89,8 +90,10 @@ class FPSCamera(DirectObject):
         self.dmgFade.setTransparency(1)
         self.dmgFade.setColorScale(1, 1, 1, 0)
         self.dmgFadeIval = None
+        
+        self.accept('v', self.vmRender.ls)
 
-        base.bspLoader.addDynamicNode(self.vmRoot)
+        #base.bspLoader.addDynamicNode(self.vmRoot)
 
         taskMgr.add(self.__vpDebugTask, "vpdebutask", sort = -100)
 
@@ -111,7 +114,7 @@ class FPSCamera(DirectObject):
 
         # Since the viewmodel is not underneath BSPRender, it's not going to be automatically
         # influenced by the ambient probes. We need to do this explicitly.
-        base.bspLoader.updateDynamicNode(self.vmRoot)
+        #base.bspLoader.updateDynamicNode(self.vmRoot)
 
         #self.viewportDebug.setImage(self.viewportCam.node().getDisplayRegion(0).getScreenshot())
 

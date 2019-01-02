@@ -49,7 +49,7 @@ class CTCSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         self.geom.find('**/hill').setTransparency(TransparencyAttrib.MBinary, 1)
         # It has to be to Toontown Central.
         if base.cr.holidayManager.getHoliday() == HolidayType.CHRISTMAS:
-            self.geom.find('**/mainFloor').setTexture(loader.loadTexture('winter/maps/winter_ground.jpg'), 1)
+            self.geom.find('**/mainFloor').setBSPMaterial('winter/maps/winter_ground.mat', 1)
         #self.telescope = Actor(self.geom.find('**/*animated_prop_HQTelescopeAnimatedProp*'),
         #                    {"chan": "phase_3.5/models/props/HQ_telescope-chan.bam"}, copy=0)
         #self.telescope.reparentTo(self.geom.find('**/*toon_landmark_hqTT*'))

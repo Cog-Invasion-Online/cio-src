@@ -12,7 +12,7 @@ from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, Te
 from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState, Vec4, Point3
 from panda3d.core import CollisionTraverser, CullBinManager, LightRampAttrib, Camera, OmniBoundingVolume, Texture, GraphicsOutput
 from panda3d.bullet import BulletWorld, BulletDebugNode
-from panda3d.bsp import BSPLoader, BSPRender, PSSMShaderGenerator, VertexLitGenericSpec, LightmappedGenericSpec
+from panda3d.bsp import BSPLoader, BSPRender, PSSMShaderGenerator, VertexLitGenericSpec, LightmappedGenericSpec, UnlitGenericSpec
 
 from p3recastnavigation import RNNavMeshManager
 
@@ -69,8 +69,6 @@ class CIBase(ShowBase):
         self.computeCam.reparentTo(self.computeRoot)
 
         self.shaderGenerator = PSSMShaderGenerator(self.win.getGsg(), self.camera, self.render)
-        self.shaderGenerator.addShader(VertexLitGenericSpec())
-        self.shaderGenerator.addShader(LightmappedGenericSpec())
         self.win.getGsg().setShaderGenerator(self.shaderGenerator)
         self.shaderGenerator.startUpdate()
 
@@ -539,6 +537,13 @@ class CIBase(ShowBase):
     def initStuff(self):
         # Precache water bar shader, prevents crash from running out of GPU registers
         loader.loadShader("phase_14/models/shaders/progress_bar.sha")
+
+        vlg = VertexLitGenericSpec() # models
+        ulg = UnlitGenericSpec() # ui elements, particles, etc
+        lmg = LightmappedGenericSpec() # brushes, displacements
+        self.shaderGenerator.addShader(vlg)
+        self.shaderGenerator.addShader(ulg)
+        self.shaderGenerator.addShader(lmg)
     
         wrm = WaterReflectionManager()
         self.waterReflectionMgr = wrm

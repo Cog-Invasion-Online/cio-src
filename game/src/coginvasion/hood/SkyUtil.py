@@ -9,7 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import Vec3
-from panda3d.bsp import IgnorePVSAttrib, BSPFaceAttrib
+from panda3d.bsp import BSPFaceAttrib
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
@@ -18,12 +18,9 @@ class SkyUtil:
     notify = directNotify.newCategory("SkyUtil")
     
     def startSky(self, sky):
-        sky.setAttrib(IgnorePVSAttrib.make(), 1)
-        sky.setAttrib(BSPFaceAttrib.makeDefault(), 1)
+        sky.setAttrib(BSPFaceAttrib.makeIgnorePvs(), 1)
         sky.setLightOff(1)
-        sky.setShaderOff(1)
         sky.setFogOff(1)
-        sky.setMaterialOff(1)
         #sky.setBin("background", 0)
         #sky.setDepthWrite(False)
         sky.setScale(6)

@@ -1,5 +1,4 @@
 from direct.showutil.Rope import Rope
-from panda3d.bsp import IgnorePVSAttrib
 
 from Entity import Entity
         

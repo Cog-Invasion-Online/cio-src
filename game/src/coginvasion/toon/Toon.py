@@ -674,8 +674,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.updateChatSoundDict()
         self.setBlend(frameBlend = True)
 
-        bodyMat = CIGlobals.getCharacterMaterial(shininess = 0)
-        self.setMaterial(bodyMat)
+        bodyMat = CIGlobals.getCharacterMaterial(shininess = 5, specular = (0.5, 0.5, 0.5, 1))
+        self.setMaterial(bodyMat, 1)
 
         if not hasattr(base, 'localAvatar') or base.localAvatar != self:
             self.setupPhysics(1.0, self.getHeight())
@@ -740,9 +740,9 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         torsot = self.findAllMatches('**/torso-top')
         torsob = self.findAllMatches('**/torso-bot')
         sleeves = self.findAllMatches('**/sleeves')
-        torsot.setTexture(loader.loadTexture(shirt), 1)
-        torsob.setTexture(loader.loadTexture(short), 1)
-        sleeves.setTexture(loader.loadTexture(sleeve), 1)
+        torsot.setBSPMaterial(shirt, 1)
+        torsob.setBSPMaterial(short, 1)
+        sleeves.setBSPMaterial(sleeve, 1)
         torsot.setColor(shirtcolor)
         sleeves.setColor(sleevecolor)
         torsob.setColor(shortcolor)

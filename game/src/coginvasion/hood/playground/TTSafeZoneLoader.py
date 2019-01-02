@@ -76,22 +76,6 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         water = self.geom.find("**/pond_water")
         water.removeNode()
         
-        normalStage = TextureStages.getNormalmap()
-        sphereStage = TextureStages.getSpheremap()
-        
-        fences = ["fence5", "fence11", "fence10", "fence8"]
-        fenceNormal = loader.loadTexture("phase_14/maps/ttc_fence_normal.jpg")
-        for fenceName in fences:
-            fence = self.geom.find("**/" + fenceName)
-            fence.setTexture(normalStage, fenceNormal)
-
-        groundNormal = loader.loadTexture("phase_3.5/maps/cobblestone_normal.jpg")
-        gnd = self.geom.find("**/ttc_beta/inner/terrain/ground")
-        gnd.setTexture(normalStage, groundNormal)
-        
-        sphTex = loader.loadTexture("phase_14/maps/envmap001a.png")
-        gnd.setTexture(sphereStage, sphTex)
-        
         self.doFlatten()
         
     def doFlatten(self):

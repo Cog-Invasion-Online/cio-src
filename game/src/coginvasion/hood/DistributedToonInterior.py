@@ -62,8 +62,8 @@ class DistributedToonInterior(DistributedObject.DistributedObject):
                 if key2 == 'r':
                     self.replaceRandomInModel(newNP)
             elif key1 == 't':
-                texture = self.randomDNAItem(category, self.dnaStore.findTexture)
-                np.setTexture(texture, 100)
+                texture = self.randomDNAItem(category, self.dnaStore.findMaterial)
+                np.setBSPMaterial(texture, 100)
                 newNP = np
             if key2 == 'c':
                 if category == 'TI_wallpaper' or category == 'TI_wallpaper_border':

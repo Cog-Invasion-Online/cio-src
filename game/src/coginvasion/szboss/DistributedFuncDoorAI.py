@@ -93,7 +93,7 @@ class DistributedFuncDoorAI(DistributedEntityAI, FSM):
         return task.done
         
     def delete(self):
-        self.Request('Off')
+        self.request('Off')
         self.state = None
         self.moveDuration = None
         self.wait = None
