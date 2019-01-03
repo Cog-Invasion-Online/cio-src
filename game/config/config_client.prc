@@ -117,7 +117,7 @@ want-pstats 0
 pstats-gpu-timing 0
 pstats-host 127.0.0.1
 
-preload-textures 0
+preload-textures 1
 preload-simple-textures 1
 texture-compression 1
 allow-incomplete-render 1
@@ -147,10 +147,11 @@ gl-force-depth-stencil 0
 glsl-preprocess 1
 
 text-flatten 1
+text-dynamic-merge 1
 
 interpolate-frames 0
 
 #threading-model App/Cull/Draw # experimental
-assert-abort 1
+assert-abort 0
 
 textures-power-2 none
