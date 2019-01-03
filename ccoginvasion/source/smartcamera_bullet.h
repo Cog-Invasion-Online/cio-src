@@ -8,7 +8,7 @@
 class EXPCL_CCOGINVASION SmartCamera
 {
 PUBLISHED:
-        SmartCamera();
+        //SmartCamera();
 
 private:
         NodePath _camera;
