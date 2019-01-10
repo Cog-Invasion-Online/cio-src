@@ -17,9 +17,13 @@ from direct.interval.IntervalGlobal import SoundInterval
 from panda3d.core import Point3
 
 class Geyser(SquirtGag, ChargeUpGag):
+    
+    name = GagGlobals.Geyser
+    model = 'phase_5/models/props/geyser.bam'
+    hitSfxPath = GagGlobals.GEYSER_HIT_SFX
 
     def __init__(self):
-        SquirtGag.__init__(self, GagGlobals.Geyser, GagGlobals.getProp(5, 'geyser'), GagGlobals.GEYSER_HIT_SFX)
+        SquirtGag.__init__(self)
         ChargeUpGag.__init__(self, 24, 10, 50, 0.5, maxCogs = 4)
         self.setImage('phase_3.5/maps/geyser.png')
         self.entities = []

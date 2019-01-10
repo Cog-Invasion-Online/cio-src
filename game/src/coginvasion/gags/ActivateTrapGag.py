@@ -20,13 +20,17 @@ from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
 
 class ActivateTrapGag(TrapGag, LocationGag):
+    
+    collRadius = 1.0
+    trapMode = 0
+    autoRelease = True
+    activateSfxPath = None
 
-    def __init__(self, name, model, damage, hitSfx, collRadius, mode = 0, anim = None, autoRelease = True, activateSfx = None):
-        TrapGag.__init__(self, name, model, damage, hitSfx, anim, doesAutoRelease = autoRelease)
+    def __init__(self):
+        TrapGag.__init__(self)
         LocationGag.__init__(self, 10, 50, shadowScale = 0.25)
 
-        # This is the mode the trap gag is on. 0) Trapdoor/Quicksand and 1) Banana Peel, marbles, etc.
-        self.trapMode = mode
+        # trapMode is the mode the trap gag is on. 0) Trapdoor/Quicksand and 1) Banana Peel, marbles, etc.
 
         # This keeps track of the entities we drop.
         self.entities = []
@@ -37,8 +41,7 @@ class ActivateTrapGag(TrapGag, LocationGag):
         # This is the minimum distance an entity has to be from another.
         self.minSafeDistance = 5
 
-        # This is the radius of the CollisionSphere that detects suits.
-        self.collRadius = collRadius
+        # collRadius is the radius of the CollisionSphere that detects suits.
 
         # This is the sound effect called when a trap is tripped.
         self.activateSfx = None
@@ -46,8 +49,8 @@ class ActivateTrapGag(TrapGag, LocationGag):
         self.entityTrack = None
 
         if metadata.PROCESS == 'client':
-            if activateSfx:
-                self.activateSfx = base.audio3d.loadSfx(activateSfx)
+            if self.activateSfxPath:
+                self.activateSfx = base.audio3d.loadSfx(self.activateSfxPath)
 
     def __clearEntity(self, entity, task):
         if entity:

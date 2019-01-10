@@ -16,14 +16,18 @@ from SquirtGag import SquirtGag
 import GagGlobals
 
 class WaterGlass(SquirtGag):
+        
+    name = GagGlobals.WaterGlass
+    model = "phase_5/models/props/glass-mod.bam"
+    hitSfxPath = GagGlobals.NULL_SFX
+    sprayScale = 0.1
+    scale = 3.5
+    anim = 'spit'
 
     def __init__(self):
-        SquirtGag.__init__(self, GagGlobals.WaterGlass, "phase_5/models/props/glass-mod.bam", GagGlobals.NULL_SFX)
+        SquirtGag.__init__(self)
         self.setHealth(GagGlobals.WATERGLASS_HEAL)
         self.setImage('phase_3.5/maps/water-glass.png')
-        self.anim = 'spit'
-        self.sprayScale = 0.1
-        self.scale = 3.5
         self.holdTime = 0.0
         self.spitSfx = None
         self.track = None

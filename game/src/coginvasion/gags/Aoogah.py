@@ -14,10 +14,15 @@ from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, Sound
 from panda3d.core import Vec3
 
 class Aoogah(SoundGag):
+    
+    name = GagGlobals.Aoogah
+    model = 'phase_5/models/props/aoogah.bam'
+    appearSfxPath = GagGlobals.AOOGAH_APPEAR_SFX
+    soundSfxPath = GagGlobals.AOOGAH_SFX
+    soundRange = 30
 
     def __init__(self):
-        SoundGag.__init__(self, GagGlobals.Aoogah, 'phase_5/models/props/aoogah.bam',
-                          16, GagGlobals.AOOGAH_APPEAR_SFX, GagGlobals.AOOGAH_SFX, soundRange = 30, hitSfx = None)
+        SoundGag.__init__(self)
         self.setImage('phase_3.5/maps/aoogah.png')
         #self.setRechargeTime(5.5)
 

@@ -104,11 +104,12 @@ pssm-size 2048
 pssm-shadow-depth-bias 0.0001
 pssm-normal-offset-scale 0.1
 pssm-softness-factor 2.0
+pssm-cache-shaders 1
 shadow-depth-bits 32
 stencil-bits 8
 
 # Time averaged lighting in BSP levels to reduce popping
-light-average 1
+light-average 0
 light-lerp-speed 5.0
 
 ctmusic-numsongs 1
@@ -117,7 +118,7 @@ want-pstats 0
 pstats-gpu-timing 0
 pstats-host 127.0.0.1
 
-preload-textures 1
+preload-textures 0
 preload-simple-textures 1
 texture-compression 1
 allow-incomplete-render 1
@@ -155,3 +156,5 @@ interpolate-frames 0
 assert-abort 0
 
 textures-power-2 none
+
+precache-assets 1

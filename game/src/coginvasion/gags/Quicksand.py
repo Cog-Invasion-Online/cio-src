@@ -15,9 +15,14 @@ from panda3d.core import Point3
 
 class Quicksand(ActivateTrapGag):
     
+    name = GagGlobals.Quicksand
+    model = 'phase_5/models/props/quicksand.bam'
+    collRadius = 2.5
+    activateSfxPath = GagGlobals.FALL_SFX
+    hitSfxPath = GagGlobals.QUICKSAND_SFX
+    
     def __init__(self):
-        ActivateTrapGag.__init__(self, GagGlobals.Quicksand, 'phase_5/models/props/quicksand.bam', 
-                                 50, GagGlobals.QUICKSAND_SFX, 2.5, activateSfx = GagGlobals.FALL_SFX)
+        ActivateTrapGag.__init__(self)
         self.setImage('phase_3.5/maps/quicksand.png')
         
     def onActivate(self, entity, suit):

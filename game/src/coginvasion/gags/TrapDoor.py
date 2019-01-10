@@ -15,9 +15,14 @@ from panda3d.core import Vec4, Point3
 
 class TrapDoor(ActivateTrapGag):
     
+    name = GagGlobals.TrapDoor
+    model = 'phase_5/models/props/trapdoor.bam'
+    collRadius = 2.5
+    hitSfxPath = GagGlobals.TRAP_DOOR_SFX
+    activateSfxPath = GagGlobals.FALL_SFX
+    
     def __init__(self):
-        ActivateTrapGag.__init__(self, GagGlobals.TrapDoor, 'phase_5/models/props/trapdoor.bam', 
-                                 70, GagGlobals.TRAP_DOOR_SFX, 2.5, activateSfx = GagGlobals.FALL_SFX)
+        ActivateTrapGag.__init__(self)
         self.setImage('phase_3.5/maps/trap-door.png')
         
     def onActivate(self, entity, suit):

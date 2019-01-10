@@ -15,9 +15,15 @@ from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, Parti
 from panda3d.core import Point3
 
 class PixieDust(ToonUpGag):
+    
+    name = GagGlobals.PixieDust
+    minHeal = 50
+    maxHeal = 70
+    efficiency = 85
+    hitSfxPath = GagGlobals.PIXIE_DUST_SFX
 
     def __init__(self):
-        ToonUpGag.__init__(self, GagGlobals.PixieDust, None, 50, 70, 85, GagGlobals.PIXIE_DUST_SFX, 1)
+        ToonUpGag.__init__(self)
         self.setImage('phase_3.5/maps/pixie-dust.png')
         self.radius = 25
         self.timeout = 4.0

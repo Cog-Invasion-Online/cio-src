@@ -14,10 +14,15 @@ from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, Sound
 from panda3d.core import Vec3
 
 class Foghorn(SoundGag):
+        
+    name = GagGlobals.Foghorn
+    model = 'phase_5/models/props/fog_horn.bam'
+    appearSfxPath = GagGlobals.FOG_APPEAR_SFX
+    soundSfxPath = GagGlobals.FOG_SFX
+    soundRange = 40
 
     def __init__(self):
-        SoundGag.__init__(self, GagGlobals.Foghorn, 'phase_5/models/props/fog_horn.bam', 50, GagGlobals.FOG_APPEAR_SFX,
-                          GagGlobals.FOG_SFX, soundRange = 40, hitSfx = None)
+        SoundGag.__init__(self)
         self.setImage('phase_3.5/maps/fog-horn.png')
         #self.setRechargeTime(14.5)
 

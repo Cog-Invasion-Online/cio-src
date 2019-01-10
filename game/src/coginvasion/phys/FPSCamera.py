@@ -7,6 +7,7 @@ from direct.gui.DirectGui import OnscreenImage
 from direct.interval.IntervalGlobal import Sequence, Wait, LerpColorScaleInterval
 from direct.interval.IntervalGlobal import Parallel, LerpHprInterval, LerpPosInterval
 
+from src.coginvasion.base.Precache import precacheActor
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.toon.ToonDNA import ToonDNA
 from src.coginvasion.gags.BCakeEntity import BCakeEntity
@@ -73,6 +74,7 @@ class FPSCamera(DirectObject):
         self.viewModel.reparentTo(self.vmRoot2)
         self.viewModel.find("**/hands").setTwoSided(True)
         self.viewModel.hide()
+        precacheActor(self.viewModel)
         #self.viewModel.clearMaterial()
         #self.viewModel.setMaterial(CIGlobals.getCharacterMaterial(specular = (0, 0, 0, 1)), 1)
         self.viewportLens = PerspectiveLens()

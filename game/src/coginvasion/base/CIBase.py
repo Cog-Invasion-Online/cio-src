@@ -557,6 +557,23 @@ class CIBase(ShowBase):
         #self.filters.setAmbientOcclusion()
         #self.filters.setDepthOfField(distance = 10.0, range = 175.0, near = 1.0, far = 1000.0 / (1000.0 - 1.0))
         #self.filters.setFXAA()
+        
+    def precacheStuff(self):
+        from src.coginvasion.toon import ToonGlobals
+        ToonGlobals.precacheToons()
+        
+        from src.coginvasion.cog.SuitAttacks import SuitAttacks
+        SuitAttacks.precache()
+        
+        from src.coginvasion.gags.GagManager import GagManager
+        for gagCls in GagManager.gags.values():
+            gagCls.precache()
+            
+        from src.coginvasion.gags.LocationSeeker import LocationSeeker
+        LocationSeeker.precache()
+        
+        from src.coginvasion.gags.LocationGag import LocationGag
+        LocationGag.precache()
 
     def setHDR(self, toggle):
         self.hdrToggle = toggle

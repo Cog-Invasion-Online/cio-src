@@ -20,13 +20,15 @@ import random
 class WaterGun(SquirtGag):
 
     InspectIval = [10, 25]
+    
+    name = GagGlobals.WaterGun
+    model = "phase_4/models/props/water-gun.bam"
+    hitSfxPath = GagGlobals.WATERGUN_SFX
+    sprayJoint = 'joint_nozzle'
+    dmgIval = 0.4
 
     def __init__(self):
-        SquirtGag.__init__(self, GagGlobals.WaterGun, "phase_4/models/props/water-gun.bam", GagGlobals.WATERGUN_SFX)
-        self.anim = 'squirt'
-        self.sprayJoint = 'joint_nozzle'
-        self.dmgIval = 0.4
-        self.scale = 1.0
+        SquirtGag.__init__(self)
         self.shootSfx = None
         self.timeout = 3.0
         self.inspectTask = None

@@ -16,10 +16,15 @@ from direct.showutil import Effects
 from panda3d.core import OmniBoundingVolume, Point3
 
 class GrandPiano(DropGag):
+      
+    name = GagGlobals.GrandPiano
+    model = 'phase_5/models/props/piano-mod.bam'
+    anim = 'phase_5/models/props/piano-chan.bam'
+    hitSfxPath = GagGlobals.PIANO_DROP_SFX
+    missSfxPath = GagGlobals.PIANO_MISS_SFX
 
     def __init__(self):
-        DropGag.__init__(self, GagGlobals.GrandPiano, 'phase_5/models/props/piano-mod.bam', 'phase_5/models/props/piano-chan.bam',
-                         170, GagGlobals.PIANO_DROP_SFX, GagGlobals.PIANO_MISS_SFX, 1, 1)
+        DropGag.__init__(self)
         self.setImage('phase_3.5/maps/grand-piano.png')
         self.colliderRadius = 5
         self.colliderOfs = Point3(0, 1.5, 0)

@@ -12,8 +12,14 @@ from src.coginvasion.gags.ThrowGag import ThrowGag
 from src.coginvasion.gags import GagGlobals
 
 class Cupcake(ThrowGag):
+        
+    name                = GagGlobals.Cupcake
+    model               = "phase_3.5/models/props/tart.bam"
+    hitSfxPath          = GagGlobals.TART_SPLAT_SFX
+    splatColor          = GagGlobals.TART_SPLAT_COLOR
+    scale               = GagGlobals.CUPCAKE_SCALE
 
     def __init__(self):
-        ThrowGag.__init__(self, GagGlobals.Cupcake, "phase_3.5/models/props/tart.bam", 6, GagGlobals.TART_SPLAT_SFX, GagGlobals.TART_SPLAT_COLOR, scale = GagGlobals.CUPCAKE_SCALE)
+        ThrowGag.__init__(self)
         self.setHealth(GagGlobals.CUPCAKE_HEAL)
         self.setImage('phase_3.5/maps/cupcake.png')

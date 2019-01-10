@@ -526,4 +526,4 @@ class CharSelection(DirectObject):
         base.transitions.noTransitions()
         del self.selectionFSM
 
-        CIGlobals.doSceneCleanup()
+        #CIGlobals.doSceneCleanup()

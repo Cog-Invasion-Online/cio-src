@@ -86,7 +86,7 @@ class TownLoader(StateData):
         del self.streetSong
         del self.interiorSong
 
-        CIGlobals.doSceneCleanup()
+        #CIGlobals.doSceneCleanup()
 
         StateData.unload(self)
 

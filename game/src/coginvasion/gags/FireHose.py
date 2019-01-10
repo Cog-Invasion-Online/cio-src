@@ -19,12 +19,15 @@ from SquirtGag import SquirtGag
 import GagGlobals
 
 class FireHose(SquirtGag):
+    
+    name = GagGlobals.FireHose
+    model = "phase_5/models/props/firehose-mod.bam"
+    anim = 'phase_5/models/props/firehose-chan.bam'
+    hitSfxPath = GagGlobals.NULL_SFX
+    scale = 1.0
 
     def __init__(self):
-        SquirtGag.__init__(self, GagGlobals.FireHose, "phase_5/models/props/firehose-mod.bam", GagGlobals.NULL_SFX)
-        self.anim = 'phase_5/models/props/firehose-chan.bam'
-        self.sprayParticleFile = 'phase_14/etc/spray.ptf'
-        self.scale = 1.0
+        SquirtGag.__init__(self)
         self.hydrant = None
         self.hydrantNode = None
         self.hydrantScale = None

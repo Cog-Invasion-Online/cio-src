@@ -14,10 +14,15 @@ from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, Sound
 from panda3d.core import Vec3
 
 class ElephantHorn(SoundGag):
+        
+    name = GagGlobals.ElephantHorn
+    model = 'phase_5/models/props/elephant.bam'
+    appearSfxPath = GagGlobals.ELEPHANT_APPEAR_SFX
+    soundSfxPath = GagGlobals.ELEPHANT_SFX
+    soundRange = 35
 
     def __init__(self):
-        SoundGag.__init__(self, GagGlobals.ElephantHorn, 'phase_5/models/props/elephant.bam', 21,
-                          GagGlobals.ELEPHANT_APPEAR_SFX, GagGlobals.ELEPHANT_SFX, soundRange = 35, hitSfx = None)
+        SoundGag.__init__(self)
         self.setImage('phase_3.5/maps/elephant-horn.png')
         #self.setRechargeTime(6.5)
 

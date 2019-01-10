@@ -14,14 +14,16 @@ import abc
 import datetime
 
 class TrapGag(Gag):
+    
+    gagType = GagType.TRAP
+    doesAutoRelease = False
 
-    def __init__(self, name, model, damage, hitSfx, anim = None, doesAutoRelease = True):
-        Gag.__init__(self, name, model, GagType.TRAP, hitSfx, anim = anim)
-        self.hitSfx = None
+    def __init__(self):
+        Gag.__init__(self)
         self.entity = None
         self.timeout = 3.0
         if metadata.PROCESS == 'client':
-            self.hitSfx = base.audio3d.loadSfx(hitSfx)
+            self.hitSfx = base.audio3d.loadSfx(self.hitSfxPath)
 
     def build(self):
         super(TrapGag, self).build()

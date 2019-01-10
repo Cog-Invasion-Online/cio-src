@@ -130,12 +130,14 @@ LegHeightDict = {
     'dgl': 2.75
 }
 
+DogHeads = ['dgs_shorts', 'dgl_shorts', 'dgm_shorts', 'dgm_skirt']    
+
 def generateBodyPart(toon, bodyPart, partType, partPhase, pantType):
     partAnimations = {}
 
     # Load the body part.
-    mdlPath = BASE_MODEL % (partPhase, partType, pantType, bodyPart,
-        str(CIGlobals.getModelDetail(toon.avatarType)))
+    mdlPath = BASE_MODEL % (partPhase, partType, pantType, bodyPart, '1000')
+        #str(CIGlobals.getModelDetail(toon.avatarType)))
 
     if '_-' in mdlPath:
         mdlPath = mdlPath.replace('_-', '-')
@@ -167,3 +169,57 @@ def generateBodyPart(toon, bodyPart, partType, partPhase, pantType):
         partAnimations[animName] = animPath
 
     toon.loadAnims(partAnimations, bodyPart)
+    
+def precacheToons():
+    """
+    Precaches all Toon models and animations!
+    """
+    
+    from src.coginvasion.base.Precache import precacheActor, precacheModel
+    from direct.actor.Actor import Actor
+    
+    for legType in LegHeightDict.keys():
+        toon = Actor()
+        generateBodyPart(toon, 'legs', legType, 3, 'shorts')
+        precacheActor(toon)
+        toon.cleanup()
+        toon.removeNode()
+        
+    for torsoType in TorsoHeightDict.keys():
+        toon = Actor()
+        generateBodyPart(toon, 'torso', torsoType, 3, '')
+        precacheActor(toon)
+        toon.cleanup()
+        toon.removeNode()
+        
+    for animal in HeadScales.keys():
+        if animal != "dog":
+            precacheModel("phase_3/models/char/%s-heads-1000.bam" % animal)
+        else:
+            for headType in DogHeads:
+                # precache all dog head models and animations
+                
+                mdl = "phase_3/models/char/tt_a_chr_%s_head_1000.bam" % headType
+                partAnimations = {}
+
+                # Load the body part animations.
+                for animName in ANIMATIONS:
+                    animationData = list(ANIMATIONS[animName])
+                    animPath = None
+
+                    if len(animationData) == 2:
+                        animPhase = animationData[0]
+                        animFile = animationData[1]
+
+                        # Let's create the path for the animation.
+                        animPath = BASE_MODEL % (animPhase, headType, '',
+                            'head', animFile)
+
+                        if '_-' in animPath:
+                            animPath = animPath.replace('_-', '-')
+
+                        if '__' in animPath:
+                            animPath = animPath.replace('__', '_')
+
+                    partAnimations[animName] = animPath
+                precacheActor([mdl, partAnimations])

@@ -13,14 +13,18 @@ from src.coginvasion.gags import GagGlobals
 from panda3d.core import Point3
 
 class SeltzerBottle(SquirtGag):
+        
+    name = GagGlobals.SeltzerBottle
+    model = "phase_3.5/models/props/bottle.bam"
+    hitSfxPath = GagGlobals.SELTZER_HIT_SFX
+    sprayScale = 0.2
 
     def __init__(self):
-        SquirtGag.__init__(self, GagGlobals.SeltzerBottle, "phase_3.5/models/props/bottle.bam", GagGlobals.SELTZER_HIT_SFX)
+        SquirtGag.__init__(self)
         self.setHealth(GagGlobals.SELTZER_HEAL)
         self.setImage('phase_3.5/maps/seltzer_bottle.png')
         self.anim = 'hold-bottle'
         self.holdTime = 2
-        self.sprayScale = 0.2
         self.timeout = 3.0
 
     def start(self):

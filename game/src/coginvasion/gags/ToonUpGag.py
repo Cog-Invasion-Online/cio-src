@@ -17,12 +17,14 @@ from panda3d.core import Point3
 import random
 
 class ToonUpGag(Gag):
+    
+    minHeal =1.0
+    maxHeal = 1.0
+    efficiency = 1.0
+    gagType = GagType.TOON_UP
 
-    def __init__(self, name, model, minHeal, maxHeal, efficiency, healSfx, playRate, anim = None):
-        Gag.__init__(self, name, model, GagType.TOON_UP, healSfx, anim = anim, scale = 1)
-        self.minHeal = minHeal
-        self.maxHeal = maxHeal
-        self.efficiency = efficiency
+    def __init__(self):
+        Gag.__init__(self)
         self.lHandJoint = None
         self.hips = None
         self.PNTNEARZERO = Point3(0.01, 0.01, 0.01)

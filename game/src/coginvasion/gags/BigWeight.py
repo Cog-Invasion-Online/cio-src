@@ -16,10 +16,15 @@ from direct.showutil import Effects
 from panda3d.core import OmniBoundingVolume, Point3
 
 class BigWeight(DropGag):
+      
+    name = GagGlobals.BigWeight
+    model = 'phase_5/models/props/weight-mod.bam'
+    anim = 'phase_5/models/props/weight-chan.bam'
+    hitSfxPath = GagGlobals.WEIGHT_DROP_SFX
+    missSfxPath = GagGlobals.WEIGHT_MISS_SFX
 
     def __init__(self):
-        DropGag.__init__(self, GagGlobals.BigWeight, 'phase_5/models/props/weight-mod.bam', 'phase_5/models/props/weight-chan.bam',
-                         45, GagGlobals.WEIGHT_DROP_SFX, GagGlobals.WEIGHT_MISS_SFX, 1, 1)
+        DropGag.__init__(self)
         self.setImage('phase_3.5/maps/big-weight.png')
         self.colliderRadius = 2
 

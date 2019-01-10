@@ -16,9 +16,16 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, Actor
 import random
 
 class Megaphone(ToonUpGag):
-
+    
+    name = GagGlobals.Megaphone
+    model = 'phase_5/models/props/megaphone.bam'
+    minHeal = 10
+    maxHeal = 20
+    efficiency = 100
+    hitSfxPath = GagGlobals.TELLJOKE_SFX
+    
     def __init__(self):
-        ToonUpGag.__init__(self, GagGlobals.Megaphone, 'phase_5/models/props/megaphone.bam', 10, 20, 100, GagGlobals.TELLJOKE_SFX, 1)
+        ToonUpGag.__init__(self)
         self.setImage('phase_3.5/maps/megaphone.png')
         self.track = None
         self.soundInterval = None

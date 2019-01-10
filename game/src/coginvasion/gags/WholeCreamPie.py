@@ -12,8 +12,13 @@ from src.coginvasion.gags.ThrowGag import ThrowGag
 from src.coginvasion.gags import GagGlobals
 
 class WholeCreamPie(ThrowGag):
+        
+    name = GagGlobals.WholeCreamPie
+    model = "phase_14/models/props/creampie.bam"
+    hitSfxPath = GagGlobals.WHOLE_PIE_SPLAT_SFX
+    splatColor = GagGlobals.CREAM_SPLAT_COLOR
 
     def __init__(self):
-        ThrowGag.__init__(self, GagGlobals.WholeCreamPie, "phase_3.5/models/props/tart.bam", 36, GagGlobals.WHOLE_PIE_SPLAT_SFX, GagGlobals.CREAM_SPLAT_COLOR)
+        ThrowGag.__init__(self)
         self.setHealth(GagGlobals.CREAM_PIE_HEAL)
         self.setImage('phase_3.5/maps/tart.png')

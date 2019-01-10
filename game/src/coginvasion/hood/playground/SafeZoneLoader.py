@@ -147,7 +147,7 @@ class SafeZoneLoader(StateData):
         del self.interiorSong
         self.ignoreAll()
 
-        CIGlobals.doSceneCleanup()
+        #CIGlobals.doSceneCleanup()
 
     def enter(self, requestStatus):
         StateData.enter(self)
@@ -174,6 +174,8 @@ class SafeZoneLoader(StateData):
                 fish.removeNode()
             #petShop.removeNode()
         #del petShop
+        
+        CIGlobals.preRenderScene(self.geom)
 
     def exit(self):
         StateData.exit(self)

@@ -14,10 +14,15 @@ from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, Sound
 from panda3d.core import Vec3
 
 class Bugle(SoundGag):
+    
+    name = GagGlobals.Bugle
+    model = 'phase_5/models/props/bugle.bam'
+    appearSfxPath = GagGlobals.BUGLE_APPEAR_SFX
+    soundSfxPath = GagGlobals.BUGLE_SFX
+    soundRange = 25
 
     def __init__(self):
-        SoundGag.__init__(self, GagGlobals.Bugle, 'phase_5/models/props/bugle.bam', 11,
-                          GagGlobals.BUGLE_APPEAR_SFX, GagGlobals.BUGLE_SFX, soundRange = 25, hitSfx = None)
+        SoundGag.__init__(self)
         self.setImage('phase_3.5/maps/bugle.png')
         self.setRechargeTime(4.5)
 

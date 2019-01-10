@@ -21,34 +21,42 @@ from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.toon import ParticleLoader
 from src.coginvasion.gui.WaterBar import WaterBar
 from src.coginvasion.phys import PhysicsUtils
+from src.coginvasion.base.Precache import precacheSound
 
 import abc
 import math
 
 class SquirtGag(Gag):
+    
+    gagType = GagType.SQUIRT
+    sprayParticleFile = 'phase_14/etc/spray.ptf'
+    sprayJoint = 'joint_water_stream'
+    spraySoundPath = "phase_14/audio/sfx/squirtgun_spray_loop.ogg"
+    dmgIval = 0.2
+    sprayParticleDist = 50.0
+    sprayParticleLife = 0.5
+    spraySoundSpeed = 4.0
 
-    def __init__(self, name, model, hitSfx, scale = 1):
-        Gag.__init__(self, name, model, GagType.SQUIRT, hitSfx, scale = scale)
+    def __init__(self):
+        Gag.__init__(self)
         self.splatDist = None
-
         self.sprayParticleRoot = None
         self.waterStreamParent = None
         self.spRootUpdateTask = None
         self.sprayParticle = None
-        self.sprayParticleFile = 'phase_14/etc/spray.ptf'
-        self.sprayJoint = 'joint_water_stream'
-        self.spraySound = base.audio3d.loadSfx("phase_14/audio/sfx/squirtgun_spray_loop.ogg")
+        self.spraySound = base.audio3d.loadSfx(self.spraySoundPath)
         self.spraySound.setVolume(0.0)
-        self.sprayParticleDist = 50.0
-        self.sprayParticleLife = 0.5
         self.lastDmgTime = 0.0
         self.lastSprayTime = 0.0
-        self.dmgIval = 0.2
-        self.spraySoundSpeed = 4.0
         self.spraySoundIval = None
         
         self.waterBar = None
         self.barTask = None
+        
+    @classmethod
+    def doPrecache(cls):
+        super(SquirtGag, cls).doPrecache()
+        precacheSound(cls.spraySoundPath)
 
     def stopSpraySoundIval(self):
         if self.spraySoundIval:

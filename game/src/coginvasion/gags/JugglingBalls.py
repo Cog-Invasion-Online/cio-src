@@ -13,10 +13,17 @@ from src.coginvasion.gags import GagGlobals
 from direct.interval.IntervalGlobal import Sequence, Func, Parallel, ActorInterval
 
 class JugglingBalls(ToonUpGag):
+        
+    name = GagGlobals.JugglingBalls
+    model = 'phase_5/models/props/cubes-mod.bam'
+    minHeal = 90
+    maxHeal = 120
+    efficiency = 100
+    hitSfxPath = GagGlobals.JUGGLE_SFX
+    anim = 'phase_5/models/props/cubes-chan.bam'
 
     def __init__(self):
-        ToonUpGag.__init__(self, GagGlobals.JugglingBalls,
-                           'phase_5/models/props/cubes-mod.bam', 90, 120, 100, GagGlobals.JUGGLE_SFX, 1, anim = 'phase_5/models/props/cubes-chan.bam')
+        ToonUpGag.__init__(self)
         self.setImage('phase_3.5/maps/juggling-cubes.png')
         self.track = None
         self.soundInterval = None

@@ -17,9 +17,13 @@ from direct.interval.IntervalGlobal import Sequence, Func, Wait, Parallel
 from direct.interval.IntervalGlobal import LerpScaleInterval, ActorInterval
 
 class SquirtingFlower(SquirtGag):
+    
+    name = GagGlobals.SquirtFlower
+    model = 'phase_3.5/models/props/button.bam'
+    hitSfxPath = GagGlobals.FLOWER_HIT_SFX
 
     def __init__(self):
-        SquirtGag.__init__(self, GagGlobals.SquirtFlower, GagGlobals.getProp(3.5, 'button'), GagGlobals.FLOWER_HIT_SFX)
+        SquirtGag.__init__(self)
         self.setImage('phase_3.5/maps/squirting-flower.png')
         self.flower = None
         self.flowerScale = 1.5

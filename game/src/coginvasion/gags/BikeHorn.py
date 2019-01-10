@@ -14,10 +14,14 @@ from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, Sound
 from panda3d.core import Vec3
 
 class BikeHorn(SoundGag):
+        
+    name = GagGlobals.BikeHorn
+    model = 'phase_5/models/props/bikehorn.bam'
+    appearSfxPath = GagGlobals.BIKE_HORN_APPEAR_SFX
+    soundSfxPath = GagGlobals.BIKE_HORN_SFX
 
     def __init__(self):
-        SoundGag.__init__(self, GagGlobals.BikeHorn, 'phase_5/models/props/bikehorn.bam', 5,
-                          GagGlobals.BIKE_HORN_APPEAR_SFX, GagGlobals.BIKE_HORN_SFX, hitSfx = None)
+        SoundGag.__init__(self)
         self.setImage('phase_3.5/maps/bike-horn.png')
         self.setRechargeTime(2.5)
 

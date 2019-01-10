@@ -161,7 +161,7 @@ class Goon(Avatar, FSM):
 
         self.find("**/hard_hat").setTwoSided(True)
         self.find("**/security_hat").setTwoSided(True)
-        self.find("**/eye").setShaderOff(1)
+        self.find("**/eye").setLightOff(1)
 
         if self.hatType == Goon.Security:
             self.hat = self.find("**/security_hat")

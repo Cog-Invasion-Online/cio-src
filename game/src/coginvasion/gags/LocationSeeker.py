@@ -15,13 +15,16 @@ from direct.interval.IntervalGlobal import Sequence, Func, Parallel, LerpHprInte
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.phys import PhysicsUtils
+from src.coginvasion.base.Precache import Precacheable, precacheModel, precacheSound, precacheMaterial
 
-class LocationSeeker:
+class LocationSeeker(Precacheable):
 
     MovedEpsilon = 0.25
 
     GoodCS = (0.0, 1.0, 0.0, 0.6)
     BadCS = (1.0, 0.0, 0.0, 0.6)
+    
+    crosshairMaterial = 'phase_14/materials/crosshair_3.mat'
     
     def __init__(self, avatar, gag, minDistance, maxDistance, shadowScale = 1):
         self.dropShadowPath = 'phase_3.5/models/props/glow.bam'
@@ -42,6 +45,10 @@ class LocationSeeker:
         self.confirmIndTrack = None
 
         self.goodSpot = False
+        
+    @classmethod
+    def doPrecache(cls):
+        precacheMaterial(cls.crosshairMaterial)
         
     def startSeeking(self):
         if not hasattr(self, 'avatar') or (hasattr(self, 'avatar') and not self.avatar): return
@@ -148,7 +155,7 @@ class LocationSeeker:
         cm = CardMaker('locationIndicator')
         cm.setFrame(-1, 1, -1, 1)
         indicatorNP = self.dropShadow.attachNewNode(cm.generate())
-        indicatorNP.setBSPMaterial('phase_14/materials/crosshair_3.mat', 1)
+        indicatorNP.setBSPMaterial(self.crosshairMaterial, 1)
         indicatorNP.setScale(self.shadowScale * 2.5)
         indicatorNP.setDepthOffset(16)
         indicatorNP.setTransparency(1)

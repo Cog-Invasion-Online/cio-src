@@ -14,12 +14,17 @@ from direct.interval.IntervalGlobal import Parallel, Sequence, Wait, LerpPosInte
 from panda3d.core import Point3
 
 class BananaPeel(ActivateTrapGag):
+        
+    name = GagGlobals.BananaPeel
+    model = 'phase_5/models/props/banana-peel-mod.bam'
+    hitSfxPath = GagGlobals.BANANA_SFX
+    activateSfxPath = GagGlobals.FALL_SFX
+    anim = 'phase_5/models/props/banana-peel-chan.bam'
+    doesAutoRelease = True
+    collRadius = 2.0
 
     def __init__(self):
-        ActivateTrapGag.__init__(self, GagGlobals.BananaPeel,
-                                 'phase_5/models/props/banana-peel-mod.bam', 10, GagGlobals.BANANA_SFX, 2.0, mode = 1,
-                                 anim = 'phase_5/models/props/banana-peel-chan.bam', activateSfx = GagGlobals.FALL_SFX,
-                                 autoRelease = True)
+        ActivateTrapGag.__init__(self)
         self.slipSfx = None
         self.setImage('phase_3.5/maps/banana-peel.png')
 

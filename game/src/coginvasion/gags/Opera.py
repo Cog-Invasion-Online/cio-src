@@ -16,10 +16,16 @@ from panda3d.core import Vec3, Point3
 from src.coginvasion.base.CIParticleEffect import CIParticleEffect
 
 class Opera(SoundGag):
+        
+    name = GagGlobals.Opera
+    model = 'phase_5/models/props/singing.bam'
+    appearSfxPath = GagGlobals.FOG_APPEAR_SFX
+    soundSfxPath = GagGlobals.OPERA_SFX
+    hitSfxPath = GagGlobals.OPERA_HIT_SFX
+    soundRange = 50
 
     def __init__(self):
-        SoundGag.__init__(self, GagGlobals.Opera, 'phase_5/models/props/singing.bam', 90, appearSfx = GagGlobals.FOG_APPEAR_SFX,
-                          soundSfx = GagGlobals.OPERA_SFX, soundRange = 50, hitSfx = GagGlobals.OPERA_HIT_SFX)
+        SoundGag.__init__(self)
         self.setImage('phase_3.5/maps/opera.png')
 
     def __createToonInterval(self, delay):

@@ -158,7 +158,7 @@ class Hood(StateData):
         del self.dnaStore
         self.ignoreAll()
 
-        CIGlobals.doSceneCleanup()
+        #CIGlobals.doSceneCleanup()
 
         StateData.unload(self)
 

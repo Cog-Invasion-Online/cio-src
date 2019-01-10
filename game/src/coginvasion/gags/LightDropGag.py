@@ -17,13 +17,15 @@ from direct.showutil import Effects
 from panda3d.core import OmniBoundingVolume, Point3
 
 class LightDropGag(DropGag):
+    
+    rotate90 = False
+    scale = 1
 
-    def __init__(self, name, model, anim, damage, hitSfx, missSfx, rotate90 = False):
-        DropGag.__init__(self, name, model, anim, damage, hitSfx, missSfx, scale = 1, playRate = 1)
+    def __init__(self):
+        DropGag.__init__(self)
         DropGag.setShadowData(self, isCircle = True, shadowScale = 0.5)
         self.stunTime = 1.5
         self.objTrack = None
-        self.rotate90 = rotate90
 
     def startDrop(self, entity):
         if entity and self.dropLoc:

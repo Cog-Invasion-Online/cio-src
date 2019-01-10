@@ -13,11 +13,14 @@ from direct.interval.IntervalGlobal import Sequence, Func, Parallel, SoundInterv
 from direct.gui.DirectGui import OnscreenText
 from panda3d.core import Point3
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.base.Precache import Precacheable, precacheSound, precacheModel
 
-class LocationGag:
+class LocationGag(Precacheable):
+    
+    buttonSoundPath = 'phase_5/audio/sfx/AA_drop_trigger_box.ogg'
+    buttonPath = 'phase_3.5/models/props/button.bam'
 
     def __init__(self, minDistance, maxDistance, shadowScale = 1):
-        self.buttonSoundPath = 'phase_5/audio/sfx/AA_drop_trigger_box.ogg'
         self.button = None
         self.buttonSfx = loader.loadSfx(self.buttonSoundPath)
         self.buttonAnim = 'push-button'
@@ -34,6 +37,11 @@ class LocationGag:
         self.isCircle = False
         self.shadowScale = 1
         self.helpInfo = None
+        
+    @classmethod
+    def doPrecache(cls):
+        precacheSound(cls.buttonSoundPath)
+        precacheModel(cls.buttonPath)
 
     def setShadowData(self, isCircle, shadowScale):
         self.isCircle = isCircle
@@ -111,7 +119,7 @@ class LocationGag:
 
     def buildButton(self):
         self.cleanupButton()
-        self.button = loader.loadModel('phase_3.5/models/props/button.bam')
+        self.button = loader.loadModel(self.buttonPath)
 
     def setLocation(self, value):
         self.dropLoc = value

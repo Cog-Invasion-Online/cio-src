@@ -14,26 +14,38 @@ from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.base.CIParticleEffect import CIParticleEffect
+from src.coginvasion.base.Precache import precacheModel, precacheSound
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, SoundInterval, ActorInterval
 from panda3d.core import Point3
 import random
 
 class SoundGag(Gag):
+    
+    megaphonePath = 'phase_14/models/props/megaphone.bam'
+    appearSfxPath = None
+    soundSfxPath = None
+    soundRange = 18
+    gagType = GagType.SOUND
 
-    def __init__(self, name, model, damage, appearSfx, soundSfx, soundRange = 18, hitSfx = None):
-        Gag.__init__(self, name, model, GagType.SOUND, hitSfx, anim = None, scale = 1)
+    def __init__(self):
+        Gag.__init__(self)
         self.appearSfx = None
         self.soundSfx = None
-        self.soundRange = soundRange
-        self.megaphonePath = 'phase_14/models/props/megaphone.bam'
         self.megaphone = None
         self.tracks = None
         self.timeout = 5.0
         self.holdGag = False
 
         if metadata.PROCESS == 'client':
-            self.appearSfx = base.audio3d.loadSfx(appearSfx)
-            self.soundSfx = base.audio3d.loadSfx(soundSfx)
+            self.appearSfx = base.audio3d.loadSfx(self.appearSfxPath)
+            self.soundSfx = base.audio3d.loadSfx(self.soundSfxPath)
+            
+    @classmethod
+    def doPrecache(cls):
+        super(SoundGag, cls).doPrecache()
+        precacheModel(cls.megaphonePath)
+        precacheSound(cls.appearSfxPath)
+        precacheSound(cls.soundSfxPath)
 
     def start(self):
         Gag.start(self)

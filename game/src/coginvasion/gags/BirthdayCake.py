@@ -12,9 +12,15 @@ from src.coginvasion.gags.ThrowGag import ThrowGag
 from src.coginvasion.gags import GagGlobals
 
 class BirthdayCake(ThrowGag):
+    
+    name = GagGlobals.BirthdayCake
+    model = "phase_5/models/props/birthday-cake-mod.bam"
+    anim = "phase_5/models/props/birthday-cake-chan.bam"
+    hitSfxPath = GagGlobals.WHOLE_PIE_SPLAT_SFX
+    splatColor = GagGlobals.CAKE_SPLAT_COLOR
 
     def __init__(self):
-        ThrowGag.__init__(self, GagGlobals.BirthdayCake, "phase_5/models/props/birthday-cake-mod.bam", 75, GagGlobals.WHOLE_PIE_SPLAT_SFX, GagGlobals.CAKE_SPLAT_COLOR, anim = "phase_5/models/props/birthday-cake-chan.bam")
+        ThrowGag.__init__(self)
         self.setHealth(GagGlobals.BDCAKE_HEAL)
         self.setImage('phase_3.5/maps/cake.png')
 

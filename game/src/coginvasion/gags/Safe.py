@@ -16,10 +16,15 @@ from direct.showutil import Effects
 from panda3d.core import OmniBoundingVolume, Point3
 
 class Safe(DropGag):
+      
+    name = GagGlobals.Safe
+    model = 'phase_5/models/props/safe-mod.bam'
+    anim = 'phase_5/models/props/safe-chan.bam'
+    hitSfxPath = GagGlobals.SAFE_DROP_SFX
+    missSfxPath = GagGlobals.SAFE_MISS_SFX
 
     def __init__(self):
-        DropGag.__init__(self, GagGlobals.Safe, 'phase_5/models/props/safe-mod.bam', 'phase_5/models/props/safe-chan.bam',
-                         60, GagGlobals.SAFE_DROP_SFX, GagGlobals.SAFE_MISS_SFX, 1, 1)
+        DropGag.__init__(self)
         self.setImage('phase_3.5/maps/safe.png')
         self.colliderOfs = Point3(0, 0, 0.25)
         self.colliderRadius = 2

@@ -94,23 +94,8 @@ def preRenderScene(np):
     where is was before.
     """
 
-    print "Pre-rendering scene..."
-
-    oldparent = np.getParent()
-
-    if oldparent != render and np != render:
-        np.reparentTo(render)
-    render.node().setBounds(OmniBoundingVolume())
-    render.node().setFinal(1)
-    render.premungeScene(base.win.getGsg())
-    render.prepareScene(base.win.getGsg())
-    base.graphicsEngine.renderFrame()
-    base.graphicsEngine.syncFrame()
-    render.node().setFinal(0)
-    render.node().clearBounds()
-    np.reparentTo(oldparent)
-
-    print "Done."
+    from src.coginvasion.base.Precache import precacheScene
+    precacheScene(np)
 
 def replaceDecalEffectsWithDepthOffsetAttrib(node):
     for np in node.findAllMatches("**"):

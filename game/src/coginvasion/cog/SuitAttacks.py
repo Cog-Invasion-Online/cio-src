@@ -26,6 +26,7 @@ from src.coginvasion.toon import ParticleLoader
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.phys.WorldCollider import WorldCollider
 from src.coginvasion.phys import PhysicsUtils
+from src.coginvasion.base.Precache import precacheModel, precacheSound, precacheActor
 from SuitAttackGlobals import *
 import SuitGlobals
 from SuitType import SuitType
@@ -78,6 +79,10 @@ class Attack(DirectObject):
         self.suitTrack = None
         self.collider = None
         self.throwTrack = None
+        
+    @classmethod
+    def precache(cls):
+        pass
 
     def startThrowTrack(self, prop, speed, distance):
         self.stopThrowTrack()
@@ -221,6 +226,9 @@ class ThrowAttack(Attack):
     speed = 1.5
     throwSpeed = 75.0
     throwDistance = 50.0
+    
+    throwMdlPath = None
+    throwSfxPath = None
 
     def __init__(self, attacksClass, suit):
         Attack.__init__(self, attacksClass, suit)
@@ -232,6 +240,13 @@ class ThrowAttack(Attack):
         self.throwTrajectory = None
         self.startNP = None
         self.theActorIval = None
+        
+    @classmethod
+    def precache(cls):
+        if cls.throwMdlPath:
+            precacheModel(cls.throwMdlPath)
+        if cls.throwSfxPath:
+            precacheSound(cls.throwSfxPath)
 
     def handleWeaponCollision(self, entry):
         if PhysicsUtils.isLocalAvatar(entry):
@@ -383,13 +398,15 @@ class HardballAttack(ThrowAttack):
             "You can't play with me!",
             "I'll strike you out.",
             "I'm throwing you a real curve ball!"]
+    throwMdlPath = "phase_5/models/props/baseball.bam"
+    throwSfxPath = "phase_5/audio/sfx/SA_hardball_throw_only.ogg"
 
     def doAttack(self, ts = 0):
-        ThrowAttack.doAttack(self, "phase_5/models/props/baseball.bam", 10, 'doHardballAttack',
+        ThrowAttack.doAttack(self, self.throwMdlPath, 10, 'doHardballAttack',
                             'throw-object', 0.1, 'hardballWeaponSphere', weapon_z = -0.5, ts = ts)
 
     def playWeaponSound(self):
-        self.weaponSfx = base.audio3d.loadSfx("phase_5/audio/sfx/SA_hardball_throw_only.ogg")
+        self.weaponSfx = base.audio3d.loadSfx(self.throwSfxPath)
         ThrowAttack.playWeaponSound(self)
 
     def handleWeaponTouch(self):
@@ -415,13 +432,15 @@ class ClipOnTieAttack(ThrowAttack):
             'This is going to choke you up.',
             "You'll want to dress up before you go OUT.",
             "I think I'll tie you up."]
+    throwMdlPath = "phase_3.5/models/props/clip-on-tie-mod.bam"
+    throwSfxPath = "phase_5/audio/sfx/SA_powertie_throw.ogg"
 
     def doAttack(self, ts = 0):
-        ThrowAttack.doAttack(self, "phase_3.5/models/props/clip-on-tie-mod.bam", 1, 'doClipOnTieAttack',
+        ThrowAttack.doAttack(self, self.throwMdlPath, 1, 'doClipOnTieAttack',
                             'throw-paper', 1.1, 'clipOnTieWeaponSphere', weapon_r = 180, ts = ts)
 
     def playWeaponSound(self):
-        self.weaponSfx = base.audio3d.loadSfx("phase_5/audio/sfx/SA_powertie_throw.ogg")
+        self.weaponSfx = base.audio3d.loadSfx(self.throwSfxPath)
         ThrowAttack.playWeaponSound(self)
 
 class MarketCrashAttack(ThrowAttack):
@@ -440,9 +459,11 @@ class MarketCrashAttack(ThrowAttack):
             'Sell! Sell! Sell!',
             'Shall I lead the recession?',
             "Everybody's getting out, shouldn't you?"]
+    throwMdlPath = "phase_5/models/props/newspaper.bam"
+    throwSfxPath = None
 
     def doAttack(self, ts = 0):
-        ThrowAttack.doAttack(self, "phase_5/models/props/newspaper.bam", 3, 'doMarketCrashAttack',
+        ThrowAttack.doAttack(self, self.throwMdlPath, 3, 'doMarketCrashAttack',
                             'throw-paper', 0.35, 'marketCrashWeaponSphere', weapon_x = 0.41,
                             weapon_y = -0.06, weapon_z = -0.06, weapon_h = 90, weapon_r = 270, ts = ts)
 
@@ -465,9 +486,10 @@ class SackedAttack(ThrowAttack):
             "Your time is up around here, you're being sacked!",
             'Let me bag that for you.',
             'No defense can match my sack attack!']
+    throwMdlPath = "phase_5/models/props/sandbag-mod.bam"
 
     def doAttack(self, ts = 0):
-        ThrowAttack.doAttack(self, "phase_5/models/props/sandbag-mod.bam", 2, 'doSackedAttack',
+        ThrowAttack.doAttack(self, self.throwMdlPath, 2, 'doSackedAttack',
                             'throw-paper', 1, 'sackedWeaponSphere', weapon_r = 180, weapon_p = 90,
                             weapon_y = -2.8, weapon_z = -0.3, ts = ts)
 
@@ -499,12 +521,20 @@ class GlowerPowerAttack(Attack):
         SuitGlobals.HeadHunter: [Point3(0.3, 4.3, 5.3), Point3(-0.3, 4.3, 5.3)],
         SuitGlobals.Tightwad: [Point3(0.4, 3.8, 3.7), Point3(-0.4, 3.8, 3.7)]
     }
+    
+    KnifeMdl = "phase_5/models/props/dagger.bam"
+    KnifeSfx = "phase_5/audio/sfx/SA_glower_power.ogg"
 
     def __init__(self, ac, suit):
         Attack.__init__(self, ac, suit)
         self.knifeRoot = None
         self.knives = []
         self.sound = None
+        
+    @classmethod
+    def precache(cls):
+        precacheModel(cls.KnifeMdl)
+        precacheSound(cls.KnifeSfx)
 
     def cleanup(self):
         Attack.cleanup(self)
@@ -517,7 +547,7 @@ class GlowerPowerAttack(Attack):
             self.knifeRoot = None
 
     def loadKnife(self):
-        k = loader.loadModel("phase_5/models/props/dagger.bam")
+        k = loader.loadModel(self.KnifeMdl)
         k.setScale(self.knifeScale)
         return k
 
@@ -537,7 +567,7 @@ class GlowerPowerAttack(Attack):
         self.knifeRoot = self.suit.attachNewNode("knifeRoot")
         self.knifeRoot.setPos(0, left.getY(), left.getZ())
 
-        self.sound = base.audio3d.loadSfx("phase_5/audio/sfx/SA_glower_power.ogg")
+        self.sound = base.audio3d.loadSfx(self.KnifeSfx)
         base.audio3d.attachSoundToObject(self.sound, self.suit)
         
         self.collider = self.makeWorldCollider(self.knifeRoot)
@@ -603,6 +633,11 @@ class PickPocketAttack(Attack):
         Attack.__init__(self, attacksClass, suit)
         self.dollar = None
         self.pickSfx = None
+        
+    @classmethod
+    def precache(cls):
+        precacheModel("phase_5/models/props/1dollar-bill-mod.bam")
+        precacheSound("phase_5/audio/sfx/SA_pick_pocket.ogg")
 
     def doAttack(self, ts = 0):
         self.startToonLockOn()
@@ -666,6 +701,9 @@ class FountainPenAttack(Attack):
             'I call this the plume of doom.',
             "There's a blot on your performance.",
             "Don't you hate when this happens?"]
+            
+    SplatActorDef = ["phase_3.5/models/props/splat-mod.bam",
+            {"chan": "phase_3.5/models/props/splat-chan.bam"}]
 
     def __init__(self, attacksClass, suit):
         Attack.__init__(self, attacksClass, suit)
@@ -675,6 +713,13 @@ class FountainPenAttack(Attack):
         self.spraySfx = None
         self.sprayParticle = None
         self.sprayScaleIval = None
+        
+    @classmethod
+    def precache(cls):
+        precacheModel("phase_5/models/props/pen.bam")
+        precacheModel("phase_3.5/models/props/spray.bam")
+        precacheActor(cls.SplatActorDef)
+        precacheSound("phase_5/audio/sfx/SA_fountain_pen.ogg")
 
     def loadAttack(self):
         self.pen = loader.loadModel("phase_5/models/props/pen.bam")
@@ -682,8 +727,7 @@ class FountainPenAttack(Attack):
         self.sprayParticle = ParticleLoader.loadParticleEffect("phase_5/etc/penSpill.ptf")
         self.spray = loader.loadModel("phase_3.5/models/props/spray.bam")
         self.spray.setColor(VBase4(0, 0, 0, 1))
-        self.splat = Actor("phase_3.5/models/props/splat-mod.bam",
-            {"chan": "phase_3.5/models/props/splat-chan.bam"})
+        self.splat = Actor(*self.SplatActorDef)
         self.splat.setColor(VBase4(0, 0, 0, 1))
         self.sprayScaleIval = LerpScaleInterval(
             self.spray,
@@ -802,6 +846,13 @@ class HangUpAttack(Attack):
         self.cord = None
         self.receiverOutCord = None
         self.phoneOutCord = None
+        
+    @classmethod
+    def precache(cls):
+        precacheModel("phase_3.5/models/props/phone.bam")
+        precacheModel("phase_3.5/models/props/receiver.bam")
+        precacheSound("phase_3.5/audio/sfx/SA_hangup.ogg")
+        precacheSound("phase_3.5/audio/sfx/SA_hangup_place_down.ogg")
 
     def loadAttack(self):
         self.phone = loader.loadModel("phase_3.5/models/props/phone.bam")
@@ -943,14 +994,16 @@ class RedTapeAttack(ThrowAttack):
              'Let me keep you busy.',
              'Just try to unravel this.',
              'I want this meeting to stick with you.']
+    throwMdlPath = "phase_5/models/props/redtape.bam"
+    throwSfxPath = "phase_5/audio/sfx/SA_red_tape.ogg"
 
     def doAttack(self, ts = 0):
-        ThrowAttack.doAttack(self, "phase_5/models/props/redtape.bam", 1, 'doRedTapeAttack',
+        ThrowAttack.doAttack(self, self.throwMdlPath, 1, 'doRedTapeAttack',
                             'throw-paper', 0.5, 'redTapeWeaponSphere', weapon_p = 90,
                             weapon_y = 0.35, weapon_z = -0.5, ts = ts)
 
     def playWeaponSound(self):
-        self.weaponSfx = base.audio3d.loadSfx("phase_5/audio/sfx/SA_red_tape.ogg")
+        self.weaponSfx = base.audio3d.loadSfx(self.throwSfxPath)
         ThrowAttack.playWeaponSound(self)
 
     def handleWeaponTouch(self):
@@ -974,13 +1027,16 @@ class PowerTieAttack(ThrowAttack):
             "My powers are far too great for you!",
             "I've got the power!",
             "By the powers vested in me, I'll tie you up."]
+            
+    throwMdlPath = "phase_5/models/props/power-tie.bam"
+    throwSfxPath = "phase_5/audio/sfx/SA_powertie_throw.ogg"
 
     def doAttack(self, ts = 0):
-        ThrowAttack.doAttack(self, "phase_5/models/props/power-tie.bam", 4, 'doPowerTieAttack',
+        ThrowAttack.doAttack(self, self.throwMdlPath, 4, 'doPowerTieAttack',
                             'throw-paper', 0.2, 'powerTieWeaponSphere', weapon_r = 180, ts = ts)
 
     def playWeaponSound(self):
-        self.weaponSfx = base.audio3d.loadSfx("phase_5/audio/sfx/SA_powertie_throw.ogg")
+        self.weaponSfx = base.audio3d.loadSfx(self.throwSfxPath)
         ThrowAttack.playWeaponSound(self)
 
 class HalfWindsorAttack(ThrowAttack):
@@ -997,14 +1053,16 @@ class HalfWindsorAttack(ThrowAttack):
             'This tie is out of your league.',
             "I shouldn't even waste this tie on you.",
             "You're not even worth half of this tie!"]
+    throwMdlPath = "phase_5/models/props/half-windsor.bam"
+    throwSfxPath = "phase_5/audio/sfx/SA_powertie_throw.ogg"
 
     def doAttack(self, ts = 0):
-        ThrowAttack.doAttack(self, "phase_5/models/props/half-windsor.bam", 6, 'doHalfWindsorAttack',
+        ThrowAttack.doAttack(self, self.throwMdlPath, 6, 'doHalfWindsorAttack',
                             'throw-paper', 0.2, 'halfWindsorWeaponSphere', weapon_r = 90, weapon_p = 0,
                             weapon_h = 90, weapon_z = -1, weapon_y = -1.6, ts = ts)
 
     def playWeaponSound(self):
-        self.weaponSfx = base.audio3d.loadSfx("phase_5/audio/sfx/SA_powertie_throw.ogg")
+        self.weaponSfx = base.audio3d.loadSfx(self.throwSfxPath)
         ThrowAttack.playWeaponSound(self)
 
 class BiteAttack(ThrowAttack):
@@ -1022,9 +1080,10 @@ class BiteAttack(ThrowAttack):
           "I'm just gonna grab a quick bite.",
           "I haven't had a bite all day.",
           'I just want a bite.  Is that too much to ask?']
+    throwMdlPath = "phase_5/models/props/teeth-mod.bam"
 
     def doAttack(self, ts = 0):
-        ThrowAttack.doAttack(self, "phase_5/models/props/teeth-mod.bam", 6, 'doBiteAttack',
+        ThrowAttack.doAttack(self, self.throwMdlPath, 6, 'doBiteAttack',
                             'throw-object', 0.2, 'biteWeaponSphere', weapon_r = 180, ts = ts)
 
     def throwObject(self):
@@ -1045,9 +1104,10 @@ class ChompAttack(ThrowAttack):
            "Why don't you chomp on this?",
            "I'm going to have you for dinner.",
            'I love to feed on Toons!']
+    throwMdlPath = "phase_5/models/props/teeth-mod.bam"
 
     def doAttack(self, ts = 0):
-        ThrowAttack.doAttack(self, "phase_5/models/props/teeth-mod.bam", 6, 'doChompAttack',
+        ThrowAttack.doAttack(self, self.throwMdlPath, 6, 'doChompAttack',
                             'throw-object', 0.2, 'chompWeaponSphere', weapon_r = 180, ts = ts)
 
     def throwObject(self):
@@ -1072,9 +1132,10 @@ class EvictionNoticeAttack(ThrowAttack):
             "You're out of place.",
             'Prepare to be relocated.',
             "You're in a hostel position."]
+    throwMdlPath = "phase_3.5/models/props/shredder-paper-mod.bam"
 
     def doAttack(self, ts = 0):
-        ThrowAttack.doAttack(self, "phase_3.5/models/props/shredder-paper-mod.bam", 1, 'doEvictionNoticeAttack',
+        ThrowAttack.doAttack(self, self.throwMdlPath, 1, 'doEvictionNoticeAttack',
                             'throw-paper', 1, 'evictionNoticeWeaponSphere', weapon_y = -0.15, weapon_z = -0.5,
                             weapon_x = -1.4, weapon_r = 90, weapon_h = 30, ts = ts)
 
@@ -1617,6 +1678,11 @@ class EvilEyeAttack(Attack):
         self.eyeRoot = None
         self.eye = None
         self.sound = None
+        
+    @classmethod
+    def precache(cls):
+        precacheModel("phase_5/models/props/evil-eye.bam")
+        precacheSound("phase_5/audio/sfx/SA_evil_eye.ogg")
 
     def doAttack(self, ts):
         Attack.doAttack(self, ts)
@@ -1717,6 +1783,11 @@ class TeeOffAttack(Attack):
         self.club = None
         self.sound = None
         self.ballVisRope = None
+        
+    @classmethod
+    def precache(cls):
+        precacheModel("phase_5/models/props/golf-ball.bam")
+        precacheSound("phase_5/audio/sfx/SA_tee_off.ogg")
 
     def doAttack(self, ts):
         Attack.doAttack(self, ts)
@@ -1797,6 +1868,11 @@ class WatercoolerAttack(Attack):
             "Care for a drink?",
             "It all comes out in the wash.",
             "The drink's on you."]
+            
+    SprayAppearSfx = "phase_5/audio/sfx/SA_watercooler_appear_only.ogg"
+    SpraySfx = "phase_5/audio/sfx/SA_watercooler_spray_only.ogg"
+    CoolerMdl = "phase_5/models/props/watercooler.bam"
+    SprayMdl = "phase_3.5/models/props/spray.bam"
 
     def __init__(self, ac, suit):
         Attack.__init__(self, ac, suit)
@@ -1805,6 +1881,13 @@ class WatercoolerAttack(Attack):
         self.splash = None
         self.soundAppear = None
         self.soundSpray = None
+        
+    @classmethod
+    def precache(cls):
+        precacheSound(cls.SprayAppearSfx)
+        precacheSound(cls.SpraySfx)
+        precacheModel(cls.CoolerMdl)
+        precacheModel(cls.SprayMdl)
 
     def doAttack(self, ts):
         Attack.doAttack(self, ts)
@@ -1813,17 +1896,17 @@ class WatercoolerAttack(Attack):
             spout = self.cooler.find("**/joint_toSpray")
             return spout.getPos(render)
 
-        self.soundAppear = base.audio3d.loadSfx("phase_5/audio/sfx/SA_watercooler_appear_only.ogg")
+        self.soundAppear = base.audio3d.loadSfx(self.SprayAppearSfx)
         base.audio3d.attachSoundToObject(self.soundAppear, self.suit)
-        self.soundSpray = base.audio3d.loadSfx("phase_5/audio/sfx/SA_watercooler_spray_only.ogg")
+        self.soundSpray = base.audio3d.loadSfx(self.SpraySfx)
         base.audio3d.attachSoundToObject(self.soundSpray, self.suit)
 
-        self.cooler = loader.loadModel("phase_5/models/props/watercooler.bam")
+        self.cooler = loader.loadModel(self.CoolerMdl)
         self.cooler.reparentTo(self.suit.find("**/joint_Lhold"))
         self.cooler.setPosHpr(0.48, 0.11, -0.92, 20.403, 33.158, 69.511)
         self.cooler.hide()
 
-        self.spray = loader.loadModel("phase_3.5/models/props/spray.bam")
+        self.spray = loader.loadModel(self.SprayMdl)
         self.spray.setTransparency(True)
         self.spray.setColor(0.75, 0.75, 1.0, 0.8)
         self.spray.setScale(0.3, 1.0, 0.3)
@@ -1882,10 +1965,22 @@ class WriteOffAttack(Attack):
               "I'll shuffle your accounts around.",
               "You're about to suffer some losses.",
               "This is going to hurt your bottom line."]
+              
+    PadMdl = "phase_5/models/props/pad.bam"
+    PencilMdl = "phase_5/models/props/pencil.bam"
+    PenSfx = "phase_5/audio/sfx/SA_writeoff_pen_only.ogg"
+    DingSfx = "phase_5/audio/sfx/SA_writeoff_ding_only.ogg"
 
     def __init__(self, ac, suit):
         Attack.__init__(self, ac, suit)
         self.check = None
+        
+    @classmethod
+    def precache(cls):
+        precacheModel(cls.PadMdl)
+        precacheModel(cls.PencilMdl)
+        precacheSound(cls.PenSfx)
+        precacheSound(cls.DingSfx)
 
     def cleanup(self):
         Attack.cleanup(self)
@@ -1922,11 +2017,11 @@ class WriteOffAttack(Attack):
     def doAttack(self, ts):
         Attack.doAttack(self, ts)
 
-        pad = loader.loadModel("phase_5/models/props/pad.bam")
+        pad = loader.loadModel(self.PadMdl)
         padPosPoints = [Point3(-0.25, 1.38, -0.08), VBase3(-19.078, -6.603, -171.594)]
         padPropTrack = self.getPropTrack(pad, self.suit.getLeftHand(), padPosPoints, 0.5, 2.57, Point3(1.89, 1.89, 1.89))
 
-        pencil = loader.loadModel("phase_5/models/props/pencil.bam")
+        pencil = loader.loadModel(self.PencilMdl)
         pencilPosPoints = [Point3(-0.47, 1.08, 0.28), VBase3(21.045, 12.702, -176.374)]
         extraArgsForShowProp = [pencil, self.suit.getRightHand()]
         extraArgsForShowProp.extend(pencilPosPoints)
@@ -1941,9 +2036,9 @@ class WriteOffAttack(Attack):
         pencilPropTrack.append(LerpScaleInterval(pencil, 0.5, Point3(0.01)))
         pencilPropTrack.append(Func(self.removeProp, pencil))
 
-        penSfx = base.audio3d.loadSfx("phase_5/audio/sfx/SA_writeoff_pen_only.ogg")
+        penSfx = base.audio3d.loadSfx(self.PenSfx)
         base.audio3d.attachSoundToObject(penSfx, pad)
-        dingSfx = base.audio3d.loadSfx("phase_5/audio/sfx/SA_writeoff_ding_only.ogg")
+        dingSfx = base.audio3d.loadSfx(self.DingSfx)
         base.audio3d.attachSoundToObject(dingSfx, pad)
 
         soundTrack = Sequence(Wait(2.3), SoundInterval(penSfx, duration=0.9), SoundInterval(dingSfx))
@@ -1966,10 +2061,20 @@ class RubberStampAttack(Attack):
               "I'll make sure you RECEIVED my message.",
               "You're not going anyways - you have POSTAGE DUE.",
               "I'll need a response ASAP."]
+              
+    StampMdl = "phase_5/models/props/rubber-stamp.bam"
+    PadMdl = "phase_5/models/props/pad.bam"
+    StampSfx = "phase_5/audio/sfx/SA_rubber_stamp.ogg"
 
     def __init__(self, ac, suit):
         Attack.__init__(self, ac, suit)
         self.cancelled = None
+        
+    @classmethod
+    def precache(cls):
+        precacheModel(cls.StampMdl)
+        precacheModel(cls.PadMdl)
+        precacheSound(cls.StampSfx)
 
     def cleanup(self):
         Attack.cleanup(self)
@@ -2021,8 +2126,8 @@ class RubberStampAttack(Attack):
     def doAttack(self, ts):
         Attack.doAttack(self, ts)
 
-        stamp = loader.loadModel("phase_5/models/props/rubber-stamp.bam")
-        pad = loader.loadModel("phase_5/models/props/pad.bam")
+        stamp = loader.loadModel(self.StampMdl)
+        pad = loader.loadModel(self.PadMdl)
         suitType = self.suit.suitPlan.getSuitType()
         if suitType == SuitType.A:
             padPosPoints = [Point3(-0.65, 0.83, -0.04), VBase3(5.625, 4.456, -165.125)]
@@ -2044,7 +2149,7 @@ class RubberStampAttack(Attack):
         propTrack.append(LerpScaleInterval(stamp, 0.5, Point3(0.01)))
         propTrack.append(Func(self.removeProp, stamp))
 
-        snd = base.loadSfxOnNode("phase_5/audio/sfx/SA_rubber_stamp.ogg", stamp)
+        snd = base.loadSfxOnNode(self.StampSfx, stamp)
         soundTrack = Sequence(Wait(1.3), SoundInterval(snd, duration = 1.1))
 
         self.suitTrack = Parallel(soundTrack, suitTrack, padPropTrack, propTrack)
@@ -2075,6 +2180,16 @@ class FiredAttack(Attack):
               "You shouldn't run around half baked."]
     emitFlameIval = 0.3
     maxFlames = 10
+    
+    GlowMdl = "phase_14/models/props/lightglow.egg"
+    FlameHitSfx = "phase_14/audio/sfx/SA_hot_air_flame_hit.ogg"
+    FlameEmitSfx = "phase_14/audio/sfx/SA_hot_air_flame_emit.ogg"
+    
+    @classmethod
+    def precache(cls):
+        precacheModel(cls.GlowMdl)
+        precacheSound(cls.FlameHitSfx)
+        precacheSound(cls.FlameEmitSfx)
 
     class Flame(NodePath, DirectObject):
         flameSpeed = 30.0
@@ -2093,7 +2208,7 @@ class FiredAttack(Attack):
             fireroot = self.attachNewNode('fireroot')
             fireroot.setScale(1.25)
             fireroot.setBillboardAxis()
-            glow = loader.loadModel("phase_14/models/props/lightglow.egg")
+            glow = loader.loadModel(FiredAttack.GlowMdl)
             glow.reparentTo(fireroot)
             glow.setTransparency(1)
             glow.setColorScale(1, 0.5, 0, 0.5)
@@ -2123,7 +2238,7 @@ class FiredAttack(Attack):
         def handleCollision(self, entry):
             if not self.isEmpty():
                 CIGlobals.makeDustCloud(self.getPos(render), scale = (0.25, 0.9, 1),
-                                        sound = base.audio3d.loadSfx("phase_14/audio/sfx/SA_hot_air_flame_hit.ogg"),
+                                        sound = base.audio3d.loadSfx(FiredAttack.FlameHitSfx),
                                         color = (0.2, 0.2, 0.2, 0.6))
 
             if PhysicsUtils.isLocalAvatar(entry):
@@ -2186,7 +2301,7 @@ class FiredAttack(Attack):
         self.emitTask = None
 
     def doAttack(self, ts):
-        self.glow = loader.loadModel("phase_14/models/props/lightglow.egg")
+        self.glow = loader.loadModel(FiredAttack.GlowMdl)
         self.glow.reparentTo(self.suit)
         self.glow.setLightOff(1)
         self.glow.setMaterialOff(1)
@@ -2202,7 +2317,7 @@ class FiredAttack(Attack):
                                   LerpColorScaleInterval(self.glow, self.emitFlameIval / 2, (1, 0.5, 0, 0),
                                                          (1, 0.5, 0, 0.5), blendType = 'easeInOut'))
 
-        self.emitSfx = base.loadSfxOnNode("phase_14/audio/sfx/SA_hot_air_flame_emit.ogg", self.suit)
+        self.emitSfx = base.loadSfxOnNode(FiredAttack.FlameEmitSfx, self.suit)
         self.suitTrack = Sequence(Func(self.startToonLockOn),
                                   ActorInterval(self.suit, 'magic2', endFrame = 32),
                                   Func(self.startEmitting),
@@ -2275,6 +2390,11 @@ class SuitAttacks(StateData):
         self.suit = suit
         self.target = target
         self.currentAttack = None
+        
+    @staticmethod
+    def precache():
+        for cls in SuitAttacks.attack2attackClass.values():
+            cls.precache()
 
     def load(self, attackId):
         StateData.load(self)

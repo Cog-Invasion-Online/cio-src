@@ -19,21 +19,24 @@ from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gui.Crosshair import CrosshairData
+from src.coginvasion.base.Precache import Precacheable, precacheActor, precacheModel, precacheSound
 
 from panda3d.core import Point3
 from abc import ABCMeta
 import abc
 
-class Gag(object, DirectObject):
+class Gag(DirectObject, Precacheable):
+    
+    model = None
+    anim = None
+    scale = 1
+    hitSfxPath = None
+    name = "Gag"
+    gagType = None
 
-    def __init__(self, name, model, gagType, hitSfx, anim = None, scale = 1):
+    def __init__(self):
         __metaclass__ = ABCMeta
         DirectObject.__init__(self)
-        self.name = name
-        self.model = model
-        self.anim = anim
-        self.scale = scale
-        self.gagType = gagType
         self.playRate = 1.0
         self.avatar = None
         self.gag = None
@@ -45,7 +48,7 @@ class Gag(object, DirectObject):
         self.handJoint = None
         self.equipped = False
         self.index = None
-        self.id = GagGlobals.getIDByName(name)
+        self.id = GagGlobals.getIDByName(self.name)
         self.timeout = 5
         self.animTrack = None
         self.holdGag = True
@@ -61,10 +64,19 @@ class Gag(object, DirectObject):
         self.rechargeElapsedTime = 0
 
         if metadata.PROCESS == 'client':
-            if gagType == GagType.THROW:
+            if self.gagType == GagType.THROW:
                 self.woosh = base.audio3d.loadSfx(GagGlobals.PIE_WOOSH_SFX)
-            self.hitSfx = base.audio3d.loadSfx(hitSfx)
+            self.hitSfx = base.audio3d.loadSfx(self.hitSfxPath)
             self.drawSfx = base.audio3d.loadSfx(GagGlobals.DEFAULT_DRAW_SFX)
+            
+    @classmethod
+    def doPrecache(cls):
+        if cls.anim:
+            precacheActor([cls.model, {'chan' : cls.anim, 'zero' : cls.model}])
+        elif cls.model:
+            precacheModel(cls.model)
+        if cls.hitSfxPath:
+            precacheSound(cls.hitSfxPath)
 
     def doDrawAndHold(self, drawAnim, drawAnimStart = None, drawAnimEnd = None,
                       drawAnimSpeed = 1.0, bobStart = None, bobEnd = None, bobSpeed = 1.0,
@@ -74,8 +86,6 @@ class Gag(object, DirectObject):
             if holdCallback:
                 holdCallback()
             self.setAnimTrack(self.getBobSequence(drawAnim, bobStart, bobEnd, bobSpeed), startNow = True, looping = True)
-
-        print self.avatar.getForcedTorsoAnim()
 
         self.setAnimTrack(Sequence(Func(self.avatar.setForcedTorsoAnim, drawAnim),
                                    self.getAnimationTrack(drawAnim, drawAnimStart, drawAnimEnd, drawAnimSpeed),

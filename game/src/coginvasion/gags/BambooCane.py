@@ -14,12 +14,18 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, Actor
 from panda3d.core import Point3
 
 class BambooCane(ToonUpGag):
+        
+    name = GagGlobals.BambooCane
+    model = 'phase_5/models/props/cane.bam'
+    minHeal = 40
+    maxHeal = 45
+    efficiency = 100
+    hitSfxPath = GagGlobals.BAMBOO_CANE_SFX
+    hatPath = 'phase_5/models/props/hat.bam'
 
     def __init__(self):
-        ToonUpGag.__init__(self, GagGlobals.BambooCane,
-                           'phase_5/models/props/cane.bam', 40, 45, 100, GagGlobals.BAMBOO_CANE_SFX, 1)
+        ToonUpGag.__init__(self)
         self.setImage('phase_3.5/maps/bamboo-cane.png')
-        self.hatPath = 'phase_5/models/props/hat.bam'
         self.hat = None
         self.track = None
         self.scaleDuration = 0.5

@@ -14,10 +14,14 @@ from direct.interval.IntervalGlobal import Parallel, Sequence, Func, Wait, Sound
 from panda3d.core import Vec3
 
 class Whistle(SoundGag):
+        
+    name = GagGlobals.Whistle
+    model = 'phase_5/models/props/whistle.bam'
+    appearSfxPath = GagGlobals.WHISTLE_APPEAR_SFX
+    soundSfxPath = GagGlobals.WHISTLE_SFX
 
     def __init__(self):
-        SoundGag.__init__(self, GagGlobals.Whistle, 'phase_5/models/props/whistle.bam', 7,
-                          GagGlobals.WHISTLE_APPEAR_SFX, GagGlobals.WHISTLE_SFX, hitSfx = None)
+        SoundGag.__init__(self)
         self.setImage('phase_3.5/maps/whistle.png')
         self.setRechargeTime(3.5)
 

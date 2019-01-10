@@ -20,10 +20,17 @@ from src.coginvasion.toon import ParticleLoader
 from PowerBar import PowerBar
 
 class TNT(TossTrapGag):
+        
+    name = GagGlobals.TNT
+    model = "phase_5/models/props/tnt-mod.bam"
+    idleSfxPath = "phase_5/audio/sfx/TL_dynamite.ogg"
+    hitSfxPath = "phase_3.5/audio/sfx/ENC_cogfall_apart.ogg"
+    particlesFx = "phase_5/etc/tnt.ptf"
+    anim = "phase_5/models/props/tnt-chan.bam"
+    
 
     def __init__(self):
-        TossTrapGag.__init__(self, GagGlobals.TNT, "phase_5/models/props/tnt-mod.bam", 180, "phase_3.5/audio/sfx/ENC_cogfall_apart.ogg",
-                             "phase_5/audio/sfx/TL_dynamite.ogg", particlesFx="phase_5/etc/tnt.ptf", anim = "phase_5/models/props/tnt-chan.bam")
+        TossTrapGag.__init__(self)
         self.maxDistance = GagGlobals.TNT_RANGE
         self.setImage('phase_3.5/maps/tnt.png')
         self.setRechargeTime(0.0)

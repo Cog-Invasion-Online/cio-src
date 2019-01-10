@@ -15,18 +15,20 @@ from direct.interval.IntervalGlobal import ProjectileInterval
 from panda3d.core import NodePath, BitMask32, CollisionSphere, CollisionNode, CollisionHandlerEvent
 
 class TossTrapGag(TrapGag):
+        
+    wantParticles = True
+    particlesFx = None
+    idleSfxPath = None
 
-    def __init__(self, name, model, damage, hitSfx, idleSfx = None, particlesFx = None, anim = None, wantParticles = True):
-        TrapGag.__init__(self, name, model, damage, hitSfx, anim)
-        self.wantParticles = wantParticles
+    def __init__(self):
+        TrapGag.__init__(self)
         self.particles = None
-        self.particlesFx = particlesFx
         self.idleSfx = None
         self.timeout = 5.0
 
         if metadata.PROCESS == 'client':
-            if idleSfx:
-                self.idleSfx = base.audio3d.loadSfx(idleSfx)
+            if self.idleSfxPath:
+                self.idleSfx = base.audio3d.loadSfx(self.idleSfxPath)
 
     def startTrap(self):
         TrapGag.startTrap(self)

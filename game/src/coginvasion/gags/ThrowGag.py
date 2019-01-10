@@ -33,11 +33,13 @@ class ThrowGag(Gag):
     BobPlayRateMultiplier = 0.25
     ThrowObjectFrame = 62
     FinalThrowFrame = 90
+    
+    splatColor = (1, 1, 1, 1)
+    gagType = GagType.THROW
 
-    def __init__(self, name, model, damage, hitSfx, splatColor, anim = None, scale = 1):
-        Gag.__init__(self, name, model, GagType.THROW, hitSfx, anim = anim, scale = scale)
+    def __init__(self):
+        Gag.__init__(self)
         self.splatScale = GagGlobals.splatSizes[self.name]
-        self.splatColor = splatColor
         self.entities = []
         self.timeout = 1.0
         self.powerBar = None

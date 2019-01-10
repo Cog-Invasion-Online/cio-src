@@ -12,6 +12,7 @@ from src.coginvasion.gags.Gag import Gag
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags import GagGlobals
+from src.coginvasion.base.Precache import precacheSound
 from src.coginvasion.phys.WorldCollider import WorldCollider
 from src.coginvasion.globals import CIGlobals
 from LocationGag import LocationGag
@@ -29,14 +30,17 @@ SoundTrackName = 'SoundTrack'
 
 class DropGag(Gag, LocationGag):
     notify = directNotify.newCategory('DropGag')
+    
+    gagType = GagType.DROP
+    missSfxPath = None
+    fallSoundPath = 'phase_5/audio/sfx/incoming_whistleALT.ogg'
 
-    def __init__(self, name, model, anim, damage, hitSfx, missSfx, scale, playRate):
-        Gag.__init__(self, name, model, GagType.DROP, hitSfx, anim = anim, scale = scale)
+    def __init__(self):
+        Gag.__init__(self)
         LocationGag.__init__(self, 3, 50)
         self.crosshair.wantCrosshair = False
         self.holdGag = False
         self.missSfx = None
-        self.fallSoundPath = 'phase_5/audio/sfx/incoming_whistleALT.ogg'
         self.fallSfx = None
         self.chooseLocFrame = 34
         self.completeFrame = 77
@@ -45,7 +49,7 @@ class DropGag(Gag, LocationGag):
         self.isDropping = False
         self.timeout = 3.0
         if metadata.PROCESS == 'client':
-            self.missSfx = base.audio3d.loadSfx(missSfx)
+            self.missSfx = base.audio3d.loadSfx(self.missSfxPath)
             self.fallSfx = base.audio3d.loadSfx(self.fallSoundPath)
 
         self.dropCollider = None
@@ -65,6 +69,11 @@ class DropGag(Gag, LocationGag):
         self.shadowIdleTaskName = 'Handle-IdleShadow'
 
         self.lastShadowMoveTime = 0.0
+        
+    @classmethod
+    def doPrecache(cls):
+        super(DropGag, cls).doPrecache()
+        precacheSound(cls.fallSoundPath)
 
     def build(self):
         # Let's move away from using the `gag` attribute and instead

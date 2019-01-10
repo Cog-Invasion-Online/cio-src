@@ -49,7 +49,10 @@ class InitialLoad(LoadUtility):
         loader.progressScreen.logoNode.setScale(1.8)
         self.createGui()
         loader.beginBulkLoad('init', 'init', len(self.models), 0, False)
-        LoadUtility.load(self)
+        if base.config.GetBool('precache-assets', True):
+            base.precacheStuff()
+        self.done()
+       # LoadUtility.load(self)
 
     def done(self):
         # Load C++ tournament music stuff.

@@ -14,10 +14,16 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, LerpP
 from panda3d.core import Point3
 
 class Lipstick(ToonUpGag):
+    
+    name = GagGlobals.Lipstick
+    model = 'phase_5/models/props/lipstick.bam'
+    minHeal = 25
+    maxHeal = 30
+    efficiency = 75
+    hitSfxPath = GagGlobals.SMOOCH_SFX
 
     def __init__(self):
-        ToonUpGag.__init__(self, GagGlobals.Lipstick,
-                           GagGlobals.getProp(5, 'lipstick'), 25, 30, 75, GagGlobals.SMOOCH_SFX, 1)
+        ToonUpGag.__init__(self)
         self.setImage('phase_3.5/maps/lipstick.png')
         self.avAnim = 'smooch'
         self.track = None
