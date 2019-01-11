@@ -574,6 +574,9 @@ class CIBase(ShowBase):
         
         from src.coginvasion.gags.LocationGag import LocationGag
         LocationGag.precache()
+        
+        from src.coginvasion.hood.DistributedBuilding import DistributedBuilding
+        DistributedBuilding.precache()
 
     def setHDR(self, toggle):
         self.hdrToggle = toggle
