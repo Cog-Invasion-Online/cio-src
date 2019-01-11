@@ -109,6 +109,10 @@ class FPSCamera(DirectObject):
         self.viewModel.showThrough(CIGlobals.ViewModelCamMask)
 
     def __vpDebugTask(self, task):
+        if self.vmRender.getState() != render.getState():
+            # pretend like the view model is part of the main scene
+            self.vmRender.setState(render.getState())
+            
         self.viewportLens.setAspectRatio(base.getAspectRatio())
         self.viewportLens.setMinFov(self.ViewModelFOV / (4. / 3.))
         self.vmRoot.setTransform(render, self.camRoot.getTransform(render))

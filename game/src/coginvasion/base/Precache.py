@@ -11,7 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
       there is little to no chug.
 """
 
-from panda3d.core import OmniBoundingVolume
+from panda3d.core import OmniBoundingVolume, NodePathCollection
 from panda3d.bsp import BSPMaterial
 
 class Precacheable(object):
@@ -37,6 +37,13 @@ def precacheScene(scene, reset = True):
         rHidden = True
         render.show()
         
+    stashed = NodePathCollection()
+    for np in scene.findAllMatches("**;+s"):
+        if np.isStashed():
+            stashed.addPath(np)
+            print np, "is stashed"
+            np.unstash()
+        
     if not scene.isAncestorOf(render):
         # if it's parented to camera,
         # camera will always see it
@@ -61,6 +68,10 @@ def precacheScene(scene, reset = True):
 
         if rHidden:
             render.hide()
+    
+    # restash
+    for np in stashed:
+        np.stash()
 
     return rHidden
     

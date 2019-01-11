@@ -22,16 +22,22 @@ from direct.gui.DirectGui import DirectLabel
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cog import Dept
 from src.coginvasion.hood import ZoneUtil
+from src.coginvasion.base.Precache import Precacheable, precacheModel
 
 from src.coginvasion.cogoffice.ElevatorConstants import *
 from src.coginvasion.cogoffice.ElevatorUtils import *
 from src.coginvasion.cogoffice.SuitBuildingGlobals import *
 
-class DistributedBuilding(DistributedObject):
+class DistributedBuilding(DistributedObject, Precacheable):
     notify = directNotify.newCategory('DistributedBuilding')
 
     SUIT_INIT_HEIGHT = 125
     TAKEOVER_SFX_PREFIX = 'phase_5/audio/sfx/'
+    
+    # for precaching
+    ELEVATOR_MDL = 'phase_4/models/modules/elevator.bam'
+    ICONS_MDL = 'phase_3/models/gui/cog_icons.bam'
+    SIGN_MDL = 'phase_5/models/modules/suit_sign.bam'
 
     def __init__(self, cr):
         DistributedObject.__init__(self, cr)
@@ -55,6 +61,12 @@ class DistributedBuilding(DistributedObject):
         self.toonGrowSound = None
         self.toonSettleSound = None
         self.leftDoor = None
+        
+    @classmethod
+    def doPrecache(cls):
+        precacheModel(cls.ELEVATOR_MDL)
+        precacheModel(cls.ICONS_MDL)
+        precacheModel(cls.SIGN_MDL)
 
     def getDeptClassFromAbbr(self, abbr):
         if abbr == 's':
@@ -200,7 +212,7 @@ class DistributedBuilding(DistributedObject):
     def loadElevator(self, newNP):
         self.floorIndicator = [None, None, None, None, None]
         self.elevatorNodePath = hidden.attachNewNode('elevatorNodePath')
-        self.elevatorModel = loader.loadModel('phase_4/models/modules/elevator.bam')
+        self.elevatorModel = loader.loadModel(self.ELEVATOR_MDL)
         npc = self.elevatorModel.findAllMatches('**/floor_light_?;+s')
         for i in xrange(npc.getNumPaths()):
             np = npc.getPath(i)
@@ -213,7 +225,7 @@ class DistributedBuilding(DistributedObject):
 
         self.elevatorModel.reparentTo(self.elevatorNodePath)
         self.cab = self.elevatorModel.find('**/elevator')
-        cogIcons = loader.loadModel('phase_3/models/gui/cog_icons.bam')
+        cogIcons = loader.loadModel(self.ICONS_MDL)
         dept = self.getDeptClassFromAbbr(self.suitDept)
         if dept == Dept.BOSS:
             corpIcon = cogIcons.find('**/CorpIcon').copyTo(self.cab)
@@ -351,7 +363,7 @@ class DistributedBuilding(DistributedObject):
         textHeight = textNode.getHeight()
         zScale = (textHeight + 2) / 3.0
         signOrigin = suitBuildingNP.find('**/sign_origin;+s')
-        backgroundNP = loader.loadModel('phase_5/models/modules/suit_sign.bam')
+        backgroundNP = loader.loadModel(self.SIGN_MDL)
         backgroundNP.reparentTo(signOrigin)
         backgroundNP.setPosHprScale(0.0, 0.0, textHeight * 0.8 / zScale, 0.0, 0.0, 0.0, 8.0, 8.0, 8.0 * zScale)
         #backgroundNP.node().setEffect(DecalEffect.make())

@@ -26,7 +26,7 @@ FavoriteGag = 'Favorite Gag'
 FavoriteGagPos = (0, 0, -0.125)
 FavoriteGagTitlePos = (0, 0.075, 0)
 FavoriteGagNamePos = (0, -0.325, 0)
-GagGlowColor = (1.0, 1.0, 0.4, 1.0)
+GagGlowColor = (1.0, 1.0, 1.0, 1.0)
 NewGagCongratsMessages = ['Yeah!', 'Wow!', 
     'Cool!', 'Congrats!', 'Awesome!',
     'Toon-tastic!', 'Fantastic!']
@@ -39,8 +39,9 @@ class RewardPanel(DirectFrame):
         dialogBox = loader.loadModel('phase_3/models/gui/dialog_box_gui.bam')
         DirectFrame.__init__(self, relief = None, geom = dialogBox, 
             geom_color = CIGlobals.DialogColor, geom_scale = (1.75, 1, 0.75 * 1.1),
-            geom_pos = Point3(0, 0, -0.05), pos = (0, 0, 0.57))
+            geom_pos = Point3(0, 0, -0.05), pos = (0, 0, 0.661))
         self.initialiseoptions(RewardPanel)
+        self.setScale(0.8)
         
         # The data for the reward panel inside of a RPToonData object.
         self.panelData = panelData
@@ -77,20 +78,21 @@ class RewardPanel(DirectFrame):
             fg = (1, 0.2, 0.2, 1), sort = 0)
         
         glow = loader.loadModel('phase_4/models/minigames/particleGlow.bam')
+        self.favoriteGagGlow = OnscreenImage(parent = self.playerInfo,
+            image = glow, pos = FavoriteGagPos, color = GagGlowColor,
+            scale = (0.8, 0.8, 0.8))
+        self.favoriteGagGlow.setBin('gui-popup', 10)
+        # particleGlow.bam uses a material since it's normally part of render, not render2d.
+        # Since render2d is still fixed-function, we have to explicitly enable shader generation
+        # to correctly display the glow in render2d.
+        self.favoriteGagGlow.setShaderAuto()
+        
         invIcons = loader.loadModel('phase_3.5/models/gui/inventory_icons.bam')
         gag = invIcons.find(GagGlobals.InventoryIconByName.get(GagGlobals.Foghorn))
         self.favoriteGag = OnscreenImage(parent = self.playerInfo, 
             image = gag, pos = FavoriteGagPos, 
             scale = (1.65, 1.65, 1.65))
         self.favoriteGag.setBin('gui-popup', 20)
-        
-        self.favoriteGagGlow = OnscreenImage(parent = self.playerInfo,
-            image = glow, pos = FavoriteGagPos, color = GagGlowColor,
-            scale = (0.8, 0.8, 0.8))
-        
-        self.favoriteGagGlow.setBin('gui-popup', 10)
-        self.favoriteGagGlow.setDepthTest(False)
-        self.favoriteGagGlow.setDepthWrite(False)
         
         self.favoriteGagName = OnscreenText(parent = self.playerInfo,
             text = GagGlobals.Foghorn, font = CIGlobals.getToonFont(),
