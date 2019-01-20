@@ -10,11 +10,12 @@ aux-display pandagl
 #clock-frame-rate 10
 
 # Logging...
-notify-level warning
+notify-level info
 notify-level-egg2pg warning
-notift-level-bspfile info
+notift-level-bspfile debug
+notify-level-pgraph info
 notify-timestamp #f
-default-directnotify-level warning
+default-directnotify-level info
 
 # Filenames...
 cursor-filename resources/toonmono.cur
@@ -57,6 +58,7 @@ vfs-mount resourcepack/phase_14 phase_14
 # Server...
 server-port 7032
 server-address gameserver.coginvasion.com
+connect-method native
 
 # Performance...
 hardware-animated-vertices #f
@@ -67,6 +69,7 @@ framebuffer-multisample 0
 framebuffer-stencil 0
 support-stencil 0
 framebuffer-srgb 0
+framebuffer-alpha 1
 default-texture-color-space sRGB
 textures-srgb 1
 multisamples 0
@@ -98,9 +101,13 @@ hdr-percent-bright-pixels 2.0
 hdr-percent-target 60.0
 hdr-debug-histogram #f
 
-want-pssm 0
+want-pssm 1
+pssm-debug-cascades 1
 pssm-splits 3
 pssm-size 2048
+pssm-size-0 4096
+pssm-size-1 1024
+pssm-size-2 512
 pssm-shadow-depth-bias 0.0001
 pssm-normal-offset-scale 0.1
 pssm-softness-factor 2.0
@@ -109,13 +116,13 @@ shadow-depth-bits 32
 stencil-bits 8
 
 # Time averaged lighting in BSP levels to reduce popping
-light-average 0
+light-average 1
 light-lerp-speed 5.0
 
 ctmusic-numsongs 1
 
 want-pstats 0
-pstats-gpu-timing 0
+pstats-gpu-timing 1
 pstats-host 127.0.0.1
 
 preload-textures 0
@@ -152,9 +159,11 @@ text-dynamic-merge 1
 
 interpolate-frames 0
 
-#threading-model App/Cull/Draw # experimental
+#threading-model Cull/Draw # experimental
 assert-abort 0
 
 textures-power-2 none
 
 precache-assets 1
+
+mat_rimlight 1
