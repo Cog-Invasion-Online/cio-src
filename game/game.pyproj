@@ -85,6 +85,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\coginvasion\base\PositionExaminer.py" />
+    <Compile Include="src\coginvasion\base\Precache.py" />
     <Compile Include="src\coginvasion\base\Ripples.py" />
     <Compile Include="src\coginvasion\base\ScreenshotHandler.py" />
     <Compile Include="src\coginvasion\base\SectionedSound.py" />
