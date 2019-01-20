@@ -317,7 +317,7 @@ class WaterScene:
             tmpnp.setAttrib(CullFaceAttrib.makeDefault())
         # As an optimization, disable any kind of shaders (mainly the ShaderGenerator) on the
         # reflected/refracted scene.
-        tmpnp.setShaderOff(10)
+        #tmpnp.setShaderOff(10)
         tmpnp.setAntialias(0, 10)
         self.camera.node().setInitialState(tmpnp.getState())
 

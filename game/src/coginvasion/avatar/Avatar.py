@@ -29,6 +29,7 @@ notify = directNotify.newCategory("Avatar")
 
 class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
     RealShadows = ConfigVariableBool('want-real-shadows', False)
+    AvatarMovedEpsilon = 0.05
 
     def __init__(self, mat=0):
         try:
@@ -269,7 +270,8 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         delta = time - self.lastWakeTime
         dt = globalClock.getDt()
         pos = self.getPos(render)
-        moveMag = (pos - self.prevPos).length() / dt
+        posDelta = (pos - self.prevPos).lengthSquared()
+        moveMag =  posDelta / dt
         if moveMag > 5.0 and delta > 0.1:
             if hasattr(base, 'waterReflectionMgr'):
                 result = base.waterReflectionMgr.isTouchingAnyWater(pos, pos + (0, 0, self.height))
@@ -278,7 +280,10 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
                     self.lastWakeTime = time
         self.prevPos = pos
 
-        if not self.avatarFloorToggle and not self.shadowFloorToggle:
+        if (not self.avatarFloorToggle and
+            not self.shadowFloorToggle or
+            moveMag < self.AvatarMovedEpsilon):
+                
             # Avoid unnecessary ray casting.
             return task.cont
 
@@ -290,7 +295,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         aboveResult = base.physicsWorld.rayTestAll(pFrom, pTo, CIGlobals.WallGroup | CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
         aboveGround = False
         if aboveResult.hasHits():
-            sortedHits = sorted(aboveResult.getHits(), key = lambda hit: (pFrom - hit.getHitPos()).length())
+            sortedHits = sorted(aboveResult.getHits(), key = lambda hit: (pFrom - hit.getHitPos()).lengthSquared())
             for i in xrange(len(sortedHits)):
                 hit = sortedHits[i]
                 node = hit.getNode()
@@ -308,7 +313,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         pTo = pFrom + (0, 0, 2000)
         belowResult = base.physicsWorld.rayTestAll(pFrom, pTo, CIGlobals.WallGroup | CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
         if belowResult.hasHits():
-            sortedHits = sorted(belowResult.getHits(), key = lambda hit: (pFrom - hit.getHitPos()).length())
+            sortedHits = sorted(belowResult.getHits(), key = lambda hit: (pFrom - hit.getHitPos()).lengthSquared())
             for i in xrange(len(sortedHits)):
                 hit = sortedHits[i]
                 node = hit.getNode()

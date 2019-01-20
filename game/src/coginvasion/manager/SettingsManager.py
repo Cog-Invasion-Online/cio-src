@@ -156,20 +156,10 @@ class SettingsManager:
         if maspr is None:
             maspr = self.updateAndWriteSetting("maspr", True)
             
-        # Lighting
-        lighting = settings.get("lighting", None)
-        if lighting is None:
-            lighting = self.updateAndWriteSetting("lighting", False)
-            
         # Hdr
         hdr = settings.get("hdr", None)
         if hdr is None:
             hdr = self.updateAndWriteSetting("hdr", False)
-            
-        # Per pixel lighting
-        ppl = settings.get("ppl", None)
-        if ppl is None:
-            ppl = self.updateAndWriteSetting("ppl", False)
             
         # Reflection quality
         refl = settings.get("refl", None)
@@ -190,17 +180,6 @@ class SettingsManager:
         base.enableSoundEffects(sfx)
         
         from src.coginvasion.globals import CIGlobals
-        
-        metadata.USE_LIGHTING = lighting
-        if lighting:
-            #render.show(CIGlobals.ShadowCameraBitmask)
-            if ppl:
-                render.setShaderAuto()
-            else:
-                render.setShaderOff(1)
-        else:
-            render.setShaderOff(1)
-            render.setLightOff(1)
 
         base.musicManager.setVolume(musvol)
         base.sfxManagerList[0].setVolume(sfxvol)

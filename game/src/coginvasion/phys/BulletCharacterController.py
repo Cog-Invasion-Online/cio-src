@@ -1,4 +1,4 @@
-from panda3d.core import Vec3, Point3, Quat, BitMask32, TransformState, MeshDrawer, Vec4, LineSegs, NodePath
+from panda3d.core import Vec3, Point3, Quat, BitMask32, TransformState, MeshDrawer, Vec4, LineSegs, NodePath, PStatCollector
 from panda3d.bullet import BulletCapsuleShape, BulletRigidBodyNode, BulletGhostNode, BulletSphereShape
 
 from direct.showbase.DirectObject import DirectObject
@@ -6,6 +6,27 @@ from direct.showbase.DirectObject import DirectObject
 from src.coginvasion.globals import CIGlobals
 
 import math
+
+updateCollector = PStatCollector("App:PhysController:Update")
+testDnCollector = PStatCollector("App:PhysController:TestDown")
+
+updFootContactCollector = PStatCollector("App:PhysController:UpdateFootContact")
+updEventSphCollector = PStatCollector("App:PhysController:UpdateEventSphere")
+updHeadContactCollector = PStatCollector("App:PhysController:UpdateHeadContact")
+
+prevPeneCollector = PStatCollector("App:PhysController:PreventPenetration")
+sweepCollector = PStatCollector("App:PhysController:PreventPenetration:DoSweepTest")
+testUpCollector = PStatCollector("App:PhysController:UpdateFootContact:TestUp")
+rtaCollector = PStatCollector("App:PhysController:UpdateFootContact:RayTestAll")
+sortCollector = PStatCollector("App:PhysController:UpdateFootContact:SortHits")
+iterateCollector = PStatCollector("App:PhysController:UpdateFootContact:Iterate")
+iterationsCollector = PStatCollector("Phys Controller Iterations")
+
+procGroundCollector = PStatCollector("App:PhysController:ProcessGround")
+procFallCollector = PStatCollector("App:PhysController:ProcessFalling")
+procJmpCollector = PStatCollector("App:PhysController:ProcessJumping")
+procSwimCollector = PStatCollector("App:PhysController:ProcessSwimming")
+
 
 class BulletCharacterController(DirectObject):
     """
@@ -197,6 +218,8 @@ class BulletCharacterController(DirectObject):
         """
         Update method. Call this around doPhysics.
         """
+        updateCollector.start()
+        
         processStates = {
             "ground": self.__processGround,
             "jumping": self.__processJumping,
@@ -207,19 +230,21 @@ class BulletCharacterController(DirectObject):
         self.__currentPos = self.movementParent.getPos(render)
         self.__targetPos = Vec3(self.__currentPos)
         
+        testDnCollector.start()
         pFrom = self.capsuleNP.getPos(render) + (0, 0, 0.1)
         pTo = pFrom - (0, 0, 2000)
         result = base.physicsWorld.rayTestClosest(pFrom, pTo, CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
         # Only fall if there is a ground for us to fall onto.
         # Prevents the character from falling out of the world.
         self.__aboveGround = result.hasHit()
+        testDnCollector.stop()
         
         self.__timeStep = globalClock.getDt()
         
         self.__updateEventSphere()
         self.__updateFootContact()
         self.__updateHeadContact()
-        
+
         processStates[self.movementState]()
         
         self.__applyLinearVelocity()
@@ -229,8 +254,12 @@ class BulletCharacterController(DirectObject):
         
         if self.isCrouching and not self.__enabledCrouch:
             self.__standUp()
+            
+        updateCollector.stop()
 
     def __updateEventSphere(self):
+        updEventSphCollector.start()
+        
         overlapping = []
 
         result = base.physicsWorld.contactTest(self.eventSphereNP.node())
@@ -248,6 +277,8 @@ class BulletCharacterController(DirectObject):
                 messenger.send('exit' + node.getName(), [NodePath(node)])
 
         self.__prevOverlapping = list(overlapping)
+        
+        updEventSphCollector.stop()
     
     def __land(self):
         self.movementState = "ground"
@@ -313,15 +344,21 @@ class BulletCharacterController(DirectObject):
             self.__standUpCallback[0](*self.__standUpCallback[1], **self.__standUpCallback[2])
     
     def __processGround(self):
+        procGroundCollector.start()
+        
         if not self.isOnGround():
             self.__fall()
         else:
             self.__targetPos.z = self.__footContact[0].z
+            
+        procGroundCollector.stop()
     
     def __processFalling(self):
         if not self.__aboveGround:
             # Don't fall if we don't have a ground to fall onto!
             return
+            
+        procFallCollector.start()
             
         self.__fallTime += self.__timeStep
         self.fallDelta = self.gravity * (self.__fallTime) ** 2
@@ -337,6 +374,8 @@ class BulletCharacterController(DirectObject):
             self.__targetPos.z = self.__footContact[0].z
             if self.__fallCallback[0] is not None:
                 self.__fallCallback[0](self.__fallStartPos - newPos.z, *self.__fallCallback[1], **self.__fallCallback[2])
+                
+        procFallCollector.stop()
     
     def __processJumping(self):
         if self.__headContact is not None and self.__capsuleTop >= self.__headContact[0].z:
@@ -349,6 +388,8 @@ class BulletCharacterController(DirectObject):
             # Emulate the original toontown mechanisms.
             return
         
+        procJmpCollector.start()
+        
         oldPos = float(self.__targetPos.z)
         
         self.jumpTime += self.__timeStep
@@ -357,8 +398,12 @@ class BulletCharacterController(DirectObject):
         
         if round(self.__targetPos.z, 2) >= self.jumpMaxHeight:
             self.__fall()
+            
+        procJmpCollector.stop()
     
     def __processSwimming(self):
+        procSwimCollector.start()
+        
         if self.__footContact:
             absSlopeDot = round(self.__footContact[2].dot(Vec3.up()), 2)
             if self.__targetPos.z - 0.1 < self.__footContact[0].z and (self.__linearVelocity.z < 0.0 or absSlopeDot < 1):
@@ -367,6 +412,8 @@ class BulletCharacterController(DirectObject):
         
         if self.__headContact and self.__capsuleTop >= self.__headContact[0].z and self.__linearVelocity.z > 0.0:
             self.__linearVelocity.z = 0.0
+            
+        procSwimCollector.stop()
     
     def __checkFutureSpace(self, globalVel):
         globalVel = globalVel * self.futureSpacePredictionDistance
@@ -394,6 +441,9 @@ class BulletCharacterController(DirectObject):
     
     
     def __updateFootContact(self):
+        updFootContactCollector.start()
+        
+        testUpCollector.start()
         if not self.__aboveGround:
             pFrom = self.capsuleNP.getPos(render)
             pTo = pFrom + (0, 0, 2000)
@@ -402,40 +452,68 @@ class BulletCharacterController(DirectObject):
                 self.__footContact = [result.getHitPos(), result.getNode(), result.getHitNormal()]
                 self.__targetPos.z = self.__footContact[0].z
                 self.movementState = "ground"
+                testUpCollector.stop()
+                updFootContactCollector.stop()
                 return
-
+        testUpCollector.stop()
+        
+        rtaCollector.start()
         pFrom = Point3(self.capsuleNP.getPos(render))
         pTo = Point3(pFrom - Point3(0, 0, self.__footDistance))
         result = self.__world.rayTestAll(pFrom, pTo, CIGlobals.WallGroup | CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
+        rtaCollector.stop()
         
         if not result.hasHits():
             self.__footContact = None
+            updFootContactCollector.stop()
             return
         
-        sorted_hits = sorted(result.getHits(), key = lambda hit: (pFrom - hit.getHitPos()).length())
+        sortCollector.start()
+        sorted_hits = sorted(result.getHits(), key = lambda hit: (pFrom - hit.getHitPos()).lengthSquared())
+        sortCollector.stop()
         
+        iterationsCollector.flushLevel()
+        iterationsCollector.clearLevel()
+        
+        itrs = 0
+        
+        iterateCollector.start()
         for hit in sorted_hits:
+            iterationsCollector.addLevel(1)
+            itrs += 1
+            node = hit.getNode()
             if type(hit.getNode()) is BulletGhostNode:
                 continue
+                
+            idx = hit.getTriangleIndex()
             
             if self.__spam and self.movementState != "swimming" and not base.localAvatar.touchingWater:
-                dat = base.materialData.get(hit.getNode(), {})
-                mat = dat.get(hit.getTriangleIndex(), "dirt")
-                if base.localAvatar.walkControls.getCurrentSurface() != mat:
-                    base.localAvatar.walkControls.setCurrentSurface(mat)
-            self.__footContact = [hit.getHitPos(), hit.getNode(), hit.getHitNormal()]
+                mat = base.localAvatar.walkControls.getDefaultSurface()
+                if node in base.materialData:
+                    dat = base.materialData[node]
+                    if idx in dat:
+                        mat = dat[idx]
+                base.localAvatar.walkControls.setCurrentSurface(mat)
+            
+            self.__footContact = [hit.getHitPos(), node, hit.getHitNormal()]
             break
+        
+        iterateCollector.stop()
+        updFootContactCollector.stop()
     
     def __updateHeadContact(self):
+        updHeadContactCollector.start()
+        
         pFrom = Point3(self.capsuleNP.getPos(render))
         pTo = Point3(pFrom + Point3(0, 0, self.__capsuleH * 20.0))
         result = self.__world.rayTestAll(pFrom, pTo, CIGlobals.WallGroup)
         
         if not result.hasHits():
             self.__headContact = None
+            updHeadContactCollector.stop()
             return
         
-        sorted_hits = sorted(result.getHits(), key = lambda hit: (pFrom - hit.getHitPos()).length())
+        sorted_hits = sorted(result.getHits(), key = lambda hit: (pFrom - hit.getHitPos()).lengthSquared())
         
         for hit in sorted_hits:
             if type(hit.getNode()) is BulletGhostNode:
@@ -443,6 +521,8 @@ class BulletCharacterController(DirectObject):
             
             self.__headContact = [hit.getHitPos(), hit.getNode()]
             break
+            
+        updHeadContactCollector.stop()
     
     def __updateCapsule(self):
         self.movementParent.setPos(render, self.__targetPos)
@@ -505,6 +585,8 @@ class BulletCharacterController(DirectObject):
         if self.noClip:
             return
             
+        prevPeneCollector.start()
+            
         maxIter = 10
         fraction = 1.0
 
@@ -523,7 +605,9 @@ class BulletCharacterController(DirectObject):
         
             tsFrom = TransformState.makePos(self.__currentPos + offset)
             tsTo = TransformState.makePos(currentTarget + offset)
+            sweepCollector.start()
             result = self.__world.sweepTestClosest(self.capsuleNP.node().getShape(0), tsFrom, tsTo, CIGlobals.WallGroup, 1e-7)
+            sweepCollector.stop()
             if result.hasHit() and (type(result.getNode()) is not BulletGhostNode):
                 if result.getNode().getCollisionResponse():
                     fraction -= result.getHitFraction()
@@ -551,6 +635,8 @@ class BulletCharacterController(DirectObject):
         #    self.currLineSegsGeom = render.attachNewNode(lines.create())
 
         self.__targetPos += collisions
+        
+        prevPeneCollector.stop()
     
     def __mapMethods(self):
         self.getHpr = self.movementParent.getHpr

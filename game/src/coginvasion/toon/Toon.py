@@ -688,8 +688,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         
         # Don't do it in Make-A-Toon though, as we have to be constantly modifying the pieces.
         if not self.mat:
-            self.getPart('legs').flattenStrong()
-            self.postFlatten()
+            self.optimize()
 
         if makeTag:
             self.setupNameTag()
@@ -697,6 +696,10 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.showAvId()
 
         self.loop('neutral')
+        
+    def optimize(self):
+        self.getPart('legs').flattenStrong()
+        self.postFlatten()
 
     def attachTNT(self):
         self.pies.attachTNT()

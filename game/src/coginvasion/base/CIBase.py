@@ -12,7 +12,7 @@ from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, Te
 from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState, Vec4, Point3
 from panda3d.core import CollisionTraverser, CullBinManager, LightRampAttrib, Camera, OmniBoundingVolume, Texture, GraphicsOutput
 from panda3d.bullet import BulletWorld, BulletDebugNode
-from panda3d.bsp import BSPLoader, BSPRender, PSSMShaderGenerator, VertexLitGenericSpec, LightmappedGenericSpec, UnlitGenericSpec
+from panda3d.bsp import BSPLoader, BSPRender, PSSMShaderGenerator, VertexLitGenericSpec, LightmappedGenericSpec, UnlitGenericSpec, UnlitNoMatSpec, CSMRenderSpec
 
 from p3recastnavigation import RNNavMeshManager
 
@@ -57,8 +57,19 @@ class CIBase(ShowBase):
             __builtin__.loader = self.loader
             self.graphicsEngine.setDefaultLoader(self.loader.loader)
 
-        #self.startTk()
-		
+        # Enable shader generation on all of the main scenes
+        gsg = self.win.getGsg()
+        if gsg.getSupportsBasicShaders() and gsg.getSupportsGlsl():
+            render.setShaderAuto()
+            render2d.setShaderAuto()
+            render2dp.setShaderAuto()
+            aspect2d.setShaderAuto()
+            pixel2d.setShaderAuto()
+        else:
+            # I don't know how this could be possible
+            self.notify.error("GLSL shaders unsupported by graphics driver.")
+            return
+
 		# Any ComputeNodes should be parented to this node, not render.
 		# We isolate ComputeNodes to avoid traversing the same ComputeNodes
 		# when doing multi-pass rendering.
@@ -75,7 +86,6 @@ class CIBase(ShowBase):
         render.hide()
 
         self.camLens.setNearFar(0.5, 10000)
-        #self.taskMgr.setupTaskChain('fpsIndependentStuff', numThreads = 1, frameSync = False)
 
         self.physicsWorld = BulletWorld()
         # Panda units are in feet, so the gravity is 32 feet per second,
@@ -110,7 +120,7 @@ class CIBase(ShowBase):
         self.bspLoader.setWantVisibility(True)
         self.bspLoader.setVisualizeLeafs(False)
         self.bspLoader.setWantLightmaps(True)
-        self.bspLoader.setWantShadows(metadata.USE_REAL_SHADOWS)
+        #self.bspLoader.setWantShadows(metadata.USE_REAL_SHADOWS)
         self.bspLoader.setShadowCamPos(Point3(-15, 5, 40))
         self.bspLoader.setShadowResolution(60 * 2, 1024 * 1)
         self.bspLevel = None
@@ -212,6 +222,9 @@ class CIBase(ShowBase):
         #self.accept('o', render.setShaderOff, [2])
         self.accept('o', self.oobeCull)
         self.accept('c', self.reportCam)
+        
+    def hideHood(self):
+        base.cr.playGame.hood.loader.geom.hide()
         
     def reportCam(self):
         print self.camera
@@ -538,13 +551,33 @@ class CIBase(ShowBase):
         # Precache water bar shader, prevents crash from running out of GPU registers
         loader.loadShader("phase_14/models/shaders/progress_bar.sha")
 
-        vlg = VertexLitGenericSpec() # models
-        ulg = UnlitGenericSpec() # ui elements, particles, etc
-        lmg = LightmappedGenericSpec() # brushes, displacements
+        vlg = VertexLitGenericSpec()    # models
+        ulg = UnlitGenericSpec()        # ui elements, particles, etc
+        lmg = LightmappedGenericSpec()  # brushes, displacements
+        unm = UnlitNoMatSpec()          # when there's no material
+        csm = CSMRenderSpec()           # renders the shadow scene for CSM
         self.shaderGenerator.addShader(vlg)
         self.shaderGenerator.addShader(ulg)
+        self.shaderGenerator.addShader(unm)
         self.shaderGenerator.addShader(lmg)
-    
+        self.shaderGenerator.addShader(csm)
+        
+        if metadata.USE_REAL_SHADOWS and self.config.GetBool('pssm-debug-cascades', False):
+            from panda3d.core import CardMaker, Shader#, Camera, Trackball
+            cm = CardMaker('cm')
+            cm.setFrame(-1, 1, -1, 1)
+            np = aspect2d.attachNewNode(cm.generate())
+            np.setScale(0.3)
+            np.setPos(0, -0.7, -0.7)
+            np.setShader(Shader.load(Shader.SLGLSL, "phase_14/models/shaders/debug_csm.vert.glsl", "phase_14/models/shaders/debug_csm.frag.glsl"))
+            np.setShaderInput("cascadeSampler", self.shaderGenerator.getPssmArrayTexture())
+            #cam = Camera('csmDbgCam')
+            #tb = Trackball('tb')
+            #lens = PerspectiveLens()
+            #cam.setLens(lens)
+            #cam.reparentTo(render)
+            #base.openWindow(useCamera = cam)
+
         wrm = WaterReflectionManager()
         self.waterReflectionMgr = wrm
         __builtin__.waterReflectionMgr = wrm
@@ -557,6 +590,8 @@ class CIBase(ShowBase):
         #self.filters.setAmbientOcclusion()
         #self.filters.setDepthOfField(distance = 10.0, range = 175.0, near = 1.0, far = 1000.0 / (1000.0 - 1.0))
         #self.filters.setFXAA()
+        #render.setLightOff(10)
+        #render.setFogOff(10)
         
     def precacheStuff(self):
         from src.coginvasion.toon import ToonGlobals

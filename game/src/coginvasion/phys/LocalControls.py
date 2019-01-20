@@ -69,7 +69,7 @@ class LocalControls(DirectObject):
         self.footstepIval = LocalControls.FootstepIval
         self.lastFootstepTime = 0
         self.currentSurface = None
-        self.footstepSounds = []
+        self.footstepSounds = {}
         self.currFootstepSound = None
         self.lastFoot = True
         self.setCurrentSurface('default')
@@ -237,24 +237,17 @@ class LocalControls(DirectObject):
     def setCurrentSurface(self, surface):
         if self.currentSurface == surface:
             return
-
-        #if surface == "default":
-        #    surface = "concrete"
-        #if surface == "concrete":
-        #    surface = "default"
-        if surface == "dirt":
-            surface = "default"
             
         self.currentSurface = surface
         
-        self.footstepSounds = []
-        
-        vfs = VirtualFileSystem.getGlobalPtr()
-        for vFile in vfs.scanDirectory("phase_14/audio/sfx/footsteps/"):
-            fullPath = vFile.getFilename().getFullpath()
-            if self.currentSurface == vFile.getFilename().getBasenameWoExtension()[:len(self.currentSurface)]:
-                sound = base.loadSfx(fullPath)
-                self.footstepSounds.append(sound)
+        if not surface in self.footstepSounds:
+            self.footstepSounds[surface] = []
+            vfs = VirtualFileSystem.getGlobalPtr()
+            for vFile in vfs.scanDirectory("phase_14/audio/sfx/footsteps/"):
+                fullPath = vFile.getFilename().getFullpath()
+                if surface == vFile.getFilename().getBasenameWoExtension()[:len(surface)]:
+                    sound = base.loadSfx(fullPath)
+                    self.footstepSounds[surface].append(sound)
 
     def getCurrentSurface(self):
         return self.currentSurface
@@ -414,21 +407,26 @@ class LocalControls(DirectObject):
         if self.exitControlsWhenGrounded:
             self.stopControllerUpdate()
             self.exitControlsWhenGrounded = False
+            
+    def getDefaultSurface(self):
+        return "default"
 
     def playFootstep(self, volume = 1.0):
-        if len(self.footstepSounds) > 0:
+        surfSounds = self.footstepSounds[self.currentSurface]
+        numSounds = len(surfSounds)
+        if numSounds > 0:
             self.lastFoot = not self.lastFoot
-            mid = int(len(self.footstepSounds) / 2)
+            mid = int(numSounds / 2)
             if self.lastFoot:
-                choices = self.footstepSounds[:mid]
+                choices = surfSounds[:mid]
             else:
-                choices = self.footstepSounds[mid:]
+                choices = surfSounds[mid:]
             if self.currFootstepSound:
                 self.currFootstepSound.stop()
             sound = random.choice(choices)
             sound.setVolume(volume * LocalControls.FootstepVolumeMod)
             sound.play()
-            if self.currentSurface != "default":
+            if self.currentSurface != self.getDefaultSurface():
                 # if it's not the default footstep sound, put the default toon step sound behind it
                 # to sound more like feet running
                 default = self.defaultSounds[int(self.lastFoot)]

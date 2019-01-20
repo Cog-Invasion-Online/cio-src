@@ -17,6 +17,7 @@ class WholeCreamPie(ThrowGag):
     model = "phase_14/models/props/creampie.bam"
     hitSfxPath = GagGlobals.WHOLE_PIE_SPLAT_SFX
     splatColor = GagGlobals.CREAM_SPLAT_COLOR
+    scale = 0.9
 
     def __init__(self):
         ThrowGag.__init__(self)

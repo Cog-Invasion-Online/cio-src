@@ -19,11 +19,11 @@ class AdvancedDisplayCategory(OptionsCategory):
     def __init__(self, page):
         OptionsCategory.__init__(self, page)
         
-        self.lighting = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.47), self.__updateLighting, "Lighting",
-            desc = 'Toggles basic per-vertex lighting.\nShould not affect performance.', settingKeyName = 'lighting')
+        #self.lighting = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.47), self.__updateLighting, "Lighting",
+        #    desc = 'Toggles basic per-vertex lighting.\nShould not affect performance.', settingKeyName = 'lighting')
         
-        self.ppl = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.24), self.__updatePPL, "Per-Pixel Lighting",
-            desc = 'Toggles more advanced per-pixel shaders.\nRequires Lighting to be enabled.\nAffects performance.', settingKeyName = 'ppl')
+        #self.ppl = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.24), self.__updatePPL, "Per-Pixel Lighting",
+        #    desc = 'Toggles more advanced per-pixel shaders.\nRequires Lighting to be enabled.\nAffects performance.', settingKeyName = 'ppl')
 
         self.hdr = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.01),
             self.__updateHDR, "HDR Lighting", desc = 'Increases perceived range of colors and brightness on screen.\nRequires Per-Pixel Lighting to be enabled.\nRequires at least OpenGL 4.3.',
@@ -39,14 +39,14 @@ class AdvancedDisplayCategory(OptionsCategory):
 
         self.discardChanges()
         
-    def __updateLighting(self, useLighting):
-        metadata.USE_LIGHTING = useLighting
+    #def __updateLighting(self, useLighting):
+    #    metadata.USE_LIGHTING = useLighting
         
-    def __updatePPL(self, ppl):
-        if ppl:
-            render.setShaderAuto()
-        else:
-            render.setShaderOff(1)
+    #def __updatePPL(self, ppl):
+    #    if ppl:
+    #        render.setShaderAuto()
+    #    else:
+    #        render.setShaderOff(1)
             
     def __updateWater(self, quality):
         resolution = CIGlobals.getSettingsMgr().ReflectionQuality.get(quality)

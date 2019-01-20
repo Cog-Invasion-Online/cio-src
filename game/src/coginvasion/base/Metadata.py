@@ -28,7 +28,7 @@ class Metadata:
     PHASE_DIRECTORY = './resources/'
     USE_RENDER_PIPELINE = 0
     USE_LIGHTING = 1
-    USE_REAL_SHADOWS = 0
+    USE_REAL_SHADOWS = 1
     PHYS_FIXED_TIMESTEP = 1
     PHYS_SUBSTEPS = 1
     

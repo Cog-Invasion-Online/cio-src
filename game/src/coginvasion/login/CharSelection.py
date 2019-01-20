@@ -158,6 +158,15 @@ class CharSelection(DirectObject):
                 # the scene with #flattenStrong(), and finally #wrtReparentTo(self.szGeom)
                 # the trees back to the main scene node so they get cleaned up properly.
                 trees = self.szGeom.findAllMatches('**/*tree*')
+                #self.szGeom.find("**/shadow").removeNode()
+                
+                #from panda3d.core import CullBinAttrib
+                #self.szGeom.find("**/shadow_crack").setAttrib(CullBinAttrib.make("foreground", 10), 10)
+                #shs = self.szGeom.findAllMatches("**/*shadow*")
+                #for sh in shs:
+                #    sh.removeNode()
+                
+               # self.szGeom.ls()
                 
                 for tree in trees:
                     tree.wrtReparentTo(render)
@@ -178,6 +187,8 @@ class CharSelection(DirectObject):
         CIGlobals.preRenderScene(render)
 
         self.asyncSZLoadStatus = True
+        
+        #base.accept('l', render.ls)
 
         if task:
             return task.done
@@ -343,6 +354,7 @@ class CharSelection(DirectObject):
     def enterCharSelected(self):
         self.playOrCreateButton['text'] = self.PLAY
         self.playOrCreateButton['extraArgs'] = ['play']
+        #aspect2d.hide()
 
     def exitCharSelected(self):
         self.playOrCreateButton.hide()
