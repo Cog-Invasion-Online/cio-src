@@ -20,6 +20,8 @@ from src.coginvasion.cog import CogBattleGlobals, SuitGlobals
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.battle import BattleGlobals
 from src.coginvasion.hood import ZoneUtil
+from src.coginvasion.toon.ToonGlobals import GAG_START_EVENT
+
 from DistributedCogOfficeElevatorAI import DistributedCogOfficeElevatorAI
 from DistributedCogOfficeSuitAI import DistributedCogOfficeSuitAI
 from CogOfficeConstants import *
@@ -124,7 +126,8 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
                         suit.brain.currentBehavior.pickTarget()
                 
                 # We don't care if this toon starts using a gag anymore.
-                suit.ignore(toon.getGagStartEvent())
+                gagStartEvt = GAG_START_EVENT.format(avId)
+                suit.ignore(gagStartEvt)
 
         if len(self.watchingAvatarIds) == 0:
             self.resetEverything()

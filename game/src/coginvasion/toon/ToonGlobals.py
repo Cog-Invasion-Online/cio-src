@@ -17,6 +17,8 @@ from panda3d.core import Point3
 
 BASE_MODEL = "phase_%s/models/char/tt_a_chr_%s_%s_%s_%s.bam"
 
+GAG_START_EVENT = 'distPlayerAI-gagStart-{0}'
+
 # These are the animations
 # Key is the code name of the animation,
 # Value starts with phase number, second

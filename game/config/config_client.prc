@@ -21,6 +21,8 @@ notify-level-display warning
 notify-timestamp #f
 default-directnotify-level info
 
+gl-debug #t
+
 # Filenames...
 cursor-filename resources/toonmono.cur
 icon-filename resources/icon.ico

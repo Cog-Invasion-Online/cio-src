@@ -15,6 +15,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from src.coginvasion.toon.DistributedToonAI import DistributedToonAI
+from src.coginvasion.toon.ToonGlobals import GAG_START_EVENT
 from src.coginvasion.quest.QuestManagerAI import QuestManagerAI
 from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
 from src.coginvasion.gags import GagGlobals
@@ -526,7 +527,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
     def getGagStartEvent(self):
         # This event is sent out just as we start using a gag.
         if hasattr(self, 'doId'):
-            return 'distPlayerAI-gagStart-{0}'.format(self.doId)
+            return GAG_START_EVENT.format(self.doId)
         return None
 
     def announceGenerate(self):

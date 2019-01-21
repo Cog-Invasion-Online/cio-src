@@ -171,26 +171,7 @@ class CogInvasionLoader(Loader.Loader):
     def loadModel(self, *args, **kw):
         ret = Loader.Loader.loadModel(self, *args, **kw)
         CIGlobals.fixGrayscaleTextures(ret)
-        
-        #corrections = 0
 
-        def processChildren(collection):
-            for node in collection:
-                if node.node().isOfType(GeomNode.getClassType()):
-                    geomNode = node.node()
-                    for i in xrange(geomNode.getNumGeoms()):
-                        geom = geomNode.getGeom(i)
-                        state = geomNode.getGeomState(i)
-                        if state.hasAttrib(TransparencyAttrib.getClassType()):
-                            newState = state.addAttrib(TransparencyAttrib.make(TransparencyAttrib.M_multisample))
-                            geomNode.setGeomState(i, newState)
-                            node.setDepthOffset(1, 1)
-                            node.clearModelNodes()
-                            print 'Applied fix'
-
-        #processChildren(ret.findAllMatches('**'))
-        
-        #print 'Corrected {0} transparency nodes.'.format(corrections)
         self.tick()
         return ret
 
