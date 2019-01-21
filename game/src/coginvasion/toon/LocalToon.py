@@ -1080,6 +1080,7 @@ class LocalToon(DistributedPlayerToon):
         self.disableAvatarControls()
         self.destroyControls()
         if self.smartCamera:
+            self.smartCamera.stopUpdateSmartCamera()
             self.smartCamera.deleteSmartCameraCollisions()
             self.smartCamera = None
         if self.questManager:

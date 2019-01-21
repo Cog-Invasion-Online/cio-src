@@ -113,7 +113,7 @@ class SmartCamera:
                                             0))
 
     def pageUp(self):
-        if not base.localAvatar.avatarMovementEnabled:
+        if not base.localAvatarReachable() or (base.localAvatarReachable() and not base.localAvatar.avatarMovementEnabled):
             return
         if not self.isPageUp:
             self.isPageDown = 0
@@ -124,7 +124,7 @@ class SmartCamera:
             self.clearPageUpDown()
 
     def pageDown(self):
-        if not base.localAvatar.avatarMovementEnabled:
+        if not base.localAvatarReachable() or (base.localAvatarReachable() and not base.localAvatar.avatarMovementEnabled):
             return
         if not self.isPageDown:
             self.isPageUp = 0
@@ -142,7 +142,7 @@ class SmartCamera:
             self.setCameraPositionByIndex(self.cameraIndex)
 
     def nextCameraPos(self, forward):
-        if not base.localAvatar.avatarMovementEnabled:
+        if not base.localAvatarReachable() or (base.localAvatarReachable() and not base.localAvatar.avatarMovementEnabled):
             return
         self.__cameraHasBeenMoved = 1
         if forward:
@@ -241,7 +241,7 @@ class SmartCamera:
                 # In third person battle controls, we want to just move the camera closer to the player.
                 liftMult = max(0.0, 1.0 - ratio * ratio)
                 compromisePos = Point3(compromisePos[0], compromisePos[1], compromisePos[2] + base.localAvatar.getHeight() * 0.4 * liftMult)
-        if not base.localAvatar.battleControls:
+        if base.localAvatarReachable() and not base.localAvatar.battleControls:
             compromisePos.setZ(compromisePos[2] + self.cameraZOffset)
         return compromisePos
 
@@ -370,12 +370,13 @@ class SmartCamera:
             pointB = render.getRelativePoint(camera.getParent(), self.pointB)
 
             mask = CIGlobals.WallGroup | CIGlobals.CameraGroup
-            if base.localAvatar.battleControls:
-                mask |= (CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
+            if base.localAvatarReachable():
+                if base.localAvatar.battleControls:
+                    mask |= (CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
 
-            result = PhysicsUtils.rayTestClosestNotMe(base.localAvatar, pointA, pointB, mask)
-            if result:
-                self.handleCameraObstruction(result)
+                result = PhysicsUtils.rayTestClosestNotMe(base.localAvatar, pointA, pointB, mask)
+                if result:
+                    self.handleCameraObstruction(result)
 
             if not self.__onLevelGround:
                 self.handleCameraFloorInteraction()
@@ -436,7 +437,7 @@ class SmartCamera:
         self.popCameraToDest()
 
     def handleCameraFloorInteraction(self):
-        if self.__onLevelGround or base.localAvatar.battleControls:
+        if self.__onLevelGround or not base.localAvatarReachable() or (base.localAvatarReachable() and base.localAvatar.battleControls):
             return
 
         self.putCameraFloorRayOnCamera()
