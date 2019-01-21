@@ -29,12 +29,14 @@ class PowerBar(NodePath):
         self.task = None
         
     def __getPower(self, time):
-        elapsed = max(time - self.startTime, 0.0)
-        t = elapsed / self.speed
-        t = math.pow(t, self.exponent)
-        power = int(t * 150) % 300
-        if power > 150:
-            power = 300 - power
+        power = 0.0
+        if not self.startTime is None:
+            elapsed = max(time - self.startTime, 0.0)
+            t = elapsed / self.speed
+            t = math.pow(t, self.exponent)
+            power = int(t * 150) % 300
+            if power > 150:
+                power = 300 - power
         return power
         
     def getPower(self):

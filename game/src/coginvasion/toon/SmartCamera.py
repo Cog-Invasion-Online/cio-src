@@ -350,7 +350,7 @@ class SmartCamera:
         self.started = False
 
     def updateSmartCamera(self, task):
-        if base.localAvatar.battleControls and base.localAvatar.isFirstPerson():
+        if base.localAvatarReachable() and base.localAvatar.battleControls and base.localAvatar.isFirstPerson():
             return Task.cont
 
         if not self.__camCollCanMove and not self.__cameraHasBeenMoved:
