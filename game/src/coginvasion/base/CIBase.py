@@ -175,6 +175,10 @@ class CIBase(ShowBase):
         
         self.avatars = []
         
+        wrm = WaterReflectionManager()
+        self.waterReflectionMgr = wrm
+        __builtin__.waterReflectionMgr = wrm
+        
         # Let's setup our margins
         base.marginManager = MarginManager()
         base.margins = aspect2d.attachNewNode(base.marginManager, DirectGuiGlobals.MIDGROUND_SORT_INDEX + 1)
@@ -578,9 +582,6 @@ class CIBase(ShowBase):
             #cam.reparentTo(render)
             #base.openWindow(useCamera = cam)
 
-        wrm = WaterReflectionManager()
-        self.waterReflectionMgr = wrm
-        __builtin__.waterReflectionMgr = wrm
         #self.shadowCaster.turnOnShadows()
 
         self.filters = CommonFilters(self.win, self.cam)
@@ -673,7 +674,7 @@ class CIBase(ShowBase):
             self.credits2d.setScale(1.0 / aspectRatio, 1.0, 1.0)
             return
 
-        if (CIGlobals.getSettingsMgr().getSetting("maspr") is True):
+        if CIGlobals.getSettingsMgr().getSetting("maspr").getValue():
             # Go ahead and maintain the aspect ratio if the user wants us to.
             ShowBase.adjustWindowAspectRatio(self, aspectRatio)
             self.credits2d.setScale(1.0 / aspectRatio, 1.0, 1.0)
@@ -685,13 +686,13 @@ class CIBase(ShowBase):
         self.musicManager.setVolume(0.0)
 
     def unMuteMusic(self):
-        self.musicManager.setVolume(CIGlobals.SettingsMgr.getSetting("musvol"))
+        self.musicManager.setVolume(CIGlobals.SettingsMgr.getSetting("musvol").getValue())
 
     def muteSfx(self):
         self.sfxManagerList[0].setVolume(0.0)
 
     def unMuteSfx(self):
-        self.sfxManagerList[0].setVolume(CIGlobals.SettingsMgr.getSetting("sfxvol"))
+        self.sfxManagerList[0].setVolume(CIGlobals.SettingsMgr.getSetting("sfxvol").getValue())
         
     def localAvatarReachable(self):
         # This verifies that the localAvatar hasn't been deleted and isn't none.

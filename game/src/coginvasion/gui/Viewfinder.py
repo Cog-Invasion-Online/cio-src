@@ -125,7 +125,7 @@ class Viewfinder(DirectFrame):
         self.screenSizeX = (base.a2dRight - base.a2dLeft) * self.screenSizeMult
         self.screenSizeY = (base.a2dTop - base.a2dBottom) * self.screenSizeMult
         self.captureFOV = (Viewfinder.ViewSizeX / self.screenSizeX *
-                           CIGlobals.getSettingsMgr().getSetting("fpmgfov") *
+                           CIGlobals.getSettingsMgr().getSetting("fpmgfov").getValue() *
                            0.5)
         self.captureLens.setFov(self.captureFOV)
         self.captureLens.setAspectRatio(1.33)

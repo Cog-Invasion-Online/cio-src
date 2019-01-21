@@ -379,4 +379,4 @@ class FPSCamera(DirectObject):
         return task.cont
     
     def __getMouseSensitivity(self):
-        return CIGlobals.getSettingsMgr().getSetting('fpmgms')
+        return CIGlobals.getSettingsMgr().getSetting('fpmgms').getValue()

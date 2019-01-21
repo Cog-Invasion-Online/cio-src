@@ -11,7 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 from src.coginvasion.globals import CIGlobals
 
 def __applyAF(task):
-    af = CIGlobals.getSettingsMgr().getSetting("af")
+    af = CIGlobals.getSettingsMgr().getSetting("af").getValue()
     for tex in render.findAllTextures():
         if tex.getAnisotropicDegree() != af:
             tex.setAnisotropicDegree(af)

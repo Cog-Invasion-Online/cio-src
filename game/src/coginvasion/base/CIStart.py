@@ -53,32 +53,29 @@ else:
 notify.info(metadata.getBuildInformation())
 notify.info('Phase directory: {0}'.format(metadata.PHASE_DIRECTORY))
 
-from src.coginvasion.manager.SettingsManager import SettingsManager
-jsonfile = "settings.json"
-notify.info("Reading settings file " + jsonfile)
+from src.coginvasion.settings.SettingsManager import SettingsManager
+from src.coginvasion.settings.Setting import SHOWBASE_PREINIT, SHOWBASE_POSTINIT
+jsonFile = "settings.json"
+notify.info("Reading settings file: " + jsonFile)
+
 sm = SettingsManager()
+
 from src.coginvasion.globals import CIGlobals
 CIGlobals.SettingsMgr = sm
-sm.loadFile(jsonfile)
-notify.info("Applying pre settings")
-sm.applyPreSettings()
+sm.loadFile(jsonFile)
+sm.doSunriseFor(sunrise = SHOWBASE_PREINIT)
+notify.info("Applying pre-ShowBase initialization settings.")
 
 from CIBase import CIBase
 base = CIBase()
 
-notify.info("Applying post settings")
-sm.applySettings()
-
-# Let's load up our multifiles
-base.loader.mountMultifiles(sm.getSetting("resourcepack"))
+sm.doSunriseFor(sunrise = SHOWBASE_POSTINIT)
+notify.info("Applying post-ShowBase initialization settings.")
 
 base.initStuff()
 
 notify.info("Using Panda3D version {0}".format(PandaSystem.getVersionString()))
 notify.info("True threading: " + str(Thread.isTrueThreads()))
-
-sm.maybeFixAA()
-base.setFrameRateMeter(sm.getSetting("fps"))
 
 # Use our shader generator extension
 #import ccoginvasion
@@ -151,9 +148,7 @@ NametagGlobals.setClickSound(soundClick)
 def maybeDoSomethingWithMusic(condition):
     # 0 = paused
     # 1 = restarted
-    music = sm.getSetting("music")
-    if music:
-        base.enableMusic(condition)
+    base.enableMusic(condition)
 
 def handleMusicEnabled():
     if not hasattr(base, 'cr'):

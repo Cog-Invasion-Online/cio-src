@@ -185,7 +185,7 @@ class DistributedDisneyChar(DistributedAvatar):
         self.stop()
 
     def chatStompComplete(self, chatString):
-        if CIGlobals.getSettingsMgr().getSetting("chs") is False:
+        if not CIGlobals.getSettingsMgr().getSetting("chs"):
             # No chat sounds!
             return
 

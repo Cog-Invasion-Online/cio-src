@@ -25,17 +25,17 @@ class AdvancedDisplayCategory(OptionsCategory):
         #self.ppl = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.24), self.__updatePPL, "Per-Pixel Lighting",
         #    desc = 'Toggles more advanced per-pixel shaders.\nRequires Lighting to be enabled.\nAffects performance.', settingKeyName = 'ppl')
 
-        self.hdr = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.01),
-            self.__updateHDR, "HDR Lighting", desc = 'Increases perceived range of colors and brightness on screen.\nRequires Per-Pixel Lighting to be enabled.\nRequires at least OpenGL 4.3.',
-            settingKeyName = 'hdr', requirement = base.hdr.isSupported)
+        self.hdr = ChoiceWidget(page, None, pos = (0, 0, 0.01),
+            widgetName = "HDR Lighting", settingKeyName = 'hdr', 
+            requirement = base.hdr.isSupported)
 
-        self.bloom = ChoiceWidget(page, ["Off", "On"], (0, 0, -0.22), self.__updateBloom, "Bloom Filter",
-            desc = "Increases perceived brightness by glowing objects that are very bright.\nAffects performance.", settingKeyName = 'bloom')
+        self.bloom = ChoiceWidget(page, None, pos = (0, 0, -0.22), 
+            widgetName = "Bloom Filter", settingKeyName = 'bloom')
         
-        self.waterRefl = ChoiceWidget(page, ["Off", "Low", "Medium", "High", "Ultra"], (0, 0, -0.45), self.__updateWater, "Water Reflections",
-            desc = 'Sets the resolution of water reflection textures around the game.\Affects performance.', settingKeyName = 'refl')
+        self.waterRefl = ChoiceWidget(page, None, pos = (0, 0, -0.45), 
+            widgetName = "Water Reflections", settingKeyName = 'refl')
         
-        self.widgets = [self.lighting, self.ppl, self.waterRefl, self.hdr, self.bloom]
+        self.widgets = [self.waterRefl, self.hdr, self.bloom]#self.lighting, self.ppl, self.waterRefl, self.hdr, self.bloom]
 
         self.discardChanges()
         
@@ -47,43 +47,13 @@ class AdvancedDisplayCategory(OptionsCategory):
     #        render.setShaderAuto()
     #    else:
     #        render.setShaderOff(1)
-            
-    def __updateWater(self, quality):
-        resolution = CIGlobals.getSettingsMgr().ReflectionQuality.get(quality)
-        base.waterReflectionMgr.handleResolutionUpdate(resolution)
 
     def __handleBadHdrAck(self, value):
         self.cleanupBadHdrDlg()
-            
-    def __updateHDR(self, hdr):
-        #if hdr and not base.hdr.isSupported():
-        #    self.cleanupBadHdrDlg()
-
-        #    self.badHdrDlg = GlobalDialog(
-        #        ("Sorry, but HDR is not supported by your graphics hardware.\n\n" +
-        #         "Minimum OpenGL requirement: 4.3\n" +
-        #         "Your OpenGL version: {0}".format(base.win.getGsg().getDriverVersion())),
-        #         style = Ok, doneEvent = 'badHdrAck')
-        #    self.acceptOnce('badHdrAck', self.__handleBadHdrAck)
-        #    self.badHdrDlg.show()
-
-        #    return
-
-        CIGlobals.getSettingsMgr().applyHdr(hdr)
-            
-    def __updateBloom(self, flag):
-        base.setBloom(flag)
 
     def _setDefaults(self):
         for widget in self.widgets:
             widget.reset()
-
-    def applyChanges(self):
-        self._showApplying()
-        
-        OptionsCategory.applyChanges(self)
-
-        self._hideApplying()
 
     def discardChanges(self):
         OptionsCategory.discardChanges(self)
@@ -102,8 +72,6 @@ class AdvancedDisplayCategory(OptionsCategory):
             widget.cleanup()
         
         self.widgets = []
-        del self.lighting
-        del self.ppl
         del self.waterRefl
         del self.hdr
         del self.bloom

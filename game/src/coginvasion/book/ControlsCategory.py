@@ -21,9 +21,8 @@ class ControlsCategory(OptionsCategory):
     def __init__(self, page):
         OptionsCategory.__init__(self, page)
         
-        gagKeys = base.inputStore.getControlOptions('UseGag')
-        self.gagKey = ChoiceWidget(page, gagKeys, (0, 0.47, 0.47), self.__updateGagKey, "Use Gag",
-            desc = 'Changes the control to use a gag.', settingKeyName = 'gagkey', mode = MULTICHOICE)
+        self.gagKey = ChoiceWidget(page, None, pos = (0, 0.47, 0.47), widgetName = "Use Gag",
+            settingKeyName = 'gagkey', mode = MULTICHOICE)
 
         self.fpmsSlider = SliderWidget(page, "Mouse Sensitivity\n(First Person)", (0.05, 0.3), self.__setFPMS, (0, 0, 0.2))
         self.fpfovSlider = SliderWidget(page, "Field of View\n(First Person)", (54.0, 70.0), self.__setFPFov, (0, 0, -0.1))
@@ -34,9 +33,9 @@ class ControlsCategory(OptionsCategory):
         self.discardChanges()
 
     def _setDefaults(self):
-        self.origFPms = float(CIGlobals.getSettingsMgr().getSetting("fpmgms"))
-        self.origFPfov = float(CIGlobals.getSettingsMgr().getSetting("fpmgfov"))
-        self.origGenFov = float(CIGlobals.getSettingsMgr().getSetting("genfov"))
+        self.origFPms = float(CIGlobals.getSettingsMgr().getSetting("fpmgms").getValue())
+        self.origFPfov = float(CIGlobals.getSettingsMgr().getSetting("fpmgfov").getValue())
+        self.origGenFov = float(CIGlobals.getSettingsMgr().getSetting("genfov").getValue())
 
         self.fpFov = self.origFPfov
         self.fpMs = self.origFPms
@@ -70,16 +69,13 @@ class ControlsCategory(OptionsCategory):
 
         if (self.fpFov != self.origFPfov):
             # They changed the first person fov!
-            CIGlobals.getSettingsMgr().updateAndWriteSetting("fpmgfov", self.fpFov)
-            CIGlobals.GunGameFov = self.fpFov
+            self.settingsMgr.getSetting("fpmgfov").setValue(self.fpFov)
 
         if (self.fpMs != self.origFPms):
-            CIGlobals.getSettingsMgr().updateAndWriteSetting("fpmgms", self.fpMs)
+            self.settingsMgr.getSetting("fpmgms").setValue(self.fpMs)
 
         if (self.genFov != self.origGenFov):
-            CIGlobals.getSettingsMgr().updateAndWriteSetting("genfov", self.genFov)
-            CIGlobals.DefaultCameraFov = self.genFov
-            base.camLens.setMinFov(self.genFov / (4. / 3.))
+            self.settingsMgr.getSetting("genfov").setValue(self.genFov)
 
         # We need to let the chat input know when we updated keys.
         if self.keysChanged > 0:

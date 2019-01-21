@@ -375,7 +375,7 @@ class WaterReflectionManager:
             self.wadeSounds.append(sound)
         
         sMgr = CIGlobals.getSettingsMgr()
-        self.reso = sMgr.ReflectionQuality[sMgr.getSetting("refl")]
+        self.reso = sMgr.ReflectionQuality[sMgr.getSetting("refl").getValue()]
 
     def getDefaultSpec(self, name):
         return defaultWaterSpecs.get(name, WaterSpec())

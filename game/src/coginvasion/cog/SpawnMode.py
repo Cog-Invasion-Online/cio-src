@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-class SpawnMode:
-    FLYDOWN = 0
-    FADEOUT = 1
-    APPEAR = 2
+FLYDOWN = 0
+FADEOUT = 1
+APPEAR = 2
+FROM_BUILDING = 3

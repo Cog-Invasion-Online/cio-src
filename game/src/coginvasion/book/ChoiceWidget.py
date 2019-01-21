@@ -75,6 +75,17 @@ class ChoiceWidget(DirectFrame):
         self.settingKeyName = settingKeyName
         self.mode = mode
         
+        # Let's update the options if we specified a setting key name.
+        if self.settingKeyName and len(self.settingKeyName) > 0:
+            settingsMgr = CIGlobals.getSettingsMgr()
+            settingInst = settingsMgr.getSetting(self.settingKeyName)
+            
+            if not settingInst:
+                raise ValueError("Setting \"%s\" could not be found!")
+            else:
+                self.options = settingInst.getOptions()
+                desc = settingInst.getDescription()
+        
         widgetParent = parent
         if hasattr(parent, 'book'):
             widgetParent = parent.book
@@ -121,7 +132,7 @@ class ChoiceWidget(DirectFrame):
 
         if self.settingKeyName:
             # This widget is supposed to be used to change game settings. Let's lookup the currently saved game setting.
-            self.origChoice = self.__getCurrentSetting()
+            self.origChoice = self.__getCurrentSetting().getValue()
             
             try:
                 if self.mode == DEGREE and not self.origChoice == 0:
@@ -149,7 +160,11 @@ class ChoiceWidget(DirectFrame):
         if `settingKeyName` was not set, it will send the command specified with the current user choice. """
         willUpdateChoice = (self.userChoice != self.origChoice)
         if self.settingKeyName and willUpdateChoice:
-            CIGlobals.getSettingsMgr().updateAndWriteSetting(self.settingKeyName, self.userChoice)
+            settingInst = CIGlobals.getSettingsMgr().getSetting(self.settingKeyName)
+            
+            if settingInst:
+                settingInst.setValue(self.userChoice)
+
             self.reset()
             
         if self.command and willUpdateChoice:

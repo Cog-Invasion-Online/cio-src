@@ -88,7 +88,7 @@ class FirstPerson(DirectObject):
                 base.win.movePointer(0, centerX, centerY)
 
             # Get the mouse sensitivity
-            sens = CIGlobals.getSettingsMgr().getSetting("fpmgms")
+            sens = CIGlobals.getSettingsMgr().getSetting("fpmgms").getValue()
             
             dt = globalClock.getDt()
 
