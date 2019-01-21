@@ -22,7 +22,7 @@ from src.coginvasion.cog.SuitItemDropperAI import SuitItemDropperAI
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.GagType import GagType
 
-from SpawnMode import SpawnMode
+import SpawnMode
 from SuitBrainAI import SuitBrain
 from SuitBank import SuitPlan
 from SuitFlyToRandomSpotBehaviorAI import SuitFlyToRandomSpotBehaviorAI

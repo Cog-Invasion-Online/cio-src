@@ -28,7 +28,7 @@ class WaterManager:
         self.enabled = True
         
         sMgr = CIGlobals.getSettingsMgr()
-        reso = sMgr.ReflectionQuality[sMgr.getSetting("refl")]
+        reso = sMgr.ReflectionQuality[sMgr.getSetting("refl").getValue()]
         if reso == 0:
             self.enabled = False
             return

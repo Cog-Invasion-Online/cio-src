@@ -32,28 +32,23 @@ cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
 cbm.addBin('gui-popup', CullBinManager.BTUnsorted, 60)
 
 from src.coginvasion.base.CIBase import CIBase
-
-from src.coginvasion.manager.SettingsManager import SettingsManager
-jsonfile = "settings.json"
+from src.coginvasion.settings.SettingsManager import SettingsManager
+from src.coginvasion.settings.Setting import SHOWBASE_PREINIT, SHOWBASE_POSTINIT
+jsonFile = "settings.json"
 sm = SettingsManager()
+
 from src.coginvasion.globals import CIGlobals
 CIGlobals.SettingsMgr = sm
-sm.loadFile(jsonfile)
-sm.applyPreSettings()
+sm.loadFile(jsonFile)
+sm.doSunriseFor(sunrise = SHOWBASE_PREINIT)
 
 base = CIBase()
 render.setAntialias(AntialiasAttrib.MMultisample)
 render.show()
 
-sm.applySettings()
-
-# Let's load up our multifiles
-base.loader.mountMultifiles(sm.getSetting("resourcepack"))
+sm.doSunriseFor(sunrise = SHOWBASE_POSTINIT)
 
 base.initStuff()
-
-sm.maybeFixAA()
-base.setFrameRateMeter(sm.getSetting("fps"))
 
 if metadata.USE_LIGHTING:
     render.setShaderAuto()

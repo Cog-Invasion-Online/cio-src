@@ -8,13 +8,9 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import WindowProperties
-
 from OptionsCategory import OptionsCategory
 from ChoiceWidget import ChoiceWidget
 from ChoiceWidget import MULTICHOICE
-
-from src.coginvasion.globals import CIGlobals
 
 class GeneralCategory(OptionsCategory):
     Name = "General"
@@ -22,32 +18,16 @@ class GeneralCategory(OptionsCategory):
     def __init__(self, page):
         OptionsCategory.__init__(self, page)
         
-        self.cursor = ChoiceWidget(page, CIGlobals.getSettingsMgr().MouseCursors.keys(), (0, 0, 0.47),
-            self.__updateCursor, "Mouse Cursor", 0.05, desc = "Updates the game's cursor.", 
+        self.cursor = ChoiceWidget(page, None, pos = (0, 0, 0.47),
+            widgetName = "Mouse Cursor", choiceTextScale = 0.05, 
             settingKeyName = 'cursor', mode = MULTICHOICE)
         
-        self.fps = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.3), self.__updateFPSMeter, 'FPS Meter', 
-            desc = 'Enables/Disables an FPS meter in the top-right\n corner of the screen.', settingKeyName = 'fps')
+        self.fps = ChoiceWidget(page, None, pos = (0, 0, 0.3), 
+            widgetName = 'FPS Meter', settingKeyName = 'fps')
         
         self.widgets = [self.cursor, self.fps]
         
         self.discardChanges()
-            
-    def __updateCursor(self, cursor):
-        wp = WindowProperties()
-        wp.setCursorFilename(CIGlobals.getSettingsMgr().MouseCursors[cursor])
-        base.win.requestProperties(wp)
-            
-    def __updateFPSMeter(self, wantMeter):
-        base.setFrameRateMeter(wantMeter)
-        
-    def applyChanges(self):
-        self._showApplying()
-        
-        for widget in self.widgets:
-            widget.saveSetting()
-
-        self._hideApplying()
         
     def cleanup(self):
         for widget in self.widgets:

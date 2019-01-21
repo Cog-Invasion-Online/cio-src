@@ -14,6 +14,10 @@ notify-level info
 notify-level-egg2pg warning
 notift-level-bspfile debug
 notify-level-pgraph info
+notify-level-loader warning
+notify-level-gobj warning
+notify-level-bspmaterial warning
+notify-level-display warning
 notify-timestamp #f
 default-directnotify-level info
 
@@ -102,7 +106,7 @@ hdr-percent-target 60.0
 hdr-debug-histogram #f
 
 want-pssm 1
-pssm-debug-cascades 1
+pssm-debug-cascades 0
 pssm-splits 3
 pssm-size 2048
 pssm-size-0 4096

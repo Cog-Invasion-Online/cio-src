@@ -34,13 +34,18 @@ class OptionsCategory(DirectObject):
         self.applying = GlobalDialog("Saving settings...")
         self.applying.hide()
         
+        self.settingsMgr = CIGlobals.getSettingsMgr()
+        
         # This is a list of ChoiceWidgets under this options category.
         self.widgets = []
 
     def applyChanges(self):
+        self._showApplying()
         if self.widgets:
             for widget in self.widgets:
                 widget.saveSetting()
+        self.settingsMgr.saveFile()
+        self._hideApplying()
 
     def discardChanges(self):
         if self.widgets:

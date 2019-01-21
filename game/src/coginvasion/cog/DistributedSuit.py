@@ -26,13 +26,13 @@ from src.coginvasion.battle import BattleGlobals
 from SuitState import SuitState
 from SuitBank import SuitPlan
 from Suit import Suit
-from SpawnMode import SpawnMode
 from SuitUtils import getMoveIvalFromPath
 import SuitBank
 import SuitGlobals
 import CogBattleGlobals
 import Voice
 import Variant
+import SpawnMode
 import SuitAttacks
 
 import types, random

@@ -735,7 +735,7 @@ class Suit(Avatar):
                 self.nametag.setText(self.nametag.getText() + '\n%s' % (self.dept.getName()))
 
     def chatStompComplete(self, chatString):
-        if (CIGlobals.getSettingsMgr().getSetting("chs") is False):
+        if not CIGlobals.getSettingsMgr().getSetting("chs").getValue():
             return
 
         self.chat = chatString

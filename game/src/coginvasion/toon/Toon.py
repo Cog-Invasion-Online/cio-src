@@ -611,7 +611,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             base.playSfx(sfx, node = self)
 
     def chatStompComplete(self, chatString):
-        if not self.thoughtInProg and CIGlobals.getSettingsMgr().getSetting("chs") is True:
+        if not self.thoughtInProg and CIGlobals.getSettingsMgr().getSetting("chs").getValue():
             self.playChatSfx(chatString)
 
     def setName(self, nameString):
