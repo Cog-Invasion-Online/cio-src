@@ -59,6 +59,8 @@ def precacheScene(scene, reset = True):
     scene.prepareScene(base.win.getGsg())
     base.graphicsEngine.renderFrame()
     base.graphicsEngine.syncFrame()
+    base.audio3d.update()
+    base.musicManager.update()
     
     if reset:
         scene.node().setFinal(0)
