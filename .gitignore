@@ -85,6 +85,7 @@ game/tools/nirai
 !game/astron/libeay32.dll
 !game/astron/ssleay32.dll
 !game/tools/*.bat
+!ccoginvasion/interrogate.bat
 
 .vs
 
