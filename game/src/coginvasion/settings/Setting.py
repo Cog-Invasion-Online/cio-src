@@ -73,9 +73,9 @@ class Setting(object):
                 messenger.send(self.getEventName(), sentArgs = [value, current])
             except: pass
         else:
-            raise ValueError("%s expects a value of type %s, instead it was given a %s."
+            raise ValueError("{0} expects a value of type {1}, instead it was given a {2}."
                              .format(self.name, 
-                                     self.type.__class__.__name__, 
+                                     str(self.type), 
                                      value.__class.__name__))
     
     def getValue(self):
@@ -103,4 +103,4 @@ class Setting(object):
         return self.description
     
     def getEventName(self):
-        return "%s-Changed".format(self.name)
+        return "{0}-Changed".format(self.name)

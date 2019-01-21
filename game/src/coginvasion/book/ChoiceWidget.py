@@ -81,7 +81,7 @@ class ChoiceWidget(DirectFrame):
             settingInst = settingsMgr.getSetting(self.settingKeyName)
             
             if not settingInst:
-                raise ValueError("Setting \"%s\" could not be found!")
+                raise ValueError("Setting \"{0}\" could not be found!".format(self.settingKeyName))
             else:
                 self.options = settingInst.getOptions()
                 desc = settingInst.getDescription()
