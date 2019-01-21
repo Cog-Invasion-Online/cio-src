@@ -55,25 +55,30 @@ def precacheScene(scene, reset = True):
     scene.node().setBounds(OmniBoundingVolume())
     scene.node().setFinal(1)
     
-    scene.premungeScene(base.win.getGsg())
-    scene.prepareScene(base.win.getGsg())
-    base.graphicsEngine.renderFrame()
-    base.graphicsEngine.syncFrame()
-    base.audio3d.update()
-    base.musicManager.update()
-    
-    if reset:
-        scene.node().setFinal(0)
-        scene.node().clearBounds()
+    try:
+        scene.premungeScene(base.win.getGsg())
+        scene.prepareScene(base.win.getGsg())
+        base.graphicsEngine.renderFrame()
+        base.graphicsEngine.syncFrame()
+        base.audio3d.update()
+        base.musicManager.update()
         
-        scene.reparentTo(oldp)
-
-        if rHidden:
-            render.hide()
+        if reset:
+            scene.node().setFinal(0)
+            scene.node().clearBounds()
+            
+            scene.reparentTo(oldp)
     
-    # restash
-    for np in stashed:
-        np.stash()
+            if rHidden:
+                render.hide()
+        
+        # restash
+        for np in stashed:
+            np.stash()
+    except:
+        # The program might have exited prematurely.
+        # This will prevent the game from yelling at us.
+        pass
 
     return rHidden
     
