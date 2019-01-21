@@ -1,4 +1,4 @@
-from panda3d.core import VirtualFileSystem, Filename
+from panda3d.core import VirtualFileSystem
 
 # song name : AudioSound object
 Cache = {}
@@ -19,8 +19,6 @@ def precacheMusic(extension = "ogg"):
             fn = vFile.getFilename()
             if fn.getExtension() == extension:
                 Cache[fn.getBasenameWoExtension()] = fn.getFullpath()
-
-    print Cache
 
 def findSong(songName):
     path = Cache.get(songName, None)
