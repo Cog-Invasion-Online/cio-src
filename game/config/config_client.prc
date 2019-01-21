@@ -14,6 +14,10 @@ notify-level info
 notify-level-egg2pg warning
 notift-level-bspfile debug
 notify-level-pgraph info
+notify-level-loader warning
+notify-level-gobj warning
+notify-level-bspmaterial warning
+notify-level-display warning
 notify-timestamp #f
 default-directnotify-level info
 
