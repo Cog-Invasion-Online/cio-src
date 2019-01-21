@@ -224,8 +224,10 @@ class CIBase(ShowBase):
         #self.accept('u', render.setShaderOff)
         #self.accept('i', render.setShaderOff, [1])
         #self.accept('o', render.setShaderOff, [2])
-        self.accept('o', self.oobeCull)
-        self.accept('c', self.reportCam)
+        
+        # Disabled oobe culling
+        #self.accept('o', self.oobeCull)
+        #self.accept('c', self.reportCam)
         
     def hideHood(self):
         base.cr.playGame.hood.loader.geom.hide()
