@@ -1,0 +1,3 @@
+..\cio-panda3d\built_x64\bin\interrogate -D__inline -DCPPPARSER -DP3_INTERROGATE=1 -D__cplusplus -fnames -string -refcount -assert -S..\cio-panda3d\built_x64\include\parser-inc -S..\cio-panda3d\built_x64\include -I..\cio-panda3d\built_x64\include -Isource -oc ccoginvasion_igate.cpp -od ccoginvasion.in -python-native -module ccoginvasion -library ccoginvasion -Dvolatile= -DINTERROGATE -DCPPPARSER -D__STDC__=1 -D__cplusplus=201103L -D__inline -D_X86_ -DWIN32_VC -DWIN32 -D_WIN32 -D_MSC_VER=1600 -D"__declspec(param)=" -D__cdecl -D_near -D_far -D__near -D__far -D__stdcall source/*.h
+
+..\cio-panda3d\built_x64\bin\interrogate_module -python-native -import panda3d.core -module ccoginvasion -library ccoginvasion -oc ccoginvasion_module.cpp ccoginvasion.in

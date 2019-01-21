@@ -14,7 +14,7 @@ from panda3d.core import CollisionTraverser, CullBinManager, LightRampAttrib, Ca
 from panda3d.bullet import BulletWorld, BulletDebugNode
 from panda3d.bsp import BSPLoader, BSPRender, PSSMShaderGenerator, VertexLitGenericSpec, LightmappedGenericSpec, UnlitGenericSpec, UnlitNoMatSpec, CSMRenderSpec
 
-from p3recastnavigation import RNNavMeshManager
+#from p3recastnavigation import RNNavMeshManager
 
 from direct.showbase.ShowBase import ShowBase
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -128,11 +128,11 @@ class CIBase(ShowBase):
         self.skyBox = None
         self.skyBoxUtil = None
         
-        self.nmMgr = RNNavMeshManager.get_global_ptr()
-        self.nmMgr.set_root_node_path(self.render)
-        self.nmMgr.get_reference_node_path().reparentTo(self.render)
-        self.nmMgr.start_default_update()
-        self.nmMgr.get_reference_node_path_debug().reparentTo(self.render)
+        #self.nmMgr = RNNavMeshManager.get_global_ptr()
+        #self.nmMgr.set_root_node_path(self.render)
+        #self.nmMgr.get_reference_node_path().reparentTo(self.render)
+        #self.nmMgr.start_default_update()
+        #self.nmMgr.get_reference_node_path_debug().reparentTo(self.render)
         self.navMeshNp = None
 
         # Setup 3d audio                                 run before igLoop so 3d positioning doesn't lag behind
@@ -304,7 +304,7 @@ class CIBase(ShowBase):
         
     def cleanupBSPLevel(self):
         self.cleanupSkyBox()
-        self.cleanupNavMesh()
+        #self.cleanupNavMesh()
         if self.bspLevel:
             # Cleanup any physics meshes for the level.
             self.disableAndRemovePhysicsNodes(self.bspLevel)
@@ -313,22 +313,22 @@ class CIBase(ShowBase):
         self.bspLoader.cleanup()
         base.materialData = {}
         
-    def cleanupNavMesh(self):
-        if self.navMeshNp:
-            self.navMeshNp.removeNode()
-            self.navMeshNp = None
+    #def cleanupNavMesh(self):
+    #    if self.navMeshNp:
+    #        self.navMeshNp.removeNode()
+    #        self.navMeshNp = None
         
-    def setupNavMesh(self, node):
-        self.cleanupNavMesh()
+    #def setupNavMesh(self, node):
+    #    self.cleanupNavMesh()
         
-        nmMgr = RNNavMeshManager.get_global_ptr()
-        self.navMeshNp = nmMgr.create_nav_mesh()
-        self.navMeshNp.node().set_owner_node_path(node)
-        self.navMeshNp.node().setup()
+    #    nmMgr = RNNavMeshManager.get_global_ptr()
+    #    self.navMeshNp = nmMgr.create_nav_mesh()
+    #    self.navMeshNp.node().set_owner_node_path(node)
+    #    self.navMeshNp.node().setup()
         
-        if 0:
-            self.navMeshNp.node().enable_debug_drawing(self.camera)
-            self.navMeshNp.node().toggle_debug_drawing(True)
+    #    if 0:
+    #        self.navMeshNp.node().enable_debug_drawing(self.camera)
+    #        self.navMeshNp.node().toggle_debug_drawing(True)
         
     def setupRender(self):
         """

@@ -8,23 +8,10 @@ extern const struct LibraryDef ccoginvasion_moddef;
 extern void Dtool_ccoginvasion_RegisterTypes();
 extern void Dtool_ccoginvasion_BuildInstants(PyObject *module);
 
-#if PY_MAJOR_VERSION >= 3 || !defined(NDEBUG)
-#ifdef _WIN32
-extern "C" __declspec(dllexport) PyObject *PyInit_ccoginvasion();
-#elif __GNUC__ >= 4
-extern "C" __attribute__((visibility("default"))) PyObject *PyInit_ccoginvasion();
+#if PY_MAJOR_VERSION >= 3
+extern "C" EXPORT_CLASS PyObject *PyInit_ccoginvasion();
 #else
-extern "C" PyObject *PyInit_ccoginvasion();
-#endif
-#endif
-#if PY_MAJOR_VERSION < 3 || !defined(NDEBUG)
-#ifdef _WIN32
-extern "C" __declspec(dllexport) void initccoginvasion();
-#elif __GNUC__ >= 4
-extern "C" __attribute__((visibility("default"))) void initccoginvasion();
-#else
-extern "C" void initccoginvasion();
-#endif
+extern "C" EXPORT_CLASS void initccoginvasion();
 #endif
 
 #if PY_MAJOR_VERSION >= 3
@@ -50,11 +37,6 @@ PyObject *PyInit_ccoginvasion() {
   return module;
 }
 
-#ifndef NDEBUG
-void initccoginvasion() {
-  PyErr_SetString(PyExc_ImportError, "ccoginvasion was compiled for Python " PY_VERSION ", which is incompatible with Python 2");
-}
-#endif
 #else  // Python 2 case
 
 void initccoginvasion() {
@@ -68,13 +50,6 @@ void initccoginvasion() {
     Dtool_ccoginvasion_BuildInstants(module);
   }
 }
-
-#ifndef NDEBUG
-PyObject *PyInit_ccoginvasion() {
-  PyErr_SetString(PyExc_ImportError, "ccoginvasion was compiled for Python " PY_VERSION ", which is incompatible with Python 3");
-  return nullptr;
-}
-#endif
 #endif
 
 #line 1 "dtool/src/interrogatedb/py_panda.cxx"
