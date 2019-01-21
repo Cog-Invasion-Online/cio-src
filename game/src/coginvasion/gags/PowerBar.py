@@ -29,14 +29,12 @@ class PowerBar(NodePath):
         self.task = None
         
     def __getPower(self, time):
-        power = 0.0
-        if not self.startTime is None:
-            elapsed = max(time - self.startTime, 0.0)
-            t = elapsed / self.speed
-            t = math.pow(t, self.exponent)
-            power = int(t * 150) % 300
-            if power > 150:
-                power = 300 - power
+        elapsed = max(time - self.startTime, 0.0)
+        t = elapsed / self.speed
+        t = math.pow(t, self.exponent)
+        power = int(t * 150) % 300
+        if power > 150:
+            power = 300 - power
         return power
         
     def getPower(self):
@@ -66,6 +64,7 @@ class PowerBar(NodePath):
         
     def destroy(self):
         taskMgr.remove("hideBarTask-" + str(id(self)))
+        taskMgr.remove("powerBarUpdate-" + str(id(self)))
         self.stop()
         self.speed = None
         self.exponent = None
