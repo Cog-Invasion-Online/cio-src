@@ -52,7 +52,6 @@ class SnowEffect:
         self.particlesRender.setDepthWrite(0)
         self.particlesRender.setBin('fixed', 1)
         self.particlesRender.setLightOff(1)
-        self.particlesRender.setShaderOff(1)
         self.particlesRender.setMaterialOff(1)
         self.fog = Fog('snowFog')
         self.fog.setColor(0.486, 0.784, 1)

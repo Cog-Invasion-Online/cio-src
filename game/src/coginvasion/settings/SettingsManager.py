@@ -63,10 +63,10 @@ class SettingsManager:
         self.addSetting("refl", optionType = DATATYPE_STR, default = "Off",
                         callback = self.__updateWaterReflections, sunrise = SHOWBASE_POSTINIT,
                         options = ["Off", "Low", "Medium", "High", "Ultra"],
-                        description = 'Sets the resolution of water reflection textures around the game.\Affects performance.')
+                        description = 'Sets the resolution of water reflection textures\naround the game. Affects performance.')
         self.addSetting("hdr", optionType = DATATYPE_BOOL, default = False,
                         callback = self.__updateHDR, sunrise = SHOWBASE_POSTINIT,
-                        description = "'Increases perceived range of colors and brightness on screen.\nRequires Per-Pixel Lighting to be enabled.\nRequires at least OpenGL 4.3.'")
+                        description = "Increases perceived range of colors and brightness on screen.\nRequires at least OpenGL 4.3.'")
         self.addSetting("fps", optionType = DATATYPE_BOOL, default = False,
                         callback = self.__updateFPS, sunrise = SHOWBASE_POSTINIT,
                         description = "Enables/Disables an FPS meter in the top-right\n corner of the screen.")

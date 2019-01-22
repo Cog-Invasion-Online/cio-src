@@ -18,35 +18,20 @@ class AdvancedDisplayCategory(OptionsCategory):
 
     def __init__(self, page):
         OptionsCategory.__init__(self, page)
-        
-        #self.lighting = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.47), self.__updateLighting, "Lighting",
-        #    desc = 'Toggles basic per-vertex lighting.\nShould not affect performance.', settingKeyName = 'lighting')
-        
-        #self.ppl = ChoiceWidget(page, ["Off", "On"], (0, 0, 0.24), self.__updatePPL, "Per-Pixel Lighting",
-        #    desc = 'Toggles more advanced per-pixel shaders.\nRequires Lighting to be enabled.\nAffects performance.', settingKeyName = 'ppl')
 
-        self.hdr = ChoiceWidget(page, None, pos = (0, 0, 0.01),
+        self.hdr = ChoiceWidget(page, None, pos = (0, 0, 0.47),
             widgetName = "HDR Lighting", settingKeyName = 'hdr', 
             requirement = base.hdr.isSupported)
 
-        self.bloom = ChoiceWidget(page, None, pos = (0, 0, -0.22), 
+        self.bloom = ChoiceWidget(page, None, pos = (0, 0, 0.24), 
             widgetName = "Bloom Filter", settingKeyName = 'bloom')
         
-        self.waterRefl = ChoiceWidget(page, None, pos = (0, 0, -0.45), 
+        self.waterRefl = ChoiceWidget(page, None, pos = (0, 0, 0.01), 
             widgetName = "Water Reflections", settingKeyName = 'refl')
         
-        self.widgets = [self.waterRefl, self.hdr, self.bloom]#self.lighting, self.ppl, self.waterRefl, self.hdr, self.bloom]
+        self.widgets = [self.waterRefl, self.hdr, self.bloom]
 
         self.discardChanges()
-        
-    #def __updateLighting(self, useLighting):
-    #    metadata.USE_LIGHTING = useLighting
-        
-    #def __updatePPL(self, ppl):
-    #    if ppl:
-    #        render.setShaderAuto()
-    #    else:
-    #        render.setShaderOff(1)
 
     def __handleBadHdrAck(self, value):
         self.cleanupBadHdrDlg()
