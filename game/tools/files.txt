@@ -1,5 +1,4 @@
 built/coginvasion_opengl.exe
-built/coginvasion_dx9.exe
 built/coginvasion.bin
 resources/phase_3.5.mf
 resources/phase_3.mf

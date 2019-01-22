@@ -19,11 +19,11 @@
 using namespace std;
 
 #ifdef BUILDING_CCOGINVASION
-#define EXPCL_CCOGINVASION __declspec(dllexport)
-#define EXPTP_CCOGINVASION __declspec(dllexport)
+#define EXPCL_CCOGINVASION EXPORT_CLASS
+#define EXPTP_CCOGINVASION EXPORT_TEMPL
 #else
-#define EXPCL_CCOGINVASION __declspec(dllimport)
-#define EXPTP_CCOGINVASION __declspec(dllimport)
+#define EXPCL_CCOGINVASION IMPORT_CLASS
+#define EXPTP_CCOGINVASION IMPORT_TEMPL
 #endif
 
 NotifyCategoryDeclNoExport(ccoginvasion);

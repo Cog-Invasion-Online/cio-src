@@ -25,7 +25,7 @@ from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.task.Task import Task
 from panda3d.core import Vec4, VBase4, Texture, TextureStage, TexGenAttrib
-from panda3d.bsp import TextureStages
+from panda3d.bsp import TextureStages, BSPMaterialAttrib, BSPMaterial
 import random
 
 class Suit(Avatar):
@@ -601,6 +601,8 @@ class Suit(Avatar):
             else:
                 self.loadModel('phase_4/models/char/suit%s-lose-mod.bam' % (str(self.suit)), 'body')
             self.loadAnims({'lose' : 'phase_4/models/char/suit%s-lose.bam' % (str(self.suit))}, 'body')
+            # Force the loser suit to use UnlitGeneric shader, workaround for the has_mat() assertion
+            self.setAttrib(BSPMaterialAttrib.makeOverrideShader(BSPMaterial.getFromFile("phase_14/materials/unlit.mat")))
         if self.variant != Variant.SKELETON:
             self.headModel = self.head.generate()
             self.headModel.reparentTo(self.find("**/joint_head"))
