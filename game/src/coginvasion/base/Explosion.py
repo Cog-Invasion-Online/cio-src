@@ -37,5 +37,4 @@ class Explosion(NodePath):
         self.lines = None
         self.smoke = None
         self.removeNode()
-        print "removed"
         return task.done

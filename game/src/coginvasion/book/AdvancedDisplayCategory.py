@@ -8,9 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.globals import CIGlobals
-from src.coginvasion.gui.Dialog import GlobalDialog, Ok
-from ChoiceWidget import ChoiceWidget, INDEX
+from ChoiceWidget import ChoiceWidget
 from OptionsCategory import OptionsCategory
 
 class AdvancedDisplayCategory(OptionsCategory):
@@ -33,9 +31,6 @@ class AdvancedDisplayCategory(OptionsCategory):
 
         self.discardChanges()
 
-    def __handleBadHdrAck(self, value):
-        self.cleanupBadHdrDlg()
-
     def _setDefaults(self):
         for widget in self.widgets:
             widget.reset()
@@ -44,15 +39,7 @@ class AdvancedDisplayCategory(OptionsCategory):
         OptionsCategory.discardChanges(self)
         self._setDefaults()
 
-    def cleanupBadHdrDlg(self):
-        self.ignore('badHdrAck')
-        if hasattr(self, 'badHdrDlg'):
-            self.badHdrDlg.cleanup()
-            del self.badHdrDlg
-
     def cleanup(self):
-        self.cleanupBadHdrDlg()
-
         for widget in self.widgets:
             widget.cleanup()
         

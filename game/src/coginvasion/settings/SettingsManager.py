@@ -15,10 +15,13 @@ from Setting import DATATYPE_INT, DATATYPE_STR, DATATYPE_TUPLE, DATATYPE_BOOL, D
 from src.coginvasion.globals import CIGlobals
 
 from panda3d.core import WindowProperties, AntialiasAttrib, loadPrcFileData
+from direct.directnotify.DirectNotifyGlobal import directNotify
 
 import json
 
 class SettingsManager:
+    notify = directNotify.newCategory('SettingsManager')
+    
     MouseCursors = {"Toontown": metadata.PHASE_DIRECTORY + "toonmono.cur", "None": ""}
     ReflectionQuality = {"Off": 0, "Low": 256, "Medium": 512, "High": 1024, "Ultra": 2048}
     
@@ -162,7 +165,11 @@ class SettingsManager:
         base.waterReflectionMgr.handleResolutionUpdate(resolution)
         
     def __updateHDR(self, flag):
-        base.setHDR(flag)
+        try:
+            base.setHDR(flag)
+        except:
+            self.notify.info("Failed to toggle HDR.")
+            self.getSetting('hdr').setValue((not flag), andCallback=False)
         
     def __updateFPS(self, flag):
         base.setFrameRateMeter(flag)
