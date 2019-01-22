@@ -10,7 +10,7 @@ class EnvParticleSystem(Entity):
     def __init__(self):
         Entity.__init__(self)
         self.setLightOff(1)
-        self.setShaderOff(1)
+        #self.setShaderOff(1)
         
         self.system = None
         self.spawnflags = 0
@@ -40,7 +40,7 @@ class EnvParticleSystem(Entity):
         scale = loader.getEntityValueFloat(entnum, "scale")
         self.spawnflags = loader.getEntityValueInt(entnum, "spawnflags")
         self.system = ParticleLoader.loadParticleEffect(ptfFile)
-        self.system.setShaderOff(1)
+        #self.system.setShaderOff(1)
         self.system.setLightOff(1)
         self.system.setScale(scale)
         

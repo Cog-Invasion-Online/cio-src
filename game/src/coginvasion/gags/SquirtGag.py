@@ -184,8 +184,6 @@ class SquirtGag(Gag):
         Gag.equip(self)
         self.sprayParticleRoot = render.attachNewNode('sprayParticleRoot')
         self.sprayParticleRoot.setLightOff(1)
-        #self.sprayParticleRoot.setMaterialOff(1)
-        #self.sprayParticleRoot.setShaderOff(1)
         
         if self.isLocal():
             self.waterBar = WaterBar()

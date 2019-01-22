@@ -48,7 +48,7 @@ class DistributedSewer(DistributedBattleZone):
                     self.skyNP.setHpr(0, 0, 0)
                     self.skyNP.setLightOff(1)
                     self.skyNP.setFogOff(1)
-                    self.skyNP.setShaderOff(1)
+                    #self.skyNP.setShaderOff(1)
                     self.skyNP.setMaterialOff(1)
                     self.skyNP.setCompass()
                     if OutdoorLightingConfig.SkyData[skyType][1]:

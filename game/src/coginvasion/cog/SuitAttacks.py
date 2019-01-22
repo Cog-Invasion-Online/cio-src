@@ -868,7 +868,7 @@ class HangUpAttack(Attack):
         self.cord.ropeNode.setUseVertexThickness(1)
         self.cord.setup(3, ({'node': self.phone, 'point': (0.8, 0, 0.2), 'color': (0, 0, 0, 1), 'thickness': 1000}, {'node': self.phone, 'point': (2, 0, 0), 'color': (0, 0, 0, 1), 'thickness': 1000}, {'node': self.receiver, 'point': (1.1, 0.25, 0.5), 'color': (0, 0, 0, 1), 'thickness': 1000}), [])
         self.cord.setH(180)
-        self.cord.setShaderOff() # fixes crash in bsp levels
+        #self.cord.setShaderOff() # fixes crash in bsp levels
         self.phoneSfx = base.audio3d.loadSfx("phase_3.5/audio/sfx/SA_hangup.ogg")
         base.audio3d.attachSoundToObject(self.phoneSfx, self.phone)
         self.hangupSfx = base.audio3d.loadSfx("phase_3.5/audio/sfx/SA_hangup_place_down.ogg")
@@ -1207,7 +1207,6 @@ class ParticleAttack(Attack):
                 mdl = handObjPath[0]
                 anims = handObjPath[1]
                 self.handObj = Actor(mdl, anims)
-            self.handObj.setShaderOff(1)
             self.handObj.reparentTo(handObjParent)
         if hasattr(self.suit, 'uniqueName'):
             track_name = self.suit.uniqueName(track_name)
@@ -2200,7 +2199,6 @@ class FiredAttack(Attack):
 
             self.setLightOff(1)
             self.setMaterialOff(1)
-            self.setShaderOff(1)
 
             self.attack = attack
             self.suit = self.attack.suit
@@ -2305,7 +2303,6 @@ class FiredAttack(Attack):
         self.glow.reparentTo(self.suit)
         self.glow.setLightOff(1)
         self.glow.setMaterialOff(1)
-        self.glow.setShaderOff(1)
         self.glow.setP(90)
         self.glow.setTransparency(1)
         self.glow.setDepthOffset(1)

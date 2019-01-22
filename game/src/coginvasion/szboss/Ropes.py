@@ -11,7 +11,7 @@ class RopeBegin(Entity, Rope):
         Entity.__init__(self)
         Rope.__init__(self)
         
-        self.setShaderOff(1)
+        #self.setShaderOff(1)
         
     def load(self):
         Entity.load(self)
