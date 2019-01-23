@@ -8,7 +8,6 @@ from src.coginvasion.phys.Ragdoll import Ragdoll, RagdollLimbShapeDesc
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
-from GoonAI import GoonAI, GBSleep, GBPatrol
 
 import random
 
