@@ -49,9 +49,9 @@ class SettingsManager:
         self.addSetting("fullscreen", optionType = DATATYPE_BOOL, default = True,
                         callback = self.__updateFullscreen, sunrise = SHOWBASE_PREINIT,
                         description = "Toggles fullscreen mode.")
-        self.addSetting("aa", optionType = DATATYPE_INT, default = 16,
+        self.addSetting("aa", optionType = DATATYPE_STR, default = "None",
                         callback = self.__updateAA, sunrise = SHOWBASE_PREINIT,
-                        options = ["None", "x2", "x4", "x8", "x16"],
+                        options = ["None", "FXAA", "2x MSAA", "4x MSAA", "8x MSAA", "16x MSAA"],
                         description = "Smooths out jagged edges on screen.\nAffects performance.")
         self.addSetting("af", optionType = DATATYPE_INT, default = 16,
                         callback = self.__updateAF, sunrise = SHOWBASE_PREINIT,
@@ -133,7 +133,12 @@ class SettingsManager:
         except: pass
     
     def __updateAA(self, degree):
-        if degree != 0:
+        if "FXAA" in degree:
+            # fxaa
+            try:    base.setFXAA(True)
+            except: pass
+        elif "MSAA" in degree:
+            degree = int(degree.split('x')[0])
             loadPrcFileData("", "framebuffer-multisample 1")
             loadPrcFileData("", "multisamples {0}".format(degree))
             

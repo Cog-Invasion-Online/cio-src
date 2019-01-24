@@ -80,6 +80,8 @@ class ControlsCategory(OptionsCategory):
         # We need to let the chat input know when we updated keys.
         if self.keysChanged > 0:
             base.localAvatar.chatInput.setKeyList()
+            
+        self.settingsMgr.saveFile()
 
         self._setDefaults()
         self._hideApplying()

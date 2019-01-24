@@ -15,7 +15,7 @@ from direct.gui.DirectGui import DirectCheckButton, OnscreenText
 from src.coginvasion.globals import CIGlobals
 from OptionsCategory import OptionsCategory
 from ChoiceWidget import ChoiceWidget
-from ChoiceWidget import DEGREE
+from ChoiceWidget import DEGREE, RESOLUTION
 
 class DisplayCategory(OptionsCategory):
     Name = "Display"
@@ -25,7 +25,7 @@ class DisplayCategory(OptionsCategory):
 
         self.reso = ChoiceWidget(page, None,
             pos = (0, 0, 0.47), widgetName = "Resolution", choiceTextScale = 0.05, 
-            settingKeyName = 'resolution')
+            settingKeyName = 'resolution', mode = RESOLUTION)
 
         self.masprText = OnscreenText(text = "Maintain aspect ratio?", scale = 0.045, parent = page.book, align = TextNode.ALeft, pos = (-0.7, 0.4))
         self.maspr = DirectCheckButton(scale = 0.07, parent = page.book, pos = (-0.19, 0, 0.41), command = self.__toggleMaspr)
@@ -34,7 +34,7 @@ class DisplayCategory(OptionsCategory):
             widgetName = "Fullscreen", settingKeyName = 'fullscreen')
 
         self.aa = ChoiceWidget(page, None, pos = (0, 0, 0.01), widgetName = "Antialiasing",
-            settingKeyName = 'aa', mode = DEGREE)
+            settingKeyName = 'aa', choiceTextScale = 0.05)
 
         self.af = ChoiceWidget(page, None, (0, 0, -0.22), widgetName = "Anisotropic Filtering",
             settingKeyName = 'af', mode = DEGREE)
@@ -70,6 +70,8 @@ class DisplayCategory(OptionsCategory):
 
         if (self.masprChoice != self.origMaspr):
             self.settingsMgr.getSetting("maspr").setValue(self.masprChoice)
+            
+        self.settingsMgr.saveFile()
 
         self._hideApplying()
 

@@ -21,6 +21,7 @@ AUTO = 1
 MULTICHOICE = 2
 DEGREE = 3
 INDEX = 4
+RESOLUTION = 5
 
 class ChoiceWidget(DirectFrame):
     notify = directNotify.newCategory("ChoiceWidget")
@@ -225,7 +226,7 @@ class ChoiceWidget(DirectFrame):
                 self.userChoice = bool(self.currentChoiceIndex)
             elif self.mode == INDEX:
                 self.userChoice = self.currentChoiceIndex
-            elif self.mode == DEGREE or 'x' in self.choiceText.getText():
+            elif self.mode == DEGREE or self.mode == RESOLUTION:
                 # We're working with either a degree based option or a resolution option.
                 data = self.options[self.currentChoiceIndex].split('x')
                 
