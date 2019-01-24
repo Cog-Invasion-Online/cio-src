@@ -11,8 +11,8 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 from src.coginvasion.quest.QuestManagerBase import QuestManagerBase
 from src.coginvasion.quest.Quest import Quest
 from src.coginvasion.quest import QuestData
-from src.coginvasion.quest.Objectives import *
-from src.coginvasion.quest.QuestGlobals import *
+from src.coginvasion.quest.Objectives import PlayMinigame, DefeatCogObjectives, DefeatCogBuilding
+from src.coginvasion.quest.Objectives import DefeatCogInvasion, DefeatCogTournament
 
 class QuestManagerAI(QuestManagerBase):
 
