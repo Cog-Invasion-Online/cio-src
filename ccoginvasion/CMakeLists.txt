@@ -32,7 +32,7 @@ endif ()
 include_directories(./source ${COG_PANDA3D_DIR}/python/include ${COG_PANDA3D_DIR}/include)
 link_directories(${COG_PANDA3D_DIR}/lib ${COG_PANDA3D_DIR}/python/libs)
 
-add_library(ccoginvasion ${LIB_TYPE} ${SRCS} ${HEADERS})
+add_library(ccoginvasion ${LIB_TYPE} ${SRCS} ${HEADERS} ccoginvasion_module.cpp ccoginvasion_igate.cpp)
 
 set_target_properties(ccoginvasion PROPERTIES SUFFIX ${OUT_EXT})
 
