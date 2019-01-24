@@ -70,9 +70,9 @@ class CIBase(ShowBase):
             self.notify.error("GLSL shaders unsupported by graphics driver.")
             return
 
-		# Any ComputeNodes should be parented to this node, not render.
-		# We isolate ComputeNodes to avoid traversing the same ComputeNodes
-		# when doing multi-pass rendering.
+        # Any ComputeNodes should be parented to this node, not render.
+        # We isolate ComputeNodes to avoid traversing the same ComputeNodes
+        # when doing multi-pass rendering.
         self.computeRoot = NodePath('computeRoot')
         self.computeCam = self.makeCamera(base.win)
         self.computeCam.node().setCullBounds(OmniBoundingVolume())

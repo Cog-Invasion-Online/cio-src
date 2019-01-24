@@ -165,11 +165,7 @@ class SettingsManager:
         base.waterReflectionMgr.handleResolutionUpdate(resolution)
         
     def __updateHDR(self, flag):
-        try:
-            base.setHDR(flag)
-        except:
-            self.notify.info("Failed to toggle HDR.")
-            self.getSetting('hdr').setValue((not flag), andCallback=False)
+        base.setHDR(flag)
         
     def __updateFPS(self, flag):
         base.setFrameRateMeter(flag)
