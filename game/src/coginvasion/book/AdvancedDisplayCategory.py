@@ -29,8 +29,11 @@ class AdvancedDisplayCategory(OptionsCategory):
             
         self.shadows = ChoiceWidget(page, None, pos = (0, 0, -0.22), settingKeyName = 'shadows',
                                  widgetName = "Shadows", choiceTextScale = 0.058, mode = INDEX)
+                                 
+        self.ao = ChoiceWidget(page, None, pos = (0, 0, -0.45), settingKeyName = 'ao',
+                                widgetName = "Ambient Occlusion")
         
-        self.widgets = [self.waterRefl, self.hdr, self.bloom, self.shadows]
+        self.widgets = [self.waterRefl, self.hdr, self.bloom, self.shadows, self.ao]
 
         self.discardChanges()
 
@@ -52,5 +55,6 @@ class AdvancedDisplayCategory(OptionsCategory):
         del self.bloom
         del self.widgets
         del self.shadows
+        del self.ao
 
         OptionsCategory.cleanup(self)

@@ -168,6 +168,7 @@ class CIBase(ShowBase):
         self.bloomToggle = False
         self.hdrToggle = False
         self.fxaaToggle = CIGlobals.getSettingsMgr().getSetting("aa").getValue() == "FXAA"
+        self.aoToggle = False
 
         self.music = None
         self.currSongName = None
@@ -591,11 +592,8 @@ class CIBase(ShowBase):
         self.setHDR(self.hdrToggle)
         self.setBloom(self.bloomToggle)
         self.setFXAA(self.fxaaToggle)
-        #self.filters.setAmbientOcclusion()
+        self.setAmbientOcclusion(self.aoToggle)
         #self.filters.setDepthOfField(distance = 10.0, range = 175.0, near = 1.0, far = 1000.0 / (1000.0 - 1.0))
-        #self.filters.setFXAA()
-        #render.setLightOff(10)
-        #render.setFogOff(10)
         
     def precacheStuff(self):
         from src.coginvasion.toon import ToonGlobals
@@ -616,6 +614,16 @@ class CIBase(ShowBase):
         
         from src.coginvasion.hood.DistributedBuilding import DistributedBuilding
         DistributedBuilding.precache()
+        
+    def setAmbientOcclusion(self, toggle):
+        self.aoToggle = toggle
+        if not hasattr(self, 'filters'):
+            # Sanity check
+            return
+        if toggle:
+            self.filters.setAmbientOcclusion()
+        else:
+            self.filters.delAmbientOcclusion()
         
     def setFXAA(self, toggle):
         self.fxaaToggle = toggle

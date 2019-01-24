@@ -107,6 +107,12 @@ class SettingsManager:
                         callback = self.__updateShadows, sunrise = SHOWBASE_PREINIT,
                         options = ["Off", "Low", "Medium", "High", "Very High"],
                         description = "The quality of shadows.\nAffects performance.")
+        self.addSetting("ao", optionType = DATATYPE_BOOL, default = False,
+                        callback = self.__updateAO, sunrise = SHOWBASE_POSTINIT,
+                        description = "Screen space ambient occlusion.\nAffects performance")
+                        
+    def __updateAO(self, toggle):
+        base.setAmbientOcclusion(toggle)
                         
     def __updateShadows(self, shadowIdx):
         csmSizes = [0, 512, 1024, 2048, 4096]
