@@ -115,7 +115,7 @@ pssm-size-0 4096
 pssm-size-1 1024
 pssm-size-2 512
 pssm-shadow-depth-bias 0.0001
-pssm-normal-offset-scale 0.1
+pssm-normal-offset-scale 3.0
 pssm-softness-factor 2.0
 pssm-cache-shaders 1
 shadow-depth-bits 32
@@ -128,8 +128,9 @@ light-lerp-speed 5.0
 ctmusic-numsongs 1
 
 want-pstats 0
-pstats-gpu-timing 1
+pstats-gpu-timing 0
 pstats-host 127.0.0.1
+pstats-view-on-server 1
 
 preload-textures 0
 preload-simple-textures 1

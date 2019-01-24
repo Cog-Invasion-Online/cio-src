@@ -364,7 +364,11 @@ class AdminPage(BookPage):
         if PStatClient.isConnected():
             PStatClient.disconnect()
         else:
-            PStatClient.connect("127.0.0.1")
+            # in production, show stats viewer on the server
+            if base.config.GetBool("pstats-view-on-server", False):
+                PStatClient.connect("127.0.0.1" if not metadata.IS_PRODUCTION else "gameserver.coginvasion.online")
+            else:
+                PStatClient.connect("127.0.0.1")
 
     def toggleBackground(self):
         if render.isHidden():
