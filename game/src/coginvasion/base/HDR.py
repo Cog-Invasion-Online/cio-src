@@ -12,7 +12,6 @@ from panda3d.core import Shader, ComputeNode, Vec2, Vec4, PTALVecBase2f, Texture
 
 from direct.showbase.DirectObject import DirectObject
 from direct.gui.DirectGui import OnscreenImage
-from direct.filter.FilterManager import FilterManager
 
 import math
 
@@ -24,6 +23,7 @@ class HDR(DirectObject):
     def __init__(self):
         self.ptaBucketRange = None
         self.sceneQuad = None
+        self.sceneBuf = None
         self.sceneTex = None
         self.histogramCompute = None
         self.histogramTex = None
@@ -32,7 +32,6 @@ class HDR(DirectObject):
         self.debugTex = None
         self.debugCompute = None
         self.debugImg = None
-        self.mgr = None
 
     def isSupported(self):
         return base.win.getGsg().getSupportsComputeShaders()
@@ -41,10 +40,6 @@ class HDR(DirectObject):
         base.filters.delExposure()
 
         taskMgr.remove("hdrUpdate")
-        
-        if self.mgr:
-            self.mgr.cleanup()
-        self.mgr = None
 
         if self.debugCompute:
             self.debugCompute.removeNode()
@@ -74,12 +69,18 @@ class HDR(DirectObject):
         if self.sceneQuad:
             self.sceneQuad.removeNode()
         self.sceneQuad = None
+        if self.sceneBuf:
+            self.sceneBuf.clearRenderTextures()
+            base.filters.manager.engine.removeWindow(self.sceneBuf)
+        self.sceneBuf = None
 		
     def __setupSceneQuad(self):
-        self.sceneQuad = self.mgr.renderQuadInto(colortex = self.sceneTex)
+        self.sceneQuad, self.sceneBuf = base.filters.manager.renderQuadInto(colortex = self.sceneTex, size = (self.Size, self.Size), addToList = False)
         self.sceneQuad.setShader(Shader.load(Shader.SLGLSL, "phase_14/models/shaders/hdr_scene.vert.glsl",
                                              "phase_14/models/shaders/hdr_scene.frag.glsl"))
         self.sceneQuad.setShaderInput("scene_tex", base.filters.textures["color"])
+        
+        OnscreenImage(image = self.sceneTex, scale = 0.3, pos = (0, -0.7, -0.7))
 
     def enable(self):
         if not self.isSupported():
@@ -87,8 +88,6 @@ class HDR(DirectObject):
             # shaders, which are only supported by more modern
             # graphics cards and requires at least OpenGL 4.3.
             return
-            
-        self.mgr = FilterManager(base.win, base.cam, self.Size, self.Size)
 
         self.sceneTex = Texture('hdrSceneTex')
         self.sceneTex.setup2dTexture(self.Size, self.Size, Texture.TFloat, Texture.FRgba32)
