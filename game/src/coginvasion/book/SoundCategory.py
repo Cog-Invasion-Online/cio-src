@@ -56,6 +56,8 @@ class SoundCategory(OptionsCategory):
             self.settingsMgr.getSetting("musvol").setValue(base.musicManager.getVolume())
         if (base.sfxManagerList[0].getVolume() != self.origSfxVol):
             self.settingsMgr.getSetting("sfxvol").setValue(base.sfxManagerList[0].getVolume())
+            
+        self.settingsMgr.saveFile()
 
         self._setDefaults()
 

@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from ChoiceWidget import ChoiceWidget
+from ChoiceWidget import ChoiceWidget, INDEX
 from OptionsCategory import OptionsCategory
 
 class AdvancedDisplayCategory(OptionsCategory):
@@ -26,8 +26,11 @@ class AdvancedDisplayCategory(OptionsCategory):
         
         self.waterRefl = ChoiceWidget(page, None, pos = (0, 0, 0.01), 
             widgetName = "Water Reflections", settingKeyName = 'refl')
+            
+        self.shadows = ChoiceWidget(page, None, pos = (0, 0, -0.22), settingKeyName = 'shadows',
+                                 widgetName = "Shadows", choiceTextScale = 0.058, mode = INDEX)
         
-        self.widgets = [self.waterRefl, self.hdr, self.bloom]
+        self.widgets = [self.waterRefl, self.hdr, self.bloom, self.shadows]
 
         self.discardChanges()
 
@@ -48,5 +51,6 @@ class AdvancedDisplayCategory(OptionsCategory):
         del self.hdr
         del self.bloom
         del self.widgets
+        del self.shadows
 
         OptionsCategory.cleanup(self)

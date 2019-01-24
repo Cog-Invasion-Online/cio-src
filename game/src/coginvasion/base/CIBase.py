@@ -70,9 +70,9 @@ class CIBase(ShowBase):
             self.notify.error("GLSL shaders unsupported by graphics driver.")
             return
 
-		# Any ComputeNodes should be parented to this node, not render.
-		# We isolate ComputeNodes to avoid traversing the same ComputeNodes
-		# when doing multi-pass rendering.
+        # Any ComputeNodes should be parented to this node, not render.
+        # We isolate ComputeNodes to avoid traversing the same ComputeNodes
+        # when doing multi-pass rendering.
         self.computeRoot = NodePath('computeRoot')
         self.computeCam = self.makeCamera(base.win)
         self.computeCam.node().setCullBounds(OmniBoundingVolume())
@@ -166,6 +166,7 @@ class CIBase(ShowBase):
 
         self.bloomToggle = False
         self.hdrToggle = False
+        self.fxaaToggle = CIGlobals.getSettingsMgr().getSetting("aa").getValue() == "FXAA"
 
         self.music = None
         self.currSongName = None
@@ -544,7 +545,6 @@ class CIBase(ShowBase):
 
         if not hasattr(self, 'filters'):
             # Sanity check
-            self.notify.warning("setBloom: CommonFilters not constructed")
             return
 
         if flag:
@@ -594,6 +594,7 @@ class CIBase(ShowBase):
         self.hdr = HDR()
         self.setHDR(self.hdrToggle)
         self.setBloom(self.bloomToggle)
+        self.setFXAA(self.fxaaToggle)
         #self.filters.setAmbientOcclusion()
         #self.filters.setDepthOfField(distance = 10.0, range = 175.0, near = 1.0, far = 1000.0 / (1000.0 - 1.0))
         #self.filters.setFXAA()
@@ -619,6 +620,18 @@ class CIBase(ShowBase):
         
         from src.coginvasion.hood.DistributedBuilding import DistributedBuilding
         DistributedBuilding.precache()
+        
+    def setFXAA(self, toggle):
+        self.fxaaToggle = toggle
+        
+        if not hasattr(self, 'filters'):
+            # Sanity check
+            return
+        
+        if toggle:
+            self.filters.setFXAA()
+        else:
+            self.filters.delFXAA()
 
     def setHDR(self, toggle):
         self.hdrToggle = toggle

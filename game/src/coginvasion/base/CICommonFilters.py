@@ -15,7 +15,7 @@ clunky approach.  - Josh
 
 """
 
-from direct.filter.FilterManager import FilterManager
+from CIFilterManager import FilterManager
 from panda3d.core import LVecBase4, LPoint2
 from panda3d.core import Filename
 from panda3d.core import AuxBitplaneAttrib
