@@ -79,8 +79,6 @@ class HDR(DirectObject):
         self.sceneQuad.setShader(Shader.load(Shader.SLGLSL, "phase_14/models/shaders/hdr_scene.vert.glsl",
                                              "phase_14/models/shaders/hdr_scene.frag.glsl"))
         self.sceneQuad.setShaderInput("scene_tex", base.filters.textures["color"])
-        
-        OnscreenImage(image = self.sceneTex, scale = 0.3, pos = (0, -0.7, -0.7))
 
     def enable(self):
         if not self.isSupported():

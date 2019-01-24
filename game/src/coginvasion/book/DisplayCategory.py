@@ -15,7 +15,7 @@ from direct.gui.DirectGui import DirectCheckButton, OnscreenText
 from src.coginvasion.globals import CIGlobals
 from OptionsCategory import OptionsCategory
 from ChoiceWidget import ChoiceWidget
-from ChoiceWidget import DEGREE, RESOLUTION
+from ChoiceWidget import DEGREE, RESOLUTION, INDEX
 
 class DisplayCategory(OptionsCategory):
     Name = "Display"
@@ -38,9 +38,6 @@ class DisplayCategory(OptionsCategory):
 
         self.af = ChoiceWidget(page, None, (0, 0, -0.22), widgetName = "Anisotropic Filtering",
             settingKeyName = 'af', mode = DEGREE)
-        
-        #self.shadows = ChoiceWidget(page, ["Low", "Medium", "High", "Ultra High"], (0, 0, -0.21), 
-        #                         self.__chooseShadowQuality, "Shadows", 0.06)
         
         self.vsync = ChoiceWidget(page, None, pos = (0, 0, -0.45), widgetName = "V-Sync",
             settingKeyName = 'vsync')

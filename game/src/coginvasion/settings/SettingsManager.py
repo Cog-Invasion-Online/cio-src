@@ -23,7 +23,7 @@ class SettingsManager:
     notify = directNotify.newCategory('SettingsManager')
     
     MouseCursors = {"Toontown": metadata.PHASE_DIRECTORY + "toonmono.cur", "None": ""}
-    ReflectionQuality = {"Off": 0, "Low": 256, "Medium": 512, "High": 1024, "Ultra": 2048}
+    ReflectionQuality = {"Off": 0, "Low": 256, "Medium": 512, "High": 1024, "Very High": 2048}
     
     def __init__(self):
         self.jsonData = None
@@ -65,7 +65,7 @@ class SettingsManager:
                         description = "Increases perceived brightness by glowing objects that are very bright.\nAffects performance.")
         self.addSetting("refl", optionType = DATATYPE_STR, default = "Off",
                         callback = self.__updateWaterReflections, sunrise = SHOWBASE_POSTINIT,
-                        options = ["Off", "Low", "Medium", "High", "Ultra"],
+                        options = ["Off", "Low", "Medium", "High", "Very High"],
                         description = 'Sets the resolution of water reflection textures\naround the game. Affects performance.')
         self.addSetting("hdr", optionType = DATATYPE_BOOL, default = False,
                         callback = self.__updateHDR, sunrise = SHOWBASE_POSTINIT,
@@ -103,6 +103,23 @@ class SettingsManager:
         self.addSetting("texture-detail", optionType = DATATYPE_STR, default = "high",
                         callback = self.__updateTextureDetail, sunrise = SHOWBASE_PREINIT,
                         description = "The detail level of textures.")
+        self.addSetting("shadows", optionType = DATATYPE_INT, default = 0,
+                        callback = self.__updateShadows, sunrise = SHOWBASE_PREINIT,
+                        options = ["Off", "Low", "Medium", "High", "Very High"],
+                        description = "The quality of shadows.\nAffects performance.")
+                        
+    def __updateShadows(self, shadowIdx):
+        csmSizes = [0, 512, 1024, 2048, 4096]
+        if shadowIdx == 0:
+            # drop shadows
+            loadPrcFileData("", "want-pssm 0")
+            metadata.USE_REAL_SHADOWS = 0
+        else:
+            # real shadows
+            loadPrcFileData("", "want-pssm 1")
+            loadPrcFileData("", "pssm-size {0}".format(csmSizes[shadowIdx]))
+            metadata.USE_REAL_SHADOWS = 1
+            
     
     def __updateCursor(self, cursorName):
         wp = WindowProperties()
@@ -165,7 +182,7 @@ class SettingsManager:
         base.setBloom(flag)
         
     def __updateWaterReflections(self, value):
-        qualities = {"Off": 0, "Low": 256, "Medium": 512, "High": 1024, "Ultra": 2048}
+        qualities = {"Off": 0, "Low": 256, "Medium": 512, "High": 1024, "Very High": 2048}
         resolution = qualities.get(value, 0)
         base.waterReflectionMgr.handleResolutionUpdate(resolution)
         
