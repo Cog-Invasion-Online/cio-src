@@ -78,10 +78,9 @@ class CIBase(ShowBase):
         self.computeCam.node().setCullBounds(OmniBoundingVolume())
         self.computeCam.node().setFinal(True)
         self.computeCam.reparentTo(self.computeRoot)
-
-        self.shaderGenerator = PSSMShaderGenerator(self.win.getGsg(), self.camera, self.render)
-        self.win.getGsg().setShaderGenerator(self.shaderGenerator)
-        self.shaderGenerator.startUpdate()
+        
+        # Initialized in initStuff()
+        self.shaderGenerator = None
 
         render.hide()
 
@@ -556,7 +555,10 @@ class CIBase(ShowBase):
     def initStuff(self):
         # Precache water bar shader, prevents crash from running out of GPU registers
         loader.loadShader("phase_14/models/shaders/progress_bar.sha")
-
+        
+        self.shaderGenerator = PSSMShaderGenerator(self.win.getGsg(), self.camera, self.render)
+        self.win.getGsg().setShaderGenerator(self.shaderGenerator)
+        self.shaderGenerator.startUpdate()
         vlg = VertexLitGenericSpec()    # models
         ulg = UnlitGenericSpec()        # ui elements, particles, etc
         lmg = LightmappedGenericSpec()  # brushes, displacements
@@ -585,6 +587,8 @@ class CIBase(ShowBase):
             #base.openWindow(useCamera = cam)
 
         #self.shadowCaster.turnOnShadows()
+        
+        self.waterReflectionMgr.load()
 
         self.filters = CommonFilters(self.win, self.cam)
         self.hdr = HDR()

@@ -46,14 +46,14 @@ class SettingsManager:
         self.addSetting("maspr", optionType = DATATYPE_BOOL, default = True,
                         callback = self.__updateAspectRatio, sunrise = SHOWBASE_POSTINIT,
                         description = "Maintain aspect ratio?")
-        self.addSetting("fullscreen", optionType = DATATYPE_BOOL, default = True,
+        self.addSetting("fullscreen", optionType = DATATYPE_BOOL, default = False,
                         callback = self.__updateFullscreen, sunrise = SHOWBASE_PREINIT,
                         description = "Toggles fullscreen mode.")
         self.addSetting("aa", optionType = DATATYPE_INT, default = 16,
                         callback = self.__updateAA, sunrise = SHOWBASE_PREINIT,
                         options = ["None", "x2", "x4", "x8", "x16"],
                         description = "Smooths out jagged edges on screen.\nAffects performance.")
-        self.addSetting("af", optionType = DATATYPE_INT, default = 16,
+        self.addSetting("af", optionType = DATATYPE_INT, default = 0,
                         callback = self.__updateAF, sunrise = SHOWBASE_PREINIT,
                         options = ["None", "x2", "x4", "x8", "x16"],
                         description = "Improves the quality of textures viewed from an angle.\nAffects performance.")
@@ -67,7 +67,7 @@ class SettingsManager:
                         callback = self.__updateWaterReflections, sunrise = SHOWBASE_POSTINIT,
                         options = ["Off", "Low", "Medium", "High", "Ultra"],
                         description = 'Sets the resolution of water reflection textures\naround the game. Affects performance.')
-        self.addSetting("hdr", optionType = DATATYPE_BOOL, default = False,
+        self.addSetting("hdr", optionType = DATATYPE_BOOL, default = True,
                         callback = self.__updateHDR, sunrise = SHOWBASE_POSTINIT,
                         description = "Increases perceived range of colors and brightness on screen.\nRequires at least OpenGL 4.3.'")
         self.addSetting("fps", optionType = DATATYPE_BOOL, default = False,
