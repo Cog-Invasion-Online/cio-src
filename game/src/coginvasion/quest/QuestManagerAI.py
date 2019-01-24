@@ -168,16 +168,15 @@ class QuestManagerAI(QuestManagerBase):
                 progresses.append(progress)
             else:
                 progress = []
+                
                 for i, objective in enumerate(quest.accessibleObjectives):
-                    if not i is objIndex:
+                    if i != objIndex:
                         progress.append(objective.progress)
                     else:
                         progress.append(objective.progress + increment)
                 progresses.append(progress)
-        return QuestData.toDataStump(self.quests.values(), self.trackingId, objectiveProgresses = progresses)
 
-        # Let's see the if the objective is complete, now that we've updated the progress.
-        #self.checkIfObjectiveIsComplete(questId)
+        return QuestData.toDataStump(self.quests.values(), self.trackingId, objectiveProgresses = progresses)
         
     def getObjectiveIndex(self, questId, objective):
         """ Fetches the relative index of an objective inside of accessible objectives. """

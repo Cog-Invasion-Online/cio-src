@@ -87,6 +87,24 @@ class Objective:
 
     def isComplete(self):
         return (self.HasProgress and self.progress >= self.goal)
+    
+    def getIndex(self):
+        return self.quest.questMgr.getObjectiveIndex(self.quest.id, self)
+    
+    def incrementProgress(self):
+        """ Helper method to increment objective progress on the QuestManager """
+        questMgr = self.quest.questMgr
+        
+        self.progress += 1
+        
+        if not questMgr.isOnLastObjectiveOfQuest(self.quest.id):
+            questMgr.checkIfObjectiveIsComplete(self.quest.id)
+        elif self.quest.isComplete():
+            questMgr.completedQuest(self.quest.id)
+        
+    def goToNextObjective(self):
+        """ Helper method to move to the next objective """
+        self.quest.questMgr.incrementQuestObjective(self.quest.id)
 
 class VisitNPCObjective(Objective):
     """
@@ -117,16 +135,7 @@ class VisitNPCObjective(Objective):
         questMgr = self.quest.questMgr
         
         if not self.showAsComplete and self.isPreparedToVisit():
-            
-            questMgr.incrementQuestObjectiveProgress(self.quest.id, 
-                questMgr.getObjectiveIndex(self.quest.id, self))
-            
-            if not questMgr.isOnLastObjectiveOfQuest(self.quest.id):
-                questMgr.checkIfObjectiveIsComplete()
-            elif self.quest.isComplete():
-                questMgr.completedQuest(self.quest.id)
-                
-            questMgr.updateQuestData()
+            self.incrementProgress()
 
     def isPreparedToVisit(self):
         return 1
@@ -158,13 +167,11 @@ class CogObjective(DefeatObjective):
 
     def handleProgress(self, cog):
         if not self.isComplete() and self.isNeededCog(cog):
-            self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id, 
-                self.quest.questMgr.getObjectiveIndex(self))
+            self.incrementProgress()
             
     def handleProgressFromDeadCogData(self, deadCogData):
         if not self.isComplete() and self.isNeededCogFromDeadCogData(deadCogData):
-            self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id,
-                self.quest.questMgr.getObjectiveIndex(self.quest.id, self))
+            self.incrementProgress()
             
     def isNeededCogFromDeadCogData(self, deadCogData):
         if not self.isValidLocation(deadCogData.location):
@@ -303,8 +310,7 @@ class RecoverItemObjective(ItemObjective, CogObjective):
             
     def handleProgress(self, cog):
         if not self.isComplete() and self.isNeededCog(cog) and random.randint(0, 101) < self.recoverChance:
-            self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id, 
-                self.quest.questMgr.getObjectiveIndex(self))
+            self.incrementProgress()
         
     def getTaskInfo(self, speech = False):
         cogObjInfo = CogObjective.getTaskInfo(self)
@@ -319,11 +325,8 @@ class CogInvasionObjective(DefeatObjective):
     Name = "Cog Invasion"
 
     def handleProgress(self, hood):
-        if not self.isComplete():
-
-            if self.isValidLocation(hood):
-                self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id, 
-                    self.quest.questMgr.getObjectiveIndex(self))
+        if not self.isComplete() and self.isValidLocation(hood):
+            self.incrementProgress()
 
     def getTaskInfo(self, speech = False):
         if self.goal > 1:
@@ -339,11 +342,8 @@ class CogTournamentObjective(DefeatObjective):
     Name = "Cog Tournament"
 
     def handleProgress(self, hood):
-        if not self.isComplete():
-
-            if self.isValidLocation(hood):
-                self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id, 
-                    self.quest.questMgr.getObjectiveIndex(self))
+        if not self.isComplete() and self.isValidLocation(hood):
+            self.incrementProgress()
 
     def getTaskInfo(self, speech = False):
         if self.goal > 1:
@@ -364,13 +364,11 @@ class CogBuildingObjective(DefeatObjective):
         self.minFloors = minFloors
 
     def handleProgress(self, hood, dept, numFloors):
-        if not self.isComplete():
+        if not self.isComplete() and self.isValidLocation(hood):
+                withinFloorRange = (numFloors >= self.minFloors or self.minFloors == QuestGlobals.Any)
 
-            if self.isValidLocation(hood):
-
-                if (self.dept == QuestGlobals.Any or self.dept == dept) and (numFloors >= self.minFloors or self.minFloors == QuestGlobals.Any):
-                    self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id, 
-                        self.quest.questMgr.getObjectiveIndex(self.quest.id, self))
+                if (self.dept == QuestGlobals.Any or self.dept == dept) and withinFloorRange:
+                    self.incrementProgress()
                     
     def isAcceptable(self, hood, dept, numFloors):
         if not self.isComplete() and self.isValidLocation(hood):
@@ -411,12 +409,8 @@ class MinigameObjective(Objective):
         self.area = ZoneUtil.MinigameAreaId
 
     def handleProgress(self, minigame):
-
-        if not self.isComplete():
-
-            if minigame == self.minigame:
-                self.quest.questMgr.incrementQuestObjectiveProgress(self.quest.id, 
-                    self.quest.questMgr.getObjectiveIndex(self))
+        if not self.isComplete() and minigame == self.minigame:
+            self.incrementProgress()
 
     def getTaskInfo(self, speech = False):
         if self.goal > 1:

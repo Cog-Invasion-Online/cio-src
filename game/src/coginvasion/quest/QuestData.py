@@ -55,9 +55,15 @@ def toDataStump(quests, trackingId = -1, currentObjectives = [], objectiveProgre
         if len(objectiveProgresses) == 0 or len(objectiveProgresses) > 0 and len(objectiveProgresses[index]) == 0:
             # Let's use the objective progress inside of the quest.
             for i, objective in enumerate(quest.accessibleObjectives):
-                objProgressStr += str(objective.progress)
+                progress = 0
+                
+                if i in currentObjectives:
+                    progress = objective.progress
+                
+                objProgressStr += str(progress)
                 if i < len(quest.accessibleObjectives) - 1:
                     objProgressStr += ','
+
             objProgressStr += ']'
         else:
             # Let's use the values given to us to use instead.

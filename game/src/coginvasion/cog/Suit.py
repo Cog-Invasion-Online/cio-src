@@ -9,7 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from src.coginvasion.avatar.Avatar import Avatar
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.globals import CIGlobals, BSPUtility
 from src.coginvasion.cog import SuitGlobals
 from src.coginvasion.cog import Variant
 from src.coginvasion.cog import Voice
@@ -601,8 +601,9 @@ class Suit(Avatar):
             else:
                 self.loadModel('phase_4/models/char/suit%s-lose-mod.bam' % (str(self.suit)), 'body')
             self.loadAnims({'lose' : 'phase_4/models/char/suit%s-lose.bam' % (str(self.suit))}, 'body')
+            
             # Force the loser suit to use UnlitGeneric shader, workaround for the has_mat() assertion
-            self.setAttrib(BSPMaterialAttrib.makeOverrideShader(BSPMaterial.getFromFile("phase_14/materials/unlit.mat")))
+            BSPUtility.makeOverrideShader(self, BSPUtility.UNLIT_MATERIAL)
         if self.variant != Variant.SKELETON:
             self.headModel = self.head.generate()
             self.headModel.reparentTo(self.find("**/joint_head"))
