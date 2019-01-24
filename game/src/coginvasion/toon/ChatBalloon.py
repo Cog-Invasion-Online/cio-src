@@ -51,6 +51,7 @@ class ChatBalloon(NodePath):
         if is2d:
             # Don't use the black outline on 2d chat balloons (old toontown).
             self.balloon.setTextureOff(1)
+            self.balloon.setShaderOff(1)
 
         # Attach the TextNode:
         self.textNodePath = self.attachNewNode(self.textNode.generate())
