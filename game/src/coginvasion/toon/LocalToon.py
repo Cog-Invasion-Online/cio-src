@@ -1158,17 +1158,18 @@ class LocalToon(DistributedPlayerToon):
         self.accept("gotLookSpot", self.handleLookSpot)
         self.accept("clickedWhisper", self.handleClickedSentWhisper)
         self.accept(base.inputStore.ToggleAspect2D, self.toggleAspect2d)
-
-        self.acceptOnce('m', self.sendUpdate, ['reqMakeSewer'])
-        self.accept('l', render.ls)
+        
+        if not metadata.IS_PRODUCTION:
+            self.acceptOnce('m', self.sendUpdate, ['reqMakeSewer'])
+            self.accept('l', render.ls)
+            self.accept('/', self.printPos)
+            self.accept('\\', self.printPos_cam)
 
         #self.accept('c', self.walkControls.setCollisionsActive, [0])
 
         self.createInvGui()
 
         # Unused developer methods.
-        self.accept('/', self.printPos)
-        self.accept('\\', self.printPos_cam)
         #self.accept('p', self.enterPictureMode)
         #self.accept('c', self.teleportToCT)
         #posBtn = DirectButton(text = "Get Pos", scale = 0.08, pos = (0.3, 0, 0), parent = base.a2dLeftCenter, command = self.printAvPos)
