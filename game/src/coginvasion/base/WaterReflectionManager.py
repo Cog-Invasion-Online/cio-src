@@ -364,18 +364,21 @@ class WaterReflectionManager:
         # name to list of textures for each frame
         self.dudvs = {}
 
+        self.underwaterSound = None
+        self.wadeSounds = []
+        
+        sMgr = CIGlobals.getSettingsMgr()
+        self.reso = sMgr.ReflectionQuality[sMgr.getSetting("refl").getValue()]
+        
+    def load(self):
         self.underwaterSound = base.loadSfx("phase_14/audio/sfx/AV_ambient_water.ogg")
         self.underwaterSound.setLoop(True)
-
-        self.wadeSounds = []
+        
         wades = 8
         for i in xrange(wades):
             sound = base.loadSfx("phase_14/audio/sfx/footsteps/wade{0}.wav".format(i + 1))
             sound.setVolume(0.6)
             self.wadeSounds.append(sound)
-        
-        sMgr = CIGlobals.getSettingsMgr()
-        self.reso = sMgr.ReflectionQuality[sMgr.getSetting("refl").getValue()]
 
     def getDefaultSpec(self, name):
         return defaultWaterSpecs.get(name, WaterSpec())
