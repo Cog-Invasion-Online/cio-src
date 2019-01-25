@@ -13,7 +13,7 @@ from src.coginvasion.globals import CIGlobals
 from OptionsCategory import OptionsCategory
 from SliderWidget import SliderWidget
 from ChoiceWidget import ChoiceWidget
-from ChoiceWidget import MULTICHOICE
+from ChoiceWidget import MULTICHOICE, INDEX
 
 class ControlsCategory(OptionsCategory):
     Name = "Controls"
@@ -23,9 +23,12 @@ class ControlsCategory(OptionsCategory):
         
         self.gagKey = ChoiceWidget(page, None, pos = (0, 0.47, 0.47), widgetName = "Use Gag",
             settingKeyName = 'gagkey', mode = MULTICHOICE)
+            
+        self.bpov = ChoiceWidget(page, None, pos = (0, 0.25, 0.25), widgetName = "Battle POV",
+                settingKeyName = 'bpov', mode = INDEX, choiceTextScale = 0.055)
 
-        self.fpmsSlider = SliderWidget(page, "Mouse Sensitivity\n(First Person)", (0.05, 0.3), self.__setFPMS, (0, 0, 0.2))
-        self.fpfovSlider = SliderWidget(page, "Field of View\n(First Person)", (54.0, 70.0), self.__setFPFov, (0, 0, -0.1))
+        self.fpmsSlider = SliderWidget(page, "Mouse Sensitivity\n(First Person)", (0.05, 0.3), self.__setFPMS, (0, 0, 0.1))
+        self.fpfovSlider = SliderWidget(page, "Field of View\n(First Person)", (54.0, 70.0), self.__setFPFov, (0, 0, -0.15))
         self.genFovSlider = SliderWidget(page, "Field of View\n(General Gameplay)", (40.0, 70.0), self.__setGenFov, (0, 0, -0.4))
         
         self.keysChanged = 0
@@ -43,6 +46,7 @@ class ControlsCategory(OptionsCategory):
         
         self.keysChanged = 0
         self.gagKey.reset()
+        self.bpov.reset()
         
     def __updateGagKey(self, _):
         self.keysChanged += 1
@@ -66,6 +70,7 @@ class ControlsCategory(OptionsCategory):
         self._showApplying()
         
         self.gagKey.saveSetting()
+        self.bpov.saveSetting()
 
         if (self.fpFov != self.origFPfov):
             # They changed the first person fov!
@@ -102,10 +107,11 @@ class ControlsCategory(OptionsCategory):
         self.discardChanges()
         OptionsCategory.cleanup(self)
 
-        for widget in [self.gagKey, self.fpmsSlider, self.fpfovSlider, self.genFovSlider]:
+        for widget in [self.gagKey, self.fpmsSlider, self.fpfovSlider, self.genFovSlider, self.bpov]:
             widget.cleanup()
 
         del self.gagKey
+        del self.bpov
         del self.fpmsSlider
         del self.fpfovSlider
         del self.genFovSlider

@@ -110,6 +110,14 @@ class SettingsManager:
         self.addSetting("ao", optionType = DATATYPE_BOOL, default = False,
                         callback = self.__updateAO, sunrise = SHOWBASE_POSTINIT,
                         description = "Screen space ambient occlusion.\nAffects performance")
+        self.addSetting("bpov", optionType = DATATYPE_INT, default = 1,
+                        callback = self.__updateBattlePOV, sunrise = SHOWBASE_POSTINIT,
+                        options = ["Third Person", "First Person"],
+                        description = "Battle camera point-of-view.")
+    
+    def __updateBattlePOV(self, pov):
+        try:    base.localAvatar.walkControls.setMode(pov)
+        except: pass
                         
     def __updateAO(self, toggle):
         base.setAmbientOcclusion(toggle)

@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Point3
+from panda3d.core import Point3, NodePath
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood.SkyUtil import SkyUtil
@@ -188,6 +188,8 @@ class OutdoorLightingConfig(LightingConfig):
         LightingConfig.unapply(self)
         if metadata.USE_LIGHTING:
             render.clearLight(self.sunNP)
+            if metadata.USE_REAL_SHADOWS:
+                base.shaderGenerator.setSunLight(NodePath())
             if not self.winterOverride:
                 render.clearFog()
 
