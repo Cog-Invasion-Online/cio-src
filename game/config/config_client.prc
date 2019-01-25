@@ -21,8 +21,6 @@ notify-level-display warning
 notify-timestamp #f
 default-directnotify-level info
 
-gl-debug #t
-
 # Filenames...
 cursor-filename resources/toonmono.cur
 icon-filename resources/icon.ico
@@ -174,3 +172,5 @@ textures-power-2 none
 precache-assets 1
 
 mat_rimlight 1
+mat_envmaps 1
+mat_phong 1
