@@ -119,9 +119,8 @@ class CIBase(ShowBase):
         self.bspLoader.setWantVisibility(True)
         self.bspLoader.setVisualizeLeafs(False)
         self.bspLoader.setWantLightmaps(True)
-        #self.bspLoader.setWantShadows(metadata.USE_REAL_SHADOWS)
-        self.bspLoader.setShadowCamPos(Point3(-15, 5, 40))
-        self.bspLoader.setShadowResolution(60 * 2, 1024 * 1)
+        #self.bspLoader.setShadowCamPos(Point3(-15, 5, 40))
+        #self.bspLoader.setShadowResolution(60 * 2, 1024 * 1)
         self.bspLevel = None
         self.materialData = {}
         self.skyBox = None
@@ -556,6 +555,8 @@ class CIBase(ShowBase):
     def initStuff(self):
         # Precache water bar shader, prevents crash from running out of GPU registers
         loader.loadShader("phase_14/models/shaders/progress_bar.sha")
+        
+        self.bspLoader.setWantShadows(metadata.USE_REAL_SHADOWS)
         
         self.shaderGenerator = PSSMShaderGenerator(self.win.getGsg(), self.camera, self.render)
         self.win.getGsg().setShaderGenerator(self.shaderGenerator)

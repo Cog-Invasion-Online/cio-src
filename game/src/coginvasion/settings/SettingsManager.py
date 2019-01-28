@@ -147,7 +147,8 @@ class SettingsManager:
 
         try:
             base.win.requestProperties(wp)
-        except: pass
+        except:
+            loadPrcFileData("", "win-size {0} {1}".format(width, height))
         
     def __updateAspectRatio(self, maintainRatio):
         if not maintainRatio:
@@ -161,7 +162,8 @@ class SettingsManager:
         
         try:
             base.win.requestProperties(wp)
-        except: pass
+        except:
+            loadPrcFileData("", "fullscreen {0}".format(int(flag)))
     
     def __updateAA(self, degree):
         if "FXAA" in degree:

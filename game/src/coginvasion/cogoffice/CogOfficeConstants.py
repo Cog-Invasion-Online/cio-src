@@ -21,6 +21,7 @@ EXECUTIVE_FLOOR = "cog_interior_concept"
 CUBICLE_FLOOR = "cog_floor2"
 BREAK_FLOOR = "cog_breakfoor"
 LONG_TEST = "testlongfloor"
+SELL_FLOOR_1 = "sellbot_floor_1"
 
 #middleFloors = [CONFERENCE_FLOOR, LOUNGE_FLOOR]
 
@@ -33,11 +34,11 @@ LONG_TEST = "testlongfloor"
 #}
 
 numFloors2roomsVisited = {
-    1: [LONG_TEST],
-    2: [LONG_TEST, LONG_TEST],
-    3: [LONG_TEST, LONG_TEST, LONG_TEST],
-    4: [LONG_TEST, LONG_TEST, LONG_TEST, LONG_TEST],
-    5: [LONG_TEST, LONG_TEST, LONG_TEST, LONG_TEST, LONG_TEST]
+    1: [SELL_FLOOR_1],
+    2: [SELL_FLOOR_1, LONG_TEST],
+    3: [SELL_FLOOR_1, LONG_TEST, LONG_TEST],
+    4: [SELL_FLOOR_1, LONG_TEST, LONG_TEST, LONG_TEST],
+    5: [SELL_FLOOR_1, LONG_TEST, LONG_TEST, LONG_TEST, LONG_TEST]
 }
 
 # Faceoff: Position of Toons during faceoff

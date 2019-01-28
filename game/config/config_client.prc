@@ -116,6 +116,9 @@ pssm-shadow-depth-bias 0.0001
 pssm-normal-offset-scale 3.0
 pssm-softness-factor 2.0
 pssm-cache-shaders 1
+pssm-ambient-light-identifier 0.35 0.35 0.35
+pssm-ambient-light-min 0.0 0.0 0.0
+pssm-ambient-light-scale 1.0
 shadow-depth-bits 32
 stencil-bits 8
 

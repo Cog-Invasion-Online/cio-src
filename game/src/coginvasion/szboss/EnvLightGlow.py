@@ -6,7 +6,7 @@ class EnvLightGlow(Entity):
     def __init__(self):
         Entity.__init__(self)
         self.setLightOff(1)
-        self.setShaderOff(1)
+        #self.setShaderOff(1)
         self.setMaterialOff(1)
         
         self.lightGlow = None
