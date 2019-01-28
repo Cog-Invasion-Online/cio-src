@@ -285,7 +285,7 @@ class FilterManager(DirectObject):
         # any pixels accidentally sampled in the padded region won't
         # be reading from unititialised memory.
         buffer.setClearColor((0, 0, 0, 1))
-        buffer.setClearColorActive(True)
+        buffer.setClearColorActive(False)
         
         if addToList:
             self.buffers.append(buffer)

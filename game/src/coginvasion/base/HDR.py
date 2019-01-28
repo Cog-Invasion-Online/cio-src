@@ -34,7 +34,11 @@ class HDR(DirectObject):
         self.debugImg = None
 
     def isSupported(self):
-        return base.win.getGsg().getSupportsComputeShaders()
+		gsg = base.win.getGsg()
+		# We have to refuse HDR on all Intel cards until 
+		# they fix their buggy drivers or we find a workaround.
+		return (gsg.getSupportsComputeShaders() and
+				gsg.getDriverVendor() != "Intel")
 
     def disable(self):
         base.filters.delExposure()

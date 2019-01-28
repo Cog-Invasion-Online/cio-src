@@ -69,6 +69,10 @@ class CIBase(ShowBase):
             # I don't know how this could be possible
             self.notify.error("GLSL shaders unsupported by graphics driver.")
             return
+            
+        self.win.setClearColorActive(False)
+        self.win.setClearStencilActive(False)
+        self.win.setClearDepthActive(True)
 
         # Any ComputeNodes should be parented to this node, not render.
         # We isolate ComputeNodes to avoid traversing the same ComputeNodes

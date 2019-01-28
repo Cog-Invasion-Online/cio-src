@@ -281,8 +281,9 @@ class WaterScene:
     def __init__(self, name, reso, height, planeVec, reflection = False, needDepth = False):
         buffer = base.win.makeTextureBuffer(name, reso, reso)
         buffer.setSort(-100)
-        buffer.setClearColorActive(True)
-        buffer.setClearColor(base.win.getClearColor())
+        buffer.setClearColorActive(False)
+        buffer.setClearStencilActive(False)
+        buffer.setClearDepthActive(True)
 
         self.buffer = buffer
         
