@@ -95,10 +95,10 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
             av = self.air.doId2do.get(avId)
             if av is None and avId in avIds:
                 avIds.remove(avId)
-            elif av is not None and av.isDead():
+            elif av is not None and av.isDead() and avId in avIds:
                 # Don't target dead toons.
                 avIds.remove(avId)
-            elif av is not None and (not self.isPlayerVisible(av)):
+            elif av is not None and (not self.isPlayerVisible(av)) and avId in avIds:
                 avIds.remove(avId)
 
         # Make sure we found some avatars to pursue.
