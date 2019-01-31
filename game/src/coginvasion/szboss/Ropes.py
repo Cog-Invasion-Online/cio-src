@@ -1,5 +1,7 @@
 from direct.showutil.Rope import Rope
 
+from src.coginvasion.globals import BSPUtility, CIGlobals
+
 from Entity import Entity
         
 class RopeKeyframe(Entity):
@@ -11,7 +13,8 @@ class RopeBegin(Entity, Rope):
         Entity.__init__(self)
         Rope.__init__(self)
         
-        #self.setShaderOff(1)
+        self.hide(CIGlobals.ShadowCameraBitmask)
+        BSPUtility.applyUnlitOverride(self)
         
     def load(self):
         Entity.load(self)

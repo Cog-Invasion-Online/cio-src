@@ -38,5 +38,10 @@ def makeOverrideShader(nodepath, overrideShader):
         except: pass
         
         notify.warning('Failed to apply shader to {0} with Material file called: {1}'.format(nodeName, matName))
-
+        
 UNLIT_MATERIAL = getMaterialFile("phase_14/materials/unlit.mat")
+
+def applyUnlitOverride(nodepath):
+    makeOverrideShader(nodepath, UNLIT_MATERIAL)
+
+

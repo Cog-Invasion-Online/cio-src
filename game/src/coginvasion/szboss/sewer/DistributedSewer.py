@@ -14,6 +14,7 @@ from src.coginvasion.battle.DistributedBattleZone import DistributedBattleZone
 from src.coginvasion.phys import PhysicsUtils
 from src.coginvasion.base.Lighting import OutdoorLightingConfig
 from src.coginvasion.hood.SkyUtil import SkyUtil
+from src.coginvasion.globals import BSPUtility
 
 class DistributedSewer(DistributedBattleZone):
     notify = directNotify.newCategory("DistributedSewer")
@@ -48,7 +49,7 @@ class DistributedSewer(DistributedBattleZone):
                     self.skyNP.setHpr(0, 0, 0)
                     self.skyNP.setLightOff(1)
                     self.skyNP.setFogOff(1)
-                    #self.skyNP.setShaderOff(1)
+                    BSPUtility.applyUnlitOverride(self.skyNP)
                     self.skyNP.setMaterialOff(1)
                     self.skyNP.setCompass()
                     if OutdoorLightingConfig.SkyData[skyType][1]:

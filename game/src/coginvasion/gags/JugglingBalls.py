@@ -10,6 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from src.coginvasion.gags.ToonUpGag import ToonUpGag
 from src.coginvasion.gags import GagGlobals
+from src.coginvasion.globals import BSPUtility
 from direct.interval.IntervalGlobal import Sequence, Func, Parallel, ActorInterval
 
 class JugglingBalls(ToonUpGag):
@@ -35,6 +36,8 @@ class JugglingBalls(ToonUpGag):
         self.build()
         self.placeProp(self.hips, self.gag)
         self.soundInterval = self.getSoundTrack(0.7, self.gag, 7.7)
+        
+        BSPUtility.applyUnlitOverride(self.gag)
         
         propInterval = Sequence()
         propInterval.append(ActorInterval(self.gag, 'chan'))

@@ -355,6 +355,7 @@ class CIBase(ShowBase):
     def loadSkyBox(self, skyType):
         if skyType != OutdoorLightingConfig.STNone:
             self.skyBox = loader.loadModel(OutdoorLightingConfig.SkyData[skyType][0])
+            self.skyBox.hide(CIGlobals.ShadowCameraBitmask)
             self.skyBox.reparentTo(camera)
             self.skyBox.setCompass()
             self.skyBox.setZ(-350)

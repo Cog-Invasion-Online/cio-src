@@ -374,9 +374,13 @@ class Suit(Avatar):
         bigGearExplosion.getParticlesNamed('particles-1').setPoolSize(30)
 
         smallGears.setDepthWrite(False)
+        smallGears.hide(CIGlobals.ShadowCameraBitmask)
         singleGear.setDepthWrite(False)
+        singleGear.hide(CIGlobals.ShadowCameraBitmask)
         smallGearExplosion.setDepthWrite(False)
+        smallGearExplosion.hide(CIGlobals.ShadowCameraBitmask)
         bigGearExplosion.setDepthWrite(False)
+        bigGearExplosion.hide(CIGlobals.ShadowCameraBitmask)
 
         self.smallGears = smallGears
         self.smallGears.setPos(self.find('**/joint_head').getPos() + (0,0, 2))
@@ -603,7 +607,7 @@ class Suit(Avatar):
             self.loadAnims({'lose' : 'phase_4/models/char/suit%s-lose.bam' % (str(self.suit))}, 'body')
             
             # Force the loser suit to use UnlitGeneric shader, workaround for the has_mat() assertion
-            BSPUtility.makeOverrideShader(self, BSPUtility.UNLIT_MATERIAL)
+            BSPUtility.applyUnlitOverride(self)
         if self.variant != Variant.SKELETON:
             self.headModel = self.head.generate()
             self.headModel.reparentTo(self.find("**/joint_head"))

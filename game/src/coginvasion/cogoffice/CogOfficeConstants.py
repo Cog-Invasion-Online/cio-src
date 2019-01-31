@@ -21,7 +21,7 @@ EXECUTIVE_FLOOR = "cog_interior_concept"
 CUBICLE_FLOOR = "cog_floor2"
 BREAK_FLOOR = "cog_breakfoor"
 LONG_TEST = "testlongfloor"
-SELL_FLOOR_1 = "sellbot_floor_1"
+SELL_FLOOR_1 = "sellbot_floor_2"
 
 #middleFloors = [CONFERENCE_FLOOR, LOUNGE_FLOOR]
 

@@ -334,6 +334,7 @@ def makeSplat(pos, color, scale, sound = None):
     splat.setPos(pos)
     splat.setLightOff(1)
     splat.setTransparency(TransparencyAttrib.MDual)
+    splat.hide(ShadowCameraBitmask)
 
     if sound:
         if isinstance(sound, str):
@@ -351,6 +352,7 @@ def getParticleRender():
     if not ParticleRender:
         ParticleRender = render.attachNewNode('particleRender')
         ParticleRender.setLightOff(1)
+        ParticleRender.hide(ShadowCameraBitmask)
     return ParticleRender
 
 def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, duration = 1.0, soundVol = 0.5):
@@ -359,6 +361,7 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
     explosion.reparentTo(render)
     explosion.setBillboardPointEye()
     explosion.setLightOff(1)
+    explosion.hide(ShadowCameraBitmask)
     explosion.setPos(pos)
 
     frames = 10.0
@@ -412,6 +415,7 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
 def makeDustCloud(pos, scale = (0.1, 0.9, 1), sound = None, color = (1, 1, 1, 1)):
     from direct.actor.Actor import Actor
     dust = Actor('phase_5/models/props/dust-mod.bam', {'chan' : 'phase_5/models/props/dust-chan.bam'})
+    dust.hide(ShadowCameraBitmask)
     objBin = 110
     for cloudNum in range(1, 12):
         cloudName = '**/cloud' + str(cloudNum)
