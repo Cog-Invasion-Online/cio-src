@@ -70,7 +70,7 @@ class CIBase(ShowBase):
             self.notify.error("GLSL shaders unsupported by graphics driver.")
             return
             
-        self.win.setClearColorActive(False)
+        self.win.setClearColorActive(True)
         self.win.setClearStencilActive(False)
         self.win.setClearDepthActive(True)
 
