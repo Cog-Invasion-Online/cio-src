@@ -32,11 +32,12 @@ class Control(object):
 
 class UserInputStorage(object):
     
-    ViewQuests = Control('q')
+    ViewQuests = Control('z')
+    LastGag = Control('q')
     UseGag = Control('mouse1', alternatives = ['f'])
     ToggleLoadoutVisibility = Control('e')
-    PreviousTrackGag = Control('z')
-    NextTrackGag = Control('c')
+    #PreviousTrackGag = Control('z')
+    #NextTrackGag = Control('c')
     ToggleGTAControls = Control('escape')
     TakeScreenshot = Control('f9')
     ToggleAspect2D = Control('f2')

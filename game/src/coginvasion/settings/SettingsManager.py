@@ -140,6 +140,17 @@ class SettingsManager:
         wp.setCursorFilename(self.MouseCursors.get(cursorName))
         base.win.requestProperties(wp)
         
+    def updateResolutionAndFullscreen(self, reso, fs):
+        """
+        This function is required when applying settings from the book,
+        as resolution and fullscreen need to be requested together.
+        """
+        
+        wp = WindowProperties()
+        wp.setSize(reso[0], reso[1])
+        wp.setFullscreen(fs)
+        base.win.requestProperties(wp)
+        
     def __updateResolution(self, resolutionValue):
         wp = WindowProperties()
         width, height = resolutionValue

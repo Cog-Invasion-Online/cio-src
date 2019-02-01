@@ -101,7 +101,8 @@ class ThrowGag(Gag):
                 base.localAvatar.releaseGag()
                 vm = base.localAvatar.getViewModel()
                 fpsCam = base.localAvatar.getFPSCam()
-                fpsCam.setVMAnimTrack(Sequence(Func(vm.hide), Func(vm.pose, "pie_draw", 0)))
+                fpsCam.clearVMGag()
+                fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "tnt_throw", startFrame = 27), Func(vm.hide), Func(vm.pose, "pie_draw", 0)))
         
         self.setAnimTrack(
             Parallel(

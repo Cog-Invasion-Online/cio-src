@@ -30,6 +30,8 @@ class CIProgressScreen:
         self.defaultLogoZ = 0.65
         self.bgm = loader.loadModel("phase_3/models/gui/progress-background.bam")
         self.bgm.find('**/logo').stash()
+        self.barShadow = OnscreenImage(image = self.bgm.find("**/bar_shadow"), parent = hidden)
+        self.bgm.find("**/bar_shadow").removeNode()
         self.bg = self.bgm.find('**/bg')
         self.defaultBgTexture = self.bg.findTexture('*')
         
@@ -80,7 +82,7 @@ class CIProgressScreen:
         self.progress_bar['range'] = range
         self.bgm.reparentTo(aspect2d)
         
-        print hood
+        self.bg.ls()
         
         ZoneUtil.Hood2ZoneId.keys()
         
@@ -92,6 +94,7 @@ class CIProgressScreen:
             if bgTexture:
                 self.bg.setTexture(bgTexture, 1)
 
+        self.barShadow.reparentTo(aspect2d)
         self.bg.reparentTo(render2d)
         self.bg_img.reparentTo(hidden)
         self.loading_lbl.reparentTo(aspect2d)
@@ -120,6 +123,7 @@ class CIProgressScreen:
         self.progress_bar.finish()
         self.bg_img.reparentTo(hidden)
         self.logoNode.reparentTo(hidden)
+        self.barShadow.reparentTo(hidden)
         self.bg.reparentTo(hidden)
         
         # Let's get rid of the extra texture stage.
@@ -139,6 +143,8 @@ class CIProgressScreen:
         self.bgm.removeNode()
         del self.bgm
         self.bg_img.destroy()
+        self.barShadow.destroy()
+        del self.barShadow
         self.loading_lbl.destroy()
         self.progress_bar.destroy()
         self.bgm.destroy()

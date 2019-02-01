@@ -607,8 +607,8 @@ def getLogoFont(font):
     # from this font.
     from panda3d.core import DynamicTextFont
     font = DynamicTextFont(font, 0)
-    font.setFg((188 / 255.0, 195 / 255.0, 205 / 255.0, 1.0))
-    font.setOutline((71 / 255.0, 73 / 255.0, 81 / 255.0, 1.0), 0.85, 0.175)
+    font.setFg((145 / 255.0, 145 / 255.0, 145 / 255.0, 1.0))
+    font.setOutline((0 / 255.0, 0 / 255.0, 0 / 255.0, 1.0), 0.85, 0.175)
     font.setScaleFactor(1)
     return font
    
@@ -637,7 +637,8 @@ def getLogoImage(parent = None, size = 1, pos = (0, 0, 0)):
     logoNode = parent.attachNewNode('logoNode')
     logoNode.setScale(size)
     logoNode.setPos(pos)
-    logoImg = OnscreenImage(image = logo, scale = (0.676, 0, 0.324), parent = logoNode)
+    factor = 0.315
+    logoImg = OnscreenImage(image = logo, scale = (1.920 * factor, 0, 1.080 * factor), parent = logoNode)
     logoImg.setTransparency(1)
     
     return [logoNode, logoImg]

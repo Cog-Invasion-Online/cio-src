@@ -264,6 +264,7 @@ class LocalControls(DirectObject):
         if base.localAvatar.battleControls:
             base.taskMgr.add(self.__handleUse, "LocalControls.handleUse", taskChain = "fpsIndependentStuff")
             #self.accept(base.inputStore.NextCameraPosition, self.switchMode)
+            self.accept(base.inputStore.LastGag, base.localAvatar.switchToLastSelectedGag)
 
             if self.mode == LocalControls.MFirstPerson:
                 self.fp_enable(wantMouse)
@@ -364,6 +365,7 @@ class LocalControls(DirectObject):
 
         if base.localAvatar.battleControls:
             self.fpsCam.disableMouseMovement(False, not chat)
+            self.ignore(base.inputStore.LastGag)
 
         self.ignore('alt')
         self.ignore(base.inputStore.NextCameraPosition)
@@ -392,8 +394,6 @@ class LocalControls(DirectObject):
         self.standingUp = True
 
     def __handleLand(self, fallDistance):
-        
-        
         if self.controlsEnabled:
             self.playFootstep(1.5)
             

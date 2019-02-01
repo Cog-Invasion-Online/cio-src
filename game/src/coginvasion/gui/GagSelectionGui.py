@@ -463,7 +463,7 @@ class GagSelectionGui(DirectFrame, FSM):
                 gagId = self.currentGag.gagId
                 base.localAvatar.needsToSwitchToGag = gagId
                 if base.localAvatar.gagsTimedOut == False:
-                    base.localAvatar.b_setCurrentGag(gagId)
+                    base.localAvatar.selectGag(gagId)
                     selected = True
                     
         if not selected:

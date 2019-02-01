@@ -42,7 +42,7 @@ class DisplayCategory(OptionsCategory):
         self.vsync = ChoiceWidget(page, None, pos = (0, 0, -0.45), widgetName = "V-Sync",
             settingKeyName = 'vsync')
         
-        self.widgets = [self.fs, self.aa, self.af, self.reso, self.vsync]
+        self.widgets = [self.aa, self.af, self.vsync]
 
         self.discardChanges()
 
@@ -68,6 +68,18 @@ class DisplayCategory(OptionsCategory):
         if (self.masprChoice != self.origMaspr):
             self.settingsMgr.getSetting("maspr").setValue(self.masprChoice)
             
+        # Fullscreen and screen resolution are a special case.
+        # They must be applied together in the same WindowProperties request.
+        if (self.fs.userChoice != self.fs.origChoice or
+            self.reso.userChoice != self.reso.origChoice):
+                
+            self.settingsMgr.updateResolutionAndFullscreen(self.reso.userChoice, self.fs.userChoice)
+            self.settingsMgr.getSetting("fullscreen").setValue(self.fs.userChoice, False)
+            self.settingsMgr.getSetting("resolution").setValue(self.reso.userChoice, False)
+            
+            self.fs.reset()
+            self.reso.reset()
+            
         self.settingsMgr.saveFile()
 
         self._hideApplying()
@@ -91,6 +103,8 @@ class DisplayCategory(OptionsCategory):
             del self.maspr
 
         self.widgets = []
+        self.fs.cleanup()
+        self.reso.cleanup()
         del self.reso
         del self.fs
         del self.aa

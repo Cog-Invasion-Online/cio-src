@@ -134,6 +134,15 @@ class LocalToon(DistributedPlayerToon):
         self.playState = False
         self.battleControls = False
         
+        self.selectedGag = -1
+        self.lastSelectedGag = -1
+        
+    def selectGag(self, gagId):
+        self.lastSelectedGag = self.selectedGag
+        self.selectedGag = gagId
+        self.needsToSwitchToGag = gagId
+        self.b_setCurrentGag(gagId)
+        
     def setBattleControls(self, flag):
         self.battleControls = flag
         if self.playState:
@@ -167,8 +176,6 @@ class LocalToon(DistributedPlayerToon):
 
         if laff:
             self.createLaffMeter()
-        if gags:
-            self.enableGags(1)
         if book:
             self.showBookButton()
         if friends:
@@ -180,6 +187,10 @@ class LocalToon(DistributedPlayerToon):
         if not self.walkControls.getCollisionsActive():
             self.walkControls.setCollisionsActive(1)
         self.enableAvatarControls(wantMouse)
+        
+        if gags:
+            self.enableGags(1)
+        
         self.startPosHprBroadcast()
         self.d_broadcastPositionNow()
         self.startTrackAnimToSpeed()
@@ -227,6 +238,9 @@ class LocalToon(DistributedPlayerToon):
 
     def b_unEquipGag(self):
         self.b_setCurrentGag(-1)
+        
+    def switchToLastSelectedGag(self):
+        self.selectGag(self.lastSelectedGag)
 
     def setCurrentGag(self, gagId):
         DistributedPlayerToon.setCurrentGag(self, gagId)
@@ -763,6 +777,8 @@ class LocalToon(DistributedPlayerToon):
         CIGlobals.acceptWithModifiers(self, key + "-up", self.throwGag)
         
         self.gagsEnabled = True
+        
+        self.selectGag(self.selectedGag)
 
     def disableGagKeys(self):
         self.gagsEnabled = False

@@ -29,6 +29,7 @@ class InitialLoad(LoadUtility):
         self.models = FileUtility.findAllModelFilesInVFS(phasesToScan)
         self.version_lbl = None
         self.clouds = None
+        self.barShadow = None
 
     def createGui(self):
         self.version_lbl = OnscreenText(text="Version {0} (Build {1} : {2})".format(metadata.VERSION, metadata.BUILD_NUMBER, metadata.BUILD_TYPE),
@@ -37,7 +38,10 @@ class InitialLoad(LoadUtility):
                                         font = CIGlobals.getToonLogoFont())
         gui = loader.loadModel('phase_3/models/gui/loading-background.bam')
         gui.find('**/fg').removeNode()
-        self.clouds = OnscreenImage(image = gui, parent = render2d)
+        gui.ls()
+        self.clouds = OnscreenImage(image = gui.find("**/bg"), parent = render2d)
+        #self.barShadow = OnscreenImage(image = gui.find("**/bar_shadow"), parent = aspect2d)
+        #self.barShadow.setSx(1.33)
         gui.removeNode()
 
     def load(self):
@@ -78,6 +82,8 @@ class InitialLoad(LoadUtility):
         self.version_lbl = None
         self.clouds.destroy()
         self.clouds = None
+        #self.barShadow.destroy()
+        #self.barShadow = None
         loader.progressScreen.bg_img.show()
         loader.progressScreen.bgm.show()
         loader.progressScreen.bg.show()
