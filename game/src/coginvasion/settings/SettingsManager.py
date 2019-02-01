@@ -60,7 +60,7 @@ class SettingsManager:
         self.addSetting("vsync", optionType = DATATYPE_BOOL, default = True,
                         callback = self.__updateVsync, sunrise = SHOWBASE_PREINIT,
                         description = "Reduces screen tearing by limiting frame rate to your monitor's refresh rate.\nThis is really only effective in Fullscreen mode.")
-        self.addSetting("bloom", optionType = DATATYPE_BOOL, default = True,
+        self.addSetting("bloom", optionType = DATATYPE_BOOL, default = False,
                         callback = self.__updateBloom, sunrise = SHOWBASE_POSTINIT, 
                         description = "Increases perceived brightness by glowing objects that are very bright.\nAffects performance.")
         self.addSetting("refl", optionType = DATATYPE_STR, default = "Off",
@@ -73,7 +73,7 @@ class SettingsManager:
         self.addSetting("fps", optionType = DATATYPE_BOOL, default = False,
                         callback = self.__updateFPS, sunrise = SHOWBASE_POSTINIT,
                         description = "Enables/Disables an FPS meter in the top-right\n corner of the screen.")
-        self.addSetting("musvol", optionType = DATATYPE_FLOAT, default = 0.35,
+        self.addSetting("musvol", optionType = DATATYPE_FLOAT, default = 0.25,
                         callback = self.__updateMusicVolume, sunrise = SHOWBASE_POSTINIT,
                         description = "Music Volume"),
         self.addSetting("sfxvol", optionType = DATATYPE_FLOAT, default = 1.0,
@@ -209,6 +209,10 @@ class SettingsManager:
         base.setBloom(flag)
         
     def __updateWaterReflections(self, value):
+        # Temporary until water is fixed and optimized
+        if value != "Off":
+            value = "Off"
+            
         qualities = {"Off": 0, "Low": 256, "Medium": 512, "High": 1024, "Very High": 2048}
         resolution = qualities.get(value, 0)
         base.waterReflectionMgr.handleResolutionUpdate(resolution)
