@@ -165,7 +165,7 @@ glsl-preprocess 1
 text-flatten 1
 text-dynamic-merge 1
 
-interpolate-frames 0
+interpolate-frames 1
 
 #threading-model Cull/Draw # experimental
 assert-abort 0
