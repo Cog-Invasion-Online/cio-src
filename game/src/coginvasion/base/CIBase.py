@@ -372,7 +372,7 @@ class CIBase(ShowBase):
         for prop in base.bspLevel.findAllMatches("**/+BSPProp"):
             base.createAndEnablePhysicsNodes(prop)
         #base.setupNavMesh(base.bspLevel.find("**/model-0"))
-        base.bspLevel.prepareScene(base.win.getGsg())
+        CIGlobals.preRenderScene(base.bspLevel)
 
         skyType = 1#self.bspLoader.getEntityValueInt(0, "skytype")
         self.loadSkyBox(skyType)

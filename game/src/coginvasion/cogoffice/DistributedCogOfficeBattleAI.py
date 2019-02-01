@@ -229,32 +229,38 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         if self.elevators[0]:
             self.elevators[0].b_setState('closed')
         self.readyAvatars = []
+        
+    def pickAndStartFloor(self, floorIdx):
+        """Picks and starts the next floor,
+        or the floor index specified."""
+            
+        floors = numFloors2roomsVisited[self.numFloors]
+        newFloor = floors[floorIdx]
+        if newFloor == RANDOM_FLOOR:
+            # Let's choose a random middle floor to go to!
+            self.notify.debug("Choosing random floor")
+            choices = []
+            for floor in middleFloors:
+                if not floor in self.roomsVisited:
+                    self.notify.debug("Added floor to choices: " + floor)
+                    choices.append(floor)
+                else:
+                    self.notify.debug("Room {0} already visited.".format(floor))
+            if len(choices) == 0:
+                self.notify.debug("No choices, choosing randomly from middleFloors.")
+                # We haven't finished making all of the floors yet, go to one we have already been to.
+                newFloor = random.choice(middleFloors)
+            else:
+                newFloor = random.choice(choices)
+        self.notify.debug('Chose floor: ' + newFloor)
+        self.startFloor(floorIdx, newFloor)
 
     def readyForNextFloor(self):
         avId = self.air.getAvatarIdFromSender()
         if not avId in self.readyAvatars:
             self.readyAvatars.append(avId)
         if len(self.readyAvatars) == len(self.watchingAvatarIds):
-            floors = numFloors2roomsVisited[self.numFloors]
-            newFloor = floors[self.currentFloor + 1]
-            if newFloor == RANDOM_FLOOR:
-                # Let's choose a random middle floor to go to!
-                self.notify.info("Choosing random floor")
-                choices = []
-                for floor in middleFloors:
-                    if not floor in self.roomsVisited:
-                        self.notify.info("Added floor to choices: " + floor)
-                        choices.append(floor)
-                    else:
-                        self.notify.info("Room {0} already visited.".format(floor))
-                if len(choices) == 0:
-                    self.notify.info("No choices, choosing randomly from middleFloors.")
-                    # We haven't finished making all of the floors yet, go to one we have already been to.
-                    newFloor = random.choice(middleFloors)
-                else:
-                    newFloor = random.choice(choices)
-            self.notify.info('Chose floor: ' + newFloor)
-            self.startFloor(self.currentFloor + 1, newFloor)
+            self.pickAndStartFloor(self.currentFloor + 1)
 
     def exitFloorIntermission(self):
         pass
@@ -603,4 +609,4 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.readyAvatars.append(avId)
         if len(self.readyAvatars) == len(self.watchingAvatarIds):
             # We're ready to go!
-            self.startFloor(0, numFloors2roomsVisited[self.numFloors][0])
+            self.pickAndStartFloor(0)
