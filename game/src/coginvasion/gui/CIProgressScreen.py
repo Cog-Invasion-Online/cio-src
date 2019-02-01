@@ -82,8 +82,6 @@ class CIProgressScreen:
         self.progress_bar['range'] = range
         self.bgm.reparentTo(aspect2d)
         
-        self.bg.ls()
-        
         ZoneUtil.Hood2ZoneId.keys()
         
         # We only want to show special loading screens for actual in-game locations.
