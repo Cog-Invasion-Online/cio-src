@@ -137,8 +137,9 @@ class LocalToon(DistributedPlayerToon):
         self.selectedGag = -1
         self.lastSelectedGag = -1
         
-    def selectGag(self, gagId):
-        self.lastSelectedGag = self.selectedGag
+    def selectGag(self, gagId, record = True):
+        if record:
+            self.lastSelectedGag = self.selectedGag
         self.selectedGag = gagId
         self.needsToSwitchToGag = gagId
         self.b_setCurrentGag(gagId)
@@ -778,7 +779,7 @@ class LocalToon(DistributedPlayerToon):
         
         self.gagsEnabled = True
         
-        self.selectGag(self.selectedGag)
+        self.selectGag(self.selectedGag, False)
 
     def disableGagKeys(self):
         self.gagsEnabled = False
