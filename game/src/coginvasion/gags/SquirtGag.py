@@ -184,6 +184,7 @@ class SquirtGag(Gag):
         Gag.equip(self)
         self.sprayParticleRoot = render.attachNewNode('sprayParticleRoot')
         self.sprayParticleRoot.setLightOff(1)
+        self.sprayParticleRoot.hide(CIGlobals.ShadowCameraBitmask)
         
         if self.isLocal():
             self.waterBar = WaterBar()

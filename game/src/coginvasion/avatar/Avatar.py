@@ -121,6 +121,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         self.healthLabel.setBillboardPointEye()
         self.healthLabel.stash()
         self.healthLabel.setLightOff(1)
+        self.healthLabel.hide(CIGlobals.ShadowCameraBitmask)
 
     def showAndMoveHealthLabel(self, zoffset = 0.5, stashWaitTime = 1.0):
         self.unstashHpLabel()
