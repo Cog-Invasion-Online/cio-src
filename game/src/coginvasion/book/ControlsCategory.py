@@ -25,7 +25,7 @@ class ControlsCategory(OptionsCategory):
             settingKeyName = 'gagkey', mode = MULTICHOICE)
             
         self.bpov = ChoiceWidget(page, None, pos = (0, 0.25, 0.25), widgetName = "Battle POV",
-                settingKeyName = 'bpov', mode = INDEX, choiceTextScale = 0.055)
+                settingKeyName = 'bpov', mode = INDEX, choiceTextScale = 0.053)
 
         self.fpmsSlider = SliderWidget(page, "Mouse Sensitivity\n(First Person)", (0.05, 0.3), self.__setFPMS, (0, 0, 0.1))
         self.fpfovSlider = SliderWidget(page, "Field of View\n(First Person)", (54.0, 70.0), self.__setFPFov, (0, 0, -0.15))

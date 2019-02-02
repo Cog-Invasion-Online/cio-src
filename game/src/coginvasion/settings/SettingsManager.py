@@ -65,7 +65,7 @@ class SettingsManager:
                         description = "Increases perceived brightness by glowing objects that are very bright.\nAffects performance.")
         self.addSetting("refl", optionType = DATATYPE_STR, default = "Off",
                         callback = self.__updateWaterReflections, sunrise = SHOWBASE_POSTINIT,
-                        options = ["Off", "Low", "Medium", "High", "Very High"],
+                        options = ["Off", "Low", "Medium", "High", "Very High", "Ultra"],
                         description = 'Sets the resolution of water reflection textures\naround the game. Affects performance.')
         self.addSetting("hdr", optionType = DATATYPE_BOOL, default = True,
                         callback = self.__updateHDR, sunrise = SHOWBASE_POSTINIT,
@@ -123,7 +123,8 @@ class SettingsManager:
         base.setAmbientOcclusion(toggle)
                         
     def __updateShadows(self, shadowIdx):
-        csmSizes = [0, 512, 1024, 2048, 4096]
+        csmSizes = [0, 512, 1024, 2048, 4096, 4096]
+        cascades = [0, 3,   3,    3,    3,    4]
         if shadowIdx == 0:
             # drop shadows
             loadPrcFileData("", "want-pssm 0")
@@ -132,6 +133,7 @@ class SettingsManager:
             # real shadows
             loadPrcFileData("", "want-pssm 1")
             loadPrcFileData("", "pssm-size {0}".format(csmSizes[shadowIdx]))
+            loadPrcFileData("", "pssm-splits {0}".format(cascades[shadowIdx]))
             metadata.USE_REAL_SHADOWS = 1
             
     
