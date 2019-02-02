@@ -109,10 +109,9 @@ want-pssm 1
 pssm-debug-cascades 0
 pssm-splits 3
 pssm-size 2048
-pssm-size-0 4096
-pssm-size-1 1024
-pssm-size-2 512
 pssm-shadow-depth-bias 0.0001
+pssm-max-distance 200
+pssm-sun-distance 400
 pssm-normal-offset-scale 3.0
 pssm-softness-factor 2.0
 pssm-cache-shaders 1
