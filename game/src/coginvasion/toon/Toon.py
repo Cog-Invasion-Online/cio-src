@@ -1017,7 +1017,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.track.start(ts)
 
     def doPortalBins(self, portal):
-        portal.setBin('shadow', 0)
+        portal.setBin('portal', 19)
         portal.setDepthWrite(0)
         portal.setDepthTest(0)
 

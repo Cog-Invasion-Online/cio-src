@@ -210,6 +210,9 @@ class CIBase(ShowBase):
         
         cbm = CullBinManager.getGlobalPtr()
         cbm.addBin('ground', CullBinManager.BTUnsorted, 18)
+        # The portal uses the shadow bin by default,
+        # but we still want to see it with real shadows.
+        cbm.addBin('portal', CullBinManager.BTBackToFront, 19)
         if not metadata.USE_REAL_SHADOWS:
             cbm.addBin('shadow', CullBinManager.BTBackToFront, 19)
         else:
