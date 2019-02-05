@@ -85,6 +85,15 @@ MB_Moving = 1
 MB_Crouching = 2
 MB_Walking = 4
 
+def remapVal(val, A, B, C, D):
+    if A == B:
+        return D if val >= B else C
+        
+    return C + (D - C) * (val - A) / (B - A)
+    
+def clamp(val, A, B):
+    return max(A, min(B, val))
+
 def preRenderScene(np):
     """
     Uploads the entire scene to the graphics card immediately.

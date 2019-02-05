@@ -65,7 +65,7 @@ class SettingsManager:
                         description = "Increases perceived brightness by glowing objects that are very bright.\nAffects performance.")
         self.addSetting("refl", optionType = DATATYPE_STR, default = "Off",
                         callback = self.__updateWaterReflections, sunrise = SHOWBASE_POSTINIT,
-                        options = ["Off", "Low", "Medium", "High", "Very High", "Ultra"],
+                        options = ["Off", "Low", "Medium", "High", "Very High"],
                         description = 'Sets the resolution of water reflection textures\naround the game. Affects performance.')
         self.addSetting("hdr", optionType = DATATYPE_BOOL, default = True,
                         callback = self.__updateHDR, sunrise = SHOWBASE_POSTINIT,
@@ -105,7 +105,7 @@ class SettingsManager:
                         description = "The detail level of textures.")
         self.addSetting("shadows", optionType = DATATYPE_INT, default = 0,
                         callback = self.__updateShadows, sunrise = SHOWBASE_PREINIT,
-                        options = ["Off", "Low", "Medium", "High", "Very High"],
+                        options = ["Off", "Low", "Medium", "High", "Very High", "Ultra"],
                         description = "The quality of shadows.\nAffects performance.")
         self.addSetting("ao", optionType = DATATYPE_BOOL, default = False,
                         callback = self.__updateAO, sunrise = SHOWBASE_POSTINIT,

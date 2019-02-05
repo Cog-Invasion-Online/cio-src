@@ -8,30 +8,41 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Point3, VBase3
+from panda3d.core import Point3, VBase3, Vec3
 
 from direct.interval.IntervalGlobal import Sequence, Parallel, Wait, Func, ActorInterval
 
-from SquirtGag import SquirtGag
+from src.coginvasion.phys import PhysicsUtils
+from src.coginvasion.globals import CIGlobals
+from src.coginvasion.gags.GagType import GagType
+from Gag import Gag
+from WaterPellet import WaterPellet
+from src.coginvasion.gui.Crosshair import CrosshairData
 import GagGlobals
 
 import random
 
-class WaterGun(SquirtGag):
+class WaterGun(Gag):
 
     InspectIval = [10, 25]
     
+    gagType = GagType.SQUIRT
     name = GagGlobals.WaterGun
     model = "phase_4/models/props/water-gun.bam"
-    hitSfxPath = GagGlobals.WATERGUN_SFX
-    sprayJoint = 'joint_nozzle'
+    hitSfxPath = "phase_4/audio/sfx/AA_squirt_seltzer_miss.ogg"
     dmgIval = 0.4
+    
+    multiUse = True
+    
+    pelletSpeed = 300
 
     def __init__(self):
-        SquirtGag.__init__(self)
+        Gag.__init__(self)
         self.shootSfx = None
         self.timeout = 3.0
         self.inspectTask = None
+        
+        self.crosshair = CrosshairData(crosshairScale = 0.6, crosshairRot = 45)
 
     def doInspect(self, task):
         task.delayTime = random.uniform(*self.InspectIval)
@@ -46,7 +57,7 @@ class WaterGun(SquirtGag):
         return task.again
 
     def equip(self):
-        SquirtGag.equip(self)
+        Gag.equip(self)
 
         if self.isLocal():
             vm = self.getViewModel()
@@ -66,20 +77,41 @@ class WaterGun(SquirtGag):
     def unEquip(self):
         if self.isLocal():
             taskMgr.remove("sg_inspectTask")
-        SquirtGag.unEquip(self)
+        Gag.unEquip(self)
 
     def start(self):
-        SquirtGag.start(self)
-
+        Gag.start(self)
+        
+        self.hitSfx.play()
+        
+        gag = self.gag
         if self.isLocal():
             vm = self.getViewModel()
             fpsCam = self.getFPSCam()
-            fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "sg_shoot_begin"), Func(vm.loop, "sg_shoot_loop")))
-
-    def throw(self):
-        SquirtGag.throw(self)
+            fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "sg_shoot_begin"), ActorInterval(vm, "sg_shoot_end"), Func(vm.loop, "sg_idle")))
+            gag = self.getVMGag()
             
+        nozzle = gag.find("**/joint_nozzle")
+            
+        if self.isLocal() and base.localAvatar.battleControls:
+            if base.localAvatar.isFirstPerson():
+                self.getFPSCam().resetViewPunch()
+                self.getFPSCam().addViewPunch(Vec3(random.uniform(-0.6, 0.6), random.uniform(0.25, 0.5), 0.0))
+                startPos = camera.getPos(render)
+            else:
+                startPos = nozzle.getPos(render)
+            hitPos = PhysicsUtils.getHitPosFromCamera()
+        else:
+            startPos = nozzle.getPos(render)
+            hitPos = self.avatar.getQuat(render).xform(Vec3.forward() * 10000)
+            hit = PhysicsUtils.rayTestClosestNotMe(self.avatar, startPos,
+                hitPos,
+                CIGlobals.WorldGroup | CIGlobals.LocalAvGroup)
+            if hit is not None:
+                hitPos = hit.getHitPos()
+            
+        pellet = WaterPellet(self.isLocal())
+        pellet.addToWorld(nozzle.getPos(render), lookAt = hitPos, velo = Vec3.forward() * self.pelletSpeed)
+        
         if self.isLocal():
-            vm = self.getViewModel()
-            fpsCam = self.getFPSCam()
-            fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "sg_shoot_end"), Func(vm.loop, "sg_idle")))
+            base.localAvatar.sendUpdate('usedGag', [self.id])

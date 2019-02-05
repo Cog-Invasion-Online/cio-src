@@ -25,6 +25,7 @@ from src.coginvasion.base.Precache import precacheSound
 
 import abc
 import math
+import random
 
 class SquirtGag(Gag):
     
@@ -36,6 +37,7 @@ class SquirtGag(Gag):
     sprayParticleDist = 50.0
     sprayParticleLife = 0.5
     spraySoundSpeed = 4.0
+    multiUse = True
 
     def __init__(self):
         Gag.__init__(self)
@@ -134,6 +136,9 @@ class SquirtGag(Gag):
                     self.lastDmgTime = time
 
             if time - self.lastSprayTime >= self.dmgIval:
+                self.getFPSCam().addViewPunch(Vec3(random.uniform(-0.6, 0.6),
+                                                   random.uniform(0.25, 1.0),
+                                                   0.0))
                 base.localAvatar.sendUpdate('usedGag', [self.id])
                 self.lastSprayTime = time
 
@@ -246,11 +251,6 @@ class SquirtGag(Gag):
             return
 
         self.stopParticle()
-
-        if self.isLocal():
-            base.localAvatar.enableGagKeys()
-
-        self.state = GagState.LOADED
 
     def _handleSprayCollision(self, intoNP, hitPos, distance):
         avNP = intoNP.getParent()

@@ -762,6 +762,7 @@ class LocalToon(DistributedPlayerToon):
     def enableGags(self, andKeys = 0):
         if self.avatarMovementEnabled and andKeys:
             self.enableGagKeys()
+            self.selectGag(self.selectedGag, False)
         self.invGui.show()
         self.invGui.enableControls()
 
@@ -778,8 +779,6 @@ class LocalToon(DistributedPlayerToon):
         CIGlobals.acceptWithModifiers(self, key + "-up", self.throwGag)
         
         self.gagsEnabled = True
-        
-        self.selectGag(self.selectedGag, False)
 
     def disableGagKeys(self):
         self.gagsEnabled = False

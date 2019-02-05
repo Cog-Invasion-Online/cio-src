@@ -33,6 +33,7 @@ class Gag(DirectObject, Precacheable):
     hitSfxPath = None
     name = "Gag"
     gagType = None
+    multiUse = False
 
     def __init__(self):
         __metaclass__ = ABCMeta
@@ -269,7 +270,11 @@ class Gag(DirectObject, Precacheable):
 
     @abc.abstractmethod
     def throw(self):
-        return
+        if self.multiUse:
+            if self.isLocal():
+                base.localAvatar.enableGagKeys()
+
+            self.state = GagState.LOADED
 
     @abc.abstractmethod
     def release(self):
@@ -288,6 +293,8 @@ class Gag(DirectObject, Precacheable):
         self.avatar = avatar
         if CIGlobals.isNodePathOk(self.avatar):
             base.audio3d.attachSoundToObject(self.drawSfx, self.avatar)
+            if self.hitSfx:
+                base.audio3d.attachSoundToObject(self.hitSfx, self.avatar)
 
     def getAvatar(self):
         return self.avatar
