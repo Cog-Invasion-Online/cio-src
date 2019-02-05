@@ -128,9 +128,9 @@ class FPSCamera(DirectObject):
         self.viewModel = newViewModel
         self.viewModel.reparentTo(self.vmRoot2)
         if isHidden:
-            self.hideViewModel()
+            self.viewModel.hide()
         else:
-            self.showViewModel()
+            self.viewModel.show()
         self.idealFov = fov
         
     def restoreViewModel(self):
@@ -140,9 +140,9 @@ class FPSCamera(DirectObject):
         self.viewModel.reparentTo(self.vmRoot2)
         self.idealFov = self.ViewModelFOV
         if isHidden:
-            self.hideViewModel()
+            self.viewModel.hide()
         else:
-            self.showViewModel()
+            self.viewModel.show()
         
     def addViewPunch(self, punch):
         self.punchAngleVel += punch * 20
