@@ -29,7 +29,7 @@ class HL2Shotgun(Gag):
     name = GagGlobals.HL2Shotgun
     gagType = GagType.TRAP
     multiUse = True
-    model = "phase_4/models/props/water-gun.bam"
+    model = "phase_14/hl2/w_shotgun/w_shotgun.bam"
     
     sgDir = 'phase_14/hl2/v_shotgun/panda/opt/'
     sgActorDef = [sgDir + 'v_shotgun.bam',
@@ -219,6 +219,9 @@ class HL2Shotgun(Gag):
         precacheSound(cls.sgEmptyPath)
         for rl in cls.sgReloadPaths:
             precacheSound(rl)
+            
+    def __doBob(self):
+        self.setAnimTrack(self.getBobSequence('firehose', 30, 30, 1.0), startNow = True, looping = True)
         
     def equip(self):
         Gag.equip(self)
@@ -245,6 +248,13 @@ class HL2Shotgun(Gag):
             
             taskMgr.add(self.__tick, "HL2ShotgunTick")
             
+            
+        self.gag.setPosHprScale(-0.03, 1.19, -0.14, 2.29, 347.01, 45, 2, 2, 2)
+        toonTrack = Sequence(Func(self.avatar.setForcedTorsoAnim, 'firehose'),
+                         self.getAnimationTrack('firehose', endFrame = 30),
+                         Func(self.__doBob))
+        self.setAnimTrack(toonTrack, startNow = True)
+            
     def start(self):
             
         Gag.start(self)
@@ -259,9 +269,12 @@ class HL2Shotgun(Gag):
                     return
                     
                 self.setNextAction(self.actionFire)
-                    
+        else:
+            self.fireSound.play()
             
     def unEquip(self):
+        Gag.unEquip(self)
+        
         if self.isLocal():
             self.getFPSCam().restoreViewModel()
             self.sgViewModel.cleanup()
