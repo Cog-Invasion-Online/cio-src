@@ -132,7 +132,7 @@ class LocalToon(DistributedPlayerToon):
         self.__traverseGUI = None
 
         self.playState = False
-        self.battleControls = True
+        self.battleControls = False
         
         self.selectedGag = -1
         self.lastSelectedGag = -1
