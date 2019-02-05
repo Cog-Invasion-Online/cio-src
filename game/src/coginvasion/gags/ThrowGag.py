@@ -137,7 +137,9 @@ class ThrowGag(Gag):
             hitPos = PhysicsUtils.getHitPosFromCamera()
         else:
             startPos = self.handJoint.getPos(render)
-            hitPos = self.avatar.getQuat(render).xform(Vec3.forward() * self.power)
+            quat = Quat()
+            quat.setHpr(self.avatar.getHpr(render) + (0, self.avatar.lookPitch, 0))
+            hitPos = quat.xform(Vec3.forward() * self.power)
             hit = PhysicsUtils.rayTestClosestNotMe(self.avatar, startPos,
                 hitPos,
                 CIGlobals.WorldGroup | CIGlobals.LocalAvGroup)
