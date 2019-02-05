@@ -176,3 +176,8 @@ precache-assets 1
 mat_rimlight 1
 mat_envmaps 1
 mat_phong 1
+
+r_ambientboost 1
+r_ambientmin 0.3
+r_ambientfraction 0.1
+r_ambientfactor 5.0
