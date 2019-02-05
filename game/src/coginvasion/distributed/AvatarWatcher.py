@@ -93,7 +93,7 @@ class AvatarWatcher(DirectObject):
             inst = AvatarInstance(avatar, self)
             self.avId2instance[avId] = inst
             
-    def stopTrackingAvatarId(self, avId):
+    def stopTrackingAvatarId(self, avId, removeFromList = True):
         """ If given an avatar id currently being tracked, let's stop tracking it,
         stop listening to events emitted by the avatar, and remove it from our cache. """
         if self.isTrackingAvatarId(avId) and self.idPointsToValidAvatar(avId):
@@ -101,7 +101,8 @@ class AvatarWatcher(DirectObject):
             inst = self.avId2instance[avId]
             inst.cleanup()
             del self.avId2instance[avId]
-            self.watchingAvatarIds.remove(avId)
+            if removeFromList:
+                self.watchingAvatarIds.remove(avId)
         else:
             self.notify.debug('Avatar ID {0} is not currently being tracked and/or the avatar assigned to it has regressed.'.format(avId))
             
@@ -110,7 +111,7 @@ class AvatarWatcher(DirectObject):
         cache. """
         
         for avId in self.watchingAvatarIds:
-            self.stopTrackingAvatarId(avId)
+            self.stopTrackingAvatarId(avId, False)
             
         self.watchingAvatarIds = []
         self.avId2instance = {}
