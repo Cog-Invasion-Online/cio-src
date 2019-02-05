@@ -402,6 +402,9 @@ class DistributedSuitAI(DistributedAvatarAI):
                 return 'soak'
             else:
                 return 'squirt-small'
+        
+        # Do the pie flail by default
+        return 'pie'
 
     def stopStun(self, restart = False):
         taskMgr.remove(self.taskName('stunTask'))

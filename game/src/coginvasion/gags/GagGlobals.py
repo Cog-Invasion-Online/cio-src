@@ -56,6 +56,7 @@ WaterGlass = "Glass of Water"
 FireHose = "Fire Hose"
 SquirtFlower = "Squirting Flower"
 WaterGun = "Squirt Gun"
+HL2Shotgun = "HL2 Shotgun" # easter egg!
 
 MajorDrops = [GrandPiano, Safe, BigWeight]
 Stunnables = MajorDrops + [TNT]
@@ -249,7 +250,7 @@ gagIds = {0 : WholeCreamPie, 1 : CreamPieSlice, 2 : BirthdayCake, 3 : TNT,
           23 : Whistle, 24 : Bugle, 25 : PixieDust, 26 : FlowerPot,
           27 : Sandbag, 28 : Anvil, 29 : Geyser, 30 : BigWeight,
           31 : StormCloud, 32 : WaterGlass, 33 : WaterGun, 34 : FireHose,
-          35 : SquirtFlower}
+          35 : SquirtFlower, 36 : HL2Shotgun}
 gagIdByName = {v: k for k, v in gagIds.items()}
 
 Throw = "Throw"
@@ -263,6 +264,12 @@ Trap = "Trap"
 # Data that should be able to be quickly picked up by the client and server.
 # Values: [default current supply, default max supply, default damage (or health), and, if necessary, toon-up amount.
 gagData = {
+    HL2Shotgun : {'minDamage': 40,
+                  'maxDamage': 60,
+                  'minMaxSupply': 24,
+                  'maxSupply': 32,
+                  'supply': 32,
+                  'track': Trap},
     BirthdayCake : {'health': 10,
         'minDamage' : 48, 
         'maxDamage': 100,
@@ -506,7 +513,8 @@ InventoryIconByName = {WholeCreamPie : '**/inventory_creampie',
  WaterGlass : '**/inventory_glass_of_water',
  WaterGun : '**/inventory_water_gun',
  FireHose : '**/inventory_firehose',
- SquirtFlower : '**/inventory_squirt_flower'}
+ SquirtFlower : '**/inventory_squirt_flower',
+ HL2Shotgun : '**/inventory_water_gun'}
 
 TrackIdByName = {Throw : GagType.THROW,
                  Squirt : GagType.SQUIRT,
@@ -560,7 +568,8 @@ TrackGagNamesByTrackName = {Throw : [Cupcake,
  Trap : [BananaPeel,
   Quicksand,
   TrapDoor,
-  TNT],
+  TNT,
+  HL2Shotgun],
  Lure : []}
 
 TrackExperienceAmounts = {
@@ -568,7 +577,7 @@ TrackExperienceAmounts = {
     ToonUp: [20, 200, 800, 2000, 6000], # 10000
     Sound : [40, 200, 1000, 2500, 7500, 10000],
     Drop: [20, 100, 500, 2000, 6000, 10000],
-    Trap: [20, 800, 2000, 6000],#100, 800, 2000, 6000, 10000],
+    Trap: [20, 800, 2000, 6000, 10000],#100, 800, 2000, 6000, 10000],
     Squirt: [10, 50, 400, 2000, 6000, 10000],
     Lure: [20, 100, 800, 2000, 6000, 10000]
 }
@@ -911,6 +920,6 @@ def getDefaultBackpack(isAI = False):
 tempAllowedGags = [Cupcake, FruitPieSlice, CreamPieSlice, WholeFruitPie, WholeCreamPie, BirthdayCake,
                    WaterGun, FireHose,
                    FlowerPot, Sandbag, Anvil, BigWeight, Safe, GrandPiano,
-                   TNT,
+                   TNT, HL2Shotgun,
                    Megaphone, Lipstick, JugglingBalls, BambooCane, PixieDust,
                    BikeHorn, Whistle, Bugle, Aoogah, ElephantHorn, Foghorn, Opera]

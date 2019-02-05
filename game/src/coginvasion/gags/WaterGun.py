@@ -96,7 +96,7 @@ class WaterGun(Gag):
         if self.isLocal() and base.localAvatar.battleControls:
             if base.localAvatar.isFirstPerson():
                 self.getFPSCam().resetViewPunch()
-                self.getFPSCam().addViewPunch(Vec3(random.uniform(-0.6, 0.6), random.uniform(0.25, 0.5), 0.0))
+                self.getFPSCam().addViewPunch(Vec3(random.uniform(-0.6, 0.6), random.uniform(-0.25, -0.5), 0.0))
                 startPos = camera.getPos(render)
             else:
                 startPos = nozzle.getPos(render)

@@ -93,6 +93,10 @@ class FPSCamera(DirectObject):
         self.viewModel.reparentTo(self.vmRoot2)
         self.viewModel.find("**/hands").setTwoSided(True)
         self.viewModel.hide()
+        
+        self.defaultViewModel = self.viewModel
+        self.idealFov = self.ViewModelFOV
+        
         precacheActor(self.viewModel)
         #self.viewModel.clearMaterial()
         #self.viewModel.setMaterial(CIGlobals.getCharacterMaterial(specular = (0, 0, 0, 1)), 1)
@@ -117,6 +121,28 @@ class FPSCamera(DirectObject):
         #base.bspLoader.addDynamicNode(self.vmRoot)
 
         taskMgr.add(self.__vpDebugTask, "vpdebutask", sort = -100)
+        
+    def swapViewModel(self, newViewModel, fov = 70.0):
+        isHidden = self.viewModel.isHidden()
+        self.viewModel.reparentTo(hidden)
+        self.viewModel = newViewModel
+        self.viewModel.reparentTo(self.vmRoot2)
+        if isHidden:
+            self.hideViewModel()
+        else:
+            self.showViewModel()
+        self.idealFov = fov
+        
+    def restoreViewModel(self):
+        isHidden = self.viewModel.isHidden()
+        self.viewModel.reparentTo(hidden)
+        self.viewModel = self.defaultViewModel
+        self.viewModel.reparentTo(self.vmRoot2)
+        self.idealFov = self.ViewModelFOV
+        if isHidden:
+            self.hideViewModel()
+        else:
+            self.showViewModel()
         
     def addViewPunch(self, punch):
         self.punchAngleVel += punch * 20
@@ -169,7 +195,7 @@ class FPSCamera(DirectObject):
             self.vmRender.setState(render.getState())
             
         self.viewportLens.setAspectRatio(base.getAspectRatio())
-        self.viewportLens.setMinFov(self.ViewModelFOV / (4. / 3.))
+        self.viewportLens.setMinFov(self.idealFov / (4. / 3.))
         self.vmRoot.setTransform(render, self.camRoot.getTransform(render))
         self.viewportCam.setTransform(render, base.camera.getTransform(render))
 
@@ -231,10 +257,13 @@ class FPSCamera(DirectObject):
             self.vmGag = None
         
     def setup(self):
-        # Match the arm color with the torso color of local avatar
-        self.viewModel.find("**/arms").setColorScale(base.localAvatar.getTorsoColor(), 1)
-        # Same with glove cover
-        self.viewModel.find("**/hands").setColorScale(base.localAvatar.getGloveColor(), 1)
+        try:
+            # Match the arm color with the torso color of local avatar
+            self.viewModel.find("**/arms").setColorScale(base.localAvatar.getTorsoColor(), 1)
+            # Same with glove cover
+            self.viewModel.find("**/hands").setColorScale(base.localAvatar.getGloveColor(), 1)
+        except:
+            pass
 
         self.attachCamera()
 
@@ -415,6 +444,7 @@ class FPSCamera(DirectObject):
         if base.localAvatar.isFirstPerson():
             # Camera / viewmodel bobbing
             vmBob = Point3(0)
+            vmAngles = Vec3(0)
             vmRaise = Point3(0)
             camBob = Point3(0)
             
@@ -452,12 +482,21 @@ class FPSCamera(DirectObject):
             lateralBob = max(-7.0, min(4.0, lateralBob))
             lateralBob /= 16.0
 
-            vmBob.set(lateralBob, 0, verticalBob)
+            # Apply bob, but scaled down a bit
+            vmBob.set(lateralBob * 0.8, 0, verticalBob * 0.1)
+            # Z bob a bit more
+            vmBob[2] += verticalBob * 0.1
+            # Bob the angles
+            vmAngles[2] += verticalBob * 0.5
+            vmAngles[1] -= verticalBob * 0.4
+            vmAngles[0] -= lateralBob * 0.3
+            
             vmRaise.set(0, abs(camRootAngles.getY()) * -0.002, camRootAngles.getY() * 0.002)
             camBob.set(0, 0, 0)
 
             # Apply bob, raise, and sway to the viewmodel.
             self.viewModel.setPos(vmBob + vmRaise + self.lastVMPos)
+            self.vmRoot2.setHpr(vmAngles)
             self.camRoot.setPos(eyePoint + camBob)
 
         newPitch = camRootAngles.getY()

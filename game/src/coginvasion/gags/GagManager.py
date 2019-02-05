@@ -45,6 +45,7 @@ from src.coginvasion.gags.WaterGlass import WaterGlass
 from src.coginvasion.gags.WaterGun import WaterGun
 from src.coginvasion.gags.FireHose import FireHose
 from src.coginvasion.gags.SquirtingFlower import SquirtingFlower
+from src.coginvasion.gags.HL2Shotgun import HL2Shotgun
 
 class GagManager:
        
@@ -83,7 +84,8 @@ class GagManager:
               GagGlobals.WaterGlass : WaterGlass,
               GagGlobals.WaterGun : WaterGun,
               GagGlobals.FireHose : FireHose,
-              GagGlobals.SquirtFlower : SquirtingFlower}
+              GagGlobals.SquirtFlower : SquirtingFlower,
+              GagGlobals.HL2Shotgun : HL2Shotgun}
         
     def getGagNameByType(self, gagType):
         for gName, definedType in self.gags.iteritems():
