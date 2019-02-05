@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Point3, VBase3, Vec3
+from panda3d.core import Point3, VBase3, Vec3, Quat
 
 from direct.interval.IntervalGlobal import Sequence, Parallel, Wait, Func, ActorInterval
 

@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import CollisionSphere, BitMask32, CollisionNode, NodePath, CollisionHandlerEvent, Vec3
+from panda3d.core import CollisionSphere, BitMask32, CollisionNode, NodePath, CollisionHandlerEvent, Vec3, Quat
 from panda3d.bullet import BulletSphereShape, BulletGhostNode
 from direct.interval.IntervalGlobal import Sequence, Func, Wait, Parallel, ProjectileInterval, ActorInterval
 from direct.gui.DirectGui import DirectWaitBar, DGG
