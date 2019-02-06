@@ -24,5 +24,5 @@ class PublicWalk(Walk.Walk):
         self.parentFSM = parentFSM
 
     def enter(self, wantMouse = 0):
-        base.localAvatar.startPlay(gags = base.localAvatar.inBattle or base.config.GetBool("want-playground-gags", False),
+        base.localAvatar.startPlay(gags = base.localAvatar.battleControls or base.config.GetBool("want-playground-gags", False),
                                    book = True, laff = True, friends = True, chat = True, wantMouse = wantMouse)

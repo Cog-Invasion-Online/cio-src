@@ -96,7 +96,7 @@ want-gta-controls #f
 show-minigame-dates #f
 want-real-shadows #f
 load-stuff #f
-want-playground-gags #t
+want-playground-gags #f
 gsg-want-hlsounds #f
 explosion-hlsounds #f
 
