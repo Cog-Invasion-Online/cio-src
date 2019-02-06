@@ -23,6 +23,7 @@ import GagGlobals
 from PowerBar import PowerBar
 
 import math
+import random
 
 class ThrowGag(Gag):
     
@@ -129,6 +130,9 @@ class ThrowGag(Gag):
         
         if self.isLocal() and base.localAvatar.battleControls:
             if base.localAvatar.isFirstPerson():
+                # Add a small kick to the camera to give more feedback
+                self.getFPSCam().addViewPunch(Vec3(random.uniform(.5, 1), random.uniform(-.5, -1), 0))
+                
                 startPos = camera.getPos(render) + camera.getQuat(render).xform(Vec3.right())
                 push = 0.0
             else:

@@ -8,6 +8,8 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.core import Vec3
+
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval, Parallel
 from direct.interval.SoundInterval import SoundInterval
 from direct.actor.Actor import Actor
@@ -18,6 +20,8 @@ from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.toon import ParticleLoader
 from PowerBar import PowerBar
+
+import random
 
 class TNT(TossTrapGag):
         
@@ -103,6 +107,8 @@ class TNT(TossTrapGag):
             if base.localAvatar.isFirstPerson():
                 vm = self.getViewModel()
                 cam = self.getFPSCam()
+                # Add a small kick to the camera to give more feedback
+                cam.addViewPunch(Vec3(random.uniform(.5, 1), random.uniform(-.5, -1), 0))
                 #fps = 24.0
                 #playRate = 1.0
                 #snapTime = 13.0 / fps

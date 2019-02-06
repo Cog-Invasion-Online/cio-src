@@ -34,7 +34,7 @@ class WaterGun(Gag):
     
     multiUse = True
     
-    pelletSpeed = 300
+    pelletSpeed = 150.0
 
     def __init__(self):
         Gag.__init__(self)
