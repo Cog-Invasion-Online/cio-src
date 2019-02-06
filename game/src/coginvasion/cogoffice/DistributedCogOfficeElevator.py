@@ -30,7 +30,7 @@ class Elevator:
             self.elevatorMdl = loader.loadModel('phase_7/models/modules/cogoffice_elevator.bam')
             
         self.elevatorMdl.reparentTo(render)
-        base.enablePhysicsNodes(self.elevatorMdl)
+        base.createAndEnablePhysicsNodes(self.elevatorMdl)
         self.leftDoor = getLeftDoor(self.elevatorMdl)
         self.rightDoor = getRightDoor(self.elevatorMdl)
 
