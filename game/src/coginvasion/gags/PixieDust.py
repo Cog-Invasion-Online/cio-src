@@ -8,6 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.ToonUpGag import ToonUpGag
 from src.coginvasion.base.CIParticleEffect import CIParticleEffect
@@ -31,6 +32,7 @@ class PixieDust(ToonUpGag):
     def createParticle(self, particleFile):
         particle = CIParticleEffect()
         particle.loadConfig('phase_5/etc/%s.ptf' % (particleFile))
+        particle.hide(CIGlobals.ShadowCameraBitmask)
         return particle
 
     def doPixieDust(self, target):

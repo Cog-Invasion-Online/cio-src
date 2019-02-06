@@ -1050,6 +1050,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.portal1 = None
         if hasattr(self, 'shadow') and self.shadow is not None:
             self.shadow.show()
+        self.__restoreHide()
         self.playingAnim = 'neutral'
 
     def getTeleportInTrack(self, portal):
