@@ -174,11 +174,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
                     delay += 0.22
                     taskMgr.doMethodLater(delay, self.doBlink, self.doBlinkTaskName)
                 numBlinks += 1
-            taskMgr.doMethodLater(delay, self.__startBlinkAfterLook, self.uniqueName("sBAL"))
-
-    def __startBlinkAfterLook(self, task):
-        self.startBlink()
-        return task.done
 
     def b_lookAtObject(self, h, p, r, blink=1):
         self.d_lookAtObject(h, p, r, blink)

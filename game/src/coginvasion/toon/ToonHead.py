@@ -6,7 +6,7 @@
 
 """
 
-from panda3d.core import PerspectiveLens, LensNode, Texture, Point3, Mat4, ModelNode
+from panda3d.core import PerspectiveLens, LensNode, Texture, Point3, Mat4, ModelNode, NodePath, Vec3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Parallel, Sequence, LerpHprInterval
@@ -40,6 +40,12 @@ class ToonHead(Actor.Actor):
     RightBC = Point3(RightB[0] - RightB[2] * (RightC[0] - RightB[0]) / (RightC[2] - RightB[2]), 0.0, 0.0)
     LeftMid = (LeftA + LeftB + LeftC + LeftD) / 4.0
     RightMid = (RightA + RightB + RightC + RightD) / 4.0
+    
+    MaxPupilLook = 0.07
+    
+    EyeStateClosed = 0
+    EyeStateOpened = 1
+    ClosedDuration = 0.15
 
     def __init__(self, cr):
         try:
@@ -64,7 +70,27 @@ class ToonHead(Actor.Actor):
         self.lookAroundTaskName = "lookAroundTask" + str(id(self))
         self.doLookAroundTaskName = "doLookAround" + str(id(self))
         self.openEyesTaskName = "openEyes" + str(id(self))
+        
+        self.eyeTarget = None
+        self.targetIsNew = True
+        self.lastEyeTarget = None
+        self.eyeTargetLastPos = Point3(0)
+        self.eyeTargetBoredTime = 0.0
+        self.eyeTargetLastMove = 0
+        self.eyeTargetTime = 0
+        
+        self.eyeStateTime = 0
+        self.eyeState = self.EyeStateOpened
+        self.eyesOpenDuration = 5
+        
         return
+        
+    def getPupilDistance(self):
+        """
+        Returns the average distance of the two pupils from center.
+        """
+        left, right = self.getPupils()
+        return (left.getPos().length() + right.getPos().length()) / 2.0
     
     def getLeftPupil(self):
         return self.__lpupil
@@ -179,7 +205,167 @@ class ToonHead(Actor.Actor):
         self.fixEyes()
         if self.gender == "girl":
             self.setupEyelashes()
+        
+        if not forGui:
+            if not self.eyeLensNP:
+                lens = PerspectiveLens()
+                lens.setMinFov(180.0 / (4./3.))
+                node = LensNode('toonEyes', lens)
+                node.activateLens(0)
+                #node.showFrustum()
+                self.eyeLensNP = self.attachNewNode(node)
+                self.eyeLensNP.setZ(self.getHeight() - 0.5)
+                self.eyeLensNP.setY(-1)
+            self.setEyesOpenDuration()
+            taskMgr.add(self.__eyesLookTask, "toonHeadEyesLook-" + str(id(self)))
         return
+        
+    def setEyesOpenDuration(self):
+        self.eyesOpenDuration = random.uniform(0.5, 7.0)
+        
+    def hasPupils(self):
+        return CIGlobals.isNodePathOk(self.__lpupil) and CIGlobals.isNodePathOk(self.__rpupil)
+        
+    def setEyeTarget(self, target):
+        self.lastEyeTarget = self.eyeTarget
+        self.targetIsNew = True
+        self.eyeTarget = target
+        self.eyeTargetTime = globalClock.getFrameTime()
+        self.eyeTargetLastMove = self.eyeTargetTime
+        if isinstance(target, NodePath):
+            self.eyeTargetLastPos = target.getPos(render)
+        else:
+            self.eyeTargetLastPos = target
+        # How long until we get bored of this eye target?
+        self.eyeTargetBoredTime = random.uniform(6.0, 10.0)
+        
+        # Blink when we get a new eye target, so our eyes don't strangely teleport
+        self.blink()
+        
+    def clearEyeTarget(self):
+        self.lastEyeTarget = self.eyeTarget
+        self.eyeTarget = None
+        self.eyeTargetTime = 0
+        self.eyeTargetLastMove = 0
+        self.eyeTargetLastPos = Point3(0)
+        
+    def hasEyeTarget(self):
+        if isinstance(self.eyeTarget, NodePath):
+            return CIGlobals.isNodePathOk(self.eyeTarget)
+            
+        return self.eyeTarget is not None
+        
+    def blink(self):
+        self.closeEyes()
+        self.setEyeState(self.EyeStateClosed)
+        
+    def setEyeState(self, state):
+        self.eyeState = state
+        self.eyeStateTime = globalClock.getFrameTime()
+        
+    def lookEyesAtTarget(self, eyeTarget):
+        if isinstance(eyeTarget, NodePath):
+            if hasattr(base, 'localAvatar') and eyeTarget == base.localAvatar and base.localAvatar.isFirstPerson():
+                self.lookPupilsAt(camera, Point3(0))
+            elif hasattr(eyeTarget, 'getHeight'):
+                self.lookPupilsAt(eyeTarget, Point3(0, 0, eyeTarget.getHeight() * 0.85))
+            else:
+                self.lookPupilsAt(eyeTarget, Point3(0))
+        else:
+            self.lookPupilsAt(None, eyeTarget)
+        
+    def __eyesLookTask(self, task):
+        if not self.hasPupils():
+            return task.done
+            
+        if hasattr(base, 'localAvatar') and self == base.localAvatar:
+            return task.cont
+        
+        now = globalClock.getFrameTime()
+        
+        eyeStateElapsed = now - self.eyeStateTime
+        # Should we blink?
+        if self.eyeState == self.EyeStateClosed and eyeStateElapsed >= self.ClosedDuration:
+            self.openEyes()
+            self.setEyeState(self.EyeStateOpened)
+            self.setEyesOpenDuration()
+        elif self.eyeState == self.EyeStateOpened and eyeStateElapsed >= self.eyesOpenDuration:
+            self.blink()
+            
+        if self.hasEyeTarget():
+            if self.targetIsNew:
+                self.lookPupilsMiddle()
+                self.targetIsNew = False
+            pDist = self.getPupilDistance()
+            # did our eye target move?
+            if isinstance(self.eyeTarget, NodePath):
+                targetIsPoint = False
+                # actual objects are more interesting, look longer
+                boredTime = self.eyeTargetBoredTime * 2
+                currTargetPos = self.eyeTarget.getPos(self.eyeLensNP)
+            else:
+                targetIsPoint = True
+                boredTime = self.eyeTargetBoredTime * 0.5
+                currTargetPos = self.eyeTarget
+            
+            if pDist > self.MaxPupilLook or not self.eyeLensNP.node().isInView(currTargetPos):
+                # Target no longer in line-of-sight
+                self.clearEyeTarget()
+                return task.cont
+            
+            if not targetIsPoint:
+                if (currTargetPos - self.eyeTargetLastPos).lengthSquared() > 0.01:
+                    self.eyeTargetLastMove = now
+                elif (now - self.eyeTargetLastMove) > boredTime * 0.5:
+                    # We get bored twice as fast if our eye target is not moving
+                    self.clearEyeTarget()
+                    return task.cont
+                
+            if (now - self.eyeTargetTime) > boredTime:
+                self.clearEyeTarget()
+                return task.cont
+                
+            self.lookEyesAtTarget(self.eyeTarget)
+
+            self.eyeTargetLastPos = currTargetPos
+        else:            
+            # find a new eye target
+            target = None
+            
+            avOrPoint = random.randint(0, 1)
+            if avOrPoint == 0:
+                visible = []
+                avs = list(base.avatars)
+                if hasattr(base, 'localAvatar'):
+                    avs.append(base.localAvatar)
+                for avatar in avs:
+                    if avatar == self.lastEyeTarget or avatar == self:
+                        continue
+                    apos = avatar.getPos(self.eyeLensNP)
+                    lastPupils = [self.__lpupil.getPos(), self.__rpupil.getPos()]
+                    self.lookEyesAtTarget(avatar)
+                    pDist = self.getPupilDistance()
+                    self.__lpupil.setPos(lastPupils[0])
+                    self.__rpupil.setPos(lastPupils[1])
+                    if self.eyeLensNP.node().isInView(apos):
+                        visible.append(avatar)
+                if len(visible):
+                    target = random.choice(visible)
+                
+            if not target:
+                target = random.choice([Vec3(0, 25, 0),
+                                        Vec3(10, 25, 0),
+                                        Vec3(10, 25, 10),
+                                        Vec3(0, 25, 10),
+                                        Vec3(0, 25, -10),
+                                        Vec3(-10, 25, -10),
+                                        Vec3(-10, 25, 10),
+                                        Vec3(-10, 25, 0),
+                                        Vec3(10, 25, -10)])
+                                        
+            self.setEyeTarget(target)
+            
+        return task.cont
         
     def fixEyes(self):
         mode = -3
@@ -305,10 +491,12 @@ class ToonHead(Actor.Actor):
         self.__eyelashClosed.hide()
 
     def startBlink(self):
+        return
         randomStart = random.uniform(0.5, 7)
         taskMgr.doMethodLater(randomStart, self.blinkTask, self.blinkTaskName)
 
     def stopBlink(self):
+        return
         if hasattr(self, 'blinkTaskName') and hasattr(self, 'doBlinkTaskName') and hasattr(self, 'openEyesTaskName'):
             taskMgr.remove(self.blinkTaskName)
             taskMgr.remove(self.doBlinkTaskName)
@@ -321,8 +509,7 @@ class ToonHead(Actor.Actor):
         return task.again
 
     def doBlink(self, task):
-        self.closeEyes()
-        taskMgr.doMethodLater(0.15, self.doOpenEyes, self.openEyesTaskName)
+        self.blink()
         return task.done
 
     def doOpenEyes(self, task):
@@ -377,16 +564,6 @@ class ToonHead(Actor.Actor):
 
     def startLookAround(self):
         return
-        
-        if not self.eyeLensNP:
-            lens = PerspectiveLens()
-            lens.setMinFov(180.0 / (4./3.))
-            node = LensNode('toonEyes', lens)
-            node.activateLens(0)
-            #node.showFrustum()
-            self.eyeLensNP = self.attachNewNode(node)
-            self.eyeLensNP.setZ(self.getHeight() - 0.5)
-            self.eyeLensNP.setY(-1)
 
         delay = random.randint(3, 15)
         taskMgr.doMethodLater(delay, self.lookAroundTask, self.lookAroundTaskName)
@@ -494,6 +671,7 @@ class ToonHead(Actor.Actor):
             self.ToonHead_deleted = 1
             self.stopBlink()
             self.stopLookAround()
+            taskMgr.remove("toonHeadEyesLook-" + str(id(self)))
             del self.blinkTaskName
             del self.doBlinkTaskName
             del self.lookAroundTaskName
