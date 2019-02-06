@@ -9,6 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from src.coginvasion.base import ToontownIntervals
+from src.coginvasion.globals import CIGlobals
 
 from direct.gui.DirectGui import DirectFrame, DirectLabel
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -31,6 +32,7 @@ class LaffOMeter(DirectFrame):
             self.setLightOff()
             self.setFogOff()
             self.setMaterialOff()
+            self.hide(CIGlobals.ShadowCameraBitmask)
         self.forRender = forRender
 
     def generate(self, r, g, b, animal, maxHP = 50, initialHP = 50):
