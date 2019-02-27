@@ -42,7 +42,7 @@ class GagWidget(DirectButton):
     def __init__(self, track, gagId):
         self.track = track
         self.gagId = gagId
-        self.gagName = GagGlobals.gagIds[gagId]
+        self.gagName = GagGlobals.getGagByID(gagId)
 
         self.lastScale = 1.0
         self.goalScale = 1.0
@@ -248,7 +248,7 @@ class GagTrack(DirectFrame):
         gags = GagGlobals.TrackGagNamesByTrackName[self.trackName]
         for i in xrange(len(gags)):
             gagName = gags[i]
-            gagId = GagGlobals.gagIdByName[gagName]
+            gagId = GagGlobals.getIDByName(gagName)
             btn = GagWidget(self, gagId)
             btn.reparentTo(self)
             btn.setX(GAG_BTN_START + (GAG_BTN_OFFSET * i))
@@ -298,7 +298,7 @@ class GagSelectionGui(DirectFrame, FSM):
         
         gagId = -1
         if self.getCurrentOrNextState() == 'Idle':
-            gagId = bp.currentGag
+            gagId = bp.getCurrentGag()
         elif self.getCurrentOrNextState() == 'Select' and self.currentGag:
             gagId = self.currentGag.gagId
         
@@ -403,11 +403,12 @@ class GagSelectionGui(DirectFrame, FSM):
 
     def __accumulateTracks(self):
         tracks = []
-        for gagId in base.localAvatar.backpack.gags.keys():
+        for gagId in base.localAvatar.attacks.keys():
             trackId = GagGlobals.getTrackOfGag(gagId, getId = True)
             if trackId not in tracks:
                 tracks.append(trackId)
         tracks.sort()
+        print tracks
         return tracks
 
     def load(self):
@@ -456,7 +457,7 @@ class GagSelectionGui(DirectFrame, FSM):
         self.keyScrollSound.stop()
         
         if self.currentGag is not None:
-            if base.localAvatar.backpack.currentGag == self.currentGag.gagId:
+            if base.localAvatar.backpack.getCurrentGag() == self.currentGag.gagId:
                 selected = True
             elif (self.currentGag.hasAmmo() and
                   not self.currentGag.locked):
@@ -545,6 +546,7 @@ class GagSelectionGui(DirectFrame, FSM):
     def updateCurrentTrack(self, idx, startLoc = None):
         oldTrack = self.tracks[self.currentTrack]
         oldTrack.deselectAll()
+        oldTrack.stashContents()
 
         if idx - self.currentTrack < 0:
             direction = 1

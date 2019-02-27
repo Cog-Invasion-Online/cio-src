@@ -14,18 +14,19 @@ from direct.distributed import DelayDelete
 from direct.interval.IntervalGlobal import Parallel, ParallelEndTogether, ActorInterval, Sequence, \
     LerpScaleInterval, SoundInterval, Wait, Func
 
+from src.coginvasion.avatar.BaseAttacks import BaseAttack
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gui.Crosshair import CrosshairData
-from src.coginvasion.base.Precache import Precacheable, precacheActor, precacheModel, precacheSound
+from src.coginvasion.base.Precache import precacheActor, precacheModel, precacheSound
 
 from panda3d.core import Point3
 from abc import ABCMeta
 import abc
 
-class Gag(DirectObject, Precacheable):
+class Gag(BaseAttack, DirectObject):
     
     model = None
     anim = None
@@ -38,7 +39,7 @@ class Gag(DirectObject, Precacheable):
     def __init__(self):
         __metaclass__ = ABCMeta
         DirectObject.__init__(self)
-        self.playRate = 1.0
+        BaseAttack.__init__(self)
         self.avatar = None
         self.gag = None
         self.target = None
@@ -53,8 +54,6 @@ class Gag(DirectObject, Precacheable):
         self.timeout = 5
         self.animTrack = None
         self.holdGag = True
-
-        self.crosshair = CrosshairData()
 
         # Handles the new recharging for certain gags.
 
@@ -78,114 +77,6 @@ class Gag(DirectObject, Precacheable):
             precacheModel(cls.model)
         if cls.hitSfxPath:
             precacheSound(cls.hitSfxPath)
-
-    def doDrawAndHold(self, drawAnim, drawAnimStart = None, drawAnimEnd = None,
-                      drawAnimSpeed = 1.0, bobStart = None, bobEnd = None, bobSpeed = 1.0,
-                      holdCallback = None):
-
-        def __doHold():
-            if holdCallback:
-                holdCallback()
-            self.setAnimTrack(self.getBobSequence(drawAnim, bobStart, bobEnd, bobSpeed), startNow = True, looping = True)
-
-        self.setAnimTrack(Sequence(Func(self.avatar.setForcedTorsoAnim, drawAnim),
-                                   self.getAnimationTrack(drawAnim, drawAnimStart, drawAnimEnd, drawAnimSpeed),
-                                   Func(__doHold)), startNow = True)
-
-    def getViewModel(self):
-        return base.localAvatar.getViewModel()
-
-    def getFPSCam(self):
-        return base.localAvatar.getFPSCam()
-
-    def getVMGag(self):
-        return base.localAvatar.getFPSCam().vmGag
-    
-    # This should be called to change the 'animTrack' variable.
-    def setAnimTrack(self, track, withDelayDelete=True, startNow = False, looping = False):
-        """ Sets the animation track for this gag. """
-        if track is None:
-            # If we try to set the animation track to None, we should
-            # just call clearAnimTrack.
-            self.clearAnimTrack()
-            return
-
-        # Stop the one that was playing before.
-        self.clearAnimTrack()
-        
-        self.animTrack = track
-        
-        #if withDelayDelete and not looping:
-        #    self.animTrack.delayDelete = DelayDelete.DelayDelete(self.avatar, track.getName())
-
-        if startNow:
-            if looping:
-                self.animTrack.loop()
-            else:
-                self.animTrack.start()
-    
-    # This should be called whenever we want to clear the 'animTrack' variable.
-    def clearAnimTrack(self):
-        if self.animTrack is not None:
-            #DelayDelete.cleanupDelayDeletes(self.animTrack)
-            self.animTrack.pause()
-            self.animTrack = None
-
-    def playAnimThatShouldBePlaying(self):
-        if self.avatar:
-            self.avatar.loop(self.avatar.playingAnim)
-            
-    def getAnimationTrack(self, animName, startFrame = None, endFrame = None, playRate = 1.0, startTime = None, endTime = None):
-        return Parallel(
-            ActorInterval(self.avatar, 
-                animName, 
-                startFrame = startFrame, 
-                endFrame = endFrame,
-                partName = 'head',
-                playRate = playRate,
-                startTime = startTime,
-                endTime = endTime),
-            ActorInterval(self.avatar, 
-                animName, 
-                startFrame = startFrame, 
-                endFrame = endFrame,
-                partName = 'torso-top',
-                playRate = playRate,
-                startTime = startTime,
-                endTime = endTime)
-        )
-            
-    def getBobSequence(self, animName, startFrame, endFrame, playRate):
-        return Sequence(
-            Parallel(
-                ActorInterval(self.avatar, 
-                    animName, 
-                    startFrame = startFrame,
-                    endFrame = endFrame,
-                    partName = 'head',
-                    playRate = playRate),
-                ActorInterval(self.avatar, 
-                    animName, 
-                    startFrame = startFrame, 
-                    endFrame = endFrame,
-                    partName = 'torso-top',
-                    playRate = playRate)
-            ),
-            Parallel(
-                ActorInterval(self.avatar, 
-                    animName, 
-                    startFrame = endFrame,
-                    endFrame = startFrame,
-                    partName = 'head',
-                    playRate = playRate),
-                ActorInterval(self.avatar,
-                    animName, 
-                    startFrame = endFrame,
-                    endFrame = startFrame,
-                    partName = 'torso-top',
-                    playRate = playRate)
-            )
-        )
     
     def setRechargeTime(self, time):
         self.rechargeTime = time
@@ -237,7 +128,7 @@ class Gag(DirectObject, Precacheable):
         base.taskMgr.remove(self.avatar.uniqueName('timeoutDone'))
 
     @abc.abstractmethod
-    def start(self):
+    def primaryFirePress(self):
         if not self.avatar:
             return
         if self.avatar.getBackpack().getSupply(self.getID()) == 0 or self.state == GagState.RECHARGING:
@@ -269,7 +160,7 @@ class Gag(DirectObject, Precacheable):
                         base.localAvatar.b_setCurrentGag(-1)
 
     @abc.abstractmethod
-    def throw(self):
+    def primaryFireRelease(self):
         if self.multiUse:
             if self.isLocal():
                 base.localAvatar.enableGagKeys()
@@ -514,11 +405,3 @@ class Gag(DirectObject, Precacheable):
 
     def doesAutoRelease(self):
         return self.autoRelease
-
-    def isLocal(self):
-        if not self.avatar:
-            return False
-        return self.avatar.doId == base.localAvatar.doId
-
-    def getID(self):
-        return self.id

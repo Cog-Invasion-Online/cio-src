@@ -13,8 +13,8 @@ class DistributedSZBossSuit(DistributedSuit, DistributedEntity):
         self.setPos(self.cEntity.getOrigin())
         self.setHpr(self.cEntity.getAngles())
      
-    def generateSuit(self, suitPlan, variant, voice = None, hideFirst = True):
-        DistributedSuit.generateSuit(self, suitPlan, variant, voice = voice, hideFirst = True)
+    def generateSuit(self, suitPlan, variant, voice = None, hideFirst = False):
+        DistributedSuit.generateSuit(self, suitPlan, variant, voice = voice, hideFirst = False)
         
     def announceGenerate(self):
         DistributedEntity.announceGenerate(self)

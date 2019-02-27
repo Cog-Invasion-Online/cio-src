@@ -55,7 +55,10 @@ class AvatarInstance(DirectObject):
         self.watcher = None
 
 class AvatarWatcher(DirectObject):
-    """ Utility class that listens for when an avatar is deleted or changes health or zone. """
+    """
+    Utility class that listens for when an avatar is deleted or changes health or zone.
+    NOTE: This class referers to the PLAYER avatars, not NPC avatars like Suits.
+    """
     
     STOP_TRACKING_WHEN_DEAD = 0
     

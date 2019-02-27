@@ -13,7 +13,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectLabel
 from direct.interval.IntervalGlobal import LerpPosInterval, Sequence, Wait, Func, LerpColorScaleInterval
 
-from panda3d.core import BitMask32, ConfigVariableBool, TransformState, Point3, NodePath, TextNode
+from panda3d.core import BitMask32, ConfigVariableBool, TransformState, Point3, NodePath, TextNode, Vec2, Vec3
 from panda3d.bullet import BulletRigidBodyNode, BulletCapsuleShape
 
 from src.coginvasion.globals import CIGlobals
@@ -21,13 +21,21 @@ from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.npc import DisneyCharGlobals as DCG
 from src.coginvasion.toon import ToonTalker
 from src.coginvasion.nametag.NametagGroup import NametagGroup
-from src.coginvasion.phys.PhysicsNodePath import PhysicsNodePath
+from src.coginvasion.phys.PhysicsNodePath import BasePhysicsObject
 from src.coginvasion.base.Wake import Wake
 from src.coginvasion.base.Splash import Splash
+from src.coginvasion.avatar.AvatarShared import AvatarShared
 
 notify = directNotify.newCategory("Avatar")
 
-class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
+class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared):
+    """
+    Client side implementation of the base Avatar.
+	
+    An Avatar is an animatable character, playable or non-playable, that can be involved
+    in combat. Also has the ability to chat, have a nametag, hitbox, and more.
+    """
+
     RealShadows = ConfigVariableBool('want-real-shadows', False)
     AvatarMovedEpsilon = 0.05
 
@@ -39,7 +47,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
             self.Avatar_initialized = 1
 
         ToonTalker.ToonTalker.__init__(self)
-        PhysicsNodePath.__init__(self)
+        AvatarShared.__init__(self)
         Actor.__init__(self, None, None, None, flattenable=0, setFinal=1)
 
         self.shapeGroup = CIGlobals.WallGroup | CIGlobals.CharacterGroup
@@ -47,7 +55,6 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         self.getGeomNode().showThrough(CIGlobals.ShadowCameraBitmask)
 
         self.mat = mat
-        self._name = ''
         self.chat = ''
 
         self.nametagNodePath = None
@@ -62,14 +69,18 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
 
         self.setTwoSided(False)
 
+        self.forwardSpeed = 0.0
+        self.rotateSpeed = 0.0
+        self.strafeSpeed = 0.0
+        self.standWalkRunReverse = None
+        self.currentMoveAction = None
+
         self.enableBlend()
 
         self.showNametagInMargins = True
         self.avatarType = None
         self.charName = None
-        self._name = None
         self.tag = None
-        self.height = 0
 
         self.splashEffect = None
         self.splashSound = None
@@ -86,32 +97,181 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         
         self.ragdoll = None
         self.ragdollMode = False
-        
-        self.health = 100
-        self.maxHealth = 100
+
         self.healthLabel = None
         self.healthLabelTrack = None
         self.dmgFadeIval = None
 
+        self.forcedTorsoAnim = None
+        self.lastForcedTorsoAnim = None
+
+        self.activityTrack = None
+        self.wasDoingActivity = False
+
         return
+
+    def setActivity(self, activity, timestamp):
+        AvatarShared.setActivity(self, activity, timestamp)
+
+        if activity == -1 or activity not in self.activities:
+            self.doingActivity = False
+            return
+
+        self.doingActivity = True
+        ts = globalClockDelta.localElapsedTime(timestamp)
+        act = self.activities[activity]
+        loop = act.shouldLoop()
+        self.activityTrack = act.doActivity()
+        self.activityTrack.start()
+        #if loop:
+        #    self.activityTrack.loop()
+        #else:
+        #    self.activityTrack.start()
+
+    def setForcedTorsoAnim(self, anim):
+        self.forcedTorsoAnim = anim
+
+    def hasForcedTorsoAnim(self):
+        return self.forcedTorsoAnim is not None
+
+    def getForcedTorsoAnim(self):
+        return self.forcedTorsoAnim
+
+    def clearForcedTorsoAnim(self):
+
+        if not self.forcedTorsoAnim is None:
+            # Let's switch our current torso and head animation to the
+            # animation the legs are running.
+            legs = self.getLowerBodySubpart()[0]
+            legAnimation = self.getCurrentAnim(partName = legs)
+            frame = self.getCurrentFrame(partName = legs, animName = legAnimation)
+
+            def __anim(partName):
+                self.stop(partName = partName)
+                self.play(animName = legAnimation, partName = partName, fromFrame = frame)
+
+            parts = self.getUpperBodySubpart()
+            for part in parts:
+                __anim(part)
+
+        self.forcedTorsoAnim = None
+
+    def setPlayRate(self, rate, animName, partName = None):
+        if partName or not self.forcedTorsoAnim:
+            Actor.setPlayRate(self, rate, animName, partName)
+        else:
+            parts = self.getLowerBodySubpart() + self.getUpperBodySubpart()
+            for part in parts:
+                Actor.setPlayRate(self, rate, animName, part)
+        
+    def play(self, animName, partName=None, fromFrame=None, toFrame=None):
+        lowerHalfNames = self.getLowerBodySubpart()
+        if self.forcedTorsoAnim is None or (not (partName in lowerHalfNames)):
+            Actor.play(self, animName, partName=partName, fromFrame=fromFrame, toFrame=toFrame)
+        else:
+            # The torso and the head must stay in its current animation.
+            # Let's only update the pants and the legs animation.
+            for part in lowerHalfNames:
+                Actor.play(self, animName, partName=part, fromFrame=fromFrame, toFrame=toFrame)
+            
+    def loop(self, animName, restart=1, partName=None, fromFrame=None, toFrame=None):
+        lowerHalfNames = self.getLowerBodySubpart()
+        if self.forcedTorsoAnim is None:
+            return Actor.loop(self, animName, restart=restart, partName=partName, fromFrame=fromFrame, toFrame=toFrame)
+        else:
+            # The torso and the head must stay in its current animation.
+            # Let's only update the pants and the legs animation.
+            for index, part in enumerate(lowerHalfNames):
+                output = Actor.loop(self, animName, restart=restart, partName=part, fromFrame=fromFrame, toFrame=toFrame)
+
+    def getMoveAction(self, forward, rotate, strafe):
+        return 0
+
+    def resetMoveAnims(self, anim = None, anim2 = None):
+        self.resetAnimBlends()
+        if self.forcedTorsoAnim is None:
+            self.disableBlend()
+            self.stop()
+            if anim and anim2:
+                self.enableBlend()
+                self.loop(anim)
+                self.loop(anim2)
+        else:
+            parts = self.getLowerBodySubpart()
+            for part in parts:
+                self.disableBlend(partName = part)
+                self.stop(partName = part)
+                if anim and anim2:
+                    self.enableBlend(partName = part)
+                    self.loop(anim, partName = part)
+                    self.loop(anim2, partName = part)
+
+    def resetAnimBlends(self):
+        for anim in self.getAnimNames():
+            self.setControlEffect(anim, 0.0)
+
+    def setSpeed(self, forwardSpeed, rotateSpeed, strafeSpeed = 0.0):
+        self.forwardSpeed = forwardSpeed
+        self.rotateSpeed = rotateSpeed
+        self.strafeSpeed = strafeSpeed
+
+        action = None
+        if self.standWalkRunReverse != None and not self.doingActivity:
+            action = self.getMoveAction(forwardSpeed, rotateSpeed, strafeSpeed)
+            anim, anim2, minSpeed, maxSpeed, rate, rate2 = self.standWalkRunReverse[action]
+            if self.currentMoveAction != action or self.lastForcedTorsoAnim != self.forcedTorsoAnim or self.wasDoingActivity:
+                self.playingAnim = anim
+                self.lastForcedTorsoAnim = self.forcedTorsoAnim
+                self.currentMoveAction = action
+
+                self.resetMoveAnims(anim, anim2)
+
+            speed = max(Vec3(forwardSpeed, strafeSpeed, rotateSpeed / 10.0).length(), minSpeed)
+            ratio = speed / maxSpeed
+            ratioClamped = CIGlobals.clamp(ratio, 0, 1)
+            self.setControlEffect(anim, 1 - ratioClamped)
+            self.setControlEffect(anim2, ratioClamped)
+
+            if ratio > 1:
+                self.setPlayRate(rate * ratio, anim)
+                self.setPlayRate(rate2 * ratio, anim2)
+            else:
+                self.setPlayRate(rate, anim)
+                self.setPlayRate(rate2, anim2)
+
+            self.wasDoingActivity = False
+        elif self.doingActivity and not self.wasDoingActivity:
+            self.wasDoingActivity = True
+            self.resetMoveAnims()
+
+        return action
+
+    def getRightHandNode(self):
+        return NodePath("rightHand")
+
+    def getLeftHandNode(self):
+        return NodePath("leftHand")
+
+    def getHeadNode(self):
+        return NodePath("head")
         
     def handleHitByToon(self, player, gagId, distance):
         pass
         
     def handleHitByEnemy(self, enemy, weaponId, distance):
         pass
+
+    def getLowerBodySubpart(self):
+        return ["legs"]
+
+    def getUpperBodySubpart(self):
+        return ["torso"]
         
     def taskName(self, name):
         return name + "-" + str(id(self))
         
     def uniqueName(self, name):
         return name + "-" + str(id(self))
-        
-    def setMaxHealth(self, health):
-        self.maxHealth = health
-
-    def getMaxHealth(self):
-        return self.maxHealth
         
     def setupHealthLabel(self):
         self.healthLabel = DirectLabel(text = "", text_fg = CIGlobals.PositiveTextColor,
@@ -185,15 +345,6 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
             self.healthLabel['text'] = prefix + str(hp)
 
         self.showAndMoveHealthLabel(1.0 if extraId != -1 else 0.5)
-
-    def setHealth(self, health):
-        self.health = health
-
-    def getHealth(self):
-        return self.health
-
-    def isDead(self):
-        return self.health <= 0
         
     def doRagdollMode(self):
         if self.ragdollMode:
@@ -275,7 +426,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         moveMag =  posDelta / dt
         if moveMag > 5.0 and delta > 0.1:
             if hasattr(base, 'waterReflectionMgr'):
-                result = base.waterReflectionMgr.isTouchingAnyWater(pos, pos + (0, 0, self.height))
+                result = base.waterReflectionMgr.isTouchingAnyWater(pos, pos + (0, 0, self.getHeight()))
                 if result[0]:
                     self.getWake().createRipple(result[1], rate = 1, startFrame = 4)
                     self.lastWakeTime = time
@@ -330,10 +481,12 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         return task.cont 
 
     def setupPhysics(self, radius = 1, height = 2):
+        print self.__class__.__name__, "setupPhysics(r{0}, h{1}) hitboxData:".format(radius, height), self.hitboxData
+
         # When the height is passed into BulletCapsuleShape, it's
         # talking about the height only of the cylinder part.
         # But what we want is the height of the entire capsule.
-        height -= (radius * 2)
+        #height -= (radius * 2)
         # The middle of the capsule is the origin by default. Push the capsule shape up
         # so the very bottom of the capsule is the origin.
         zOfs = (height / 2.0) + radius
@@ -343,7 +496,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         bodyNode.addShape(capsule, TransformState.makePos(Point3(0, 0, zOfs)))
         bodyNode.setKinematic(True)
 
-        PhysicsNodePath.setupPhysics(self, bodyNode, True)
+        BasePhysicsObject.setupPhysics(self, bodyNode, True)
 
     def isDistributed(self):
         return hasattr(self, 'doId')
@@ -370,8 +523,6 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
             if self in base.avatars:
                 base.avatars.remove(self)
             self.stopMovingHealthLabel()
-            self.health = None
-            self.maxHealth = None
             self.healthLabel = None
             self.healthLabelTrack = None
             if self.floorTask:
@@ -388,11 +539,9 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
             self.mat = None
             self.tag = None
             self.chat = None
-            self.height = None
             self.avatarType = None
             self.charName = None
             self.nameTag = None
-            self._name = None
             self.cleanupPhysics()
 
             self.lastWakeTime = None
@@ -419,16 +568,11 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
         except:
             self.Avatar_deleted = 1
             self.removeLoopTask()
+            AvatarShared.delete(self)
             Actor.delete(self)
 
     def getNameTag(self):
         return self.nametag3d
-
-    def setHeight(self, height):
-        self.height = height
-
-    def getHeight(self):
-        return self.height
 
     def setChat(self, chatString = None):
         self.nametag.setChatType(NametagGlobals.CHAT)
@@ -446,14 +590,11 @@ class Avatar(ToonTalker.ToonTalker, Actor, PhysicsNodePath):
     def setName(self, nameString = None, charName = None, createNow = 0):
         if not nameString:
             return
-        self._name = nameString
+        AvatarShared.setName(self, nameString)
         if charName:
             self.charName = charName
         if createNow:
             self.setupNameTag()
-
-    def getName(self):
-        return self._name
 
     def setupNameTag(self, tempName = None):
         if not self._name and not tempName:

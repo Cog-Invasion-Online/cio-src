@@ -98,18 +98,7 @@ class HL2Shotgun(Gag):
                 if CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey():
                     obj.handleHitByToon(self.avatar, self.getID(), distance)
         
-    def isActionComplete(self):
-        return self.getActionTime()  >= self.actionLengths[self.action]
-        
-    def getActionTime(self):
-        return (globalClock.getFrameTime() - self.actionStartTime)
-        
-    def setNextAction(self, action):
-        self.nextAction = action
-        
-    def setAction(self, action):
-        self.actionStartTime = globalClock.getFrameTime()
-        self.action = action
+    
         
         vm = self.getViewModel()
         fpsCam = self.getFPSCam()
@@ -193,8 +182,9 @@ class HL2Shotgun(Gag):
                     self.needsPump = False
                 else:
                     nextAction = self.actionIdle
-                    
-            self.setAction(nextAction)
+            
+            if self.action != nextAction or nextAction != self.actionIdle:
+                self.setAction(nextAction)
             
         elif ((complete) or
                (not complete and self.action == self.actionPump and

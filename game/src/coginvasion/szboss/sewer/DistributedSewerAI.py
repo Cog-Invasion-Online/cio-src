@@ -32,11 +32,12 @@ class DistributedSewerAI(DistributedBattleZoneAI):
         # Link up networked entities
         from src.coginvasion.szboss import (DistributedTriggerAI, DistributedFuncDoorAI, DistributedIndicatorLightAI,
                                             DistributedSZBossSuitAI, DistributedCutsceneAI, DistributedGoonAI,
-                                            DistributedButtonAI, DistributedGeneratorAI, DistributedFuncRotatingAI, LogicCounter)
+                                            DistributedButtonAI, DistributedGeneratorAI, DistributedFuncRotatingAI, LogicCounter,
+                                            DistributedSZBossToonAI, HintsAI)
         self.bspLoader.linkServerEntityToClass("trigger_once",          DistributedTriggerAI.DistributedTriggerOnceAI)
         self.bspLoader.linkServerEntityToClass("trigger_multiple",      DistributedTriggerAI.DistributedTriggerMultipleAI)
         self.bspLoader.linkServerEntityToClass("func_door",             DistributedFuncDoorAI.DistributedFuncDoorAI)
-        self.bspLoader.linkServerEntityToClass("npc_goon",              DistributedGoonAI.DistributedGoonAI)
+        #self.bspLoader.linkServerEntityToClass("npc_goon",              DistributedGoonAI.DistributedGoonAI)
         self.bspLoader.linkServerEntityToClass("npc_suit",              DistributedSZBossSuitAI.DistributedSZBossSuitAI)
         self.bspLoader.linkServerEntityToClass("info_cutscene",         DistributedCutsceneAI.DistributedCutsceneAI)
         self.bspLoader.linkServerEntityToClass("info_indicator_light",  DistributedIndicatorLightAI.DistributedIndicatorLightAI)
@@ -44,6 +45,8 @@ class DistributedSewerAI(DistributedBattleZoneAI):
         self.bspLoader.linkServerEntityToClass("func_generator",        DistributedGeneratorAI.DistributedGeneratorAI)
         self.bspLoader.linkServerEntityToClass("func_rotating",         DistributedFuncRotatingAI.DistributedFuncRotatingAI)
         self.bspLoader.linkServerEntityToClass("logic_counter",         LogicCounter.LogicCounter)
+        self.bspLoader.linkServerEntityToClass("npc_toon",              DistributedSZBossToonAI.DistributedSZBossToonAI)
+        self.bspLoader.linkServerEntityToClass("info_hint_cover",       HintsAI.InfoHintCover)
         
     def delete(self):
         self.avId = None
@@ -67,20 +70,14 @@ class DistributedSewerAI(DistributedBattleZoneAI):
 
         if avId == self.avId:
             self.avReady = True
-            self.b_loadMap('phase_14/etc/sewer_entrance_room_indoors/sewer_entrance_room_indoors.bsp')
+            #self.b_loadMap('phase_14/etc/sewer_entrance_room_indoors/sewer_entrance_room_indoors.bsp')
             #self.b_loadMap('phase_14/etc/testmats/testmats.bsp')
             #self.b_loadMap('phase_14/etc/estate_interior/estate_interior.bsp')
+            #self.b_loadMap("phase_14/etc/test_attacks/test_attacks.bsp")
+            self.b_loadMap('phase_14/etc/test_ai_arena/test_ai_arena.bsp')
         else:
             self.notify.warning("Suspicious: avIds do not match in ready()")
 
     def b_loadMap(self, map):
         self.sendUpdate('loadMap', [map])
-        self.loadMap(map)
-    
-    def loadMap(self, map):
-        # We wouldn't really do anything on the AI side.
-        # But maybe.
-        if not self.bspLoader.read(map):
-            self.notify.error("Could not read server side BSP file {0}".format(map))
-        self.bspLoader.getResult().ls()
-        self.setupNavMesh(self.bspLoader.getResult())
+        self.loadBSPLevel(map)

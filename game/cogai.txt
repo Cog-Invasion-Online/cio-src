@@ -1,0 +1,12 @@
+- more intelligent ai
+- more freedom of movement
+    - currently, cogs can only turn and move forward
+    - they should be able to strafe, move back, etc
+- move while attacking
+    - for certain cogs/attacks
+- run?
+
+- do things like attack while retreating, or move away from player that is charging them while attacking
+
+- say things based on environment
+    - "Your child-like jokes won't touch us, Toon." (if they're tooning up)

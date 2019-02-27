@@ -23,6 +23,9 @@ class DistributedPhysicsEntity(DistributedSmoothNode, PhysicsNodePath):
     def doSetupPhysics(self):
         self.setupPhysics(self.getPhysBody(), True)
 
+    def getPhysBody(self):
+        return None
+
     def announceGenerate(self):
         self.doSetupPhysics()
         DistributedSmoothNode.announceGenerate(self)

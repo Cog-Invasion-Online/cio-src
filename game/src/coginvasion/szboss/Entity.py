@@ -13,6 +13,12 @@ class Entity(NodePath):
         self.cEntity = None
         self.outputs = []
         self.bspLoader = None
+
+    def getCEntity(self):
+        return self.cEntity
+
+    def getLoader(self):
+        return self.bspLoader
         
     def entityTaskName(self, taskName):
         return taskName + "-" + str(self.getEntnum())

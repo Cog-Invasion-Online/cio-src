@@ -132,17 +132,22 @@ class LocalToon(DistributedPlayerToon):
         self.__traverseGUI = None
 
         self.playState = False
-        self.battleControls = False
+        self.battleControls = True
         
         self.selectedGag = -1
         self.lastSelectedGag = -1
         
     def selectGag(self, gagId, record = True):
         if record:
-            self.lastSelectedGag = self.selectedGag
+            # Forget this gag if they ran out of ammo
+            if self.backpack.getSupply(self.lastSelectedGag) <= 0:
+                self.lastSelectedGag = -1
+            else:
+                self.lastSelectedGag = self.selectedGag
+                
         self.selectedGag = gagId
         self.needsToSwitchToGag = gagId
-        self.b_setCurrentGag(gagId)
+        self.b_setEquippedAttack(gagId)
         
     def setBattleControls(self, flag):
         self.battleControls = flag
@@ -233,18 +238,14 @@ class LocalToon(DistributedPlayerToon):
     def getFPSCam(self):
         return self.walkControls.fpsCam
 
-    def b_setCurrentGag(self, gagId):
-        self.setCurrentGag(gagId)
-        self.sendUpdate('setCurrentGag', [gagId])
-
     def b_unEquipGag(self):
-        self.b_setCurrentGag(-1)
-        
+        self.b_setEquippedAttack(-1)
+       
     def switchToLastSelectedGag(self):
         self.selectGag(self.lastSelectedGag)
 
-    def setCurrentGag(self, gagId):
-        DistributedPlayerToon.setCurrentGag(self, gagId)
+    def setEquippedAttack(self, gagId):
+        DistributedPlayerToon.setEquippedAttack(self, gagId)
         if gagId != -1:
             if self.battleControls:
                 self.crosshair.setCrosshair(self.backpack.getGagByID(gagId).crosshair)
@@ -770,90 +771,66 @@ class LocalToon(DistributedPlayerToon):
         if not self.areGagsAllowed():
             return
 
-        if self.gagThrowBtn:
-            self.gagThrowBtn.bind(DGG.B1PRESS, self.startGag)
-            self.gagThrowBtn.bind(DGG.B1RELEASE, self.throwGag)
-            
-        key = CIGlobals.getSettingsMgr().getSetting("gagkey").getValue()
-        CIGlobals.acceptWithModifiers(self, key, self.startGag)
-        CIGlobals.acceptWithModifiers(self, key + "-up", self.throwGag)
+        # Using attacks
+        CIGlobals.acceptWithModifiers(self, base.inputStore.PrimaryFire,            self.primaryFirePress)
+        CIGlobals.acceptWithModifiers(self, base.inputStore.PrimaryFire + '-up',    self.primaryFireRelease)
+        CIGlobals.acceptWithModifiers(self, base.inputStore.SecondaryFire,          self.secondaryFirePress)
+        CIGlobals.acceptWithModifiers(self, base.inputStore.SecondaryFire + '-up',  self.secondaryFireRelease)
+        CIGlobals.acceptWithModifiers(self, base.inputStore.Reload,                 self.reloadPress)
+        CIGlobals.acceptWithModifiers(self, base.inputStore.Reload + '-up',         self.reloadRelease)
         
         self.gagsEnabled = True
 
     def disableGagKeys(self):
         self.gagsEnabled = False
-        
-        if self.gagThrowBtn:
-            self.gagThrowBtn.unbind(DGG.B1PRESS)
-            self.gagThrowBtn.unbind(DGG.B1RELEASE)
-        key = CIGlobals.getSettingsMgr().getSetting("gagkey").getValue()
-        CIGlobals.ignoreWithModifiers(self, key)
-        CIGlobals.ignoreWithModifiers(self, key + "-up")
+
+        CIGlobals.ignoreWithModifiers(self, base.inputStore.PrimaryFire)
+        CIGlobals.ignoreWithModifiers(self, base.inputStore.PrimaryFire + '-up')
+        CIGlobals.ignoreWithModifiers(self, base.inputStore.SecondaryFire)
+        CIGlobals.ignoreWithModifiers(self, base.inputStore.SecondaryFire + '-up')
+        CIGlobals.ignoreWithModifiers(self, base.inputStore.Reload)
+        CIGlobals.ignoreWithModifiers(self, base.inputStore.Reload + '-up')
 
     def disableGags(self):
         self.disableGagKeys()
         if self.invGui:
             self.invGui.hide()
             self.invGui.disableControls()
-        self.b_setCurrentGag(-1)
+        self.b_setEquippedAttack(-1)
 
     def resetHeadHpr(self, override = False):
         if self.lookMode == self.LMOff or not self.walkControls.controlsEnabled or override:
             self.b_lookAtObject(0, 0, 0, blink = 0)
 
-    def canUseGag(self, preActive):
-        if preActive:
-
-            # We're checking if we can call `startGag` (before the gag gets activated)
-            return (self.backpack is not None
-                    and self.backpack.getCurrentGag() is not None
-                    and self.backpack.getSupply() > 0
-                    and self.gagsEnabled)
-
-        else:
-
-            # We're checking if we can call `throwGag` or `releaseGag` (after the gag gets activated)
-            return (self.backpack is not None
-                    and self.backpack.getCurrentGag() is not None
-                    and self.backpack.getActiveGag() is not None
-                    and self.backpack.getSupply() > 0
-                    and self.gagsEnabled)
-
-    def startGag(self, start = True):
-        if not self.canUseGag(True) or self.backpack.getCurrentGag().__class__.__name__ == 'BananaPeel':
+    def primaryFirePress(self):
+        if not self.canUseGag():
             return
 
-        if self.gagThrowBtn:
-            self.gagThrowBtn.unbind(DGG.B1PRESS)
+        DistributedPlayerToon.primaryFirePress(self)
 
-        CIGlobals.ignoreWithModifiers(self, CIGlobals.getSettingsMgr().getSetting("gagkey").getValue())
-        self.resetHeadHpr()
-        self.b_gagStart(self.backpack.getCurrentGag().getID())
-
-    def throwGag(self, start = True):
-        if not self.canUseGag(False):
+    def primaryFireRelease(self):
+        if not self.canUseGag():
             return
 
-        if self.gagThrowBtn:
-            self.gagThrowBtn.unbind(DGG.B1RELEASE)
+        DistributedPlayerToon.primaryFireRelease(self)
 
-        CIGlobals.ignoreWithModifiers(self, CIGlobals.getSettingsMgr().getSetting("gagkey").getValue() + "-up")
-
-        self.b_gagThrow(self.backpack.getActiveGag().getID())
-
-        activeGag = self.backpack.getActiveGag()
-        if not activeGag:
-            activeGag = self.backpack.getCurrentGag()
-
-    def releaseGag(self):
-        if not self.canUseGag(False) or self.backpack.getCurrentGag().__class__.__name__ == 'BananaPeel':
+    def secondaryFirePress(self):
+        if not self.canUseGag():
             return
-        gag = self.backpack.getActiveGag()
-        if not gag:
-            gag = self.backpack.getCurrentGag()
-        if gag.getState() != GagState.RELEASED:
-            gagName = gag.getName()
-            self.b_gagRelease(GagGlobals.getIDByName(gagName))
+        
+        DistributedPlayerToon.secondaryFirePress(self)
+
+    def secondaryFireRelease(self):
+        if not self.canUseGag():
+            return
+
+        DistributedPlayerToon.secondaryFireRelease(self)
+
+    def canUseGag(self):
+        return (self.backpack is not None
+                and self.backpack.getCurrentGag() != -1
+                and self.backpack.getSupply() > 0
+                and self.gagsEnabled)
 
     def checkSuitHealth(self, suit):
         pass
@@ -861,26 +838,6 @@ class LocalToon(DistributedPlayerToon):
     def handleLookSpot(self, hpr):
         h, p, r = hpr
         self.d_lookAtObject(h, p, r, blink = 1)
-
-    def showGagButton(self):
-        geom = CIGlobals.getDefaultBtnGeom()
-        self.gagThrowBtn = DirectButton(
-            geom = geom,
-            geom_scale = (0.75, 1, 1),
-            text = "Throw Gag",
-            text_scale = 0.05,
-            text_pos = (0, -0.01),
-            relief = None,
-            parent = base.a2dTopCenter,
-            pos = (0, 0, -0.1)
-        )
-        self.gagThrowBtn.setBin('gui-popup', 60)
-        self.gagThrowBtn.hide()
-
-    def hideGagButton(self):
-        if self.gagThrowBtn:
-            self.gagThrowBtn.removeNode()
-            self.gagThrowBtn = None
 
     def showBookButton(self, inBook = 0):
         self.book_gui = loader.loadModel("phase_3.5/models/gui/stickerbook_gui.bam")
@@ -1114,7 +1071,6 @@ class LocalToon(DistributedPlayerToon):
         self.disableChatInput()
         self.stopMonitoringHP()
         self.hideBookButton()
-        self.hideGagButton()
         self.weaponType = None
         self.myBattle = None
         self.runSfx = None
@@ -1197,7 +1153,6 @@ class LocalToon(DistributedPlayerToon):
         self.getGeomNode().hide()
         self.deleteNameTag()
         self.invGui.disable()
-        self.hideGagButton()
         self.hideFriendButton()
         self.hideBookButton()
         self.removeAdminToken()

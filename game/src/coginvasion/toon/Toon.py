@@ -21,6 +21,8 @@ from src.coginvasion.toon.ToonHead import ToonHead
 from src.coginvasion.distributed import AdminCommands
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.avatar import Avatar
+from src.coginvasion.avatar.Activities import ACT_DIE
+from src.coginvasion.toon.activities.Die import Die
 
 import AccessoryGlobals
 
@@ -66,8 +68,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.gun = None
         self.tokenIcon = None
         self.tokenIconIval = None
-        self.forcedTorsoAnim = None
-        self.lastForcedTorsoAnim = None
         self.fallSfx = base.audio3d.loadSfx("phase_4/audio/sfx/MG_cannon_hit_dirt.ogg")
         base.audio3d.attachSoundToObject(self.fallSfx, self)
         self.eyes = loader.loadTexture("phase_3/maps/eyes.jpg", "phase_3/maps/eyes_a.rgb")
@@ -120,33 +120,32 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         if not hasattr(self, 'uniqueName'):
             self.uniqueName = types.MethodType(uniqueName, self)
 
+        self.activities = {ACT_DIE  :   Die(self)}
+
+    def getUpperBodySubpart(self):
+        if self.getAnimal() == "dog":
+            return ["torso-top", "head"]
+
+        return ["torso-top"]
+
+    def getLowerBodySubpart(self):
+        return ["legs", "torso-pants"]
+
+    def getRightHandNode(self):
+        return self.find("**/def_joint_right_hold")
+
+    def getLeftHandNode(self):
+        return self.find("**/def_joint_left_hold")
+
+    def getHeadNode(self):
+        return self.getPart('head')
+
     def getEyePoint(self):
         # middle of the head
         return Point3(0, 0, self.getHeight() - (self.getHeadHeight() / 2.0))
             
     def setForceRunSpeed(self, flag):
         self.forceRunSpeed = flag
-
-    def setForcedTorsoAnim(self, anim):
-        self.forcedTorsoAnim = anim
-
-    def hasForcedTorsoAnim(self):
-        return self.forcedTorsoAnim is not None
-
-    def getForcedTorsoAnim(self):
-        return self.forcedTorsoAnim
-
-    def clearForcedTorsoAnim(self):
-        if not self.forcedTorsoAnim is None:
-            # Let's switch our current torso and head animation to the
-            # animation the legs are running.
-            legs = self.__getLowerHalfPartNames()[0]
-            legAnimation = self.getCurrentAnim(partName = legs)
-            frame = self.getCurrentFrame(partName = legs, animName = legAnimation)
-            for part in self.__getUpperHalfPartNames():
-                self.stop(partName = part)
-                self.play(animName = legAnimation, partName = part, fromFrame = frame)
-        self.forcedTorsoAnim = None
             
     def resetTorsoRotation(self):
         if not self.isEmpty():
@@ -195,41 +194,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         #    if hasattr(base, 'localAvatar'):
         #        if base.localAvatar.doId == self.doId:
         #            self.controlManager.enableAvatarJump()
-        
-    def setPlayRate(self, rate, animName, partName = None):
-        if partName or not self.forcedTorsoAnim:
-            Actor.setPlayRate(self, rate, animName, partName)
-        else:
-            parts = self.__getLowerHalfPartNames() + self.__getUpperHalfPartNames()
-            for part in parts:
-                Actor.setPlayRate(self, rate, animName, part)
-        
-    def play(self, animName, partName=None, fromFrame=None, toFrame=None):
-        lowerHalfNames = self.__getLowerHalfPartNames()
-        if self.forcedTorsoAnim is None or (not (partName in lowerHalfNames)):
-            Actor.play(self, animName, partName=partName, fromFrame=fromFrame, toFrame=toFrame)
-        else:
-            # The torso and the head must stay in its current animation.
-            # Let's only update the pants and the legs animation.
-            for part in lowerHalfNames:
-                Actor.play(self, animName, partName=part, fromFrame=fromFrame, toFrame=toFrame)
-            
-    def loop(self, animName, restart=1, partName=None, fromFrame=None, toFrame=None):
-        lowerHalfNames = self.__getLowerHalfPartNames()
-        if self.forcedTorsoAnim is None:
-            return Actor.loop(self, animName, restart=restart, partName=partName, fromFrame=fromFrame, toFrame=toFrame)
-        else:
-            # The torso and the head must stay in its current animation.
-            # Let's only update the pants and the legs animation.
-            for index, part in enumerate(lowerHalfNames):
-                output = Actor.loop(self, animName, restart=restart, partName=part, fromFrame=fromFrame, toFrame=toFrame)
-                
-                    
-    def __getUpperHalfPartNames(self):
-        return ['head', 'torso-top']
-            
-    def __getLowerHalfPartNames(self):
-        return ['torso-pants', 'legs']
 
     def setSpeed(self, forwardSpeed, rotateSpeed, strafeSpeed = 0.0):
         if self.forceRunSpeed:
@@ -543,12 +507,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.shadowCaster.clear()
             self.shadowCaster = None
 
-        try:
-            self.stopLookAround()
-            self.stopBlink()
-        except:
-            pass
-
         for accessory in self.accessories:
             accessory.removeNode()
         self.accessories = []
@@ -728,11 +686,14 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         return headHeight
 
     def rescaleToon(self):
+        if not self.getHead():
+            return
+
         animal = self.getAnimal()
         bodyScale = ToonGlobals.BodyScales[animal]
         headScale = ToonGlobals.HeadScales[animal][2]
-        shoulderHeight = ToonGlobals.LegHeightDict[self.legs] * bodyScale + ToonGlobals.TorsoHeightDict[self.torso] * bodyScale
-        height = shoulderHeight + ToonGlobals.HeadHeightDict[self.head] * headScale
+        shoulderHeight = ToonGlobals.LegHeightDict[self.getLegs()] * bodyScale + ToonGlobals.TorsoHeightDict[self.getTorso()] * bodyScale
+        height = shoulderHeight + ToonGlobals.HeadHeightDict[self.getHead()] * headScale
         bodyScale = ToonGlobals.BodyScales[animal]
         self.setAvatarScale(bodyScale)
         self.getPart('head').setScale(headScale)
@@ -860,13 +821,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.stop()
 
     def enterNeutral(self, ts = 0, callback = None, extraArgs = []):
-        if self.backpack:
-            cg = self.backpack.getCurrentGag()
-            if cg and cg.getState() in [GagState.START, GagState.RELEASED]:
-                self.loop("neutral", partName = "legs")
-                if self.animal == "dog":
-                    self.loop("neutral", partName = "head")
-                return
         if self.forcedTorsoAnim != None:
             self.loop(self.forcedTorsoAnim, partName = 'torso')
             self.loop("neutral", partName = "legs")
@@ -879,22 +833,9 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.playingAnim = 'neutral'
 
     def exitGeneral(self):
-        if self.backpack:
-            cg = self.backpack.getCurrentGag()
-            if cg and cg.getState() in [GagState.START, GagState.RELEASED]:
-                self.stop(partName = 'legs')
-                return
-
         self.stop()
 
     def enterRun(self, ts = 0, callback = None, extraArgs = []):
-        if self.backpack:
-            cg = self.backpack.getCurrentGag()
-            if cg and cg.getState() in [GagState.START, GagState.RELEASED]:
-                self.loop('run', partName = 'legs')
-                if self.animal == 'dog':
-                    self.loop('run', partName = 'head')
-                return
         if self.forcedTorsoAnim != None:
             self.loop(self.forcedTorsoAnim, partName = 'torso')
             self.loop('run', partName = 'legs')
@@ -905,13 +846,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.exitGeneral()
 
     def enterWalk(self, ts = 0, callback = None, extraArgs = []):
-        if self.backpack:
-            cg = self.backpack.getCurrentGag()
-            if cg and cg.getState() in [GagState.START, GagState.RELEASED]:
-                self.loop('walk', partName = 'legs')
-                if self.animal == 'dog':
-                    self.loop('walk', partName = 'head')
-                return
         if self.forcedTorsoAnim != None:
             self.loop(self.forcedTorsoAnim, partName = 'torso')
             self.loop('walk', partName = 'legs')
@@ -1175,8 +1109,8 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         def shouldDisableGags():
             if hasattr(self, 'disableGags'):
                 self.disableGags()
-            if hasattr(self, 'b_setCurrentGag'):
-                self.b_setCurrentGag(-1)
+            if hasattr(self, 'setEquippedAttack'):
+                self.setEquippedAttack(-1)
         
         self.playingAnim = 'lose'
         self.isdying = True

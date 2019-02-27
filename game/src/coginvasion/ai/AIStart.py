@@ -21,7 +21,7 @@ sys.dont_write_bytecode = True
 #logger = Logger.Starter(log_prefix = 'ai-', path = 'astron/district_logs')
 #logger.startNotifyLogging()
 
-from panda3d.core import loadPrcFile, loadPrcFileData, VirtualFileSystem
+from panda3d.core import loadPrcFile, loadPrcFileData, VirtualFileSystem, PStatClient
 
 loadPrcFileData('', 'model-path ./resources')
 
@@ -72,9 +72,12 @@ metadata.PROCESS = 'server'
 loadPrcFileData('', 'window-type none')
 loadPrcFileData('', 'audio-library-name none')
 
+PStatClient.connect("127.0.0.1")
+
 from direct.showbase.ShowBase import ShowBase
 base = ShowBase()
-base.setSleep(0.015)
+# Limit server to a certain number of ticks per second
+#base.setSleep(1 / base.config.GetFloat('server-ticks', 30))
 
 from p3recastnavigation import RNNavMeshManager
 
@@ -84,6 +87,13 @@ nmMgr.get_reference_node_path().reparentTo(render)
 nmMgr.start_default_update()
 nmMgr.get_reference_node_path_debug().reparentTo(render)
 base.nmMgr = nmMgr
+
+# We deal with attacks on the server side as well
+from src.coginvasion.avatar import AttackClasses
+base.attackMgr = AttackClasses.AttackManager()
+
+from direct.distributed.ClockDelta import globalClockDelta
+__builtins__.globalClockDelta = globalClockDelta
 
 from src.coginvasion.ai.CogInvasionAIRepository import CogInvasionAIRepository as CIAIR
 base.air = CIAIR(config.GetInt('air-base-channel', 401000000), config.GetInt('air-stateserver', 10000))

@@ -84,7 +84,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
                 avIds.remove(avId)
 
         #for avId in self.battle.getAvatars():
-        #    numAttackers = len(self.suit.battle.getSuitsTargetingAvId(avId))
+        #    numAttackers = len(self.suit.getBattleZone().getSuitsTargetingAvId(avId))
         #    if numAttackers  >= self.MaxAttackersPerTarget:
         #        # This toon has too many attackers already.
         #        print str(self.suit.doId) + ": Toon " + str(avId) + " already has " + str(numAttackers) + " attackers."
@@ -112,7 +112,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
 
         self.target = self.air.doId2do.get(self.targetId)
         self.suit.sendUpdate('setChaseTarget', [self.targetId])
-        self.suit.battle.newTarget(self.suit.doId, self.targetId)
+        self.suit.getBattleZone().newTarget(self.suit.doId, self.targetId)
         return 1
 
     def resetNextFrame(self):
@@ -137,7 +137,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         self.fsm.request('off')
         self.target = None
         self.targetId = None
-        self.suit.battle.clearTargets(self.suit.doId)
+        self.suit.getBattleZone().clearTargets(self.suit.doId)
         self.suit.sendUpdate('setChaseTarget', [0])
         SuitPathBehaviorAI.exit(self)
 
@@ -188,7 +188,7 @@ class SuitPursueToonBehaviorAI(SuitPathBehaviorAI):
         attack = SuitUtils.attack(self.suit, self.target)
         timeout = SuitAttacks.SuitAttacks.attack2attackClass[attack].length
 
-        task.delayTime = timeout + (self.suit.getLevel() / self.AttackCooldownFactor)
+        task.delayTime = timeout
         return task.again
 
     def exitAttack(self):

@@ -7,7 +7,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from direct.task import Task
 
 from src.coginvasion.cog.DistributedSuitAI import DistributedSuitAI
-from src.coginvasion.cog import SuitGlobals, SuitAttacks
+from src.coginvasion.cog import SuitGlobals#, SuitAttacks
 from src.coginvasion.npc.NPCWalker import NPCWalkInterval
 from src.coginvasion.globals import CIGlobals
 import TutorialGlobals
@@ -126,6 +126,7 @@ class DistributedTutorialSuitAI(DistributedSuitAI):
         base.taskMgr.doMethodLater(random.randint(*self.ATTACK_IVAL_RANGE), self.__doAttack, self.uniqueName('doAttack'))
 
     def __doAttack(self, task):
+        return task.done
         base.taskMgr.remove(self.uniqueName('scwaa'))
         target = self.air.doId2do.get(self.avatarId)
         if not target:

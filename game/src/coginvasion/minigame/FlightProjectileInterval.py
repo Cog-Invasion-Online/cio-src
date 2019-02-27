@@ -50,6 +50,8 @@ class FlightProjectileInterval(ProjectileInterval):
         vel = self.getVel(t)
         run = math.sqrt(vel[0] * vel[0] + vel[1] * vel[1])
         rise = vel[2]
+        if run < 0.001:
+            return Task.cont
         theta = self.__toDegrees(math.atan(rise / run))
         self.node.setP(theta)
 

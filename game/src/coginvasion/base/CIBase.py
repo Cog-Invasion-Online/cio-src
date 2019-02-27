@@ -74,6 +74,9 @@ class CIBase(ShowBase):
         self.win.setClearStencilActive(False)
         self.win.setClearDepthActive(True)
 
+        from direct.distributed.ClockDelta import globalClockDelta
+        __builtin__.globalClockDelta = globalClockDelta
+
         # Any ComputeNodes should be parented to this node, not render.
         # We isolate ComputeNodes to avoid traversing the same ComputeNodes
         # when doing multi-pass rendering.
@@ -148,6 +151,8 @@ class CIBase(ShowBase):
         base.queue = CollisionHandlerQueue()
 
         base.lightingCfg = None
+
+        self.attackMgr = None
         
         #self.accept('/', self.projectShadows)
         
@@ -608,16 +613,17 @@ class CIBase(ShowBase):
         self.setAmbientOcclusion(self.aoToggle)
         #self.filters.setDepthOfField(distance = 10.0, range = 175.0, near = 1.0, far = 1000.0 / (1000.0 - 1.0))
         
+        #from src.coginvasion.globals import BSPUtility
+        #BSPUtility.applyUnlitOverride(render)
+
+        from src.coginvasion.avatar import AttackClasses
+        self.attackMgr = AttackClasses.AttackManager()
+        
     def precacheStuff(self):
         from src.coginvasion.toon import ToonGlobals
         ToonGlobals.precacheToons()
-        
-        from src.coginvasion.cog.SuitAttacks import SuitAttacks
-        SuitAttacks.precache()
-        
-        from src.coginvasion.gags.GagManager import GagManager
-        for gagCls in GagManager.gags.values():
-            gagCls.precache()
+
+        self.attackMgr.precache()
             
         from src.coginvasion.gags.LocationSeeker import LocationSeeker
         LocationSeeker.precache()

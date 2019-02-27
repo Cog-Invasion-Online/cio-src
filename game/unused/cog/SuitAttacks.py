@@ -2202,7 +2202,7 @@ class FiredAttack(Attack):
 
             self.setLightOff(1)
             self.setMaterialOff(1)
-            BSPUtility.applyUnlitOverride(self)
+            self.hide(CIGlobals.ShadowCameraBitmask)
             
             self.attack = attack
             self.suit = self.attack.suit
@@ -2307,12 +2307,12 @@ class FiredAttack(Attack):
         self.glow.reparentTo(self.suit)
         self.glow.setLightOff(1)
         self.glow.setMaterialOff(1)
-        BSPUtility.applyUnlitOverride(self.glow)
         self.glow.setP(90)
         self.glow.setTransparency(1)
         self.glow.setDepthOffset(1)
         self.glow.setColorScale(1, 0.5, 0, 0)
         self.glow.setScale(3)
+        self.glow.hide(CIGlobals.ShadowCameraBitmask)
 
         self.glowTrack = Sequence(LerpColorScaleInterval(self.glow, self.emitFlameIval / 2, (1, 0.5, 0, 0.5),
                                                          (1, 0.5, 0, 0), blendType = 'easeInOut'),

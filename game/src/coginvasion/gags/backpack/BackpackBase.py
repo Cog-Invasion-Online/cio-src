@@ -11,6 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from src.coginvasion.gags import GagGlobals
+from src.coginvasion.avatar import Attacks
 
 from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
@@ -18,18 +19,19 @@ from direct.distributed.PyDatagramIterator import PyDatagramIterator
 MAXIMUM_SUPPLY = 255
 
 class BackpackBase:
+    """
+    Shared base class between AI and Client for a backpack.
+    A backpack is a collection of Toon/Player attacks, suited for storing on a database.
+
+    In the new universal attacks system, the backpack does not store the attacks directly,
+    but reads and manipulates the `attacks` dictionary on an avatar. It kinds of acts
+    as a wrapper layer around the attacks system to maintain compatibility with the old system code.
+    """
     
     def __init__(self, avatar):
         # Must pass the avatar this backpack is associated with.
         self.avatar = avatar
-        
-        # A dictionary used to store gag data.
-        # Data is stored differently depending on the game process.
-        # Clients store data like: {gagId: [gag class instance, current supply, max supply]}
-        # AIs store data like this: {gagId: [current supply, max supply]}
-        # This is because the gag class instance would be redundant to point to on the AI.
-        self.gags = {}
-        
+
         # A list of gags immediately available in the avatar's loadout.
         self.loadout = []
     
@@ -37,32 +39,38 @@ class BackpackBase:
     # When a max supply isn't specified, the default is located and assigned from GagGlobals.
     # The current supply is assigned to the max supply if both the max supply and current supply is 0.
     # Returns true/false depending on if the gag was successfully added to the backpack or not.
+    #
+    # TODO: work with new system
     def addGag(self, gagId, curSupply = None, maxSupply = None):
-        if not self.hasGag(gagId):
+        if isinstance(gagId, str):
+            gagId = GagGlobals.getIDByName(gagId)
+        # Make sure the gag is actually a registered attack and we
+        # don't already have it in our backpack
+        if not self.hasGag(gagId) and gagId in base.attackMgr.AttackClasses.keys():
             if maxSupply is None:
                 # Sets the max supply if one is not specified.
                 maxSupply = GagGlobals.calculateMaxSupply(self.avatar,
-                    GagGlobals.gagIds.get(gagId), 
+                    GagGlobals.getGagByID(gagId),
                 GagGlobals.getGagData(gagId))
                 
             # Sets the current supply to the max supply if current supply isn't
             # specified.
             if curSupply is None:
                 curSupply = maxSupply
-            
-            if metadata.PROCESS == 'server':
-                self.gags.update({gagId: [curSupply, maxSupply]})
+
+            gagData = GagGlobals.getGagData(gagId)
+
+            attackCls = base.attackMgr.getAttackClassByID(gagId)
+            if attackCls:
+                attack = attackCls()
+                attack.setAvatar(self.avatar)
+                attack.setMaxAmmo(maxSupply)
+                attack.setAmmo(curSupply)
+                attack.baseDamage = GagGlobals.calcBaseDamage(self.avatar, GagGlobals.getGagByID(gagId), gagData)
+                attack.damageMaxDistance = float(gagData.get('distance', 10))
+                self.avatar.attacks[gagId] = attack
                 return True
-            elif hasattr(self, 'gagManager'):
-                # This code will only occur on the client.
-                gagName = GagGlobals.getGagByID(gagId)
-                
-                if gagName:
-                    # We must create a new gag class instance for the client.
-                    gagClass = self.gagManager.getGagByName(gagName)
-                    gagClass.setAvatar(self.avatar)
-                    self.gags.update({gagId : [gagClass, curSupply, maxSupply]})
-                    return True
+
         return False
         
     def setLoadout(self, gagIds):
@@ -72,28 +80,22 @@ class BackpackBase:
     # Returns either true/false depending on if max supply
     # was updated or not.
     def setMaxSupply(self, gagId, maxSupply):
+        if isinstance(gagId, str):
+            gagId = GagGlobals.getIDByName(gagId)
         if self.hasGag(gagId) and 0 <= maxSupply <= MAXIMUM_SUPPLY:
-            values = self.gags.get(gagId)
-            supply = -1
-            
-            if metadata.PROCESS == 'server':
-                supply = values[0]
-                self.gags.update({gagId : [supply, maxSupply]})
-            else:
-                gagInstance = values[0]
-                supply = values[1]
-                self.gags.update({gagId : [gagInstance, supply, maxSupply]})
+            attack = self.avatar.attacks.get(gagId)
+            attack.setMaxAmmo(maxSupply)
             return True
+
         return False
     
     # Returns the max supply of a gag in the backpack or
     # -1 if the gag isn't in the backpack.
     def getMaxSupply(self, gagId):
+        if isinstance(gagId, str):
+            gagId = GagGlobals.getIDByName(gagId)
         if self.hasGag(gagId):
-            if metadata.PROCESS == 'server':
-                return self.gags.get(gagId)[1]
-            else:
-                return self.gags.get(gagId)[2]
+            return self.avatar.attacks[gagId].getMaxAmmo()
         return -1
     
     # Returns the default max supply of a gag.
@@ -109,62 +111,48 @@ class BackpackBase:
     # Returns either true or false depending on if the
     # supply was updated.
     def setSupply(self, gagId, supply):
+        if isinstance(gagId, str):
+            gagId = GagGlobals.getIDByName(gagId)
         if self.hasGag(gagId) and 0 <= supply <= MAXIMUM_SUPPLY:
-            values = self.gags.get(gagId)
-            maxSupply = -1
-            
-            # If we're updating the supply of a gag on the AI,
-            # we need to do this a little bit differently.
-            if metadata.PROCESS == 'server':
-                currSupply = values[0]
-                if currSupply == supply:
-                    # No change in supply.
-                    return False
-                maxSupply = values[1]
-                self.gags.update({gagId : [supply, maxSupply]})
-            else:
-                currSupply = values[1]
-                if currSupply == supply:
-                    # No change in supply.
-                    return False
-                gagInstance = values[0]
-                maxSupply = values[2]
-                self.gags.update({gagId : [gagInstance, supply, maxSupply]})
+            attack = self.avatar.attacks.get(gagId)
+
+            currSupply = attack.getAmmo()
+            if supply == currSupply:
+                # No change in supply.
+                return False
+
+            attack.setAmmo(supply)
             return True
+
         return False
     
     # Returns the supply of a gag in the backpack by gagId.
     # If gagId is not in the backpack, -1 is returned.
     def getSupply(self, gagId):
+        if isinstance(gagId, str):
+            gagId = GagGlobals.getIDByName(gagId)
         if self.hasGag(gagId):
-            if metadata.PROCESS == 'server':
-                return self.gags.get(gagId)[0]
-            else:
-                return self.gags.get(gagId)[1]
+            return self.avatar.attacks[gagId].getAmmo()
         return -1
         
     # Returns true or false depending on if the gag
     # is in the backpack.
     def hasGag(self, gagId):
-        return gagId in self.gags.keys()
+        if isinstance(gagId, str):
+            gagId = GagGlobals.getIDByName(gagId)
+        return gagId in self.avatar.attacks.keys()
         
     # Converts out backpack to a blob for storing.
     # Returns a blob of bytes.
     def toNetString(self):
         dg = PyDatagram()
-        supplyIndex = 1
         
-        # On the server side, the supply of the current gag is first
-        # in the list of data assigned to each gagId.
-        if metadata.PROCESS == 'server':
-            supplyIndex = 0
-        
-        for gagId in self.gags.keys():
-            supply = self.gags[gagId][supplyIndex]
+        for gagId in self.avatar.attacks.keys():
+            supply = self.avatar.attacks[gagId].getAmmo()
             dg.addUint8(gagId)
             dg.addUint8(supply)
-        dgi = PyDatagramIterator(dg)
-        return dgi.getRemainingBytes()
+
+        return dg.getMessage()
     
     # Converts a net string blob back to data that we can handle.
     # Returns a dictionary of {gagIds : supply}
@@ -180,10 +168,6 @@ class BackpackBase:
         return dictionary
         
     def cleanup(self):
-        self.gags.clear()
-        self.loadout = []
-        self.avatar = None
-        del self.gags
         del self.loadout
         del self.avatar
         

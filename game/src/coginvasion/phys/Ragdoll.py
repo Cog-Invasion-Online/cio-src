@@ -72,7 +72,7 @@ class Ragdoll(DirectObject):
         self.mode = Ragdoll.RMKinematic
         self.createActorJointsDesc(self.actor.getPartBundle(self.partName), None)
         self.exposeActorJoints()
-        self.updateTask = base.taskMgr.add(self.__updateTask, "ragdoll-update")
+        self.updateTask = base.taskMgr.add(self.__updateTask, "ragdoll-update" + str(id(self)))
 
     def setupLimbs(self):
         pass
@@ -164,7 +164,6 @@ class Ragdoll(DirectObject):
         if self.attached:
             for jointName in self.jointsOrder:
                 jointDesc = self.actorJoints[jointName]
-                #jointDesc.cNp.reparentTo(jointDesc.limb.bodyNode)
         else:
             self.attached = True
             for jointName in self.jointsOrder:
@@ -176,7 +175,6 @@ class Ragdoll(DirectObject):
                 self.actor.controlJoint(cNp, self.partName, jointName)
                 cNp.setMat(render, jointDesc.eNp.getMat(render))
                 jointDesc.cNp = cNp
-                #cNp.reparentTo(jointDesc.limb.bodyNode)
 
     def detachActor(self):
         if not self.attached:
@@ -266,5 +264,3 @@ class Ragdoll(DirectObject):
     def __blendFinished(self, task):
         self.detachActor()
         return task.done
-
-            

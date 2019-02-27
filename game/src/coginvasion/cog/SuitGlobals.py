@@ -14,20 +14,24 @@ from src.coginvasion.cog.SuitType import SuitType
 from panda3d.core import Vec4
 
 # The cog classes
-CC_minion        = 0
-CC_secretary     = 1
-CC_scout         = 2
-CC_enforcer      = 3
-CC_marshal       = 4
-CC_supervisor    = 5
+COGCLASS_GRUNT          = 0
+COGCLASS_JUNIOR         = 1
+COGCLASS_THREE          = 2
+COGCLASS_FOUR           = 3
+COGCLASS_FIVE           = 4
+COGCLASS_SIX            = 5
+COGCLASS_SEVEN          = 6
+COGCLASS_SUPERVISOR     = 7
 
 ClassNameById = {
-    CC_minion:       'Minion',
-    CC_secretary:    'Secretary',
-    CC_scout:        'Scout',
-    CC_enforcer:     'Enforcer',
-    CC_marshal:      'Marshal',
-    CC_supervisor:   'Supervisor'
+    COGCLASS_GRUNT  :   'Grunt',
+    COGCLASS_JUNIOR :   'Junior',
+    COGCLASS_THREE:        'Class 3',
+    COGCLASS_FOUR:     'Class 4',
+    COGCLASS_FIVE:      'Class 5',
+    COGCLASS_SIX:   'Class 6',
+    COGCLASS_SEVEN: 'Class 7',
+    COGCLASS_SUPERVISOR: 'Supervisor'
 }
 
 def getClassName(id):
@@ -57,23 +61,23 @@ def getClassAttrs(_id):
         # TODO:
         # Higher level minions can stun toons
         # Drop gags slow their movement greatly
-        CC_minion:       CogClassAttributes(walkMod = 2.0, dmgMod = 0.5, scaleMod = 0.5, voiceMod = 1.75, baseHp = 10),
+        COGCLASS_GRUNT:       CogClassAttributes(walkMod = 2.0, dmgMod = 0.5, scaleMod = 0.5, voiceMod = 1.75, baseHp = 10),
     
-        CC_secretary:    CogClassAttributes(walkMod = 1.8, dmgMod = 0.7, scaleMod = 0.7, voiceMod = 1.5, baseHp = 25, healer = True,
+        COGCLASS_JUNIOR:    CogClassAttributes(walkMod = 1.8, dmgMod = 0.7, scaleMod = 0.7, voiceMod = 1.5, baseHp = 25, healer = True,
                                            gagRamps = {GagGlobals.Trap: 1.1}),
     
-        CC_scout:        CogClassAttributes(walkMod = 1.3, dmgMod = 1.0, scaleMod = 0.95, voiceMod = 1.1, baseHp = 30,
+        COGCLASS_THREE:        CogClassAttributes(walkMod = 1.3, dmgMod = 1.0, scaleMod = 0.95, voiceMod = 1.1, baseHp = 30,
                                            gagRamps = {GagGlobals.Sound: 0.9, GagGlobals.Squirt: 1.15}, footsteps = False),
     
-        CC_enforcer:     CogClassAttributes(walkMod = 1.2, dmgMod = 1.1, scaleMod = 1.0, voiceMod = 1.0, baseHp = 50),
+        COGCLASS_FOUR:     CogClassAttributes(walkMod = 1.2, dmgMod = 1.1, scaleMod = 1.0, voiceMod = 1.0, baseHp = 50),
     
         # TODO:
         # Can shield supervisor cogs
-        CC_marshal:      CogClassAttributes(walkMod = 1.1, dmgMod = 1.2, scaleMod = 1.0, voiceMod = 0.9, baseHp = 75),
+        COGCLASS_FIVE:      CogClassAttributes(walkMod = 1.1, dmgMod = 1.2, scaleMod = 1.0, voiceMod = 0.9, baseHp = 75),
     
         # TODO:
         # Sound gags award a temporary 2-5 second speed boost (they anger them)
-        CC_supervisor:   CogClassAttributes(walkMod = 0.9, dmgMod = 1.3, scaleMod = 1.0, voiceMod = 0.8, baseHp = 100,
+        COGCLASS_SIX:   CogClassAttributes(walkMod = 0.9, dmgMod = 1.3, scaleMod = 1.0, voiceMod = 0.8, baseHp = 100,
                                            gagRamps = {GagGlobals.Throw: 1.1})
     }
     

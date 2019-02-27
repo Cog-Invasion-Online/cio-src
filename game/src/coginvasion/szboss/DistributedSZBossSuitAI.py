@@ -2,8 +2,8 @@ from src.coginvasion.cog.DistributedSuitAI import DistributedSuitAI
 from DistributedEntityAI import DistributedEntityAI
 
 from src.coginvasion.cog import Variant, SuitBank
-from src.coginvasion.cog.SuitBrainAI import SuitBrain
-from src.coginvasion.cog.SuitPursueToonBehaviorAI import SuitPursueToonBehaviorAI
+#from src.coginvasion.cog.SuitBrainAI import SuitBrain
+#from src.coginvasion.cog.SuitPursueToonBehaviorAI import SuitPursueToonBehaviorAI
 from src.coginvasion.globals import CIGlobals
 
 class DistributedSZBossSuitAI(DistributedSuitAI, DistributedEntityAI):
@@ -14,38 +14,22 @@ class DistributedSZBossSuitAI(DistributedSuitAI, DistributedEntityAI):
     def __init__(self, air, dispatch):
         DistributedEntityAI.__init__(self, air, dispatch)
         DistributedSuitAI.__init__(self, air)
-        self.battleZone = dispatch
-        self.battle = dispatch
-        self.setManager(dispatch)
+        self.setBattleZone(dispatch)
         dispatch.suits.append(self)
         
     def Activate(self):
-        self.stopPosHprBroadcast()
-        if self.brain:
-            self.brain.startThinking()
+        #self.stopPosHprBroadcast()
+        #if self.brain:
+        #    self.brain.startThinking()
+        self.startAI()
             
     def Deactivate(self):
-        if self.brain:
-            self.brain.stopThinking()
+        #if self.brain:
+        #    self.brain.stopThinking()
+        self.stopAI()
             
     def Kill(self):
         self.b_setHealth(0)
-        
-    def spawn(self):
-        self.brain = SuitBrain(self)
-        pursue = SuitPursueToonBehaviorAI(self, self.getManager())
-        pursue.battle = self.battle
-        pursue.setSuitList(self.battleZone.suits)
-        self.brain.addBehavior(pursue, priority = 1)
-        self.b_setParent(CIGlobals.SPRender)
-        taskMgr.add(self.monitorHealth, self.uniqueName('monitorHealth'))
-        self.startPosHprBroadcast()
-        
-        spawnflags = self.bspLoader.getEntityValueInt(self.entnum, "spawnflags")
-        if spawnflags & self.StartsActive:
-            self.Activate()
-        elif spawnflags & self.GuardSuit:
-            self.b_setAnimState('neutral')
         
     def delete(self):
         taskMgr.remove(self.uniqueName('monitorHealth'))
@@ -72,3 +56,13 @@ class DistributedSZBossSuitAI(DistributedSuitAI, DistributedEntityAI):
         
         DistributedEntityAI.announceGenerate(self)
         DistributedSuitAI.announceGenerate(self)
+
+        self.b_setParent(CIGlobals.SPRender)
+        taskMgr.add(self.monitorHealth, self.uniqueName('monitorHealth'))
+        self.startPosHprBroadcast()
+        
+        spawnflags = self.bspLoader.getEntityValueInt(self.entnum, "spawnflags")
+        if spawnflags & self.StartsActive:
+            self.Activate()
+        #elif spawnflags & self.GuardSuit:
+            #self.b_setAnimState('neutral')

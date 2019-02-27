@@ -6,7 +6,7 @@ from direct.interval.IntervalGlobal import Func, LerpHprInterval
 from direct.showbase import PythonUtil
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.cog.BaseBehaviorAI import BaseBehaviorAI
+#from src.coginvasion.cog.BaseBehaviorAI import BaseBehaviorAI
 
 import random
 
@@ -19,7 +19,7 @@ GBFlee = 4
 GBScan = 5
 GBPatrol = 6
 
-class Behavior(StateData, BaseBehaviorAI):
+class Behavior(StateData):#, BaseBehaviorAI):
     ID = GBInvalid # Must be overridden in each behavior
 
     def __init__(self, brain):

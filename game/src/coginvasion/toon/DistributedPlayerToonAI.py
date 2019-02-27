@@ -66,11 +66,8 @@ class DistributedPlayerToonAI(DistributedToonAI):
         sewer.generateWithRequired(zoneId)
         self.sendUpdate('sewerHeadOff', [zoneId])
 
-    def setCurrentGag(self, gagId):
-        self.currentGag = gagId
-
     def getCurrentGag(self):
-        return self.currentGag
+        return self.getEquippedAttack()
 
     def createObjectForMe(self, dclassNum):
         sender = self.air.getMsgSender()
@@ -107,9 +104,6 @@ class DistributedPlayerToonAI(DistributedToonAI):
             self.b_setHoodsDiscovered(ZoneUtil.Hood2ZoneId.values())
             if andTP:
                 self.b_setTeleportAccess(ZoneUtil.Hood2ZoneId.values())
-        
-    def d_setDNAStrand(self, strand):
-        self.sendUpdate('setDNAStrand', [strand])
         
     def reqSetTSAUni(self, flag):
         if self.__requesterAuthorized():
@@ -423,17 +417,9 @@ class DistributedPlayerToonAI(DistributedToonAI):
     def getAccessLevel(self):
         return AdminCommands.NoAccess if not self.role else self.role.accessLevel
 
-    def usedGag(self, gagId):
-        supply = self.backpack.getSupply(gagId)
-        amt = supply - 1
-        if amt < 0:
-            self.ejectSelf()
-            return
-        self.b_setGagAmmo(gagId, amt)
-
     def setLoadout(self, gagIds):
         if self.backpack:
-            for i in range(len(gagIds)):
+            for i in xrange(len(gagIds) - 1, -1, -1):
                 gagId = gagIds[i]
                 if not self.backpack.hasGag(gagId):
                     gagIds.remove(gagId)
@@ -443,15 +429,11 @@ class DistributedPlayerToonAI(DistributedToonAI):
         self.sendUpdate('setLoadout', [gagIds])
         self.setLoadout(gagIds)
 
-    def d_addGag(self, gagId, curSupply, maxSupply):
-        self.sendUpdate('addGag', [gagId, curSupply, maxSupply])
-
-    def b_setGagAmmo(self, gagId, ammo):
-        self.setGagAmmo(gagId, ammo)
-        self.sendUpdate('setGagAmmo', [gagId, ammo])
-
-    def setGagAmmo(self, gagId, ammo):
+    def updateAttackAmmo(self, gagId, ammo):
         self.backpack.setSupply(gagId, ammo)
+
+    def getCurrentGag(self):
+        return self.getEquippedAttack()
     
     def setBackpackAmmo(self, netString):
         data = self.backpack.fromNetString(netString)

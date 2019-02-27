@@ -57,6 +57,7 @@ FireHose = "Fire Hose"
 SquirtFlower = "Squirting Flower"
 WaterGun = "Squirt Gun"
 HL2Shotgun = "HL2 Shotgun" # easter egg!
+HL2Pistol = "HL2 Pistol"
 
 MajorDrops = [GrandPiano, Safe, BigWeight]
 Stunnables = MajorDrops + [TNT]
@@ -240,19 +241,6 @@ ToonHealJokes = [['What goes TICK-TICK-TICK-WOOF?', 'A watchdog! '],
  ['What would you get if you crossed an elephant with a skunk?', 'A big stinker.'],
  ['Why did ' + Mickey + ' take a trip to outer space?', 'He wanted to find ' + Pluto + '.']]
 
-# These ids are sent on the wire to capture gags.
-gagIds = {0 : WholeCreamPie, 1 : CreamPieSlice, 2 : BirthdayCake, 3 : TNT,
-          4 : SeltzerBottle, 5 : WholeFruitPie, 6 : WeddingCake,
-          7 : FruitPieSlice, 8 : GrandPiano, 9 : Safe, 10 : BambooCane,
-          11 : JugglingBalls, 12 : Megaphone, 13 : Cupcake, 14 : TrapDoor,
-          15 : Quicksand, 16 : BananaPeel, 17 : Lipstick, 18 : Foghorn,
-          19 : Aoogah, 20 : ElephantHorn, 21 : Opera, 22 : BikeHorn,
-          23 : Whistle, 24 : Bugle, 25 : PixieDust, 26 : FlowerPot,
-          27 : Sandbag, 28 : Anvil, 29 : Geyser, 30 : BigWeight,
-          31 : StormCloud, 32 : WaterGlass, 33 : WaterGun, 34 : FireHose,
-          35 : SquirtFlower, 36 : HL2Shotgun}
-gagIdByName = {v: k for k, v in gagIds.items()}
-
 Throw = "Throw"
 Squirt = "Squirt"
 Drop = "Drop"
@@ -270,6 +258,12 @@ gagData = {
                   'maxSupply': 32,
                   'supply': 32,
                   'track': Trap},
+    HL2Pistol : {'minDamage': 5,
+                 'maxDamage': 8,
+                 'minMaxSupply': 100,
+                 'maxSupply': 150,
+                 'supply': 150,
+                 'track': Trap},
     BirthdayCake : {'health': 10,
         'minDamage' : 48, 
         'maxDamage': 100,
@@ -514,7 +508,8 @@ InventoryIconByName = {WholeCreamPie : '**/inventory_creampie',
  WaterGun : '**/inventory_water_gun',
  FireHose : '**/inventory_firehose',
  SquirtFlower : '**/inventory_squirt_flower',
- HL2Shotgun : '**/inventory_water_gun'}
+ HL2Shotgun : '**/inventory_water_gun',
+ HL2Pistol : '**/inventory_water_gun'}
 
 TrackIdByName = {Throw : GagType.THROW,
                  Squirt : GagType.SQUIRT,
@@ -533,44 +528,46 @@ TrackColorByName = {ToonUp : (211 / 255.0, 148 / 255.0, 255 / 255.0),
 Type2TrackName = {GagType.TOON_UP : 0, GagType.TRAP : 1, GagType.LURE : 2, GagType.SOUND : 3, GagType.THROW : 4, GagType.SQUIRT : 5, GagType.DROP : 6}
 TrackNameById = OrderedDict({GagType.TOON_UP : ToonUp, GagType.TRAP : Trap, GagType.LURE : Lure,
                              GagType.SOUND : Sound, GagType.THROW : Throw, GagType.SQUIRT : Squirt, GagType.DROP : Drop})
-TrackGagNamesByTrackName = {Throw : [Cupcake,
-  FruitPieSlice,
-  CreamPieSlice,
-  WholeFruitPie,
-  WholeCreamPie,
-  BirthdayCake,
-  WeddingCake],
- ToonUp : [Megaphone,
-  Lipstick,
-  BambooCane,
-  PixieDust,
-  JugglingBalls],
- Sound : [BikeHorn,
-  Whistle,
-  Bugle,
-  Aoogah,
-  ElephantHorn,
-  Foghorn,
-  Opera],
- Drop : [FlowerPot,
-  Sandbag,
-  Anvil,
-  BigWeight,
-  Safe,
-  GrandPiano],
- Squirt : [SquirtFlower,
-  WaterGlass,
-  WaterGun,
-  SeltzerBottle,
-  FireHose,
-  StormCloud,
-  Geyser],
- Trap : [BananaPeel,
-  Quicksand,
-  TrapDoor,
-  TNT,
-  HL2Shotgun],
- Lure : []}
+#TrackGagNamesByTrackName = {Throw : [Cupcake,
+#  FruitPieSlice,
+#  CreamPieSlice,
+#  WholeFruitPie,
+#  WholeCreamPie,
+#  BirthdayCake,
+#  WeddingCake],
+# ToonUp : [Megaphone,
+#  Lipstick,
+#  BambooCane,
+#  PixieDust,
+#  JugglingBalls],
+# Sound : [BikeHorn,
+#  Whistle,
+#  Bugle,
+#  Aoogah,
+#  ElephantHorn,
+#  Foghorn,
+#  Opera],
+# Drop : [FlowerPot,
+#  Sandbag,
+#  Anvil,
+#  BigWeight,
+#  Safe,
+#  GrandPiano],
+# Squirt : [SquirtFlower,
+#  WaterGlass,
+#  WaterGun,
+#  SeltzerBottle,
+#  FireHose,
+#  StormCloud,
+#  Geyser],
+# Trap : [BananaPeel,
+#  Quicksand,
+#  TrapDoor,
+#  TNT,
+#  HL2Shotgun],
+# Lure : []}
+
+TrackGagNamesByTrackName = {Throw: [WholeCreamPie], ToonUp: [], Lure: [], Sound: [], Drop: [], Squirt: [], Trap: [HL2Shotgun, HL2Pistol, TNT]}
 
 TrackExperienceAmounts = {
     Throw : [10, 50, 400, 2000, 6000, 10000],
@@ -610,19 +607,42 @@ def calculateMaxSupply(avatar, name, data):
         increaseEvery = float(unlockAtExp / maxSupply)
         increaseAmt = (float(trackExp - unlockAtExp) / increaseEvery)
         
-        #print '{0} Experience: {1}, Gag Name: {2}, Unlock At Exp: {3}, Max Supply: {4}, Increase Every: {5}, Increase Amount: {6}'.format(
-        #    str(track), str(trackExp), name, str(unlockAtExp), str(maxSupply), str(increaseEvery), str(increaseAmt))
-        
         if (minMaxSupply + increaseAmt) > maxSupply:
-            #print 'Final Value: ' + str(int(maxSupply))
             return int(maxSupply)
         else:
-            #print 'Final Value: ' + str(int(minMaxSupply + increaseAmt))
             return int(minMaxSupply + increaseAmt)
     elif minMaxSupply == maxSupply:
         return int(maxSupply)
     else:
         return int(minMaxSupply)
+
+def calcBaseDamage(avatar, name, data):
+    track = data.get('track')
+    trackExp = avatar.trackExperience.get(track)
+        
+    minDamage = float(data.get('minDamage'))
+    maxDamage = float(data.get('maxDamage'))
+    gagIndex = TrackGagNamesByTrackName.get(track).index(name)
+    unlockAtExp = float(TrackExperienceAmounts.get(track)[gagIndex])
+    nextGagUnlockExp = unlockAtExp
+        
+    if (gagIndex + 1) < len(TrackExperienceAmounts.get(track)):
+        nextGagUnlockExp = float(TrackExperienceAmounts.get(track)[gagIndex + 1])
+        
+    scaleDmgEvery = float((nextGagUnlockExp - unlockAtExp) / (maxDamage - minDamage))
+    earnedExpSinceUnlock = float(trackExp - unlockAtExp)
+        
+    if scaleDmgEvery == 0:
+        baseDmg = maxDamage
+    else:
+        dmgAdditions = math.ceil(earnedExpSinceUnlock / scaleDmgEvery)
+            
+        if (minDamage + dmgAdditions) > maxDamage:
+            baseDmg = maxDamage
+        else:
+            baseDmg = float(minDamage + dmgAdditions)
+
+    return baseDmg
 
 def calculateDamage(avId, name, data):
     """ This calculates the damage a gag will do on a Cog (This is an AI-side method) """
@@ -636,33 +656,10 @@ def calculateDamage(avId, name, data):
     if 'damage' in data.keys():
         baseDmg = float(data.get('damage'))
     elif 'minDamage' in data.keys():
-        track = data.get('track')
-        trackExp = avatar.trackExperience.get(track)
-        
-        minDamage = float(data.get('minDamage'))
-        maxDamage = float(data.get('maxDamage'))
-        gagIndex = TrackGagNamesByTrackName.get(track).index(name)
-        unlockAtExp = float(TrackExperienceAmounts.get(track)[gagIndex])
-        nextGagUnlockExp = unlockAtExp
-        
-        if (gagIndex + 1) < len(TrackExperienceAmounts.get(track)):
-            nextGagUnlockExp = float(TrackExperienceAmounts.get(track)[gagIndex + 1])
-        
-        scaleDmgEvery = float((nextGagUnlockExp - unlockAtExp) / (maxDamage - minDamage))
-        earnedExpSinceUnlock = float(trackExp - unlockAtExp)
-        
-        if scaleDmgEvery == 0:
-            baseDmg = maxDamage
-        else:
-            dmgAdditions = math.ceil(earnedExpSinceUnlock / scaleDmgEvery)
-            
-            if (minDamage + dmgAdditions) > maxDamage:
-                baseDmg = maxDamage
-            else:
-                baseDmg = float(minDamage + dmgAdditions)
+        baseDmg = calcBaseDamage(avatar, name, data)
 
     dist = data.get('distance', 10)
-    ramp = calcAttackDamage(data.get('distance', 10), baseDmg)
+    ramp = calcAttackDamage(dist, baseDmg)
 
     return ramp
 
@@ -773,12 +770,12 @@ def getProp(phase, name):
     return 'phase_%s/models/props/%s.bam' % (str(phase), name)
 
 def getGagByID(gId):
-    return gagIds.get(gId)
+    return base.attackMgr.getAttackName(gId)
 
 def getIDByName(name):
-    for gId, gName in gagIds.iteritems():
-        if gName == name:
-            return gId
+    for aID, cls in base.attackMgr.AttackClasses.items():
+        if cls.Name == name:
+            return aID
 
 def getGagData(gagId):
     return gagData.get(getGagByID(gagId))
@@ -807,14 +804,14 @@ def processTrackData(trackData, backpack):
             maxEXP = expAmounts[i]
             if exp >= maxEXP and len(gags) > i:
                 gagAtLevel = gags[i]
-                gagId = gagIdByName.get(gagAtLevel)
+                gagId = getIDByName(gagAtLevel)
                 
                 if not backpack.hasGag(gagAtLevel):
                     addedGag = True
                     backpack.addGag(gagId, 1, None)
                 
-    for gagId in backpack.gags.keys():
-        gagName = gagIds.get(gagId)
+    for gagId in backpack.avatar.attacks.keys():
+        gagName = getGagByID(gagId)
         maxSupply = calculateMaxSupply(backpack.avatar, gagName, gagData.get(gagName))
         backpack.setMaxSupply(gagId, maxSupply)
 
@@ -917,9 +914,10 @@ def getDefaultBackpack(isAI = False):
     return defaultBackpack
 
 # Specifies which gags are allowed to be used. This should only be temporary until all the gags are implemented correctly.
-tempAllowedGags = [Cupcake, FruitPieSlice, CreamPieSlice, WholeFruitPie, WholeCreamPie, BirthdayCake,
-                   WaterGun, FireHose,
-                   FlowerPot, Sandbag, Anvil, BigWeight, Safe, GrandPiano,
-                   TNT, HL2Shotgun,
-                   Megaphone, Lipstick, JugglingBalls, BambooCane, PixieDust,
-                   BikeHorn, Whistle, Bugle, Aoogah, ElephantHorn, Foghorn, Opera]
+#tempAllowedGags = #[Cupcake, FruitPieSlice, CreamPieSlice, WholeFruitPie, WholeCreamPie, BirthdayCake,
+                  # WaterGun, FireHose,
+                  # FlowerPot, Sandbag, Anvil, BigWeight, Safe, GrandPiano,
+                  # TNT, HL2Shotgun,
+                  # Megaphone, Lipstick, JugglingBalls, BambooCane, PixieDust,
+                  # BikeHorn, Whistle, Bugle, Aoogah, ElephantHorn, Foghorn, Opera]
+tempAllowedGags = [WholeCreamPie, HL2Shotgun, HL2Pistol, TNT]

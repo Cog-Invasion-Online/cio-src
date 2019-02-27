@@ -9,6 +9,12 @@ class CrosshairData:
         self.crosshairScale = crosshairScale
         self.crosshairRot = crosshairRot
 
+    def cleanup(self):
+        del self.wantCrosshair
+        del self.crosshairTex
+        del self.crosshairScale
+        del self.crosshairRot
+
 class Crosshair(DirectFrame):
 
     def __init__(self):

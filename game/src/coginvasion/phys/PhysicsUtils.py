@@ -58,12 +58,15 @@ def makeBulletBoxColl(node, extents):
     rbnodeNp.setCollideMask(WallGroup)
     base.physicsWorld.attachRigidBody(rbnode)
 
-def makeBulletCollFromGeoms(rootNode, exclusions = []):
+def makeBulletCollFromGeoms(rootNode, exclusions = [], enableNow = True, world = None):
     """
     Creates and attaches bullet triangle mesh nodes underneath each GeomNode
     of `rootNode`, which contains the same mesh as the Geoms.
     This can be expensive if the geometry contains lots of triangles or GeomNodes.
     """
+
+    if not world:
+        world = base.physicsWorld
 
     # BulletRigidBodyNode -> triangle index -> surfaceprop
     # (it's so we know which surface we are walking on)
@@ -86,10 +89,13 @@ def makeBulletCollFromGeoms(rootNode, exclusions = []):
             if state.hasAttrib(BSPFaceAttrib.getClassSlot()):
                 bca = state.getAttrib(BSPFaceAttrib.getClassSlot())
                 facetype = bca.getFaceType()
-                if not type2geoms.has_key(facetype):
-                    type2geoms[facetype] = [(geom, state)]
-                else:
-                    type2geoms[facetype].append((geom, state))
+            else:
+                facetype = BSPFaceAttrib.FACETYPE_WALL
+                
+            if not type2geoms.has_key(facetype):
+                type2geoms[facetype] = [(geom, state)]
+            else:
+                type2geoms[facetype].append((geom, state))
 
         # Now create a separate body node to group each face type,
         # and assign the correct bit
@@ -122,7 +128,8 @@ def makeBulletCollFromGeoms(rootNode, exclusions = []):
                 rbnodeNp.setCollideMask(CIGlobals.WallGroup)
             elif facetype == BSPFaceAttrib.FACETYPE_FLOOR:
                 rbnodeNp.setCollideMask(CIGlobals.FloorGroup)
-            base.physicsWorld.attachRigidBody(rbnode)
+            if enableNow:
+                world.attachRigidBody(rbnode)
             result[rbnode] = data
 
     return result
@@ -199,15 +206,21 @@ def makeBulletCollFromPandaColl(rootNode, exclusions = []):
         # Now that we're using bullet collisions, we don't need the panda collisions anymore.
         pCollNp.removeNode()
 
-def rayTestAllSorted(pFrom, pTo, mask = BitMask32.allOn()):
-    result = base.physicsWorld.rayTestAll(pFrom, pTo, mask)
+def rayTestAllSorted(pFrom, pTo, mask = BitMask32.allOn(), world = None):
+    if not world:
+        world = base.physicsWorld
+
+    result = world.rayTestAll(pFrom, pTo, mask)
     sortedHits = None
     if result.hasHits():
         sortedHits = sorted(result.getHits(), key = lambda hit: (pFrom - hit.getHitPos()).length())
     return [result, sortedHits]
 
-def rayTestClosestNotMe(me, pFrom, pTo, mask = BitMask32.allOn()):
-    _, hits = rayTestAllSorted(pFrom, pTo, mask)
+def rayTestClosestNotMe(me, pFrom, pTo, mask = BitMask32.allOn(), world = None):
+    if not world:
+        world = base.physicsWorld
+
+    _, hits = rayTestAllSorted(pFrom, pTo, mask, world)
     if hits is not None:
         for i in xrange(len(hits)):
             hit = hits[i]
@@ -220,23 +233,29 @@ def rayTestClosestNotMe(me, pFrom, pTo, mask = BitMask32.allOn()):
 def isChildOfLA(node):
     return hasattr(base, 'localAvatar') and base.localAvatar.isAncestorOf(node)
 
-def detachBulletNodes(rootNode):
+def detachBulletNodes(rootNode, world = None):
+    if not world:
+        world = base.physicsWorld
+
     for rbnode in rootNode.findAllMatches("**/+BulletRigidBodyNode"):
         if isChildOfLA(rbnode):
             print "Tried to detach body node of local avatar!"
             continue
-        base.physicsWorld.removeRigidBody(rbnode.node())
+        world.removeRigidBody(rbnode.node())
     for ghostnode in rootNode.findAllMatches("**/+BulletGhostNode"):
         if isChildOfLA(ghostnode):
             print "Tried to detach ghost node of local avatar!"
             continue
-        base.physicsWorld.removeGhost(ghostnode.node())
+        world.removeGhost(ghostnode.node())
 
-def attachBulletNodes(rootNode):
+def attachBulletNodes(rootNode, physicsWorld = None):
+    if physicsWorld is None:
+        physicsWorld = base.physicsWorld
+        
     for rbnode in rootNode.findAllMatches("**/+BulletRigidBodyNode"):
-        base.physicsWorld.attachRigidBody(rbnode.node())
+        physicsWorld.attachRigidBody(rbnode.node())
     for ghostnode in rootNode.findAllMatches("**/+BulletGhostNode"):
-        base.physicsWorld.attachGhost(ghostnode.node())
+        physicsWorld.attachGhost(ghostnode.node())
         
 def removeBulletNodes(rootNode):
     for rbnode in rootNode.findAllMatches("**/+BulletRigidBodyNode"):
@@ -250,8 +269,11 @@ def removeBulletNodes(rootNode):
             continue
         ghostnode.removeNode()
         
-def detachAndRemoveBulletNodes(rootNode):
-    detachBulletNodes(rootNode)
+def detachAndRemoveBulletNodes(rootNode, world = None):
+    if not world:
+        world = base.physicsWorld
+
+    detachBulletNodes(rootNode, world)
     removeBulletNodes(rootNode)
 
 def __ghostNodeWatcherTask(triggerNp, callback, extraArgs, task):
@@ -293,6 +315,23 @@ def getNearestGroundSurfaceZ(rootNode, height):
         raise Exception("#getNearestGroundSurfaceZ(): Requires a non-empty NodePath to ray test on!")
     
     return -1
+
+def getThrowVector(traceOrigin, traceVector, throwOrigin, me, physWorld):
+    # Trace a line from the trace origin outward along the trace direction
+    # to find out what we hit, and adjust the direction of the projectile launch
+    traceEnd = traceOrigin + (traceVector * 10000)
+    hit = rayTestClosestNotMe(me,
+                              traceOrigin,
+                              traceEnd,
+                              CIGlobals.WorldGroup | CIGlobals.CharacterGroup,
+                              physWorld)
+    if hit is not None:
+        hitPos = hit.getHitPos()
+    else:
+        hitPos = traceEnd
+
+    vecThrow = (hitPos - throwOrigin).normalized()
+    return vecThrow
 
 class GhostNodeLocalAvBroadcaster:
     """Fires events when the local avatar enters and leaves the ghost node."""

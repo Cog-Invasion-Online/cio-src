@@ -91,7 +91,6 @@ class DistributedTutorial(DistributedBattleZone):
     def enableAvStuff(self):
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.d_broadcastPositionNow()
-        base.localAvatar.startBlink()
         base.localAvatar.attachCamera()
         base.localAvatar.startSmartCamera()
         base.localAvatar.collisionsOn()
@@ -105,7 +104,6 @@ class DistributedTutorial(DistributedBattleZone):
         base.localAvatar.disableAvatarControls()
         base.localAvatar.stopSmartCamera()
         base.localAvatar.stopPosHprBroadcast()
-        base.localAvatar.stopBlink()
         base.localAvatar.collisionsOff()
         base.localAvatar.controlManager.placeOnFloor()
         base.localAvatar.disableGags()
@@ -373,7 +371,6 @@ class DistributedTutorial(DistributedBattleZone):
         self.guide.nametag.updateAll()
         self.guide.nametag.getNametag3d().setClickEvent('tutGuide-click')
         self.guide.nametag.getNametag2d().setClickEvent('tutGuide-click')
-        self.guide.startBlink()
         self.guide.reparentTo(render)
         base.localAvatar.reparentTo(render)
         loader.loadDNAFile(self.dnaStore, 'phase_3.5/dna/storage_tutorial.pdna')

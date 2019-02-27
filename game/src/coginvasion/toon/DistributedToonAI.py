@@ -12,12 +12,22 @@ Revamped on June 15, 2018
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
+from src.coginvasion.avatar.Activities import ACT_DIE
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
+from src.coginvasion.avatar.AvatarTypes import *
+from src.coginvasion.cog.ai.RelationshipsAI import *
 from src.coginvasion.globals import CIGlobals
 import ToonDNA
 
 class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
     notify = directNotify.newCategory('DistributedToonAI')
+    
+    AvatarType = AVATAR_TOON
+    Relationships = {
+        AVATAR_TOON     :   RELATIONSHIP_FRIEND,
+        AVATAR_SUIT     :   RELATIONSHIP_HATE,
+        AVATAR_CCHAR    :   RELATIONSHIP_FRIEND
+    }
 
     def __init__(self, air):
         try:
@@ -61,14 +71,17 @@ class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
         self.toon_torso = None
         self.toon_head = None
         self.lookMode = 2 # LMOff
-        self.lookPitch = 0
+
+        self.activities = {ACT_DIE: 7.0}
+
         return
 
-    def setLookPitch(self, pitch):
-        self.lookPitch = pitch
-
-    def getLookPitch(self):
-        return self.lookPitch
+    def b_setDNAStrand(self, strand):
+        self.d_setDNAStrand(strand)
+        self.setDNAStrand(strand)
+        
+    def d_setDNAStrand(self, strand):
+        self.sendUpdate('setDNAStrand', [strand])
 
     def setLookMode(self, mode):
         self.lookMode = mode

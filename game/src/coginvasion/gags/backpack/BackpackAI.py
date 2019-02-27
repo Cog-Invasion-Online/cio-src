@@ -13,13 +13,10 @@ Copyright (c) CIO Team. All rights reserved.
 from src.coginvasion.gags.backpack.BackpackBase import BackpackBase
 
 class BackpackAI(BackpackBase):
-    
-    def __init__(self, avatar):
-        BackpackBase.__init__(self, avatar)
 
     # Sets the supply on each gag in this backpack to the default max.
     def refillSupply(self):
-        for gagId in self.gags.keys():
+        for gagId in self.avatar.attacks.keys():
             self.setSupply(gagId, self.getMaxSupply(gagId))
     
     # Sets the supply of a gag in the backpack.

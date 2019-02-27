@@ -7,6 +7,8 @@ from direct.fsm.State import State
 from direct.distributed.ClockDelta import globalClockDelta
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
+from src.coginvasion.avatar.AvatarTypes import *
+from src.coginvasion.cog.ai.RelationshipsAI import *
 
 from DisneyCharGlobals import *
 
@@ -14,6 +16,13 @@ import random
 
 class DistributedDisneyCharAI(DistributedAvatarAI):
     notify = directNotify.newCategory('DistributedDisneyCharAI')
+    
+    AvatarType = AVATAR_CCHAR
+    Relationships = {
+        AVATAR_CCHAR    :   RELATIONSHIP_FRIEND,
+        AVATAR_TOON     :   RELATIONSHIP_FRIEND,
+        AVATAR_SUIT     :   RELATIONSHIP_FEAR,
+    }
 
     def __init__(self, air, charId):
         DistributedAvatarAI.__init__(self, air)

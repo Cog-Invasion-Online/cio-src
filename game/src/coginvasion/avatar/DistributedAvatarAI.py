@@ -8,43 +8,106 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.bullet import BulletRigidBodyNode, BulletCapsuleShape, ZUp
+from panda3d.core import TransformState, Point3, Vec3
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed import DistributedSmoothNodeAI
+from src.coginvasion.globals import CIGlobals
 
-class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI):
+from AvatarTypes import AVATAR_NONE
+from AvatarShared import AvatarShared
+from Activities import ACT_NONE
+from src.coginvasion.cog.ai.RelationshipsAI import RELATIONSHIP_NONE
+
+class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, AvatarShared):
     notify = directNotify.newCategory("DistributedAvatarAI")
+    
+    AvatarType = AVATAR_NONE
+    # AI relationships to other types of avatars
+    Relationships = {}
 
     def __init__(self, air):
-        try:
-            self.DistributedAvatarAI_initialized
-            return
-        except:
-            self.DistributedAvatarAI_initialized = 1
         DistributedSmoothNodeAI.DistributedSmoothNodeAI.__init__(self, air)
-        self.health = 0
-        self.maxHealth = 0
-        self.moveBits = 0
-        self._name = ""
-        self.place = 0
-        self.hood = ""
+        AvatarShared.__init__(self)
         self.battleZone = None
+        
+        self.lastPos = Point3(0)
+        self.movementDelta = Vec3(0)
+        self.movementVector = Vec3(0)
         return
 
-    def setMoveBits(self, bits):
-        self.moveBits = bits
+    def getLightDamage(self):
+        return 1
 
-    def getMoveBits(self):
-        return self.moveBits
+    def getHeavyDamage(self):
+        return 10
+
+    def b_setAttackIds(self, ids):
+        self.sendUpdate('setAttackIds', [ids])
+        self.setAttackIds(ids)
+
+    def b_setActivity(self, activity):
+        timestamp = globalClockDelta.getFrameNetworkTime()
+        self.sendUpdate('setActivity', [activity, timestamp])
+        self.setActivity(activity, timestamp)
+
+    def __stopActivityTask(self):
+        taskMgr.remove("activityTask-" + str(id(self)))
+
+    def setActivity(self, activity, timestamp):
+        AvatarShared.setActivity(self, activity, timestamp)
+
+        self.__stopActivityTask()
+
+        if activity == -1 or activity not in self.activities:
+            self.doingActivity = False
+            return
+
+        self.doingActivity = True
+        taskMgr.doMethodLater(self.activities[activity], self.__activityTask, "activityTask-" + str(id(self)))
         
-    def takeDamage(self, dmg):
-        hp = self.getHealth() - dmg
+    def __activityTask(self, task):
+        self.doingActivity = False
+        self.b_setActivity(ACT_NONE)
+        return task.done
+
+    def d_playAnimation(self, animName):
+        self.sendUpdate('playAnimation', [animName, globalClockDelta.getFrameNetworkTime()])
+
+    def setBattleZone(self, bz):
+        self.battleZone = bz
+
+    def getBattleZone(self):
+        return self.battleZone
+
+    def b_setAttackState(self, state):
+        self.sendUpdate('setAttackState', [state])
+        self.setAttackState(state)
+        
+    def getMovementVector(self):
+        return self.movementVector
+        
+    def __avatarTick(self, task):
+        if self.isEmpty():
+            return task.done
+            
+        pos = self.getPos(render)
+        # Determine movement vector, used by AI sensing.
+        self.movementDelta = pos - self.lastPos
+        self.movementVector = self.movementDelta.normalized()
+        self.lastPos = pos
+            
+        return task.cont
+        
+    def takeDamage(self, dmgInfo):
+        hp = self.getHealth() - dmgInfo.damageAmount
         if hp < 0:
             hp = 0
         self.b_setHealth(hp)
-        self.d_announceHealth(0, -dmg)
-
-    def setHood(self, hood):
-        self.hood = hood
+        self.d_announceHealth(0, -dmgInfo.damageAmount)
+        try:    self.setDamageConditions(dmgInfo.damageAmount)
+        except: pass
 
     def d_setHood(self, hood):
         self.sendUpdate('setHood', [hood])
@@ -53,27 +116,12 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI):
         self.d_setHood(hood)
         self.setHood(hood)
 
-    def getHood(self):
-        return self.hood
-
-    def d_setChat(self, chat):
-        self.sendUpdate('setChat', [chat])
-
-    def setName(self, name):
-        self._name = name
-
     def d_setName(self, name):
         self.sendUpdate("setName", [name])
 
     def b_setName(self, name):
         self.d_setName(name)
         self.setName(name)
-
-    def getName(self):
-        return self._name
-
-    def setMaxHealth(self, health):
-        self.maxHealth = health
 
     def d_setMaxHealth(self, health):
         self.sendUpdate("setMaxHealth", [health])
@@ -82,30 +130,15 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI):
         self.d_setMaxHealth(health)
         self.setMaxHealth(health)
 
-    def getMaxHealth(self):
-        return self.maxHealth
-
-    def setPlace(self, place):
-        self.place = place
-
     def b_setPlace(self, place):
         self.sendUpdate("setPlace", [place])
         self.setPlace(place)
 
-    def getPlace(self):
-        return self.place
-
-    def isDead(self):
-        return self.health <= 0
-
     def setHealth(self, health):
-        #if health > self.maxHealth:
-            #base.air.logServerEvent("suspicious", "self.health is greater than self.maxHealth: avId %s" % self.doId)
-            #base.air.sendKickMessage(self.doId)
         # Let's send out an event to let listeners know that our health changed.
         # The new health and the previous health are sent out in that order.
         messenger.send(self.getHealthChangeEvent(), [health, self.health])
-        self.health = health
+        AvatarShared.setHealth(self, health)
 
     def d_setHealth(self, health):
         self.sendUpdate("setHealth", [health])
@@ -113,9 +146,6 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI):
     def b_setHealth(self, health):
         self.d_setHealth(health)
         self.setHealth(health)
-
-    def getHealth(self):
-        return self.health
 
     def d_announceHealth(self, level, hp, extraId = -1):
         # There's no need to announce when the avatar's health doesn't change.
@@ -127,21 +157,59 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI):
         if hasattr(self, 'doId'):
             return 'DAvatarAI-healthChanged-{0}'.format(self.doId)
         return None
+        
+    def handleLogicalZoneChange(self, newZoneId, oldZoneId):
+        """Make sure the avatar lists are updated with our new zone."""
+        
+        self.air.removeAvatar(self)
+        self.air.addAvatar(self, newZoneId)
+        
+        DistributedSmoothNodeAI.DistributedSmoothNodeAI.handleLogicalZoneChange(self, newZoneId, oldZoneId)
+        
+    def getRelationshipTo(self, avatar):
+        if not hasattr(avatar, 'AvatarType'):
+            return RELATIONSHIP_NONE
+            
+        return self.Relationships.get(avatar.AvatarType, RELATIONSHIP_NONE)
 
+    def setupPhysics(self):
+        print self.__class__.__name__, "setupPhysics() hitboxData:", self.hitboxData
+
+        bodyNode = BulletRigidBodyNode(self.uniqueName('avatarBodyNode'))
+
+        radius = self.getWidth()
+        height = self.getHeight()# - (radius * 2)
+        zOfs = (height / 2.0) + radius
+        capsule = BulletCapsuleShape(radius, height)
+        bodyNode.addShape(capsule, TransformState.makePos(Point3(0, 0, zOfs)))
+        bodyNode.setKinematic(True)
+        
+        AvatarShared.setupPhysics(self, bodyNode, True)
+        
+    def announceGenerate(self):
+        DistributedSmoothNodeAI.DistributedSmoothNodeAI.announceGenerate(self)
+        AvatarShared.announceGenerate(self)
+
+        self.setupPhysics()
+
+        # Add ourself to the avatar list for the zone
+        base.air.addAvatar(self)
+        self.lastPos = self.getPos(render)
+        taskMgr.add(self.__avatarTick, self.uniqueName('avatarTick'))
+        
     def disable(self):
-        self.health = None
-        self.maxHealth = None
-        self._name = None
-        self.place = None
-        self.hood = None
-        self.battleZone = None
-        return
+        pass
     
     def delete(self):
-        del self.health
-        del self.maxHealth
-        del self._name
-        del self.place
-        del self.hood
-        del self.battleZone
-        return
+        self.__stopActivityTask()
+        base.air.removeAvatar(self)
+        
+        taskMgr.remove(self.uniqueName('avatarTick'))
+
+        self.battleZone = None
+        self.movementVector = None
+        self.movementDelta = None
+        self.lastPos = None
+        
+        AvatarShared.delete(self)
+        DistributedSmoothNodeAI.DistributedSmoothNodeAI.delete(self)

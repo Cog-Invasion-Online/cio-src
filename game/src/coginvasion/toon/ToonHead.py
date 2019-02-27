@@ -65,11 +65,9 @@ class ToonHead(Actor.Actor):
         self.__lpupil = None
         self.__rpupil = None
         self.pupils = []
-        self.blinkTaskName = "blinkTask" + str(id(self))
-        self.doBlinkTaskName = "doBlink" + str(id(self))
         self.lookAroundTaskName = "lookAroundTask" + str(id(self))
         self.doLookAroundTaskName = "doLookAround" + str(id(self))
-        self.openEyesTaskName = "openEyes" + str(id(self))
+        self.doBlinkTaskName = "doBlinkTask" + str(id(self))
         
         self.eyeTarget = None
         self.targetIsNew = True
@@ -200,6 +198,7 @@ class ToonHead(Actor.Actor):
             stashMuzzles("long", stashNeutral=1)
             _pupilL = self.findAllMatches('**/joint_pupilL_long')
             _pupilR = self.findAllMatches('**/joint_pupilR_long')
+        print headType
         self.pupils.append(_pupilL)
         self.pupils.append(_pupilR)
         self.fixEyes()
@@ -490,24 +489,6 @@ class ToonHead(Actor.Actor):
         self.__eyelashClosed = lashes.find('**/' + closedString).copyTo(head)
         self.__eyelashClosed.hide()
 
-    def startBlink(self):
-        return
-        randomStart = random.uniform(0.5, 7)
-        taskMgr.doMethodLater(randomStart, self.blinkTask, self.blinkTaskName)
-
-    def stopBlink(self):
-        return
-        if hasattr(self, 'blinkTaskName') and hasattr(self, 'doBlinkTaskName') and hasattr(self, 'openEyesTaskName'):
-            taskMgr.remove(self.blinkTaskName)
-            taskMgr.remove(self.doBlinkTaskName)
-            taskMgr.remove(self.openEyesTaskName)
-
-    def blinkTask(self, task):
-        taskMgr.add(self.doBlink, self.doBlinkTaskName)
-        delay = random.uniform(0.5, 7)
-        task.delayTime = delay
-        return task.again
-
     def doBlink(self, task):
         self.blink()
         return task.done
@@ -669,14 +650,10 @@ class ToonHead(Actor.Actor):
             self.ToonHead_deleted
         except:
             self.ToonHead_deleted = 1
-            self.stopBlink()
-            self.stopLookAround()
             taskMgr.remove("toonHeadEyesLook-" + str(id(self)))
-            del self.blinkTaskName
-            del self.doBlinkTaskName
             del self.lookAroundTaskName
             del self.doLookAroundTaskName
-            del self.openEyesTaskName
+            del self.doBlinkTaskName
             if self.eyeLensNP:
                 self.eyeLensNP.removeNode()
                 self.eyeLensNP = None

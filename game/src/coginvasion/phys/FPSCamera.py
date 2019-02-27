@@ -8,6 +8,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, LerpColorScaleInterva
 from direct.interval.IntervalGlobal import Parallel, LerpHprInterval, LerpPosInterval
 from direct.showutil import Effects
 
+from src.coginvasion.avatar.Attacks import ATTACK_HOLD_LEFT, ATTACK_HOLD_RIGHT
 from src.coginvasion.base.Precache import precacheActor
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.toon.ToonDNA import ToonDNA
@@ -39,6 +40,8 @@ class FPSCamera(DirectObject):
         
         self.punchAngleVel = Vec3(0)
         self.punchAngle = Vec3(0)
+
+        self.lastFacing = Vec3(0)
         
         self.lastMousePos = Point2(0)
         self.currMousePos = Point2(0)
@@ -237,14 +240,18 @@ class FPSCamera(DirectObject):
     def setVMGag(self, gag, pos = (0, 0, 0), hpr = (0, 0, 0), scale = (1, 1, 1), hand = 0, animate = True):
         self.clearVMGag()
 
-        hand = self.getViewModelRightHand() if hand == 0 else self.getViewModelLeftHand()
+        handNode = NodePath()
+        if hand == ATTACK_HOLD_RIGHT:
+            handNode = self.getViewModelRightHand()
+        elif hand == ATTACK_HOLD_LEFT:
+            handNode = self.getViewModelLeftHand()
 
         if isinstance(gag, Actor) and animate:
             self.vmGag = Actor(other = gag)
-            self.vmGag.reparentTo(hand)
+            self.vmGag.reparentTo(handNode)
             self.vmGag.loop('chan')
         else:
-            self.vmGag = gag.copyTo(hand)
+            self.vmGag = gag.copyTo(handNode)
         self.vmGag.setPos(pos)
         self.vmGag.setHpr(hpr)
         self.vmGag.setScale(scale)
@@ -371,6 +378,9 @@ class FPSCamera(DirectObject):
         Sequence(down, up).start()
             
     def __updateTask(self, task):
+        # TODO -- This function does a lot of math, I measured it to take .5 ms on my laptop
+        #         That's a lot of time for something miniscule like sway and bob.
+        
         dt = globalClock.getDt()
         time = globalClock.getFrameTime()
 
@@ -424,7 +434,7 @@ class FPSCamera(DirectObject):
                     swayX = -maxSway
                 elif swayX > maxSway:
                     swayX = maxSway
-
+            
                 if abs(swayY) < minSway:
                     swayY = 0.0
                 elif swayY < 0:
@@ -490,6 +500,24 @@ class FPSCamera(DirectObject):
             vmAngles[2] += verticalBob * 0.5
             vmAngles[1] -= verticalBob * 0.4
             vmAngles[0] -= lateralBob * 0.3
+            
+            #angles = self.vmRoot.getHpr(render)
+
+            #maxVMLag = 1.5
+            #lagforward = CIGlobals.angleVectors(angles, True, False, False)[0]
+            #if dt != 0.0:
+            #    lagdifference = lagforward - self.lastFacing
+            #    lagspeed = 5.0
+            #    lagdiff = lagdifference.length()
+            #    if (lagdiff > maxVMLag) and (maxVMLag > 0.0):
+            #        lagscale = lagdiff / maxVMLag
+            #        lagspeed *= lagscale
+
+            #    self.lastFacing = CIGlobals.extrude(self.lastFacing, lagspeed * dt, lagdifference)
+            #    self.lastFacing.normalize()
+            #    vmBob = CIGlobals.extrude(vmBob, 5.0, lagdifference * -1.0)
+
+            #right, up = CIGlobals.angleVectors(
             
             vmRaise.set(0, abs(camRootAngles.getY()) * -0.002, camRootAngles.getY() * 0.002)
             camBob.set(0, 0, 0)

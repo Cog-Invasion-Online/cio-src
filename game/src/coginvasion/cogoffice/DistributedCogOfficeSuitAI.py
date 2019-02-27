@@ -13,8 +13,8 @@ from direct.fsm import ClassicFSM, State
 from direct.distributed.ClockDelta import globalClockDelta
 
 from src.coginvasion.cog.DistributedSuitAI import DistributedSuitAI
-from src.coginvasion.cog.SuitBrainAI import SuitBrain
-from src.coginvasion.cog.SuitPursueToonBehaviorAI import SuitPursueToonBehaviorAI
+#from src.coginvasion.cog.SuitBrainAI import SuitBrain
+#from src.coginvasion.cog.SuitPursueToonBehaviorAI import SuitPursueToonBehaviorAI
 from src.coginvasion.globals import CIGlobals
 from CogOfficeConstants import POINTS
 from CogOfficePathDataAI import *
@@ -159,16 +159,19 @@ class DistributedCogOfficeSuitAI(DistributedSuitAI):
     def getState(self):
         return [self.fsm.getCurrentState().getName(), globalClockDelta.getRealNetworkTime()]
 
-    def spawn(self):
-        self.brain = SuitBrain(self)
-        pursue = SuitPursueToonBehaviorAI(self, self.getManager())
-        pursue.setSuitList(self.getManager().guardSuits)
-        pursue.battle = self.battle
-        self.brain.addBehavior(pursue, priority = 1)
-        if not self.isChair:
-            self.b_setState('guard')
-        else:
-            self.b_setState('chair')
+    #def spawn(self):
+        #self.brain = SuitBrain(self)
+        #pursue = SuitPursueToonBehaviorAI(self, self.getBattleZone())
+        #pursue.setSuitList(self.getBattleZone().guardSuits)
+        #pursue.battle = self.getBattleZone()
+        #self.brain.addBehavior(pursue, priority = 1)
+        #if not self.isChair:
+        #    self.b_setState('guard')
+        #else:
+        #    self.b_setState('chair')
+
+    def announceGenerate(self):
+        DistributedSuitAI.announceGenerate(self)
         self.b_setParent(CIGlobals.SPRender)
         taskMgr.add(self.monitorHealth, self.uniqueName('monitorHealth'))
 

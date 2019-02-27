@@ -23,17 +23,13 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.npc.NPCWalker import NPCWalkInterval
 from src.coginvasion.battle import BattleGlobals
 
-from SuitState import SuitState
 from SuitBank import SuitPlan
 from Suit import Suit
 from SuitUtils import getMoveIvalFromPath
 import SuitBank
 import SuitGlobals
-import CogBattleGlobals
 import Voice
 import Variant
-import SpawnMode
-import SuitAttacks
 
 import types, random
 
@@ -45,7 +41,6 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
         DistributedAvatar.__init__(self, cr)
 
         self.anim = None
-        self._state = SuitState.ALIVE
         self.dept = None
         self.variant = None
         self.suitPlan = None
@@ -53,28 +48,7 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
         self.moveIval = None
         self.hpFlash = None
 
-        # For PythonCTMusicManager:
-        # Are we in range of the localAvatar?
-        self.isInRange = False
-
         self.chaseTarget = 0
-
-        self.suitFSM = ClassicFSM('DistributedSuit',
-            [
-                State('off', self.enterSuitOff, self.exitSuitOff),
-                State('walking', self.enterWalking, self.exitWalking),
-                State('flyingDown', self.enterFlyingDown, self.exitFlyingDown),
-                State('flyingUp', self.enterFlyingUp, self.exitFlyingUp),
-                State('lured', self.enterLured, self.exitLured)
-            ],
-            'off', 'off'
-        )
-        self.stateIndex2suitState = {}
-        self.suitFSM.enterInitialState()
-        self.makeStateDict()
-        
-    def handleHitByToon(self, player, gagId, distance):
-        self.sendUpdate('hitByGag', [gagId, distance])
 
     def setChaseTarget(self, avId):
         self.chaseTarget = avId
@@ -195,92 +169,12 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
     def getLevel(self):
         return self.level
 
-    def startMoveInterval(self, startX, startY, startZ, endX, endY, endZ, duration):
-        self.stopMoving()
-        endPos = Point3(endX, endY, endZ)
-        self.moveIval = NPCWalkInterval(self, endPos,
-            durationFactor = duration, fluid = 1)
-        self.moveIval.start()
-
-    def stopMoveInterval(self, andTurnAround = 0):
-        if self.moveIval:
-            self.moveIval.pause()
-            self.moveIval = None
-        if andTurnAround == 1:
-            if self.health > 0:
-                self.animFSM.request('neutral')
-            self.setH(self.getH() - 180)
-
     def toggleRay(self, ray = 1):
         if ray:
             self.enableRay()
         else:
             self.disableRay()
         pass
-
-    def startProjInterval(self, startX, startY, startZ, endX, endY, endZ, duration, gravityMult, ts = 0):
-        if isinstance(ts, int) and ts != 0:
-            ts = globalClockDelta.localElapsedTime(ts)
-
-        self.disableRay()
-        self.stopMoveInterval()
-        startPos = Point3(startX, startY, startZ)
-        endPos = Point3(endX, endY, endZ)
-        oldHpr = self.getHpr(render)
-        self.headsUp(endPos)
-        newHpr = self.getHpr(render)
-        self.setHpr(oldHpr)
-        self.moveIval = Parallel(
-            LerpHprInterval(self, duration = 0.5, hpr = newHpr, startHpr = oldHpr, blendType = 'easeInOut'),
-            Sequence(
-                Func(self.animFSM.request, 'flyAway', [ts]),
-                Wait(3.5),
-                Func(self.animFSM.request, 'flyDown', [1.0])
-            ),
-            Sequence(
-                Wait(2.0),
-                Func(self.headsUp, endPos),
-                ProjectileInterval(self,
-                    startPos = startPos,
-                    endPos = endPos,
-                    gravityMult = gravityMult,
-                    duration = duration)
-            )
-        )
-        self.moveIval.start(ts)
-
-    def startPosInterval(self, startX, startY, startZ, endX, endY, endZ, duration, blendType, ts = 0.0):
-        if ts != 0.0:
-            ts = globalClockDelta.localElapsedTime(ts)
-        self.stopMoveInterval()
-        startPos = Point3(startX, startY, startZ)
-        endPos = Point3(endX, endY, endZ)
-        self.moveIval = LerpPosInterval(self,
-            duration = duration,
-            pos = endPos,
-            startPos = startPos,
-            blendType = blendType
-        )
-        self.moveIval.start(ts)
-
-    def stopMoving(self, finish = 0):
-        if self.moveIval:
-            if finish:
-                self.moveIval.finish()
-            else:
-                self.moveIval.pause()
-            self.moveIval = None
-
-    def d_disableMovement(self, wantRay = False):
-        self.sendUpdate('disableMovement', [])
-        self.interruptAttack()
-        self.stopMoving()
-        if not wantRay:
-            self.disableRay()
-
-    def d_enableMovement(self):
-        self.sendUpdate('enableMovement', [])
-        self.enableRay()
 
     def startRay(self):
         self.enableRay()
@@ -305,8 +199,8 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
         if self.isDead():
             self.setChaseTarget(0)
             base.taskMgr.remove(self.uniqueName('monitorLocalAvDistance'))
-            if self.isInRange:
-                self.isInRange = False
+            #if self.isInRange:
+            #    self.isInRange = False
             self.interruptAttack()
             #self.gruntSound.play()
 
@@ -365,74 +259,6 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
     def getSuit(self):
         return tuple((self.suitPlan, self.variant))
 
-    def spawn(self, startIndex, endIndex, spawnMode = SpawnMode.FLYDOWN):
-        if spawnMode == SpawnMode.FLYDOWN:
-            startPoint = CogBattleGlobals.SuitSpawnPoints[self.getHood()].keys()[startIndex]
-            startPos = CogBattleGlobals.SuitSpawnPoints[self.getHood()][startPoint] + (0, 0, 50)
-            endPoint = CogBattleGlobals.SuitSpawnPoints[self.getHood()].keys()[endIndex]
-            endPos = CogBattleGlobals.SuitSpawnPoints[self.getHood()][endPoint]
-            if self.moveIval:
-                self.moveIval.finish()
-                self.moveIval = None
-            self.moveIval = LerpPosInterval(self, duration = 3, pos = endPos, startPos = startPos, fluid = 1)
-
-    def makeStateDict(self):
-        self.stateIndex2suitState = {
-            0 : self.suitFSM.getStateNamed('off'),
-            1 : self.suitFSM.getStateNamed('walking'),
-            2 : self.suitFSM.getStateNamed('flyingDown'),
-            3 : self.suitFSM.getStateNamed('flyingUp'),
-            4 : self.suitFSM.getStateNamed('lured')
-        }
-        self.suitState2stateIndex = {}
-        for stateId, state in self.stateIndex2suitState.items():
-            self.suitState2stateIndex[state.getName()] = stateId
-
-    def setSuitState(self, index, startPoint, endPoint, timestamp = None):
-        if timestamp != None:
-            ts = globalClockDelta.localElapsedTime(timestamp)
-        else:
-            ts = 0.0
-
-        self.suitState = self.stateIndex2suitState[index]
-        self.startPoint = startPoint
-        self.endPoint = endPoint
-
-        self.suitFSM.request(self.suitState, [startPoint, endPoint, ts])
-
-    def getSuitState(self):
-        return self.suitState
-
-    def setAnimState(self, anim, loop = 1, timestamp = None):
-        prevAnim = self.anim
-        self.anim = anim
-
-        if timestamp is None:
-            ts = 0.0
-        else:
-            ts = globalClockDelta.localElapsedTime(timestamp)
-
-        if type(anim) == types.IntType:
-            if anim != 44 and anim != 45:
-                anim = SuitGlobals.getAnimById(anim)
-                animName = anim.getName()
-            elif anim == 44:
-                animName = 'die'
-            elif anim == 45:
-                animName = 'flyNeutral'
-        elif type(anim) == types.StringType:
-            animName = anim
-
-        if self.animFSM.hasStateNamed(animName):
-            self.animFSM.request(animName, [ts])
-        else:
-            self.animFSM.request('off')
-            if loop:
-                self.loop(animName)
-            else:
-                self.play(animName)
-        messenger.send(SuitGlobals.animStateChangeEvent % (self.uniqueName), [anim, prevAnim])
-
     def stun(self, animB4Stun):
         self.animFSM.request('stunned', [animB4Stun])
 
@@ -453,30 +279,22 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
 
         self.animFSM.request('attack', [attackId, avatar, 0.0])
 
-    def throwObject(self):
-        self.acceptOnce('enter' + self.wsnp.node().getName(), self.__handleWeaponCollision)
-        Suit.throwObject(self)
-
-    def __handleWeaponCollision(self, entry):
-        self.sendUpdate('toonHitByWeapon', [self.attack, base.localAvatar.doId])
-        base.localAvatar.handleHitByWeapon(self.attack, self)
-        self.b_handleWeaponTouch()
-
-    def b_handleWeaponTouch(self):
-        self.sendUpdate('handleWeaponTouch', [])
-        self.handleWeaponTouch()
-
     def announceGenerate(self):
         DistributedAvatar.announceGenerate(self)
-        self.setAnimState('neutral')
+        #self.setAnimState('neutral')
 
         # Picked up by DistributedBattleZone:
         messenger.send('suitCreate', [self])
+
+        self.activateSmoothing(True, False)
+        self.startSmooth()
 
     def generate(self):
         DistributedAvatar.generate(self)
 
     def disable(self):
+        self.stopSmooth()
+
         # Picked up by DistributedBattleZone:
         messenger.send('suitDelete', [self])
 

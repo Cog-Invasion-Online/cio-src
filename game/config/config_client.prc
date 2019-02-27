@@ -13,11 +13,14 @@ aux-display pandagl
 notify-level info
 notify-level-egg2pg warning
 notift-level-bspfile debug
-notify-level-pgraph info
+notify-level-pgraph warning
 notify-level-loader warning
 notify-level-gobj warning
 notify-level-bspmaterial warning
 notify-level-display warning
+notify-level-raytrace warning
+notify-level-glgsg warning
+notify-level-gsg warning
 notify-timestamp #f
 default-directnotify-level info
 
@@ -62,7 +65,12 @@ vfs-mount resourcepack/phase_14 phase_14
 # Server...
 server-port 7032
 server-address gameserver.coginvasion.com
-connect-method native
+connect-method net
+
+# 150-300 ms latency
+simulated-latency 1
+simulated-latency-min 0.15
+simulated-latency-max 0.3
 
 # Performance...
 hardware-animated-vertices #f
@@ -118,6 +126,8 @@ pssm-cache-shaders 1
 pssm-ambient-light-identifier 0.2 0.2 0.2
 pssm-ambient-light-min 0.2 0.2 0.2
 pssm-ambient-light-scale 1.0
+pssm-dynamic-cubemaps 0
+pssm-dynamic-cubemaps-size 128
 shadow-depth-bits 32
 stencil-bits 0
 

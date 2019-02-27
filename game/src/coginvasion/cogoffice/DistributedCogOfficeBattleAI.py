@@ -444,7 +444,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
         plan = random.choice(availableSuits)
         suit = DistributedCogOfficeSuitAI(self.air, self, spawnData, hangoutData, isChair, self.hood)
-        suit.setManager(self)
+        suit.setBattleZone(self)
         suit.generateWithRequired(self.zoneId)
         suit.d_setHood(suit.hood)
         suit.b_setLevel(level)
@@ -485,8 +485,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
     def startFloor(self, floorNum, room):
         # Clean up barrels and drops from the last floor.
         self.cleanupDrops()
-        self.cleanupNavMesh()
-        self.bspLoader.cleanup()
+        self.unloadBSPLevel()
 
         self.currentFloor = floorNum
         self.currentRoom = room
@@ -499,8 +498,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.sendUpdate('loadFloor', [self.currentFloor, self.currentRoom])
 
         # Load the BSP level for this floor.
-        self.bspLoader.read("phase_14/etc/{0}/{0}.bsp".format(room))
-        self.setupNavMesh(self.bspLoader.getResult())
+        self.loadBSPLevel("phase_14/etc/{0}/{0}.bsp".format(room))
         
         # Get the info entity
         infos = self.bspLoader.findAllEntities("info_cogoffice_floor")

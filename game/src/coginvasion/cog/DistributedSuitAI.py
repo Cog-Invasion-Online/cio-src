@@ -15,23 +15,17 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
+from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE
+from src.coginvasion.avatar.AvatarTypes import *
+from src.coginvasion.avatar.TakeDamageInfo import TakeDamageInfo
+from src.coginvasion.cog.ai.RelationshipsAI import *
+from src.coginvasion.cog.ai.BaseNPCAI import BaseNPCAI
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.cog import CogBattleGlobals
-from src.coginvasion.cog.SuitItemDropperAI import SuitItemDropperAI
 
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.GagType import GagType
 
-import SpawnMode
-from SuitBrainAI import SuitBrain
 from SuitBank import SuitPlan
-from SuitFlyToRandomSpotBehaviorAI import SuitFlyToRandomSpotBehaviorAI
-from SuitCallInBackupBehaviorAI import SuitCallInBackupBehaviorAI
-from SuitPursueToonBehaviorAI import SuitPursueToonBehaviorAI
-from SuitAttackTurretBehaviorAI import SuitAttackTurretBehaviorAI
-from SuitAttackBehaviorAI import SuitAttackBehaviorAI
-from SuitPathDataAI import *
-import SuitAttacks
 import SuitBank
 import SuitGlobals
 import Variant
@@ -39,32 +33,34 @@ import GagEffects
 
 import types
 import random
+import math
 
-class DistributedSuitAI(DistributedAvatarAI):
+class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
     notify = directNotify.newCategory('DistributedSuitAI')
-    dropItems = ConfigVariableBool('want-suit-drops', True)
+    
+    AvatarType = AVATAR_SUIT
+    Relationships = {
+        AVATAR_SUIT     :   RELATIONSHIP_FRIEND,
+        AVATAR_TOON     :   RELATIONSHIP_HATE,
+        AVATAR_CCHAR    :   RELATIONSHIP_DISLIKE
+    }
 
     def __init__(self, air):
         DistributedAvatarAI.__init__(self, air)
+        BaseNPCAI.__init__(self)
         self.anim = 'neutral'
-        self.brain = None
         self.track = None
         self.currentPath = None
         self.currentPathQueue = []
         self.suitMgr = None
         self.suitPlan = 0
         self.variant = Variant.NORMAL
-        if self.dropItems.getValue():
-            self.itemDropper = SuitItemDropperAI(self)
         self.suitState = 0
         self.startPoint = -1
         self.endPoint = -1
         self.stateTimestamp = 0
         self.level = 0
-        self.lateX = 0
-        self.lateY = 0
         self.animStateChangeEvent = SuitGlobals.animStateChangeEvent
-        self.requestedBehaviors = []
 
         # This is for handling death.
         self.deathAnim = None
@@ -89,41 +85,15 @@ class DistributedSuitAI(DistributedAvatarAI):
         self.allowHits = True
         self.firstTimeDead = True
         self.stunned = False
-        
-        # This variable stores what avatarIds have damaged us.
+
         self.damagers = []
 
-    def handleToonThreat(self, toon, hasBeenHit, gagId=None):
-        if not hasattr(self, 'brain') or self.brain is None:
-            return
+        from src.coginvasion.avatar.Attacks import ATTACK_CLIPONTIE
+        self.attackIds = [ATTACK_CLIPONTIE]
 
-        if (CIGlobals.areFacingEachOther(self, toon) or hasBeenHit):
-            # Woah! This Toon might be trying to attack us!
-
-            doIt = random.choice([True, False])
-            if not doIt and not hasBeenHit or not self.brain:
-                return
-
-            behav = self.brain.currentBehavior
-
-            if behav.__class__.__name__ == "SuitPursueToonBehaviorAI":
-
-                if behav.fsm.getCurrentState().getName() != "attack":
-
-                    if self.getDistance(toon) < 40 and self.battleZone.toonAvailableForTargeting(toon.doId):
-
-                        if toon != behav.target:
-
-                            # We need to make this toon our new target.
-                            behav.fsm.request("off")
-                            behav.setTarget(toon)
-
-                        # Attack
-                        behav.fsm.request("attack", [False])
-                    #else:
-                    #    # We can't attack them, run away?
-                    #    behav.fsm.request("divert")
-
+        self.activities = {ACT_WAKE_ANGRY   :   0.564,
+                           ACT_SMALL_FLINCH :   2.25,
+                           ACT_DIE          :   6.0}
 
 
     def d_setWalkPath(self, path):
@@ -150,15 +120,15 @@ class DistributedSuitAI(DistributedAvatarAI):
         self.suitPlan = plan
         self.variant = Variant.getVariantById(variant)
 
+        # setup the hitbox
+        self.b_setHitboxData(0, 2, self.suitPlan.getHeight())
+
         classAttrs = plan.getCogClassAttrs()
         self.maxHealth = classAttrs.baseHp
         self.maxHealth += SuitGlobals.calculateHP(self.level)
         self.maxHealth *= classAttrs.hpMod
 
         self.health = self.maxHealth
-
-        if self.dropItems.getValue():
-            self.itemDropper.calculate(tutorial)
 
         if self.level == 0:
             self.maxHealth = 1
@@ -169,80 +139,6 @@ class DistributedSuitAI(DistributedAvatarAI):
 
     def getSuit(self):
         return tuple((self.suitPlan, self.variant))
-
-    def setSuitState(self, index, startPoint, endPoint):
-        if index == 0 and not self.isEmpty():
-            self.setLatePos(self.getX(render), self.getY(render))
-        self.suitState = index
-        self.startPoint = startPoint
-        self.endPoint = endPoint
-
-    def d_setSuitState(self, index, startPoint, endPoint):
-        self.stateTimestamp = globalClockDelta.getFrameNetworkTime()
-        self.sendUpdate('setSuitState', [index, startPoint, endPoint, self.stateTimestamp])
-
-    def b_setSuitState(self, index, startPoint, endPoint):
-        self.d_setSuitState(index, startPoint, endPoint)
-        self.setSuitState(index, startPoint, endPoint)
-
-    def getSuitState(self):
-        return [self.suitState, self.startPoint, self.endPoint, self.stateTimestamp]
-
-    def setAnimState(self, anim):
-        if hasattr(self, 'animStateChangeEvent'):
-            messenger.send(self.animStateChangeEvent, [anim, self.anim])
-            self.anim = anim
-            if type(self.anim) == types.IntType:
-                if anim != 44 and anim != 45:
-                    self.anim = SuitGlobals.getAnimById(anim).getName()
-                elif anim == 44:
-                    self.anim = 'die'
-                elif anim == 45:
-                    self.anim = 'flyNeutral'
-
-    def b_setAnimState(self, anim, loop = 1):
-        if type(anim) == types.StringType:
-            animId = SuitGlobals.getAnimId(SuitGlobals.getAnimByName(anim))
-            if animId is None and anim != 'flyNeutral':
-                animId = 44
-            elif anim == 'flyNeutral':
-                animId = 45
-        else:
-            animId = anim
-        self.d_setAnimState(animId, loop)
-        self.setAnimState(animId)
-
-    def d_setAnimState(self, anim, loop):
-        timestamp = globalClockDelta.getFrameNetworkTime()
-        self.sendUpdate('setAnimState', [anim, loop, timestamp])
-
-    def getAnimState(self):
-        return self.anim
-
-    def d_startMoveInterval(self, startPos, endPos, durationFactor = 0.2):
-        durationFactor = durationFactor * 10
-        self.sendUpdate('startMoveInterval', [startPos.getX(), startPos.getY(), startPos.getZ(),
-                endPos.getX(), endPos.getY(), endPos.getZ(), durationFactor])
-
-    def d_stopMoveInterval(self, andTurnAround = 0):
-        self.sendUpdate('stopMoveInterval', [andTurnAround])
-
-    def d_startProjInterval(self, startPos, endPos, duration, gravityMult):
-        timestamp = globalClockDelta.getFrameNetworkTime()
-        self.sendUpdate('startProjInterval', [startPos.getX(), startPos.getY(), startPos.getZ(),
-                endPos.getX(), endPos.getY(), endPos.getZ(), duration, gravityMult, timestamp])
-
-    def d_startPosInterval(self, startPos, endPos, duration, blendType):
-        timestamp = globalClockDelta.getFrameNetworkTime()
-        self.sendUpdate('startPosInterval', [startPos.getX(), startPos.getY(), startPos.getZ(),
-                endPos.getX(), endPos.getY(), endPos.getZ(), duration, blendType, timestamp])
-
-    def setLatePos(self, lateX, lateY):
-        self.lateX = lateX
-        self.lateY = lateY
-
-    def getLatePos(self):
-        return [self.lateX, self.lateY]
 
     def setLevel(self, level):
         self.level = level
@@ -265,17 +161,12 @@ class DistributedSuitAI(DistributedAvatarAI):
             self.d_announceHealth(0, prevHealth - self.health)
 
     def stopSuitInPlace(self, killBrain = True):
-        if hasattr(self, 'brain') and self.brain is not None:
-            self.brain.stopThinking()
-            if killBrain:
-                self.brain.unloadBehaviors()
-                self.brain = None
-        self.b_setSuitState(0, -1, -1)
+        self.stopAI()
+        #self.b_setSuitState(0, -1, -1)
         self.clearTrack()
 
     def restartSuit(self):
-        if self.brain is not None:
-            self.brain.startThinking()
+        self.startAI()
 
     def monitorHealth(self, task):
         if self.health <= 0:
@@ -306,9 +197,9 @@ class DistributedSuitAI(DistributedAvatarAI):
         task.delayTime = self.clearComboDataTime
         return task.again
             
-    def __handleTacticalAttacks(self, avId, gagName, gagData):
+    def __handleTacticalAttacks(self, avId, gagName, gagData, damageInfo, isPlayer):
         # Gets the damage and the damage offset.
-        baseDmg, dmgOffset = self.__getGagEffectOnMe(avId, gagName, gagData)
+        baseDmg, dmgOffset = self.__getGagEffectOnMe(avId, gagName, gagData, damageInfo, isPlayer)
 
         self.tacticalSeq = Sequence()
         
@@ -340,11 +231,14 @@ class DistributedSuitAI(DistributedAvatarAI):
 
         return finalDmg
         
-    def __getGagEffectOnMe(self, avId, gagName, gagData):
+    def __getGagEffectOnMe(self, avId, gagName, gagData, damageInfo, isPlayer):
         """ Returns the base damage and the damage offset a specified gag name used by "avId" has on this Cog """
         weaknessFactor = self.suitPlan.getGagWeaknesses().get(gagName, 1.0)
         classWeakness = self.suitPlan.getCogClassAttrs().getGagDmgRamp(GagGlobals.getTrackOfGag(gagName))
-        baseDmg = GagGlobals.calculateDamage(avId, gagName, gagData)
+        if isPlayer:
+            baseDmg = GagGlobals.calculateDamage(avId, gagName, gagData)
+        else:
+            baseDmg = damageInfo.damageAmount
         dmgOffset = int(math.ceil(baseDmg * weaknessFactor * classWeakness)) - baseDmg
         return baseDmg, dmgOffset
 
@@ -417,18 +311,24 @@ class DistributedSuitAI(DistributedAvatarAI):
         return task.done
 
     # The new method for handling gags.
-    def hitByGag(self, gagId, distance):
-        avId = self.air.getAvatarIdFromSender()
-        avatar = self.air.doId2do.get(avId, None)
+    def takeDamage(self, damageInfo):#, gagId, distance):
+        gagId = damageInfo.attackID
+        distance = damageInfo.damageDistance
+        avId = damageInfo.damager.doId
+        avatar = damageInfo.damager
         gagName = GagGlobals.getGagByID(gagId)
         data = dict(GagGlobals.getGagData(gagId))
         data['distance'] = distance
         track = GagGlobals.getTrackOfGag(gagId, getId = True)
 
+        isPlayer = hasattr(avatar, "trackExperience")
+
         if self.canGetHit():
-            damage = self.__handleTacticalAttacks(avatar.doId, gagName, data)
+            damage = self.__handleTacticalAttacks(avatar.doId, gagName, data, damageInfo, isPlayer)
+
+            self.setDamageConditions(damage)
             
-            if self.battleZone:
+            if isPlayer and self.battleZone:
                 # We only want to award credit when Toons use gags that are less than or at the level of the Cog
                 # they're using them on.
                 gagLevel = GagGlobals.TrackGagNamesByTrackName.get(data.get('track')).index(gagName)
@@ -436,17 +336,19 @@ class DistributedSuitAI(DistributedAvatarAI):
                 if gagLevel <= self.level:
                     self.battleZone.handleGagUse(gagId, avId)
             
-            if not avId in self.damagers:
+            if isPlayer and not avId in self.damagers:
                 self.damagers.append(avId)
 
             if self.isDead():
                 self.stopStun()
 
-                if self.firstTimeDead:
-                    self.sendUpdate('doStunEffect')
+                #if self.firstTimeDead:
+                #    self.sendUpdate('doStunEffect')
 
                 deathAnim = self.__getAnimForGag(track, gagName)
-                self.b_setAnimState(deathAnim, 0)
+                #self.b_setAnimState(deathAnim, 0)
+
+                #self.stopAI()
                 
                 # Let's give everyone credit who damaged me.
                 if self.battleZone:
@@ -475,7 +377,7 @@ class DistributedSuitAI(DistributedAvatarAI):
                     self.stopStun(restart = True)
 
                 # I've been hit! Take appropriate actions.
-                self.handleToonThreat(avatar, True)
+                #self.handleToonThreat(avatar, True)
 
             # Do appropriate gag effects.
             flags = 0
@@ -496,20 +398,15 @@ class DistributedSuitAI(DistributedAvatarAI):
         else:
             return task.done
 
+    def __resumeThinking(self, task):
+        self.startAI()
+        return task.done
+
     def handleAvatarDefeat(self, av):
         if av.isDead() and hasattr(self, 'brain') and self.brain != None:
-            self.b_setAnimState('win')
-            self.brain.stopThinking()
-            taskMgr.doMethodLater(8.5, self.brain.startThinking, self.uniqueName('Resume Thinking'))
-
-    def disableMovement(self):
-        self.brain.stopThinking()
-
-    def enableMovement(self):
-        self.brain.startThinking()
-
-    def addBehavior(self, behavior, priority):
-        self.requestedBehaviors.append([behavior, priority])
+            #self.b_setAnimState('win')
+            self.stopAI()
+            taskMgr.doMethodLater(8.5, self.__resumeThinking, self.uniqueName('Resume Thinking'))
 
     def toonHitByWeapon(self, weaponId, avId, distance):
         weapon = SuitAttacks.SuitAttacks.attack2attackClass[weaponId]
@@ -523,93 +420,31 @@ class DistributedSuitAI(DistributedAvatarAI):
 
         toon = self.air.doId2do.get(avId, None)
         if toon:
-            toon.takeDamage(dmg)
+            dmgInfo = TakeDamageInfo(self, weaponId, dmg)
+            toon.takeDamage(dmgInfo)
             self.handleAvatarDefeat(toon)
-
-    def turretHitByWeapon(self, weaponId, avId):
-        weapon = SuitAttacks.SuitAttacks.attack2attackClass[weaponId]
-        dmg = CIGlobals.calcAttackDamage(10.0, weapon.baseDamage, weapon.maxDist)
-        turret = self.air.doId2do.get(avId, None)
-        if turret:
-            turret.b_setHealth(turret.getHealth() - 1)
-            turret.d_announceHealth(0, dmg)
-            self.handleAvatarDefeat(turret)
-
-    def d_handleWeaponTouch(self):
-        self.sendUpdate('handleWeaponTouch', [])
-
-    def d_interruptAttack(self):
-        self.sendUpdate('interruptAttack', [])
 
     def killSuit(self):
         if self.level > 0 and self.health <= 0:
             self.allowHits = False
-            self.b_setAnimState('die')
+            #self.b_setAnimState('die')
+            #print "Setting death activity"
+            #self.b_setActivity(ACT_DIE)
             self.clearTrack()
             self.track = Sequence(Wait(6.0), Func(self.closeSuit))
             self.track.start()
 
     def closeSuit(self):
-        if self.dropItems.getValue():
-            self.itemDropper.drop()
-        if self.getManager():
-            self.getManager().deadSuit(self.doId)
+        print "Closing suit"
+        if self.battleZone:
+            self.battleZone.deadSuit(self.doId)
         self.disable()
         self.requestDelete()
-
-    def spawn(self, spawnMode = SpawnMode.FLYDOWN):
-        self.brain = SuitBrain(self)
-        for behavior, priority in self.requestedBehaviors:
-            self.brain.addBehavior(behavior, priority)
-        self.requestedBehaviors = []
-        if self.suitPlan.getName() in [SuitGlobals.VicePresident]:
-            self.brain.addBehavior(SuitCallInBackupBehaviorAI(self), priority = 1)
-            self.brain.addBehavior(SuitFlyToRandomSpotBehaviorAI(self), priority = 2)
-            self.brain.addBehavior(SuitAttackBehaviorAI(self), priority = 3)
-        else:
-            pursue = SuitPursueToonBehaviorAI(self, getPathFinder(self.hood))
-            pursue.setSuitDict(self.getManager().suits)
-            pursue.battle = self.getManager().getBattle()
-            self.brain.addBehavior(pursue, priority = 1)
-            self.brain.addBehavior(SuitAttackTurretBehaviorAI(self), priority = 2)
-        place = CogBattleGlobals.SuitSpawnPoints[self.hood]
-        landspot = random.choice(place.keys())
-        path = place[landspot]
-        index = place.keys().index(landspot)
-        self.currentPath = landspot
-        yaw = random.uniform(0.0, 360.0)
-        self.setH(yaw)
-        self.d_setH(yaw)
-        self.clearTrack()
-        self.track = Sequence()
-        if spawnMode == SpawnMode.FLYDOWN:
-            flyTrack = self.posInterval(3.5,
-                path, startPos = path + (0, 0, 6.5 * 4.8)
-            )
-            flyTrack.start()
-            self.b_setSuitState(2, index, index)
-            self.track.append(Wait(6.5))
-        self.track.append(Func(self.b_setAnimState, 'neutral'))
-        self.track.append(Wait(1.0))
-        self.track.append(Func(self.brain.startThinking))
-        self.track.start()
-        self.b_setParent(CIGlobals.SPRender)
-        taskMgr.add(self.monitorHealth, self.uniqueName('monitorHealth'))
 
     def clearTrack(self):
         if self.track:
             self.track.pause()
             self.track = None
-
-    def setManager(self, suitMgr):
-        self.suitMgr = suitMgr
-        if hasattr(self.getManager(), 'getBattle'):
-            self.hood = CogBattleGlobals.HoodIndex2HoodName[self.getManager().getBattle().getHoodIndex()]
-
-    def getManager(self):
-        if hasattr(self, 'suitMgr'):
-            return self.suitMgr
-        return None
 
     def generate(self):
         DistributedAvatarAI.generate(self)
@@ -617,31 +452,42 @@ class DistributedSuitAI(DistributedAvatarAI):
     def announceGenerate(self):
         DistributedAvatarAI.announceGenerate(self)
         self.clearTrack()
-        self.track = Sequence(Wait(0.1), Func(self.spawn))
-        self.track.start()
+        
+        self.startAI()
 
         # Let's set the combo data task name and start the task.
         self.comboDataTaskName = self.uniqueName('clearComboData')
         taskMgr.add(self.clearComboData, self.comboDataTaskName)
 
+        dur = 8
+
+        Sequence(
+            Func(self.setH, 90),
+            Wait(0.5),
+            self.posInterval(dur, (-25, 0, 0), (25, 0, 0), blendType = 'easeInOut'),
+            Wait(0.5),
+            Func(self.setH, -90),
+            Wait(0.5),
+            self.posInterval(dur, (25, 0, 0), (-25, 0, 0), blendType = 'easeInOut'),
+            Wait(0.5)
+            )#.loop()
+        #self.setH(90)
+
+        self.startPosHprBroadcast()
+
     def disable(self):
+        self.stopPosHprBroadcast()
         DistributedAvatarAI.disable(self)
+        self.stopAI()
         self.clearTrack()
         self.stopStun()
         taskMgr.remove(self.uniqueName('__handleDeath'))
         taskMgr.remove(self.uniqueName('Resume Thinking'))
         taskMgr.remove(self.uniqueName('monitorHealth'))
         taskMgr.remove(self.comboDataTaskName)
-        if self.brain:
-            self.brain.stopThinking()
-            self.brain.unloadBehaviors()
-            self.brain = None
         if self.tacticalSeq:
             self.tacticalSeq.pause()
             self.tacticalSeq = None
-        if self.dropItems.getValue():
-            self.itemDropper.cleanup()
-            self.itemDropper = None
         self.lateX = None
         self.lateY = None
         self.anim = None
@@ -656,7 +502,6 @@ class DistributedSuitAI(DistributedAvatarAI):
         self.level = None
         self.suitMgr = None
         self.animStateChangeEvent = None
-        self.requestedBehaviors = None
         self.deathAnim = None
         self.deathTimeLeft = None
         self.comboData = None
@@ -668,10 +513,8 @@ class DistributedSuitAI(DistributedAvatarAI):
         self.damagers = []
 
     def delete(self):
+        BaseNPCAI.delete(self)
         self.DELETED = True
-        del self.brain
-        if self.dropItems.getValue():
-            del self.itemDropper
         del self.lateX
         del self.lateY
         del self.anim
@@ -686,7 +529,6 @@ class DistributedSuitAI(DistributedAvatarAI):
         del self.level
         del self.suitMgr
         del self.animStateChangeEvent
-        del self.requestedBehaviors
         del self.track
         del self.deathAnim
         del self.deathTimeLeft
@@ -703,9 +545,6 @@ class DistributedSuitAI(DistributedAvatarAI):
     def printPos(self, task):
         self.notify.info('%s\n%s' % (self.getPos(render), self.getHpr(render)))
         return task.cont
-
-    def getBrain(self):
-        return self.brain
 
     def setCurrentPath(self, curPath):
         self.currentPath = curPath

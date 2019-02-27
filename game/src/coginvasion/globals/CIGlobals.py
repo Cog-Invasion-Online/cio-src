@@ -17,7 +17,7 @@ Where to find moved globals:
 
 from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog, OmniBoundingVolume
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
-from panda3d.core import TextureStage, VBase4, TransparencyAttrib, Vec3, deg2Rad, Point2, DecalEffect, ModelNode
+from panda3d.core import TextureStage, VBase4, TransparencyAttrib, Vec3, deg2Rad, Point2, DecalEffect, ModelNode, rad2Deg, Vec2
 
 from direct.interval.IntervalGlobal import Sequence, Func, LerpScaleInterval, Wait, Parallel, SoundInterval, ActorInterval
 
@@ -85,6 +85,81 @@ MB_Moving = 1
 MB_Crouching = 2
 MB_Walking = 4
 
+def getDGIForBlob(blob):
+    from direct.distributed.PyDatagram import PyDatagram
+    from direct.distributed.PyDatagramIterator import PyDatagramIterator
+    dg = PyDatagram(blob)
+    dgi = PyDatagramIterator(dg)
+    return dgi
+
+def extrude(start, scale, direction):
+    return start + (direction * scale)
+
+def angleVectors(angles, forward = False, right = False, up = False):
+    """
+    Get basis vectors for the angles.
+    Each vector is optional.
+    """
+
+    if forward or right or up:
+        sh = math.sin(deg2Rad(angles[0]))
+        ch = math.cos(deg2Rad(angles[0]))
+        sp = math.sin(deg2Rad(angles[1]))
+        cp = math.cos(deg2Rad(angles[1]))
+        sr = math.sin(deg2Rad(angles[2]))
+        cr = math.cos(deg2Rad(angles[2]))
+
+    result = []
+    if forward:
+        forward = Vec3(cp*ch,
+                       cp*sh,
+                       -sp)
+        result.append(forward)
+    if right:
+        right = Vec3(-1*sr*sp*ch+-1*cr*-sh,
+                     -1*sr*sp*sh+-1*cr*ch,
+                     -1*sr*cp)
+        result.append(right)
+    if up:
+        up = Vec3(cr*sp*ch+-sr*-sh,
+                  cr*sp*sh+-sr*ch,
+                  cr*cp)
+        result.append(up)
+
+    return result
+
+def vecToYaw(vec):
+    return rad2Deg(math.atan2(vec[1], vec[0])) - 90
+
+def angleMod(a):
+    return a % 360
+
+def angleDiff(destAngle, srcAngle):
+
+    delta = destAngle - srcAngle
+
+    if destAngle > srcAngle:
+        if delta >= 180:
+            delta -= 360
+    else:
+        if delta <= -180:
+            delta += 360
+
+    return delta
+
+def putVec3(dg, vec):
+    from panda3d.direct import STFloat64
+    dg.putArg(vec[0], STFloat64)
+    dg.putArg(vec[1], STFloat64)
+    dg.putArg(vec[2], STFloat64)
+
+def getVec3(dgi):
+    from panda3d.direct import STFloat64
+    x = dgi.getArg(STFloat64)
+    y = dgi.getArg(STFloat64)
+    z = dgi.getArg(STFloat64)
+    return Vec3(x, y, z)
+
 def remapVal(val, A, B, C, D):
     if A == B:
         return D if val >= B else C
@@ -138,8 +213,8 @@ def clearModelNodesBelow(node):
         np.clearModelNodes()
 
 def isAvatar(obj):
-    from src.coginvasion.avatar.Avatar import Avatar
-    return isinstance(obj, Avatar)
+    from src.coginvasion.avatar.AvatarShared import AvatarShared
+    return isinstance(obj, AvatarShared)
 
 def isDistributed(obj):
     return hasattr(obj, 'doId')
@@ -364,7 +439,7 @@ def getParticleRender():
         ParticleRender.hide(ShadowCameraBitmask)
     return ParticleRender
 
-def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, duration = 1.0, soundVol = 0.5):
+def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, duration = 1.0, soundVol = 1.0):
     explosion = loader.loadModel('phase_3.5/models/props/explosion.bam')
     explosion.setScale(scale)
     explosion.reparentTo(render)
@@ -392,7 +467,7 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
         hlsounds = base.config.GetBool('explosion-hlsounds', False)
         if hlsounds:
             hldir = "phase_14/audio/sfx/"
-            snd = base.audio3d.loadSfx(hldir + random.choice(['explode3', 'explode4', 'explode5']) + ".ogg")
+            snd = base.audio3d.loadSfx(hldir + random.choice(['explode3_hl2', 'explode4_hl2', 'explode5_hl2']) + ".ogg")
         else:
             snd = base.audio3d.loadSfx("phase_3.5/audio/sfx/ENC_cogfall_apart.ogg")
 
@@ -408,7 +483,7 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
         
         track.append(SoundInterval(snd, volume = soundVol))
         wait = 0.0791 if not hlsounds else 0.0
-        track.append(Sequence(Wait(wait), SoundInterval(debris, volume = soundVol * 1.2)))
+        track.append(Sequence(Wait(wait), SoundInterval(debris, volume = soundVol)))
 
     if shakeCam:
         dist = camera.getDistance(explosion)
@@ -710,6 +785,14 @@ def getHeadsUpDistance(fromNP, to):
     _newHpr = fromNP.getHpr()
     fromNP.setHpr(_oldHpr)
     _distance = (_newHpr.getXy() - _oldHpr.getXy()).length()
+    return _distance
+    
+def getHeadsUpDistanceSquared(fromNP, to):
+    _oldHpr = fromNP.getHpr()
+    fromNP.headsUp(to)
+    _newHpr = fromNP.getHpr()
+    fromNP.setHpr(_oldHpr)
+    _distance = (_newHpr.getXy() - _oldHpr.getXy()).lengthSquared()
     return _distance
 
 # Cog classes that can be damaged by gags.

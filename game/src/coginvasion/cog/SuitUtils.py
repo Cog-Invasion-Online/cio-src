@@ -14,10 +14,10 @@ from direct.distributed.ClockDelta import globalClockDelta
 from direct.interval.IntervalGlobal import Sequence, Func
 
 from src.coginvasion.npc.NPCWalker import NPCWalkInterval
-import SuitAttacks
+#import SuitAttacks
 
 import random
-
+"""
 def attack(suit, toon, attack = None):
     suit.b_setAnimState('neutral')
     suit.headsUp(toon)
@@ -28,6 +28,7 @@ def attack(suit, toon, attack = None):
         return None
     suit.sendUpdate('doAttack', [attack, toon.doId, timestamp])
     return attack
+"""
 
 def getMoveIvalFromPath(suit, path, elapsedT, isClient, seqName):
     baseSpeed = 5.0

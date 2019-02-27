@@ -64,6 +64,10 @@ class LocalControls(DirectObject):
         self.controlsEnabled = False
         self.airborne = False
         self.crouching = False
+        
+        self.defaultSounds = [base.loadSfx("phase_14/audio/sfx/footsteps/default1.ogg"),
+                              base.loadSfx("phase_14/audio/sfx/footsteps/default2.ogg")]
+        self.defaultOverride = "concrete"
 
         self.standingUp = True
         self.footstepIval = LocalControls.FootstepIval
@@ -76,9 +80,6 @@ class LocalControls(DirectObject):
         
         self.currentObjectUsing = None
         self.lastUseObjectTime = 0.0
-		
-        self.defaultSounds = [base.loadSfx("phase_14/audio/sfx/footsteps/default1.ogg"),
-                              base.loadSfx("phase_14/audio/sfx/footsteps/default2.ogg")]
 
         self.mode = LocalControls.MFirstPerson
         self.scheme = LocalControls.SDefault
@@ -240,6 +241,9 @@ class LocalControls(DirectObject):
             
         self.currentSurface = surface
         
+        if surface == "default" and self.defaultOverride is not None:
+            surface = self.defaultOverride
+        
         if not surface in self.footstepSounds:
             self.footstepSounds[surface] = []
             vfs = VirtualFileSystem.getGlobalPtr()
@@ -250,6 +254,9 @@ class LocalControls(DirectObject):
                     self.footstepSounds[surface].append(sound)
 
     def getCurrentSurface(self):
+        if self.currentSurface == "default" and self.defaultOverride is not None:
+            return self.defaultOverride
+            
         return self.currentSurface
 
     def enableControls(self, wantMouse = 0):
@@ -370,6 +377,10 @@ class LocalControls(DirectObject):
         self.ignore('alt')
         self.ignore(base.inputStore.NextCameraPosition)
         self.ignore(base.inputStore.PreviousCameraPosition)
+        self.ignore(base.inputStore.PrimaryFire)
+        self.ignore(base.inputStore.PrimaryFire + '-up')
+        self.ignore(base.inputStore.SecondaryFire)
+        self.ignore(base.inputStore.SecondaryFire + '-up')
         
         if base.localAvatar.isThirdPerson() or not base.localAvatar.battleControls:
             base.localAvatar.stopSmartCamera()
@@ -412,7 +423,7 @@ class LocalControls(DirectObject):
         return "default"
 
     def playFootstep(self, volume = 1.0):
-        surfSounds = self.footstepSounds[self.currentSurface]
+        surfSounds = self.footstepSounds[self.getCurrentSurface()]
         numSounds = len(surfSounds)
         if numSounds > 0:
             self.lastFoot = not self.lastFoot
@@ -426,12 +437,12 @@ class LocalControls(DirectObject):
             sound = random.choice(choices)
             sound.setVolume(volume * LocalControls.FootstepVolumeMod)
             sound.play()
-            if self.currentSurface != self.getDefaultSurface():
-                # if it's not the default footstep sound, put the default toon step sound behind it
-                # to sound more like feet running
-                default = self.defaultSounds[int(self.lastFoot)]
-                default.setVolume(volume * LocalControls.FootstepVolumeMod)
-                default.play()
+            #if self.currentSurface != self.getDefaultSurface():
+            #    # if it's not the default footstep sound, put the default toon step sound behind it
+            #    # to sound more like feet running
+            #    default = self.defaultSounds[int(self.lastFoot)]
+            #    default.setVolume(volume * LocalControls.FootstepVolumeMod)
+            #    default.play()
             self.currFootstepSound = sound
         self.lastFootstepTime = globalClock.getFrameTime()
         
@@ -440,16 +451,19 @@ class LocalControls(DirectObject):
         speeds = self.speeds.length()
         if speeds > 0.1 and (self.isOnGround() or self.scheme == LocalControls.SSwim):
             # 8 frames in between footsteps in run animation
+            # take absolute value, running backwards would give us a negative footstep ival
             if base.localAvatar.playingAnim == 'run':
-                self.footstepIval = 8 / 24.0
+                self.footstepIval = (8 / 24.0) * abs(base.localAvatar.playingRate) 
             elif base.localAvatar.playingAnim == 'walk':
-                self.footstepIval = 11 / 24.0
+                self.footstepIval = (11 / 24.0) * abs(base.localAvatar.playingRate)
 
             if self.scheme == LocalControls.SSwim:
                 self.footstepIval *= 6.0
+            if speeds > self.BattleNormalSpeed + 0.1:
+                self.footstepIval *= 0.8
                 
             if time - self.lastFootstepTime >= self.footstepIval:
-                self.playFootstep(min(1, speeds / 15.0))
+                self.playFootstep(min(1, speeds / self.BattleNormalSpeed))
         return task.cont
         
     def __handleUse(self, task):

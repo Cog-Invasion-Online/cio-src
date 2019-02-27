@@ -1,0 +1,1 @@
+DMG_GENERIC = 0

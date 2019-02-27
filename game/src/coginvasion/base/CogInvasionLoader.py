@@ -18,6 +18,7 @@ from src.coginvasion.resourcepack.EnvironmentConfiguration import EnvironmentCon
 from src.coginvasion.resourcepack.ResourcePack import ResourcePack
 from src.coginvasion.dna.DNALoader import loadDNAFile
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.toon import ParticleLoader
 
 import os
 import io
@@ -196,6 +197,9 @@ class CogInvasionLoader(Loader.Loader):
         ret = Loader.Loader.loadMusic(self, soundPath)
         self.tick()
         return ret
+
+    def loadParticleEffect(self, ptfPath):
+        return ParticleLoader.loadParticleEffect(ptfPath)
 
     def destroy(self):
         Loader.Loader.destroy(self)

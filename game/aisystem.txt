@@ -1,0 +1,23 @@
+AI system
+
+Conditions
+Interrupts
+States -> Schedules -> Tasks
+
+Combat State:
+
+	Attack Schedule:
+		- turn to enemy
+		- throw attack
+		
+	Charge Schedule:
+		- get path to enemy
+		- walk along path
+
+States and schedules:
+	- STATE_COMBAT
+		* SCHDULE_ATTACK
+			= TASK_TURN
+	- STATE_IDLE
+	- STATE_ALERT
+	- STATE_DEAD

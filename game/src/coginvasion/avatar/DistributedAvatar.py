@@ -14,6 +14,7 @@ from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.avatar.Avatar import Avatar
+from src.coginvasion.avatar.AvatarShared import AvatarShared
 from src.coginvasion.globals import CIGlobals
 
 class DistributedAvatar(DistributedSmoothNode, Avatar):
@@ -22,34 +23,24 @@ class DistributedAvatar(DistributedSmoothNode, Avatar):
     EXTRAS = ["IMMUNITY LOSS!", "COMBO BONUS!", "WEAKNESS BONUS!", "MISSED!"]
 
     def __init__(self, cr):
-        try:
-            self.DistributedAvatar_initialized
-            return
-        except:
-            self.DistributedAvatar_initialized = 1
         Avatar.__init__(self)
         DistributedSmoothNode.__init__(self, cr)
-        self.place = 0
-        self.hood = None
-        self.moveBits = 0
-        return
+
+    def doSmoothTask(self, task):
+        self.smoother.computeAndApplySmoothPosHpr(self, self)
+        if not hasattr(base, 'localAvatar') or self.doId != base.localAvatar.doId:
+            self.setSpeed(self.smoother.getSmoothForwardVelocity(),
+                          self.smoother.getSmoothRotationalVelocity(),
+                          self.smoother.getSmoothLateralVelocity())
+        return task.cont
 
     def b_setMoveBits(self, bits):
         self.sendUpdate('setMoveBits', [bits])
         self.moveBits = bits
 
-    def getMoveBits(self):
-        return self.moveBits
-
     def b_splash(self, x, y, z):
         self.sendUpdate('splash', [x, y, z])
         self.splash(x, y, z)
-
-    def setHood(self, hood):
-        self.hood = hood
-
-    def getHood(self):
-        return self.hood
 
     def setName(self, name):
         Avatar.setName(self, name)
@@ -57,21 +48,13 @@ class DistributedAvatar(DistributedSmoothNode, Avatar):
     def setChat(self, chat):
         Avatar.setChat(self, chat)
 
-    def d_setChat(self, chat):
-        self.sendUpdate("setChat", [chat])
-
     def b_setChat(self, chat):
         self.d_setChat(chat)
         self.setChat(chat)
 
-    def setPlace(self, place):
-        self.place = place
-
-    def getPlace(self):
-        return self.place
-
     def announceGenerate(self):
         DistributedSmoothNode.announceGenerate(self)
+        AvatarShared.announceGenerate(self)
         self.setPythonTag('avatar', self.doId)
         self.setParent(CIGlobals.SPHidden)
         self.loadAvatar()
@@ -88,5 +71,3 @@ class DistributedAvatar(DistributedSmoothNode, Avatar):
     def delete(self):
         DistributedSmoothNode.delete(self)
         Avatar.delete(self)
-        self.hood = None
-        self.place = None

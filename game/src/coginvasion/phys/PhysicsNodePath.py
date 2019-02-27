@@ -3,48 +3,26 @@ from panda3d.bullet import BulletRigidBodyNode, BulletGhostNode
 
 from src.coginvasion.globals import CIGlobals
 
-class PhysicsNodePath(NodePath):
+class BasePhysicsObject:
 
-    def __init__(self, *args, **kwargs):
-        NodePath.__init__(self, *args, **kwargs)
+    def __init__(self):
         self.bodyNode = None
         self.bodyNP = None
         self.shapeGroup = BitMask32.allOn()
         self.underneathSelf = False
-        self.shadow = None
-        self.shadowPlacerTask = None
 
-    def makeShadow(self, scale = 1):
-        self.shadow = loader.loadModel("phase_3/models/props/drop_shadow.bam")
-        self.shadow.setScale(scale)
-        self.shadow.flattenMedium()
-        self.shadow.setBillboardAxis(4)
-        self.shadow.setColor(0, 0, 0, 0.5, 1)
-        self.shadow.reparentTo(self)
+    def addToPhysicsWorld(self, world):
+        print self.__class__.__name__, "Adding", self.bodyNode, "to physics world", world
+        if self.bodyNode:
+            world.attach(self.bodyNode)
 
-        self.shadowPlacerTask = taskMgr.add(self.__shadowPlacerTask, "shadowPlacerTask")
-
-    def __shadowPlacerTask(self, task):
-        if self.shadow.isEmpty():
-            return task.done
-
-        start = self.shadow.getPos(render)
-        end = self.shadow.getPos(render) + (Vec3.down() * 500)
-        result = base.physicsWorld.rayTestClosest(start, end)
-        if result.hasHit():
-            self.shadow.setPos(result.getHitPos())
-        else:
-            self.shadow.setPos(0, 0, 0)
-        self.shadow.setHpr(render, 0, 0, 0)
-
-        return task.cont
+    def removeFromPhysicsWorld(self, world):
+        if self.bodyNode:
+            world.remove(self.bodyNode)
 
     def cleanupPhysics(self):
-        if self.bodyNode:
-            if self.bodyNode.isExactType(BulletGhostNode.getClassType()):
-                base.physicsWorld.removeGhost(self.bodyNode)
-            else:
-                base.physicsWorld.removeRigidBody(self.bodyNode)
+        if self.bodyNode and hasattr(base, 'physicsWorld'):
+            self.removeFromPhysicsWorld(base.physicsWorld)
         if self.bodyNP and not self.bodyNP.isEmpty():
             if self.underneathSelf:
                 self.bodyNP.removeNode()
@@ -68,8 +46,12 @@ class PhysicsNodePath(NodePath):
             self.assign(self.bodyNP)
         else:
             self.bodyNP.reparentTo(self)
-        if self.bodyNode.isExactType(BulletGhostNode.getClassType()):
-            base.physicsWorld.attachGhost(self.bodyNode)
-        else:
-            base.physicsWorld.attachRigidBody(self.bodyNode)
+        if hasattr(base, 'physicsWorld'):
+            self.addToPhysicsWorld(base.physicsWorld)
+
+class PhysicsNodePath(BasePhysicsObject, NodePath):
+
+    def __init__(self, *args, **kwargs):
+        BasePhysicsObject.__init__(self)
+        NodePath.__init__(self, *args, **kwargs)
             

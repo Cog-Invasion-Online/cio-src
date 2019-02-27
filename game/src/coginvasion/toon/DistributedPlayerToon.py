@@ -399,125 +399,16 @@ class DistributedPlayerToon(DistributedToon):
 
     def getGhost(self):
         return self.ghost
-    
-    def setTarget(self, gagId, targetId):
-        gag = self.backpack.getGagByID(gagId)
-        target = self.cr.doId2do.get(targetId, None)
-        gag.setTarget(target)
-
-    def trapActivate(self, gagId, avId, entityId, suitId):
-        sender = self.cr.doId2do.get(avId, None)
-        suit = self.cr.doId2do.get(suitId, None)
-        if sender:
-            backpack = sender.getBackpack()
-            trapGag = backpack.getGagByID(gagId)
-            if backpack and trapGag:
-                entity = None
-                if hasattr(trapGag, 'getEntities') and 0 <= entityId <= (len(trapGag.getEntities()) - 1):
-                    entity = trapGag.getEntities()[entityId]
-                    
-                    # This is for light drop gags
-                    if entity is None and entity.hasPythonTag('EntityRoot'):
-                        entity = entity.getPythonTag('EntityRoot')
-                    
-                    trapGag.onActivate(entity, suit)
-
-    def b_trapActivate(self, gagId, avId, entityId, suitId):
-        self.trapActivate(gagId, avId, entityId, suitId)
-        self.d_trapActivate(gagId, avId, entityId, suitId)
-
-    def d_trapActivate(self, gagId, avId, entityId, suitId):
-        self.sendUpdate('trapActivate', [gagId, avId, entityId, suitId])
-
-    def gagCollision(self, gagId):
-        gag = self.backpack.getGagByID(gagId)
-        gag.doCollision()
-
-    def b_gagCollision(self, gagId):
-        self.sendUpdate("gagCollision", [gagId])
-        self.gagCollision(gagId)
-
-    def gagActivate(self, gagId):
-        gag = self.backpack.getGagByID(gagId)
-        if hasattr(gag, 'activate'):
-            gag.activate()
-
-    def b_gagActivate(self, gagId):
-        self.sendUpdate("gagActivate", [gagId])
-        self.gagActivate(gagId)
-
-    def setDropLoc(self, gagId, x, y, z):
-        gag = self.backpack.getGagByID(gagId)
-        gag.setEndPos(x, y, z)
-
-    def setGagPos(self, gagId, x, y, z):
-        pos = Point3(x, y, z)
-        gag = self.backpack.getGagByID(gagId)
-        ent = gag.getGag()
-        if ent:
-            ent.setPos(pos)
-
-    def setThrowPower(self, gagId, power):
-        gag = self.backpack.getGagByID(gagId)
-        if gag:
-            gag.setPower(power)
-
-    def gagStart(self, gagId):
-        gag = self.backpack.getGagByID(gagId)
-        if gag:
-            gag.start()
-
-    def b_gagStart(self, gagId):
-        self.sendUpdate("gagStart", [gagId])
-        self.gagStart(gagId)
-
-    def gagThrow(self, gagId):
-        gag = self.backpack.getGagByID(gagId)
-        if gag:
-            gag.throw()
-
-    def b_gagThrow(self, gagId):
-        self.sendUpdate("gagThrow", [gagId])
-        self.gagThrow(gagId)
-
-    def gagRelease(self, gagId):
-        gag = self.backpack.getGagByID(gagId)
-        print "gagRelease:", gag, hasattr(gag, 'name')
-        if gag and hasattr(gag, 'name'):
-            gag.release()
-
-    def b_gagRelease(self, gagId):
-        self.sendUpdate("gagRelease", [gagId])
-        self.gagRelease(gagId)
-
-    def setSplatPos(self, gagId, x, y, z):
-        splatGag = self.backpack.getGagByID(gagId)
-        if splatGag:
-            splatGag.setSplatPos(x, y, z)
-
-    def d_setSplatPos(self, gagId, x, y, z):
-        self.sendUpdate('setSplatPos', [gagId, x, y, z])
-
-    def gagBuild(self, gagId):
-        gag = self.backpack.getGagByID(gagId)
-        if gag:
-            gag.build()
-
-    def b_gagBuild(self, gagId):
-        self.gagBuild(gagId)
-        self.sendUpdate('gagBuild', [gagId])
-        
-    def setCurrentGag(self, gagId):
-        if self.backpack:
-            self.backpack.setCurrentGag(gagId)
-
-    def getCurrentGag(self):
-        if self.backpack:
-            return self.backpack.currentGag
-        return -1
 
     def getBackpack(self):
         return self.backpack
+
+    def setEquippedAttack(self, attackID):
+        self.backpack.setCurrentGag(attackID)
+        DistributedToon.setEquippedAttack(self, attackID)
+
+    def getCurrentGag(self):
+        return self.getEquippedAttack()
 
     def setLoadout(self, gagIds):
         if self.backpack:
@@ -546,7 +437,7 @@ class DistributedPlayerToon(DistributedToon):
     def getTrackExperience(self):
         return GagGlobals.trackExperienceToNetString(self.trackExperience)
 
-    def setGagAmmo(self, gagId, ammo):
+    def updateAttackAmmo(self, gagId, ammo):
         self.backpack.setSupply(gagId, ammo)
 
     def setMoney(self, money):

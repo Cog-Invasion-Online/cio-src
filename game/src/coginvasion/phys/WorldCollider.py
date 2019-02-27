@@ -5,21 +5,30 @@ from src.coginvasion.globals import CIGlobals
 
 class WorldCollider(NodePath):
 
+    WantNPInit = True
+
     def __init__(self, name, radius, collideEvent = None,
                  mask = CIGlobals.WorldGroup,
                  offset = Point3(0), needSelfInArgs = False,
                  startNow = True, myMask = CIGlobals.EventGroup,
-                 exclusions = [], resultInArgs = False, useSweep = False):
+                 exclusions = [], resultInArgs = False, useSweep = False,
+                 world = None, initNp = True):
 
-        NodePath.__init__(self, BulletGhostNode(name))
+        if self.WantNPInit:
+            NodePath.__init__(self)
+        self.assign(NodePath(BulletGhostNode(name)))
 
         self.needSelfInArgs = needSelfInArgs
         self.resultInArgs = resultInArgs
         self.event = collideEvent
         self.mask = mask
-        self.exclusions = exclusions
+        self.__exclusions = []
         self.useSweep = useSweep
+        if not world and hasattr(base, 'physicsWorld'):
+            world = base.physicsWorld
+        self.world = world
         
+        self.initialPos = Point3(0)
         self.lastPos = Point3(0)
         
         self.hitCallbacks = []
@@ -35,6 +44,10 @@ class WorldCollider(NodePath):
 
         if startNow:
             self.start()
+
+    def addExclusion(self, excl):
+        #print "Add exclusion", self, id(self), self.__exclusions, id(self.__exclusions)
+        self.__exclusions.append(excl)
             
     def addHitCallback(self, cbk):
         self.hitCallbacks.append(cbk)
@@ -44,24 +57,32 @@ class WorldCollider(NodePath):
             return self.event
         return self.node().getName() + str(id(self))
 
+    def getInitialPos(self):
+        return self.initialPos
+
     def start(self):
         if self.isEmpty():
             return
             
-        self.lastPos = self.getPos(render)
+        self.initialPos = self.getPos(render)
+        self.lastPos = self.initialPos
             
-        base.physicsWorld.attach(self.node())
+        self.world.attach(self.node())
         self.task = taskMgr.add(self.tick, "WorldCollider.collisionTick" + str(id(self)))
 
     def stop(self):
         if hasattr(self, 'task'):
             taskMgr.remove(self.task)
             del self.task
+
+        if hasattr(self, 'initialPos'):
+            del self.initialPos
+            del self.lastPos
             
         if self.isEmpty():
             return
             
-        base.physicsWorld.remove(self.node())
+        self.world.remove(self.node())
 
     def removeNode(self):
         if self.isEmpty():
@@ -83,14 +104,24 @@ class WorldCollider(NodePath):
         intoNode = None
         
         if self.useSweep:
+            #print "From", self.lastPos, "to", currPos
+            #print "Exclusions", self.__exclusions
             # Sweep test ensures no slip-throughs, but is a bit more expensive.
-            result = base.physicsWorld.sweepTestClosest(self.node().getShape(0), TransformState.makePos(self.lastPos),
-                                                        TransformState.makePos(currPos), self.mask)
+            result = self.world.sweepTestClosest(self.node().getShape(0), TransformState.makePos(self.lastPos),
+                                                 TransformState.makePos(currPos), self.mask)
             if result.hasHit():
+                #print "has hit"
                 intoNode = result.getNode()
+                for excl in self.__exclusions:
+                    if excl.isAncestorOf(NodePath(intoNode)) or excl == NodePath(intoNode):
+                        #print "Collided with exclusion", excl
+                        intoNode = None
+                        break
                 contact = result
+            #else:
+                #print "no hit"
         else:
-            result = base.physicsWorld.contactTest(self.node())
+            result = self.world.contactTest(self.node())
             for contact in result.getContacts():
                 node = contact.getNode1()
                 if node == self.node():
@@ -98,7 +129,7 @@ class WorldCollider(NodePath):
                 if node.isOfType(BulletGhostNode.getClassType()):
                     continue
                 isExcluded = False
-                for excl in self.exclusions:
+                for excl in self.__exclusions:
                     if excl.isAncestorOf(NodePath(node)) or excl == NodePath(node):
                         isExcluded = True
                         break
@@ -107,8 +138,9 @@ class WorldCollider(NodePath):
                     
                 intoNode = node
                 break
-                
-        self.lastPos = currPos
+        
+        if currPos != self.lastPos:
+            self.lastPos = currPos
         
         if intoNode is None:
             return task.cont

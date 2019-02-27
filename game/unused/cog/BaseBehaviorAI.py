@@ -19,22 +19,29 @@ class BaseBehaviorAI:
 
     def isPlayerAudible(self, plyr):
         return self.isPlayerInPVS(plyr) and self.suit.getDistance(plyr) < 50.0
+        
+    def doesLineTraceToPlayer(self, plyr):
+        # Is the player occluded by any BSP faces?
+        return self.battle.traceLine(self.suit.getPos(render) + (0, 0, 3.5 / 2), plyr.getPos(render) + (0, 0, 2.0))
+        
+    def isPlayerInVisionCone(self, plyr):
+        # Is the player in my angle of vision?
+        angle = CIGlobals.getHeadsUpDistance(self.suit, plyr)
+        return abs(angle) <= self.MaxVisionAngle
+        
+    def isPlayerInVisionRange(self, plyr):
+        # Is the player close enough to where I could see them?
+        return self.suit.getDistance(plyr) <= self.MaxVisionDistance
 
     def isPlayerVisible(self, plyr, checkVisionAngle = True, checkVisionDistance = True):
         # Check if player is potentially visible from my leaf.
         if not self.isPlayerInPVS(plyr):
             return False
 
-        if checkVisionAngle:
-            # Is the player in my angle of vision?
-            angle = CIGlobals.getHeadsUpDistance(self.suit, plyr)
-            if abs(angle) > self.MaxVisionAngle:
-                return False
+        if checkVisionAngle and not self.isPlayerInVisionCone(plyr):
+            return False
                 
-        if checkVisionDistance:
-            # Is the player close enough to where I could see them?
-            if self.suit.getDistance(plyr) > self.MaxVisionDistance:
-                return False
+        if checkVisionDistance and not self.isPlayerInVisionRange(plyr):
+            return False
 
-        # Is the player occluded by any BSP faces?
-        return self.battle.traceLine(self.suit.getPos(render) + (0, 0, 3.5 / 2), plyr.getPos(render) + (0, 0, 2.0))
+        return self.doesLineTraceToPlayer(plyr)

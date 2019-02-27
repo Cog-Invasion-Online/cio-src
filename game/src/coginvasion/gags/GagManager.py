@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.gags import GagGlobals
+"""
 from src.coginvasion.gags.BirthdayCake import BirthdayCake
 from src.coginvasion.gags.CreamPieSlice import CreamPieSlice
 from src.coginvasion.gags.WholeCreamPie import WholeCreamPie
@@ -99,3 +99,7 @@ class GagManager:
 
     def getGags(self):
         return self.gags
+"""
+
+class GagManager:
+    pass

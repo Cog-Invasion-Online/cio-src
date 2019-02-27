@@ -44,7 +44,7 @@ class DistributedTNT(DistributedPhysicsEntity):
         return body
 
     def announceGenerate(self):
-        self.tnt = Actor('phase_5/models/props/tnt-mod.bam', {'chan': 'phase_5/models/props/tnt-chan.bam'})
+        self.tnt = Actor('phase_14/models/props/tnt.bam', {'chan': 'phase_5/models/props/tnt-chan.bam'})
         self.tnt.reparentTo(self)
         self.tnt.play('chan')
         self.tnt.setP(97.492)

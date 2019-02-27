@@ -1,6 +1,7 @@
 # Server...
 account-bridge-filename astron/databases/account-bridge.db
 connect-method native
+server-ticks 30
 
 # Cogs
 want-suits #t

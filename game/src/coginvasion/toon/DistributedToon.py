@@ -43,7 +43,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
         self.animId2animState = {v: k for k, v in self.animState2animId.items()}
 
         self.lookMode = self.LMOff
-        self.lookPitch = 0
         self.cageBone = None
         self.lookTask = None
 
@@ -99,12 +98,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
     def getLookMode(self):
         return self.mode
 
-    def setLookPitch(self, pitch):
-        self.lookPitch = pitch
-
-    def getLookPitch(self):
-        return self.lookPitch
-
     def getCageBone(self, makeIfEmpty = True):
         if self.isEmpty():
             return None
@@ -144,17 +137,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
 
         return task.cont
 
-    def doSmoothTask(self, task):
-        self.smoother.computeAndApplySmoothPosHpr(self, self)
-        if not hasattr(base, 'localAvatar'):
-            return task.done
-        else:
-            if self.doId != base.localAvatar.doId:
-                self.setSpeed(self.smoother.getSmoothForwardVelocity(),
-                              self.smoother.getSmoothRotationalVelocity(),
-                              self.smoother.getSmoothLateralVelocity())
-        return task.cont
-
     def lookAtObject(self, h, p, r, blink=1):
         head = self.getPart('head')
         
@@ -163,7 +145,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
         
         Toon.Toon.lerpLookAt(self, head, tuple((h, p, r)))
         if blink:
-            self.stopBlink()
             maxBlinks = random.randint(1, 2)
             numBlinks = 0
             delay = 0
@@ -235,7 +216,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
         DistributedAvatar.announceGenerate(self)
         if self.animFSM.getCurrentState().getName() == 'off':
             self.setAnimState('neutral')
-        self.startBlink()
 
     def generate(self):
         DistributedAvatar.generate(self)
@@ -247,13 +227,11 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
         self.animState2animId = None
         self.animId2animState = None
 
-        taskMgr.remove(self.uniqueName('sBAL'))
         taskMgr.remove(self.uniqueName('blinkOnTurn'))
         if self.track != None:
             self.track.finish()
             DelayDelete.cleanupDelayDeletes(self.track)
             self.track = None
-        self.stopBlink()
         self.ignore('showAvId')
         self.ignore('showName')
         self.stopSmooth()

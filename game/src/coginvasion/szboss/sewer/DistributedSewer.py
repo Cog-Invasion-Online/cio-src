@@ -67,7 +67,6 @@ class DistributedSewer(DistributedBattleZone):
         #base.bspLevel.writeBamFile("bspLevel.bam")
     
         base.localAvatar.startPlay(gags = True, laff = True)
-        base.localAvatar.startBlink()
 
     def startLevel(self):
         base.bspLevel.reparentTo(render)

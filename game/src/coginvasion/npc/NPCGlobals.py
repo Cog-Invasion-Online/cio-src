@@ -687,6 +687,7 @@ NPCToonNames = {20000: 'Tutorial Tom',
  7009: 'Jimmy Thelock'
 }
 
+NPCIDByName = {v : k for k,v in NPCToonNames.items()}
 
 NPCToonDict = {
   5120: (5611, NPCToonNames[5120], "00/03/03/22/00/22/02/22/01/01/17/19/00", 0),
@@ -1368,3 +1369,6 @@ NPC_DNA = {
     "Doctor Surlee" : "00/04/01/09/02/09/02/09/24/24/21/00/00/00/00",
     "Doctor Dimm" : "00/08/03/15/00/15/00/15/25/24/22/00/00/00/00"
 }
+
+def getNPCIDByName(name):
+    return NPCIDByName.get(name, -1)

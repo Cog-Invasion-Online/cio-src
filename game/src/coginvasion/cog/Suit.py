@@ -8,15 +8,9 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from src.coginvasion.avatar.Avatar import Avatar
-from src.coginvasion.globals import CIGlobals, BSPUtility
-from src.coginvasion.cog import SuitGlobals
-from src.coginvasion.cog import Variant
-from src.coginvasion.cog import Voice
-from src.coginvasion.cog.SuitAttacks import SuitAttacks
-from src.coginvasion.cog.SuitType import SuitType
-from src.coginvasion.toon import ParticleLoader
-from src.coginvasion.cog import GagEffects
+from panda3d.core import Vec4, VBase4, Texture, TextureStage, TexGenAttrib
+from panda3d.bsp import TextureStages, BSPMaterialAttrib, BSPMaterial
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Parallel, ActorInterval, SoundInterval, Wait, Func
 from direct.distributed import DelayDelete
@@ -24,8 +18,21 @@ from direct.actor.Actor import Actor
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.task.Task import Task
-from panda3d.core import Vec4, VBase4, Texture, TextureStage, TexGenAttrib
-from panda3d.bsp import TextureStages, BSPMaterialAttrib, BSPMaterial
+
+from src.coginvasion.avatar.Avatar import Avatar
+from src.coginvasion.globals import CIGlobals, BSPUtility
+from src.coginvasion.cog import SuitGlobals
+from src.coginvasion.cog import Variant
+from src.coginvasion.cog import Voice
+from src.coginvasion.cog.SuitType import SuitType
+from src.coginvasion.toon import ParticleLoader
+from src.coginvasion.cog import GagEffects
+
+from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE
+from src.coginvasion.cog.activities.WakeAngry import WakeAngry
+from src.coginvasion.cog.activities.Flinch import Flinch
+from src.coginvasion.cog.activities.Die import Die
+
 import random
 
 class Suit(Avatar):
@@ -60,6 +67,12 @@ class Suit(Avatar):
         self.footstepSound = None
         self.showNametagInMargins = False
 
+        self.activities = {ACT_WAKE_ANGRY   :   WakeAngry(self),
+                           ACT_SMALL_FLINCH :   Flinch(self),
+                           ACT_DIE          :   Die(self)}
+
+        self.standWalkRunReverse = [('neutral', 'walk', 0.0, 5.0, 1.0, 1.0)]
+
         self.gruntSound = base.audio3d.loadSfx("phase_14/audio/sfx/cog_grunt.ogg")
         base.audio3d.attachSoundToObject(self.gruntSound, self)
 
@@ -84,6 +97,24 @@ class Suit(Avatar):
             State('squirt-small', self.enterSquirtSmall, self.exitSquirtSmall)
         ], 'off', 'off')
         self.animFSM.enterInitialState()
+        
+    def getRightHandNode(self):
+        return self.find("**/joint_Rhold")
+
+    def getLeftHandNode(self):
+        return self.find("**/joint_Lhold")
+
+    def getHeadNode(self):
+        return self.headModel
+
+    def getUpperBodySubpart(self):
+        return [None]
+
+    def getLowerBodySubpart(self):
+        return [None]
+
+    def getMoveAction(self, forward, rotate, strafe):
+        return 0
 
     def enterPie(self, ts = 0):
         self.play('pie')
@@ -353,6 +384,7 @@ class Suit(Avatar):
         self.exitGeneral()
 
     def enterDie(self, ts = 0):
+        print "Timestamp is", ts
         self.show()
         self.generateCog(isLose = 1)
         self.nametag.clearChatText()
@@ -447,7 +479,7 @@ class Suit(Avatar):
 
     # END STATES
 
-    def generateSuit(self, suitPlan, variant, voice = None, hideFirst = True):
+    def generateSuit(self, suitPlan, variant, voice = None, hideFirst = False):
         self.suitPlan = suitPlan
         self.suit = suitPlan.getSuitType()
         self.head = suitPlan.getHead()
@@ -472,6 +504,8 @@ class Suit(Avatar):
 
         if hideFirst:
             self.hide()
+        else:
+            self.show()
 
     def __blinkRed(self, task):
         self.healthBar.setColor(SuitGlobals.healthColors[3], 1)
@@ -620,7 +654,7 @@ class Suit(Avatar):
 
         classScale = 1.0#self.suitPlan.getCogClassAttrs().scaleMod
         self.setAvatarScale((self.suitPlan.getScale() / SuitGlobals.scaleFactors[self.suit]) * classScale)
-        self.setHeight(self.suitPlan.getHeight())
+        #self.setHeight(self.suitPlan.getHeight())
         self.setupNameTag()
 
         Avatar.initShadow(self)

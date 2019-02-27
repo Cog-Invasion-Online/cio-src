@@ -8,6 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
+from panda3d.bullet import BulletWorld
 from panda3d.bsp import BSPLoader
 from panda3d.core import Vec3
 
@@ -19,9 +20,15 @@ from src.coginvasion.distributed.AvatarWatcher import AvatarWatcher
 from src.coginvasion.battle.RPToonData import RPToonData
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.quest.Objectives import DefeatCog, DefeatCogBuilding
+from src.coginvasion.phys.PhysicsUtils import makeBulletCollFromGeoms, detachAndRemoveBulletNodes
 
 import BattleGlobals
 import itertools
+
+try:
+    from scipy.spatial.ckdtree import cKDTree
+except:
+    raise ImportError("You need to pull in the scipy package")
 
 class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
     notify = directNotify.newCategory('DistributedBattleZoneAI')
@@ -47,6 +54,15 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.svEntities = []
         self.navMeshNp = None
 
+        # List of info_hint_cover entites, which indicate cover locations for AIs.
+        self.coverKDTree = None
+        self.coverHints = []
+        
+        self.physicsWorld = None
+
+    def getCoverHints(self):
+        return self.coverHints
+
     def traceLine(self, start, end):
         if not self.bspLoader.hasActiveLevel():
             return True
@@ -58,15 +74,64 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         
     def suitHPAtZero(self, doId):
         pass
+
+    def generate(self):
+        DistributedObjectAI.generate(self)
+        self.air.battleZones[self.zoneId] = self
         
     def announceGenerate(self):
         DistributedObjectAI.announceGenerate(self)
+
         self.bspLoader = BSPLoader()
         self.bspLoader.setAi(True)
         self.bspLoader.setMaterialsFile("phase_14/etc/materials.txt")
         #self.bspLoader.setTextureContentsFile("phase_14/etc/texturecontents.txt")
         self.bspLoader.setServerEntityDispatcher(self)
         AvatarWatcher.zoneId = self.zoneId
+        
+        self.physicsWorld = BulletWorld()
+        self.physicsWorld.setGravity(Vec3(0, 0, -32.1740))
+
+        taskMgr.add(self.__updateTask, self.uniqueName('battleZoneUpdate'))
+
+    def __updateTask(self, task):
+        dt = globalClock.getDt()
+        try:
+            self.physicsWorld.doPhysics(dt, metadata.PHYS_SUBSTEPS, dt / (metadata.PHYS_SUBSTEPS + 1))
+        except:
+            pass
+        return task.cont
+
+    def getPhysicsWorld(self):
+        return self.physicsWorld
+
+    def loadBSPLevel(self, lfile):
+        self.bspLoader.read(lfile)
+        self.setupNavMesh(self.bspLoader.getResult())
+        makeBulletCollFromGeoms(self.bspLoader.getResult(), world = self.physicsWorld)
+
+        coverPositions = []
+        self.coverHints = []
+        for hint in self.bspLoader.findAllEntities("info_hint_cover"):
+            pos = hint.getCEntity().getOrigin()
+            coverPositions.append([pos[0], pos[1], pos[2]])
+            self.coverHints.append(hint)
+        if len(coverPositions) > 0:
+            self.coverKDTree = cKDTree(coverPositions)
+
+    def findClosestCoverPoint(self, currPos, n = 1):
+        if not self.coverKDTree:
+            return []
+
+        return list(self.coverKDTree.query([currPos[0], currPos[1], currPos[2]], n)[1])
+
+    def unloadBSPLevel(self):
+        self.cleanupNavMesh()
+        self.coverKDTree = None
+        self.coverHints = []
+        if self.bspLoader:
+            detachAndRemoveBulletNodes(self.bspLoader.getResult(), world = self.physicsWorld)
+            self.bspLoader.cleanup()
         
     def cleanupNavMesh(self):
         if self.navMeshNp:
@@ -154,15 +219,33 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         pass
 
     def delete(self):
+        taskMgr.remove(self.uniqueName('battleZoneUpdate'))
+
+        self.coverHints = None
+
+        del self.air.battleZones[self.zoneId]
+
         self.resetStats()
         
-        self.cleanupNavMesh()
         for ent in self.svEntities:
             ent.requestDelete()
         self.svEntities = None
-        if self.bspLoader:
-            self.bspLoader.cleanup()
-            self.bspLoader = None
+
+        self.unloadBSPLevel()
+        self.bspLoader = None
+            
+        if self.physicsWorld:
+            # We are counting on other types of objects never being added on the server side.
+            numRigids = self.physicsWorld.getNumRigidBodies()
+            numGhosts = self.physicsWorld.getNumGhosts()
+            numConstraints = self.physicsWorld.getNumConstraints()
+            for i in xrange(numRigids - 1, -1, -1):
+                self.physicsWorld.removeRigidBody(self.physicsWorld.getRigidBody(i))
+            for i in xrange(numGhosts - 1, -1, -1):
+                self.physicsWorld.removeGhost(self.physicsWorld.getGhost(i))
+            for i in xrange(numConstraints - 1, -1, -1):
+                self.physicsWorld.removeConstraint(self.physicsWorld.getConstraint(i))
+        self.physicsWorld = None
 
         self.avId2suitsTargeting = None
         self.watchingAvatarIds = None

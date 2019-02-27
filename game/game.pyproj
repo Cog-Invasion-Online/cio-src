@@ -30,7 +30,6 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
   <ItemGroup>
     <Content Include="astron\config\astrond.yml" />
     <Content Include="astron\databases\record_population.txt" />
-    <Content Include="astron\DistrictNames.txt" />
     <Content Include="astron\nameRequests.json" />
     <Content Include="config\Confauto.prc" />
     <Content Include="config\config_client.prc" />
@@ -44,7 +43,6 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Content Include="tools\todo.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="astron\databases\DatabaseManager.py" />
     <Compile Include="src\coginvasion\achievement\__init__.py" />
     <Compile Include="src\coginvasion\ai\AIBase.py" />
     <Compile Include="src\coginvasion\ai\AIBaseGlobal.py" />
@@ -52,9 +50,38 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\ai\AIZoneData.py" />
     <Compile Include="src\coginvasion\ai\CogInvasionAIRepository.py" />
     <Compile Include="src\coginvasion\ai\__init__.py" />
+    <Compile Include="src\coginvasion\avatar\Activities.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\avatar\AttackClasses.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\avatar\Attacks.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\avatar\Avatar.py" />
+    <Compile Include="src\coginvasion\avatar\AvatarShared.py" />
+    <Compile Include="src\coginvasion\avatar\AvatarTypes.py" />
+    <Compile Include="src\coginvasion\avatar\BaseActivity.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\avatar\BaseAttacks.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\avatar\BaseProjectile.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\avatar\DamageTypes.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\avatar\DistributedAvatar.py" />
     <Compile Include="src\coginvasion\avatar\DistributedAvatarAI.py" />
+    <Compile Include="src\coginvasion\avatar\Motor.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\avatar\TakeDamageInfo.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\avatar\__init__.py" />
     <Compile Include="src\coginvasion\base\AnisotropicFiltering.py" />
     <Compile Include="src\coginvasion\base\ChatCommands.py" />
@@ -63,6 +90,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     </Compile>
     <Compile Include="src\coginvasion\base\CIBase.py" />
     <Compile Include="src\coginvasion\base\CICommonFilters.py" />
+    <Compile Include="src\coginvasion\base\CIFilterManager.py" />
     <Compile Include="src\coginvasion\base\CIParticleEffect.py">
       <SubType>Code</SubType>
     </Compile>
@@ -180,55 +208,52 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\cogtropolis\NURBSMopath.py" />
     <Compile Include="src\coginvasion\cogtropolis\TrafficLight.py" />
     <Compile Include="src\coginvasion\cogtropolis\__init__.py" />
-    <Compile Include="src\coginvasion\cog\BaseBehaviorAI.py">
+    <Compile Include="src\coginvasion\cog\activities\Die.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\cog\activities\Flinch.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\cog\activities\WakeAngry.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\cog\activities\__init__.py" />
+    <Compile Include="src\coginvasion\cog\ai\BaseNPCAI.py" />
+    <Compile Include="src\coginvasion\cog\ai\ConditionsAI.py" />
+    <Compile Include="src\coginvasion\cog\ai\MemoryAI.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\cog\ai\RelationshipsAI.py" />
+    <Compile Include="src\coginvasion\cog\ai\ScheduleAI.py" />
+    <Compile Include="src\coginvasion\cog\ai\ScheduleResultsAI.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\cog\ai\StatesAI.py" />
+    <Compile Include="src\coginvasion\cog\ai\tasks\BaseTaskAI.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\cog\ai\tasks\TasksAI.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\cog\ai\tasks\__init__.py" />
+    <Compile Include="src\coginvasion\cog\ai\__init__.py" />
+    <Compile Include="src\coginvasion\cog\attacks\ClipOnTie.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\cog\attacks\__init__.py" />
     <Compile Include="src\coginvasion\cog\CogBattleGlobals.py" />
     <Compile Include="src\coginvasion\cog\Dept.py" />
-    <Compile Include="src\coginvasion\cog\DistributedDroppableCollectableBackpack.py" />
-    <Compile Include="src\coginvasion\cog\DistributedDroppableCollectableBackpackAI.py" />
-    <Compile Include="src\coginvasion\cog\DistributedDroppableCollectableJellybean.py" />
-    <Compile Include="src\coginvasion\cog\DistributedDroppableCollectableJellybeanAI.py" />
-    <Compile Include="src\coginvasion\cog\DistributedDroppableCollectableJellybeanJar.py" />
-    <Compile Include="src\coginvasion\cog\DistributedDroppableCollectableJellybeanJarAI.py" />
-    <Compile Include="src\coginvasion\cog\DistributedDroppableCollectableJellybeans.py" />
-    <Compile Include="src\coginvasion\cog\DistributedDroppableCollectableJellybeansAI.py" />
-    <Compile Include="src\coginvasion\cog\DistributedDroppableCollectableObject.py" />
-    <Compile Include="src\coginvasion\cog\DistributedDroppableCollectableObjectAI.py" />
     <Compile Include="src\coginvasion\cog\DistributedSuit.py" />
     <Compile Include="src\coginvasion\cog\DistributedSuitAI.py" />
-    <Compile Include="src\coginvasion\cog\DroppableCollectableJellybean.py" />
-    <Compile Include="src\coginvasion\cog\DroppableCollectableJellybeanJar.py" />
-    <Compile Include="src\coginvasion\cog\DroppableCollectableJellybeans.py" />
-    <Compile Include="src\coginvasion\cog\DroppableCollectableObject.py" />
     <Compile Include="src\coginvasion\cog\GagEffects.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\coginvasion\cog\Head.py" />
     <Compile Include="src\coginvasion\cog\SpawnMode.py" />
     <Compile Include="src\coginvasion\cog\Suit.py" />
-    <Compile Include="src\coginvasion\cog\SuitAttackBehaviorAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitAttackGlobals.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="src\coginvasion\cog\SuitAttacks.py" />
-    <Compile Include="src\coginvasion\cog\SuitAttackTurretBehaviorAI.py" />
+    <Compile Include="src\coginvasion\cog\SuitAttackGlobals.py" />
     <Compile Include="src\coginvasion\cog\SuitBank.py" />
-    <Compile Include="src\coginvasion\cog\SuitBehaviorBaseAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitBrainAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitCallInBackupBehaviorAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitFlyToRandomSpotBehaviorAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitFollowBossBehaviorAI.py" />
     <Compile Include="src\coginvasion\cog\SuitGlobals.py" />
-    <Compile Include="src\coginvasion\cog\SuitHabitualBehaviorAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitHealBossBehaviorAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitItemDropperAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitPanicBehaviorAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitPathBehaviorAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitPathDataAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitPursueToonBehaviorAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitRandomStrollBehaviorAI.py" />
-    <Compile Include="src\coginvasion\cog\SuitState.py" />
     <Compile Include="src\coginvasion\cog\SuitType.py" />
     <Compile Include="src\coginvasion\cog\SuitUtils.py" />
     <Compile Include="src\coginvasion\cog\Variant.py" />
@@ -259,6 +284,20 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\friends\FriendsManager.py" />
     <Compile Include="src\coginvasion\friends\FriendsManagerUD.py" />
     <Compile Include="src\coginvasion\friends\__init__.py" />
+    <Compile Include="src\coginvasion\gagsnew\BaseGag.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\gagsnew\HL2Pistol.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\gagsnew\HL2Shotgun.py" />
+    <Compile Include="src\coginvasion\gagsnew\TNT.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\gagsnew\WholeCreamPie.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\gagsnew\__init__.py" />
     <Compile Include="src\coginvasion\gags\AccuracyBar.py" />
     <Compile Include="src\coginvasion\gags\ActivateTrapGag.py" />
     <Compile Include="src\coginvasion\gags\Anvil.py" />
@@ -269,6 +308,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\gags\backpack\__init__.py" />
     <Compile Include="src\coginvasion\gags\BambooCane.py" />
     <Compile Include="src\coginvasion\gags\BananaPeel.py" />
+    <Compile Include="src\coginvasion\gags\BaseProjectile.py" />
     <Compile Include="src\coginvasion\gags\BCakeEntity.py">
       <SubType>Code</SubType>
     </Compile>
@@ -295,6 +335,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\gags\GagUtils.py" />
     <Compile Include="src\coginvasion\gags\Geyser.py" />
     <Compile Include="src\coginvasion\gags\GrandPiano.py" />
+    <Compile Include="src\coginvasion\gags\HL2Shotgun.py" />
     <Compile Include="src\coginvasion\gags\Inventory.py" />
     <Compile Include="src\coginvasion\gags\JugglingBalls.py" />
     <Compile Include="src\coginvasion\gags\LightDropGag.py" />
@@ -321,11 +362,13 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\gags\TrapGag.py" />
     <Compile Include="src\coginvasion\gags\WaterGlass.py" />
     <Compile Include="src\coginvasion\gags\WaterGun.py" />
+    <Compile Include="src\coginvasion\gags\WaterPellet.py" />
     <Compile Include="src\coginvasion\gags\WeddingCake.py" />
     <Compile Include="src\coginvasion\gags\Whistle.py" />
     <Compile Include="src\coginvasion\gags\WholeCreamPie.py" />
     <Compile Include="src\coginvasion\gags\WholeFruitPie.py" />
     <Compile Include="src\coginvasion\gags\__init__.py" />
+    <Compile Include="src\coginvasion\globals\BSPUtility.py" />
     <Compile Include="src\coginvasion\globals\ChatGlobals.py" />
     <Compile Include="src\coginvasion\globals\CIGlobals.py" />
     <Compile Include="src\coginvasion\globals\__init__.py" />
@@ -482,7 +525,6 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\makeatoon\MakeAToon.py" />
     <Compile Include="src\coginvasion\makeatoon\ToonGenerator.py" />
     <Compile Include="src\coginvasion\makeatoon\__init__.py" />
-    <Compile Include="src\coginvasion\manager\SettingsManager.py" />
     <Compile Include="src\coginvasion\manager\UserInputStorage.py" />
     <Compile Include="src\coginvasion\manager\__init__.py" />
     <Compile Include="src\coginvasion\margins\MarginCell.py" />
@@ -611,6 +653,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\phys\DistributedPhysicsEntityAI.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\phys\DistributedPhysicsEntityShared.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\phys\DistributedTNT.py">
       <SubType>Code</SubType>
     </Compile>
@@ -662,6 +707,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\resourcepack\EnvironmentConfiguration.py" />
     <Compile Include="src\coginvasion\resourcepack\ResourcePack.py" />
     <Compile Include="src\coginvasion\resourcepack\__init__.py" />
+    <Compile Include="src\coginvasion\settings\Setting.py" />
+    <Compile Include="src\coginvasion\settings\SettingsManager.py" />
+    <Compile Include="src\coginvasion\settings\__init__.py" />
     <Compile Include="src\coginvasion\shop\BattleShop.py" />
     <Compile Include="src\coginvasion\shop\DistributedBattleShop.py" />
     <Compile Include="src\coginvasion\shop\DistributedBattleShopAI.py" />
@@ -700,12 +748,17 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\szboss\DistributedIndicatorLightAI.py" />
     <Compile Include="src\coginvasion\szboss\DistributedSZBossSuit.py" />
     <Compile Include="src\coginvasion\szboss\DistributedSZBossSuitAI.py" />
+    <Compile Include="src\coginvasion\szboss\DistributedSZBossToon.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\szboss\DistributedTrigger.py" />
     <Compile Include="src\coginvasion\szboss\DistributedTriggerAI.py" />
     <Compile Include="src\coginvasion\szboss\Entity.py" />
     <Compile Include="src\coginvasion\szboss\EntityAI.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\szboss\EnvLightGlow.py" />
+    <Compile Include="src\coginvasion\szboss\EnvParticleSystem.py" />
     <Compile Include="src\coginvasion\szboss\FuncButton.py" />
     <Compile Include="src\coginvasion\szboss\FuncPhysics.py" />
     <Compile Include="src\coginvasion\szboss\FuncWater.py">
@@ -713,9 +766,16 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     </Compile>
     <Compile Include="src\coginvasion\szboss\Goon.py" />
     <Compile Include="src\coginvasion\szboss\GoonAI.py" />
+    <Compile Include="src\coginvasion\szboss\HintsAI.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\szboss\InfoBgm.py" />
     <Compile Include="src\coginvasion\szboss\InfoPlayerRelocate.py" />
+    <Compile Include="src\coginvasion\szboss\InfoTimer.py" />
     <Compile Include="src\coginvasion\szboss\LogicCounter.py" />
+    <Compile Include="src\coginvasion\szboss\DistributedSZBossToonAI.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\szboss\Ropes.py" />
     <Compile Include="src\coginvasion\szboss\sewer\DistributedSewer.py">
       <SubType>Code</SubType>
@@ -732,6 +792,10 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\szboss\UseableObject.py" />
     <Compile Include="src\coginvasion\szboss\__init__.py" />
     <Compile Include="src\coginvasion\toon\AccessoryGlobals.py" />
+    <Compile Include="src\coginvasion\toon\activities\Die.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\toon\activities\__init__.py" />
     <Compile Include="src\coginvasion\toon\ChatBalloon.py" />
     <Compile Include="src\coginvasion\toon\ChatBalloonOld.py" />
     <Compile Include="src\coginvasion\toon\CIGravityWalker.py" />
@@ -831,6 +895,10 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Folder Include="src\coginvasion\cogoffice\" />
     <Folder Include="src\coginvasion\cogtropolis\" />
     <Folder Include="src\coginvasion\cog\" />
+    <Folder Include="src\coginvasion\cog\ai\" />
+    <Folder Include="src\coginvasion\cog\ai\tasks\" />
+    <Folder Include="src\coginvasion\cog\activities\" />
+    <Folder Include="src\coginvasion\cog\attacks\" />
     <Folder Include="src\coginvasion\distributed\" />
     <Folder Include="src\coginvasion\dna\" />
     <Folder Include="src\coginvasion\friends\" />
@@ -848,6 +916,8 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Folder Include="src\coginvasion\margins\" />
     <Folder Include="src\coginvasion\minigame\" />
     <Folder Include="src\coginvasion\nametag\" />
+    <Folder Include="src\coginvasion\gagsnew\" />
+    <Folder Include="src\coginvasion\settings\" />
     <Folder Include="src\coginvasion\szboss\" />
     <Folder Include="src\coginvasion\npc\" />
     <Folder Include="src\coginvasion\pet\" />
@@ -859,6 +929,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Folder Include="src\coginvasion\standalone\" />
     <Folder Include="src\coginvasion\szboss\sewer\" />
     <Folder Include="src\coginvasion\toon\" />
+    <Folder Include="src\coginvasion\toon\activities\" />
     <Folder Include="src\coginvasion\tutorial\" />
     <Folder Include="src\coginvasion\uber\" />
     <Folder Include="tools\" />

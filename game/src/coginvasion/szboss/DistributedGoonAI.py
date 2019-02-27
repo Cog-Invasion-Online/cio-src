@@ -1,4 +1,6 @@
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
+from src.coginvasion.avatar.AvatarTypes import *
+from src.coginvasion.cog.ai.RelationshipsAI import *
 from DistributedEntityAI import DistributedEntityAI
 from src.coginvasion.gags import GagGlobals
 
@@ -7,6 +9,13 @@ from GoonAI import GoonAI, GBSleep, GBPatrol
 class DistributedGoonAI(DistributedEntityAI, DistributedAvatarAI):
 
     StartsAsleep = 1
+    
+    AvatarType = AVATAR_SUIT
+    Relationships = {
+        AVATAR_CCHAR    :   RELATIONSHIP_DISLIKE,
+        AVATAR_SUIT     :   RELATIONSHIP_NONE,
+        AVATAR_TOON     :   RELATIONSHIP_HATE
+    }
 
     def __init__(self, air, dispatch):
         DistributedEntityAI.__init__(self, air, dispatch)

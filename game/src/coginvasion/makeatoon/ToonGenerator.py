@@ -467,7 +467,5 @@ class ToonGenerator:
             self.toon.animFSM.request('neutral')
         else:
             self.toon.loopFromFrameToZero('neutral', fromFrame = self.currentAnimFrame)
-        self.toon.startBlink()
-        self.toon.startLookAround()
         self.toon.setH(180)
         #self.toon.deleteShadow()

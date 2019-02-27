@@ -226,7 +226,6 @@ class CharSelection(DirectObject):
         self.stageToon.nametag.unmanage(base.marginManager)
         self.stageToon.nametag.updateAll()
         self.stageToon.animFSM.request('neutral')
-        self.stageToon.startBlink()
         self.stageToon.setPosHpr(0, 0, 0, 10, 0, 0)
         self.stageToon.show()
 
@@ -347,8 +346,6 @@ class CharSelection(DirectObject):
         camera.setPosHpr(0, 0, 0, 0, 0, 0)
         #base.transitions.fadeScreen(1.0)
         self.unloadSZGeom()
-        self.stageToon.stopLookAround()
-        self.stageToon.stopBlink()
         self.stageToon.hide()
 
     def enterCharSelected(self):

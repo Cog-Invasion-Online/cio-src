@@ -103,7 +103,7 @@ class BuildingSuitPlannerAI:
             plan = random.choice(planList)
 
             suit = DistributedTakeOverSuitAI(base.air, self, bldg, bldg.door.doId)
-            suit.setManager(self)
+            #suit.setManager(self)
             suit.generateWithRequired(bldg.zoneId)
             suit.b_setHood(self.hoodClass.hood)
             suit.b_setLevel(level)
