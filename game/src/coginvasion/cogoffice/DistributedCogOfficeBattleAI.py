@@ -109,25 +109,6 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
     def handleAvatarLeave(self, avatar, reason):
         DistributedBattleZoneAI.handleAvatarLeave(self, avatar, reason)
-        avId = avatar.doId
-
-        if avId in self.toonId2suitsTargeting.keys():
-            del self.toonId2suitsTargeting[avId]
-        
-        toon = self.air.doId2do.get(avId)
-        if len(self.watchingAvatarIds) > 0:
-            allSuits = self.guardSuits + self.chairSuits
-            for suit in allSuits:
-                if suit.isActivated():
-                    if not suit.brain is None and not suit.brain.currentBehavior is None \
-                        and suit.brain.currentBehavior.targetId == avId:
-                        # Uh oh, this cog was targeting this toon.
-                        # We have to make them pick a new target.
-                        suit.brain.currentBehavior.pickTarget()
-                
-                # We don't care if this toon starts using a gag anymore.
-                gagStartEvt = GAG_START_EVENT.format(avId)
-                suit.ignore(gagStartEvt)
 
         if len(self.watchingAvatarIds) == 0:
             self.resetEverything()
@@ -444,25 +425,24 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
         plan = random.choice(availableSuits)
         suit = DistributedCogOfficeSuitAI(self.air, self, spawnData, hangoutData, isChair, self.hood)
-        suit.setBattleZone(self)
-        suit.generateWithRequired(self.zoneId)
-        suit.d_setHood(suit.hood)
-        suit.b_setLevel(level)
-        suit.battleZone = self
-        
-        for avId in self.watchingAvatarIds:
-            avatar = self.air.doId2do.get(avId, None)
-            
-            if avatar and avatar.getGagStartEvent():
-                suit.accept(avatar.getGagStartEvent(), suit.handleToonThreat, [avatar, False])
-        
+        suit.setBattleZone(self) 
         variant = Variant.NORMAL
         hood = self.hood
         if self.hood == ZoneUtil.ToontownCentral:
             hood = ZoneUtil.BattleTTC
         if CogBattleGlobals.hi2hi[hood] == CogBattleGlobals.WaiterHoodIndex:
             variant = Variant.WAITER
-        suit.b_setSuit(plan, variant)
+        suit.setSuit(plan, variant)
+        suit.generateWithRequired(self.zoneId)
+        suit.d_setHood(suit.hood)
+        suit.b_setLevel(level)
+        suit.battleZone = self
+        
+        #for avId in self.watchingAvatarIds:
+        #    avatar = self.air.doId2do.get(avId, None)
+        #    
+        #    if avatar and avatar.getGagStartEvent():
+        #        suit.accept(avatar.getGagStartEvent(), suit.handleToonThreat, [avatar, False])
         suit.b_setPlace(self.zoneId)
         suit.b_setName(plan.getName())
         return suit

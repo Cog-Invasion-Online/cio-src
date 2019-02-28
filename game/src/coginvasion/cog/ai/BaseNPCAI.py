@@ -892,7 +892,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                 #print "schedule still running"
         
     def startAI(self):
-        self.runAITask = taskMgr.add(self.__runAITask, "BaseNPCAI.runAITask")
+        self.runAITask = taskMgr.add(self.__runAITask, "BaseNPCAI.runAITask-" + str(id(self)))
         
     def __runAITask(self, task):
         self.runAI()

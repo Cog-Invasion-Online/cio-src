@@ -215,6 +215,10 @@ def clearModelNodesBelow(node):
 def isAvatar(obj):
     from src.coginvasion.avatar.AvatarShared import AvatarShared
     return isinstance(obj, AvatarShared)
+    
+def avatarsAreFriends(av1, av2):
+    from src.coginvasion.cog.ai.RelationshipsAI import RELATIONSHIP_FRIEND
+    return av1.getRelationshipTo(av2) == RELATIONSHIP_FRIEND
 
 def isDistributed(obj):
     return hasattr(obj, 'doId')

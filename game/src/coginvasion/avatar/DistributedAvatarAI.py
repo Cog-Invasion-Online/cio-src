@@ -158,6 +158,10 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
             return 'DAvatarAI-healthChanged-{0}'.format(self.doId)
         return None
         
+    def b_updateAttackAmmo(self, attackID, ammo):
+        self.sendUpdate('updateAttackAmmo', [attackID, ammo])
+        self.updateAttackAmmo(attackID, ammo)
+        
     def handleLogicalZoneChange(self, newZoneId, oldZoneId):
         """Make sure the avatar lists are updated with our new zone."""
         

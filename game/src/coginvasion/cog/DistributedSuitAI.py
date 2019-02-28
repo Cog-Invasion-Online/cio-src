@@ -110,6 +110,9 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
     def b_setSuit(self, plan, variant = 0):
         self.d_setSuit(plan, variant)
         self.setSuit(plan, variant)
+        self.d_setHitboxData(*self.getHitboxData())
+        self.d_setMaxHealth(self.maxHealth)
+        self.d_setHealth(self.health)
 
     def d_setSuit(self, plan, variant = 0):
         if isinstance(plan, SuitPlan):
@@ -121,7 +124,7 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         self.variant = Variant.getVariantById(variant)
 
         # setup the hitbox
-        self.b_setHitboxData(0, 2, self.suitPlan.getHeight())
+        self.setHitboxData(0, 2, self.suitPlan.getHeight())
 
         classAttrs = plan.getCogClassAttrs()
         self.maxHealth = classAttrs.baseHp
@@ -134,11 +137,11 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
             self.maxHealth = 1
             self.health = self.maxHealth
             
-        self.d_setMaxHealth(self.maxHealth)
-        self.d_setHealth(self.health)
+        self.setMaxHealth(self.maxHealth)
+        self.setHealth(self.health)
 
     def getSuit(self):
-        return tuple((self.suitPlan, self.variant))
+        return tuple((SuitBank.getIdFromSuit(self.suitPlan), self.variant))
 
     def setLevel(self, level):
         self.level = level
@@ -161,7 +164,7 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
             self.d_announceHealth(0, prevHealth - self.health)
 
     def stopSuitInPlace(self, killBrain = True):
-        self.stopAI()
+        #self.stopAI()
         #self.b_setSuitState(0, -1, -1)
         self.clearTrack()
 

@@ -234,6 +234,9 @@ def isChildOfLA(node):
     return hasattr(base, 'localAvatar') and base.localAvatar.isAncestorOf(node)
 
 def detachBulletNodes(rootNode, world = None):
+    if not rootNode or rootNode.isEmpty():
+        return
+        
     if not world:
         world = base.physicsWorld
 
@@ -258,6 +261,8 @@ def attachBulletNodes(rootNode, physicsWorld = None):
         physicsWorld.attachGhost(ghostnode.node())
         
 def removeBulletNodes(rootNode):
+    if not rootNode or rootNode.isEmpty():
+        return
     for rbnode in rootNode.findAllMatches("**/+BulletRigidBodyNode"):
         if isChildOfLA(rbnode):
             print "Tried to remove body node of local avatar!"

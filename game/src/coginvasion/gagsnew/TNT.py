@@ -20,7 +20,7 @@ import random
 class TNTProjectile(DistributedPhysicsEntity):
     
     def __init__(self, cr):
-        DistributedPhysicsEntity.__init__(self)
+        DistributedPhysicsEntity.__init__(self, cr)
         self.tnt = None
         self.tntSound = None
         self.particle = None
@@ -103,7 +103,7 @@ class TNTProjectileAI(DistributedPhysicsEntityAI):
         self.sendUpdate('explode')
 
         for obj in self.air.avatars[self.zoneId]:
-            if CIGlobals.isAvatar(obj):
+            if CIGlobals.isAvatar(obj) and not CIGlobals.avatarsAreFriends(self.avatar, obj):
                 dist = obj.getDistance(self)
                 if dist <= GagGlobals.TNT_RANGE:
                     info = TakeDamageInfo(self.avatar, ATTACK_GAG_TNT, self.attack.calcDamage(dist), self.getPos())
@@ -121,7 +121,6 @@ class TNT(BaseGag, TNTShared):
     Name = GagGlobals.TNT
 
     ModelPath = "phase_14/models/props/tnt.bam"
-    ModelAnimPath = "phase_5/models/props/tnt-chan.bam"
     Hold = ATTACK_HOLD_RIGHT
 
     ModelVMOrigin = (-0.23, 0.26, 0.05)
@@ -205,7 +204,7 @@ class TNT_AI(BaseGagAI, TNTShared):
                 self.traceVector,
                 self.throwOrigin,
                 self.getAvatar(),
-                self.getAvatar().getBattleZone().getPhysicsWorld())
+                self.getAvatar().getBattleZone().getPhysicsWorld()) + (0, 0, 0.1)
 
             proj = TNTProjectileAI(base.air, self.avatar, self)
             proj.generateWithRequired(self.avatar.zoneId)

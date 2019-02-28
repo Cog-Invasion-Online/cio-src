@@ -548,15 +548,15 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
                     track.append(Func(toon.startSmooth))
                 runTrack.append(track)
 
-        for suit in self.suits.values():
-            if suit.hangoutPoint[0]:
-                track = Sequence(
-                    Func(suit.setAnimState, 'walk'),
-                    NPCWalkInterval(
-                        suit, Point3(suit.guardPoint[0][0], suit.guardPoint[0][1], suit.guardPoint[0][2]), durationFactor = 0.19),
-                    Func(suit.setHpr, Vec3(suit.guardPoint[1], 0, 0)),
-                    Func(suit.setAnimState, 'neutral'))
-                runTrack.append(track)
+        #for suit in self.suits.values():
+        #    if suit.hangoutPoint[0]:
+        #        track = Sequence(
+        #            Func(suit.setAnimState, 'walk'),
+        #            NPCWalkInterval(
+        #                suit, Point3(suit.guardPoint[0][0], suit.guardPoint[0][1], suit.guardPoint[0][2]), durationFactor = 0.19),
+        #            Func(suit.setHpr, Vec3(suit.guardPoint[1], 0, 0)),
+        #            Func(suit.setAnimState, 'neutral'))
+        #        runTrack.append(track)
 
         self.faceOffTrack.append(runTrack)
         self.faceOffTrack.start(ts)

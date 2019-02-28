@@ -72,7 +72,7 @@ metadata.PROCESS = 'server'
 loadPrcFileData('', 'window-type none')
 loadPrcFileData('', 'audio-library-name none')
 
-PStatClient.connect("127.0.0.1")
+#PStatClient.connect("127.0.0.1")
 
 from direct.showbase.ShowBase import ShowBase
 base = ShowBase()

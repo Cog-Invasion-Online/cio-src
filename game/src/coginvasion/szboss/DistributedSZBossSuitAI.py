@@ -56,6 +56,7 @@ class DistributedSZBossSuitAI(DistributedSuitAI, DistributedEntityAI):
         
         DistributedEntityAI.announceGenerate(self)
         DistributedSuitAI.announceGenerate(self)
+        self.stopAI()
 
         self.b_setParent(CIGlobals.SPRender)
         taskMgr.add(self.monitorHealth, self.uniqueName('monitorHealth'))

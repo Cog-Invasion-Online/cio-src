@@ -19,6 +19,7 @@ class DistributedPhysicsEntityAI(DistributedSmoothNodeAI, PhysicsNodePath):
 
     def doSetupPhysics(self):
         self.setupPhysics(self.getPhysBody(), False)
+        self.addToPhysicsWorld(self.air.getPhysicsWorld(self.zoneId))
 
     def getPhysBody(self):
         return None
@@ -26,8 +27,7 @@ class DistributedPhysicsEntityAI(DistributedSmoothNodeAI, PhysicsNodePath):
     def announceGenerate(self):
         self.doSetupPhysics()
         DistributedSmoothNodeAI.announceGenerate(self)
-        self.activateSmoothing(True, False)
-        self.startPosHprBroadcast(0.075) # broadcast every 75 milliseconds
+        self.startPosHprBroadcast(0.0) # every frame we should broadcast pos
 
     def delete(self):
         self.stopPosHprBroadcast()
