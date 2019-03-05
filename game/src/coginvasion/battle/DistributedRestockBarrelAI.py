@@ -41,10 +41,13 @@ class DistributedRestockBarrelAI(DistributedEntityAI, DistributedNodeAI):
     def d_setGrab(self, avId):
         self.sendUpdate('setGrab', [avId])
         
-    def requestGrab(self):
-        avId = self.air.getAvatarIdFromSender()
-        if avId not in self.usedAvIds:
-            self.usedAvIds.append(avId)
+    def requestGrab(self, avId = None):
+        npc = (avId is not None)
+        if avId is None:
+            avId = self.air.getAvatarIdFromSender()
+        if npc or avId not in self.usedAvIds:
+            if not npc:
+                self.usedAvIds.append(avId)
             self.d_setGrab(avId)
         else:
             self.sendUpdate('setReject', [])

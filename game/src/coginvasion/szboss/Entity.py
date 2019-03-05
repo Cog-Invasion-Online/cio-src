@@ -13,6 +13,10 @@ class Entity(NodePath):
         self.cEntity = None
         self.outputs = []
         self.bspLoader = None
+        self.spawnflags = 0
+
+    def hasSpawnFlags(self, flags):
+        return (self.spawnflags & flags) != 0
 
     def getCEntity(self):
         return self.cEntity
@@ -21,7 +25,7 @@ class Entity(NodePath):
         return self.bspLoader
         
     def entityTaskName(self, taskName):
-        return taskName + "-" + str(self.getEntnum())
+        return taskName + "-entity_" + str(self.getEntnum())
         
     def getEntnum(self):
         assert self.cEntity
@@ -92,6 +96,8 @@ class Entity(NodePath):
             self.outputs.append({'output': k, 'target': data[0], 'input': data[1],
                                  'parameter': data[2], 'delay': float(data[3]),
                                  'once': bool(int(data[4])), 'active': True})
+
+        self.spawnflags = self.getEntityValueInt("spawnflags")
                                  
         self.dispatchOutput("OnSpawn")
                                      

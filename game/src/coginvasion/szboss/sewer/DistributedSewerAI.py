@@ -33,7 +33,10 @@ class DistributedSewerAI(DistributedBattleZoneAI):
         from src.coginvasion.szboss import (DistributedTriggerAI, DistributedFuncDoorAI, DistributedIndicatorLightAI,
                                             DistributedSZBossSuitAI, DistributedCutsceneAI, DistributedGoonAI,
                                             DistributedButtonAI, DistributedGeneratorAI, DistributedFuncRotatingAI, LogicCounter,
-                                            DistributedSZBossToonAI, HintsAI)
+                                            DistributedSZBossToonAI, HintsAI, InfoTimer)
+        from src.coginvasion.cogoffice.AIEntities import (SuitSpawn)
+        from src.coginvasion.battle.DistributedHPBarrelAI import DistributedHPBarrelAI
+        from src.coginvasion.battle.DistributedGagBarrelAI import DistributedGagBarrelAI
         self.bspLoader.linkServerEntityToClass("trigger_once",          DistributedTriggerAI.DistributedTriggerOnceAI)
         self.bspLoader.linkServerEntityToClass("trigger_multiple",      DistributedTriggerAI.DistributedTriggerMultipleAI)
         self.bspLoader.linkServerEntityToClass("func_door",             DistributedFuncDoorAI.DistributedFuncDoorAI)
@@ -47,6 +50,10 @@ class DistributedSewerAI(DistributedBattleZoneAI):
         self.bspLoader.linkServerEntityToClass("logic_counter",         LogicCounter.LogicCounter)
         self.bspLoader.linkServerEntityToClass("npc_toon",              DistributedSZBossToonAI.DistributedSZBossToonAI)
         self.bspLoader.linkServerEntityToClass("info_hint_cover",       HintsAI.InfoHintCover)
+        self.bspLoader.linkServerEntityToClass("cogoffice_suitspawn",   SuitSpawn)
+        self.bspLoader.linkServerEntityToClass("info_timer",            InfoTimer.InfoTimer)
+        self.bspLoader.linkServerEntityToClass("item_gagbarrel",            DistributedGagBarrelAI)
+        self.bspLoader.linkServerEntityToClass("item_laffbarrel",           DistributedHPBarrelAI)
         
     def delete(self):
         self.avId = None

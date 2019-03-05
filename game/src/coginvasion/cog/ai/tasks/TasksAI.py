@@ -72,15 +72,16 @@ class Task_EquipAttack(BaseTaskAI):
         if len(self.npc.capableAttacks) == 0:
             return SCHED_FAILED
 
-        attack = random.choice(self.npc.capableAttacks)
-        if attack.getID() != self.npc.getEquippedAttack():
-            self.npc.b_setEquippedAttack(attack.getID())
+        attackID = random.choice(self.npc.capableAttacks)
+        if attackID != self.npc.getEquippedAttack():
+            self.npc.b_setEquippedAttack(attackID)
         return SCHED_COMPLETE
 
 class Task_StopAttack(BaseTaskAI):
 
     def runTask(self):
-        self.npc.b_setEquippedAttack(-1)
+        if self.npc.getEquippedAttack() != -1:
+            self.npc.b_setEquippedAttack(-1)
         return SCHED_COMPLETE
 
 class Task_FireAttack(BaseTaskAI):
@@ -233,3 +234,60 @@ class Task_AwaitAttack(BaseTaskAI):
             print "Await attack done"
             return SCHED_COMPLETE
         return SCHED_CONTINUE
+        
+class Task_SetSchedule(BaseTaskAI):
+    
+    def __init__(self, npc, schedName):
+        BaseTaskAI.__init__(self, npc)
+        self.schedName = schedName
+    
+    def runTask(self):
+        sched = self.npc.getScheduleByName(self.schedName)
+        if not sched:
+            return SCHED_FAILED
+            
+        self.npc.changeSchedule(sched)
+        return SCHED_COMPLETE
+        
+    def cleanup(self):
+        del self.schedName
+        BaseTaskAI.cleanup(self)
+        
+class Task_RememberPosition(BaseTaskAI):
+    
+    def runTask(self):
+        self.npc.memoryPosition = self.npc.getPos()
+        return SCHED_COMPLETE
+        
+class Task_ForgetPosition(BaseTaskAI):
+    
+    def runTask(self):
+        self.npc.memoryPosition = None
+        return SCHED_COMPLETE
+        
+class Task_GetPathToMemoryPosition(BaseTaskAI):
+    
+    def runTask(self):
+        if not self.npc.memoryPosition:
+            return SCHED_FAILED
+            
+        path = self.npc.getBattleZone().planPath(self.npc.getPos(), self.npc.memoryPosition)
+        if len(path) < 2:
+            return SCHED_FAILED
+
+        self.npc.getMotor().setWaypoints(path)
+        return SCHED_COMPLETE
+
+class Task_SetPostAttackSchedule(BaseTaskAI):
+
+    def runTask(self):
+        if self.npc.getEquippedAttack() == -1:
+            return SCHED_FAILED
+        schedName = self.npc.attacks[self.npc.getEquippedAttack()].getPostAttackSchedule()
+        if not schedName:
+            return SCHED_FAILED
+        sched = self.npc.getScheduleByName(schedName)
+        if not sched:
+            return SCHED_FAILED
+        self.npc.changeSchedule(sched)
+        return SCHED_COMPLETE

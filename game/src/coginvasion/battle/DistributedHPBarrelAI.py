@@ -12,6 +12,7 @@ It seriously took me 2 years to add in toon-up barrels. SMH
 
 from src.coginvasion.hood import ZoneUtil
 
+from src.coginvasion.globals import CIGlobals
 from DistributedRestockBarrelAI import DistributedRestockBarrelAI
 from src.coginvasion.hood.playground import TreasureGlobals
 
@@ -23,7 +24,7 @@ class DistributedHPBarrelAI(DistributedRestockBarrelAI):
         if hasattr(self.dispatch, 'hood'):
             self.hoodId = ZoneUtil.Hood2ZoneId.get(self.dispatch.hood)
         else:
-            self.hoodId = None
+            self.hoodId = ZoneUtil.ToontownCentralId
             
         self.hp = 10
         
@@ -53,8 +54,8 @@ class DistributedHPBarrelAI(DistributedRestockBarrelAI):
                     # Buildings can be difficult, let's multiply the heal amount by 2.
                     healAmt = (treasureData[1] * 2)
                     
-                if (avatar.health + healAmt > avatar.maxHealth):
-                    healAmt = avatar.maxHealth - avatar.health
+            if (avatar.health + healAmt > avatar.maxHealth):
+                healAmt = avatar.maxHealth - avatar.health
             
             if healAmt > 0:
                 # Let's toon up the avatar that wants to grab health and announce it.

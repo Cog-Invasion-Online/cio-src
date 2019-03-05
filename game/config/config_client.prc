@@ -75,7 +75,8 @@ simulated-latency-max 0.3
 # Performance...
 hardware-animated-vertices #f
 sync-video #f
-smooth-lag 0.4
+smooth-lag 0.2
+smooth-prediction-lag 0.0
 basic-shaders-only #f
 framebuffer-multisample 0
 framebuffer-stencil 0
@@ -126,8 +127,6 @@ pssm-cache-shaders 1
 pssm-ambient-light-identifier 0.2 0.2 0.2
 pssm-ambient-light-min 0.2 0.2 0.2
 pssm-ambient-light-scale 1.0
-pssm-dynamic-cubemaps 0
-pssm-dynamic-cubemaps-size 128
 shadow-depth-bits 32
 stencil-bits 0
 

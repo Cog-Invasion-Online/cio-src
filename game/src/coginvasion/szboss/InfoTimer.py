@@ -7,14 +7,15 @@ class InfoTimer(EntityAI):
         self.delay = 0.0
         self.loop = False
         
-        self.__time = 0.0
         self.timerTask = None
+        
+        self.__startTime = 0.0
         
     def unload(self):
         if self.timerTask:
             self.timerTask.remove()
         self.timerTask = None
-        self.__time = None
+        self.__startTime = None
         self.delay = None
         self.loop = None
         
@@ -25,11 +26,11 @@ class InfoTimer(EntityAI):
         self.loop = bool(self.getEntityValueInt("loop"))
         
     def __timerTask(self, task):
-        self.__time += task.getDt()
-        if self.__time >= self.delay:
+        now = globalClock.getFrameTime()
+        if now - self.__startTime >= self.delay:
             self.dispatchOutput("OnTimeout")
             if self.loop:
-                self.__time = 0.0
+                self.Reset()
             else:
                 return task.done
         
@@ -37,9 +38,14 @@ class InfoTimer(EntityAI):
         
     ####### Inputs ########
     
-    def Start(self):
+    def Start(self, reset = True):
+        if reset:
+            self.Reset()
         self.timerTask = taskMgr.add(self.__timerTask, self.entityTaskName("info_timer_task"))
         self.dispatchOutput("OnStart")
+        
+    def Resume(self):
+        self.Start(False)
         
     def Stop(self):
         if self.timerTask:
@@ -48,7 +54,7 @@ class InfoTimer(EntityAI):
             self.dispatchOutput("OnStop")
             
     def Reset(self):
-        self.__time = 0.0
+        self.__startTime = globalClock.getFrameTime()
         
     def SetDelay(self, delay):
         self.delay = float(delay)

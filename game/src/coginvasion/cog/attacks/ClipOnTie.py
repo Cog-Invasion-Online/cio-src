@@ -59,17 +59,9 @@ class ClipOnTieProjectile(LinearProjectile):
 class ClipOnTieProjectileAI(LinearProjectileAI):
 
     def doInitCollider(self):
-        #self.initCollider()
-        #self.collider = WorldCollider("wholeCreamPieCollider", 1.0, needSelfInArgs = True,
-        #                  useSweep = True, resultInArgs = True, startNow = False, initNp = False)
-        #self.collider.world = self.air.getPhysicsWorld(self.zoneId)
-        #self.collider.user = self
-        #self.assign(self.collider)
-
-        
-
         WorldCollider.__init__(self, "wholeCreamPieCollider", 1.0, needSelfInArgs = True,
-                          useSweep = True, resultInArgs = True, startNow = False, mask = CIGlobals.WorldGroup | CIGlobals.CharacterGroup)
+                          useSweep = True, resultInArgs = True, startNow = False,
+                          mask = CIGlobals.WorldGroup | CIGlobals.CharacterGroup)
         self.world = self.air.getPhysicsWorld(self.zoneId)
 
 class ClipOnTieShared:

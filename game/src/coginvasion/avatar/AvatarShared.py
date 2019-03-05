@@ -173,10 +173,15 @@ class AvatarShared(BasePhysicsObject):
 
     def setHitboxData(self, htype, width, height):
         self.hitboxData = [htype, width, height]
+        if self.arePhysicsSetup():
+            self.setupPhysics()
 
     def b_setHitboxData(self, htype, width, height):
-        self.sendUpdate('setHitboxData', [htype, width, height])
+        self.d_setHitboxData(htype, width, height)
         self.setHitboxData(htype, width, height)
+        
+    def d_setHitboxData(self, htype, width, height):
+        self.sendUpdate('setHitboxData', [htype, width, height])
 
     def getHitboxData(self):
         return self.hitboxData
@@ -186,6 +191,9 @@ class AvatarShared(BasePhysicsObject):
         
     def getHealth(self):
         return self.health
+        
+    def getHealthPercentage(self):
+        return float(self.health) / float(self.maxHealth)
 
     def setMaxHealth(self, health):
         self.maxHealth = health

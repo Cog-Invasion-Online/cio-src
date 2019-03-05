@@ -60,9 +60,10 @@ ATTACK_GAG_TNT                  = 48
 ATTACK_GAG_TRAIN                = 49
 
 ATTACK_HL2SHOTGUN               = 50
-ATTACK_HL2PISTOL                = 52
 
 ATTACK_CLIPONTIE                = 51
+ATTACK_HL2PISTOL                = 52
+ATTACK_BOMB                     = 53
 
 # ===============================================
 

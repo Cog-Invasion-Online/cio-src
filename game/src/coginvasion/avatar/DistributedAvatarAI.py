@@ -152,6 +152,20 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         if hp != 0:
             self.sendUpdate('announceHealth', [level, hp, extraId])
             
+    def toonUp(self, hp, announce = 1, sound = 1):
+        amt = hp
+        originalHealth = self.getHealth()
+        hp = self.getHealth() + hp
+        if hp > self.getMaxHealth():
+            amt = self.getMaxHealth() - originalHealth
+            hp = self.getMaxHealth()
+        self.b_setHealth(hp)
+        #if announce and sound:
+        #    self.d_announceHealthAndPlaySound(1, amt)
+        #elif announce and not sound:
+        if announce:
+            self.d_announceHealth(1, amt)
+            
     def getHealthChangeEvent(self):
         # This is sent once our health changes.
         if hasattr(self, 'doId'):

@@ -85,6 +85,39 @@ MB_Moving = 1
 MB_Crouching = 2
 MB_Walking = 4
 
+def makeSprite(name, texture, scale):
+    from panda3d.core import (GeomVertexFormat, GeomVertexData, GeomEnums,
+                              InternalName, GeomVertexWriter, GeomPoints,
+                              Geom, GeomNode, NodePath, TextureStage,
+                              TexGenAttrib, BoundingSphere)
+    format = GeomVertexFormat.getV3()
+    data = GeomVertexData(name + "_data", format, GeomEnums.UHStatic)
+    writer = GeomVertexWriter(data, InternalName.getVertex())
+    writer.addData3f((0, 0, 0))
+    primitive = GeomPoints(GeomEnums.UHStatic)
+    primitive.addVertex(0)
+    primitive.closePrimitive()
+    geom = Geom(data)
+    geom.addPrimitive(primitive)
+    geomNode = GeomNode(name)
+    geomNode.addGeom(geom)
+    np = NodePath(geomNode)
+    np.setShaderOff(1)
+    np.setLightOff(1)
+    np.setMaterialOff(1)
+    np.setRenderModePerspective(True)
+    np.setTexture(texture, 1)
+    np.setTexGen(TextureStage.getDefault(), TexGenAttrib.MPointSprite)
+    np.setDepthWrite(False)
+    np.setDepthOffset(1)
+    np.setTransparency(True)
+    np.node().setBounds(BoundingSphere((0, 0, 0), 1))
+    np.node().setFinal(True)
+    np.flattenStrong()
+    np.setScale(scale)
+
+    return np
+
 def getDGIForBlob(blob):
     from direct.distributed.PyDatagram import PyDatagram
     from direct.distributed.PyDatagramIterator import PyDatagramIterator

@@ -237,6 +237,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     </Compile>
     <Compile Include="src\coginvasion\cog\ai\tasks\__init__.py" />
     <Compile Include="src\coginvasion\cog\ai\__init__.py" />
+    <Compile Include="src\coginvasion\cog\attacks\Bomb.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\cog\attacks\ClipOnTie.py">
       <SubType>Code</SubType>
     </Compile>
@@ -653,9 +656,6 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\phys\DistributedPhysicsEntityAI.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\coginvasion\phys\DistributedPhysicsEntityShared.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="src\coginvasion\phys\DistributedTNT.py">
       <SubType>Code</SubType>
     </Compile>
@@ -776,6 +776,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\szboss\DistributedSZBossToonAI.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\szboss\PointSpotlight.py" />
     <Compile Include="src\coginvasion\szboss\Ropes.py" />
     <Compile Include="src\coginvasion\szboss\sewer\DistributedSewer.py">
       <SubType>Code</SubType>

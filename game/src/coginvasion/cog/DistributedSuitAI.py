@@ -20,6 +20,7 @@ from src.coginvasion.avatar.AvatarTypes import *
 from src.coginvasion.avatar.TakeDamageInfo import TakeDamageInfo
 from src.coginvasion.cog.ai.RelationshipsAI import *
 from src.coginvasion.cog.ai.BaseNPCAI import BaseNPCAI
+from src.coginvasion.cog.ai.StatesAI import *
 from src.coginvasion.globals import CIGlobals
 
 from src.coginvasion.gags import GagGlobals
@@ -88,13 +89,12 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
 
         self.damagers = []
 
-        from src.coginvasion.avatar.Attacks import ATTACK_CLIPONTIE
-        self.attackIds = [ATTACK_CLIPONTIE]
+        from src.coginvasion.avatar.Attacks import ATTACK_CLIPONTIE, ATTACK_BOMB
+        self.attackIds = [ATTACK_CLIPONTIE, ATTACK_BOMB]
 
         self.activities = {ACT_WAKE_ANGRY   :   0.564,
                            ACT_SMALL_FLINCH :   2.25,
                            ACT_DIE          :   6.0}
-
 
     def d_setWalkPath(self, path):
         # Send out a list of Point2s for the client to create a path for the suit to walk.
@@ -141,6 +141,9 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         self.setHealth(self.health)
 
     def getSuit(self):
+        if isinstance(self.suitPlan, int):
+            return tuple((self.suitPlan, self.variant))
+            
         return tuple((SuitBank.getIdFromSuit(self.suitPlan), self.variant))
 
     def setLevel(self, level):
@@ -451,6 +454,10 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
 
     def generate(self):
         DistributedAvatarAI.generate(self)
+        
+    def spawnGeneric(self):
+        self.b_setParent(CIGlobals.SPRender)
+        taskMgr.add(self.monitorHealth, self.uniqueName('monitorHealth'))
 
     def announceGenerate(self):
         DistributedAvatarAI.announceGenerate(self)
@@ -462,18 +469,18 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         self.comboDataTaskName = self.uniqueName('clearComboData')
         taskMgr.add(self.clearComboData, self.comboDataTaskName)
 
-        dur = 8
+        #dur = 8
 
-        Sequence(
-            Func(self.setH, 90),
-            Wait(0.5),
-            self.posInterval(dur, (-25, 0, 0), (25, 0, 0), blendType = 'easeInOut'),
-            Wait(0.5),
-            Func(self.setH, -90),
-            Wait(0.5),
-            self.posInterval(dur, (25, 0, 0), (-25, 0, 0), blendType = 'easeInOut'),
-            Wait(0.5)
-            )#.loop()
+        #Sequence(
+        #    Func(self.setH, 90),
+        #    Wait(0.5),
+        #    self.posInterval(dur, (-25, 0, 0), (25, 0, 0), blendType = 'easeInOut'),
+        #    Wait(0.5),
+        #    Func(self.setH, -90),
+        #    Wait(0.5),
+        #    self.posInterval(dur, (25, 0, 0), (-25, 0, 0), blendType = 'easeInOut'),
+        #    Wait(0.5)
+        #    )#.loop()
         #self.setH(90)
 
         self.startPosHprBroadcast()

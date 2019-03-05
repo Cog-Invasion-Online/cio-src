@@ -76,10 +76,10 @@ class BaseNPCAI(BaseCombatCharacterAI):
     notify = directNotify.newCategory("BaseNPCAI")
     notify.setDebug(True)
     
-    # 25% hp is considered low
-    LOW_HP_PERCT = 0.25
+    # 50% hp is considered low
+    LOW_HP_PERCT = 0.5
     REACHABLE_DIST_SQR = 30*30
-    MAX_VISION_ANGLE = 130
+    MAX_VISION_ANGLE = 90
     MAX_VISION_DISTANCE_SQR = 75*75
     MAX_HEAR_DISTANCE_SQR = 50*50
     MAX_OLD_ENEMIES = 4
@@ -90,6 +90,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
         self.conditionsMask = 0
 
         self.memory = 0
+        self.memoryPosition = None
         
         self.lastHPPerct = 1.0
         
@@ -205,9 +206,40 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_EquipAttack(self),
                     Task_FireAttack(self),
                     Task_AwaitAttack(self),
+                    Task_SetPostAttackSchedule(self)
                 ],
                 interruptMask=COND_HEAVY_DAMAGE|COND_LIGHT_DAMAGE|COND_TARGET_OCCLUDED|COND_TARGET_DEAD|COND_NEW_TARGET
-            )
+            ),
+            "ALERT_FACE"    :   Schedule(
+                [
+                    Task_StopMoving(self),
+                    Task_SetActivity(self, ACT_NONE),
+                    Task_FaceIdeal(self)
+                ],
+                interruptMask=COND_NEW_TARGET|COND_SEE_FEAR|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE
+            ),
+            "ALERT_SMALL_FLINCH"    :   Schedule(
+                [
+                    Task_StopMoving(self),
+                    Task_StopAttack(self),
+                    Task_SetActivity(self, ACT_SMALL_FLINCH),
+                    Task_Remember(self, MEMORY_FLINCHED),
+                    Task_AwaitActivity(self),
+                    Task_SetSchedule(self, "ALERT_FACE")
+                ]
+            ),
+            "RETURN_TO_MEMORY_POSITION" :   Schedule(
+                [
+                    Task_StopAttack(self),
+                    Task_StopMoving(self),
+                    Task_GetPathToMemoryPosition(self),
+                    Task_ForgetPosition(self),
+                    Task_RunPath(self),
+                    Task_AwaitMovement(self),
+                    Task_FaceIdeal(self)
+                ],
+                interruptMask=COND_NEW_TARGET|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE|COND_SEE_HATE|COND_SEE_DISLIKE
+            ),
         }
 
         self.motor = Motor(self)
@@ -406,6 +438,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
             sched.cleanup()
         self.motor.cleanup()
         self.motor = None
+        self.memoryPosition = None
         self.npcState = None
         self.idealState = None
         self.capableAttacks = None
@@ -618,6 +651,9 @@ class BaseNPCAI(BaseCombatCharacterAI):
         
     def canCheckAttacks(self):
         return self.hasConditions(COND_SEE_TARGET) and not self.hasConditions(COND_TARGET_TOOFAR)
+
+    def canUseAttack(self, attackID):
+        return attackID in self.capableAttacks
         
     def checkAttacks(self, distSqr):
         """
@@ -637,7 +673,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
             attack = attacks[i]
             if attack.checkCapable(dot, distSqr) and attack.hasAmmo():
                 #print attack, "is capable"
-                self.capableAttacks.append(attack)
+                self.capableAttacks.append(attack.getID())
         
         if len(self.capableAttacks) > 0:
             self.setConditions(COND_CAN_ATTACK)
@@ -724,6 +760,11 @@ class BaseNPCAI(BaseCombatCharacterAI):
             return self.getScheduleByName("IDLE_STAND")
 
         elif self.npcState == STATE_ALERT:
+            if self.hasConditions(COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE):
+                if abs(self.getYawDiff()) < self.MAX_VISION_ANGLE * 0.5:
+                    return self.getScheduleByName("TAKE_COVER_FROM_ORIGIN")
+                else:
+                    return self.getScheduleByName("ALERT_SMALL_FLINCH")
             return self.getScheduleByName("IDLE_STAND")
 
         elif self.npcState == STATE_COMBAT:

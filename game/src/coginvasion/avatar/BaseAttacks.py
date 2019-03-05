@@ -509,6 +509,9 @@ class BaseAttackAI(BaseAttackShared):
         BaseAttackShared.__init__(self)
         self.actionLengths = {self.StateIdle: 0}
 
+    def getPostAttackSchedule(self):
+        return None
+
     def cleanup(self):
         del self.actionLengths
         BaseAttackShared.cleanup(self)

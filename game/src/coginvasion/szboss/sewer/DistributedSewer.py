@@ -114,7 +114,7 @@ class DistributedSewer(DistributedBattleZone):
     def linkSewerEntities(self):
         # Purely client-sided entities
 
-        from src.coginvasion.szboss import AmbientGeneric, FuncWater, Ropes, InfoBgm, InfoPlayerRelocate, EnvLightGlow, EnvParticleSystem
+        from src.coginvasion.szboss import AmbientGeneric, FuncWater, Ropes, InfoBgm, InfoPlayerRelocate, EnvLightGlow, EnvParticleSystem, PointSpotlight
         #base.bspLoader.linkEntityToClass("ambient_generic", AmbientGeneric.AmbientGeneric)
         base.bspLoader.linkEntityToClass("func_water", FuncWater.FuncWater)
         base.bspLoader.linkEntityToClass("rope_begin", Ropes.RopeBegin)
@@ -123,3 +123,4 @@ class DistributedSewer(DistributedBattleZone):
         base.bspLoader.linkEntityToClass("info_player_relocate", InfoPlayerRelocate.InfoPlayerRelocate)
         base.bspLoader.linkEntityToClass("env_lightglow", EnvLightGlow.EnvLightGlow)
         base.bspLoader.linkEntityToClass("env_particlesystem", EnvParticleSystem.EnvParticleSystem)
+        base.bspLoader.linkEntityToClass("point_spotlight", PointSpotlight.PointSpotlight)
