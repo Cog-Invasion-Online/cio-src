@@ -77,6 +77,9 @@ class DistributedTakeOverSuitAI(DistributedSuitAI):
         self.comboDataTaskName = self.uniqueName('clearComboData')
         taskMgr.add(self.clearComboData, self.comboDataTaskName)
         taskMgr.add(self.monitorHealth, self.uniqueName('monitorHealth'))
+        
+        self.stopPosHprBroadcast()
+        self.stopAI()
 
     def initiateTakeOver(self):
         self.b_setState('takeOver')

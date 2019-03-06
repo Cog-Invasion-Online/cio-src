@@ -87,25 +87,26 @@ class DistributedTakeOverSuit(DistributedSuit):
             return
         self.stopSmooth()
         self.hasSpawned = False
+        self.doingActivity = True
         self.reparentTo(self.door.doorNode)
         self.setHpr(0, 0, 0)
         self.takeOverTrack = Parallel(
             Sequence(
                 Func(self.animFSM.request, 'flyDown', [ts]),
                 Wait(6.834),
-                Func(self.setAnimState, 'neutral'),
+                Func(self.loop, 'neutral'),
                 Wait(0.5),
-                Func(self.setAnimState, 'walk'),
+                Func(self.loop, 'walk'),
                 LerpPosInterval(self, duration = 2.0, pos = render.getRelativePoint(self.door.doorNode, self.AtDoorPos),
                                 startPos = render.getRelativePoint(self.door.doorNode, self.StartPosFromDoor)),
-                Func(self.setAnimState, 'neutral'),
+                Func(self.loop, 'neutral'),
                 Wait(0.3),
-                Func(self.setAnimState, 'walk'),
+                Func(self.loop, 'walk'),
                 LerpPosInterval(self, duration = 0.5, pos = self.door.enterWalkBackPos,
                                 startPos = self.AtDoorPos),
-                Func(self.setAnimState, 'neutral'),
+                Func(self.loop, 'neutral'),
                 Wait(1.0),
-                Func(self.setAnimState, 'walk'),
+                Func(self.loop, 'walk'),
                 LerpPosInterval(self, duration = 1.0, pos = self.door.enterWalkInPos,
                                 startPos = self.door.enterWalkBackPos)),
             LerpPosInterval(self,
@@ -116,6 +117,7 @@ class DistributedTakeOverSuit(DistributedSuit):
         self.takeOverTrack.start(ts)
 
     def exitTakeOver(self):
+        self.doingActivity = False
         if self.takeOverTrack:
             self.takeOverTrack.pause()
             self.takeOverTrack = None

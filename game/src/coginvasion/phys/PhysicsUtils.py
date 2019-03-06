@@ -314,8 +314,10 @@ def getNearestGroundSurfaceZ(rootNode, height):
         pFrom = Point3(rootNode.getPos(render))
         pDown = Point3(pFrom - Point3(0, 0, height))
         downTest = base.physicsWorld.rayTestClosest(pFrom, pDown, CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
-        
-        return downTest.getHitPos().z
+        if downTest.hasHit():
+            return downTest.getHitPos().z
+        else:
+            return -1
     else:
         raise Exception("#getNearestGroundSurfaceZ(): Requires a non-empty NodePath to ray test on!")
     
