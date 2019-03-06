@@ -414,40 +414,6 @@ class FPSCamera(DirectObject):
             elif camRootAngles.getY() < FPSCamera.MinP:
                 yDist = 0
                 camRootAngles.setY(FPSCamera.MinP)
-
-            if base.localAvatar.isFirstPerson():
-                maxSway = 0.55
-                minSway = 0.1
-                swayXFactor = 0.0015 * sens
-                swayYFactor = swayXFactor
-                swayRatio = 0.2
-                swayX = (xDist * swayXFactor) / dt
-                swayY = (yDist * swayYFactor) / dt
-            
-                if abs(swayX) < minSway:
-                    swayX = 0.0
-                elif swayX < 0:
-                    swayX = swayX + minSway
-                elif swayX > 0:
-                    swayX = swayX - minSway
-                if swayX < -maxSway:
-                    swayX = -maxSway
-                elif swayX > maxSway:
-                    swayX = maxSway
-            
-                if abs(swayY) < minSway:
-                    swayY = 0.0
-                elif swayY < 0:
-                    swayY = swayY + minSway
-                elif swayX > 0:
-                    swayY = swayY - minSway
-                if swayY < -maxSway:
-                    swayY = -maxSway
-                elif swayY > maxSway:
-                    swayY = maxSway
-
-                vmGoal = Point3(-swayX, 0, swayY)
-                self.lastVMPos = CIGlobals.lerpWithRatio(vmGoal, self.lastVMPos, swayRatio)
                 
             base.win.movePointer(0, int(center.getX()), int(center.getY()))
         
@@ -500,26 +466,44 @@ class FPSCamera(DirectObject):
             vmAngles[2] += verticalBob * 0.5
             vmAngles[1] -= verticalBob * 0.4
             vmAngles[0] -= lateralBob * 0.3
+
+            # ================================================================
+            # Viewmodel lag/sway
             
-            #angles = self.vmRoot.getHpr(render)
+            angles = self.camRoot.getHpr(render)
+            quat = Quat()
+            quat.setHpr(angles)
+            invQuat = Quat()
+            invQuat.invertFrom(quat)
 
-            #maxVMLag = 1.5
-            #lagforward = CIGlobals.angleVectors(angles, True, False, False)[0]
-            #if dt != 0.0:
-            #    lagdifference = lagforward - self.lastFacing
-            #    lagspeed = 5.0
-            #    lagdiff = lagdifference.length()
-            #    if (lagdiff > maxVMLag) and (maxVMLag > 0.0):
-            #        lagscale = lagdiff / maxVMLag
-            #        lagspeed *= lagscale
+            maxVMLag = 1.5
+            lagforward = quat.getForward()
+            if dt != 0.0:
+                lagdifference = lagforward - self.lastFacing
+                lagspeed = 5.0
+                lagdiff = lagdifference.length()
+                if (lagdiff > maxVMLag) and (maxVMLag > 0.0):
+                    lagscale = lagdiff / maxVMLag
+                    lagspeed *= lagscale
 
-            #    self.lastFacing = CIGlobals.extrude(self.lastFacing, lagspeed * dt, lagdifference)
-            #    self.lastFacing.normalize()
-            #    vmBob = CIGlobals.extrude(vmBob, 5.0, lagdifference * -1.0)
+                self.lastFacing = CIGlobals.extrude(self.lastFacing, lagspeed * dt, lagdifference)
+                self.lastFacing.normalize()
+                lfLocal = invQuat.xform(lagdifference)
+                vmBob = CIGlobals.extrude(vmBob, 5.0 / 16.0, lfLocal * -1.0)
 
-            #right, up = CIGlobals.angleVectors(
+            pitch = angles[1]
+            if pitch > 180:
+                pitch -= 360
+            elif pitch < -180:
+                pitch += 360
+
+            vmBob = CIGlobals.extrude(vmBob, pitch * (0.035 / 16), Vec3.forward())
+            vmBob = CIGlobals.extrude(vmBob, pitch * (0.03 / 16), Vec3.right())
+            vmBob = CIGlobals.extrude(vmBob, pitch * (0.02 / 16), Vec3.up())
+
+            # ================================================================
             
-            vmRaise.set(0, abs(camRootAngles.getY()) * -0.002, camRootAngles.getY() * 0.002)
+            vmRaise.set(0, 0, 0)#(0, abs(camRootAngles.getY()) * -0.002, camRootAngles.getY() * 0.002)
             camBob.set(0, 0, 0)
 
             # Apply bob, raise, and sway to the viewmodel.

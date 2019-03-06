@@ -166,7 +166,11 @@ class HL2PistolAI(BaseGagAI, HL2PistolShared):
                 self.getActionTime() >= self.FireDelay and self.nextAction == self.StateFire))
                                    
     def determineNextAction(self, completedAction):
-        if completedAction == self.StateReload:
+        if completedAction == self.StateIdle:
+            if not self.hasClip():
+                # Need to refill clip
+                return self.StateReload
+        elif completedAction == self.StateReload:
             # refill clip, but limit to ammo if ammo is less than clip size
             if self.ammo >= self.maxClip:
                 self.clip = self.maxClip
@@ -215,7 +219,7 @@ class HL2PistolAI(BaseGagAI, HL2PistolShared):
             self.__doBulletTraceAndDamage()
             
     def canUse(self):
-        return self.hasClip() and self.hasAmmo() and self.action in [self.StateIdle, self.StateFire]
+        return self.hasClip() and self.hasAmmo() and (self.action in [self.StateIdle, self.StateFire])
         
     def primaryFirePress(self, data):
         if not self.canUse():

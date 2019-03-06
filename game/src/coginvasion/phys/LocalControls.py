@@ -67,7 +67,7 @@ class LocalControls(DirectObject):
         
         self.defaultSounds = [base.loadSfx("phase_14/audio/sfx/footsteps/default1.ogg"),
                               base.loadSfx("phase_14/audio/sfx/footsteps/default2.ogg")]
-        self.defaultOverride = "concrete"
+        self.defaultOverride = None#"concrete"
 
         self.standingUp = True
         self.footstepIval = LocalControls.FootstepIval

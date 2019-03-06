@@ -21,6 +21,8 @@ from src.coginvasion.avatar.TakeDamageInfo import TakeDamageInfo
 from src.coginvasion.cog.ai.RelationshipsAI import *
 from src.coginvasion.cog.ai.BaseNPCAI import BaseNPCAI
 from src.coginvasion.cog.ai.StatesAI import *
+from src.coginvasion.cog.ai.tasks.TasksAI import *
+from src.coginvasion.cog.ai.ConditionsAI import COND_NEW_TARGET
 from src.coginvasion.globals import CIGlobals
 
 from src.coginvasion.gags import GagGlobals
@@ -95,6 +97,16 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         self.activities = {ACT_WAKE_ANGRY   :   0.564,
                            ACT_SMALL_FLINCH :   2.25,
                            ACT_DIE          :   6.0}
+
+    def setNPCState(self, state):
+        if state != self.npcState:
+            if state == STATE_COMBAT:
+                if self.hasConditions(COND_NEW_TARGET):
+                    task_oneOff(Task_Speak(self, 0.3, ["Your silly jokes can't stop me, Toon.",
+                                                       "Contact confirmed. Subject: Anarchy",
+                                                       "Toon spotted!",
+                                                       "Cogs, catch that Toon!"]))
+        BaseNPCAI.setNPCState(self, state)
 
     def d_setWalkPath(self, path):
         # Send out a list of Point2s for the client to create a path for the suit to walk.

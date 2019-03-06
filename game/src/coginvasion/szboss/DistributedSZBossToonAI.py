@@ -89,6 +89,8 @@ class DistributedSZBossToonAI(DistributedEntityAI, DistributedToonAI, BaseNPCAI)
                     Task_RememberPosition(self), # remember where we were, we will return there after grabbing some HP
                     Task_FindBestHPBarrel(self),
                     Task_GetPathToHPBarrel(self),
+                    Task_Speak(self, 0.5, ["I need more Laff points.", "I'm grabbing a Laff barrel!",
+                                           "Hang on, I need this Laff barrel.", "I need Laff!"]),
                     Task_RunPath(self),
                     Task_AwaitMovement(self),
                     Task_GrabHPBarrel(self),
@@ -99,6 +101,20 @@ class DistributedSZBossToonAI(DistributedEntityAI, DistributedToonAI, BaseNPCAI)
             )
         
         })
+
+    def setNPCState(self, state):
+        if state != self.npcState:
+            if state == STATE_COMBAT:
+                # Speak when entering combat state
+                task_oneOff(Task_Speak(self, 0.5, ["We've got trouble!",
+                                                   "Grab your pies!"
+                                                  "Who called these guys?",
+                                                  "Gear up!",
+                                                  "I'm SO scared!",
+                                                  "Bring it on!",
+                                                  "Special delivery!"]))
+
+        BaseNPCAI.setNPCState(self, state)
 
     def delete(self):
         self.died = None
@@ -112,6 +128,13 @@ class DistributedSZBossToonAI(DistributedEntityAI, DistributedToonAI, BaseNPCAI)
         
         if self.npcState in [STATE_DEAD, STATE_NONE]:
             return BaseNPCAI.getSchedule(self)
+
+        if self.npcState == STATE_COMBAT:
+            if self.hasConditions(COND_TARGET_DEAD):
+                task_oneOff(Task_Speak(self, 0.25, ["Got one!", "Take that!",
+                                                    "Piece of cake!",
+                                                    "That's going to leave a mark!",
+                                                    "Rock and roll!"]))
         
         if not self.target and self.getHealthPercentage() <= self.LOW_HP_PERCT:
             # we need some health

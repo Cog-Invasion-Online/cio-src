@@ -291,3 +291,31 @@ class Task_SetPostAttackSchedule(BaseTaskAI):
             return SCHED_FAILED
         self.npc.changeSchedule(sched)
         return SCHED_COMPLETE
+
+class Task_Speak(BaseTaskAI):
+
+    def __init__(self, npc, chance, phrases):
+        BaseTaskAI.__init__(self, npc)
+        self.chance = chance
+        self.phrases = phrases
+
+    def runTask(self):
+        chance = random.random()
+        if chance <= self.chance:
+            if isinstance(self.phrases, list):
+                phrase = random.choice(self.phrases)
+            else:
+                phrase = self.phrases
+            self.npc.d_setChat(phrase)
+        return SCHED_COMPLETE
+
+    def cleanup(self):
+        del self.chance
+        del self.phrases
+        BaseTaskAI.cleanup(self)
+
+def task_oneOff(task):
+    task.startTask()
+    task.runTask()
+    task.stopTask()
+    task.cleanup()

@@ -384,7 +384,6 @@ class Suit(Avatar):
         self.exitGeneral()
 
     def enterDie(self, ts = 0):
-        print "Timestamp is", ts
         self.show()
         self.generateCog(isLose = 1)
         self.nametag.clearChatText()
@@ -445,6 +444,9 @@ class Suit(Avatar):
 
     def suitExplode(self):
         pos = self.getPart('body').find('**/joint_head').getPos(render) + (0, 0, 2)
+
+        # Force the loser suit to use UnlitGeneric shader, workaround for the has_mat() assertion
+        BSPUtility.applyUnlitOverride(self)
 
         CIGlobals.makeExplosion(pos, 0.5, soundVol = 0.32)
 
@@ -639,9 +641,6 @@ class Suit(Avatar):
             else:
                 self.loadModel('phase_4/models/char/suit%s-lose-mod.bam' % (str(self.suit)), 'body')
             self.loadAnims({'lose' : 'phase_4/models/char/suit%s-lose.bam' % (str(self.suit))}, 'body')
-            
-            # Force the loser suit to use UnlitGeneric shader, workaround for the has_mat() assertion
-            BSPUtility.applyUnlitOverride(self)
         if self.variant != Variant.SKELETON:
             self.headModel = self.head.generate()
             self.headModel.reparentTo(self.find("**/joint_head"))

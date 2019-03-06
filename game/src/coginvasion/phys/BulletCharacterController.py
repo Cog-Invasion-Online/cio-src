@@ -541,6 +541,13 @@ class BulletCharacterController(DirectObject):
             normalVel.normalize()
             
             floorNormal = self.__footContact[2]
+            #worldToAvatar = self.movementParent.getTransform(render).getInverse().getMat()
+            #contactNormalAv = worldToAvatar * floorNormal
+            #velAv = worldToAvatar * globalVel
+            #forward = contactNormalAv.cross(Vec3.right())
+            #forward.normalize()
+            #globalVel = forward * self.__linearVelocity.length() * self.__timeStep
+
             absSlopeDot = round(floorNormal.dot(Vec3.up()), 2)
             
             def applyGravity():

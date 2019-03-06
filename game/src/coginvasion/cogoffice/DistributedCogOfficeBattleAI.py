@@ -432,10 +432,10 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
             hood = ZoneUtil.BattleTTC
         if CogBattleGlobals.hi2hi[hood] == CogBattleGlobals.WaiterHoodIndex:
             variant = Variant.WAITER
+        suit.setLevel(level)
         suit.setSuit(plan, variant)
         suit.generateWithRequired(self.zoneId)
         suit.d_setHood(suit.hood)
-        suit.b_setLevel(level)
         suit.battleZone = self
         
         #for avId in self.watchingAvatarIds:

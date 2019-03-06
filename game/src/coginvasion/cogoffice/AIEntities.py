@@ -28,10 +28,10 @@ class SuitSpawn(EntityAI):
         suit = DistributedSuitAI(self.air)
         suit.setBattleZone(self.dispatch)
         variant = Variant.NORMAL
+        suit.setLevel(level)
         suit.setSuit(plan, variant)
         suit.generateWithRequired(self.dispatch.zoneId)
         #suit.d_setHood(suit.hood)
-        suit.b_setLevel(level)
         suit.b_setPlace(self.dispatch.zoneId)
         suit.b_setName(plan.getName())
         suit.setPos(self.cEntity.getOrigin())

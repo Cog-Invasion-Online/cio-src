@@ -181,9 +181,13 @@ class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
 
         self.__projs = []
 
+        self.throwTime = 0
+
     def equip(self):
         if not BaseGagAI.equip(self):
             return False
+
+        self.throwTime = globalClock.getFrameTime()
 
         # Draw the whole cream pie!
         self.b_setAction(self.StateDraw)
@@ -237,7 +241,12 @@ class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
             proj.generateWithRequired(self.avatar.zoneId)
             proj.addHitCallback(self.__onProjectileHit)
             proj.addExclusion(self.avatar)
-            self.__projs.append(proj)            
+            self.__projs.append(proj)
+
+            self.throwTime = globalClock.getFrameTime()
+            
+    def canUse(self):
+        return self.hasAmmo() and (globalClock.getFrameTime() - self.throwTime >= 0.5)
 
     def primaryFirePress(self, data):
         if not self.canUse():
@@ -248,7 +257,7 @@ class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
         self.throwOrigin = CIGlobals.getVec3(dgi)
         self.traceOrigin = CIGlobals.getVec3(dgi)
         self.traceVector = CIGlobals.getVec3(dgi)
-        self.setNextAction(self.StateThrow)
+        self.b_setAction(self.StateThrow)
 
     def npcUseAttack(self, target):
         #print "NPC Use attack:", self.avatar, self.action, self.getAmmo()

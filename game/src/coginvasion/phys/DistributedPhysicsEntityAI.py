@@ -27,7 +27,7 @@ class DistributedPhysicsEntityAI(DistributedSmoothNodeAI, PhysicsNodePath):
     def announceGenerate(self):
         self.doSetupPhysics()
         DistributedSmoothNodeAI.announceGenerate(self)
-        self.startPosHprBroadcast(0.0) # every frame we should broadcast pos
+        self.startPosHprBroadcast(0.1) # every 100 ms we should broadcast pos
 
     def delete(self):
         self.stopPosHprBroadcast()
