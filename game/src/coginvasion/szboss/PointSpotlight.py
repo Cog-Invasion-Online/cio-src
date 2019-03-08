@@ -1,4 +1,6 @@
-from panda3d.core import Point3, Vec3, Quat, GeomPoints, GeomVertexWriter, GeomVertexFormat, GeomVertexData, GeomEnums, InternalName, TextureStage, TexGenAttrib, Geom, GeomNode, BoundingSphere
+from panda3d.core import (Point3, Vec3, Quat, GeomPoints, GeomVertexWriter, GeomVertexFormat,
+                          GeomVertexData, GeomEnums, InternalName, TextureStage, TexGenAttrib,
+                          Geom, GeomNode, BoundingSphere, CallbackNode, CallbackObject)
 
 from src.coginvasion.globals import CIGlobals
 from Entity import Entity
@@ -72,10 +74,15 @@ class PointSpotlight(Entity):
         self.setBeamHaloFactor(1.0)
         
         self.reparentTo(render)
+        
+        # Only update the spotlight if the object passes the Cull test.
+        self.node().setFinal(True)
+        clbk = CallbackNode('point_spotlight_callback')
+        clbk.setCullCallback(CallbackObject.make(self.__spotlightThink))
+        clbk.setBounds(BoundingSphere((0, 0, 0), 0))
+        self.attachNewNode(clbk)
 
-        taskMgr.add(self.__spotlightThink, self.entityTaskName("spotlightThink"))
-
-    def __spotlightThink(self, task):
+    def __spotlightThink(self, data):
         camToLight = self.getPos() - base.camera.getPos(render)
         camToLight.normalize()
 
@@ -83,10 +90,7 @@ class PointSpotlight(Entity):
         
         self.setBeamHaloFactor(factor)
         
-        return task.cont
-        
     def unload(self):
-        taskMgr.remove(self.entityTaskName("spotlightThink"))
         self.spotlight.removeNode()
         self.spotlight = None
         self.halo.removeNode()
