@@ -16,6 +16,7 @@ class PointSpotlight(Entity):
 
         self.spotlight = None
         self.halo = None
+        self.callback = None
         
     def setBeamHaloFactor(self, blend):
         if blend <= 0.001:
@@ -80,7 +81,7 @@ class PointSpotlight(Entity):
         clbk = CallbackNode('point_spotlight_callback')
         clbk.setCullCallback(CallbackObject.make(self.__spotlightThink))
         clbk.setBounds(BoundingSphere((0, 0, 0), 0))
-        self.attachNewNode(clbk)
+        self.callback = self.attachNewNode(clbk)
 
     def __spotlightThink(self, data):
         camToLight = self.getPos() - base.camera.getPos(render)
@@ -91,6 +92,8 @@ class PointSpotlight(Entity):
         self.setBeamHaloFactor(factor)
         
     def unload(self):
+        self.callback.removeNode()
+        self.callback = None
         self.spotlight.removeNode()
         self.spotlight = None
         self.halo.removeNode()
