@@ -12,7 +12,7 @@ from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, Te
 from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState, Vec4, Point3
 from panda3d.core import CollisionTraverser, CullBinManager, LightRampAttrib, Camera, OmniBoundingVolume, Texture, GraphicsOutput
 from panda3d.bullet import BulletWorld, BulletDebugNode
-from panda3d.bsp import BSPLoader, BSPRender, PSSMShaderGenerator, VertexLitGenericSpec, LightmappedGenericSpec, UnlitGenericSpec, UnlitNoMatSpec, CSMRenderSpec
+from panda3d.bsp import BSPLoader, BSPRender, PSSMShaderGenerator, VertexLitGenericSpec, LightmappedGenericSpec, UnlitGenericSpec, UnlitNoMatSpec, CSMRenderSpec, SkyBoxSpec
 
 #from p3recastnavigation import RNNavMeshManager
 
@@ -384,6 +384,9 @@ class CIBase(ShowBase):
 
         skyType = 1#self.bspLoader.getEntityValueInt(0, "skytype")
         self.loadSkyBox(skyType)
+        if self.skyBox:
+            # BSP skyboxes are drawn in a separate pass
+            self.skyBox.reparentTo(self.shaderGenerator.getSkyboxRoot())
 
     def doNextFrame(self, func, extraArgs = []):
         taskMgr.add(self.__doNextFrameTask, "doNextFrame" + str(id(func)), extraArgs = [func, extraArgs], appendTask = True)
@@ -579,11 +582,13 @@ class CIBase(ShowBase):
         lmg = LightmappedGenericSpec()  # brushes, displacements
         unm = UnlitNoMatSpec()          # when there's no material
         csm = CSMRenderSpec()           # renders the shadow scene for CSM
+        skb = SkyBoxSpec()              # renders the skybox onto faces
         self.shaderGenerator.addShader(vlg)
         self.shaderGenerator.addShader(ulg)
         self.shaderGenerator.addShader(unm)
         self.shaderGenerator.addShader(lmg)
         self.shaderGenerator.addShader(csm)
+        self.shaderGenerator.addShader(skb)
         
         if metadata.USE_REAL_SHADOWS and self.config.GetBool('pssm-debug-cascades', False):
             from panda3d.core import CardMaker, Shader#, Camera, Trackball
