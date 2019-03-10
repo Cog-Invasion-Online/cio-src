@@ -64,6 +64,7 @@ ATTACK_HL2SHOTGUN               = 50
 ATTACK_CLIPONTIE                = 51
 ATTACK_HL2PISTOL                = 52
 ATTACK_BOMB                     = 53
+ATTACK_SLAP                     = 54
 
 # ===============================================
 

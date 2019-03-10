@@ -58,6 +58,7 @@ SquirtFlower = "Squirting Flower"
 WaterGun = "Squirt Gun"
 HL2Shotgun = "HL2 Shotgun" # easter egg!
 HL2Pistol = "HL2 Pistol"
+Slap = "Slap"
 
 MajorDrops = [GrandPiano, Safe, BigWeight]
 Stunnables = MajorDrops + [TNT]
@@ -252,6 +253,12 @@ Trap = "Trap"
 # Data that should be able to be quickly picked up by the client and server.
 # Values: [default current supply, default max supply, default damage (or health), and, if necessary, toon-up amount.
 gagData = {
+    Slap : {'minDamage': 2,
+                 'maxDamage': 4,
+                 'minMaxSupply': 1,
+                 'maxSupply': 1,
+                 'supply': 1,
+                 'track': Trap},
     HL2Shotgun : {'minDamage': 40,
                   'maxDamage': 60,
                   'minMaxSupply': 24,
@@ -509,7 +516,8 @@ InventoryIconByName = {WholeCreamPie : '**/inventory_creampie',
  FireHose : '**/inventory_firehose',
  SquirtFlower : '**/inventory_squirt_flower',
  HL2Shotgun : '**/inventory_water_gun',
- HL2Pistol : '**/inventory_water_gun'}
+ HL2Pistol : '**/inventory_water_gun',
+ Slap : '**/inventory_anvil'}
 
 TrackIdByName = {Throw : GagType.THROW,
                  Squirt : GagType.SQUIRT,
@@ -567,7 +575,7 @@ TrackNameById = OrderedDict({GagType.TOON_UP : ToonUp, GagType.TRAP : Trap, GagT
 #  HL2Shotgun],
 # Lure : []}
 
-TrackGagNamesByTrackName = {Throw: [WholeCreamPie], ToonUp: [], Lure: [], Sound: [], Drop: [], Squirt: [], Trap: [HL2Shotgun, HL2Pistol, TNT]}
+TrackGagNamesByTrackName = {Throw: [WholeCreamPie], ToonUp: [], Lure: [], Sound: [], Drop: [], Squirt: [], Trap: [HL2Shotgun, HL2Pistol, TNT, Slap]}
 
 TrackExperienceAmounts = {
     Throw : [10, 50, 400, 2000, 6000, 10000],
@@ -920,4 +928,4 @@ def getDefaultBackpack(isAI = False):
                   # TNT, HL2Shotgun,
                   # Megaphone, Lipstick, JugglingBalls, BambooCane, PixieDust,
                   # BikeHorn, Whistle, Bugle, Aoogah, ElephantHorn, Foghorn, Opera]
-tempAllowedGags = [WholeCreamPie, HL2Shotgun, HL2Pistol, TNT]
+tempAllowedGags = [WholeCreamPie, HL2Shotgun, HL2Pistol, TNT, Slap]

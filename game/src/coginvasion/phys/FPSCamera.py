@@ -91,6 +91,9 @@ class FPSCamera(DirectObject):
                                 "tnt_idle": "phase_14/models/char/v_toon_arms-tnt_idle.egg",
                                 "tnt_throw": "phase_14/models/char/v_toon_arms-tnt_throw.egg",
                                 
+                                "slap_idle": "phase_14/models/char/v_toon_arms-slap_idle.egg",
+                                "slap_hit": "phase_14/models/char/v_toon_arms-slap_hit.egg",
+                                
                                 "sound": "phase_14/models/char/v_toon_arms-sound.egg"})
         self.viewModel.setBlend(frameBlend = base.config.GetBool("interpolate-frames", False))
         self.viewModel.reparentTo(self.vmRoot2)
