@@ -19,15 +19,12 @@ from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
 from direct.interval.IntervalGlobal import Sequence, Func, ActorInterval
 
-from BaseGag import BaseGag, BaseGagAI
+from BaseHitscan import BaseHitscan, BaseHitscanAI
 
 from src.coginvasion.base.Precache import precacheSound, precacheActor
-from src.coginvasion.cog.ai.RelationshipsAI import RELATIONSHIP_FRIEND
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.phys import PhysicsUtils
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.avatar.Attacks import ATTACK_HOLD_RIGHT, ATTACK_HL2SHOTGUN
-from src.coginvasion.avatar.TakeDamageInfo import TakeDamageInfo
 
 import random
 
@@ -40,7 +37,7 @@ class HL2ShotgunShared:
     StateDblFire = 4
     StateDraw = 7
     
-class HL2Shotgun(BaseGag, HL2ShotgunShared):
+class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
     
     ModelPath = "phase_14/hl2/w_shotgun/w_shotgun.bam"
     ModelOrigin = (-0.03, 1.19, -0.14)
@@ -72,7 +69,7 @@ class HL2Shotgun(BaseGag, HL2ShotgunShared):
     SpecialVM = True
     
     def __init__(self):
-        BaseGag.__init__(self)
+        BaseHitscan.__init__(self)
         
         self.sgViewModel = None 
         self.fireSound = base.audio3d.loadSfx(self.sgFirePath)
@@ -107,7 +104,7 @@ class HL2Shotgun(BaseGag, HL2ShotgunShared):
         self.setAnimTrack(self.getBobSequence('firehose', 30, 30, 1.0), startNow = True, looping = True)
             
     def equip(self):
-        if not BaseGag.equip(self):
+        if not BaseHitscan.equip(self):
             return False
             
         base.audio3d.attachSoundToObject(self.fireSound, self.avatar)
@@ -137,7 +134,7 @@ class HL2Shotgun(BaseGag, HL2ShotgunShared):
         return True
         
     def unEquip(self):
-        if not BaseGag.unEquip(self):
+        if not BaseHitscan.unEquip(self):
             return False
             
         if self.isFirstPerson():
@@ -150,7 +147,7 @@ class HL2Shotgun(BaseGag, HL2ShotgunShared):
         return True
             
     def setAction(self, action):
-        BaseGag.setAction(self, action)
+        BaseHitscan.setAction(self, action)
         
         if self.isFirstPerson():
             track = Sequence()
@@ -183,14 +180,16 @@ class HL2Shotgun(BaseGag, HL2ShotgunShared):
                 
         
 
-class HL2ShotgunAI(BaseGagAI, HL2ShotgunShared):
+class HL2ShotgunAI(BaseHitscanAI, HL2ShotgunShared):
 
     Name = GagGlobals.HL2Shotgun
     ID = ATTACK_HL2SHOTGUN
     HasClip = True
+    AttackRange = 10000
+    FireDelay = 0.5
     
     def __init__(self):
-        BaseGagAI.__init__(self)
+        BaseHitscanAI.__init__(self)
         self.actionLengths.update({self.StatePump   :   0.666666666667,
                                    self.StateReload :   0.5,
                                    self.StateBeginReload    :   0.625,
@@ -203,13 +202,11 @@ class HL2ShotgunAI(BaseGagAI, HL2ShotgunShared):
         self.maxClip = 6
         self.clip = 6
         self.needsPump = False
-        self.traceOrigin = Point3(0)
-        self.traceVector = Vec3(0)
 
     def shouldGoToNextAction(self, complete):
         return ((complete) or
                (not complete and self.action == self.StatePump and
-                self.getActionTime() >= 0.5 and self.nextAction == self.StateFire))
+                self.getActionTime() >= self.FireDelay and self.nextAction == self.StateFire))
                                    
     def determineNextAction(self, completedAction):
         if completedAction in [self.StateFire, self.StateDblFire]:
@@ -244,51 +241,18 @@ class HL2ShotgunAI(BaseGagAI, HL2ShotgunShared):
                 
         return self.StateIdle
         
-    def _handleShotSomething(self, hitNode, hitPos, distance, traces):
-        avNP = hitNode.getParent()
-        
-        for obj in base.air.avatars[self.avatar.zoneId]:
-            if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and 
-            self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND):
-                
-                for i in xrange(traces):
-                    dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
-                                     self.calcDamage(distance),
-                                     hitPos, self.traceOrigin)
-                
-                    obj.takeDamage(dmgInfo)
-
-                break
-
-    def __doBulletTraceAndDamage(self, traces):
-        # Trace a line from the trace origin outward along the trace direction
-        # to find out what we hit, and adjust the direction of the projectile launch
-        traceEnd = self.traceOrigin + (self.traceVector * 10000)
-        hit = PhysicsUtils.rayTestClosestNotMe(self.avatar,
-                                                self.traceOrigin,
-                                                traceEnd,
-                                                CIGlobals.WorldGroup | CIGlobals.CharacterGroup,
-                                                self.avatar.getBattleZone().getPhysicsWorld())
-        if hit is not None:
-            node = hit.getNode()
-            hitPos = hit.getHitPos()
-            distance = (hitPos - self.traceOrigin).length()
-            self._handleShotSomething(NodePath(node), hitPos, distance, traces)
-        
     def setAction(self, action):
-        BaseGagAI.setAction(self, action)
-        
         if action == self.StateFire:
             self.takeAmmo(-1)
             self.clip -= 1
             
-            self.__doBulletTraceAndDamage(1)
+            BaseHitscanAI.__doBulletTraceAndDamage(self, 1)
 
         elif action == self.StateDblFire:
             self.takeAmmo(-2)
             self.clip -= 2
 
-            self.__doBulletTraceAndDamage(2)
+            BaseHitscanAI.__doBulletTraceAndDamage(self, 2)
 
     def canUseSecondary(self):
         return self.clip >= 2 and self.ammo >= 2 and self.action in [self.StateReload,
@@ -303,16 +267,6 @@ class HL2ShotgunAI(BaseGagAI, HL2ShotgunShared):
                                                                      self.StateBeginReload,
                                                                      self.StateEndReload,
                                                                      self.StatePump]
-        
-    def primaryFirePress(self, data):
-        if not self.canUse():
-            return
-
-        dg = PyDatagram(data)
-        dgi = PyDatagramIterator(dg)
-        self.traceOrigin = CIGlobals.getVec3(dgi)
-        self.traceVector = CIGlobals.getVec3(dgi)
-        self.setNextAction(self.StateFire)
 
     def secondaryFirePress(self, data):
         if not self.canUseSecondary():
@@ -328,16 +282,8 @@ class HL2ShotgunAI(BaseGagAI, HL2ShotgunShared):
         if self.action == self.StateIdle and not self.isClipFull() and self.ammo > self.clip:
             self.setNextAction(self.StateBeginReload)
         
-    def equip(self):
-        if not BaseGagAI.equip(self):
-            return False
-            
-        self.b_setAction(self.StateDraw)
-        
-        return True
-        
     def unEquip(self):
-        if not BaseGagAI.unEquip(self):
+        if not BaseHitscanAI.unEquip(self):
             return False
             
         if self.action == self.StateFire:

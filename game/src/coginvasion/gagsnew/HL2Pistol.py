@@ -10,23 +10,17 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Point3, Vec3, NodePath, OmniBoundingVolume
+from panda3d.core import Vec3, OmniBoundingVolume
 
 from direct.actor.Actor import Actor
-from direct.distributed.PyDatagram import PyDatagram
-from direct.distributed.PyDatagramIterator import PyDatagramIterator
 from direct.interval.IntervalGlobal import Sequence, Func, ActorInterval
 
-from BaseGag import BaseGag, BaseGagAI
+from BaseHitscan import BaseHitscan, BaseHitscanAI
 
 from src.coginvasion.base.Precache import precacheSound, precacheActor
-from src.coginvasion.cog.ai.RelationshipsAI import RELATIONSHIP_FRIEND
-from src.coginvasion.gui.Crosshair import CrosshairData
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.phys import PhysicsUtils
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.avatar.Attacks import ATTACK_HOLD_RIGHT, ATTACK_HL2PISTOL
-from src.coginvasion.avatar.TakeDamageInfo import TakeDamageInfo
 
 import random
 
@@ -35,7 +29,7 @@ class HL2PistolShared:
     StateReload = 2
     StateDraw   = 3
     
-class HL2Pistol(BaseGag, HL2PistolShared):
+class HL2Pistol(BaseHitscan, HL2PistolShared):
     
     #ModelPath = "phase_14/hl2/w_pistol/w_pistol.bam"
     ModelOrigin = (-0.03, 1.19, -0.14)
@@ -59,14 +53,12 @@ class HL2Pistol(BaseGag, HL2PistolShared):
     SpecialVM = True
     
     def __init__(self):
-        BaseGag.__init__(self)
+        BaseHitscan.__init__(self)
         
         self.sgViewModel = None 
         self.fireSound = base.audio3d.loadSfx(self.sgFirePath)
         self.emptySound = base.audio3d.loadSfx(self.sgEmptyPath)
         self.reloadSound = base.audio3d.loadSfx(self.sgReloadPath)
-
-        self.crosshair = CrosshairData(crosshairScale = 0.6, crosshairRot = 45)
             
     @classmethod
     def doPrecache(cls):
@@ -83,9 +75,6 @@ class HL2Pistol(BaseGag, HL2PistolShared):
         CIGlobals.putVec3(dg, camera.getQuat(render).getForward())
             
     def equip(self):
-        if not BaseGag.equip(self):
-            return False
-            
         base.audio3d.attachSoundToObject(self.fireSound, self.avatar)
         base.audio3d.attachSoundToObject(self.emptySound, self.avatar)
         base.audio3d.attachSoundToObject(self.reloadSound, self.avatar)
@@ -106,9 +95,6 @@ class HL2Pistol(BaseGag, HL2PistolShared):
         return True
         
     def unEquip(self):
-        if not BaseGag.unEquip(self):
-            return False
-            
         if self.isFirstPerson():
             self.getFPSCam().restoreViewModel()
             self.getViewModel().hide()
@@ -119,7 +105,7 @@ class HL2Pistol(BaseGag, HL2PistolShared):
         return True
             
     def setAction(self, action):
-        BaseGag.setAction(self, action)
+        BaseHitscan.setAction(self, action)
         
         if self.isFirstPerson():
             track = Sequence()
@@ -139,16 +125,18 @@ class HL2Pistol(BaseGag, HL2PistolShared):
                 track.append(ActorInterval(vm, "fire"))
             fpsCam.setVMAnimTrack(track)
 
-class HL2PistolAI(BaseGagAI, HL2PistolShared):
+class HL2PistolAI(BaseHitscanAI, HL2PistolShared):
 
     Name = GagGlobals.HL2Pistol
     ID = ATTACK_HL2PISTOL
     HasClip = True
+    UsesAmmo = True
 
     FireDelay = 0.1
+    AttackRange = 10000
     
     def __init__(self):
-        BaseGagAI.__init__(self)
+        BaseHitscanAI.__init__(self)
         self.actionLengths.update({self.StateDraw   :   1.0,
                                    self.StateReload :   1.79,
                                    self.StateFire   :   0.5})
@@ -156,9 +144,6 @@ class HL2PistolAI(BaseGagAI, HL2PistolShared):
         self.ammo = 150
         self.maxClip = 18
         self.clip = 18
-
-        self.traceOrigin = Point3(0)
-        self.traceVector = Vec3(0)
 
     def shouldGoToNextAction(self, complete):
         return ((complete) or
@@ -178,67 +163,10 @@ class HL2PistolAI(BaseGagAI, HL2PistolShared):
                 self.clip = self.ammo
 
         return self.StateIdle
-        
-    def _handleShotSomething(self, hitNode, hitPos, distance):
-        avNP = hitNode.getParent()
-        
-        for obj in base.air.avatars[self.avatar.zoneId]:
-            if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and 
-            self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND):
-                
-                dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
-                                    self.calcDamage(distance),
-                                    hitPos, self.traceOrigin)
-                
-                obj.takeDamage(dmgInfo)
-
-                break
-
-    def __doBulletTraceAndDamage(self):
-        # Trace a line from the trace origin outward along the trace direction
-        # to find out what we hit, and adjust the direction of the projectile launch
-        traceEnd = self.traceOrigin + (self.traceVector * 10000)
-        hit = PhysicsUtils.rayTestClosestNotMe(self.avatar,
-                                                self.traceOrigin,
-                                                traceEnd,
-                                                CIGlobals.WorldGroup | CIGlobals.CharacterGroup,
-                                                self.avatar.getBattleZone().getPhysicsWorld())
-        if hit is not None:
-            node = hit.getNode()
-            hitPos = hit.getHitPos()
-            distance = (hitPos - self.traceOrigin).length()
-            self._handleShotSomething(NodePath(node), hitPos, distance)
-        
-    def setAction(self, action):
-        BaseGagAI.setAction(self, action)
-        
-        if action == self.StateFire:
-            self.takeAmmo(-1)
-            self.clip -= 1
-            
-            self.__doBulletTraceAndDamage()
             
     def canUse(self):
         return self.hasClip() and self.hasAmmo() and (self.action in [self.StateIdle, self.StateFire])
-        
-    def primaryFirePress(self, data):
-        if not self.canUse():
-            return
-
-        dg = PyDatagram(data)
-        dgi = PyDatagramIterator(dg)
-        self.traceOrigin = CIGlobals.getVec3(dgi)
-        self.traceVector = CIGlobals.getVec3(dgi)
-        self.setNextAction(self.StateFire)
 
     def reloadPress(self, data):
         if self.action == self.StateIdle and not self.isClipFull() and self.ammo > self.clip:
             self.setNextAction(self.StateReload)
-        
-    def equip(self):
-        if not BaseGagAI.equip(self):
-            return False
-            
-        self.b_setAction(self.StateDraw)
-        
-        return True
