@@ -25,9 +25,7 @@ from src.coginvasion.avatar.Attacks import ATTACK_HOLD_RIGHT, ATTACK_HL2PISTOL
 import random
 
 class HL2PistolShared:
-    StateFire   = 1
-    StateReload = 2
-    StateDraw   = 3
+    StateReload = 3
     
 class HL2Pistol(BaseHitscan, HL2PistolShared):
     
@@ -75,6 +73,9 @@ class HL2Pistol(BaseHitscan, HL2PistolShared):
         CIGlobals.putVec3(dg, camera.getQuat(render).getForward())
             
     def equip(self):
+        if not BaseHitscan.equip(self):
+            return False
+            
         base.audio3d.attachSoundToObject(self.fireSound, self.avatar)
         base.audio3d.attachSoundToObject(self.emptySound, self.avatar)
         base.audio3d.attachSoundToObject(self.reloadSound, self.avatar)
@@ -95,6 +96,9 @@ class HL2Pistol(BaseHitscan, HL2PistolShared):
         return True
         
     def unEquip(self):
+        if not BaseHitscan.unEquip(self):
+            return False
+            
         if self.isFirstPerson():
             self.getFPSCam().restoreViewModel()
             self.getViewModel().hide()
@@ -104,9 +108,7 @@ class HL2Pistol(BaseHitscan, HL2PistolShared):
             
         return True
             
-    def setAction(self, action):
-        BaseHitscan.setAction(self, action)
-        
+    def onSetAction(self, action):
         if self.isFirstPerson():
             track = Sequence()
             vm = self.getViewModel()
@@ -144,11 +146,6 @@ class HL2PistolAI(BaseHitscanAI, HL2PistolShared):
         self.ammo = 150
         self.maxClip = 18
         self.clip = 18
-
-    def shouldGoToNextAction(self, complete):
-        return ((complete) or
-               (not complete and self.action == self.StateFire and
-                self.getActionTime() >= self.FireDelay and self.nextAction == self.StateFire))
                                    
     def determineNextAction(self, completedAction):
         if completedAction == self.StateIdle:

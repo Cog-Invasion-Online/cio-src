@@ -100,6 +100,10 @@ class BaseAttackShared:
     def setAction(self, action):
         self.actionStartTime = globalClock.getFrameTime()
         self.action = action
+        self.onSetAction(action)
+        
+    def onSetAction(self, action):
+        pass
 
     def getAction(self):
         return self.action

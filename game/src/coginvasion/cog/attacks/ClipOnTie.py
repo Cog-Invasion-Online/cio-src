@@ -93,9 +93,7 @@ class ClipOnTie(BaseAttack, ClipOnTieShared):
             
         return True
 
-    def setAction(self, action):
-        BaseAttack.setAction(self, action)
-
+    def onSetAction(self, action):
         self.model.show()
         self.model.setR(180)
 
@@ -194,9 +192,7 @@ class ClipOnTieAI(BaseAttackAI, ClipOnTieShared):
 
             self.didThrow = True
 
-    def setAction(self, action):
-        BaseAttackAI.setAction(self, action)
-
+    def onSetAction(self, action):
         if action == self.StateThrow:
             self.takeAmmo(-1)
             self.didThrow = False

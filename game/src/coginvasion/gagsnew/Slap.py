@@ -57,10 +57,10 @@ class Slap(BaseHitscan, BaseHitscanShared):
             return False
             
         base.audio3d.detachSound(self.fireSound)
+        
+        return True
             
-    def setAction(self, action):
-        BaseHitscan.setAction(self, action)
-
+    def onSetAction(self, action):
         if self.isFirstPerson():
             fpsCam = self.getFPSCam()
             vm = self.getViewModel()

@@ -134,10 +134,8 @@ class TNT(BaseGag, TNTShared):
         CIGlobals.putVec3(dg, self.avatar.getRightHandNode().getPos(render))
         CIGlobals.putVec3(dg, camera.getPos(render))
         CIGlobals.putVec3(dg, camera.getQuat(render).getForward())
-        print "Added data"
 
-    def setAction(self, action):
-        BaseGag.setAction(self, action)
+    def onSetAction(self, action):
 
         if self.isFirstPerson():
             fpsCam = self.getFPSCam()
@@ -193,9 +191,7 @@ class TNT_AI(BaseGagAI, TNTShared):
 
         return self.StateIdle
 
-    def setAction(self, action):
-        BaseGagAI.setAction(self, action)
-
+    def onSetAction(self, action):
         if action == self.StateThrow:
             self.takeAmmo(-1)
 

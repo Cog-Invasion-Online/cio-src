@@ -140,9 +140,7 @@ class Bomb(BaseAttack, BombShared):
             
         return True
 
-    def setAction(self, action):
-        BaseAttack.setAction(self, action)
-
+    def onSetAction(self, action):
         self.model.show()
 
         self.avatar.doingActivity = False
@@ -192,9 +190,7 @@ class Bomb_AI(BaseAttackAI, BombShared):
     def determineNextAction(self, completedAction):
         return self.StateIdle
 
-    def setAction(self, action):
-        BaseAttackAI.setAction(self, action)
-
+    def onSetAction(self, action):
         if action == self.StateThrow:
             self.takeAmmo(-1)
 

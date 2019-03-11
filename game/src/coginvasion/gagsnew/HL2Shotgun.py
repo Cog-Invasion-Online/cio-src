@@ -28,14 +28,12 @@ from src.coginvasion.avatar.Attacks import ATTACK_HOLD_RIGHT, ATTACK_HL2SHOTGUN
 
 import random
 
-class HL2ShotgunShared:
-    StatePump = 1
-    StateBeginReload = 5
-    StateEndReload = 6
-    StateReload = 2
-    StateFire = 3
-    StateDblFire = 4
-    StateDraw = 7
+class HL2ShotgunShared:    
+    StatePump = 3
+    StateBeginReload = 4
+    StateEndReload = 5
+    StateReload = 6
+    StateDblFire = 7
     
 class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
     
@@ -146,9 +144,7 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
             
         return True
             
-    def setAction(self, action):
-        BaseHitscan.setAction(self, action)
-        
+    def onSetAction(self, action):        
         if self.isFirstPerson():
             track = Sequence()
             vm = self.getViewModel()
@@ -241,18 +237,19 @@ class HL2ShotgunAI(BaseHitscanAI, HL2ShotgunShared):
                 
         return self.StateIdle
         
-    def setAction(self, action):
+    def onSetAction(self, action):
+        print action
         if action == self.StateFire:
             self.takeAmmo(-1)
             self.clip -= 1
             
-            BaseHitscanAI.__doBulletTraceAndDamage(self, 1)
+            self._doBulletTraceAndDamage(1)
 
         elif action == self.StateDblFire:
             self.takeAmmo(-2)
             self.clip -= 2
 
-            BaseHitscanAI.__doBulletTraceAndDamage(self, 2)
+            self._doBulletTraceAndDamage(2)
 
     def canUseSecondary(self):
         return self.clip >= 2 and self.ammo >= 2 and self.action in [self.StateReload,

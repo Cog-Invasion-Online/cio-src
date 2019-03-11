@@ -30,8 +30,7 @@ from src.coginvasion.avatar.TakeDamageInfo import TakeDamageInfo
 
 class BaseHitscanShared:
     StateFire   = 1
-    StateIdle   = 2
-    StateDraw   = 3
+    StateDraw   = 2
     
 class BaseHitscan(BaseGag, BaseHitscanShared):
     Name = 'BASE HITSCAN: DO NOT USE'
@@ -78,8 +77,7 @@ class BaseHitscanAI(BaseGagAI, BaseHitscanShared):
     
     def __init__(self):
         BaseGagAI.__init__(self)
-        self.actionLengths.update({self.StateIdle   :   1.0,
-                                   self.StateFire   :   1.0,
+        self.actionLengths.update({self.StateFire   :   1.0,
                                    self.StateDraw   :   0.1})
         self.maxAmmo = 1
         self.ammo = 1
@@ -95,22 +93,23 @@ class BaseHitscanAI(BaseGagAI, BaseHitscanShared):
     def determineNextAction(self, completedAction):
         return self.StateIdle
         
-    def _handleHitSomething(self, hitNode, hitPos, distance):
+    def _handleHitSomething(self, hitNode, hitPos, distance, traces = 1):
         avNP = hitNode.getParent()
         
         for obj in base.air.avatars[self.avatar.zoneId]:
             if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and 
             self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND):
                 
-                dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
-                                    self.calcDamage(distance),
-                                    hitPos, self.traceOrigin)
-                
-                obj.takeDamage(dmgInfo)
+                for i in xrange(traces):
+                    dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
+                                        self.calcDamage(distance),
+                                        hitPos, self.traceOrigin)
+                    
+                    obj.takeDamage(dmgInfo)
 
                 break
 
-    def __doBulletTraceAndDamage(self):
+    def _doBulletTraceAndDamage(self, traces = 1):
         # Trace a line from the trace origin outward along the trace direction
         # to find out what we hit, and adjust the direction of the hitscan
         traceEnd = self.traceOrigin + (self.traceVector * self.AttackRange)
@@ -123,20 +122,20 @@ class BaseHitscanAI(BaseGagAI, BaseHitscanShared):
             node = hit.getNode()
             hitPos = hit.getHitPos()
             distance = (hitPos - self.traceOrigin).length()
-            self._handleHitSomething(NodePath(node), hitPos, distance)
+            self._handleHitSomething(NodePath(node), hitPos, distance, traces)
         
-    def setAction(self, action):
-        BaseGagAI.setAction(self, action)
+    def onSetAction(self, action):
         
         if action == self.StateFire:
             if self.UsesAmmo:
                 self.takeAmmo(-1)
+            if self.HasClip:
                 self.clip -= 1
-            self.__doBulletTraceAndDamage()
+            self._doBulletTraceAndDamage()
             
     def canUse(self):
         # Hitscan gags do not have ammo, and thus, are always usable
-        return True
+        return self.action == self.StateIdle
         
     def primaryFirePress(self, data):
         if not self.canUse():
@@ -157,7 +156,7 @@ class BaseHitscanAI(BaseGagAI, BaseHitscanShared):
         return True
         
     def unEquip(self):
-        if not BaseGagAI.equip(self):
+        if not BaseGagAI.unEquip(self):
             return False
         
         return True
