@@ -90,6 +90,5 @@ class SlapAI(BaseHitscanAI, BaseHitscanShared):
     
     def __init__(self):
         BaseHitscanAI.__init__(self)
-        self.actionLengths.update({self.StateIdle   :   1.0,
-                                   self.StateFire   :   1.0,
+        self.actionLengths.update({self.StateFire   :   1.0,
                                    self.StateDraw   :   0.1})

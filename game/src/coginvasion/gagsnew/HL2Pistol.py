@@ -68,10 +68,6 @@ class HL2Pistol(BaseHitscan, HL2PistolShared):
         precacheSound(cls.sgEmptyPath)
         precacheSound(cls.sgReloadPath)
             
-    def addPrimaryPressData(self, dg):
-        CIGlobals.putVec3(dg, camera.getPos(render))
-        CIGlobals.putVec3(dg, camera.getQuat(render).getForward())
-            
     def equip(self):
         if not BaseHitscan.equip(self):
             return False

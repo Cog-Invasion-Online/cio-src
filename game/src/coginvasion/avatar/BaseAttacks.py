@@ -108,11 +108,24 @@ class BaseAttackShared:
     def getAction(self):
         return self.action
 
+    def __thinkTask(self, task):
+        if not self.equipped:
+            return task.done
+
+        self.think()
+
+        return task.cont
+
+    def think(self):
+        pass
+
     def equip(self):
         if self.equipped:
             return False
 
         self.equipped = True
+
+        self.thinkTask = taskMgr.add(self.__thinkTask, "attackThink-" + str(id(self)))
 
         return True
 
@@ -121,6 +134,10 @@ class BaseAttackShared:
             return False
 
         self.equipped = False
+
+        if self.thinkTask:
+            self.thinkTask.remove()
+            self.thinkTask = None
 
         return True
 
@@ -549,32 +566,6 @@ class BaseAttackAI(BaseAttackShared):
         elif self.shouldGoToNextAction(complete):
             self.b_setAction(self.nextAction)
             self.nextAction = None
-
-    def __thinkTask(self, task):
-        if not self.equipped:
-            return task.done
-
-        self.think()
-
-        return task.cont
-
-    def equip(self):
-        if not BaseAttackShared.equip(self):
-            return False
-
-        self.thinkTask = taskMgr.add(self.__thinkTask, "attackThink-" + str(id(self)))
-
-        return True
-
-    def unEquip(self):
-        if not BaseAttackShared.unEquip(self):
-            return False
-
-        if self.thinkTask:
-            self.thinkTask.remove()
-            self.thinkTask = None
-
-        return True
 
     def checkCapable(self, dot, squaredDistance):
         """

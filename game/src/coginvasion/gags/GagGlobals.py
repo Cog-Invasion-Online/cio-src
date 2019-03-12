@@ -59,6 +59,7 @@ WaterGun = "Squirt Gun"
 HL2Shotgun = "HL2 Shotgun" # easter egg!
 HL2Pistol = "HL2 Pistol"
 Slap = "Slap"
+GumballBlaster = "Gumball Blaster"
 
 MajorDrops = [GrandPiano, Safe, BigWeight]
 Stunnables = MajorDrops + [TNT]
@@ -253,6 +254,12 @@ Trap = "Trap"
 # Data that should be able to be quickly picked up by the client and server.
 # Values: [default current supply, default max supply, default damage (or health), and, if necessary, toon-up amount.
 gagData = {
+    GumballBlaster : {'minDamage': 5,
+                 'maxDamage': 8,
+                 'minMaxSupply': 100,
+                 'maxSupply': 150,
+                 'supply': 150,
+                 'track': Trap},
     Slap : {'minDamage': 2,
                  'maxDamage': 4,
                  'minMaxSupply': 1,
@@ -517,7 +524,8 @@ InventoryIconByName = {WholeCreamPie : '**/inventory_creampie',
  SquirtFlower : '**/inventory_squirt_flower',
  HL2Shotgun : '**/inventory_water_gun',
  HL2Pistol : '**/inventory_water_gun',
- Slap : '**/inventory_anvil'}
+ Slap : '**/inventory_anvil',
+ GumballBlaster: '**/inventory_juggling_cubes'}
 
 TrackIdByName = {Throw : GagType.THROW,
                  Squirt : GagType.SQUIRT,
@@ -575,7 +583,7 @@ TrackNameById = OrderedDict({GagType.TOON_UP : ToonUp, GagType.TRAP : Trap, GagT
 #  HL2Shotgun],
 # Lure : []}
 
-TrackGagNamesByTrackName = {Throw: [WholeCreamPie], ToonUp: [], Lure: [], Sound: [], Drop: [], Squirt: [], Trap: [HL2Shotgun, HL2Pistol, TNT, Slap]}
+TrackGagNamesByTrackName = {Throw: [WholeCreamPie], ToonUp: [], Lure: [], Sound: [], Drop: [], Squirt: [], Trap: [HL2Shotgun, HL2Pistol, TNT, Slap, GumballBlaster]}
 
 TrackExperienceAmounts = {
     Throw : [10, 50, 400, 2000, 6000, 10000],
@@ -928,4 +936,4 @@ def getDefaultBackpack(isAI = False):
                   # TNT, HL2Shotgun,
                   # Megaphone, Lipstick, JugglingBalls, BambooCane, PixieDust,
                   # BikeHorn, Whistle, Bugle, Aoogah, ElephantHorn, Foghorn, Opera]
-tempAllowedGags = [WholeCreamPie, HL2Shotgun, HL2Pistol, TNT, Slap]
+tempAllowedGags = [WholeCreamPie, HL2Shotgun, HL2Pistol, TNT, Slap, GumballBlaster]

@@ -80,6 +80,10 @@ class FPSCamera(DirectObject):
                                 "button_draw": "phase_14/models/char/v_toon_arms-button_draw.egg",
                                 "button_idle": "phase_14/models/char/v_toon_arms-button_idle.egg",
                                 "button_press": "phase_14/models/char/v_toon_arms-button_press.egg",
+
+                                "gumball_draw": "phase_14/models/char/v_toon_arms-gumball_draw.egg",
+				                "gumball_idle": "phase_14/models/char/v_toon_arms-gumball_idle.egg",
+				                "gumball_fire": "phase_14/models/char/v_toon_arms-gumball_fire.egg",
                                 
                                 "hose_draw": "phase_14/models/char/v_toon_arms-hose_draw.egg",
                                 "hose_idle": "phase_14/models/char/v_toon_arms-hose_idle.egg",
@@ -127,6 +131,12 @@ class FPSCamera(DirectObject):
         #base.bspLoader.addDynamicNode(self.vmRoot)
 
         taskMgr.add(self.__vpDebugTask, "vpdebutask", sort = -100)
+
+    def setViewModelFOV(self, fov):
+        self.idealFov = fov
+
+    def restoreViewModelFOV(self):
+        self.idealFov = self.ViewModelFOV
         
     def swapViewModel(self, newViewModel, fov = 70.0):
         isHidden = self.viewModel.isHidden()
@@ -137,14 +147,14 @@ class FPSCamera(DirectObject):
             self.viewModel.hide()
         else:
             self.viewModel.show()
-        self.idealFov = fov
+        self.setViewModelFOV(fov)
         
     def restoreViewModel(self):
         isHidden = self.viewModel.isHidden()
         self.viewModel.reparentTo(hidden)
         self.viewModel = self.defaultViewModel
         self.viewModel.reparentTo(self.vmRoot2)
-        self.idealFov = self.ViewModelFOV
+        self.restoreViewModelFOV()
         if isHidden:
             self.viewModel.hide()
         else:

@@ -290,10 +290,15 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\gagsnew\BaseGag.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\gagsnew\BaseHitscan.py" />
+    <Compile Include="src\coginvasion\gagsnew\GumballBlaster.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\gagsnew\HL2Pistol.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\coginvasion\gagsnew\HL2Shotgun.py" />
+    <Compile Include="src\coginvasion\gagsnew\Slap.py" />
     <Compile Include="src\coginvasion\gagsnew\TNT.py">
       <SubType>Code</SubType>
     </Compile>
