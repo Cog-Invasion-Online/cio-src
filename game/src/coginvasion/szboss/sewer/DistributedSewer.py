@@ -29,32 +29,7 @@ class DistributedSewer(DistributedBattleZone):
 
         base.transitions.fadeScreen(1.0)
 
-        base.bspLoader.read(mapFile)
-        base.bspLevel = base.bspLoader.getResult()
-        base.bspLoader.doOptimizations()
-        base.materialData = PhysicsUtils.makeBulletCollFromGeoms(base.bspLevel.find("**/model-0"))
-        for prop in base.bspLevel.findAllMatches("**/+BSPProp"):
-            base.createAndEnablePhysicsNodes(prop)
-        #base.setupNavMesh(base.bspLevel.find("**/model-0"))
-        base.bspLevel.prepareScene(base.win.getGsg())
-        
-        for entnum in xrange(base.bspLoader.getNumEntities()):
-            classname = base.bspLoader.getEntityValue(entnum, "classname")
-            if classname == "worldspawn":
-                skyType = 1#base.bspLoader.getEntityValueInt(entnum, "skytype")
-                if True:#skyType != OutdoorLightingConfig.STNone:
-                    self.skyNP = loader.loadModel(OutdoorLightingConfig.SkyData[skyType][0])
-                    self.skyNP.reparentTo(camera)
-                    self.skyNP.setZ(-300)
-                    self.skyNP.setHpr(0, 0, 0)
-                    self.skyNP.setLightOff(1)
-                    self.skyNP.setFogOff(1)
-                    BSPUtility.applyUnlitOverride(self.skyNP)
-                    self.skyNP.setMaterialOff(1)
-                    self.skyNP.setCompass()
-                    if OutdoorLightingConfig.SkyData[skyType][1]:
-                        self.skyEffect = SkyUtil()
-                        self.skyEffect.startSky(self.skyNP)
+        base.loadBSPLevel(mapFile)
 
         self.sendUpdate('mapLoaded')
 
