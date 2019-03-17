@@ -119,7 +119,7 @@ class HDR(DirectObject):
         self.histogramTex.setClearColor(Vec4(0))
         self.histogramTex.clearImage()
         self.histogramCompute = base.computeRoot.attachNewNode(ComputeNode('histogramCompute'))
-        self.histogramCompute.node().addDispatch(self.Size / 16, self.Size / 16, 1)
+        self.histogramCompute.node().addDispatch(self.Size / 8, self.Size / 8, self.Size / 16)
         self.histogramCompute.setShader(Shader.loadCompute(Shader.SLGLSL, "phase_14/models/shaders/build_histogram.compute.glsl"), 1)
         self.histogramCompute.setShaderInput("scene_texture", self.sceneTex)
         self.histogramCompute.setShaderInput("histogram_texture", self.histogramTex)
