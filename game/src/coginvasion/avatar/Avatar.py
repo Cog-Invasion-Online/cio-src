@@ -49,6 +49,9 @@ class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared):
         ToonTalker.ToonTalker.__init__(self)
         AvatarShared.__init__(self)
         Actor.__init__(self, None, None, None, flattenable=0, setFinal=1)
+        
+        # All avatars should be ambient boosted to help them stand out more in BSP levels.
+        self.setAmbientBoost()
 
         self.shapeGroup = CIGlobals.WallGroup | CIGlobals.CharacterGroup
 
