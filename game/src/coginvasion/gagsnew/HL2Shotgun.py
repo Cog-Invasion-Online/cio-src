@@ -118,7 +118,6 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
             self.sgViewModel.node().setFinal(1)
             self.sgViewModel.setBlend(frameBlend = base.config.GetBool('interpolate-frames', False))
             self.sgViewModel.setH(180)
-            self.sgViewModel.find("**/shell").setBSPMaterial('phase_14/hl2/casing01.mat')
             
             fpsCam = self.getFPSCam()
             fpsCam.swapViewModel(self.sgViewModel, 54.0)
