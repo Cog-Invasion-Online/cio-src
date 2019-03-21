@@ -18,6 +18,7 @@ from panda3d.core import WindowProperties, AntialiasAttrib, loadPrcFileData
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 import json
+import os
 
 class SettingsManager:
     notify = directNotify.newCategory('SettingsManager')
@@ -261,17 +262,26 @@ class SettingsManager:
     def __updateTextureDetail(self, value):
         pass
         
+    def __buildDefaultSettings(self):
+        settings = {}
+        for settingName in self.registry.keys():
+            setting = self.registry.get(settingName)
+            settings[settingName] = setting.getDefault()
+
+        return settings
+        
     def loadFile(self, jsonFilename):
         """ Loads the JSON file and reads all the currently saved settings.
             Will save default values to the JSON file, if needed.     """
 
         self.jsonFilename = jsonFilename
         
-        try:
+        if os.path.exists(self.jsonFilename):
             self.jsonFile = open(self.jsonFilename)
             self.jsonData = json.load(self.jsonFile)
             
             settings = self.jsonData["settings"]
+            updated = False
             
             for settingName in self.registry.keys():
                 setting = self.registry.get(settingName)
@@ -282,6 +292,7 @@ class SettingsManager:
                     # This means that the setting has no value in the JSON file,
                     # let's set the value to the default.
                     settings[settingName] = setting.getDefault()
+                    updated = True
                 else:
                     # Let's update the value on the setting class without
                     # calling the callback function.
@@ -289,11 +300,14 @@ class SettingsManager:
                         fileValue = tuple(fileValue)
                     
                     setting.setValue(fileValue, andCallback = False)
-
-            self.saveFile()
-        except:
+            
+            if updated:
+                self.saveFile()
+        else:
+            # Settings file not found, save a default file.
             self.jsonData = {}
-            self.jsonData["settings"] = {}
+            self.jsonData["settings"] = self.__buildDefaultSettings()
+            self.saveFile()
             
     def saveFile(self):
         """ Saves the current settings to the JSON file """
