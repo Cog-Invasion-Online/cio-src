@@ -15,7 +15,7 @@ from panda3d.core import (BitMask32, Plane, NodePath, CullFaceAttrib, Texture,
                           FrameBufferProperties, GraphicsPipe, GraphicsOutput, TransparencyAttrib,
                           Material, WeakNodePath, RigidBodyCombiner, AntialiasAttrib, CardMaker,
                           BoundingBox, Shader, Geom, GeomVertexData, GeomVertexFormat, GeomTriangles, GeomNode, GeomVertexWriter,
-                          VirtualFileSystem, DirectionalLight, GeomVertexArrayFormat, InternalName)
+                          VirtualFileSystem, DirectionalLight, GeomVertexArrayFormat, InternalName, FrameBufferProperties)
 
 from direct.gui.DirectGui import OnscreenImage
 from direct.filter.FilterManager import FilterManager
@@ -279,8 +279,23 @@ class WaterNode(NodePath):
 class WaterScene:
 
     def __init__(self, name, reso, height, planeVec, reflection = False, needDepth = False):
-        buffer = base.win.makeTextureBuffer(name, reso, reso)
-        buffer.setSort(-100)
+        fbp = FrameBufferProperties()
+        fbp.set_depth_bits( 8 )
+        fbp.set_force_hardware( True )
+        fbp.set_rgba_bits( 8, 8, 8, 8 )
+        fbp.set_stencil_bits( 0 )
+        fbp.set_float_color( False )
+        fbp.set_float_depth( False )
+        fbp.set_stereo( False )
+        fbp.set_accum_bits( 0 )
+        fbp.set_aux_float( 0 )
+        fbp.set_aux_rgba( 0 )
+        fbp.set_aux_hrgba( 0 )
+        fbp.set_coverage_samples( 0 )
+        fbp.set_multisamples( 0 )
+        
+        buffer = base.win.makeTextureBuffer(name, reso, reso, None, False, fbp)
+        buffer.setSort(-10000)
         buffer.setClearColorActive(False)
         buffer.setClearStencilActive(False)
         buffer.setClearDepthActive(True)
@@ -319,6 +334,7 @@ class WaterScene:
         # As an optimization, disable any kind of shaders (mainly the ShaderGenerator) on the
         # reflected/refracted scene.
         #tmpnp.setShaderOff(10)
+        tmpnp.setLightOff(10)
         tmpnp.setAntialias(0, 10)
         self.camera.node().setInitialState(tmpnp.getState())
 
@@ -508,7 +524,7 @@ class WaterReflectionManager:
         self.hasScenes = False
 
     def startUpdateTask(self):
-        taskMgr.add(self.update, "waterRefl-update", sort = 45)
+        taskMgr.add(self.update, "waterRefl-update", sort = -100)
 
     def stopUpdateTask(self):
         taskMgr.remove("waterRefl-update")
