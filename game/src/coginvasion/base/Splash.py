@@ -7,13 +7,15 @@ from src.coginvasion.toon import ParticleLoader
 class Splash(NodePath):
     splashCount = 0
     
-    def __init__(self, parent = hidden, wantParticles = 1):
+    def __init__(self, parent = hidden, wantParticles = 1, tint = (1, 1, 1, 1)):
         NodePath.__init__(self, parent)
         self.assign(parent.attachNewNode('splash'))
         self.splashdown = Actor('phase_4/models/props/SZ_splashdown-mod.bam', {'splashdown': 'phase_4/models/props/SZ_splashdown-chan.bam'})
+        self.setLightOff()
         self.splashdown.reparentTo(self)
         self.splashdown.setZ(-0.01)
         self.splashdown.setScale(0.4)
+        self.setColorScale(tint)
         ta = TransparencyAttrib.make(TransparencyAttrib.MBinary)
         self.splashdown.node().setAttrib(ta, 1)
         self.splashdown.setBin('fixed', 130, 1)
@@ -24,6 +26,7 @@ class Splash(NodePath):
             self.pSystem = ParticleLoader.loadParticleEffect("phase_4/etc/splashlines.ptf")
             self.pSystem.setScale(0.40000000000000002)
             self.pSystem.setBin('fixed', 150, 1)
+            self.pSystem.setColorScale(tint)
             self.particles = self.pSystem.particlesDict.get('particles-1')
         
         self.track = None

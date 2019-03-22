@@ -32,8 +32,10 @@ class DistributedPhysicsEntity(DistributedSmoothNode, PhysicsNodePath):
         self.activateSmoothing(True, False)
         self.reparentTo(render)
         self.startSmooth()
+        self.startWaterCheck()
 
     def disable(self):
+        self.stopWaterCheck()
         self.stopSmooth()
         self.cleanupPhysics()
         DistributedSmoothNode.disable(self)

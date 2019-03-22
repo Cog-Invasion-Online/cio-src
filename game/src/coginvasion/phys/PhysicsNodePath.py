@@ -1,4 +1,4 @@
-from panda3d.core import NodePath, BitMask32, Vec3
+from panda3d.core import NodePath, BitMask32, Vec3, Point3
 from panda3d.bullet import BulletRigidBodyNode, BulletGhostNode
 
 from src.coginvasion.globals import CIGlobals
@@ -12,7 +12,34 @@ class BasePhysicsObject:
         self.underneathSelf = False
         self.worlds = []
         self.__physicsSetup = False
-
+        
+        self.__lastPos = Point3(0)
+        
+        self.waterCheckTask = None
+        
+    def startWaterCheck(self):
+        self.stopWaterCheck()
+        self.waterCheckTask = taskMgr.add(self.__checkForWater, "checkForWater-" + str(id(self)))
+        
+    def stopWaterCheck(self):
+        if self.waterCheckTask:
+            self.waterCheckTask.remove()
+            self.waterCheckTask = None
+        
+    def __checkForWater(self, task):
+        if not hasattr(base, 'waterReflectionMgr'):
+            return task.done
+            
+        currPos = self.getPos(render)
+        data = base.waterReflectionMgr.doesLineGoUnderwater(self.__lastPos, currPos)
+        if data[0]:
+            splPos = currPos
+            splPos[2] = data[1].height
+            CIGlobals.makeSplash(splPos, data[1].spec.splashTint, 1.0)
+        self.__lastPos = currPos
+        
+        return task.cont
+        
     def addToPhysicsWorld(self, world):
         print self.__class__.__name__, "Adding", self.bodyNode, "to physics world", world
         if self.bodyNode:
@@ -31,6 +58,7 @@ class BasePhysicsObject:
     def cleanupPhysics(self):
         if self.bodyNode and hasattr(base, 'physicsWorld'):
             self.removeFromPhysicsWorld(base.physicsWorld)
+            self.stopWaterCheck()
         for world in self.worlds:
             self.removeFromPhysicsWorld(world, False)
         self.worlds = []
@@ -61,6 +89,7 @@ class BasePhysicsObject:
             self.bodyNP.reparentTo(self)
         if hasattr(base, 'physicsWorld'):
             self.addToPhysicsWorld(base.physicsWorld)
+            self.startWaterCheck()
             
         self.__physicsSetup = True
 

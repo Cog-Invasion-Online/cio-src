@@ -467,6 +467,23 @@ def makeSplat(pos, color, scale, sound = None):
     seq = Sequence(ActorInterval(splat, "chan"), Func(splat.cleanup), Func(splat.removeNode))
     seq.start()
     
+def makeSplash(pos, color, scale, sound = True):
+    from direct.interval.IntervalGlobal import Sequence, Wait, Func
+    from src.coginvasion.base.Splash import Splash
+    
+    splashEffect = Splash(render, tint = color)
+    splashEffect.reparentTo(render)
+    splashEffect.setPos(pos)
+    splashEffect.setScale(scale)
+    if sound:
+        splashSound = base.loadSfxOnNode("phase_5.5/audio/sfx/AV_jump_in_water.ogg", splashEffect)
+        splashSound.play()
+    splashEffect.play()
+    
+    length = 1.5#splashEffect.track.getDuration()
+    #print length
+    Sequence(Wait(length), Func(splashEffect.destroy)).start()
+    
 ParticleRender = None
 def getParticleRender():
     global ParticleRender

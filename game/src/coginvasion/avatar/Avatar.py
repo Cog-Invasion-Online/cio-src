@@ -500,6 +500,8 @@ class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared):
         bodyNode.setKinematic(True)
 
         BasePhysicsObject.setupPhysics(self, bodyNode, True)
+        
+        self.stopWaterCheck()
 
     def isDistributed(self):
         return hasattr(self, 'doId')

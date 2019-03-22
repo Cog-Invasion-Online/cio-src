@@ -58,6 +58,7 @@ class BaseProjectile(DistributedSmoothNode, BaseProjectileShared, BasePhysicsObj
         return 0
 
     def disable(self):
+        self.stopWaterCheck()
         self.cleanupPhysics()
         if self.model:
             self.model.removeNode()
@@ -79,6 +80,7 @@ class BaseProjectile(DistributedSmoothNode, BaseProjectileShared, BasePhysicsObj
             self.model.setScale(self.ModelScale)
         self.reparentTo(render)
         self.onSpawn()
+        self.startWaterCheck()
 
 class BaseProjectileAI(DistributedSmoothNodeAI, BaseProjectileShared, WorldCollider):
 
