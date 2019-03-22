@@ -43,7 +43,7 @@ class AnimatedTexture:
 
 class WaterSpec:
 
-    def __init__(self, waterTint = (1, 1, 1, 0.0), fog = FogSpec(), dudv = AnimatedTexture('phase_14/maps/water_surface_dudv', 20, "dudv"),
+    def __init__(self, waterTint = (0, 0, 0, 1.0), fog = FogSpec(), dudv = AnimatedTexture('phase_14/maps/water_surface_dudv', 20, "dudv"),
                  staticTex = 'phase_13/maps/water3.jpg', normal = AnimatedTexture('phase_14/maps/water_surface_normal', 20, "normal_map"),
                  dudvTile = 0.1, dudvStrength = 0.1, moveFactor = (0.05, 0.05), reflectivity = 0.75, shineDamper = 1.5,
                  reflectFactor = 0.9, envMap = "phase_14/maps/envmap001a.png", cheap = True, splashTint = (1, 1, 1, 1)):
@@ -80,14 +80,14 @@ class WaterSpec:
 
 defaultWaterSpecs = {
     
-    'sewer': WaterSpec(waterTint = (1, 1, 1, 0.0), fog = FogSpec((0, 0.09, 0, 1), 0.025), staticTex = 'phase_14/maps/sewer_water.png',
+    'sewer': WaterSpec(waterTint = (0.25, 0.7, 0.2, 1.0), fog = FogSpec((0, 0.09, 0, 1), 0.025), staticTex = 'phase_14/maps/sewer_water.png',
                        reflectivity = 1.0, shineDamper = 1.0,
                        reflectFactor = 0.325, splashTint = (0.4, 0.6, 0.4, 0.7)),
 
-    'pond': WaterSpec(),
+    'pond': WaterSpec(reflectivity = 1.0),
     'lake': WaterSpec(),
     
-    'ttcPond': WaterSpec(dudvTile = 0.1, fog = FogSpec(density = 0.0), reflectFactor = 0.5, reflectivity = 0.3),
+    'ttcPond': WaterSpec(dudvTile = 0.1, fog = FogSpec(density = 0.0), reflectFactor = 0.5),
     'ddPond': WaterSpec(fog = FogSpec((38 / 255.0, 69 / 255.0, 166 / 255.0, 1), 0.04),
                         reflectFactor = 0.3, dudvStrength = 0.2, dudvTile = 0.15)
 }

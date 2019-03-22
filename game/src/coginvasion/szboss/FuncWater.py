@@ -13,14 +13,20 @@ class FuncWater(Entity):
         
         loader = self.cEntity.getLoader()
         entnum = self.cEntity.getEntnum()
+        
+        specname = self.getEntityValue("waterspec")
+        spec = base.waterReflectionMgr.getDefaultSpec(specname)
 
         mins = Point3(0)
         maxs = Point3(0)
         self.cEntity.fillinBounds(mins, maxs)
+        
+        pos = Point3((mins[0] + maxs[0]) / 2, (mins[1] + maxs[1]) / 2, maxs[2])
+        
         self.waterNode = base.waterReflectionMgr.addWaterNode(
-            (mins.getX(), maxs.getX(), mins.getY(), maxs.getY()),
-            (0, 0, maxs.getZ()),
-            maxs.getZ() - mins.getZ())
+            (mins.getX() - pos[0], maxs.getX() - pos[0], mins.getY() - pos[1], maxs.getY() - pos[1]),
+            pos,
+            maxs.getZ() - mins.getZ(), spec = spec)
 
     def unload(self):
         Entity.unload(self)
