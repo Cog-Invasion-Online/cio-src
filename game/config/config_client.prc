@@ -73,7 +73,7 @@ simulated-latency-min 0.15
 simulated-latency-max 0.3
 
 # Performance...
-hardware-animated-vertices #f
+hardware-animated-vertices #t
 sync-video #f
 smooth-lag 0.2
 smooth-prediction-lag 0.0
