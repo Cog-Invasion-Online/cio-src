@@ -1,12 +1,13 @@
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from src.coginvasion.avatar.AvatarTypes import *
 from src.coginvasion.cog.ai.RelationshipsAI import *
+from src.coginvasion.cog.ai.BaseNPCAI import BaseNPCAI
+from src.coginvasion.cog.ai.StatesAI import STATE_IDLE, STATE_ALERT
+from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE
 from DistributedEntityAI import DistributedEntityAI
 from src.coginvasion.gags import GagGlobals
 
-from GoonAI import GoonAI, GBSleep, GBPatrol
-
-class DistributedGoonAI(DistributedEntityAI, DistributedAvatarAI):
+class DistributedGoonAI(DistributedEntityAI, DistributedAvatarAI, BaseNPCAI):
 
     StartsAsleep = 1
     
@@ -20,6 +21,11 @@ class DistributedGoonAI(DistributedEntityAI, DistributedAvatarAI):
     def __init__(self, air, dispatch):
         DistributedEntityAI.__init__(self, air, dispatch)
         DistributedAvatarAI.__init__(self, air)
+        BaseNPCAI.__init__(self, dispatch)
+        
+        self.activities = {ACT_WAKE_ANGRY   :   2.0,
+                           ACT_DIE          :   -1}
+        
         self.brain = None
         self.spawnflags = 0
         
@@ -72,19 +78,22 @@ class DistributedGoonAI(DistributedEntityAI, DistributedAvatarAI):
         hpr = self.getHpr()
         self.d_setPosHpr(pos[0], pos[1], pos[2], hpr[0], hpr[1], hpr[2])
         
-        self.brain = GoonAI(self)
-        self.brain.setupBehaviors()
-        self.brain.start()
+        self.startPosHprBroadcast()
+        
+        self.startAI()
+        
         if self.spawnflags & self.StartsAsleep:
-            self.brain.enterBehavior(GBSleep)
+            self.setNPCState(STATE_IDLE)
         else:
-            self.brain.enterBehavior(GBPatrol)
+            self.setNPCState(STATE_ALERT)
             
     def Wakeup(self):
-        self.brain.enterBehavior(GBWakeUp)
+        #self.brain.enterBehavior(GBWakeUp)
+        pass
         
     def Patrol(self):
-        self.brain.enterBehavior(GBPatrol)
+        #self.brain.enterBehavior(GBPatrol)
+        pass
             
     def hitByGag(self, gagId, distance):
         if self.isDead():
@@ -108,6 +117,7 @@ class DistributedGoonAI(DistributedEntityAI, DistributedAvatarAI):
             self.d_doRagdollMode()
         
     def delete(self):
+        self.stopPosHprBroadcast()
         if self.brain:
             self.brain.stop()
             self.brain = None

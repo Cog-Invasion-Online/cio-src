@@ -32,10 +32,13 @@ class DistributedGoon(Goon, DistributedAvatar, DistributedEntity):
         DistributedEntity.announceGenerate(self)
         DistributedAvatar.announceGenerate(self)
         taskMgr.add(self.__watchTargetTask, self.uniqueName("watchTarget"))
+        
+        self.startSmooth()
 
         self.reparentTo(render)
 
     def disable(self):
+        self.stopSmooth()
         taskMgr.remove(self.uniqueName("watchTarget"))
         if self.pathVisRoot:
             self.pathVisRoot.removeNode()

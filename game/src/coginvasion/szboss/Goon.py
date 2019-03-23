@@ -9,6 +9,9 @@ from src.coginvasion.phys.Ragdoll import Ragdoll, RagdollLimbShapeDesc
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
 
+from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE
+from src.coginvasion.avatar.BaseActivity import BaseActivity
+
 import random
 
 class GoonRagdoll(Ragdoll):
@@ -43,6 +46,18 @@ class GoonRagdoll(Ragdoll):
         self.addJoint("joint22", "joint6", ((-0.5,0,0), (0,0,90)), ((0,0,0), (0,0,0)), swing=(55, 0), twist= 45)
         self.addJoint("joint6", "joint2_3", ((1,0,0), (0,90,90)), ((0,0,0), (0,0,0)), swing=(0, 70), twist=0)
         self.addJoint("joint2_3", "joint4_4", ((1,0,0), (0,0,0)), ((0,0,0), (0,0,0)), swing=(0, 45), twist=0)
+        
+class Goon_WakeAngry(BaseActivity):
+    
+    def doActivity(self):
+        return Sequence(Func(self.avatar.setEyeColor, self.avatar.IdleEyeColor),
+                        Func(self.avatar.wakeupSound.play),
+                        ActorInterval(self.avatar, "wakeup"))
+        
+class Goon_Die(BaseActivity):
+    
+    def doActivity(self):
+        return Func(self.avatar.doRagdollMode)
 
 class Goon(Avatar, FSM):
 
@@ -95,6 +110,11 @@ class Goon(Avatar, FSM):
                         "zero": "phase_9/models/char/Cog_Goonie-zero.bam"}
 
         self.baseBlendAnim = 'walk'
+        
+        self.standWalkRunReverse = [('idle', 'walk', 0.0, 5.0, 1.0, 1.0)]
+        
+        self.activities = {ACT_DIE  :   Goon_Die(self),
+                           ACT_WAKE_ANGRY   :   Goon_WakeAngry(self)}
 
     def load(self):
         loader = self.cEntity.getLoader()
@@ -103,11 +123,12 @@ class Goon(Avatar, FSM):
         self.hatType = hat
         self.generateGoon()
         self.reparentTo(render)
-        self.playIdleAnim()
+        #self.playIdleAnim()
         self.setPos(self.cEntity.getOrigin())
         self.setHpr(self.cEntity.getAngles() - (180, 0, 0))
 
     def doRagdollMode(self):
+        self.stopSmooth()
         Avatar.doRagdollMode(self)
         #self.brain.stop()
         self.doUndetectGlow()
@@ -150,8 +171,9 @@ class Goon(Avatar, FSM):
     def generateGoon(self):
         self.loadAvatar()
         self.setupPhysics(1.0, self.getHeight())
+        #self.initShadow()
         self.enableRay()
-        self.enableShadowRay()
+        #self.enableShadowRay()
 
         self.loadModel("phase_9/models/char/Cog_Goonie-zero.bam", "goon")
         self.loadAnims(self.anims, "goon")

@@ -87,6 +87,8 @@ class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared):
 
         self.splashEffect = None
         self.splashSound = None
+        
+        self.shadow = None
 
         self.prevPos = Point3(0)
         self.wake = None
