@@ -136,7 +136,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
             "WAKE_ANGRY"    :   Schedule(
                 [
                     Task_StopMoving(self),
-                    Task_SetActivity(self, ACT_NONE),#ACT_WAKE_ANGRY),
+                    Task_SetActivity(self, ACT_WAKE_ANGRY),
                     Task_AwaitActivity(self)#,
                     #Task_FaceIdeal(self)
                 ]

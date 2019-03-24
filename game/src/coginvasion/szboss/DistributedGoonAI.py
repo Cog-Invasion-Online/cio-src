@@ -1,11 +1,42 @@
+from panda3d.core import Vec3
+
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from src.coginvasion.avatar.AvatarTypes import *
-from src.coginvasion.cog.ai.RelationshipsAI import *
-from src.coginvasion.cog.ai.BaseNPCAI import BaseNPCAI
-from src.coginvasion.cog.ai.StatesAI import STATE_IDLE, STATE_ALERT
-from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE
+
+from src.coginvasion.cog.ai.AIGlobal import (BaseNPCAI, STATE_IDLE, STATE_ALERT, STATE_COMBAT, BaseTaskAI,
+                                             RELATIONSHIP_DISLIKE, RELATIONSHIP_NONE, RELATIONSHIP_HATE,
+                                             Task_StopMoving, Task_RunPath, Task_AwaitMovement,
+                                             Task_SetActivity, Task_AwaitActivity, COND_NEW_TARGET,
+                                             COND_LIGHT_DAMAGE, COND_HEAVY_DAMAGE, STATE_DEAD,
+                                             Schedule, STATE_NONE, SCHED_COMPLETE, SCHED_FAILED)
+
+from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE, ACT_GOON_SCAN
 from DistributedEntityAI import DistributedEntityAI
 from src.coginvasion.gags import GagGlobals
+
+import random
+
+class Task_GetRandomPath(BaseTaskAI):
+    
+    def runTask(self):
+        attemps = 0
+        
+        path = []
+        pos = self.npc.getPos()
+        while len(path) < 2 and attemps < 10:
+            # Pick a random point on a radius, walk to it, but make sure we can.
+            radius = random.uniform(10, 30)
+            dir = Vec3(random.uniform(-1, 1), random.uniform(-1, 1), 0)
+            endPos = pos + (dir * radius)
+            path = self.npc.getBattleZone().planPath(pos, endPos)
+            attemps += 1
+            
+        if len(path) < 2:
+            return SCHED_FAILED
+            
+        self.npc.getMotor().setWaypoints(path)
+            
+        return SCHED_COMPLETE
 
 class DistributedGoonAI(DistributedEntityAI, DistributedAvatarAI, BaseNPCAI):
 
@@ -23,14 +54,70 @@ class DistributedGoonAI(DistributedEntityAI, DistributedAvatarAI, BaseNPCAI):
         DistributedAvatarAI.__init__(self, air)
         BaseNPCAI.__init__(self, dispatch)
         
+        self.patrolTime = 0.0
+        self.patrolDur = 10.0
+        
         self.activities = {ACT_WAKE_ANGRY   :   2.0,
-                           ACT_DIE          :   -1}
+                           ACT_DIE          :   -1,
+                           ACT_GOON_SCAN    :   6.0}
+                           
+        self.schedules.update({
+            "SCAN_AREA" :   Schedule(
+                [
+                    Task_StopMoving(self),
+                    Task_GetRandomPath(self),
+                    Task_RunPath(self),
+                    Task_AwaitMovement(self),
+                    Task_SetActivity(self, ACT_GOON_SCAN),
+                    Task_AwaitActivity(self)
+                ],
+                interruptMask = COND_NEW_TARGET|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE
+            )
+        
+        })
         
         self.brain = None
         self.spawnflags = 0
         
         self.health = 25
         self.maxHealth = 25
+        
+    def takeDamage(self, dmgInfo):
+        DistributedAvatarAI.takeDamage(self, dmgInfo)
+        if self.isDead():
+            self.cleanupPhysics()
+        
+    def getIdealState(self):
+        
+        BaseNPCAI.getIdealState(self)
+        
+        if self.npcState == STATE_ALERT:
+            if globalClock.getFrameTime() - self.patrolTime > self.patrolDur:
+                self.idealState = STATE_IDLE
+                
+        return self.idealState
+        
+    def setNPCState(self, state):
+        if state != self.npcState:
+            if state == STATE_ALERT:
+                self.patrolTime = globalClock.getFrameTime()
+                self.patrolDur = random.uniform(10, 60)
+                
+            if state == STATE_COMBAT:
+                self.d_doDetectStuff()
+            elif self.npcState == STATE_COMBAT:
+                self.d_doUndetectGlow()
+        BaseNPCAI.setNPCState(self, state)
+        
+    def getSchedule(self):
+        if self.npcState in [STATE_DEAD, STATE_NONE]:
+            return BaseNPCAI.getSchedule(self)
+            
+        if self.npcState == STATE_ALERT:
+            # Walk around and scan the area for trespassers
+            return self.getScheduleByName("SCAN_AREA")
+            
+        return BaseNPCAI.getSchedule(self)
 
     def d_doDetectStuff(self):
         self.sendUpdate('doDetectStuff')

@@ -9,7 +9,7 @@ from src.coginvasion.phys.Ragdoll import Ragdoll, RagdollLimbShapeDesc
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
 
-from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE
+from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE, ACT_GOON_SCAN
 from src.coginvasion.avatar.BaseActivity import BaseActivity
 
 import random
@@ -58,6 +58,11 @@ class Goon_Die(BaseActivity):
     
     def doActivity(self):
         return Func(self.avatar.doRagdollMode)
+        
+class Goon_Scan(BaseActivity):
+    
+    def doActivity(self):
+        return Func(self.avatar.request, "Scan")
 
 class Goon(Avatar, FSM):
 
@@ -114,7 +119,8 @@ class Goon(Avatar, FSM):
         self.standWalkRunReverse = [('idle', 'walk', 0.0, 5.0, 1.0, 1.0)]
         
         self.activities = {ACT_DIE  :   Goon_Die(self),
-                           ACT_WAKE_ANGRY   :   Goon_WakeAngry(self)}
+                           ACT_WAKE_ANGRY   :   Goon_WakeAngry(self),
+                           ACT_GOON_SCAN    :   Goon_Scan(self)}
 
     def load(self):
         loader = self.cEntity.getLoader()
