@@ -43,6 +43,10 @@ class CogInvasionLoader(Loader.Loader):
         self.envConfigStream = None
         self.resourcePack = None
         return
+        
+    def mountMultifile(self, mfFile):
+        vfs = VirtualFileSystem.getGlobalPtr()
+        vfs.mount(mfFile, ".", VirtualFileSystem.MFReadOnly)
     
     def mountMultifiles(self, resourcePackName = None):
         rsPackPath = None if not resourcePackName else 'resourcepacks/' + resourcePackName
