@@ -73,10 +73,13 @@ class Setting(object):
                 messenger.send(self.getEventName(), sentArgs = [value, current])
             except: pass
         else:
+            
+            vType = value.__class__.__name__ if hasattr(value, '__class__') else type(value)
+            
             raise ValueError("{0} expects a value of type {1}, instead it was given a {2}."
                              .format(self.name, 
                                      str(self.type), 
-                                     value.__class.__name__))
+                                     vType))
     
     def getValue(self):
         """ Fetches the current value of this Setting """
