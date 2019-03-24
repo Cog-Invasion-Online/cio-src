@@ -8,7 +8,7 @@ from BaseGagAI import BaseGagAI
 from WholeCreamPieShared import WholeCreamPieShared
 from WholeCreamPieProjectileAI import WholeCreamPieProjectileAI
 from src.coginvasion.attack.Attacks import ATTACK_GAG_WHOLECREAMPIE
-from src.coginvasion.attack import TakeDamageInfo
+from src.coginvasion.attack.TakeDamageInfo import TakeDamageInfo
 from src.coginvasion.cog.ai.RelationshipsAI import RELATIONSHIP_FRIEND
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
