@@ -404,7 +404,11 @@ class DistributedPlayerToon(DistributedToon):
         return self.backpack
 
     def setEquippedAttack(self, attackID):
-        self.backpack.setCurrentGag(attackID)
+        try: 
+            self.backpack.setCurrentGag(attackID) 
+        except:
+            # If we couldn't do this, it means that the avatar was most likely disabled. 
+            pass
         DistributedToon.setEquippedAttack(self, attackID)
 
     def getCurrentGag(self):
