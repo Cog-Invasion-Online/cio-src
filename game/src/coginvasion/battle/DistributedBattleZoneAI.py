@@ -51,7 +51,6 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.avReadyToContinue = []
         
         self.bspLoader = None
-        self.svEntities = []
         self.navMeshNp = None
 
         # List of info_hint_cover entites, which indicate cover locations for AIs.
@@ -172,7 +171,6 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         dobj.entnum = entnum
         dobj.bspLoader = self.bspLoader
         dobj.zoneId = self.zoneId
-        self.svEntities.append(dobj)
         return dobj
 
     def getBattleType(self):
@@ -227,10 +225,6 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         del self.air.battleZones[self.zoneId]
 
         self.resetStats()
-        
-        # These entities will be deleted automatically
-        # by the BSPLoader.
-        self.svEntities = None
 
         self.unloadBSPLevel()
         self.bspLoader = None
