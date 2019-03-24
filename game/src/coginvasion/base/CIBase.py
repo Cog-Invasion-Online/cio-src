@@ -383,6 +383,12 @@ class CIBase(ShowBase):
         CIGlobals.preRenderScene(base.bspLevel)
 
         skyType = 1#self.bspLoader.getEntityValueInt(0, "skytype")
+        
+        try:
+            skyType = self.cr.playGame.hood.olc.skyType
+        except:
+            pass
+        
         self.loadSkyBox(skyType)
         if self.skyBox:
             # BSP skyboxes are drawn in a separate pass
