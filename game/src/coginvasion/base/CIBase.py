@@ -12,7 +12,7 @@ from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, Te
 from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState, Vec4, Point3
 from panda3d.core import CollisionTraverser, CullBinManager, LightRampAttrib, Camera, OmniBoundingVolume, Texture, GraphicsOutput
 from panda3d.bullet import BulletWorld, BulletDebugNode
-from panda3d.bsp import BSPLoader, BSPRender, PSSMShaderGenerator, VertexLitGenericSpec, LightmappedGenericSpec, UnlitGenericSpec, UnlitNoMatSpec, CSMRenderSpec, SkyBoxSpec
+from panda3d.bsp import BSPLoader, BSPRender, BSPShaderGenerator, VertexLitGenericSpec, LightmappedGenericSpec, UnlitGenericSpec, UnlitNoMatSpec, CSMRenderSpec, SkyBoxSpec
 
 #from p3recastnavigation import RNNavMeshManager
 
@@ -574,7 +574,7 @@ class CIBase(ShowBase):
         
         self.bspLoader.setWantShadows(metadata.USE_REAL_SHADOWS)
         
-        self.shaderGenerator = PSSMShaderGenerator(self.win.getGsg(), self.camera, self.render)
+        self.shaderGenerator = BSPShaderGenerator(self.win.getGsg(), self.camera, self.render)
         self.win.getGsg().setShaderGenerator(self.shaderGenerator)
         self.shaderGenerator.startUpdate()
         vlg = VertexLitGenericSpec()    # models
