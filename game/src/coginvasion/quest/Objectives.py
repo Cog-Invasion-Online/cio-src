@@ -251,7 +251,7 @@ class ItemObjective:
         self.itemName = itemName
         self.itemIcon = itemIcon
         
-        if self.itemName in GagGlobals.gagIds.values():
+        if False:#self.itemName in GagGlobals.gagIds.values():
             invIcons = loader.loadModel('phase_3.5/models/gui/inventory_icons.bam')
             self.itemIcon = invIcons.find('**/%s' % GagGlobals.InventoryIconByName[self.itemName])
             invIcons.removeNode()
@@ -269,7 +269,7 @@ class DeliverItemObjective(ItemObjective, VisitNPCObjective):
         
     def handleVisitAI(self):
         # Let's check if we're delivering a quantity of gags.
-        if self.itemName in GagGlobals.gagIds.values():
+        if False: #self.itemName in GagGlobals.gagIds.values():
             # Yes, we are. Let's subtract the quantity from our backpack.
             avatar = self.quest.questMgr.avatar
             gagId = GagGlobals.getIDByName(self.itemName)
@@ -279,7 +279,7 @@ class DeliverItemObjective(ItemObjective, VisitNPCObjective):
         VisitNPCObjective.handleVisitAI(self)
         
     def isPreparedToVisit(self):
-        if not self.itemName in GagGlobals.gagIds.values():
+        if False: #not self.itemName in GagGlobals.gagIds.values():
             return VisitNPCObjective.isPreparedToVisit(self)
         else:
             # We need to deliver a certain quantity of a gag to the NPC this objective pertains to.

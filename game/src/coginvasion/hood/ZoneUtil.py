@@ -43,6 +43,15 @@ HoodAbbr2Hood = {"TT" : ToontownCentral, "DD" : DonaldsDock, "BR" : TheBrrrgh, "
                  "DG" : DaisyGardens, "DL" : DonaldsDreamland, "MG" : MinigameArea}
 ZoneId2HoodAbbr = {2000: "TT", 1000: "DD", 3000: "BR", 4000: "MM", 5000: "DG", 9000: "DL", 10000: "MG"}
 
+ZoneId2DNAFilePrefix = {
+    # The TTC DNA prefix points to where the branch zone files are only. Safezone DNA is in phase_4 for TTC.
+    2000 : "phase_5/dna/toontown_central_",
+    3000 : "phase_6/dna/donalds_dock_",
+    4000 : "phase_6/dna/minnies_melody_land_",
+    5000 : "phase_8/dna/daisys_garden_",
+    9000 : "phase_8/dna/donalds_dreamland_"
+}
+
 SellbotFactory = "Sellbot Factory"
 ToonBattleOriginalLevel = "Original Level"
 ToontownCentralId = 2000
@@ -739,6 +748,11 @@ def getHoodId(zoneId, street = 0):
     else:
         if zoneId < DynamicZonesBegin:
             return ZoneId2Hood.get(zoneId, None)
+
+def getDNAFilePrefixFromZoneId(zoneId):
+    if not zoneId in ZoneId2DNAFilePrefix.values():
+        zoneId = getCanonicalBranchZone(zoneId)
+    return ZoneId2DNAFilePrefix.get(zoneId, "")
 
 def getZoneId(hoodId):
     if hoodId == BattleTTC:

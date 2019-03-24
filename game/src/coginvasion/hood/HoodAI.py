@@ -135,6 +135,7 @@ class HoodAI:
                                 kkDoor.generateWithRequired(exteriorZone)
             if not isSZ:
                 self.buildingPlanners[zoneId] = BuildingSuitPlannerAI(zoneId, ZoneUtil.BranchZone2StreetName[zoneId], self)
+                self.notify.info('Loading Street {0} which has DNA Zone ID: {1}'.format(ZoneUtil.BranchZone2StreetName[zoneId], zoneId))
 
         butterflies = ButterflyGlobals.Spots.get(self.zoneId) is not None
         if butterflies:
