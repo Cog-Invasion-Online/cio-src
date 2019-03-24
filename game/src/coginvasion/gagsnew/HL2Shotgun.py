@@ -17,7 +17,7 @@ from panda3d.core import Point3, Vec3, NodePath, OmniBoundingVolume
 from direct.actor.Actor import Actor
 from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
-from direct.interval.IntervalGlobal import Sequence, Func, ActorInterval
+from direct.interval.IntervalGlobal import Sequence, Func, ActorInterval, Parallel, Wait
 
 from BaseHitscan import BaseHitscan, BaseHitscanAI
 
@@ -142,6 +142,49 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
             self.sgViewModel = None
             
         return True
+
+    def __emitShell(self):
+        def __shellThink(shell, task):
+            if task.time > 3.0:
+                base.physicsWorld.remove(shell.node())
+                shell.removeNode()
+                return task.done
+            
+            if not hasattr(task, 'didHitNoise'):
+                task.didHitNoise = False
+            
+            if not task.didHitNoise:
+                contact = base.physicsWorld.contactTest(shell.node())
+                if contact.getNumContacts() > 0:
+                    task.didHitNoise = True
+                    hitNoise = base.loadSfxOnNode("phase_14/hl2/shell{0}.wav".format(random.randint(1, 3)), shell)
+                    hitNoise.play()
+        
+            return task.cont
+        
+        from panda3d.bullet import BulletCylinderShape, BulletRigidBodyNode, ZUp
+        scale = 0.75
+        shape = BulletCylinderShape(0.07 * scale, 0.47 * scale, ZUp)
+        rbnode = BulletRigidBodyNode('shellrbnode')
+        rbnode.setMass(1.0)
+        rbnode.addShape(shape)
+        rbnode.setCcdMotionThreshold(1e-7)
+        rbnode.setCcdSweptSphereRadius(0.07 * scale)
+        rbnp = render.attachNewNode(rbnode)
+        mdl = loader.loadModel("phase_14/hl2/casing.bam")
+        mdl.reparentTo(rbnp)
+        mdl.setScale(0.3 * scale, 0.7 * scale, 0.3 * scale)
+        mdl.setP(90)
+        mdl.setTransparency(True, 1)
+
+        rbnp.setPos(camera, (1, 2, -0.5))
+        rbnp.setHpr(camera, (0, -90, 0))
+
+        localEjectDir = Vec3(1, 0, 0.3)
+        rbnode.applyCentralImpulse(camera.getQuat(render).xform(localEjectDir) * 7)
+        base.physicsWorld.attach(rbnode)
+    
+        taskMgr.add(__shellThink, 'shellThink', extraArgs = [rbnp], appendTask = True)
             
     def onSetAction(self, action):        
         if self.isFirstPerson():
@@ -154,6 +197,7 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
                 track.append(ActorInterval(vm, "draw"))
             elif action == self.StatePump:
                 track.append(Func(self.pumpSound.play))
+                track.append(Func(self.__emitShell))
                 track.append(ActorInterval(vm, "pump"))
             elif action == self.StateFire:
                 fpsCam.addViewPunch(Vec3(random.uniform(-2, 2), random.uniform(2, 1), 0))
@@ -242,13 +286,13 @@ class HL2ShotgunAI(BaseHitscanAI, HL2ShotgunShared):
             self.takeAmmo(-1)
             self.clip -= 1
             
-            self._doBulletTraceAndDamage(1)
+            self.doTraceAndDamage(1)
 
         elif action == self.StateDblFire:
             self.takeAmmo(-2)
             self.clip -= 2
 
-            self._doBulletTraceAndDamage(2)
+            self.doTraceAndDamage(2)
 
     def canUseSecondary(self):
         return self.clip >= 2 and self.ammo >= 2 and self.action in [self.StateReload,

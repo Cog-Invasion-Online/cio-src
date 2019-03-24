@@ -231,7 +231,6 @@ class Task_AwaitAttack(BaseTaskAI):
 
     def runTask(self):
         if self.npc.getEquippedAttack() == -1 or self.npc.attacks[self.npc.getEquippedAttack()].getAction() == 0:
-            print "Await attack done"
             return SCHED_COMPLETE
         return SCHED_CONTINUE
         

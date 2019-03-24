@@ -12,6 +12,9 @@ from Attacks import ATTACK_NONE, ATTACKTYPE_NONE, ATTACK_HOLD_NONE, ATTACK_HOLD_
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.base.Precache import Precacheable, precacheModel, precacheActor
 from src.coginvasion.gui.Crosshair import CrosshairData
+from src.coginvasion.cog.ai.AIGlobal import RELATIONSHIP_FRIEND
+from TakeDamageInfo import TakeDamageInfo
+from src.coginvasion.phys import PhysicsUtils
 
 class BaseAttackShared:
     """
@@ -529,6 +532,37 @@ class BaseAttackAI(BaseAttackShared):
     def __init__(self):
         BaseAttackShared.__init__(self)
         self.actionLengths = {self.StateIdle: 0}
+
+    def __handleHitSomething(self, hitNode, hitPos, distance, origin, traces = 1):
+        avNP = hitNode.getParent()
+        
+        for obj in base.air.avatars[self.avatar.zoneId]:
+            if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and 
+            self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND):
+                
+                for i in xrange(traces):
+                    dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
+                                        self.calcDamage(distance),
+                                        hitPos, origin)
+                    
+                    obj.takeDamage(dmgInfo)
+
+                break
+
+    def doTraceAndDamage(self, origin, dir, dist, traces = 1):
+        # Trace a line from the trace origin outward along the trace direction
+        # to find out what we hit, and adjust the direction of the hitscan
+        traceEnd = origin + (dir * dist)
+        hit = PhysicsUtils.rayTestClosestNotMe(self.avatar,
+                                                origin,
+                                                traceEnd,
+                                                CIGlobals.WorldGroup | CIGlobals.CharacterGroup,
+                                                self.avatar.getBattleZone().getPhysicsWorld())
+        if hit is not None:
+            node = hit.getNode()
+            hitPos = hit.getHitPos()
+            distance = (hitPos - origin).length()
+            self.__handleHitSomething(NodePath(node), hitPos, distance, origin, traces)
 
     def getPostAttackSchedule(self):
         return None

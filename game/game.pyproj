@@ -218,6 +218,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\coginvasion\cog\activities\__init__.py" />
+    <Compile Include="src\coginvasion\cog\ai\AIGlobal.py" />
     <Compile Include="src\coginvasion\cog\ai\BaseNPCAI.py" />
     <Compile Include="src\coginvasion\cog\ai\ConditionsAI.py" />
     <Compile Include="src\coginvasion\cog\ai\MemoryAI.py">
@@ -243,6 +244,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\cog\attacks\ClipOnTie.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\cog\attacks\PickPocket.py" />
     <Compile Include="src\coginvasion\cog\attacks\__init__.py" />
     <Compile Include="src\coginvasion\cog\CogBattleGlobals.py" />
     <Compile Include="src\coginvasion\cog\Dept.py" />

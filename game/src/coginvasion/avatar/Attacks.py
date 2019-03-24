@@ -66,6 +66,7 @@ ATTACK_HL2PISTOL                = 52
 ATTACK_BOMB                     = 53
 ATTACK_SLAP                     = 54
 ATTACK_GUMBALLBLASTER           = 55
+ATTACK_PICKPOCKET               = 56
 
 # ===============================================
 

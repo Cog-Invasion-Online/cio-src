@@ -212,5 +212,5 @@ class ClipOnTieAI(BaseAttackAI, ClipOnTieShared):
         self.setNextAction(self.StateThrow)
 
     def checkCapable(self, dot, squaredDistance):
-        return squaredDistance <= 20*20
+        return squaredDistance <= 20*20 and squaredDistance > 8*8
 

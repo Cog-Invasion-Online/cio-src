@@ -1,4 +1,4 @@
-from panda3d.core import Vec3
+from panda3d.core import Vec3, Quat
 
 from direct.showbase.DirectObject import DirectObject
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -663,10 +663,12 @@ class BaseNPCAI(BaseCombatCharacterAI):
 
         self.clearConditions(COND_CAN_ATTACK)
         
-        vec2LOS = (self.target.entity.getPos(render) - self.getPos(render)).getXy()
+        # Vec from me to target
+        vec2LOS = (self.target.entity.getPos() - self.getPos()).getXy()
         vec2LOS.normalize()
         
-        dot = vec2LOS.dot(Vec3.forward().getXy())
+        # How much are we facing the target?
+        dot = vec2LOS.dot(self.getQuat().getForward().getXy())
         
         attacks = self.getAvailableAttacks()
         for i in xrange(len(attacks)):

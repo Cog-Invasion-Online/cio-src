@@ -92,37 +92,9 @@ class BaseHitscanAI(BaseGagAI, BaseHitscanShared):
                                    
     def determineNextAction(self, completedAction):
         return self.StateIdle
-        
-    def _handleHitSomething(self, hitNode, hitPos, distance, traces = 1):
-        avNP = hitNode.getParent()
-        
-        for obj in base.air.avatars[self.avatar.zoneId]:
-            if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and 
-            self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND):
-                
-                for i in xrange(traces):
-                    dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
-                                        self.calcDamage(distance),
-                                        hitPos, self.traceOrigin)
-                    
-                    obj.takeDamage(dmgInfo)
 
-                break
-
-    def _doBulletTraceAndDamage(self, traces = 1):
-        # Trace a line from the trace origin outward along the trace direction
-        # to find out what we hit, and adjust the direction of the hitscan
-        traceEnd = self.traceOrigin + (self.traceVector * self.AttackRange)
-        hit = PhysicsUtils.rayTestClosestNotMe(self.avatar,
-                                                self.traceOrigin,
-                                                traceEnd,
-                                                CIGlobals.WorldGroup | CIGlobals.CharacterGroup,
-                                                self.avatar.getBattleZone().getPhysicsWorld())
-        if hit is not None:
-            node = hit.getNode()
-            hitPos = hit.getHitPos()
-            distance = (hitPos - self.traceOrigin).length()
-            self._handleHitSomething(NodePath(node), hitPos, distance, traces)
+    def doTraceAndDamage(self, traces = 1):
+        BaseGagAI.doTraceAndDamage(self, self.traceOrigin, self.traceVector, self.AttackRange, traces)
         
     def onSetAction(self, action):
         
@@ -131,7 +103,7 @@ class BaseHitscanAI(BaseGagAI, BaseHitscanShared):
                 self.takeAmmo(-1)
             if self.HasClip:
                 self.clip -= 1
-            self._doBulletTraceAndDamage()
+            self.doTraceAndDamage()
             
     def canUse(self):
         # Hitscan gags do not have ammo, and thus, are always usable
