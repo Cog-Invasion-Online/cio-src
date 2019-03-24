@@ -21,6 +21,8 @@ notify-level-display warning
 notify-level-raytrace warning
 notify-level-glgsg warning
 notify-level-gsg warning
+notify-level-bullet error
+notify-level-linmath error
 notify-timestamp #f
 default-directnotify-level info
 
