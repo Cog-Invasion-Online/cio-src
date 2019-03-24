@@ -96,7 +96,6 @@ class DistributedTutorial(DistributedBattleZone):
         base.localAvatar.collisionsOn()
         base.localAvatar.enableAvatarControls()
         base.localAvatar.enableGags(1)
-        base.localAvatar.showGagButton()
         base.localAvatar.startTrackAnimToSpeed()
 
     def disableAvStuff(self):
@@ -108,7 +107,6 @@ class DistributedTutorial(DistributedBattleZone):
         base.localAvatar.controlManager.placeOnFloor()
         base.localAvatar.disableGags()
         base.localAvatar.stopTrackAnimToSpeed()
-        base.localAvatar.hideGagButton()
         base.localAvatar.detachCamera()
 
     def enterOff(self):

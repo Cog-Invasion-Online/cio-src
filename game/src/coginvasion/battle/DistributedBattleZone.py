@@ -128,7 +128,6 @@ class DistributedBattleZone(DistributedObject):
         base.localAvatar.collisionsOff()
         base.localAvatar.disableGags()
         base.localAvatar.stopTrackAnimToSpeed()
-        base.localAvatar.hideGagButton()
             
     def enableAvatarControls(self):
         # place will be None if the avatar is in the tutorial.
@@ -143,7 +142,6 @@ class DistributedBattleZone(DistributedObject):
         base.localAvatar.collisionsOn()
         base.localAvatar.enableGags()
         base.localAvatar.startTrackAnimToSpeed()
-        base.localAvatar.showGagButton()
         if not base.localAvatar.walkControls.getCollisionsActive():
             base.localAvatar.walkControls.setCollisionsActive(1)
         base.localAvatar.enableAvatarControls()
