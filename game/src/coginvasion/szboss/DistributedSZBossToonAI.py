@@ -107,7 +107,7 @@ class DistributedSZBossToonAI(DistributedEntityAI, DistributedToonAI, BaseNPCAI)
             if state == STATE_COMBAT:
                 # Speak when entering combat state
                 task_oneOff(Task_Speak(self, 0.5, ["We've got trouble!",
-                                                   "Grab your pies!"
+                                                   "Grab your pies!",
                                                   "Who called these guys?",
                                                   "Gear up!",
                                                   "I'm SO scared!",

@@ -22,7 +22,6 @@ class DistributedEntityAI(DistributedObjectAI, Entity):
         self.cEntity = self.bspLoader.getCEntity(self.entnum)
         Entity.load(self)
         self.loadEntityValues()
-        print self.__class__.__name__
         self.generateWithRequired(self.zoneId)
 
     def unload(self):

@@ -228,8 +228,8 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
 
         self.resetStats()
         
-        for ent in self.svEntities:
-            ent.requestDelete()
+        # These entities will be deleted automatically
+        # by the BSPLoader.
         self.svEntities = None
 
         self.unloadBSPLevel()
