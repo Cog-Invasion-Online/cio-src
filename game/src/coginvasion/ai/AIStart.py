@@ -89,7 +89,7 @@ nmMgr.get_reference_node_path_debug().reparentTo(render)
 base.nmMgr = nmMgr
 
 # We deal with attacks on the server side as well
-from src.coginvasion.avatar import AttackClasses
+from src.coginvasion.attack import AttackClasses
 base.attackMgr = AttackClasses.AttackManager()
 
 from direct.distributed.ClockDelta import globalClockDelta

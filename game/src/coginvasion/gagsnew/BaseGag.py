@@ -1,10 +1,5 @@
-from src.coginvasion.avatar.BaseAttacks import BaseAttack, BaseAttackAI
-
-class BaseGagShared:
-    pass
+from src.coginvasion.attack.BaseAttack import BaseAttack
+from BaseGagShared import BaseGagShared
 
 class BaseGag(BaseAttack, BaseGagShared):
-    pass
-
-class BaseGagAI(BaseAttackAI, BaseGagShared):
     pass

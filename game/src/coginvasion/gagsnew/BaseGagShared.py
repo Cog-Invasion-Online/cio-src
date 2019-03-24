@@ -1,0 +1,2 @@
+class BaseGagShared:
+    pass

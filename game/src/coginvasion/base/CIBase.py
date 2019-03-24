@@ -621,7 +621,7 @@ class CIBase(ShowBase):
         #from src.coginvasion.globals import BSPUtility
         #BSPUtility.applyUnlitOverride(render)
 
-        from src.coginvasion.avatar import AttackClasses
+        from src.coginvasion.attack import AttackClasses
         self.attackMgr = AttackClasses.AttackManager()
         
     def precacheStuff(self):

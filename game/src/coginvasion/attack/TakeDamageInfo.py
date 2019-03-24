@@ -1,6 +1,6 @@
 from panda3d.core import Point3
 
-from DamageTypes import DMG_GENERIC
+from src.coginvasion.attack.DamageTypes import DMG_GENERIC
 
 class TakeDamageInfo:
     

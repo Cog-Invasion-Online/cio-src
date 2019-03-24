@@ -4,7 +4,7 @@ from src.coginvasion.phys.PhysicsNodePath import BasePhysicsObject
 
 from src.coginvasion.globals import CIGlobals
 
-import AttackClasses
+from src.coginvasion.attack import AttackClasses
 
 class AvatarShared(BasePhysicsObject):
     """

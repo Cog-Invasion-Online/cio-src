@@ -1,4 +1,4 @@
-from Attacks import *
+from src.coginvasion.attack.Attacks import *
 
 # I don't like this, but it works
 if metadata.PROCESS != 'server':

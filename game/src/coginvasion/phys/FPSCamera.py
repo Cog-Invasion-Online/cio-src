@@ -8,7 +8,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, LerpColorScaleInterva
 from direct.interval.IntervalGlobal import Parallel, LerpHprInterval, LerpPosInterval
 from direct.showutil import Effects
 
-from src.coginvasion.avatar.Attacks import ATTACK_HOLD_LEFT, ATTACK_HOLD_RIGHT
+from src.coginvasion.attack.Attacks import ATTACK_HOLD_LEFT, ATTACK_HOLD_RIGHT
 from src.coginvasion.base.Precache import precacheActor
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.toon.ToonDNA import ToonDNA

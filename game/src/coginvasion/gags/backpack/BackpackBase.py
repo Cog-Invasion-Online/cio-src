@@ -11,7 +11,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.avatar import Attacks
+from src.coginvasion.attack import Attacks
 
 from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator

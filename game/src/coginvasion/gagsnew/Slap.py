@@ -12,11 +12,12 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.interval.IntervalGlobal import Func, ActorInterval, Parallel
 
-from BaseHitscan import BaseHitscan, BaseHitscanAI, BaseHitscanShared
+from BaseHitscan import BaseHitscan
+from BaseHitscanShared import BaseHitscanShared
 
-from src.coginvasion.base.Precache import precacheSound, precacheActor
+from src.coginvasion.base.Precache import precacheSound
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.avatar.Attacks import ATTACK_SLAP
+from src.coginvasion.attack.Attacks import ATTACK_SLAP
     
 class Slap(BaseHitscan, BaseHitscanShared):
     Name = GagGlobals.Slap
@@ -80,15 +81,3 @@ class Slap(BaseHitscan, BaseHitscanShared):
             if self.isFirstPerson():
                 fpsCam.setVMAnimTrack(Func(vm.play, 'slap_idle'))
             self.doHold('toss', 30, 30, 1.0)
-
-class SlapAI(BaseHitscanAI, BaseHitscanShared):
-
-    Name = GagGlobals.Slap
-    ID = ATTACK_SLAP
-    FireDelay = 0.6
-    AttackRange = 5.0
-    
-    def __init__(self):
-        BaseHitscanAI.__init__(self)
-        self.actionLengths.update({self.StateFire   :   1.0,
-                                   self.StateDraw   :   0.1})

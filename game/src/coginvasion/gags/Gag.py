@@ -14,7 +14,7 @@ from direct.distributed import DelayDelete
 from direct.interval.IntervalGlobal import Parallel, ParallelEndTogether, ActorInterval, Sequence, \
     LerpScaleInterval, SoundInterval, Wait, Func
 
-from src.coginvasion.avatar.BaseAttacks import BaseAttack
+from src.coginvasion.attack.BaseAttackAI import BaseAttack
 from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.gags.GagType import GagType
 from src.coginvasion.gags import GagGlobals
