@@ -17,7 +17,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE
 from src.coginvasion.avatar.AvatarTypes import *
-from src.coginvasion.avatar.TakeDamageInfo import TakeDamageInfo
+from src.coginvasion.attack.TakeDamageInfo import TakeDamageInfo
 from src.coginvasion.cog.ai.RelationshipsAI import *
 from src.coginvasion.cog.ai.BaseNPCAI import BaseNPCAI
 from src.coginvasion.cog.ai.StatesAI import *
@@ -91,7 +91,7 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
 
         self.damagers = []
 
-        from src.coginvasion.avatar.Attacks import ATTACK_CLIPONTIE, ATTACK_BOMB, ATTACK_PICKPOCKET
+        from src.coginvasion.attack.Attacks import ATTACK_CLIPONTIE, ATTACK_BOMB, ATTACK_PICKPOCKET
         self.attackIds = [ATTACK_CLIPONTIE, ATTACK_BOMB, ATTACK_PICKPOCKET]
 
         self.activities = {ACT_WAKE_ANGRY   :   0.564,

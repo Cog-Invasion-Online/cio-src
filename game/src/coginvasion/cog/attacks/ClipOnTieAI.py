@@ -2,7 +2,7 @@ from panda3d.core import Point3, Vec3
 
 from direct.distributed.ClockDelta import globalClockDelta
 
-from src.coginvasion.cog.attacks import ClipOnTieShared
+from src.coginvasion.cog.attacks.ClipOnTieShared import ClipOnTieShared
 from src.coginvasion.cog.attacks import ClipOnTieProjectileAI
 from src.coginvasion.attack.BaseAttackAI import BaseAttackAI
 from src.coginvasion.attack.Attacks import ATTACK_CLIPONTIE

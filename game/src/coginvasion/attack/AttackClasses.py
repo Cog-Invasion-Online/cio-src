@@ -12,15 +12,15 @@ if metadata.PROCESS != 'server':
     from src.coginvasion.gagsnew.GumballBlaster import GumballBlaster
     from src.coginvasion.cog.attacks.PickPocket import PickPocket
 else:
-    from src.coginvasion.gagsnew.WholeCreamPie import WholeCreamPieAI as WholeCreamPie
-    from src.coginvasion.cog.attacks.ClipOnTie import ClipOnTieAI as ClipOnTie
-    from src.coginvasion.gagsnew.HL2Shotgun import HL2ShotgunAI as HL2Shotgun
-    from src.coginvasion.gagsnew.HL2Pistol import HL2PistolAI as HL2Pistol
-    from src.coginvasion.gagsnew.TNT import TNT_AI as TNT
-    from src.coginvasion.gagsnew.Slap import SlapAI as Slap
-    from src.coginvasion.cog.attacks.Bomb import Bomb_AI as Bomb
-    from src.coginvasion.gagsnew.GumballBlaster import GumballBlaster_AI as GumballBlaster
-    from src.coginvasion.cog.attacks.PickPocket import PickPocket_AI as PickPocket
+    from src.coginvasion.gagsnew.WholeCreamPieAI import WholeCreamPieAI as WholeCreamPie
+    from src.coginvasion.cog.attacks.ClipOnTieAI import ClipOnTieAI as ClipOnTie
+    from src.coginvasion.gagsnew.HL2ShotgunAI import HL2ShotgunAI as HL2Shotgun
+    from src.coginvasion.gagsnew.HL2PistolAI import HL2PistolAI as HL2Pistol
+    from src.coginvasion.gagsnew.TNT_AI import TNT_AI as TNT
+    from src.coginvasion.gagsnew.SlapAI import SlapAI as Slap
+    from src.coginvasion.cog.attacks.Bomb_AI import Bomb_AI as Bomb
+    from src.coginvasion.gagsnew.GumballBlaster_AI import GumballBlaster_AI as GumballBlaster
+    from src.coginvasion.cog.attacks.PickPocket_AI import PickPocket_AI as PickPocket
 
 from src.coginvasion.base.Precache import Precacheable
 
