@@ -59,6 +59,7 @@ class ChatBalloon(NodePath):
         self.textNodePath = self.attachNewNode(self.textNode.generate())
         self.textNodePath.setTransparency(self.foreground[3] < 1)
         self.textNodePath.setAttrib(DepthWriteAttrib.make(0))
+        self.textNodePath.setShaderOff(1)
 
         # Resize the balloon as necessary:
         middle = self.balloon.find('**/middle')
