@@ -12,7 +12,7 @@ class DistributedTriggerOnce(DistributedEntity):
         self.watchTask = taskMgr.add(self._triggerTask, self.uniqueName("triggerTask"))
 
     def _triggerTask(self, task):
-        inside = self.cEntity.isInside(base.localAvatar.getPos(render))
+        inside = self.cEntity.isInside(base.localAvatar.getPos(render) + (0, 0, 0.05))
         if inside and not self.wasInside:
             self.sendUpdate('onPlayerEnter')
             self.wasInside = True
