@@ -56,7 +56,7 @@ class Setting(object):
         # This is what this setting is currently set to.
         current = self.value
         
-        if isinstance(value, getVariants(self.type)):
+        if self.isValidValueType(value):
             # We must update the value attribute like this to avoid
             # recursion if this method was called from our customized
             # __setattr_ function.
@@ -76,14 +76,15 @@ class Setting(object):
             
             vType = value.__class__.__name__ if hasattr(value, '__class__') else type(value)
             
-            raise ValueError("{0} expects a value of type {1}, instead it was given a {2}."
-                             .format(self.name, 
-                                     str(self.type), 
-                                     vType))
+            typeConflict = "{0} expects a value of type {1}, instead it was given a {2}. Reverting to default!".format(self.name, str(self.type), vType)
+            print typeConflict
     
     def getValue(self):
         """ Fetches the current value of this Setting """
         return self.value
+    
+    def isValidValueType(self, value):
+        return isinstance(value, getVariants(self.type))
     
     def getDefault(self):
         """ Fetches the default value of this Setting """
