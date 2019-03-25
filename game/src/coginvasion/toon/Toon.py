@@ -322,8 +322,10 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         base.audio3d.attachSoundToObject(self.chatSoundDict['howl'], self.getPart('head'))
         
     def __actAsGone(self):
-        self.nametag3d.hide()
-        self.getShadow().hide()
+        if self.nametag3d:
+            self.nametag3d.hide()
+        if self.getShadow():
+            self.getShadow().hide()
         if self.tokenIcon:
             self.tokenIcon.hide()
         #self.stashBodyCollisions()
@@ -331,11 +333,14 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
     def __restoreHide(self):
         if self.tokenIcon:
             self.tokenIcon.show()
-        self.getShadow().show()
-        self.nametag3d.show()
-        self.getGeomNode().setTransparency(False)
-        self.getGeomNode().setAlphaScale(1.0)
-        self.getGeomNode().show()
+        if self.getShadow():
+            self.getShadow().show()
+        if self.nametag3d:
+            self.nametag3d.show()
+        if self.getGeomNode():
+            self.getGeomNode().setTransparency(False)
+            self.getGeomNode().setAlphaScale(1.0)
+            self.getGeomNode().show()
         #self.unstashBodyCollisions()
         
     def handleGhost(self, flag):
