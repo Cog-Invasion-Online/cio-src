@@ -4,7 +4,6 @@ class SuitSpawn(EntityAI):
     
     def __init__(self, air = None, dispatch = None):
         EntityAI.__init__(self, air, dispatch)
-        print "Make suitspawn"
         self.spawned = []
     
     def unload(self):
@@ -15,14 +14,13 @@ class SuitSpawn(EntityAI):
         
         EntityAI.unload(self)
     
-    def Spawn(self):
-        print "spawning"
+    def Spawn(self, dept = None):
         from src.coginvasion.cog.DistributedSuitAI import DistributedSuitAI
         from src.coginvasion.cog import Dept, SuitBank, Variant
         import random
         
         level, availableSuits = SuitBank.chooseLevelAndGetAvailableSuits(
-            [1, 12], random.choice([Dept.BOSS, Dept.SALES, Dept.CASH, Dept.LAW]), False)
+            [1, 12], random.choice([Dept.BOSS, Dept.SALES, Dept.CASH, Dept.LAW]) if not dept else dept, False)
 
         plan = random.choice(availableSuits)
         suit = DistributedSuitAI(self.air)
