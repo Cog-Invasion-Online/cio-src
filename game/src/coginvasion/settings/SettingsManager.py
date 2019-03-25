@@ -288,7 +288,7 @@ class SettingsManager:
                 
                 fileValue = settings.get(settingName, None)
                 
-                if fileValue is None:
+                if fileValue is None or not setting.isValidValueType(fileValue):
                     # This means that the setting has no value in the JSON file,
                     # let's set the value to the default.
                     settings[settingName] = setting.getDefault()
