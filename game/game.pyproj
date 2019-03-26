@@ -50,13 +50,26 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\ai\AIZoneData.py" />
     <Compile Include="src\coginvasion\ai\CogInvasionAIRepository.py" />
     <Compile Include="src\coginvasion\ai\__init__.py" />
+    <Compile Include="src\coginvasion\arcade\BatchCogSpawnerAI.py" />
+    <Compile Include="src\coginvasion\arcade\__init__.py" />
+    <Compile Include="src\coginvasion\attack\AttackClasses.py" />
+    <Compile Include="src\coginvasion\attack\Attacks.py" />
+    <Compile Include="src\coginvasion\attack\BaseAttack.py" />
+    <Compile Include="src\coginvasion\attack\BaseAttackAI.py" />
+    <Compile Include="src\coginvasion\attack\BaseAttackShared.py" />
+    <Compile Include="src\coginvasion\attack\BaseProjectile.py" />
+    <Compile Include="src\coginvasion\attack\BaseProjectileAI.py" />
+    <Compile Include="src\coginvasion\attack\BaseProjectileShared.py" />
+    <Compile Include="src\coginvasion\attack\DamageTypes.py" />
+    <Compile Include="src\coginvasion\attack\LinearProjectile.py" />
+    <Compile Include="src\coginvasion\attack\LinearProjectileAI.py" />
+    <Compile Include="src\coginvasion\attack\LinearProjectileShared.py" />
+    <Compile Include="src\coginvasion\attack\LobProjectile.py" />
+    <Compile Include="src\coginvasion\attack\LobProjectileAI.py" />
+    <Compile Include="src\coginvasion\attack\LobProjectileShared.py" />
+    <Compile Include="src\coginvasion\attack\TakeDamageInfo.py" />
+    <Compile Include="src\coginvasion\attack\__init__.py" />
     <Compile Include="src\coginvasion\avatar\Activities.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="src\coginvasion\avatar\AttackClasses.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="src\coginvasion\avatar\Attacks.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\coginvasion\avatar\Avatar.py" />
@@ -65,21 +78,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\avatar\BaseActivity.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\coginvasion\avatar\BaseAttacks.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="src\coginvasion\avatar\BaseProjectile.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="src\coginvasion\avatar\DamageTypes.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="src\coginvasion\avatar\DistributedAvatar.py" />
     <Compile Include="src\coginvasion\avatar\DistributedAvatarAI.py" />
     <Compile Include="src\coginvasion\avatar\Motor.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="src\coginvasion\avatar\TakeDamageInfo.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\coginvasion\avatar\__init__.py" />
@@ -292,21 +293,41 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\gagsnew\BaseGag.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\gagsnew\BaseGagAI.py" />
+    <Compile Include="src\coginvasion\gagsnew\BaseGagShared.py" />
     <Compile Include="src\coginvasion\gagsnew\BaseHitscan.py" />
+    <Compile Include="src\coginvasion\gagsnew\BaseHitscanAI.py" />
+    <Compile Include="src\coginvasion\gagsnew\BaseHitscanShared.py" />
     <Compile Include="src\coginvasion\gagsnew\GumballBlaster.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\gagsnew\GumballBlaster_AI.py" />
+    <Compile Include="src\coginvasion\gagsnew\GumballProjectile.py" />
+    <Compile Include="src\coginvasion\gagsnew\GumballProjectileAI.py" />
     <Compile Include="src\coginvasion\gagsnew\HL2Pistol.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\gagsnew\HL2PistolAI.py" />
+    <Compile Include="src\coginvasion\gagsnew\HL2PistolShared.py" />
     <Compile Include="src\coginvasion\gagsnew\HL2Shotgun.py" />
+    <Compile Include="src\coginvasion\gagsnew\HL2ShotgunAI.py" />
+    <Compile Include="src\coginvasion\gagsnew\HL2ShotgunShared.py" />
     <Compile Include="src\coginvasion\gagsnew\Slap.py" />
+    <Compile Include="src\coginvasion\gagsnew\SlapAI.py" />
     <Compile Include="src\coginvasion\gagsnew\TNT.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\gagsnew\TNTProjectile.py" />
+    <Compile Include="src\coginvasion\gagsnew\TNTProjectileAI.py" />
+    <Compile Include="src\coginvasion\gagsnew\TNTShared.py" />
+    <Compile Include="src\coginvasion\gagsnew\TNT_AI.py" />
     <Compile Include="src\coginvasion\gagsnew\WholeCreamPie.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\gagsnew\WholeCreamPieAI.py" />
+    <Compile Include="src\coginvasion\gagsnew\WholeCreamPieProjectile.py" />
+    <Compile Include="src\coginvasion\gagsnew\WholeCreamPieProjectileAI.py" />
+    <Compile Include="src\coginvasion\gagsnew\WholeCreamPieShared.py" />
     <Compile Include="src\coginvasion\gagsnew\__init__.py" />
     <Compile Include="src\coginvasion\gags\AccuracyBar.py" />
     <Compile Include="src\coginvasion\gags\ActivateTrapGag.py" />
@@ -785,6 +806,10 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     </Compile>
     <Compile Include="src\coginvasion\szboss\PointSpotlight.py" />
     <Compile Include="src\coginvasion\szboss\Ropes.py" />
+    <Compile Include="src\coginvasion\szboss\ScriptedSequenceAI.py" />
+    <Compile Include="src\coginvasion\szboss\ScriptedSpeechAI.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\szboss\sewer\DistributedSewer.py">
       <SubType>Code</SubType>
     </Compile>
@@ -896,6 +921,8 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Folder Include="src\coginvasion\" />
     <Folder Include="src\coginvasion\achievement\" />
     <Folder Include="src\coginvasion\ai\" />
+    <Folder Include="src\coginvasion\arcade\" />
+    <Folder Include="src\coginvasion\attack\" />
     <Folder Include="src\coginvasion\avatar\" />
     <Folder Include="src\coginvasion\base\" />
     <Folder Include="src\coginvasion\battle\" />
