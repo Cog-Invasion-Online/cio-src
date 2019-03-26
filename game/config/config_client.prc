@@ -69,6 +69,10 @@ server-port 7032
 server-address gameserver.coginvasion.com
 connect-method net
 
+# Resync clocks every minute.
+# This may need to be shrinked even further.
+time-manager-freq 60
+
 # 150-300 ms latency
 simulated-latency 1
 simulated-latency-min 0.15
