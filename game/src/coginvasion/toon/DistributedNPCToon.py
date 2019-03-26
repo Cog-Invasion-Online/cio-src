@@ -328,7 +328,7 @@ class DistributedNPCToon(DistributedToon):
         
     def generateQuestEmblem(self):
         self.questEmblem = QuestEmblemGui.QuestEmblemGui(parent = self)
-        self.questEmblem.setZ(self.height + 2.0)
+        self.questEmblem.setZ(self.getHeight() + 2.0)
         self.__handleQuestDataUpdate()
         
     def __handleQuestDataUpdate(self):
@@ -341,11 +341,11 @@ class DistributedNPCToon(DistributedToon):
         if needsToVisit:
             self.questEmblem.stop()
             self.questEmblem.setEmblem(questAvailable = 0)
-            self.questEmblem.start(self.height + 2.0)
+            self.questEmblem.start(self.getHeight() + 2.0)
         elif len(pickableQuestList) > 0 and base.localAvatar.questManager.getNumQuests() < 4:
             self.questEmblem.stop()
             self.questEmblem.setEmblem()
-            self.questEmblem.start(self.height + 2.0)
+            self.questEmblem.start(self.getHeight() + 2.0)
         elif not needsToVisit:
             self.questEmblem.stop()
 

@@ -44,6 +44,9 @@ class DistributedAvatar(DistributedSmoothNode, Avatar):
 
     def setName(self, name):
         Avatar.setName(self, name)
+        
+    def getName(self):
+        return Avatar.getName(self)
 
     def setChat(self, chat):
         Avatar.setChat(self, chat)

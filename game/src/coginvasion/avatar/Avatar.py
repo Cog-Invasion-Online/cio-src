@@ -602,6 +602,9 @@ class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared):
             self.charName = charName
         if createNow:
             self.setupNameTag()
+            
+    def getName(self):
+        return AvatarShared.getName(self)
 
     def setupNameTag(self, tempName = None):
         if not self._name and not tempName:
