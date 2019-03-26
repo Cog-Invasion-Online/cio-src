@@ -276,9 +276,6 @@ class ToonHead(Actor.Actor):
     def __eyesLookTask(self, task):
         if not self.hasPupils():
             return task.done
-            
-        if hasattr(base, 'localAvatar') and self == base.localAvatar:
-            return task.cont
         
         now = globalClock.getFrameTime()
         
