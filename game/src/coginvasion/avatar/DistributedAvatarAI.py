@@ -37,6 +37,9 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         self.movementVector = Vec3(0)
         return
 
+    def getActivityDuration(self, act):
+        return self.activities.get(act, 0.0)
+
     def getLightDamage(self):
         return 1
 

@@ -22,7 +22,7 @@ class LinearProjectileShared:
     def playLinear(self):
         ts = globalClockDelta.localElapsedTime(self.linearTimestamp)
         self.ival = LerpPosInterval(self, self.linearDuration, Point3(*self.linearEnd), Point3(*self.linearStart))
-        self.ival.start(ts)
+        self.ival.start(0)#ts)
 
     def getLinear(self):
         return [self.linearDuration, self.linearStart, self.linearEnd, self.linearTimestamp]

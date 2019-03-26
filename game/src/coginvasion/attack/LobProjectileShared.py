@@ -26,7 +26,7 @@ class LobProjectileShared:
         ts = globalClockDelta.localElapsedTime(self.projTimestamp)
         self.ival = FlightProjectileInterval(self, startPos = Point3(*self.projStart), endPos = Point3(*self.projEnd),
                                                 duration = self.projDuration, gravityMult = self.projGravity)
-        self.ival.start(ts)
+        self.ival.start(0)#ts)
 
     def getProjectile(self):
         return [self.projDuration, self.projStart, self.projEnd, self.projGravity, self.projTimestamp]

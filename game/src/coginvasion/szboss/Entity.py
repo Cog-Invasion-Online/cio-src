@@ -42,6 +42,12 @@ class Entity(NodePath):
         assert self.cEntity
         
         return self.bspLoader.getEntityValueInt(self.cEntity.getEntnum(), key)
+
+    def getEntityValueBool(self, key):
+        assert self.bspLoader
+        assert self.cEntity
+        
+        return bool(self.bspLoader.getEntityValueInt(self.cEntity.getEntnum(), key))
         
     def getEntityValueFloat(self, key):
         assert self.bspLoader
