@@ -19,6 +19,8 @@ import random
 class DistributedNPCToonAI(DistributedToonAI):
     notify = directNotify.newCategory("DistributedNPCToonAI")
     ACCOUNT = 0
+    
+    Moving = False
 
     def __init__(self, air, npcId, originIndex):
         DistributedToonAI.__init__(self, air)

@@ -26,6 +26,8 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
     AvatarType = AVATAR_NONE
     # AI relationships to other types of avatars
     Relationships = {}
+    
+    Moving = True
 
     def __init__(self, air):
         DistributedSmoothNodeAI.DistributedSmoothNodeAI.__init__(self, air)
@@ -95,9 +97,9 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         if self.isEmpty():
             return task.done
             
-        pos = self.getPos(render)
+        pos = self.getPos()
         
-        if pos == self.lastPos:
+        if (pos - self.lastPos).lengthSquared() <= 0.001:
             self.movementDelta.set(0, 0, 0)
             self.movementVector.set(0, 0, 0)
             self.lastPos = pos
@@ -222,8 +224,10 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
 
         # Add ourself to the avatar list for the zone
         base.air.addAvatar(self)
-        self.lastPos = self.getPos(render)
-        taskMgr.add(self.__avatarTick, self.uniqueName('avatarTick'))
+        
+        if self.Moving:
+            self.lastPos = self.getPos(render)
+            taskMgr.add(self.__avatarTick, self.uniqueName('avatarTick'))
         
     def disable(self):
         pass
@@ -232,7 +236,8 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         self.__stopActivityTask()
         base.air.removeAvatar(self)
         
-        taskMgr.remove(self.uniqueName('avatarTick'))
+        if self.Moving:
+            taskMgr.remove(self.uniqueName('avatarTick'))
 
         self.battleZone = None
         self.movementVector = None
