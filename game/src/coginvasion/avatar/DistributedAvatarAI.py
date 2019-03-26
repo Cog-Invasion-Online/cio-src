@@ -96,6 +96,13 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
             return task.done
             
         pos = self.getPos(render)
+        
+        if pos == self.lastPos:
+            self.movementDelta.set(0, 0, 0)
+            self.movementVector.set(0, 0, 0)
+            self.lastPos = pos
+            return task.cont
+        
         # Determine movement vector, used by AI sensing.
         self.movementDelta = pos - self.lastPos
         self.movementVector = self.movementDelta.normalized()
