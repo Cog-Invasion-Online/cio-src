@@ -229,7 +229,6 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
                 self.physicsWorld.removeGhost(self.physicsWorld.getGhost(i))
             for i in xrange(numConstraints - 1, -1, -1):
                 self.physicsWorld.removeConstraint(self.physicsWorld.getConstraint(i))
-        self.physicsWorld = None
 
     def delete(self):
         taskMgr.remove(self.uniqueName('battleZoneUpdate'))
@@ -244,6 +243,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.bspLoader = None
             
         self.resetPhysics()
+        self.physicsWorld = None
 
         self.avId2suitsTargeting = None
         self.watchingAvatarIds = None
