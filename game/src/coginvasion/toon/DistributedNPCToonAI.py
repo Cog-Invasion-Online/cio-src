@@ -21,6 +21,7 @@ class DistributedNPCToonAI(DistributedToonAI):
     ACCOUNT = 0
     
     Moving = False
+    NeedsPhysics = False
 
     def __init__(self, air, npcId, originIndex):
         DistributedToonAI.__init__(self, air)

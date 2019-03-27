@@ -42,12 +42,12 @@ class BasePhysicsObject:
         
     def addToPhysicsWorld(self, world):
         print self.__class__.__name__, "Adding", self.bodyNode, "to physics world", world
-        if self.bodyNode:
+        if self.bodyNode and world:
             world.attach(self.bodyNode)
             self.worlds.append(world)
 
     def removeFromPhysicsWorld(self, world, andRemove = True):
-        if self.bodyNode:
+        if self.bodyNode and world:
             world.remove(self.bodyNode)
             if andRemove and world in self.worlds:
                 self.worlds.remove(world)

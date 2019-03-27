@@ -28,6 +28,7 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
     Relationships = {}
     
     Moving = True
+    NeedsPhysics = True
 
     def __init__(self, air):
         DistributedSmoothNodeAI.DistributedSmoothNodeAI.__init__(self, air)
@@ -203,6 +204,9 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         return self.Relationships.get(avatar.AvatarType, RELATIONSHIP_NONE)
 
     def setupPhysics(self):
+        if not self.NeedsPhysics:
+            return
+            
         print self.__class__.__name__, "setupPhysics() hitboxData:", self.hitboxData
 
         bodyNode = BulletRigidBodyNode(self.uniqueName('avatarBodyNode'))
@@ -213,6 +217,7 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         capsule = BulletCapsuleShape(radius, height)
         bodyNode.addShape(capsule, TransformState.makePos(Point3(0, 0, zOfs)))
         bodyNode.setKinematic(True)
+        bodyNode.setMass(0.0)
         
         AvatarShared.setupPhysics(self, bodyNode, True)
         
