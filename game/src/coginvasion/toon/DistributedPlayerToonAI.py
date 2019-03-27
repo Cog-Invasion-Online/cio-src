@@ -98,6 +98,10 @@ class DistributedPlayerToonAI(DistributedToonAI):
         if self.__requesterAuthorized():
             self.b_setTrackExperience(GagGlobals.trackExperienceToNetString(GagGlobals.MaxedTrackExperiences))
             self.backpack.refillSupply()
+            
+    def reqRefillLaff(self):
+        if self.__requesterAuthorized():
+            self.b_setHealth(self.getMaxHealth())
         
     def reqSetWorldAccess(self, andTP):
         if self.__requesterAuthorized():

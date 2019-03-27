@@ -19,10 +19,12 @@ NoAccess = 0
 Kick = 0
 Ban = 1
 UnlockAllGags = 2
+RefillLaff = 3
 
 PERM_TOGGLE_GHOST = "ADM_TOGGLE_GHOST"
 PERM_DIST_MSG = "ADM_DISTRICT_MESSAGE"
 PERM_UNLOCK_GAGS = "ADM_UNLOCK_GAGS"
+PERM_REFILL_LAFF = "ADM_REFILL_LAFF"
 PERM_AWARD_TSA_UNIFORM = "ADM_AWARD_TSA_UNIFORM"
 PERM_SET_WORLD_ACCESS = "ADM_SET_WORLD_ACCESS"
 PERM_TOGGLE_PLAYER_IDS = "ADM_TOGGLE_PLAYER_IDS"
@@ -163,6 +165,14 @@ def SEND_REQ_UNLOCK_GAGS():
     base.localAvatar.sendUpdate('reqUnlockAllGags')
 
 __builtin__.SEND_REQ_UNLOCK_GAGS = SEND_REQ_UNLOCK_GAGS
+
+def SEND_REQ_REFILL_LAFF():
+    if not precommandChecks(PERM_REFILL_LAFF):
+        return
+    
+    base.localAvatar.sendUpdate('reqRefillLaff')
+
+__builtin__.SEND_REQ_REFILL_LAFF = SEND_REQ_REFILL_LAFF
 
 def TOGGLE_GHOST():
     if not precommandChecks(PERM_TOGGLE_GHOST):
