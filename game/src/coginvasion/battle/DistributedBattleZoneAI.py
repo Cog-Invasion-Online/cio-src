@@ -216,6 +216,20 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         
     def rewardSequenceComplete(self, timestamp):
         pass
+    
+    def resetPhysics(self):
+        if self.physicsWorld:
+            # We are counting on other types of objects never being added on the server side.
+            numRigids = self.physicsWorld.getNumRigidBodies()
+            numGhosts = self.physicsWorld.getNumGhosts()
+            numConstraints = self.physicsWorld.getNumConstraints()
+            for i in xrange(numRigids - 1, -1, -1):
+                self.physicsWorld.removeRigidBody(self.physicsWorld.getRigidBody(i))
+            for i in xrange(numGhosts - 1, -1, -1):
+                self.physicsWorld.removeGhost(self.physicsWorld.getGhost(i))
+            for i in xrange(numConstraints - 1, -1, -1):
+                self.physicsWorld.removeConstraint(self.physicsWorld.getConstraint(i))
+        self.physicsWorld = None
 
     def delete(self):
         taskMgr.remove(self.uniqueName('battleZoneUpdate'))
@@ -229,18 +243,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.unloadBSPLevel()
         self.bspLoader = None
             
-        if self.physicsWorld:
-            # We are counting on other types of objects never being added on the server side.
-            numRigids = self.physicsWorld.getNumRigidBodies()
-            numGhosts = self.physicsWorld.getNumGhosts()
-            numConstraints = self.physicsWorld.getNumConstraints()
-            for i in xrange(numRigids - 1, -1, -1):
-                self.physicsWorld.removeRigidBody(self.physicsWorld.getRigidBody(i))
-            for i in xrange(numGhosts - 1, -1, -1):
-                self.physicsWorld.removeGhost(self.physicsWorld.getGhost(i))
-            for i in xrange(numConstraints - 1, -1, -1):
-                self.physicsWorld.removeConstraint(self.physicsWorld.getConstraint(i))
-        self.physicsWorld = None
+        self.resetPhysics()
 
         self.avId2suitsTargeting = None
         self.watchingAvatarIds = None

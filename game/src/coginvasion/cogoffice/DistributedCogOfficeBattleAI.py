@@ -330,6 +330,8 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.cleanupDrops()
         self.cleanupChairSuits()
         self.cleanupGuardSuits()
+        self.resetPhysics()
+        self.unloadBSPLevel()
         self.readyAvatars = []
         for elevator in self.elevators:
             if elevator:
@@ -337,8 +339,6 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.b_setState('off')
 
     def delete(self):
-        self.bspLoader.cleanup()
-        self.cleanupNavMesh()
         self.fsm.requestFinalState()
         self.fsm = None
         self.infoEntity = None
