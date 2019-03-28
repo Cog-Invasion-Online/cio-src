@@ -15,8 +15,6 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, SoundInterval
 from direct.interval.IntervalGlobal import Parallel, LerpPosInterval, LerpQuatInterval, LerpHprInterval
 
-from panda3d.core import Point3
-
 from src.coginvasion.toon.DistributedToon import DistributedToon
 from src.coginvasion.gags.backpack.Backpack import Backpack
 from src.coginvasion.gags import GagGlobals

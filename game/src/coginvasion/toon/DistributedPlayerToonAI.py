@@ -495,18 +495,6 @@ class DistributedPlayerToonAI(DistributedToonAI):
     def suitKilled(self, avId):
         pass
 
-    def toonHitByPie(self, avId, gagId):
-        obj = self.air.doId2do.get(avId, None)
-        hp = GagGlobals.getGagData(gagId).get('health', 0)
-        if obj and obj.getHealth() < obj.getMaxHealth() and not obj.isDead:
-            if obj.__class__.__name__ == 'DistributedPlayerToonAI':
-                obj.toonUp(hp)
-            else:
-                if obj.getHealth() + hp > obj.getMaxHealth():
-                    hp = obj.getMaxHealth() - obj.getHealth()
-                obj.b_setHealth(obj.getHealth() + hp)
-                obj.d_announceHealth(1, hp)
-
     def gagStart(self, gagId):
         # Instead, let's send out a messenger event so that cogs that are interested
         # in hearing our events get it so we don't hold up the AI by searching.
