@@ -92,8 +92,9 @@ for lclFile, lclSha in lclData.items():
             lclData[lclFile] = srvSha
         else:
             if ".mf" in lclFile.filename:
+                mfSHA = lclData[lclFile]
                 lclFile = LocalFile(lclFile.fullfile[:-3] + ".tar.gz")
-                print lclFile.filename
+                #lclData[lclFile] = mfSHA
             filesToDeploy.append(lclFile)
 
 print
@@ -108,6 +109,10 @@ if not len(filesToDeploy):
 print "Writing and deploying hash file..."
 hashfw = open('file_info.txt', 'w')
 for lclFile, sha in lclData.items():
+    if sha == None:
+        print lclFile.filename
+        print "^ THAT IS NONE"
+        continue
     hashfw.write(lclFile.filename + " " + sha + "\n")
 hashfw.flush()
 hashfw.close()
