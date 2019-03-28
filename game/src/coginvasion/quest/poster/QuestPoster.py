@@ -28,10 +28,10 @@ from src.coginvasion.quest.Objectives import DeliverItemObjective
 from src.coginvasion.quest.Objectives import MinigameObjective
 from src.coginvasion.quest.Objectives import DefeatObjectives
 from src.coginvasion.cog import Dept, SuitGlobals, SuitBank
-from src.coginvasion.toon.ToonHead import ToonHead
 from src.coginvasion.toon.ToonDNA import ToonDNA
 
 import random
+from src.coginvasion.toon import ToonGlobals
 
 class QuestPoster(DirectFrame):
     notify = directNotify.newCategory('QuestPoster')
@@ -506,9 +506,7 @@ class QuestPoster(DirectFrame):
         if not npcId == 0:
             dna = ToonDNA()
             dna.setDNAStrand(NPCGlobals.NPCToonDict.get(npcId)[2])
-            head = ToonHead(base.cr)
-            head.generateHead(dna.getGender(), dna.getAnimal(), dna.getHead(), forGui = 1)
-            head.setHeadColor(dna.getHeadColor())
+            head = ToonGlobals.generateGuiHead(dna)
             self.handleComplexIcon(head, iconElement, scale = QuestGlobals.IMAGE_SCALE_SMALL - 0.01)
         else:
             self.handleSimpleIcon(QuestGlobals.getHQIcon(), QuestGlobals.SIMPLE_IMAGE_SCALE, iconElement)

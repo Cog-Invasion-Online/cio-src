@@ -16,10 +16,10 @@ from direct.gui.DirectGui import DirectFrame, OnscreenText, OnscreenImage, DGG
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.toon.ToonHead import ToonHead
 from src.coginvasion.base import ToontownIntervals
 
 import random
+from src.coginvasion.toon import ToonGlobals
 
 class KOTHKingGui(DirectFrame):
     notify = directNotify.newCategory('KOTHKingGui')
@@ -52,14 +52,8 @@ class KOTHKingGui(DirectFrame):
         # Let's create the Toon head
         headFrame = self.attachNewNode('head')
         headFrame.setPosHprScale(0, 0, -0.1, 180, 0, 0, 0.3, 0.3, 0.3)
-        toon = ToonHead(None)
-        toon.generateHead(king.getGender(), king.getAnimal(), king.getHead())
-        r, g, b, a = king.getHeadColor()
-        color = (r, g, b, a)
-        toon.setHeadColor(color)
-        toon.setDepthWrite(1)
-        toon.setDepthTest(1)
-        toon.reparentTo(headFrame)
+        head = ToonGlobals.generateGuiHead(king)
+        head.reparentTo(headFrame)
         
         # Let's create the points text
         self.amt_label = OnscreenText(text = 'Your Points: 0', pos = (-0.012, -0.4, 0), font = toonFont,

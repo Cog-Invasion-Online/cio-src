@@ -12,8 +12,8 @@ from panda3d.core import Point3, VBase4
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectGui import DirectFrame
 
-from src.coginvasion.toon.ToonHead import ToonHead
 from HeadPanels import HeadPanels
+from src.coginvasion.toon import ToonGlobals
 
 class CameraShyHeadPanels(HeadPanels):
     notify = directNotify.newCategory('CameraShyHeadPanels')
@@ -62,21 +62,13 @@ class CameraShyHeadPanels(HeadPanels):
                 if otherAvId != avId:
                     headNumber += 1
                     otherAv = base.cr.doId2do.get(otherAvId)
-                    gender = otherAv.getGender()
-                    head, color = otherAv.getHeadStyle()
-                    animal = otherAv.getAnimal()
 
                     headFrame = otherPlayerHeadsFrame.attachNewNode('otherPlayerHeadFrame')
                     headFrame.setPosHprScale(self.otherPlayerHeadXValues[headNumber], 5, -0.1, 180, 0, 0, 0.2, 0.2, 0.2)
                     headFrame.setColorScale(self.state2Color[0])
-                    toon = ToonHead(None)
-                    toon.generateHead(gender, animal, head)
-                    r, g, b, _ = color
-                    color = (r, g, b, 1.0)
-                    toon.setHeadColor(color)
-                    toon.setDepthWrite(1)
-                    toon.setDepthTest(1)
-                    toon.reparentTo(headFrame)
+                    
+                    head = ToonGlobals.generateGuiHead(otherAv)
+                    head.reparentTo(headFrame)
 
                     self.avId2otherPlayerAvIds2otherPlayerHeadsFrame[avId][otherAvId] = headFrame
 

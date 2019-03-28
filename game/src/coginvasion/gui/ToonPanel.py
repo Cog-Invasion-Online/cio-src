@@ -15,7 +15,7 @@ from direct.gui.DirectGui import DirectFrame, DirectButton, OnscreenText, DGG
 from direct.fsm import ClassicFSM, State
 
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
-from src.coginvasion.toon import ToonHead, ToonDNA
+from src.coginvasion.toon import ToonDNA, ToonGlobals
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.distributed import AdminCommands
 from src.coginvasion.hood import ZoneUtil
@@ -394,13 +394,8 @@ class ToonPanel(DirectFrame):
         dna = ToonDNA.ToonDNA()
         dna.setDNAStrand(self.avatarInfo[2])
 
-        self.head = ToonHead.ToonHead(base.cr)
-        self.head.generateHead(dna.gender, dna.animal, dna.head, 1)
-        self.head.setHeadColor(dna.headcolor)
+        self.head = ToonGlobals.generateGuiHead(dna)
         self.head.reparentTo(self)
-        self.head.setDepthWrite(1)
-        self.head.setDepthTest(1)
-        self.head.setH(180)
         self.head.setScale(self.animal2HeadData[dna.animal][0])
         self.head.setZ(self.animal2HeadData[dna.animal][1])
 

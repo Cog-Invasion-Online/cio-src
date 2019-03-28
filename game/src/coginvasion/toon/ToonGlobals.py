@@ -11,6 +11,8 @@ Copyright (c) CIO Team. All rights reserved.
 from src.coginvasion.globals import CIGlobals
 from panda3d.core import Point3
 
+from ToonDNA import ToonDNA
+
 # First argument is phase, next is type, body part, pant type, and finally model detail.
 # Pant type is either: shorts or skirt.
 # Type is either: dgs, dgm, or dgl.
@@ -225,3 +227,20 @@ def precacheToons():
 
                     partAnimations[animName] = animPath
                 precacheActor([mdl, partAnimations])
+                
+def generateGuiHead(dnaStrand):
+    if isinstance(dnaStrand, str):
+        dna = ToonDNA()
+        dna.setDNAStrand(dnaStrand)
+    elif isinstance(dnaStrand, ToonDNA):
+        dna = dnaStrand
+    
+    from ToonHead import ToonHead
+    head = ToonHead(base.cr)
+    head.generateHead(dna.gender, dna.animal, dna.head, 1)
+    head.setHeadColor(dna.headcolor)
+    head.setDepthWrite(1)
+    head.setDepthTest(1)
+    head.setH(180)
+    
+    return head
