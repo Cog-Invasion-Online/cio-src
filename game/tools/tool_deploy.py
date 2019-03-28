@@ -40,7 +40,7 @@ for line in srvFile.readlines():
         filename, sha = line.split(' ')
         sha = sha.replace('\n', '')
         if "-" in sha:
-           sha = sha.replace('-', '')
+            sha = sha.replace('-', '')
         sha = sha.lower()
         servData[filename] = sha
 
@@ -80,6 +80,7 @@ for fpath in files.readlines():
     sha = hashlib.sha1(f.read()).hexdigest()
     f.close()
     lclData[lclFile] = sha
+    print lclFile
 
 for lclFile, lclSha in lclData.items():
     srvSha = servData.get(lclFile.filename)
