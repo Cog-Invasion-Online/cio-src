@@ -80,6 +80,9 @@ for fpath in files.readlines():
     sha = hashlib.sha1(f.read()).hexdigest()
     f.close()
     lclData[lclFile] = sha
+    
+    print "Local file: {0} Set hash to:".format(lclFile.filename)
+    print sha
 
 for lclFile, lclSha in lclData.items():
     srvSha = servData.get(lclFile.filename)
@@ -93,9 +96,10 @@ for lclFile, lclSha in lclData.items():
         else:
             if ".mf" in lclFile.filename:
                 mfSHA = lclData[lclFile]
-                lclFile = LocalFile(lclFile.fullfile[:-3] + ".tar.gz")
-                #lclData[lclFile] = mfSHA
-            filesToDeploy.append(lclFile)
+                comprFile = LocalFile(lclFile.fullfile[:-3] + ".tar.gz")
+                filesToDeploy.append(comprFile)
+            else:
+                filesToDeploy.append(lclFile)
 
 print
 
