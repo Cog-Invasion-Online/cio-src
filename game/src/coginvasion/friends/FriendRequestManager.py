@@ -44,7 +44,10 @@ class FriendRequestManager(DirectObject):
 
     def __newFriendRequest(self, requester, name, dna):
         request = GlobalDialog(message = self.MessageFriendRequest % (name, name), style = 1,
-            text_wordwrap = 12, doneEvent = 'friendRequestDone-%d' % requester, extraArgs = [requester])
+            text_wordwrap = 12, doneEvent = 'friendRequestDone-%d' % requester, extraArgs = [requester],
+            text_scale = 0.065, pos = (-0.55, 0, -0.1), scale = (0.55, 0.0, 0.35))
+        request.reparentTo(base.a2dTopRight)
+        
         self.friendRequests[requester] = request
         self.acceptOnce('friendRequestDone-%d' % requester, self.handleFriendRequestChoice)
 
