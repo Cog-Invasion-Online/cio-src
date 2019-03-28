@@ -435,15 +435,23 @@ class DistributedPlayerToonAI(DistributedToonAI):
 
     def updateAttackAmmo(self, gagId, ammo):
         self.backpack.setSupply(gagId, ammo)
-
-    def getCurrentGag(self):
-        return self.getEquippedAttack()
     
     def setBackpackAmmo(self, netString):
         data = self.backpack.fromNetString(netString)
         
         for gagId in data.keys():
             supply = data[gagId]
+            
+            if not gagId in base.attackMgr.AttackClasses.keys():
+                # This is like an integrity check making sure that the avatar
+                # only has access to attacks we want them to have access to.
+                # This also is an automatic way to correct old backpack data
+                # that could be lingering in our database. This integrity check
+                # isn't supposed to remain in the code for a long time.
+                defaultBackpack = GagGlobals.getDefaultBackpack(isAI = True)
+                self.b_setBackpackAmmo(defaultBackpack.toNetString())
+                break
+            
             if not self.backpack.hasGag(gagId):
                 self.backpack.addGag(gagId, curSupply=supply)
             else:

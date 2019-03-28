@@ -915,25 +915,43 @@ MaxedTrackExperiences = {
 # Cupcake, squirt flower
 InitLoadout = [13, 35]
 
+DefaultBackpack = None
+
 def getDefaultBackpack(isAI = False):
-    defaultBackpack = None
-    if not isAI:
-        from src.coginvasion.gags.backpack.Backpack import Backpack
-        defaultBackpack = Backpack(None)
-    else:
-        from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
-        defaultBackpack = BackpackAI(None)
-    cupcake = getGagData(13)
-    flower = getGagData(35)
-    defaultBackpack.addGag(13, cupcake.get('supply'), cupcake.get('maxSupply'))
-    defaultBackpack.addGag(35, flower.get('supply'), flower.get('maxSupply'))
-    return defaultBackpack
+    global DefaultBackpack
+    
+    if not DefaultBackpack:
+        if not isAI:
+            from src.coginvasion.gags.backpack.Backpack import Backpack
+            DefaultBackpack = Backpack(None)
+        else:
+            from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
+            DefaultBackpack = BackpackAI(None)
+        
+        # Let's add all the temporary allowed gags.
+        for tempGag in tempAllowedGags:
+            data = gagData.get(tempGag, None)
+            
+            if not data:
+                print 'Invalid attack supplied: ' + tempGag
+                continue
+            
+            # This line just gets the proper max supply for the specified attack.
+            # If a 'minMaxSupply' key doesn't exist, it defaults to the 'maxSupply' key
+            # -- and if that doesn't exist, just default to 1.
+            maxSupply = data.get('minMaxSupply', data.get('maxSupply', 1))
+            supply = data.get('supply', maxSupply)
+            
+            ID = base.attackMgr.getAttackIDByName(tempGag)
+            DefaultBackpack.addGag(ID, supply, maxSupply)
+        
+    return DefaultBackpack
 
 # Specifies which gags are allowed to be used. This should only be temporary until all the gags are implemented correctly.
 #tempAllowedGags = #[Cupcake, FruitPieSlice, CreamPieSlice, WholeFruitPie, WholeCreamPie, BirthdayCake,
-                  # WaterGun, FireHose,
-                  # FlowerPot, Sandbag, Anvil, BigWeight, Safe, GrandPiano,
-                  # TNT, HL2Shotgun,
-                  # Megaphone, Lipstick, JugglingBalls, BambooCane, PixieDust,
-                  # BikeHorn, Whistle, Bugle, Aoogah, ElephantHorn, Foghorn, Opera]
+# WaterGun, FireHose,
+# FlowerPot, Sandbag, Anvil, BigWeight, Safe, GrandPiano,
+# TNT, HL2Shotgun,
+# Megaphone, Lipstick, JugglingBalls, BambooCane, PixieDust,
+# BikeHorn, Whistle, Bugle, Aoogah, ElephantHorn, Foghorn, Opera]
 tempAllowedGags = [WholeCreamPie, HL2Shotgun, HL2Pistol, TNT, Slap, GumballBlaster]
