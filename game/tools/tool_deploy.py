@@ -80,7 +80,6 @@ for fpath in files.readlines():
     sha = hashlib.sha1(f.read()).hexdigest()
     f.close()
     lclData[lclFile] = sha
-    print lclFile
 
 for lclFile, lclSha in lclData.items():
     srvSha = servData.get(lclFile.filename)
@@ -92,6 +91,9 @@ for lclFile, lclSha in lclData.items():
             # They don't want this file to be deployed. Keep the same hash from before.
             lclData[lclFile] = srvSha
         else:
+            if ".mf" in lclFile.filename:
+                lclFile = LocalFile(lclFile.fullfile[:-3] + ".tar.gz")
+                print lclFile.filename
             filesToDeploy.append(lclFile)
 
 print
