@@ -80,9 +80,6 @@ for fpath in files.readlines():
     sha = hashlib.sha1(f.read()).hexdigest()
     f.close()
     lclData[lclFile] = sha
-    
-    print "Local file: {0} Set hash to:".format(lclFile.filename)
-    print sha
 
 for lclFile, lclSha in lclData.items():
     srvSha = servData.get(lclFile.filename)
@@ -113,10 +110,6 @@ if not len(filesToDeploy):
 print "Writing and deploying hash file..."
 hashfw = open('file_info.txt', 'w')
 for lclFile, sha in lclData.items():
-    if sha == None:
-        print lclFile.filename
-        print "^ THAT IS NONE"
-        continue
     hashfw.write(lclFile.filename + " " + sha + "\n")
 hashfw.flush()
 hashfw.close()
