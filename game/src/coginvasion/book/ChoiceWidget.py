@@ -238,7 +238,7 @@ class ChoiceWidget(DirectFrame):
                         self.userChoice = 0
                 else:
                     # This is a screen resolution option.
-                    self.userChoice = (int(data[0]), int(data[1]))
+                    self.userChoice = [int(data[0]), int(data[1])]
             else:
                 self.userChoice = self.options[self.currentChoiceIndex]
 

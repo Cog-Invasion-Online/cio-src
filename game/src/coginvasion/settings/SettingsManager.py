@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from Setting import Setting
 from Setting import SHOWBASE_PREINIT, SHOWBASE_POSTINIT
-from Setting import DATATYPE_INT, DATATYPE_STR, DATATYPE_TUPLE, DATATYPE_BOOL, DATATYPE_FLOAT
+from Setting import DATATYPE_INT, DATATYPE_STR, DATATYPE_LIST, DATATYPE_TUPLE, DATATYPE_BOOL, DATATYPE_FLOAT
 
 from src.coginvasion.globals import CIGlobals
 
@@ -39,7 +39,7 @@ class SettingsManager:
                         callback = self.__updateCursor, sunrise = SHOWBASE_POSTINIT,
                         options = ["Toontown", "None"],
                         description = "Updates the game's cursor.")
-        self.addSetting("resolution", optionType = DATATYPE_TUPLE, default = (640, 480), 
+        self.addSetting("resolution", optionType = DATATYPE_LIST, default = [640, 480], 
                         callback = self.__updateResolution, sunrise = SHOWBASE_PREINIT, 
                         options = ["640x480", "800x600", "1024x768", "1280x720", 
                                    "1360x768", "1366x768", "1600x900", "1920x1080"], 
@@ -289,6 +289,7 @@ class SettingsManager:
                 fileValue = settings.get(settingName, None)
                 
                 if fileValue is None or not setting.isValidValueType(fileValue):
+                    print "Setting is not valid: {0} {1}".format(settingName, fileValue)
                     # This means that the setting has no value in the JSON file,
                     # let's set the value to the default.
                     settings[settingName] = setting.getDefault()
@@ -296,8 +297,6 @@ class SettingsManager:
                 else:
                     # Let's update the value on the setting class without
                     # calling the callback function.
-                    if isinstance(fileValue, list):
-                        fileValue = tuple(fileValue)
                     
                     setting.setValue(fileValue, andCallback = False)
             
@@ -329,7 +328,7 @@ class SettingsManager:
             if not sunrise in [SHOWBASE_PREINIT, SHOWBASE_POSTINIT]:
                 raise ValueError("Invalid sunrise type for Setting %s.".format(name))
             
-            if not optionType in [DATATYPE_INT, DATATYPE_STR, DATATYPE_TUPLE, DATATYPE_BOOL, DATATYPE_FLOAT]:
+            if not optionType in [DATATYPE_INT, DATATYPE_STR, DATATYPE_TUPLE, DATATYPE_LIST, DATATYPE_BOOL, DATATYPE_FLOAT]:
                 raise ValueError("Invalid option type for Setting %s.".format(name))
             
             setting = Setting(self, name, optionType, default, 

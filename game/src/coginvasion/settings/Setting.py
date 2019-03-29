@@ -9,6 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 DATATYPE_TUPLE = tuple
+DATATYPE_LIST = list
 DATATYPE_INT = int
 DATATYPE_STR = unicode
 DATATYPE_BOOL = bool
