@@ -13,9 +13,18 @@ import hashlib
 import os
 import sys
 import winsound
+import tarfile
 
 def playDone():
-    winsound.PlaySound('tools/deploydone.wav', winsound.SND_FILENAME)
+    try:
+        winsound.PlaySound('tools/deploydone.wav', winsound.SND_FILENAME)
+    except: pass
+    
+def compress(filename):
+    tf = tarfile.open(filename[:-3] + ".tar.gz", mode="w:gz")
+    tf.add(filename)
+    tf.close()
+    print "Compressed {0}!".format(filename)
 
 host = "50.87.26.220"
 port = 22
@@ -92,7 +101,7 @@ for lclFile, lclSha in lclData.items():
             lclData[lclFile] = srvSha
         else:
             if ".mf" in lclFile.filename:
-                mfSHA = lclData[lclFile]
+                compress(lclFile.filename)
                 comprFile = LocalFile(lclFile.fullfile[:-3] + ".tar.gz")
                 filesToDeploy.append(comprFile)
             else:
