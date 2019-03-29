@@ -63,9 +63,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.lookAtTrack = None
         self.portal1 = None
         self.portal2 = None
-        self.gunAttached = False
         self.spineA = NodePath()
-        self.gun = None
         self.tokenIcon = None
         self.tokenIconIval = None
         self.fallSfx = base.audio3d.loadSfx("phase_4/audio/sfx/MG_cannon_hit_dirt.ogg")
@@ -361,53 +359,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         if local:
             self.getGeomNode().setTransparency(flag)
             self.getGeomNode().setColorScale(1.0, 1.0, 1.0, alpha)
-        
-
-    def attachGun(self, gunName):
-        self.detachGun()
-        if gunName == "pistol":
-            self.gun = loader.loadModel("phase_4/models/props/water-gun.bam")
-            self.gun.reparentTo(self.find('**/def_joint_right_hold'))
-            self.gun.setPos(Point3(0.28, 0.1, 0.08))
-            self.gun.setHpr(VBase3(85.6, -4.44, 94.43))
-            self.gunAttached = True
-        elif gunName == "shotgun":
-            self.gun = loader.loadModel("phase_4/models/props/shotgun.egg")
-            self.gun.setScale(0.75)
-            self.gun.reparentTo(self.find('**/def_joint_right_hold'))
-            self.gun.setPos(Point3(-0.5, -0.2, 0.19))
-            self.gun.setHpr(Vec3(350, 272.05, 0))
-            color = random.choice(
-                [
-                    VBase4(1, 0.25, 0.25, 1),
-                    VBase4(0.25, 1, 0.25, 1),
-                    VBase4(0.25, 0.25, 1, 1)
-                ]
-            )
-            self.gun.setColorScale(color)
-            self.gunAttached = True
-        elif gunName == "sniper":
-            self.gun = loader.loadModel("phase_4/models/props/sniper.egg")
-            self.gun.setScale(0.75)
-            self.gun.reparentTo(self.find('**/def_joint_right_hold'))
-            self.gun.setPos(Point3(-0.5, -0.2, 0.19))
-            self.gun.setHpr(Vec3(350, 272.05, 0))
-            color = random.choice(
-                [
-                    VBase4(1, 0.25, 0.25, 1),
-                    VBase4(0.25, 1, 0.25, 1),
-                    VBase4(0.25, 0.25, 1, 1)
-                ]
-            )
-            self.gun.setColorScale(color)
-            self.gunAttached = True
-
-
-    def detachGun(self):
-        if self.gun and self.gunAttached:
-            self.gun.removeNode()
-            self.gun = None
-            self.gunAttached = False
 
     def stopAnimations(self):
         if hasattr(self, 'animFSM'):
@@ -529,7 +480,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.removePart('head')
         self.removePart('torso')
         self.removePart('legs')
-        self.detachGun()
 
         self.clearPythonData()
         self.flush()

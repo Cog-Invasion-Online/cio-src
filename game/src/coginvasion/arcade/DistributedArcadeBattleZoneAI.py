@@ -33,7 +33,6 @@ class DistributedArcadeBattleZoneAI(DistributedBattleZoneAI):
         # Variables related to turrets
         self.turretMgr = None
         
-        
     def announceGenerate(self):
         DistributedBattleZoneAI.announceGenerate(self)
         self.turretMgr = DistributedPieTurretManagerAI(self.air)

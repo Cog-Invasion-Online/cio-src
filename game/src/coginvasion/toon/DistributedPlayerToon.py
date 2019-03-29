@@ -71,7 +71,7 @@ class DistributedPlayerToon(DistributedToon):
             self.resetTorsoRotation()
     
     def setHealth(self, health):
-        if health < self.health:
+        if health < self.health and not self.firstTimeChangingHP:
             # We took damage, make oof sound.
             self.takeDmgSfx.play()
 
