@@ -133,9 +133,6 @@ class DistributedBuildingAI(DistributedObjectAI):
         if hasattr(self, 'elevator'):
             self.elevator.requestDelete()
             del self.elevator
-        if hasattr(self, 'battle'):
-            self.battle.requestDelete()
-            del self.battle
 
     def setVictorList(self, victorList):
         self.victorList = victorList
@@ -152,6 +149,9 @@ class DistributedBuildingAI(DistributedObjectAI):
 
     def toonTakeOver(self):
         self.fsm.request('becomingToon')
+        if hasattr(self, 'battle'):
+            self.battle.requestDelete()
+            del self.battle
 
     def getFrontDoorPoint(self):
         return self.frontDoorPoint
