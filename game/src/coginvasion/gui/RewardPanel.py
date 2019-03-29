@@ -76,7 +76,6 @@ class RewardPanel(DirectFrame):
         self.favoriteGagText = OnscreenText(parent = self.playerInfo, text = FavoriteGag,
             font = CIGlobals.getMickeyFont(), pos = FavoriteGagTitlePos,
             fg = (1, 0.2, 0.2, 1), sort = 0)
-        self.favoriteGagText.hide()
         
         glow = loader.loadModel('phase_4/models/minigames/particleGlow.bam')
         self.favoriteGagGlow = OnscreenImage(parent = self.playerInfo,
@@ -87,7 +86,6 @@ class RewardPanel(DirectFrame):
         # Since render2d is still fixed-function, we have to explicitly enable shader generation
         # to correctly display the glow in render2d.
         self.favoriteGagGlow.setShaderAuto()
-        self.favoriteGagGlow.hide()
         
         invIcons = loader.loadModel('phase_3.5/models/gui/inventory_icons.bam')
         gag = invIcons.find(GagGlobals.InventoryIconByName.get(GagGlobals.Foghorn))
@@ -95,12 +93,10 @@ class RewardPanel(DirectFrame):
             image = gag, pos = FavoriteGagPos, 
             scale = (1.65, 1.65, 1.65))
         self.favoriteGag.setBin('gui-popup', 20)
-        self.favoriteGag.hide()
         
         self.favoriteGagName = OnscreenText(parent = self.playerInfo,
             text = GagGlobals.Foghorn, font = CIGlobals.getToonFont(),
             pos = FavoriteGagNamePos, mayChange = 1)
-        self.favoriteGagName.hide()
 
         ################################################################################
         # GUI elements showing gag experience on the right-side of the gag exp panel   #
