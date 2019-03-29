@@ -76,11 +76,11 @@ class OutdoorLightingConfig(LightingConfig):
     STNight   = 4
     STCog     = 5
 
-    SkyData = {STMidday:    ["phase_3.5/models/props/TT_sky.bam",   True],
-               STCloudy:    ["phase_3.5/models/props/BR_sky.bam",   False],
-               STEvening:   ["phase_6/models/props/MM_sky.bam",     False],
-               STNight:     ["phase_8/models/props/DL_sky.bam",     False],
-               STCog:       ["phase_9/models/cogHQ/cog_sky.bam",    False]}
+    SkyData = {STMidday:    ["phase_3.5/models/props/TT_sky.bam",   True,   "phase_14/maps/TT_sky/TT_sky_#.jpg"],
+               STCloudy:    ["phase_3.5/models/props/BR_sky.bam",   False,  "phase_14/maps/BR_sky/BR_sky_#.jpg"],
+               STEvening:   ["phase_6/models/props/MM_sky.bam",     False,  "phase_14/maps/MM_sky/MM_sky_#.jpg"],
+               STNight:     ["phase_8/models/props/DL_sky.bam",     False,  "phase_14/maps/DL_sky/DL_sky_#.jpg"],
+               STCog:       ["phase_9/models/cogHQ/cog_sky.bam",    False,  "phase_14/maps/cog_sky/cog_sky_#.jpg"]}
 
     def __init__(self, ambient, sun, sunAngle, fog, fogDensity, skyType, snow):
         LightingConfig.__init__(self, ambient)
@@ -143,6 +143,8 @@ class OutdoorLightingConfig(LightingConfig):
         if self.skyType != OutdoorLightingConfig.STNone:
             self.skyEffect = SkyUtil()
             self.skyNP = loader.loadModel(self.skyData[0])
+            skyCubemap = loader.loadCubeMap(self.skyData[2])
+            base.shaderGenerator.setIdentityCubemap(skyCubemap)
 
         if self.snow:
             self.snowEffect = SnowEffect()

@@ -381,18 +381,13 @@ class CIBase(ShowBase):
             base.createAndEnablePhysicsNodes(prop)
         #base.setupNavMesh(base.bspLevel.find("**/model-0"))
         CIGlobals.preRenderScene(base.bspLevel)
-
-        skyType = 1#self.bspLoader.getEntityValueInt(0, "skytype")
         
-        try:
-            skyType = self.cr.playGame.hood.olc.skyType
-        except:
-            pass
+        try:    skyType = self.cr.playGame.hood.olc.skyType
+        except: skyType = 1#self.bspLoader.getEntityValueInt(0, "skytype")
         
-        self.loadSkyBox(skyType)
-        if self.skyBox:
-            # BSP skyboxes are drawn in a separate pass
-            self.skyBox.reparentTo(self.shaderGenerator.getSkyboxRoot())
+        if skyType != OutdoorLightingConfig.STNone:
+            skyCubemap = loader.loadCubeMap(OutdoorLightingConfig.SkyData[skyType][2])
+            self.shaderGenerator.setIdentityCubemap(skyCubemap)
 
     def doNextFrame(self, func, extraArgs = []):
         taskMgr.add(self.__doNextFrameTask, "doNextFrame" + str(id(func)), extraArgs = [func, extraArgs], appendTask = True)
@@ -686,11 +681,13 @@ class CIBase(ShowBase):
             cell.setActive(active)
         self.marginManager.reorganize()
 
-    def saveCubeMap(self, namePrefix = 'cube_map_#.jpg', size = 1024):
-        namePrefix = raw_input("Cube map file: ")
+    def saveCubeMap(self, namePrefix = None, size = 1024):
+        if not namePrefix:
+            namePrefix = raw_input("Cube map file: ")
 
-        base.localAvatar.stopSmooth()
-        base.localAvatar.setHpr(0, 0, 0)
+        if hasattr(self, 'localAvatar'):
+            base.localAvatar.stopSmooth()
+            base.localAvatar.setHpr(0, 0, 0)
 
         # Hide all objects from our cubemap.
         if hasattr(self, 'cr'):
@@ -698,7 +695,7 @@ class CIBase(ShowBase):
                 if isinstance(do, NodePath):
                     do.hide()
 
-        self.notify.info("Cube map position:", camera.getPos(render))
+        self.notify.info("Cube map position: {0}".format(camera.getPos(render)))
 
         ShowBase.saveCubeMap(self, namePrefix, size = size)
 
@@ -707,8 +704,9 @@ class CIBase(ShowBase):
             for do in self.cr.doId2do.values():
                 if isinstance(do, NodePath):
                     do.show()
-
-        base.localAvatar.startSmooth()
+        
+        if hasattr(self, 'localAvatar'):
+            base.localAvatar.startSmooth()
 
     def setTimeOfDay(self, time):
         if self.metadata.USE_RENDER_PIPELINE:

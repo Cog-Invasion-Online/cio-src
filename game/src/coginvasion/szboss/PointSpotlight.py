@@ -39,6 +39,8 @@ class PointSpotlight(Entity):
         
         self.setColorScale(self.getEntityValueColor("_light") * 0.75, 1)
         
+        self.hide(CIGlobals.ShadowCameraBitmask)
+        
         beamAndHalo = loader.loadModel("phase_14/models/misc/light_beam_and_halo.bam")
         
         # Blend between halo and beam
