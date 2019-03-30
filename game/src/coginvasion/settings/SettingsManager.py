@@ -52,7 +52,7 @@ class SettingsManager:
                         description = "Toggles fullscreen mode.")
         self.addSetting("aa", optionType = DATATYPE_STR, default = "None",
                         callback = self.__updateAA, sunrise = SHOWBASE_PREINIT,
-                        options = ["None", "FXAA", "2x MSAA", "4x MSAA", "8x MSAA", "16x MSAA"],
+                        options = ["None", "FXAA", "2x MSAA", "4x MSAA", "8x MSAA"],
                         description = "Smooths out jagged edges on screen.\nAffects performance.")
         self.addSetting("af", optionType = DATATYPE_INT, default = 0,
                         callback = self.__updateAF, sunrise = SHOWBASE_PREINIT,
