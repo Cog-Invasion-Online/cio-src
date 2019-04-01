@@ -91,8 +91,8 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
 
         self.damagers = []
 
-        from src.coginvasion.attack.Attacks import ATTACK_CLIPONTIE, ATTACK_BOMB, ATTACK_PICKPOCKET
-        self.attackIds = [ATTACK_CLIPONTIE, ATTACK_BOMB, ATTACK_PICKPOCKET]
+        from src.coginvasion.attack.Attacks import ATTACK_CLIPONTIE, ATTACK_BOMB, ATTACK_PICKPOCKET, ATTACK_FIRED
+        self.attackIds = [ATTACK_CLIPONTIE, ATTACK_BOMB, ATTACK_PICKPOCKET, ATTACK_FIRED]
 
         self.activities = {ACT_WAKE_ANGRY   :   0.564,
                            ACT_SMALL_FLINCH :   2.25,

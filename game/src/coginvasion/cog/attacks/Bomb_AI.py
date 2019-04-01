@@ -27,17 +27,6 @@ class Bomb_AI(BaseAttackAI, BombShared):
         # Take cover after we throw our bomb
         return "TAKE_COVER_FROM_ORIGIN"
 
-    def equip(self):
-        if not BaseAttackAI.equip(self):
-            return False
-
-        self.b_setAction(self.StateIdle)
-
-        return True
-
-    def determineNextAction(self, completedAction):
-        return self.StateIdle
-
     def onSetAction(self, action):
         if action == self.StateThrow:
             self.takeAmmo(-1)

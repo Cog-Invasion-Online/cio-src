@@ -33,17 +33,6 @@ class ClipOnTieAI(BaseAttackAI, ClipOnTieShared):
 
         self.didThrow = False
 
-    def equip(self):
-        if not BaseAttackAI.equip(self):
-            return False
-
-        self.b_setAction(self.StateIdle)
-
-        return True
-
-    def determineNextAction(self, completedAction):
-        return self.StateIdle
-
     def __onProjectileHit(self, contact, collider, intoNP):
         avNP = intoNP.getParent()
 
@@ -86,7 +75,7 @@ class ClipOnTieAI(BaseAttackAI, ClipOnTieShared):
             proj = ClipOnTieProjectileAI(base.air)
             proj.setLinear(1.5, self.throwOrigin, endPos, globalClockDelta.getFrameNetworkTime())
             proj.generateWithRequired(self.avatar.zoneId)
-            proj.addHitCallback(self.__onProjectileHit)
+            proj.addHitCallback(self.onProjectileHit)
             proj.addExclusion(self.avatar)
 
             self.didThrow = True

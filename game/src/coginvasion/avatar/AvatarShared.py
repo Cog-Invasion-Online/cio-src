@@ -240,6 +240,7 @@ class AvatarShared(BasePhysicsObject):
             if attackCls:
                 attack = attackCls()
                 attack.setAvatar(self)
+                attack.load()
                 self.attacks[aId] = attack
 
     def cleanupAttacks(self):

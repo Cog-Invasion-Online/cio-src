@@ -68,6 +68,7 @@ class BackpackBase:
                 attack.setAmmo(curSupply)
                 attack.baseDamage = GagGlobals.calcBaseDamage(self.avatar, GagGlobals.getGagByID(gagId), gagData)
                 attack.damageMaxDistance = float(gagData.get('distance', 10))
+                attack.load()
                 self.avatar.attacks[gagId] = attack
                 return True
 

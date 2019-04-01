@@ -17,7 +17,34 @@ class BaseAttackAI(BaseAttackShared):
         BaseAttackShared.__init__(self)
         self.actionLengths = {self.StateIdle: 0}
 
-    def __handleHitSomething(self, hitNode, hitPos, distance, origin, traces = 1):
+    def equip(self):
+        if not BaseAttackShared.equip(self):
+            return False
+
+        self.b_setAction(self.StateIdle)
+
+        return True
+
+    def onProjectileHit(self, contact, collider, intoNP):
+        avNP = intoNP.getParent()
+
+        collider.d_impact(contact.getHitPos())
+
+        currProj = collider.getPos(render)
+        dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
+                                 self.calcDamage((currProj - collider.getInitialPos()).length()),
+                                 currProj, collider.getInitialPos())
+
+        for obj in base.air.avatars[self.avatar.zoneId]:
+            if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and
+                self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND):
+
+                obj.takeDamage(dmgInfo)
+                break
+
+        collider.requestDelete()
+
+    def __handleHitSomething_trace(self, hitNode, hitPos, distance, origin, traces = 1):
         avNP = hitNode.getParent()
         
         for obj in base.air.avatars[self.avatar.zoneId]:
@@ -46,7 +73,7 @@ class BaseAttackAI(BaseAttackShared):
             node = hit.getNode()
             hitPos = hit.getHitPos()
             distance = (hitPos - origin).length()
-            self.__handleHitSomething(NodePath(node), hitPos, distance, origin, traces)
+            self.__handleHitSomething_trace(NodePath(node), hitPos, distance, origin, traces)
 
     def getPostAttackSchedule(self):
         return None

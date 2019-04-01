@@ -1,4 +1,5 @@
 from direct.distributed.ClockDelta import globalClockDelta
+from direct.interval.IntervalGlobal import Sequence, Func
 
 from panda3d.core import Point3
 
@@ -24,8 +25,9 @@ class LobProjectileShared:
 
     def playProjectile(self):
         ts = globalClockDelta.localElapsedTime(self.projTimestamp)
-        self.ival = FlightProjectileInterval(self, startPos = Point3(*self.projStart), endPos = Point3(*self.projEnd),
-                                                duration = self.projDuration, gravityMult = self.projGravity)
+        self.ival = Sequence(FlightProjectileInterval(self, startPos = Point3(*self.projStart), endPos = Point3(*self.projEnd),
+                                                duration = self.projDuration, gravityMult = self.projGravity),
+                             Func(self.ivalFinished))
         self.ival.start(0)#ts)
 
     def getProjectile(self):

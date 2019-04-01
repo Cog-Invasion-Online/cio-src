@@ -1,4 +1,4 @@
-from direct.interval.IntervalGlobal import LerpPosInterval
+from direct.interval.IntervalGlobal import LerpPosInterval, Sequence, Func
 from direct.distributed.ClockDelta import globalClockDelta
 
 from panda3d.core import Point3
@@ -21,7 +21,8 @@ class LinearProjectileShared:
 
     def playLinear(self):
         ts = globalClockDelta.localElapsedTime(self.linearTimestamp)
-        self.ival = LerpPosInterval(self, self.linearDuration, Point3(*self.linearEnd), Point3(*self.linearStart))
+        self.ival = Sequence(LerpPosInterval(self, self.linearDuration, Point3(*self.linearEnd), Point3(*self.linearStart)),
+                             Func(self.ivalFinished))
         self.ival.start(0)#ts)
 
     def getLinear(self):

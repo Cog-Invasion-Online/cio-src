@@ -18,14 +18,6 @@ class PickPocket_AI(BaseAttackAI, PickPocketShared):
         self.traceVector = None
         self.didPick = False
 
-    def equip(self):
-        if not BaseAttackAI.equip(self):
-            return False
-        
-        self.b_setAction(self.StateIdle)
-
-        return True
-
     def cleanup(self):
         del self.traceOrigin
         del self.traceVector

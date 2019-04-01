@@ -198,6 +198,12 @@ class BaseAttackShared:
     def hasAmmo(self):
         return self.ammo > 0
 
+    def load(self):
+        """
+        Loads any models/sounds/data needed by this attack.
+        """
+        pass
+
     def cleanup(self):
         self.unEquip()
         del self.ammo

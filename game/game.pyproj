@@ -50,7 +50,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\ai\AIZoneData.py" />
     <Compile Include="src\coginvasion\ai\CogInvasionAIRepository.py" />
     <Compile Include="src\coginvasion\ai\__init__.py" />
+    <Compile Include="src\coginvasion\arcade\ArcadeMatchData.py" />
     <Compile Include="src\coginvasion\arcade\BatchCogSpawnerAI.py" />
+    <Compile Include="src\coginvasion\arcade\DistributedArcadeBattleZoneAI.py" />
     <Compile Include="src\coginvasion\arcade\__init__.py" />
     <Compile Include="src\coginvasion\attack\AttackClasses.py" />
     <Compile Include="src\coginvasion\attack\Attacks.py" />
@@ -242,10 +244,32 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\cog\attacks\Bomb.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\cog\attacks\BombProjectile.py" />
+    <Compile Include="src\coginvasion\cog\attacks\BombProjectileAI.py" />
+    <Compile Include="src\coginvasion\cog\attacks\BombShared.py" />
+    <Compile Include="src\coginvasion\cog\attacks\Bomb_AI.py" />
     <Compile Include="src\coginvasion\cog\attacks\ClipOnTie.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\coginvasion\cog\attacks\ClipOnTieAI.py" />
+    <Compile Include="src\coginvasion\cog\attacks\ClipOnTieProjectile.py" />
+    <Compile Include="src\coginvasion\cog\attacks\ClipOnTieProjectileAI.py" />
+    <Compile Include="src\coginvasion\cog\attacks\ClipOnTieShared.py" />
+    <Compile Include="src\coginvasion\cog\attacks\Fired.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\cog\attacks\Fired_Shared.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\cog\attacks\FiredAI.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\cog\attacks\PickPocket.py" />
+    <Compile Include="src\coginvasion\cog\attacks\PickPocketShared.py" />
+    <Compile Include="src\coginvasion\cog\attacks\PickPocket_AI.py" />
+    <Compile Include="src\coginvasion\cog\attacks\SuitAttacks.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\cog\attacks\__init__.py" />
     <Compile Include="src\coginvasion\cog\CogBattleGlobals.py" />
     <Compile Include="src\coginvasion\cog\Dept.py" />
