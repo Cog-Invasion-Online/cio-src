@@ -33,24 +33,6 @@ class ClipOnTieAI(BaseAttackAI, ClipOnTieShared):
 
         self.didThrow = False
 
-    def __onProjectileHit(self, contact, collider, intoNP):
-        avNP = intoNP.getParent()
-
-        collider.d_impact(contact.getHitPos())
-
-        currProj = collider.getPos(render)
-        dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
-                                 self.calcDamage((currProj - collider.getInitialPos()).length()),
-                                 currProj, collider.getInitialPos())
-
-        for obj in base.air.avatars[self.avatar.zoneId]:
-            if CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND:
-                # Make sure we don't friendly fire
-                obj.takeDamage(dmgInfo)
-                break
-
-        collider.requestDelete()
-
     def think(self):
         BaseAttackAI.think(self)
         

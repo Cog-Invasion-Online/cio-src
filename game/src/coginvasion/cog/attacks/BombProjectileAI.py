@@ -41,7 +41,7 @@ class BombProjectileAI(DistributedPhysicsEntityAI):
         self.sendUpdate('explode')
 
         for obj in self.air.avatars[self.zoneId]:
-            if CIGlobals.isAvatar(obj) and not CIGlobals.avatarsAreFriends(self.avatar, obj):
+            if CIGlobals.isAvatar(obj) and self.attack.canDamage(obj):
                 dist = obj.getDistance(self)
                 if dist <= 10.0:
                     info = TakeDamageInfo(self.avatar, ATTACK_BOMB, self.attack.calcDamage(dist), self.getPos())

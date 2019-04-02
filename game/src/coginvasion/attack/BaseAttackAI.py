@@ -12,10 +12,17 @@ class BaseAttackAI(BaseAttackShared):
     notify = directNotify.newCategory("BaseAttackAI")
 
     Server = True
+    FriendlyFire = False
 
     def __init__(self):
         BaseAttackShared.__init__(self)
         self.actionLengths = {self.StateIdle: 0}
+        
+    def canDamage(self, obj):
+        if self.FriendlyFire:
+            return True
+            
+        return self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND
 
     def equip(self):
         if not BaseAttackShared.equip(self):
@@ -37,7 +44,7 @@ class BaseAttackAI(BaseAttackShared):
 
         for obj in base.air.avatars[self.avatar.zoneId]:
             if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and
-                self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND):
+                self.canDamage(obj)):
 
                 obj.takeDamage(dmgInfo)
                 break
@@ -49,7 +56,7 @@ class BaseAttackAI(BaseAttackShared):
         
         for obj in base.air.avatars[self.avatar.zoneId]:
             if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and 
-            self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND):
+            self.canDamage(obj)):
                 
                 for i in xrange(traces):
                     dmgInfo = TakeDamageInfo(self.avatar, self.getID(),

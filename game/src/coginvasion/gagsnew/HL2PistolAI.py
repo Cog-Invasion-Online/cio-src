@@ -9,6 +9,7 @@ class HL2PistolAI(BaseHitscanAI, HL2PistolShared):
     ID = ATTACK_HL2PISTOL
     HasClip = True
     UsesAmmo = True
+    FriendlyFire = True
 
     FireDelay = 0.1
     AttackRange = 10000

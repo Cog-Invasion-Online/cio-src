@@ -15,6 +15,7 @@ class HL2ShotgunAI(BaseHitscanAI, HL2ShotgunShared):
     HasClip = True
     AttackRange = 10000
     FireDelay = 0.5
+    FriendlyFire = True
     
     def __init__(self):
         BaseHitscanAI.__init__(self)

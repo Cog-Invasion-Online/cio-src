@@ -58,27 +58,6 @@ class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
 
         return self.StateIdle
 
-    def __onProjectileHit(self, contact, collider, intoNP):
-        avNP = intoNP.getParent()
-        #print contact, collider, intoNP
-
-        collider.d_impact(contact.getHitPos())
-
-        currProj = collider.getPos(render)
-        dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
-                                 self.calcDamage((currProj - collider.getInitialPos()).length()),
-                                 currProj, collider.getInitialPos())
-
-        for obj in base.air.avatars[self.avatar.zoneId]:
-            if CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND:
-                # Make sure we don't friendly fire
-                #print obj, "take damage", dmgInfo.damageAmount
-                obj.takeDamage(dmgInfo)
-                break
-
-        collider.requestDelete()
-        self.__projs.remove(collider)
-
     def setAction(self, action):
         BaseGagAI.setAction(self, action)
 
@@ -95,9 +74,8 @@ class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
             proj = WholeCreamPieProjectileAI(base.air)
             proj.setProjectile(2.5, self.throwOrigin, endPos, 1.07, globalClockDelta.getFrameNetworkTime())
             proj.generateWithRequired(self.avatar.zoneId)
-            proj.addHitCallback(self.__onProjectileHit)
+            proj.addHitCallback(self.onProjectileHit)
             proj.addExclusion(self.avatar)
-            self.__projs.append(proj)
 
             self.throwTime = globalClock.getFrameTime()
             

@@ -49,23 +49,6 @@ class GumballBlaster_AI(BaseHitscanAI):
         self.fireOrigin = CIGlobals.getVec3(dgi)
         self.setNextAction(self.StateFire)
 
-    def __onProjectileHit(self, contact, collider, intoNP):
-        avNP = intoNP.getParent()
-
-        collider.d_impact(contact.getHitPos())
-
-        currProj = collider.getPos(render)
-        dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
-                                 self.calcDamage((currProj - collider.getInitialPos()).length()),
-                                 currProj, collider.getInitialPos())
-
-        for obj in base.air.avatars[self.avatar.zoneId]:
-            if CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND:
-                obj.takeDamage(dmgInfo)
-                break
-
-        collider.requestDelete()
-
     def onSetAction(self, action):
         if action == self.StateFire:
             #self.takeAmmo(-1)
@@ -80,5 +63,5 @@ class GumballBlaster_AI(BaseHitscanAI):
             proj = GumballProjectileAI(base.air)
             proj.setProjectile(2.5, self.fireOrigin, endPos, 1.07, globalClockDelta.getFrameNetworkTime())
             proj.generateWithRequired(self.avatar.zoneId)
-            proj.addHitCallback(self.__onProjectileHit)
+            proj.addHitCallback(self.onProjectileHit)
             proj.addExclusion(self.avatar)

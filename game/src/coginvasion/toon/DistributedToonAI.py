@@ -17,6 +17,7 @@ from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from src.coginvasion.avatar.AvatarTypes import *
 from src.coginvasion.cog.ai.RelationshipsAI import *
 from src.coginvasion.globals import CIGlobals
+import ToonGlobals
 import ToonDNA
 
 class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
@@ -75,6 +76,19 @@ class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
         self.activities = {ACT_DIE: 7.0}
 
         return
+        
+    def setDNAStrand(self, strand):
+        ToonDNA.ToonDNA.setDNAStrand(self, strand)
+        
+        animal = self.getAnimal()
+        bodyScale = ToonGlobals.BodyScales[animal]
+        headScale = ToonGlobals.HeadScales[animal][2]
+        shoulderHeight = ToonGlobals.LegHeightDict[self.getLegs()] * bodyScale + ToonGlobals.TorsoHeightDict[self.getTorso()] * bodyScale
+        
+        self.setHeight(shoulderHeight + ToonGlobals.HeadHeightDict[self.getHead()] * headScale)
+        
+        if self.arePhysicsSetup():
+            self.setupPhysics()
 
     def b_setDNAStrand(self, strand):
         self.d_setDNAStrand(strand)
