@@ -65,17 +65,21 @@ class FiredAI(BaseAttackAI, Fired_Shared):
         BaseAttackAI.think(self)
 
         if self.action == self.StateAttack:
-            now = globalClock.getFrameTime()
-            if (CIGlobals.isNodePathOk(self.target) and
-                now - self.lastFireTime >= self.EmitFlameIval):
+            if not CIGlobals.isNodePathOk(self.target):
+                return
 
+            # Lock onto the target
+            self.avatar.headsUp(self.target)
+
+            now = globalClock.getFrameTime()
+            if now - self.lastFireTime >= self.EmitFlameIval:
                 startPos = self.avatar.getPos() + self.avatar.getEyePosition()
                 endPos = self.target.getPos() + self.target.getEyePosition()
                 distance = (endPos - startPos).length()
                 duration = distance / self.FlameSpeed
 
                 flame = FiredProjectileAI(base.air)
-                flame.setProjectile(duration, startPos, endPos, 1.07,
+                flame.setProjectile(duration, startPos, endPos, 1.0,
                                     globalClockDelta.getFrameNetworkTime())
                 flame.generateWithRequired(self.avatar.zoneId)
                 flame.addHitCallback(self.onProjectileHit)

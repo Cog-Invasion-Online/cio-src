@@ -394,15 +394,19 @@ class Suit(Avatar):
 
         smallGears = ParticleLoader.loadParticleEffect('phase_3.5/etc/gearExplosionSmall.ptf')
         smallGears.getParticlesNamed('particles-1').setPoolSize(30)
+        smallGears.setShaderOff(1)
 
         singleGear = ParticleLoader.loadParticleEffect('phase_3.5/etc/gearExplosion.ptf')
         singleGear.getParticlesNamed('particles-1').setPoolSize(1)
+        singleGear.setShaderOff(1)
 
         smallGearExplosion = ParticleLoader.loadParticleEffect('phase_3.5/etc/gearExplosion.ptf')
         smallGearExplosion.getParticlesNamed('particles-1').setPoolSize(10)
+        smallGearExplosion.setShaderOff(1)
 
         bigGearExplosion = ParticleLoader.loadParticleEffect('phase_3.5/etc/gearExplosionBig.ptf')
         bigGearExplosion.getParticlesNamed('particles-1').setPoolSize(30)
+        bigGearExplosion.setShaderOff(1)
 
         smallGears.setDepthWrite(False)
         smallGears.hide(CIGlobals.ShadowCameraBitmask)

@@ -26,7 +26,7 @@ class HL2PistolAI(BaseHitscanAI, HL2PistolShared):
                                    
     def determineNextAction(self, completedAction):
         if completedAction == self.StateIdle:
-            if not self.hasClip():
+            if not self.hasClip() and self.hasAmmo():
                 # Need to refill clip
                 return self.StateReload
         elif completedAction == self.StateReload:
