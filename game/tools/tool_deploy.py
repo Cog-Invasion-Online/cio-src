@@ -101,7 +101,7 @@ for lclFile, lclSha in lclData.items():
             lclData[lclFile] = srvSha
         else:
             if ".mf" in lclFile.filename:
-                compress(lclFile.filename)
+                compress(lclFile.fullfile)
                 comprFile = LocalFile(lclFile.fullfile[:-3] + ".tar.gz")
                 filesToDeploy.append(comprFile)
             else:
