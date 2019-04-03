@@ -25,6 +25,7 @@ from direct.task import Task
 
 from panda3d.core import URLSpec, CollisionHandlerFloor, CollisionHandlerPusher
 from panda3d.core import CollisionHandlerQueue, ModelPool, TexturePool, TextNode
+from panda3d.core import ConfigVariableBool, ConfigVariableDouble
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gui.Dialog import GlobalDialog
@@ -158,6 +159,19 @@ class CogInvasionClientRepository(AstronClientRepository):
         SpeedHackChecker.startChecking()
         self.loginFSM.request('connect')
         return
+        
+    def readerPollUntilEmpty(self, task):
+        while self.readerPollOnce():
+            pass
+            
+        if not metadata.IS_PRODUCTION:
+            if ConfigVariableBool('simulated-latency', False).getValue():
+                latency = random.uniform(ConfigVariableDouble('simulated-latency-min', 0.125).getValue(),
+                                         ConfigVariableDouble('simulated-latency-max', 0.15).getValue())
+                task.delayTime = latency
+                return task.again
+            
+        return task.cont
 
     def togglePing(self):
         self.pingToggle = not self.pingToggle

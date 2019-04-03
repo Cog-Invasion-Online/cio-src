@@ -84,6 +84,8 @@ class PointSpotlight(Entity):
         clbk.setCullCallback(CallbackObject.make(self.__spotlightThink))
         clbk.setBounds(BoundingSphere((0, 0, 0), 0))
         self.callback = self.attachNewNode(clbk)
+        self.callback.hide(CIGlobals.ReflectionCameraBitmask)
+        self.callback.hide(CIGlobals.ShadowCameraBitmask)
 
     def __spotlightThink(self, data):
         camToLight = self.getPos() - base.camera.getPos(render)

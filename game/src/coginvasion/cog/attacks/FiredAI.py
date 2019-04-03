@@ -79,7 +79,7 @@ class FiredAI(BaseAttackAI, Fired_Shared):
                 duration = distance / self.FlameSpeed
 
                 flame = FiredProjectileAI(base.air)
-                flame.setProjectile(duration, startPos, endPos, 1.0,
+                flame.setProjectile(duration, startPos, endPos, 0.9,
                                     globalClockDelta.getFrameNetworkTime())
                 flame.generateWithRequired(self.avatar.zoneId)
                 flame.addHitCallback(self.onProjectileHit)
