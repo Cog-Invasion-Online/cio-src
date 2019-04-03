@@ -73,6 +73,10 @@ class CIBase(ShowBase):
         self.win.setClearColorActive(True)
         self.win.setClearStencilActive(False)
         self.win.setClearDepthActive(True)
+        
+        # Hack to only run BSP ambient probe logic in
+        # the Cull traversal for the main camera and no other.
+        self.camNode.setTag("__mainpass__", "1")
 
         from direct.distributed.ClockDelta import globalClockDelta
         __builtin__.globalClockDelta = globalClockDelta

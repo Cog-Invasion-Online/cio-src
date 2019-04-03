@@ -116,6 +116,8 @@ class FPSCamera(DirectObject):
         # Updates to the transform of base.camera
         self.viewportCam = base.makeCamera(base.win, clearDepth = True, camName = 'fpsViewport',
                                            mask = CIGlobals.ViewModelCamMask, lens = self.viewportLens)
+        # Pretend to be the main camera so the viewmodel gets ambient probes updated
+        self.viewportCam.node().setTag("__mainpass__", "1")
         self.viewportCam.reparentTo(self.vmRoot)
 
         self.vmGag = None
@@ -126,7 +128,7 @@ class FPSCamera(DirectObject):
         self.dmgFade.setColorScale(1, 1, 1, 0)
         self.dmgFadeIval = None
         
-        self.accept('v', self.vmRender.ls)
+        #self.accept('v', self.vmRender.ls)
 
         #base.bspLoader.addDynamicNode(self.vmRoot)
 
