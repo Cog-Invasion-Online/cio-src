@@ -635,11 +635,11 @@ def makeDirectionalLight(name, color, angle):
         
     return directional
 
-def makePointLight(name, color, pos, falloff = 0.3):
+def makePointLight(name, color, pos, falloff = 1.0):
     point = PointLight(name + "-point")
     point.setColor(color)
-    ATTN_FCTR = 0.03
-    point.setAttenuation((1, 0, falloff * ATTN_FCTR))
+    ATTN_FCTR = 0.0625
+    point.setAttenuation((0, 0, falloff * ATTN_FCTR))
     pnp = render.attachNewNode(point)
     pnp.setPos(pos)
     if False:
