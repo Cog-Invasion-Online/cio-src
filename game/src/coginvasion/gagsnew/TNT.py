@@ -27,28 +27,31 @@ class TNT(BaseGag, TNTShared):
         CIGlobals.putVec3(dg, self.avatar.getRightHandNode().getPos(render))
         CIGlobals.putVec3(dg, camera.getPos(render))
         CIGlobals.putVec3(dg, camera.getQuat(render).getForward())
+        
+    def onSetAction_firstPerson(self, action):
+        fpsCam = self.getFPSCam()
+        vm = self.getViewModel()
+        vmGag = self.getVMGag()
+        vmGag.show()
+
+        if action == self.StateDraw:
+            fpsCam.setVMAnimTrack(ActorInterval(vm, 'tnt_draw'))
+
+        elif action == self.StateIdle:
+            fpsCam.setVMAnimTrack(Func(vm.loop, 'tnt_idle'))
+            
+        elif action == self.StateThrow:
+            vmGag.hide()
+            fpsCam.addViewPunch(self.getViewPunch())
+            fpsCam.setVMAnimTrack(ActorInterval(vm, 'tnt_throw', startFrame = 27))
 
     def onSetAction(self, action):
 
-        if self.isFirstPerson():
-            fpsCam = self.getFPSCam()
-            vm = self.getViewModel()
-            vmGag = self.getVMGag()
-            vmGag.show()
-
         if action == self.StateDraw:
-            if self.isFirstPerson():
-                fpsCam.setVMAnimTrack(ActorInterval(vm, 'tnt_draw'))
             self.doDrawNoHold('toss', 0, 30)
 
         elif action == self.StateIdle:
-            if self.isFirstPerson():
-                fpsCam.setVMAnimTrack(Func(vm.loop, 'tnt_idle'))
             self.doHold('toss', 30, 30, 1.0)
 
         elif action == self.StateThrow:
-            if self.isFirstPerson():
-                vmGag.hide()
-                fpsCam.addViewPunch(self.getViewPunch())
-                fpsCam.setVMAnimTrack(ActorInterval(vm, 'tnt_throw', startFrame = 27))
             self.setAnimTrack(self.getAnimationTrack('toss', 60), startNow = True)

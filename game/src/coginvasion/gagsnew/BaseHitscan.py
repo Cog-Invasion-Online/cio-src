@@ -26,25 +26,6 @@ class BaseHitscan(BaseGag, BaseHitscanShared):
 
         self.crosshair = CrosshairData(crosshairScale = 0.6, crosshairRot = 45)
             
-    @classmethod
-    def doPrecache(cls):
-        super(BaseHitscan, cls).doPrecache()
-            
     def addPrimaryPressData(self, dg):
         CIGlobals.putVec3(dg, camera.getPos(render))
         CIGlobals.putVec3(dg, camera.getQuat(render).getForward())
-        
-    def equip(self):
-        if not BaseGag.equip(self):
-            return False
-
-        return True
-        
-    def unEquip(self):
-        if not BaseGag.unEquip(self):
-            return False
-            
-        return True
-        
-    def setAction(self, action):
-        BaseGag.setAction(self, action)

@@ -51,21 +51,17 @@ class WholeCreamPie(BaseGag, WholeCreamPieShared):
         CIGlobals.putVec3(dg, self.avatar.getRightHandNode().getPos(render))
         CIGlobals.putVec3(dg, camera.getPos(render))
         CIGlobals.putVec3(dg, camera.getQuat(render).getForward())
-
-    def equip(self):
-        if not BaseGag.equip(self):
-            return False
-
-        if not self.throwSound:
-            self.throwSound = base.loadSfxOnNode(self.ThrowSoundPath, self.avatar)
-
-        return True
+        
+    def load(self):
+        BaseGag.load(self)
+        self.throwSound = base.loadSfxOnNode(self.ThrowSoundPath, self.avatar)
 
     def cleanup(self):
         if self.throwSound:
             self.throwSound.stop()
             base.audio3d.detachSound(self.throwSound)
-            self.throwSound = None
+        self.throwSound = None
+        
         BaseGag.cleanup(self)
 
     def __doDraw(self):
@@ -73,16 +69,31 @@ class WholeCreamPie(BaseGag, WholeCreamPieShared):
 
     def __doHold(self):
         self.doHold('pie', self.BobStartFrame, self.BobEndFrame, self.PlayRate * self.BobPlayRateMultiplier)
-
-    def setAction(self, action):
-        BaseGag.setAction(self, action)
         
-        if self.isFirstPerson():
-            vm = self.getViewModel()
-            vm.show()
-            vmGag = self.getVMGag()
-            vmGag.show()
-            fpsCam = self.getFPSCam()
+    def onSetAction_firstPerson(self, action):        
+        vm = self.getViewModel()
+        vm.show()
+        vmGag = self.getVMGag()
+        vmGag.show()
+        fpsCam = self.getFPSCam()
+
+        if action == self.StateThrow:
+
+            if self.throwSound:
+                self.throwSound.play()
+
+            vmGag.hide()
+            fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "tnt_throw", startFrame = 27),
+                                           Func(vm.hide)))
+            fpsCam.addViewPunch(self.getViewPunch())
+
+        elif action == self.StateDraw:
+            fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "pie_draw")))
+
+        elif action == self.StateIdle:
+            fpsCam.setVMAnimTrack(Sequence(Func(vm.loop, "pie_idle")))
+
+    def onSetAction(self, action):        
 
         self.model.show()
 
@@ -90,12 +101,6 @@ class WholeCreamPie(BaseGag, WholeCreamPieShared):
 
             if self.throwSound:
                 self.throwSound.play()
-
-            if self.isFirstPerson():
-                vmGag.hide()
-                fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "tnt_throw", startFrame = 27),
-                                               Func(vm.hide)))
-                fpsCam.addViewPunch(self.getViewPunch())
 
             self.model.hide()
 
@@ -105,11 +110,7 @@ class WholeCreamPie(BaseGag, WholeCreamPieShared):
                 startNow = True)
 
         elif action == self.StateDraw:
-            if self.isFirstPerson():
-                fpsCam.setVMAnimTrack(Sequence(ActorInterval(vm, "pie_draw")))
             self.__doDraw()
 
         elif action == self.StateIdle:
-            if self.isFirstPerson():
-                fpsCam.setVMAnimTrack(Sequence(Func(vm.loop, "pie_idle")))
             self.__doHold()

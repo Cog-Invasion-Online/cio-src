@@ -60,24 +60,29 @@ class Slap(BaseHitscan, BaseHitscanShared):
         base.audio3d.detachSound(self.fireSound)
         
         return True
-            
-    def onSetAction(self, action):
-        if self.isFirstPerson():
-            fpsCam = self.getFPSCam()
-            vm = self.getViewModel()
+        
+    def onSetAction_firstPerson(self, action):
+        fpsCam = self.getFPSCam()
+        vm = self.getViewModel()
 
         if action == self.StateFire:
-            if self.isFirstPerson():
-                fpsCam.addViewPunch(self.getViewPunch())
-                fpsCam.setVMAnimTrack(Parallel(Func(self.fireSound.play), ActorInterval(vm, 'slap_hit')))
+            fpsCam.addViewPunch(self.getViewPunch())
+            fpsCam.setVMAnimTrack(Parallel(Func(self.fireSound.play), ActorInterval(vm, 'slap_hit')))
+
+        elif action == self.StateIdle:
+            fpsCam.setVMAnimTrack(Func(vm.loop, 'slap_idle'))
+            
+        elif action == self.StateDraw:
+            fpsCam.setVMAnimTrack(Func(vm.play, 'slap_idle'))
+            
+    def onSetAction(self, action):
+
+        if action == self.StateFire:
+            self.fireSound.play()
             self.doDrawNoHold('toss', 0, 30)
 
         elif action == self.StateIdle:
-            if self.isFirstPerson():
-                fpsCam.setVMAnimTrack(Func(vm.loop, 'slap_idle'))
             self.doHold('toss', 30, 30, 1.0)
             
         elif action == self.StateDraw:
-            if self.isFirstPerson():
-                fpsCam.setVMAnimTrack(Func(vm.play, 'slap_idle'))
             self.doHold('toss', 30, 30, 1.0)

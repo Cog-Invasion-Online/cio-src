@@ -92,11 +92,39 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
             
     def __doBob(self):
         self.setAnimTrack(self.getBobSequence('firehose', 30, 30, 1.0), startNow = True, looping = True)
-            
-    def equip(self):
-        if not BaseHitscan.equip(self):
-            return False
-            
+        
+    def cleanup(self):
+        if self.sgViewModel:
+            self.sgViewModel.cleanup()
+            self.sgViewModel.removeNode()
+        self.sgViewModel = None
+        
+        if self.fireSound:
+            base.audio3d.detachSound(self.fireSound)
+        self.fireSound = None
+        
+        if self.dblFireSound:
+            base.audio3d.detachSound(self.dblFireSound)
+        self.dblFireSound = None
+        
+        if self.pumpSound:
+            base.audio3d.detachSound(self.pumpSound)
+        self.pumpSound = None
+        
+        if self.emptySound:
+            base.audio3d.detachSound(self.emptySound)
+        self.emptySound = None
+        
+        if self.reloadSounds:
+            for snd in self.reloadSounds:
+                base.audio3d.detachSound(snd)
+        self.reloadSounds = None
+        
+        BaseHitscan.cleanup(self)
+        
+    def load(self):
+        BaseHitscan.load(self)
+        
         base.audio3d.attachSoundToObject(self.fireSound, self.avatar)
         base.audio3d.attachSoundToObject(self.dblFireSound, self.avatar)
         base.audio3d.attachSoundToObject(self.pumpSound, self.avatar)
@@ -104,13 +132,18 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
         for s in self.reloadSounds:
             base.audio3d.attachSoundToObject(s, self.avatar)
             
-        if self.isFirstPerson():
+        if self.isLocal():
             self.sgViewModel = Actor(self.sgActorDef[0], self.sgActorDef[1])
             self.sgViewModel.node().setBounds(OmniBoundingVolume())
             self.sgViewModel.node().setFinal(1)
             self.sgViewModel.setBlend(frameBlend = base.config.GetBool('interpolate-frames', False))
             self.sgViewModel.setH(180)
             
+    def equip(self):
+        if not BaseHitscan.equip(self):
+            return False        
+            
+        if self.isFirstPerson():
             fpsCam = self.getFPSCam()
             fpsCam.swapViewModel(self.sgViewModel, 54.0)
             self.getViewModel().show()
@@ -129,9 +162,6 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
         if self.isFirstPerson():
             self.getFPSCam().restoreViewModel()
             self.getViewModel().hide()
-            self.sgViewModel.cleanup()
-            self.sgViewModel.removeNode()
-            self.sgViewModel = None
             
         return True
 
@@ -177,34 +207,46 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
         base.physicsWorld.attach(rbnode)
     
         taskMgr.add(__shellThink, 'shellThink', extraArgs = [rbnp], appendTask = True)
+        
+    def onSetAction(self, action):
+        if action == self.StatePump:
+            self.pumpSound.play()
+        elif action == self.StateFire:
+            self.fireSound.play()
+        elif action == self.StateDblFire:
+            self.dblFireSound.play()
+        elif action == self.StateReload:
+            sound = random.choice(self.reloadSounds)
+            sound.play()
             
-    def onSetAction(self, action):        
-        if self.isFirstPerson():
-            track = Sequence()
-            vm = self.getViewModel()
-            fpsCam = self.getFPSCam()
-            if action == self.StateIdle:
-                track.append(Func(vm.loop, "idle"))
-            elif action == self.StateDraw:
-                track.append(ActorInterval(vm, "draw"))
-            elif action == self.StatePump:
-                track.append(Func(self.pumpSound.play))
-                track.append(Func(self.__emitShell))
-                track.append(ActorInterval(vm, "pump"))
-            elif action == self.StateFire:
-                fpsCam.addViewPunch(Vec3(random.uniform(-2, 2), random.uniform(2, 1), 0))
-                track.append(Func(self.fireSound.play))
-                track.append(ActorInterval(vm, "fire"))
-            elif action == self.StateDblFire:
-                fpsCam.addViewPunch(Vec3(0, random.uniform(-5, 5), 0))
-                track.append(Func(self.dblFireSound.play))
-                track.append(ActorInterval(vm, "altfire"))
-            elif action == self.StateReload:
-                sound = random.choice(self.reloadSounds)
-                track.append(Func(sound.play))
-                track.append(ActorInterval(vm, "reload2"))
-            elif action == self.StateBeginReload:
-                track.append(ActorInterval(vm, "reload1"))
-            elif action == self.StateEndReload:
-                track.append(ActorInterval(vm, "reload3"))
-            fpsCam.setVMAnimTrack(track)
+    def onSetAction_firstPerson(self, action):        
+        track = Sequence()
+        vm = self.getViewModel()
+        fpsCam = self.getFPSCam()
+        
+        if action == self.StateIdle:
+            track.append(Func(vm.loop, "idle"))
+        elif action == self.StateDraw:
+            track.append(ActorInterval(vm, "draw"))
+        elif action == self.StatePump:
+            track.append(Func(self.pumpSound.play))
+            track.append(Func(self.__emitShell))
+            track.append(ActorInterval(vm, "pump"))
+        elif action == self.StateFire:
+            fpsCam.addViewPunch(Vec3(random.uniform(-2, 2), random.uniform(2, 1), 0))
+            track.append(Func(self.fireSound.play))
+            track.append(ActorInterval(vm, "fire"))
+        elif action == self.StateDblFire:
+            fpsCam.addViewPunch(Vec3(0, random.uniform(-5, 5), 0))
+            track.append(Func(self.dblFireSound.play))
+            track.append(ActorInterval(vm, "altfire"))
+        elif action == self.StateReload:
+            sound = random.choice(self.reloadSounds)
+            track.append(Func(sound.play))
+            track.append(ActorInterval(vm, "reload2"))
+        elif action == self.StateBeginReload:
+            track.append(ActorInterval(vm, "reload1"))
+        elif action == self.StateEndReload:
+            track.append(ActorInterval(vm, "reload3"))
+            
+        fpsCam.setVMAnimTrack(track)

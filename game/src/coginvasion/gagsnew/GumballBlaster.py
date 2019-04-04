@@ -72,6 +72,8 @@ class GumballBlaster(BaseHitscan):
             balls.flattenStrong()
 
         base.audio3d.attachSoundToObject(self.fireSound, self.avatar)
+        
+        self.doDrawAndHold('squirt', 0, 43, 1.0, 43, 43)
     
         return True
 
@@ -96,22 +98,22 @@ class GumballBlaster(BaseHitscan):
         self.fireSound = None
         self.vmSpinNode = None
         BaseHitscan.cleanup(self)
-
+        
     def onSetAction(self, action):
-
         if action == self.StateFire:
             self.fireSound.play()
 
-        if self.isFirstPerson():
-            fpsCam = self.getFPSCam()
-            vm = self.getViewModel()
+    def onSetAction_firstPerson(self, action):
+        fpsCam = self.getFPSCam()
+        vm = self.getViewModel()
 
-            if action == self.StateIdle:
-                fpsCam.setVMAnimTrack(Func(vm.loop, "gumball_idle"))
-            elif action == self.StateDraw:
-                fpsCam.setVMAnimTrack(ActorInterval(vm, "gumball_draw"))
-            elif action == self.StateFire:
-                fpsCam.addViewPunch(Vec3(random.uniform(-0.5, 0.5), random.uniform(1, 2), 0.0))
-                fpsCam.setVMAnimTrack(ActorInterval(vm, "gumball_fire"))
-                if self.vmSpinNode:
-                    self.vmSpinNode.hprInterval(0.5, (0, 0, 360), (0, 0, 0)).play()
+        if action == self.StateIdle:
+            fpsCam.setVMAnimTrack(Func(vm.loop, "gumball_idle"))
+        elif action == self.StateDraw:
+            fpsCam.setVMAnimTrack(ActorInterval(vm, "gumball_draw"))
+        elif action == self.StateFire:
+            self.fireSound.play()
+            fpsCam.addViewPunch(Vec3(random.uniform(-0.5, 0.5), random.uniform(1, 2), 0.0))
+            fpsCam.setVMAnimTrack(ActorInterval(vm, "gumball_fire"))
+            if self.vmSpinNode:
+                self.vmSpinNode.hprInterval(0.5, (0, 0, 360), (0, 0, 0)).play()

@@ -91,9 +91,15 @@ class BaseAttackShared:
     def setAction(self, action):
         self.actionStartTime = globalClock.getFrameTime()
         self.action = action
-        self.onSetAction(action)
+        if not self.isServer() and self.isFirstPerson():
+            self.onSetAction_firstPerson(action)
+        else:
+            self.onSetAction(action)
         
     def onSetAction(self, action):
+        pass
+        
+    def onSetAction_firstPerson(self, action):
         pass
 
     def getAction(self):
