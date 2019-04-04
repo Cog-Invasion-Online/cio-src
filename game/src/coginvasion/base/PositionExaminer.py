@@ -10,11 +10,12 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.showbase.DirectObject import DirectObject
 
-from panda3d.core import NodePath, CollisionRay, CollisionNode, BitMask32
-from panda3d.core import CollisionSphere, CollisionSegment, CollisionTraverser
-from panda3d.core import CollisionHandlerQueue
+from panda3d.core import NodePath
+
+from panda3d.bullet import BulletGhostNode, BulletSphereShape
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.phys import PhysicsUtils
 
 class PositionExaminer(DirectObject, NodePath):
 
@@ -26,83 +27,67 @@ class PositionExaminer(DirectObject, NodePath):
             self.__initialized = 1
 
         NodePath.__init__(self, hidden.attachNewNode('PositionExaminer'))
-        self.cRay = CollisionRay(0.0, 0.0, 6.0, 0.0, 0.0, -1.0)
-        self.cRayNode = CollisionNode('cRayNode')
-        self.cRayNode.addSolid(self.cRay)
-        self.cRayNodePath = self.attachNewNode(self.cRayNode)
-        self.cRayNodePath.hide()
-        self.cRayBitMask = CIGlobals.FloorBitmask
-        self.cRayNode.setFromCollideMask(self.cRayBitMask)
-        self.cRayNode.setIntoCollideMask(BitMask32.allOff())
-        self.cSphere = CollisionSphere(0.0, 0.0, 0.0, 1.5)
-        self.cSphereNode = CollisionNode('cSphereNode')
-        self.cSphereNode.addSolid(self.cSphere)
-        self.cSphereNodePath = self.attachNewNode(self.cSphereNode)
-        self.cSphereNodePath.hide()
-        self.cSphereBitMask = CIGlobals.WallBitmask
-        self.cSphereNode.setFromCollideMask(self.cSphereBitMask)
-        self.cSphereNode.setIntoCollideMask(BitMask32.allOff())
-        self.ccLine = CollisionSegment(0.0, 0.0, 0.0, 1.0, 0.0, 0.0)
-        self.ccLineNode = CollisionNode('ccLineNode')
-        self.ccLineNode.addSolid(self.ccLine)
-        self.ccLineNodePath = self.attachNewNode(self.ccLineNode)
-        self.ccLineNodePath.hide()
-        self.ccLineBitMask = CIGlobals.CameraBitmask
-        self.ccLineNode.setFromCollideMask(self.ccLineBitMask)
-        self.ccLineNode.setIntoCollideMask(BitMask32.allOff())
-        self.cRayTrav = CollisionTraverser('PositionExaminer.cRayTrav')
-        self.cRayTrav.setRespectPrevTransform(False)
-        self.cRayQueue = CollisionHandlerQueue()
-        self.cRayTrav.addCollider(self.cRayNodePath, self.cRayQueue)
-        self.cSphereTrav = CollisionTraverser('PositionExaminer.cSphereTrav')
-        self.cSphereTrav.setRespectPrevTransform(False)
-        self.cSphereQueue = CollisionHandlerQueue()
-        self.cSphereTrav.addCollider(self.cSphereNodePath, self.cSphereQueue)
-        self.ccLineTrav = CollisionTraverser('PositionExaminer.ccLineTrav')
-        self.ccLineTrav.setRespectPrevTransform(False)
-        self.ccLineQueue = CollisionHandlerQueue()
-        self.ccLineTrav.addCollider(self.ccLineNodePath, self.ccLineQueue)
+        
+        bsph = BulletSphereShape(1.5)
+        bgh = BulletGhostNode('positionExaminer_sphereGhost')
+        bgh.addShape(bsph)
+        bgh.setKinematic(True)
+        self.cSphereNodePath = self.attachNewNode(bgh)
 
     def delete(self):
-        del self.cRay
-        del self.cRayNode
-        self.cRayNodePath.removeNode()
-        del self.cRayNodePath
-        del self.cSphere
-        del self.cSphereNode
         self.cSphereNodePath.removeNode()
         del self.cSphereNodePath
-        del self.ccLine
-        del self.ccLineNode
-        self.ccLineNodePath.removeNode()
-        del self.ccLineNodePath
-        del self.cRayTrav
-        del self.cRayQueue
-        del self.cSphereTrav
-        del self.cSphereQueue
-        del self.ccLineTrav
-        del self.ccLineQueue
 
     def consider(self, node, pos, eyeHeight):
         self.reparentTo(node)
         self.setPos(pos)
+        
         result = None
-        self.cRayTrav.traverse(render)
-        if self.cRayQueue.getNumEntries() != 0:
-            self.cRayQueue.sortEntries()
-            floorPoint = self.cRayQueue.getEntry(0).getSurfacePoint(self.cRayNodePath)
+        
+        floorLineStart = self.getPos(render) + (0, 0, 0.1)
+        floorLineEnd = floorLineStart - (0, 0, 10000)
+        floorResult = base.physicsWorld.rayTestClosest(floorLineStart, floorLineEnd, CIGlobals.FloorMask)
+        if floorResult.hasHit():
+            floorPoint = self.getRelativePoint(render, floorResult.getHitPos())
             if abs(floorPoint[2]) <= 4.0:
                 pos += floorPoint
+                
                 self.setPos(pos)
-                self.cSphereTrav.traverse(render)
-                if self.cSphereQueue.getNumEntries() == 0:
-                    self.ccLine.setPointA(0, 0, eyeHeight)
-                    self.ccLine.setPointB(-pos[0], -pos[1], eyeHeight)
-                    self.ccLineTrav.traverse(render)
-                    if self.ccLineQueue.getNumEntries() == 0:
+                
+                base.physicsWorld.attach(self.cSphereNodePath.node())
+                self.cSphereNodePath.node().setTransformDirty()
+                sphereContactResult = base.physicsWorld.contactTest(self.cSphereNodePath.node())
+                base.physicsWorld.remove(self.cSphereNodePath.node())
+                
+                wallEntry = False
+                
+                for iContact in xrange(sphereContactResult.getNumContacts()):
+                    contact = sphereContactResult.getContact(iContact)
+                    node0 = NodePath(contact.getNode0())
+                    node1 = NodePath(contact.getNode1())
+                    
+                    if (node0 == self.cSphereNodePath and
+                    not base.localAvatar.isAncestorOf(node1) and
+                    not node.isAncestorOf(node1)):
+                        
+                        if not (node1.getCollideMask() & CIGlobals.WallGroup).isZero():
+                            wallEntry = True
+                            break
+                            
+                    elif (node1 == self.cSphereNodePath and
+                    not base.localAvatar.isAncestorOf(node0) and
+                    not node.isAncestorOf(node0)):
+                        
+                        if not (node0.getCollideMask() & CIGlobals.WallGroup).isZero():
+                            wallEntry = True
+                            break
+                            
+                if not wallEntry:
+                    lineStart = render.getRelativePoint(self, (0, 0, eyeHeight))
+                    lineEnd = render.getRelativePoint(self, (-pos[0], -pos[1], eyeHeight))
+                    lineResult = PhysicsUtils.rayTestClosestNotMe(node, lineStart, lineEnd, CIGlobals.WallGroup)
+                    if not lineResult:
                         result = pos
+                        
         self.reparentTo(hidden)
-        self.cRayQueue.clearEntries()
-        self.cSphereQueue.clearEntries()
-        self.ccLineQueue.clearEntries()
         return result
