@@ -20,17 +20,11 @@ def playDone():
         winsound.PlaySound('tools/deploydone.wav', winsound.SND_FILENAME)
     except: pass
     
-def compress(filename):
-    filename = Filename(filename)
-    
-    basename = filename.getBasename()
-    full = filename.getFullpath()
-    full_no_ext = filename.getFullpathWoExtension()
-    
-    tf = tarfile.open(full_no_ext + ".tar.gz", mode="w:gz")
-    tf.add(full, arcname=basename)
+def compress(filename):    
+    tf = tarfile.open(filename.fullfile[:-3] + ".tar.gz", mode="w:gz")
+    tf.add(filename.fullfile, arcname=filename.filename)
     tf.close()
-    print "Compressed {0}!".format(filename)
+    print "Compressed {0}!".format(filename.fullfile)
 
 host = "50.87.26.220"
 port = 22
@@ -107,7 +101,7 @@ for lclFile, lclSha in lclData.items():
             lclData[lclFile] = srvSha
         else:
             if ".mf" in lclFile.filename:
-                compress(lclFile.fullfile)
+                compress(lclFile)
                 comprFile = LocalFile(lclFile.fullfile[:-3] + ".tar.gz")
                 filesToDeploy.append(comprFile)
             else:
