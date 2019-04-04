@@ -50,7 +50,7 @@ class BaseHitscanAI(BaseGagAI, BaseHitscanShared):
             
     def canUse(self):
         # Hitscan gags do not have ammo, and thus, are always usable
-        return self.action == [self.StateIdle, self.StateFire]
+        return self.action in [self.StateIdle, self.StateFire]
         
     def primaryFirePress(self, data):
         if not self.canUse():
