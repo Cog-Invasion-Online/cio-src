@@ -21,8 +21,14 @@ def playDone():
     except: pass
     
 def compress(filename):
-    tf = tarfile.open(filename[:-3] + ".tar.gz", mode="w:gz")
-    tf.add(filename)
+    filename = Filename(filename)
+    
+    basename = filename.getBasename()
+    full = filename.getFullpath()
+    full_no_ext = filename.getFullpathWoExtension()
+    
+    tf = tarfile.open(full_no_ext + ".tar.gz", mode="w:gz")
+    tf.add(full, arcname=basename)
     tf.close()
     print "Compressed {0}!".format(filename)
 
