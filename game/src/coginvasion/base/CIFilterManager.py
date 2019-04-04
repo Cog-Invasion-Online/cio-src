@@ -303,7 +303,10 @@ class FilterManager(DirectObject):
         props = FrameBufferProperties(FrameBufferProperties.getDefault())
         props.setBackBuffers(0)
         props.setRgbColor(1)
-        props.setDepthBits(depthbits)
+        props.setColorBits(16)
+        if depthbits:
+            props.setDepthBits(32)
+            props.setFloatDepth(True)
         props.setStereo(self.win.isStereo())
         depthtex, colortex, auxtex0, auxtex1 = texgroup
         if (auxtex0 != None):
