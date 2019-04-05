@@ -16,7 +16,7 @@ class BaseAttackAI(BaseAttackShared):
 
     def __init__(self):
         BaseAttackShared.__init__(self)
-        self.actionLengths = {self.StateIdle: 0}
+        self.actionLengths = {self.StateIdle: -1}
         
     def canDamage(self, obj):
         if self.FriendlyFire:
@@ -93,9 +93,15 @@ class BaseAttackAI(BaseAttackShared):
         self.ammo += amount
         if self.hasAvatar():
             self.avatar.sendUpdate('updateAttackAmmo', [self.getID(), self.ammo])
+            
+    def isActionIndefinite(self):
+        return self.actionLengths[self.action] == -1
 
-    def isActionComplete(self):            
-        return self.getActionTime() >= self.actionLengths[self.action]
+    def isActionComplete(self):
+        length = self.actionLengths[self.action]
+        if length == -1:
+            return False
+        return self.getActionTime() >= length
 
     def shouldGoToNextAction(self, complete):
         return complete
@@ -115,7 +121,8 @@ class BaseAttackAI(BaseAttackShared):
             nextAction = self.determineNextAction(self.action)
             if self.action != nextAction or nextAction != self.StateIdle:
                 self.b_setAction(nextAction)
-        elif self.shouldGoToNextAction(complete):
+        elif (self.nextAction is not None and
+              self.shouldGoToNextAction(complete or self.isActionIndefinite())):
             self.b_setAction(self.nextAction)
             self.nextAction = None
 

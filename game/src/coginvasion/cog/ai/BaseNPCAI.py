@@ -136,6 +136,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
             "WAKE_ANGRY"    :   Schedule(
                 [
                     Task_StopMoving(self),
+                    Task_StopAttack(self),
                     Task_SetActivity(self, ACT_WAKE_ANGRY),
                     Task_AwaitActivity(self)#,
                     #Task_FaceIdeal(self)
@@ -145,6 +146,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
             "COMBAT_FACE"   :   Schedule(
                 [
                     Task_StopMoving(self),
+                    Task_StopAttack(self),
                     Task_SetActivity(self, ACT_NONE),
                     Task_FaceTarget(self)
                 ]
@@ -153,6 +155,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
             "TAKE_COVER_FROM_ORIGIN"    :   Schedule(
                 [
                     Task_StopMoving(self),
+                    Task_StopAttack(self),
                     Task_FindCoverFromOrigin(self),
                     Task_RunPath(self),
                     Task_AwaitMovement(self),
@@ -180,6 +183,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
             "CHASE_TARGET_FAILED"   :   Schedule(
                 [
                     Task_StopMoving(self),
+                    Task_StopAttack(self),
                     Task_Wait(0.2),
                     Task_FindCoverFromTarget(self),
                     Task_RunPath(self),
@@ -192,6 +196,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
 
             "CHASE_TARGET"  :   Schedule(
                 [
+                    Task_StopAttack(self),
                     Task_GetPathToTarget(self),
                     Task_RunPath(self),
                     Task_AwaitMovement(self)
@@ -213,6 +218,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
             "ALERT_FACE"    :   Schedule(
                 [
                     Task_StopMoving(self),
+                    Task_StopAttack(self),
                     Task_SetActivity(self, ACT_NONE),
                     Task_FaceIdeal(self)
                 ],

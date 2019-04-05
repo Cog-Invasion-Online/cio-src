@@ -27,6 +27,7 @@ class BaseAttack(Precacheable, BaseAttackShared):
     ModelVMOrigin = Point3(0, 0, 0)
     ModelVMAngles = Point3(0, 0, 0)
     ModelVMScale = 1
+    ModelVMAnimate = True
     
     SpecialVM = False
 
@@ -255,7 +256,8 @@ class BaseAttack(Precacheable, BaseAttackShared):
         if not self.SpecialVM and self.isFirstPerson():
             self.getFPSCam().setVMGag(self.model, self.ModelVMOrigin,
                                       self.ModelVMAngles, self.ModelVMScale,
-                                      self.Hold, self.ModelAnimPath is not None)
+                                      self.Hold,
+                                      self.ModelAnimPath is not None and self.ModelVMAnimate)
             self.getViewModel().show()
 
     def __holdAttackModel(self):

@@ -23,6 +23,10 @@ import ToonDNA
 class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
     notify = directNotify.newCategory('DistributedToonAI')
     
+    LMHead = 0
+    LMCage = 1
+    LMOff = 2
+    
     AvatarType = AVATAR_TOON
     Relationships = {
         AVATAR_TOON     :   RELATIONSHIP_FRIEND,
@@ -76,6 +80,10 @@ class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
         self.activities = {ACT_DIE: 7.0}
 
         return
+        
+    def b_setLookMode(self, mode):
+        self.setLookMode(mode)
+        self.sendUpdate('setLookMode', [mode])
         
     def setDNAStrand(self, strand):
         ToonDNA.ToonDNA.setDNAStrand(self, strand)
