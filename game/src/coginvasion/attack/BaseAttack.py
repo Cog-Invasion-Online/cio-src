@@ -31,11 +31,15 @@ class BaseAttack(Precacheable, BaseAttackShared):
     
     SpecialVM = False
 
-    def __init__(self):
+    def __init__(self, sharedMetadata = None):
         BaseAttackShared.__init__(self)
         self.model = None
         self.crosshair = CrosshairData()
         self.animTrack = None
+        
+        if sharedMetadata:
+            for key in sharedMetadata.__dict__.keys():
+                setattr(self, key, sharedMetadata.__dict__.get(key))
 
     def doDrawNoHold(self, drawAnim, drawAnimStart = None, drawAnimEnd = None,
                      drawAnimSpeed = 1.0):

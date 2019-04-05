@@ -4,17 +4,17 @@ from direct.interval.IntervalGlobal import Parallel, Sequence, Wait, Func
 from direct.interval.IntervalGlobal import LerpScaleInterval, LerpHprInterval
 
 from src.coginvasion.attack.BaseAttack import BaseAttack
-from src.coginvasion.cog.attacks.EvilEyeShared import EyeScale, EyeOrigin, EvilEyeShared
+from src.coginvasion.cog.attacks import EvilEyeShared
 from src.coginvasion.attack.Attacks import ATTACK_HOLD_NONE, ATTACK_EVIL_EYE
 from src.coginvasion.base.Precache import precacheSound
 
-class EvilEye(BaseAttack, EvilEyeShared):
-    ModelPath = "phase_5/models/props/evil-eye.bam"
-    ModelScale = 0.01
+class EvilEye(BaseAttack):
     Hold = ATTACK_HOLD_NONE
     
-    Name = "Evil-Eye"
-    ID = ATTACK_EVIL_EYE
+    #Name = "Evil-Eye"
+    #ID = ATTACK_EVIL_EYE
+    #ModelPath = "phase_5/models/props/evil-eye.bam"
+    #ModelScale = 11.0
     
     HoldStart = 1.06
     HoldStop = 1.69
@@ -25,13 +25,16 @@ class EvilEye(BaseAttack, EvilEyeShared):
     EyeSoundPath = "phase_5/audio/sfx/SA_evil_eye.ogg"
     
     def __init__(self):
+        for key in EvilEyeShared.__dict__.keys():
+            setattr(self, key, EvilEyeShared.__dict__.get(key))
+        print self.Name
         BaseAttack.__init__(self)
         self.eyeSfx = None
         self.eyeRoot = None
         
     def load(self):
         self.eyeRoot = self.avatar.attachNewNode('eyeRoot')
-        self.eyeRoot.setPos(EyeOrigin)
+        self.eyeRoot.setPos(self.EyeOrigin)
         
         BaseAttack.load(self)
         
@@ -76,12 +79,12 @@ class EvilEye(BaseAttack, EvilEyeShared):
         
         self.avatar.doingActivity = False
         
-        if action == self.StateAttack:
+        if action == self.StateThrow:
             self.avatar.doingActivity = True
             
             eyeTrack = Sequence(
                 Wait(self.HoldStart),
-                LerpScaleInterval(self.model, self.HoldDuration, Point3(EyeScale)),
+                LerpScaleInterval(self.model, self.HoldDuration, Point3(self.ModelScale), startScale = 0.01),
                 Wait(self.EyeHoldDuration * 0.3),
                 LerpHprInterval(self.model, 0.02, Point3(205, 40, 0)),
                 Wait(self.EyeHoldDuration * 0.7),

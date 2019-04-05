@@ -70,6 +70,8 @@ ATTACK_PICKPOCKET               = 56
 ATTACK_FIRED                    = 57
 ATTACK_EVIL_EYE                 = 58
 ATTACK_WATER_COOLER             = 59
+ATTACK_RED_TAPE                 = 60
+ATTACK_HALF_WINDSOR             = 61
 
 # ===============================================
 

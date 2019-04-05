@@ -14,9 +14,13 @@ class BaseAttackAI(BaseAttackShared):
     Server = True
     FriendlyFire = False
 
-    def __init__(self):
+    def __init__(self, sharedMetadata = None):
         BaseAttackShared.__init__(self)
         self.actionLengths = {self.StateIdle: -1}
+        
+        if sharedMetadata:
+            for key in sharedMetadata.__dict__.keys():
+                setattr(self, key, sharedMetadata.__dict__.get(key))
         
     def canDamage(self, obj):
         if self.FriendlyFire:

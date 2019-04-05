@@ -1,20 +1,18 @@
 from direct.interval.IntervalGlobal import Sequence, Func, Parallel, Wait
 
-from src.coginvasion.cog.attacks.ClipOnTieShared import ClipOnTieShared
+from src.coginvasion.cog.attacks import ClipOnTieShared
 from src.coginvasion.attack.BaseAttack import BaseAttack
-from src.coginvasion.attack.Attacks import ATTACK_HOLD_RIGHT, ATTACK_CLIPONTIE
+from src.coginvasion.attack.Attacks import ATTACK_HOLD_RIGHT
 
-class ClipOnTie(BaseAttack, ClipOnTieShared):
-    ModelPath = "phase_5/models/props/power-tie.bam"
-    ModelScale = 4
+class ClipOnTie(BaseAttack):
     Hold = ATTACK_HOLD_RIGHT
-
-    Name = "Clip-On-Tie"
-    ID = ATTACK_CLIPONTIE
 
     ReleasePlayRateMultiplier = 1.0
     ThrowObjectFrame = 68
     PlayRate = 1.5
+    
+    def __init__(self):
+        BaseAttack.__init__(self, ClipOnTieShared)
 
     def equip(self):
         if not BaseAttack.equip(self):
