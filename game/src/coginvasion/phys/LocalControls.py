@@ -456,6 +456,8 @@ class LocalControls(DirectObject):
                 self.footstepIval = (8 / 24.0) * abs(base.localAvatar.playingRate) 
             elif base.localAvatar.playingAnim == 'walk':
                 self.footstepIval = (11 / 24.0) * abs(base.localAvatar.playingRate)
+            elif base.localAvatar.playingAnim == 'dwalk':
+                self.footstepIval = (15 / 24.0) * abs(base.localAvatar.playingRate)
 
             if self.scheme == LocalControls.SSwim:
                 self.footstepIval *= 6.0
@@ -613,7 +615,7 @@ class LocalControls(DirectObject):
         self.controller.setAngularMovement(self.speeds.getZ())
 
         onGround = self.isOnGround()
-        if jump and onGround and not self.airborne and self.allowJump:
+        if jump and onGround and not self.airborne and (self.allowJump and not base.localAvatar.isDead()):
             self.controller.startJump(5.0)
             self.playFootstep(1.5)
             self.airborne = True
