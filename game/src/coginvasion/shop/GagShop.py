@@ -80,7 +80,7 @@ class GagShop(Shop):
         if hasattr(self.originalSupply, 'keys'):
             gagIds = self.originalSupply.keys()
             for gagId in gagIds:
-                base.localAvatar.setGagAmmo(gagId, self.originalSupply.get(gagId))
+                base.localAvatar.updateAttackAmmo(gagId, self.originalSupply.get(gagId))
             self.originalSupply = {}
         Shop.cancelPurchase(self)
 

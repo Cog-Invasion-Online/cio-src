@@ -25,4 +25,4 @@ class DistributedGagShopAI(DistributedShopAI):
             for i in range(len(gagIds)):
                 gagId = gagIds[i]
                 ammo = ammoList[i]
-                av.b_setGagAmmo(gagId, ammo)
+                av.b_updateAttackAmmo(gagId, ammo)
