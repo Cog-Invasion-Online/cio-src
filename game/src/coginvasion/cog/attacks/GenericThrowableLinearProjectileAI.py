@@ -32,9 +32,3 @@ class GenericThrowableLinearProjectileAI(LinearProjectileAI):
         
     def getData(self):
         return self.attackID
-        
-    def d_setData(self, attackID):
-        self.sendUpdate('setData', [attackID])
-        
-    def b_setData(self, attackID):
-        self.attackID = attackID

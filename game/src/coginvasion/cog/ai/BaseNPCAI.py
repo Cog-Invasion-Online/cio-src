@@ -490,11 +490,17 @@ class BaseNPCAI(BaseCombatCharacterAI):
         return not plyr.isDead()
 
     def isSameLeafAsPlayer(self, plyr):
+        if not CIGlobals.isNodePathOk(plyr) or not CIGlobals.isNodePathOk(self):
+            return False
+
         plLeaf = self.battleZone.bspLoader.findLeaf(plyr)
         myLeaf = self.battleZone.bspLoader.findLeaf(self)
         return plLeaf == myLeaf
 
     def isPlayerInPVS(self, plyr):
+        if not CIGlobals.isNodePathOk(plyr) or not CIGlobals.isNodePathOk(self):
+            return False
+        
         plLeaf = self.battleZone.bspLoader.findLeaf(plyr)
         myLeaf = self.battleZone.bspLoader.findLeaf(self)
         return self.battleZone.bspLoader.isClusterVisible(myLeaf, plLeaf)

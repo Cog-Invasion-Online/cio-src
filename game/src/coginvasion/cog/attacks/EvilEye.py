@@ -25,10 +25,7 @@ class EvilEye(BaseAttack):
     EyeSoundPath = "phase_5/audio/sfx/SA_evil_eye.ogg"
     
     def __init__(self):
-        for key in EvilEyeShared.__dict__.keys():
-            setattr(self, key, EvilEyeShared.__dict__.get(key))
-        print self.Name
-        BaseAttack.__init__(self)
+        BaseAttack.__init__(self, EvilEyeShared)
         self.eyeSfx = None
         self.eyeRoot = None
         
@@ -72,8 +69,8 @@ class EvilEye(BaseAttack):
         BaseAttack.cleanup(self)
     
     def onSetAction(self, action):
-        self.model.show()
         self.model.reparentTo(self.eyeRoot)
+        self.model.setScale(0.01)
         self.model.setHpr(VBase3(-155.0, -20.0, 0.0))
         self.model.setLightOff()
         
@@ -83,6 +80,7 @@ class EvilEye(BaseAttack):
             self.avatar.doingActivity = True
             
             eyeTrack = Sequence(
+                Func(self.model.show),
                 Wait(self.HoldStart),
                 LerpScaleInterval(self.model, self.HoldDuration, Point3(self.ModelScale), startScale = 0.01),
                 Wait(self.EyeHoldDuration * 0.3),

@@ -52,7 +52,6 @@ class GenericThrowAttack(BaseAttack):
                         avatarTrack,
                         self.getAnimationTrack(self.ThrowAnim, startFrame = releaseFrame, playRate = self.PlayRate, fullBody = False)
                     ),
-                    Sequence(Wait(self.ThrowAfterTime), Func(self.model.hide))
+                    Sequence(Wait(self.ThrowAfterTime / self.PlayRate), Func(self.model.hide))
                 ),
             startNow = True)
-            print "Duration: " + str(avatarTrack.getDuration())

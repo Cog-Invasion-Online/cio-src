@@ -16,6 +16,7 @@ from direct.distributed.ClockDelta import globalClockDelta
 
 from src.coginvasion.attack.BaseAttackAI import BaseAttackAI
 from src.coginvasion.cog.attacks.GenericThrowableLinearProjectileAI import GenericThrowableLinearProjectileAI
+from src.coginvasion.cog.SuitType import SuitType
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.phys import PhysicsUtils
 
@@ -27,6 +28,7 @@ class GenericThrowAttackAI(BaseAttackAI):
         self.traceOrigin = Point3(0)
         self.traceVector = Vec3(0)
         self.didThrow = False
+        self.target = None
         
         if not hasattr(self, 'StateThrow'):
             raise RuntimeError('Expected a StateThrow member for GenericThrowAttackAI!')
@@ -46,43 +48,75 @@ class GenericThrowAttackAI(BaseAttackAI):
         del self.throwOrigin
         del self.traceOrigin
         del self.traceVector
+        if self.target:
+            self.target = None
+        del self.target
         BaseAttackAI.cleanup(self)
         
     def think(self):
         BaseAttackAI.think(self)
         
-        time = self.ThrowAfterTime
-        
-        if self.action == self.StateThrow and self.getActionTime() >= time and not self.didThrow:
-            # Trace a line from the trace origin outward along the trace direction
-            # to find out what we hit, and adjust the direction of the projectile launch
-            traceEnd = self.traceOrigin + (self.traceVector * 10000)
-            hit = PhysicsUtils.rayTestClosestNotMe(self.avatar,
-                                                   self.traceOrigin,
-                                                   traceEnd,
-                                                   CIGlobals.WorldGroup | CIGlobals.CharacterGroup,
-                                                   self.avatar.getBattleZone().getPhysicsWorld())
-            if hit is not None:
-                hitPos = hit.getHitPos()
-            else:
-                hitPos = traceEnd
-
-            vecThrow = (hitPos - self.throwOrigin).normalized()
-            endPos = self.throwOrigin + (vecThrow * self.ThrowPower)
+        try:
+            time = self.__calculateThrowAfterTime()
+        except:
+            time = self.ThrowAfterTime
             
-            proj = GenericThrowableLinearProjectileAI(base.air)
-            proj.b_setData(self.ID)
-            proj.setLinear(1.5, self.throwOrigin, endPos, globalClockDelta.getFrameNetworkTime())
-            proj.generateWithRequired(self.avatar.zoneId)
-            proj.addHitCallback(self.onProjectileHit)
-            proj.addExclusion(self.avatar)
+        if self.action == self.StateThrow:
+        
+            if not CIGlobals.isNodePathOk(self.target):
+                return
 
-            self.didThrow = True
+            # Lock onto the target
+            self.avatar.headsUp(self.target)
+        
+            if self.getActionTime() >= time and not self.didThrow:
+                self.calibrate(self.target)
+                # Trace a line from the trace origin outward along the trace direction
+                # to find out what we hit, and adjust the direction of the projectile launch
+                traceEnd = self.traceOrigin + (self.traceVector * 10000)
+                hit = PhysicsUtils.rayTestClosestNotMe(self.avatar,
+                                                       self.traceOrigin,
+                                                       traceEnd,
+                                                       CIGlobals.WorldGroup | CIGlobals.CharacterGroup,
+                                                       self.avatar.getBattleZone().getPhysicsWorld())
+                if hit is not None:
+                    hitPos = hit.getHitPos()
+                else:
+                    hitPos = traceEnd
+    
+                vecThrow = (hitPos - self.throwOrigin).normalized()
+                endPos = self.throwOrigin + (vecThrow * self.ThrowPower)
+                
+                proj = GenericThrowableLinearProjectileAI(base.air)
+                proj.setData(self.ID)
+                proj.setLinear(1.5, self.throwOrigin, endPos, globalClockDelta.getFrameNetworkTime())
+                proj.generateWithRequired(self.avatar.zoneId)
+                proj.addHitCallback(self.onProjectileHit)
+                proj.addExclusion(self.avatar)
+    
+                self.didThrow = True
+                
+    def __calculateThrowAfterTime(self):
+        timings = {
+            SuitType.A : 3.083,
+            SuitType.B : 3.083,
+            SuitType.C : 2.417
+        }
+        
+        time = timings.values()[0]
+        
+        try:
+            time = timings.get(self.avatar.suitPlan.getSuitType())
+        except: pass
+        
+        return time / self.PlayRate
             
     def onSetAction(self, action):
         if action == self.StateThrow:
             self.takeAmmo(-1)
             self.didThrow = False
+        elif action == self.StateIdle:
+            self.target = None
             
     def calibrate(self, target):
         self.throwOrigin = self.avatar.getPos(render) + (0, 0, self.avatar.getHeight() / 2.0)
@@ -93,7 +127,7 @@ class GenericThrowAttackAI(BaseAttackAI):
         if not self.canUse():
             return
         
-        self.calibrate(target)
+        self.target = target
         self.setNextAction(self.StateThrow)
             
     def checkCapable(self, _, squaredDistance):
