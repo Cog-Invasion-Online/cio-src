@@ -16,7 +16,7 @@ class WaterCoolerAI(BaseAttackAI, WaterCoolerShared):
         
         self.ammo = 100
         self.maxAmmo = 100
-        self.baseDamage = 4.0
+        self.baseDamage = 12.0
 
         self.traceOrigin = None
         self.traceVector = None
@@ -54,3 +54,20 @@ class WaterCoolerAI(BaseAttackAI, WaterCoolerShared):
         self.traceOrigin = self.avatar.getPos() + (0, 0, self.avatar.getHeight() / 2)
         self.traceVector = ((target.getPos() + (0, 0, target.getHeight() / 2.0)) - self.traceOrigin).normalized()
         self.setNextAction(self.StateAttack)
+    
+    def getTauntChance(self):
+        return 0.75
+    
+    def getTauntPhrases(self):
+        return ['This ought to cool you off.',
+            "Isn't this refreshing?",
+            "I deliver.",
+            "Straight from the tap - into your lap.",
+            "What's the matter, it's just spring water.",
+            "Don't worry, it's purified.",
+            "Ah, another satisfied customer.",
+            "It's time for your daily delivery.",
+            "Hope your colors don't run.",
+            "Care for a drink?",
+            "It all comes out in the wash.",
+            "The drink's on you."]

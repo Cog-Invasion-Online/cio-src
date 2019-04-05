@@ -78,3 +78,18 @@ class EvilEyeAI(BaseAttackAI, EvilEyeShared):
     
     def checkCapable(self, dot, squaredDistance):
         return squaredDistance <= 20*20 and squaredDistance > 8*8
+    
+    def getTauntChance(self):
+        return 0.75
+    
+    def getTauntPhrases(self):
+        return ["I'm giving you the evil eye.",
+            "Could you eye-ball this for me?",
+            "Wait. I've got something in my eye.",
+            "I've got my eye on you!",
+            "Could you keep an eye on this for me?",
+            "I've got a real eye for evil.",
+            "I'll poke you in the eye!",
+            "\"Eye\" am as evil as they come!",
+            "I'll put you in the eye of the storm!",
+            "I'm rolling my eye at you."]
