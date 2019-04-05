@@ -10,7 +10,7 @@ class AvatarShared(BasePhysicsObject):
     """
     Base class shared between Server and Client implementations of the Avatar.
     
-    It MUST be inerhited by a DistributedObject, at least. (It calls sendUpdate())
+    It MUST be inherited by a DistributedObject, at least. (It calls sendUpdate())
     """
 
     notify = directNotify.newCategory("AvatarShared")

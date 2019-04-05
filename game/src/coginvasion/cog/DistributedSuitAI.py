@@ -27,6 +27,7 @@ from src.coginvasion.gags.GagType import GagType
 from SuitBank import SuitPlan
 import SuitBank
 import SuitGlobals
+import SuitType
 import Variant
 import GagEffects
 
@@ -172,6 +173,11 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
             
         self.setMaxHealth(self.maxHealth)
         self.setHealth(self.health)
+        
+        # Let's add type specific attacks
+        if self.suitPlan.getSuitType() == SuitType.C:
+            from src.coginvasion.attack.Attacks import ATTACK_WATER_COOLER
+            self.attackIds.append(ATTACK_WATER_COOLER)
 
     def getSuit(self):
         if isinstance(self.suitPlan, int):

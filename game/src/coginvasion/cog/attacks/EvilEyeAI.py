@@ -26,6 +26,12 @@ class EvilEyeAI(BaseAttackAI, EvilEyeShared):
         self.traceVector = Vec3(0)
         self.didAttack = False
         
+    def cleanup(self):
+        del self.throwOrigin
+        del self.traceOrigin
+        del self.traceVector
+        BaseAttackAI.cleanup(self)
+        
     def think(self):
         BaseAttackAI.think(self)
         

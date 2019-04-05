@@ -69,6 +69,7 @@ ATTACK_GUMBALLBLASTER           = 55
 ATTACK_PICKPOCKET               = 56
 ATTACK_FIRED                    = 57
 ATTACK_EVIL_EYE                 = 58
+ATTACK_WATER_COOLER             = 59
 
 # ===============================================
 
