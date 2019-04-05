@@ -16,6 +16,7 @@ if metadata.PROCESS != 'server':
     from src.coginvasion.cog.attacks.EvilEye import EvilEye
     from src.coginvasion.cog.attacks.WaterCooler import WaterCooler
     from src.coginvasion.cog.attacks.RedTape import RedTape
+    from src.coginvasion.cog.attacks.HalfWindsor import HalfWindsor
     from src.coginvasion.cog.attacks.Sacked import Sacked
     from src.coginvasion.cog.attacks.Hardball import Hardball
     from src.coginvasion.cog.attacks.MarketCrash import MarketCrash
@@ -34,6 +35,7 @@ else:
     from src.coginvasion.cog.attacks.EvilEyeAI import EvilEyeAI as EvilEye
     from src.coginvasion.cog.attacks.WaterCoolerAI import WaterCoolerAI as WaterCooler
     from src.coginvasion.cog.attacks.RedTapeAI import RedTapeAI as RedTape
+    from src.coginvasion.cog.attacks.HalfWindsorAI import HalfWindsorAI as HalfWindsor
     from src.coginvasion.cog.attacks.SackedAI import SackedAI as Sacked
     from src.coginvasion.cog.attacks.HardballAI import HardballAI as Hardball
     from src.coginvasion.cog.attacks.MarketCrashAI import MarketCrashAI as MarketCrash
@@ -57,6 +59,7 @@ class AttackManager(Precacheable):
         ATTACK_EVIL_EYE             :   EvilEye,
         ATTACK_WATER_COOLER         :   WaterCooler,
         ATTACK_RED_TAPE             :   RedTape,
+        ATTACK_HALF_WINDSOR         :   HalfWindsor,
         ATTACK_SACKED               :   Sacked,
         ATTACK_HARDBALL             :   Hardball,
         ATTACK_MARKET_CRASH         :   MarketCrash
