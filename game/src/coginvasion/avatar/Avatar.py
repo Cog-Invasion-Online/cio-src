@@ -529,6 +529,9 @@ class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared):
             self.Avatar_disabled = 1
             if self in base.avatars:
                 base.avatars.remove(self)
+            if self.dmgFadeIval:
+                self.dmgFadeIval.finish()
+            self.dmgFadeIval = None
             self.stopMovingHealthLabel()
             self.healthLabel = None
             self.healthLabelTrack = None

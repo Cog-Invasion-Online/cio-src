@@ -16,7 +16,7 @@ import __builtin__
 
 from src.coginvasion.base.Metadata import Metadata
 __builtin__.metadata = Metadata()
-metadata.USE_LIGHTING = 0
+metadata.USE_LIGHTING = 1
 
 loadPrcFile('config/Confauto.prc')
 loadPrcFile('config/config_client.prc')
