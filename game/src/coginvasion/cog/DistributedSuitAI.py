@@ -172,6 +172,8 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
             
         self.setMaxHealth(self.maxHealth)
         self.setHealth(self.health)
+        
+        self.motor.fwdSpeed *= classAttrs.walkMod
 
     def getSuit(self):
         if isinstance(self.suitPlan, int):
