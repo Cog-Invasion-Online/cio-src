@@ -25,9 +25,9 @@ from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.GagType import GagType
 
 from SuitBank import SuitPlan
+from SuitType import SuitType
 import SuitBank
 import SuitGlobals
-import SuitType
 import Variant
 import GagEffects
 
@@ -178,6 +178,8 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         if self.suitPlan.getSuitType() == SuitType.C:
             from src.coginvasion.attack.Attacks import ATTACK_WATER_COOLER
             self.attackIds.append(ATTACK_WATER_COOLER)
+
+        self.motor.fwdSpeed *= classAttrs.walkMod
 
     def getSuit(self):
         if isinstance(self.suitPlan, int):

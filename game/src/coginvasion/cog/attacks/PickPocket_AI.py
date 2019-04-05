@@ -17,6 +17,25 @@ class PickPocket_AI(BaseAttackAI, PickPocketShared):
         self.traceOrigin = None
         self.traceVector = None
         self.didPick = False
+        
+    def getTauntChance(self):
+        return 0.75
+        
+    def getTauntPhrases(self):
+        return ['Let me check your valuables.',
+            "Hey, what's that over there?",
+            'Like taking candy from a baby.',
+            'What a steal.',
+            "I'll hold this for you.",
+            'Watch my hands at all times.',
+            'The hand is quicker than the eye.',
+            "There's nothing up my sleeve.",
+            'The management is not responsible for lost items.',
+            "Finder's keepers.",
+            "You'll never see it coming.",
+            'One for me, none for you.',
+            "Don't mind if I do.",
+            "You won't be needing this..."]
 
     def cleanup(self):
         del self.traceOrigin

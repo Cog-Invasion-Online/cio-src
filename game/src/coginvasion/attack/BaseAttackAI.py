@@ -84,6 +84,12 @@ class BaseAttackAI(BaseAttackShared):
 
     def getPostAttackSchedule(self):
         return None
+        
+    def getTauntPhrases(self):
+        return []
+        
+    def getTauntChance(self):
+        return 0.0
 
     def cleanup(self):
         del self.actionLengths

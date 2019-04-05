@@ -83,6 +83,25 @@ class Task_StopAttack(BaseTaskAI):
         if self.npc.getEquippedAttack() != -1:
             self.npc.b_setEquippedAttack(-1)
         return SCHED_COMPLETE
+        
+class Task_SpeakAttack(BaseTaskAI):
+    
+    def runTask(self):
+        if self.npc.getEquippedAttack() == -1:
+            return SCHED_FAILED
+            
+        attack = self.npc.attacks[self.npc.getEquippedAttack()]
+        phrases = attack.getTauntPhrases()
+        chance = attack.getTauntChance()
+        
+        if len(phrases) == 0 or chance <= 0:
+            return SCHED_COMPLETE
+            
+        if random.random() <= chance:
+            phrase = random.choice(phrases)
+            self.npc.d_setChat(phrase)
+            
+        return SCHED_COMPLETE
 
 class Task_FireAttack(BaseTaskAI):
 

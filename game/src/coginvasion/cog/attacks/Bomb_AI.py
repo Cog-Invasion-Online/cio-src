@@ -22,6 +22,12 @@ class Bomb_AI(BaseAttackAI, BombShared):
 
         self.maxAmmo = 2
         self.ammo = 2
+        
+    def getTauntChance(self):
+        return 0.5
+        
+    def getTauntPhrases(self):
+        return ["Bombs away!"]
 
     def getPostAttackSchedule(self):
         # Take cover after we throw our bomb
