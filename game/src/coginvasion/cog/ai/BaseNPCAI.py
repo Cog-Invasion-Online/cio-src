@@ -926,7 +926,10 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     newSched = BaseNPCAI.getSchedule(self)
                 else:
                     newSched = self.getSchedule()
-                self.changeSchedule(newSched)
+                
+                # Don't restart the same schedule
+                if newSched != self.schedule:
+                    self.changeSchedule(newSched)
 
         if self.schedule:
             run = self.schedule.runSchedule()

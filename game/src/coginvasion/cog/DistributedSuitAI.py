@@ -15,14 +15,10 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
-from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE
+from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE, ACT_VICTORY_DANCE
 from src.coginvasion.avatar.AvatarTypes import *
 from src.coginvasion.attack.TakeDamageInfo import TakeDamageInfo
-from src.coginvasion.cog.ai.RelationshipsAI import *
-from src.coginvasion.cog.ai.BaseNPCAI import BaseNPCAI
-from src.coginvasion.cog.ai.StatesAI import *
-from src.coginvasion.cog.ai.tasks.TasksAI import *
-from src.coginvasion.cog.ai.ConditionsAI import COND_NEW_TARGET
+from src.coginvasion.cog.ai.AIGlobal import *
 from src.coginvasion.globals import CIGlobals
 
 from src.coginvasion.gags import GagGlobals
@@ -96,7 +92,25 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
 
         self.activities = {ACT_WAKE_ANGRY   :   0.564,
                            ACT_SMALL_FLINCH :   2.25,
-                           ACT_DIE          :   6.0}
+                           ACT_DIE          :   6.0,
+                           ACT_VICTORY_DANCE:   9.0}
+                           
+        self.schedules.update({
+        
+            "VICTORY_TAUNT" :   Schedule(
+                [
+                    Task_StopMoving(self),
+                    Task_StopAttack(self),
+                    Task_Speak(self, 0.5, ["Aha, Toon! You thought you could get past me!",
+                                           "Caught tweakin, jit!",
+                                           "I told you it was my turn to play on the XBOX!"]),
+                    Task_SetActivity(self, ACT_VICTORY_DANCE),
+                    Task_AwaitActivity(self)
+                ],
+                interruptMask = COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE
+            )
+        
+        })
 
     def setNPCState(self, state):
         if state != self.npcState:
@@ -107,6 +121,13 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
                                                        "Toon spotted!",
                                                        "Cogs, catch that Toon!"]))
         BaseNPCAI.setNPCState(self, state)
+        
+    def getSchedule(self):
+        if self.npcState == STATE_COMBAT:
+            if self.hasConditions(COND_TARGET_DEAD):
+                return self.getScheduleByName("VICTORY_TAUNT")
+                
+        return BaseNPCAI.getSchedule(self)
 
     def d_setWalkPath(self, path):
         # Send out a list of Point2s for the client to create a path for the suit to walk.
