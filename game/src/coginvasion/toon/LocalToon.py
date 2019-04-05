@@ -756,10 +756,6 @@ class LocalToon(DistributedPlayerToon):
         self.setLookMode(mode)
         self.sendUpdate('setLookMode', [mode])
 
-    def b_setLookPitch(self, pitch):
-        self.setLookPitch(pitch)
-        self.sendUpdate('setLookPitch', [pitch])
-
     def enableGags(self, andKeys = 0):
         if self.avatarMovementEnabled and andKeys:
             self.enableGagKeys()

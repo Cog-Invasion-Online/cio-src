@@ -74,6 +74,10 @@ class AvatarShared(BasePhysicsObject):
     def setLookPitch(self, pitch):
         self.lookPitch = pitch
 
+    def b_setLookPitch(self, pitch):
+        self.sendUpdate('setLookPitch', [pitch])
+        self.setLookPitch(pitch)
+
     def getLookPitch(self):
         return self.lookPitch
 

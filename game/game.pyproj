@@ -322,6 +322,15 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\gagsnew\BaseHitscan.py" />
     <Compile Include="src\coginvasion\gagsnew\BaseHitscanAI.py" />
     <Compile Include="src\coginvasion\gagsnew\BaseHitscanShared.py" />
+    <Compile Include="src\coginvasion\gagsnew\FireHose.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\gagsnew\FireHoseAI.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\gagsnew\FireHoseShared.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\gagsnew\GumballBlaster.py">
       <SubType>Code</SubType>
     </Compile>

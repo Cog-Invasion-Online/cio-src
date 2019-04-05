@@ -40,6 +40,7 @@ class BaseAttackShared:
         self.secondaryMaxAmmo = 1
 
         self.action = self.StateIdle
+        self.lastAction = self.StateIdle
         self.actionStartTime = 0
         self.nextAction = None
 
@@ -90,6 +91,7 @@ class BaseAttackShared:
         
     def setAction(self, action):
         self.actionStartTime = globalClock.getFrameTime()
+        self.lastAction = self.action
         self.action = action
         if not self.isServer() and self.isFirstPerson():
             self.onSetAction_firstPerson(action)
@@ -104,6 +106,9 @@ class BaseAttackShared:
 
     def getAction(self):
         return self.action
+
+    def getLastAction(self):
+        return self.lastAction
 
     def __thinkTask(self, task):
         if not self.equipped:
@@ -224,3 +229,4 @@ class BaseAttackShared:
         del self.nextAction
         del self.action
         del self.actionStartTime
+        del self.lastAction

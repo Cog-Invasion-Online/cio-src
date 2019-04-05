@@ -583,7 +583,7 @@ TrackNameById = OrderedDict({GagType.TOON_UP : ToonUp, GagType.TRAP : Trap, GagT
 #  HL2Shotgun],
 # Lure : []}
 
-TrackGagNamesByTrackName = {Throw: [WholeCreamPie], ToonUp: [], Lure: [], Sound: [], Drop: [], Squirt: [], Trap: [HL2Shotgun, HL2Pistol, TNT, Slap, GumballBlaster]}
+TrackGagNamesByTrackName = {Throw: [WholeCreamPie], ToonUp: [], Lure: [], Sound: [], Drop: [], Squirt: [FireHose], Trap: [HL2Shotgun, HL2Pistol, TNT, Slap, GumballBlaster]}
 
 TrackExperienceAmounts = {
     Throw : [10, 50, 400, 2000, 6000, 10000],
@@ -958,4 +958,4 @@ def getDefaultBackpackNetString(isAI = False):
 # TNT, HL2Shotgun,
 # Megaphone, Lipstick, JugglingBalls, BambooCane, PixieDust,
 # BikeHorn, Whistle, Bugle, Aoogah, ElephantHorn, Foghorn, Opera]
-tempAllowedGags = [WholeCreamPie, HL2Shotgun, HL2Pistol, TNT, Slap, GumballBlaster]
+tempAllowedGags = [WholeCreamPie, HL2Shotgun, HL2Pistol, TNT, Slap, GumballBlaster, FireHose]
