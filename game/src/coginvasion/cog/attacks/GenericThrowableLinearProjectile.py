@@ -18,6 +18,7 @@ from src.coginvasion.attack.LinearProjectile import LinearProjectile
 class GenericThrowableLinearProjectile(LinearProjectile):
     
     ThrowSoundPath = None
+    WantLight = True
     
     def __init__(self, cr):
         LinearProjectile.__init__(self, cr)
@@ -45,6 +46,9 @@ class GenericThrowableLinearProjectile(LinearProjectile):
         if hasattr(attackCls, 'ModelOrigin'):
             self.ModelOrigin = attackCls.ModelOrigin
             
+        if hasattr(attackCls, 'WantLight'):
+            self.WantLight = attackCls.WantLight
+            
     def getData(self):
         return self.attackID
     
@@ -64,6 +68,9 @@ class GenericThrowableLinearProjectile(LinearProjectile):
         rot = self.model.getHpr(render)
         self.model.reparentTo(self)
         self.model.setHpr(rot[0], 0, 0)
+        
+        if not self.WantLight:
+            self.model.setLightOff(1)
 
     def impact(self, _):
         if self.impactSound:

@@ -34,6 +34,9 @@ class GenericThrowAttack(BaseAttack):
     
     def onSetAction(self, action):
         self.model.show()
+        
+        if hasattr(self, 'WantLight') and not self.WantLight:
+            self.model.setLightOff(1)
 
         self.avatar.doingActivity = False
 

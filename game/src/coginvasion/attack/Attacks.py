@@ -73,6 +73,8 @@ ATTACK_WATER_COOLER             = 59
 ATTACK_RED_TAPE                 = 60
 ATTACK_HALF_WINDSOR             = 61
 ATTACK_SACKED                   = 62
+ATTACK_HARDBALL                 = 63
+ATTACK_MARKET_CRASH             = 64
 
 # ===============================================
 

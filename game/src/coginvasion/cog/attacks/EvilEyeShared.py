@@ -12,3 +12,4 @@ StateThrow = 1
 ThrowPower = 100.0
 ThrowAfterTime = 2.81
 AttackDuration = 4.0
+WantLight = False
