@@ -921,12 +921,7 @@ def getDefaultBackpack(isAI = False):
     global DefaultBackpack
     
     if not DefaultBackpack:
-        if not isAI:
-            from src.coginvasion.gags.backpack.Backpack import Backpack
-            DefaultBackpack = Backpack(None)
-        else:
-            from src.coginvasion.gags.backpack.BackpackAI import BackpackAI
-            DefaultBackpack = BackpackAI(None)
+        DefaultBackpack = {}
         
         # Let's add all the temporary allowed gags.
         for tempGag in tempAllowedGags:
@@ -936,16 +931,25 @@ def getDefaultBackpack(isAI = False):
                 print 'Invalid attack supplied: ' + tempGag
                 continue
             
-            # This line just gets the proper max supply for the specified attack.
-            # If a 'minMaxSupply' key doesn't exist, it defaults to the 'maxSupply' key
-            # -- and if that doesn't exist, just default to 1.
-            maxSupply = data.get('minMaxSupply', data.get('maxSupply', 1))
-            supply = data.get('supply', maxSupply)
+            # This line just gets the proper supply for the specified attack,
+            # or 10 if it wasn't specified.
+            supply = data.get('supply', 10)
             
             ID = base.attackMgr.getAttackIDByName(tempGag)
-            DefaultBackpack.addGag(ID, supply, maxSupply)
+            DefaultBackpack[ID] = supply
         
     return DefaultBackpack
+    
+def getDefaultBackpackNetString(isAI = False):
+    from direct.distributed.PyDatagram import PyDatagram
+    
+    bp = getDefaultBackpack(isAI)
+    
+    dg = PyDatagram()
+    for gagId, supply in bp.items():
+        dg.addUint8(gagId)
+        dg.addUint8(supply)
+    return dg.getMessage()
 
 # Specifies which gags are allowed to be used. This should only be temporary until all the gags are implemented correctly.
 #tempAllowedGags = #[Cupcake, FruitPieSlice, CreamPieSlice, WholeFruitPie, WholeCreamPie, BirthdayCake,

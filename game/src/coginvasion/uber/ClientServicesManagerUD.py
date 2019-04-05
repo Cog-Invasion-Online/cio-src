@@ -72,7 +72,7 @@ class CreateToonProcess:
                 "setHealth": (100,),
                 "setMaxHealth": (100,),
                 "setMoney": (5000,),
-                "setBackpackAmmo": (GagGlobals.getDefaultBackpack().toNetString(),),
+                "setBackpackAmmo": (GagGlobals.getDefaultBackpackNetString(True),),
                 "setLoadout": (GagGlobals.InitLoadout,), # Start with cupcake and squirting flower.
                 "setTrackExperience": (GagGlobals.trackExperienceToNetString(GagGlobals.DefaultTrackExperiences),),
                 "setAccessLevel": (AdminCommands.NoAccess,),

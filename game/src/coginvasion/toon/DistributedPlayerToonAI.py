@@ -448,8 +448,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
                 # This also is an automatic way to correct old backpack data
                 # that could be lingering in our database. This integrity check
                 # isn't supposed to remain in the code for a long time.
-                defaultBackpack = GagGlobals.getDefaultBackpack(isAI = True)
-                self.b_setBackpackAmmo(defaultBackpack.toNetString())
+                self.b_setBackpackAmmo(GagGlobals.getDefaultBackpackNetString(True))
                 break
             
             if not self.backpack.hasGag(gagId):
