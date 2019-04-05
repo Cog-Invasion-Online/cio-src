@@ -106,6 +106,14 @@ class Fired(BaseAttack, Fired_Shared):
             self.glow.removeNode()
         self.glow = None
         BaseAttack.cleanup(self)
+        
+    def unEquip(self):
+        if not BaseAttack.unEquip(self):
+            return False
+        
+        self.avatar.doingActivity = False
+            
+        return True
 
     def onSetAction(self, action):
         if action == self.StateIdle:

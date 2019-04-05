@@ -41,6 +41,29 @@ class FiredAI(BaseAttackAI, Fired_Shared):
 
         self.lastFireTime = 0.0
         self.target = None
+        
+    def getTauntChance(self):
+        return 0.5
+        
+    def getTauntPhrases(self):
+        return ["I hope you brought some marshmallows.",
+                "It's going to get rather warm around here.",
+                "This should take the chill out of the air.",
+                "I hope you're cold blooded.",
+                "Hot, hot and hotter.",
+                "You better stop, drop, and roll!",
+                "You're outta here.",
+                "How does \"well-done\" sound?",
+                "Can you say ouch?",
+                "Hope you wore sunscreen.",
+                "Do you feel a little toasty?",
+                "You're going down in flames.",
+                "You'll go out in a blaze.",
+                "You're a flash in the pan.",
+                "I think I have a bit of a flare about me.",
+                "I just sparkle, don't I?",
+                "Oh look, a crispy critter.",
+                "You shouldn't run around half baked."]
 
     def determineNextAction(self, completedAction):
         if completedAction == self.StateBegin:
