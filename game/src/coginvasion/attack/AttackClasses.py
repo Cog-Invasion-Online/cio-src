@@ -20,6 +20,7 @@ if metadata.PROCESS != 'server':
     from src.coginvasion.cog.attacks.Sacked import Sacked
     from src.coginvasion.cog.attacks.Hardball import Hardball
     from src.coginvasion.cog.attacks.MarketCrash import MarketCrash
+    from src.coginvasion.cog.attacks.Bite import Bite
 else:
     from src.coginvasion.gagsnew.WholeCreamPieAI import WholeCreamPieAI as WholeCreamPie
     from src.coginvasion.cog.attacks.ClipOnTieAI import ClipOnTieAI as ClipOnTie
@@ -39,6 +40,7 @@ else:
     from src.coginvasion.cog.attacks.SackedAI import SackedAI as Sacked
     from src.coginvasion.cog.attacks.HardballAI import HardballAI as Hardball
     from src.coginvasion.cog.attacks.MarketCrashAI import MarketCrashAI as MarketCrash
+    from src.coginvasion.cog.attacks.BiteAI import BiteAI as Bite
 
 from src.coginvasion.base.Precache import Precacheable
 
@@ -62,7 +64,8 @@ class AttackManager(Precacheable):
         ATTACK_HALF_WINDSOR         :   HalfWindsor,
         ATTACK_SACKED               :   Sacked,
         ATTACK_HARDBALL             :   Hardball,
-        ATTACK_MARKET_CRASH         :   MarketCrash
+        ATTACK_MARKET_CRASH         :   MarketCrash,
+        ATTACK_BITE                 :   Bite
     }
 
     def getAttackClassByID(self, aID):

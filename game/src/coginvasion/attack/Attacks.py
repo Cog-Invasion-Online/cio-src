@@ -75,6 +75,7 @@ ATTACK_HALF_WINDSOR             = 61
 ATTACK_SACKED                   = 62
 ATTACK_HARDBALL                 = 63
 ATTACK_MARKET_CRASH             = 64
+ATTACK_BITE                     = 65
 
 # ===============================================
 
