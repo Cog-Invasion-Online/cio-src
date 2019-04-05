@@ -137,6 +137,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                 [
                     Task_StopMoving(self),
                     Task_StopAttack(self),
+                    Task_Remember(self, MEMORY_COMBAT_WAKE),
                     Task_SetActivity(self, ACT_WAKE_ANGRY),
                     Task_AwaitActivity(self)#,
                     #Task_FaceIdeal(self)
@@ -209,6 +210,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_StopMoving(self),
                     Task_FaceTarget(self),
                     Task_EquipAttack(self),
+                    Task_SpeakAttack(self),
                     Task_FireAttack(self),
                     Task_AwaitAttack(self),
                     Task_SetPostAttackSchedule(self)
@@ -784,7 +786,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                 else:
                     self.setNPCState(STATE_ALERT)
                     return self.getSchedule()
-            if self.hasConditions(COND_NEW_TARGET):
+            if self.hasConditions(COND_NEW_TARGET) and not self.hasMemory(MEMORY_COMBAT_WAKE):
                 return self.getScheduleByName("WAKE_ANGRY")
             elif self.hasConditions(COND_LIGHT_DAMAGE) and not self.hasMemory(MEMORY_FLINCHED):
                 return self.getScheduleByName("SMALL_FLINCH")
@@ -895,6 +897,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
             # not allowed to have target anymore
             if self.target is not None:
                 self.clearTarget()
+            self.forget(MEMORY_COMBAT_WAKE)
 
         self.npcState = state
         self.idealState = state
@@ -928,7 +931,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     newSched = self.getSchedule()
                 
                 # Don't restart the same schedule
-                if newSched != self.schedule:
+                if newSched != self.schedule or self.hasConditions(COND_SCHEDULE_DONE):
                     self.changeSchedule(newSched)
 
         if self.schedule:
