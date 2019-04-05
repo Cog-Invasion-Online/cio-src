@@ -13,6 +13,7 @@ if metadata.PROCESS != 'server':
     from src.coginvasion.cog.attacks.PickPocket import PickPocket
     from src.coginvasion.cog.attacks.Fired import Fired
     from src.coginvasion.gagsnew.FireHose import FireHose
+    from src.coginvasion.cog.attacks.EvilEye import EvilEye
 else:
     from src.coginvasion.gagsnew.WholeCreamPieAI import WholeCreamPieAI as WholeCreamPie
     from src.coginvasion.cog.attacks.ClipOnTieAI import ClipOnTieAI as ClipOnTie
@@ -25,6 +26,7 @@ else:
     from src.coginvasion.cog.attacks.PickPocket_AI import PickPocket_AI as PickPocket
     from src.coginvasion.cog.attacks.FiredAI import FiredAI as Fired
     from src.coginvasion.gagsnew.FireHoseAI import FireHoseAI as FireHose
+    from src.coginvasion.cog.attacks.EvilEyeAI import EvilEyeAI as EvilEye
 
 from src.coginvasion.base.Precache import Precacheable
 
@@ -41,7 +43,8 @@ class AttackManager(Precacheable):
         ATTACK_GUMBALLBLASTER       :   GumballBlaster,
         ATTACK_PICKPOCKET           :   PickPocket,
         ATTACK_FIRED                :   Fired,
-        ATTACK_GAG_FIREHOSE         :   FireHose
+        ATTACK_GAG_FIREHOSE         :   FireHose,
+        ATTACK_EVIL_EYE             :   EvilEye
     }
 
     def getAttackClassByID(self, aID):
