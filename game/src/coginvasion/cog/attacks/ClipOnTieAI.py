@@ -25,11 +25,3 @@ class ClipOnTieAI(GenericThrowAttackAI):
             'This is going to choke you up.',
             "You'll want to dress up before you go OUT.",
             "I think I'll tie you up."]
-        
-    def calibrate(self, target):
-        self.throwOrigin = self.avatar.getPos(render) + (0, 0, self.avatar.getHeight() / 2.0)
-        self.traceOrigin = self.throwOrigin
-        self.traceVector = ((target.getPos(render) + (0, 0, target.getHeight() / 2.0)) - self.throwOrigin).normalized()
-
-    def checkCapable(self, _, squaredDistance):
-        return squaredDistance <= 20*20 and squaredDistance > 8*8

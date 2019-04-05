@@ -72,6 +72,7 @@ ATTACK_EVIL_EYE                 = 58
 ATTACK_WATER_COOLER             = 59
 ATTACK_RED_TAPE                 = 60
 ATTACK_HALF_WINDSOR             = 61
+ATTACK_SACKED                   = 62
 
 # ===============================================
 

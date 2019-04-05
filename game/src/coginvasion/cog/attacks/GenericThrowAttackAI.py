@@ -85,7 +85,9 @@ class GenericThrowAttackAI(BaseAttackAI):
             self.didThrow = False
             
     def calibrate(self, target):
-        raise NotImplementedError("You're expected to \"calibrate\" the vector and origins in a subclass!")
+        self.throwOrigin = self.avatar.getPos(render) + (0, 0, self.avatar.getHeight() / 2.0)
+        self.traceOrigin = self.throwOrigin
+        self.traceVector = ((target.getPos(render) + (0, 0, target.getHeight() / 2.0)) - self.throwOrigin).normalized()
     
     def npcUseAttack(self, target):
         if not self.canUse():
