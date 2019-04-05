@@ -422,6 +422,7 @@ class CogInvasionClientRepository(AstronClientRepository):
     def _removeShardInterestComplete(self, callback):
         self.cache.flush()
         self.doDataCache.flush()
+        
         callback()
         return
 
@@ -488,12 +489,10 @@ class CogInvasionClientRepository(AstronClientRepository):
     def deleteAllObjects(self):
         for doId in self.doId2do.keys():
             obj = self.doId2do[doId]
-            if hasattr(base, 'localAvatar'):
-                if doId != base.localAvatar.doId:
-                    if not isinstance(obj, DistributedObjectGlobal) and not hasattr(obj, 'isDistrict'):
-                        self.deleteObject(doId)
-            else:
-                self.deleteObject(doId)
+
+            if not isinstance(obj, DistributedObjectGlobal) and not hasattr(obj, 'isDistrict'):
+                if hasattr(base, 'localAvatar') and doId != base.localAvatar.doId:
+                    self.deleteObject(doId)
 
     def handleEjected(self, errorCode, reason):
         self.notify.info("OMG I WAS EJECTED!")
