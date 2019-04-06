@@ -292,12 +292,15 @@ class DistributedDoor(DistributedObject.DistributedObject):
     def findDoorNode(self, string):
         if self.doorType != self.INT_HQ:
             foundNode = self.building.find('**/door_' + str(self.getDoorIndex()) + '/**/' + string + '*;+s+i')
+            
             if foundNode.isEmpty():
                 foundNode = self.building.find('**/' + string + '*;+s+i')
+
         else:
             foundNode = render.find('**/door_' + str(self.getDoorIndex()) + '/**/' + string + '*;+s+i')
             if foundNode.isEmpty():
                 foundNode = render.find('**/' + string + '*;+s+i')
+
         return foundNode
 
     def getTriggerName(self):
@@ -493,6 +496,21 @@ class DistributedDoor(DistributedObject.DistributedObject):
             else:
                 hole = self.building.find('**/doorFrameHole%s' % side)
                 geom = self.building.find('**/doorFrameHole%sGeom' % side)
+                
+            if not hole or hole.isEmpty():
+                doorFlats = self.building.findAllMatches('**/door_fla*;+s+i')
+                
+                for doorFlat in doorFlats:
+                    if not doorFlat.isEmpty() and int(doorFlat.getName()[len(doorFlat.getName()) - 1]) == self.doorIndex:
+                        doorFlat.setColor((0.0, 0.0, 0.0, 1.0), 1)
+                        doorFlat.clearMaterial()
+                        
+                        # This is a hacky way to make sure the flat part is behind the door.
+                        # This took me like 2 hours to figure out this workaround. Don't question it
+                        # with some stupid #setPos() trash, depth write/depth test, or any of that. This works.
+                        doorFlat.setSy(0.995)
+
+                        hole = doorFlat
             
             if not hole.isEmpty():
                 if not show:
