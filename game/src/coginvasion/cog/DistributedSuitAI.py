@@ -487,7 +487,7 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
             self.track.start()
 
     def closeSuit(self):
-        print "Closing suit"
+        self.notify.debug('Closing suit')
         if self.battleZone:
             self.battleZone.deadSuit(self.doId)
         self.disable()

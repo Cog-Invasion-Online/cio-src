@@ -206,8 +206,6 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
     def setupPhysics(self):
         if not self.NeedsPhysics:
             return
-            
-        print self.__class__.__name__, "setupPhysics() hitboxData:", self.hitboxData
 
         bodyNode = BulletRigidBodyNode(self.uniqueName('avatarBodyNode'))
 
@@ -218,6 +216,8 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         bodyNode.addShape(capsule, TransformState.makePos(Point3(0, 0, zOfs)))
         bodyNode.setKinematic(True)
         bodyNode.setMass(0.0)
+        
+        self.notify.debug("setupPhysics(r{0}, h{1}) hitboxData: {2}".format(radius, height, self.hitboxData))
         
         AvatarShared.setupPhysics(self, bodyNode, True)
         

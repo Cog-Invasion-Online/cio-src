@@ -159,7 +159,6 @@ class OutdoorLightingConfig(LightingConfig):
         
         if metadata.USE_LIGHTING:
             render.setLight(self.sunNP)
-            print self.sunNP.node().getDirection()
 
             # Maybe apply PSSM shadows with this sun light?
             if metadata.USE_REAL_SHADOWS:

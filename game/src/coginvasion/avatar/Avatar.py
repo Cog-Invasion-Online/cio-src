@@ -486,7 +486,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared):
         return task.cont 
 
     def setupPhysics(self, radius = 1, height = 2):
-        print self.__class__.__name__, "setupPhysics(r{0}, h{1}) hitboxData:".format(radius, height), self.hitboxData
+        self.notify.debug("setupPhysics(r{0}, h{1}) hitboxData: {2}".format(radius, height, self.hitboxData))
 
         # When the height is passed into BulletCapsuleShape, it's
         # talking about the height only of the cylinder part.
