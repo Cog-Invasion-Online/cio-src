@@ -792,6 +792,7 @@ class LocalToon(DistributedPlayerToon):
         if self.invGui:
             self.invGui.hide()
             self.invGui.disableControls()
+        self.getFPSCam().hideViewModel()
         self.b_setEquippedAttack(-1)
 
     def resetHeadHpr(self, override = False):
