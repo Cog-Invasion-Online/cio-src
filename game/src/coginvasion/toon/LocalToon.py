@@ -762,6 +762,7 @@ class LocalToon(DistributedPlayerToon):
             self.selectGag(self.selectedGag, False)
         self.invGui.show()
         self.invGui.enableControls()
+        self.getFPSCam().showViewModel()
 
     def enableGagKeys(self):
         if not self.areGagsAllowed():

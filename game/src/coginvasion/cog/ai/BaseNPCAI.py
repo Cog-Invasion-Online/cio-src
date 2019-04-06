@@ -619,8 +619,13 @@ class BaseNPCAI(BaseCombatCharacterAI):
             self.setConditions(COND_TARGET_OCCLUDED)
         else:
             self.clearConditions(COND_TARGET_OCCLUDED)
-            
-        if self.target.entity.getHealth() <= 0:
+        
+        isDead = True
+        try:
+            isDead = self.target.entity.getHealth() <= 0
+        except: pass
+        
+        if isDead:
             self.setConditions(COND_TARGET_DEAD)
             self.clearConditions(COND_SEE_TARGET | COND_TARGET_OCCLUDED)
             return False
