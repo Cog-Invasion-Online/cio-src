@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Point3
+from panda3d.core import Point3, Vec4
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed import DistributedObject, ClockDelta, DelayDelete
@@ -18,6 +18,8 @@ from direct.interval.IntervalGlobal import Parallel, ParallelEndTogether, Sequen
 from direct.interval.IntervalGlobal import Wait, Func, LerpQuatInterval, SoundInterval
 from direct.interval.IntervalGlobal import LerpPosInterval, LerpPosHprInterval
 
+from src.coginvasion.hood.ZoneUtil import DonaldsDreamland
+
 class DistributedDoor(DistributedObject.DistributedObject):
     notify = directNotify.newCategory("DistributedDoor")
     notify.setInfo(True)
@@ -26,6 +28,8 @@ class DistributedDoor(DistributedObject.DistributedObject):
     INT_HQ = 2
     EXT_HQ = 3
     EXT_GAGSHOP = 4
+    
+    LIT_INTERIOR_COLOR = Vec4(1.0, 229.0 / 255.0, 102.0 / 255.0, 0.35)
 
     def __init__(self, cr):
         DistributedObject.DistributedObject.__init__(self, cr)
@@ -499,6 +503,13 @@ class DistributedDoor(DistributedObject.DistributedObject):
                     hole.show()
                     if not geom.isEmpty():
                         geom.show()
+                    
+                    isDDL = self.cr.playGame.hood.id == DonaldsDreamland
+                    if isDDL and self.getDoorType() in [self.EXT_GAGSHOP, self.EXT_STANDARD, self.EXT_STANDARD]:
+                        hole.setColor(self.LIT_INTERIOR_COLOR, 1)
+                        
+                        if not geom.isEmpty():
+                            geom.setColor(self.LIT_INTERIOR_COLOR, 1)
 
     def printBuildingPos(self):
         self.notify.info(self.building.getPos(render))
