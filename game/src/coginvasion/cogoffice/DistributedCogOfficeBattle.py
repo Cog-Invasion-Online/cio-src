@@ -463,10 +463,10 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
             self.deptClass = Dept.CASH
             
     def enterOff(self, ts = 0):
-        base.transitions.fadeScreen(1)
+        pass
 
     def exitOff(self):
-        base.transitions.noTransitions()
+        pass
 
     def getPoints(self, name):
         if self.currentRoom in self.UNIQUE_FLOORS:
@@ -573,19 +573,18 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         tauntSuit = self.suits.get(self.tauntSuitId)
         if tauntSuit:
             tauntSuit.headsUp(self.elevators[0].getElevatorModel())
-
+        
         base.camLens.setFov(CIGlobals.OriginalCameraFov)
         camera.reparentTo(elevator.getElevatorModel())
         camera.setPos(0, 14, 4)
         camera.setHpr(180, 0, 0)
 
-        base.transitions.noTransitions()
         base.playMusic(self.rideElevatorMusic, looping = 1)
-
+        
         self.elevatorTrack = getRideElevatorInterval()
         self.elevatorTrack.append(Func(self.__doFloorTextPulse))
         self.elevatorTrack.append(getOpenInterval(self, elevator.getLeftDoor(), elevator.getRightDoor(), self.openSfx, None))
-        self.elevatorTrack.start(ts)
+        base.transitions.getIrisInInterval(t = 1.0, finishIval = self.elevatorTrack, blendType = 'easeOut').start(ts)
 
     def __doFloorTextPulse(self):
         # worldspawn `message` property
@@ -677,7 +676,6 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         DistributedBattleZone.disable(self)
 
     def loadFloor(self, floorNum, room):
-        base.transitions.fadeScreen(1.0)
         #self.cleanupFloor()
         self.currentFloor = floorNum
         self.currentRoom = room

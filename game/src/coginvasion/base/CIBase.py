@@ -26,6 +26,7 @@ from src.coginvasion.margins.MarginManager import MarginManager
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.base.CogInvasionLoader import CogInvasionLoader
 from src.coginvasion.base.ShadowCaster import ShadowCaster
+from src.coginvasion.base.CITransitions import CITransitions
 from src.coginvasion.base import ScreenshotHandler
 from src.coginvasion.base import MusicCache
 from src.coginvasion.hood.SkyUtil import SkyUtil
@@ -232,6 +233,7 @@ class CIBase(ShowBase):
         self.disableMouse()
         self.enableParticles()
         base.camLens.setNearFar(CIGlobals.DefaultCameraNear, CIGlobals.DefaultCameraFar)
+        base.transitions = CITransitions(loader)
         base.transitions.IrisModelName = "phase_3/models/misc/iris.bam"
         base.transitions.FadeModelName = "phase_3/models/misc/fade.bam"
 

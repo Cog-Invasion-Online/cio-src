@@ -10,15 +10,11 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.gui.DirectGui import OnscreenText
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.showbase.Transitions import Transitions
 from src.coginvasion.base import FileUtility
 
 loadernotify = directNotify.newCategory("CILoadingScreen")
 
 class CILoadingScreen:
-	
-	def __init__(self):
-		self.transitions = Transitions(loader)
 		
 	def createMenu(self):
 		"""
@@ -40,8 +36,7 @@ class CILoadingScreen:
 		
 		self.bg_img = OnscreenImage(image=self.menuBg, parent=render2d)
 		"""
-		base.graphicsEngine.renderFrame()
-		base.graphicsEngine.renderFrame()
+		base.transitions.refreshGraphicsEngine()
 		self.version_lbl = OnscreenText(text=metadata.getBuildInformation(), scale=0.06,
                                         pos=(-1.32, -0.97, -0.97), align=TextNode.ALeft, fg = loader.progressScreen.Color)
 		

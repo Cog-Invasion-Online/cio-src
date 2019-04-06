@@ -3,6 +3,7 @@ from direct.interval.IntervalGlobal import Sequence, Parallel, Wait, Func
 from src.coginvasion.attack.BaseAttack import BaseAttack
 from src.coginvasion.attack.Attacks import ATTACK_HOLD_RIGHT
 from src.coginvasion.cog.SuitType import SuitType
+from src.coginvasion.base.Precache import precacheSound
 
 class GenericThrowAttack(BaseAttack):
     Hold = ATTACK_HOLD_RIGHT
@@ -31,6 +32,16 @@ class GenericThrowAttack(BaseAttack):
         self.avatar.doingActivity = False
             
         return True
+    
+    @classmethod
+    def doPrecache(cls):
+        super(GenericThrowAttack, cls).doPrecache()
+        
+        if hasattr(cls, 'ImpactSoundPath') and cls.ImpactSoundPath:
+            precacheSound(cls.ImpactSoundPath)
+        
+        if hasattr(cls, 'ThrowSoundPath') and cls.ThrowSoundPath:
+            precacheSound(cls.ThrowSoundPath)
     
     def onSetAction(self, action):
         self.model.show()

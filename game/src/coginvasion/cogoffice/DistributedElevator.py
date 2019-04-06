@@ -203,7 +203,14 @@ class DistributedElevator(DistributedObject):
             
     def makeIvals(self):
         self.openDoors = getOpenInterval(self, self.getLeftDoor(), self.getRightDoor(), self.openSfx, None, self.type)
-        self.closeDoors = Sequence(getCloseInterval(self, self.getLeftDoor(), self.getRightDoor(), self.closeSfx, None, self.type), Func(self.onDoorCloseFinish))
+        
+        closeIval = getCloseInterval(self, self.getLeftDoor(), self.getRightDoor(), self.closeSfx, None, self.type)
+        
+        def maybeDoTransition():
+            if self.localAvOnElevator:
+                base.transitions.irisOut(t = closeIval.getDuration() / 1.75, blendType = 'easeIn')
+        
+        self.closeDoors = Parallel(Func(maybeDoTransition), Sequence(closeIval, Func(self.onDoorCloseFinish)))
         self.closeDoors.setDoneEvent(self.uniqueName('closeDoorsElevatorIval'))
 
     def disable(self):
@@ -243,14 +250,12 @@ class DistributedElevator(DistributedObject):
     def onDoorCloseFinish(self):
         print "Door close finish"
         if self.localAvOnElevator:
-            base.transitions.fadeScreen(1.0)
             base.localAvatar.wrtReparentTo(render)
 
             loader = 'suitInterior'
             where = 'suitInterior'
             how = 'IDK'
             world = base.cr.playGame.getCurrentWorldName()
-
 
             if self.thebldg.fsm.getCurrentState().getName() == 'bldgComplete':
                 loader = 'townLoader'

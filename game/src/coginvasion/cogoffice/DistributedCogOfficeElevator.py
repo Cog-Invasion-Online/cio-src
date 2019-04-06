@@ -141,7 +141,6 @@ class DistributedCogOfficeElevator(DistributedElevator, DistributedEntity):
         if self.index == 1:
             if self.localAvOnElevator:
                 print "Ready for next floor."
-                base.transitions.fadeScreen(1)
                 self.thebldg.d_readyForNextFloor()
                 self.localAvOnElevator = False
             else:

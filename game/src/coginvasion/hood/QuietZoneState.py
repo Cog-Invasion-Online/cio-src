@@ -61,7 +61,7 @@ class QuietZoneState(StateData):
 
     def exit(self):
         StateData.exit(self)
-        if self._requestStatus.get('how', None) != 'doorOut':
+        if not self._requestStatus.get('how', None) in ['doorOut', 'elevatorIn', 'IDK']:
             base.transitions.noTransitions()
         del self._requestStatus
         self.fsm.request('off')

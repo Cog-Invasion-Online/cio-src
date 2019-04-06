@@ -30,7 +30,7 @@ import SuitBuildingGlobals
 
 import random
 
-RIDE_ELEVATOR_TIME = 6.5
+RIDE_ELEVATOR_TIME = 7.5
 FACE_OFF_TIME = 8.5
 VICTORY_TIME = 5.0
 
