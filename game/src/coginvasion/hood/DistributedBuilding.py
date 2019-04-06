@@ -62,6 +62,8 @@ class DistributedBuilding(DistributedObject, Precacheable):
         self.toonSettleSound = None
         self.leftDoor = None
         
+        self.setLights = False
+        
     @classmethod
     def doPrecache(cls):
         precacheModel(cls.ELEVATOR_MDL)
@@ -596,6 +598,12 @@ class DistributedBuilding(DistributedObject, Precacheable):
                     i.removeNode()
                 else:
                     i.stash()
+        
+        if self.setLights and hasattr(self.cr.playGame.hood.loader, 'lampLights'):
+            blockLamps = self.cr.playGame.hood.loader.lampLights.get(int(self.block), [])
+            for lamp in blockLamps:
+                render.clearLight(lamp)
+            self.setLights = False
 
         npc = hidden.findAllMatches(self.getSbSearchString())
         for i in xrange(npc.getNumPaths()):
@@ -605,6 +613,13 @@ class DistributedBuilding(DistributedObject, Precacheable):
 
     def setToToon(self):
         self.stopTransition()
+        
+        if not self.setLights and hasattr(self.cr.playGame.hood.loader, 'lampLights'):
+            blockLamps = self.cr.playGame.hood.loader.lampLights.get(self.block, [])
+            for lamp in blockLamps:
+                render.setLight(lamp)
+            self.setLights = True
+        
         if self.mode == 'toon':
             return
         self.mode = 'toon'

@@ -13,12 +13,11 @@ import Street
 class DLStreet(Street.Street):
 
     def enter(self, requestStatus):
-        for lamp in self.loader.lampLights:
-            render.setLight(lamp)
         Street.Street.enter(self, requestStatus)
         base.prepareScene()
 
     def exit(self):
-        for lamp in self.loader.lampLights:
-            render.clearLight(lamp)
+        for lampList in self.loader.lampLights.values():
+            for lamp in lampList:
+                render.clearLight(lamp)
         Street.Street.exit(self)

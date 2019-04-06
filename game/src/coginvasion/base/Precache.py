@@ -41,7 +41,6 @@ def precacheScene(scene, reset = True):
     for np in scene.findAllMatches("**;+s"):
         if np.isStashed():
             stashed.addPath(np)
-            print np, "is stashed"
             np.unstash()
         
     if not scene.isAncestorOf(render):

@@ -11,8 +11,6 @@ Copyright (c) CIO Team. All rights reserved.
 import TownLoader
 import DLStreet
 
-from src.coginvasion.globals import CIGlobals
-
 class DLTownLoader(TownLoader.TownLoader):
 
     def __init__(self, hood, parentFSM, doneEvent):
@@ -21,12 +19,13 @@ class DLTownLoader(TownLoader.TownLoader):
         self.streetSong = 'DL_SZ'
         self.interiorSong = 'DL_SZ_activity'
         self.townStorageDNAFile = 'phase_8/dna/storage_DL_town.pdna'
-        self.lampLights = []
+        self.lampLights = {}
 
     def unload(self):
-        for lamp in self.lampLights:
-            render.clearLight(lamp)
-            lamp.removeNode()
+        for lampList in self.lampLights.values():
+            for lamp in lampList:
+                render.clearLight(lamp)
+                lamp.removeNode()
         self.lampLights = None
 
     def load(self, zoneId):
@@ -36,9 +35,33 @@ class DLTownLoader(TownLoader.TownLoader):
         self.createHood(dnaFile, 1, False)
         
         if metadata.USE_LIGHTING:
-            for lamp in self.geom.findAllMatches("**/*light_DNARoot*"):
+            lamps = self.geom.findAllMatches("**/*light_DNARoot*")
+            for lamp in lamps:
+                blockNum = self.__extractBlockNumberFromLamp(lamp)
+                blockLamps = self.lampLights.get(blockNum, [])
+
                 lightNP = self.hood.makeLampLight(lamp)
                 lightNP.wrtReparentTo(lamp)
-                self.lampLights.append(lightNP)
+                
+                blockLamps.append(lightNP)
+                self.lampLights.update({blockNum : blockLamps})
 
         self.doFlatten()
+        
+    def __extractBlockNumberFromLamp(self, lamp):
+        node = lamp.getParent()
+        blockNum = -1
+        
+        while blockNum == -1 and not node.getParent() in [render, hidden]:
+            if node.getName()[:2] == 'tb':
+                # Great, we're looking at the toon block "container"
+                colonIndex = node.getName().find(':')
+                
+                if colonIndex != -1:
+                    blockNum = int(node.getName()[2:colonIndex])
+                    break
+            
+            node = node.getParent()
+
+        return blockNum
+        
