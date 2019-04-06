@@ -580,11 +580,13 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         camera.setHpr(180, 0, 0)
 
         base.playMusic(self.rideElevatorMusic, looping = 1)
+        base.transitions.irisIn(t = 1.5, blendType = 'easeOut')
+        base.transitions.refreshGraphicsEngine()
         
         self.elevatorTrack = getRideElevatorInterval()
         self.elevatorTrack.append(Func(self.__doFloorTextPulse))
         self.elevatorTrack.append(getOpenInterval(self, elevator.getLeftDoor(), elevator.getRightDoor(), self.openSfx, None))
-        base.transitions.getIrisInInterval(t = 1.0, finishIval = self.elevatorTrack, blendType = 'easeOut').start(ts)
+        self.elevatorTrack.start(ts)
 
     def __doFloorTextPulse(self):
         # worldspawn `message` property
