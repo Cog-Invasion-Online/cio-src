@@ -48,7 +48,14 @@ class GumballBlaster(BaseHitscan):
 
     def addPrimaryPressData(self, dg):
         BaseHitscan.addPrimaryPressData(self, dg)
-        CIGlobals.putVec3(dg, self.getVMGag().find("**/Emitter1").getPos(render))
+        
+        model = None
+        if self.isFirstPerson():
+            model = self.getVMGag()
+        else:
+            model = self.model
+        
+        CIGlobals.putVec3(dg, model.find('**/Emitter1').getPos(render))
 
     def primaryFirePress(self, data = None):
         self.firing = True
