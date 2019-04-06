@@ -232,6 +232,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
 
     def delete(self):
         taskMgr.remove(self.uniqueName('battleZoneUpdate'))
+        self.ignoreEvents()
 
         self.coverHints = None
 

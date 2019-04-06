@@ -217,6 +217,9 @@ def rayTestAllSorted(pFrom, pTo, mask = BitMask32.allOn(), world = None):
     return [result, sortedHits]
 
 def rayTestClosestNotMe(me, pFrom, pTo, mask = BitMask32.allOn(), world = None):
+    if not me:
+        return None
+
     if not world:
         world = base.physicsWorld
 

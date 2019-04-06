@@ -580,8 +580,8 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
         camera.setHpr(180, 0, 0)
 
         base.playMusic(self.rideElevatorMusic, looping = 1)
-        base.transitions.irisIn(t = 1.5, blendType = 'easeOut')
         base.transitions.refreshGraphicsEngine()
+        base.transitions.irisIn(t = 1.5, blendType = 'easeOut')
         
         self.elevatorTrack = getRideElevatorInterval()
         self.elevatorTrack.append(Func(self.__doFloorTextPulse))

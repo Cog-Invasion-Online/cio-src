@@ -78,6 +78,12 @@ class AvatarWatcher(DirectObject):
         
         assert self.air != None, "Must have a valid pointer to AI!"
         
+    def acceptEvents(self):
+        self.air.netMessenger.accept('avatarOffline', self, self.__handleUnexpectedNetCrash)
+        
+    def ignoreEvents(self):
+        self.air.netMessenger.ignore('avatarOffline', self)
+        
     def getAvatarInstance(self, avId):
         return self.avId2instance.get(avId, None)
     
@@ -118,6 +124,12 @@ class AvatarWatcher(DirectObject):
             
         self.watchingAvatarIds = []
         self.avId2instance = {}
+        
+    def __handleUnexpectedNetCrash(self, avId):
+        inst = self.avId2instance.get(avId, None)
+        if inst:
+            self.handleAvatarLeave(inst.avatar, None)
+            self.notify.info('Handled premature unexpected net crash.')
             
     def handleAvatarLeave(self, avatar, reason):
         """ This method is called whenever an avatar leaves our sphere of influence and

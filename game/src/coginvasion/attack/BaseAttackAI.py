@@ -23,10 +23,13 @@ class BaseAttackAI(BaseAttackShared):
                 setattr(self, key, sharedMetadata.__dict__.get(key))
         
     def canDamage(self, obj):
-        if self.FriendlyFire:
-            return True
-            
-        return self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND
+        canDamage = self.FriendlyFire
+        
+        try:
+            canDamage = self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND
+        except: pass
+        
+        return canDamage
 
     def equip(self):
         if not BaseAttackShared.equip(self):
@@ -45,31 +48,37 @@ class BaseAttackAI(BaseAttackShared):
         dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
                                  self.calcDamage((currProj - collider.getInitialPos()).length()),
                                  currProj, collider.getInitialPos())
-
-        for obj in base.air.avatars[self.avatar.zoneId]:
-            if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and
-                self.canDamage(obj)):
-
-                obj.takeDamage(dmgInfo)
-                break
+        
+        try:
+            # Sometimes the avatar could be deleted unexpectedly.
+            for obj in base.air.avatars[self.avatar.zoneId]:
+                if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and
+                    self.canDamage(obj)):
+    
+                    obj.takeDamage(dmgInfo)
+                    break
+        except: pass
 
         collider.requestDelete()
 
     def __handleHitSomething_trace(self, hitNode, hitPos, distance, origin, traces = 1):
         avNP = hitNode.getParent()
         
-        for obj in base.air.avatars[self.avatar.zoneId]:
-            if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and 
-            self.canDamage(obj)):
-                
-                for i in xrange(traces):
-                    dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
-                                        self.calcDamage(distance),
-                                        hitPos, origin)
+        try:
+            # Again, sometimes the avatar can be deleted unexpectedly.
+            for obj in base.air.avatars[self.avatar.zoneId]:
+                if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and 
+                self.canDamage(obj)):
                     
-                    obj.takeDamage(dmgInfo)
-
-                break
+                    for _ in xrange(traces):
+                        dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
+                                            self.calcDamage(distance),
+                                            hitPos, origin)
+                        
+                        obj.takeDamage(dmgInfo)
+    
+                    break
+        except: pass
 
     def doTraceAndDamage(self, origin, dir, dist, traces = 1):
         # Trace a line from the trace origin outward along the trace direction

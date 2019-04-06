@@ -110,7 +110,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
     def handleAvatarLeave(self, avatar, reason):
         DistributedBattleZoneAI.handleAvatarLeave(self, avatar, reason)
 
-        if len(self.watchingAvatarIds) == 0:
+        if hasattr(self, 'watchingAvatarIds') and len(self.watchingAvatarIds) == 0:
             self.resetEverything()
             self.bldg.elevator.b_setState('opening')
 
@@ -127,7 +127,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         pass
 
     def exitOff(self):
-        pass
+        self.acceptEvents()
     
     def rewardSequenceComplete(self, timestamp):
         DistributedBattleZoneAI.rewardSequenceComplete(self, timestamp)
@@ -331,6 +331,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.cleanupChairSuits()
         self.cleanupGuardSuits()
         self.resetPhysics()
+        self.ignoreEvents()
         self.unloadBSPLevel()
         self.readyAvatars = []
         for elevator in self.elevators:
