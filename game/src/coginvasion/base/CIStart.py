@@ -174,7 +174,7 @@ from src.coginvasion.base import MusicCache
 print "Precaching music..."
 MusicCache.precacheMusic()
 
-base.playMusic(CIGlobals.getThemeSong())
+base.playMusic(CIGlobals.getThemeSong(), volume = 2.0)
 il.load()
 
 base.run()
