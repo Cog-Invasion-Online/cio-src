@@ -28,6 +28,17 @@ WTBattleSOS = 3
 WTEmote = 4
 WTToontownBoardingGroup = 5
 
+Punctuation = ['?', '!', '.', ',']
+
+Greetings = [
+    'Howdy, {avatarName}!',
+    'Hi there, {avatarName}!',
+    'Hi, {avatarName}!',
+    'Hello, {avatarName}!',
+    'Hey, {avatarName}!',
+    'Hey there, {avatarName}!'
+]
+
 # Foreground, background:
 WhisperColors = {
     WTNormal: (
@@ -117,7 +128,7 @@ def filterChat(chat, animal):
             checkWord = word
             
             # Let's handle end of the word punctuation.
-            if word and len(word) > 1 and word[len(word) - 1] in ['?', '!', '.', ',']:
+            if word and len(word) > 1 and word[len(word) - 1] in Punctuation:
                 checkWord = word.replace(word[len(word) - 1], '')
             
             # Let's handle thoughts and corrections.
@@ -128,3 +139,13 @@ def filterChat(chat, animal):
                 garble = getGarble(animal)
                 chat = chat.replace(checkWord, random.choice(garble))
     return chat
+
+def mentionAvatar(context, avatarName):
+    if avatarName[len(avatarName) - 1] in Punctuation:
+        avatarName = avatarName[:-1]
+    
+    return context.format(avatarName = avatarName)
+
+def getGreeting(avatarName):
+    greeting = Greetings[random.randint(0, len(Greetings) - 1)]
+    return mentionAvatar(greeting, avatarName)

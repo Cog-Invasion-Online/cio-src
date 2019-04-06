@@ -20,7 +20,7 @@ from src.coginvasion.avatar.DistributedAvatar import DistributedAvatar
 from src.coginvasion.avatar.Avatar import Avatar
 from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.npc.NPCWalker import NPCWalkInterval, NPCLookInterval
-from src.coginvasion.globals import CIGlobals
+from src.coginvasion.globals import CIGlobals, ChatGlobals
 
 from DisneyCharGlobals import *
 
@@ -143,8 +143,8 @@ class DistributedDisneyChar(DistributedAvatar):
         elif chatType in [CHAR_GREETINGS, CHAR_COMMENTS, CHAR_GOODBYES]:
             self.currentChat = CHATTER[chatType][self.charId][chatIndex]
 
-        if '%s' in self.currentChat:
-            self.currentChat = self.currentChat % toon.getName()
+        if '{avatarName}' in self.currentChat:
+            self.currentChat = ChatGlobals.mentionAvatar(self.currentChat, toon.getName())
 
         self.neutralFSM.request('turn2target', [toon])
 

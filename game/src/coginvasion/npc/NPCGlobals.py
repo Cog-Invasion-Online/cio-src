@@ -1263,8 +1263,8 @@ NPCToonDict = {
   5119: (5609, NPCToonNames[5119], "00/08/01/09/00/09/02/09/01/00/10/06/00", 0),
 }
 
-NPCEnter_Pointless_Dialogue = ["Hello there.", "How are you, %s?", "Hi there.", "Hello, %s.",
-    "Hello there, %s.", "Hi, %s.", "Can I help you?", "You can unlock new areas in Toontown by completing Quests.",
+NPCEnter_Pointless_Dialogue = ["Hello there.", "How are you, {avatarName}?", "Hi there.", "Hello, {avatarName}.",
+    "Hello there, {avatarName}.", "Hi, {avatarName}.", "Can I help you?", "You can unlock new areas in Toontown by completing Quests.",
     "You can tell the difference between Cog departments by looking at their suit design.",
     "Play minigames at the Minigame Area to earn jellybeans.",
     "Unlock new Gag tracks by completing Quests.",
@@ -1272,27 +1272,27 @@ NPCEnter_Pointless_Dialogue = ["Hello there.", "How are you, %s?", "Hi there.", 
     "Remember to pick up the jellybeans that Cogs drop when they explode!",
     "Defeat Cogs to gain experience and unlock new Gags!",
     "Complete Quests to gain Laff points!",
-    "I'm a little busy right now, %s.",
+    "I'm a little busy right now, {avatarName}.",
     "Yes?",
     "Return completed Quests to any HQ Officer or the Toon that gave you the Quest.",
     "Get new Quests from any HQ Officer in any Toon HQ building.",
     "Throw wisely! Using a gag that is too strong for a Cog will not give you any experience towards that Gag track.",
     "You can see all of your unlocked Gags on the Inventory page in your Shticker Book.",
     "You can switch out Gags that you want to use on the Backpack page in your Shticker Book."]
-NPCEnter_MFCO_Dialogue = ["%s, you must finish your Quest before returning.",
+NPCEnter_MFCO_Dialogue = ["{avatarName}, you must finish your Quest before returning.",
     "Please finish your Quest before returning to me!",
-    "Back so soon, %s? Finish your Quest, then come back.",
-    "You're back early, %s. Please finish your Quest before visiting me again."]
+    "Back so soon, {avatarName}? Finish your Quest, then come back.",
+    "You're back early, {avatarName}. Please finish your Quest before visiting me again."]
 NPCEnter_HQ_PickQuest = "Choose a Quest."
 NPCEnter_HQ_FinishCurrentQuest = "Sorry, but you need to finish your current Quest before I can give you another one."
 
 ShopGoodbye = "See you later!"
 ShopNoMoney = "Sorry, you need more jellybeans to shop! Pickup jellybeans from fallen " + Suits + " or play minigames to get more."
-SharedChatterGreetings = ['Hi, %s!',
-    'Yoo-hoo %s, nice to see you.',
+SharedChatterGreetings = ['Hi, {avatarName}!',
+    'Yoo-hoo {avatarName}, nice to see you.',
     "I'm glad you're here today!",
-    'Well, hello there, %s.']
-SharedChatterComments = ["That's a great name, %s.",
+    'Well, hello there, {avatarName}.']
+SharedChatterComments = ["That's a great name, {avatarName}.",
     'I like your name.',
     'Watch out for the Cogs.',
     'Looks like the trolley is coming!',
@@ -1318,15 +1318,15 @@ SharedChatterComments = ["That's a great name, %s.",
     'If you press the Ctrl key, you can jump!']
 SharedChatterGoodbyes = ['I have to go now, bye!',
     "I think I'll go play a trolley game.",
-    "Well, so long. I'll be seeing you, %s!",
+    "Well, so long. I'll be seeing you, {avatarName}!",
     "I'd better hurry and get to work stopping those Cogs.",
     "It's time for me to get going.",
     'Sorry, but I have to go.',
     'Good-bye.',
-    'See you later, %s!',
+    'See you later, {avatarName}!',
     "I think I'm going to go practice tossing cupcakes.",
     "I'm going to join a group and stop some Cogs.",
-    'It was nice to see you today, %s.',
+    'It was nice to see you today, {avatarName}.',
     "I have a lot to do today. I'd better get busy."]
 
 zone2NpcDict = None

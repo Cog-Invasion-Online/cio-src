@@ -13,6 +13,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from DistributedToonAI import DistributedToonAI
 from src.coginvasion.npc import NPCGlobals
 from src.coginvasion.hood import ZoneUtil
+from src.coginvasion.globals import ChatGlobals
 
 import random
 
@@ -100,12 +101,11 @@ class DistributedNPCToonAI(DistributedToonAI):
 
             if chatArray:
                 chat = random.choice(chatArray)
-                if '%s' in chat:
-                    if (chatArray == NPCGlobals.NPCEnter_Pointless_Dialogue and
+                if '{avatarName}' in chat:
+                    chat = ChatGlobals.mentionAvatar(chat, av.getName())
+                elif '{shopName}' in chat and (chatArray == NPCGlobals.NPCEnter_Pointless_Dialogue and
                     NPCGlobals.NPCEnter_Pointless_Dialogue.index(chat) == welcomeToShopDialogueIndex):
-                        chat = chat % ZoneUtil.zone2TitleDict[self.zoneId][0]
-                    else:
-                        chat = chat % av.getName()
+                        chat = chat.format(shopName = ZoneUtil.zone2TitleDict[self.zoneId][0])
                 self.d_setChat(chat)
             return chatArray is None
 

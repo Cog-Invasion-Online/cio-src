@@ -24,6 +24,7 @@ from src.coginvasion.gui.ChatInput import CHAT_WINDOW_OPENED_EVENT, CHAT_WINDOW_
 from src.coginvasion.minigame.FirstPerson import FirstPerson
 from src.coginvasion.nametag import NametagGlobals
 from src.coginvasion.holiday.HolidayManager import HolidayType
+from src.coginvasion.globals import ChatGlobals
 from SnowEffect import SnowEffect
 import LinkTunnel
 import ZoneUtil
@@ -335,7 +336,7 @@ class Place(StateData):
             av = base.cr.doId2do.get(requestStatus['avId'])
             if av:
                 base.localAvatar.gotoNode(av)
-                base.localAvatar.b_setChat("Hi, %s." % av.getName())
+                base.localAvatar.b_setChat(ChatGlobals.getGreeting(av.getName()))
 
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.b_setAnimState('teleportIn', callback = self.teleportInDone)
