@@ -161,14 +161,17 @@ class Suit(Avatar):
                                              Func(self.loop, 'stunned')),
                                     SuitGlobals.createStunInterval(self, 0, 100))
         self.stunnedIval.start()
-
-    def exitStunned(self):
+        
+    def clearStunnedIval(self):
         if hasattr(self, 'stunnedSound'):
             self.stunnedSound.stop()
             del self.stunnedSound
         if hasattr(self, 'stunnedIval'):
-            self.stunnedIval.finish()
+            self.stunnedIval.pause()
             del self.stunnedIval
+
+    def exitStunned(self):
+        self.clearStunnedIval()
         self.stop()
         
     def getLeftHand(self):
@@ -387,6 +390,7 @@ class Suit(Avatar):
 
     def enterDie(self, ts = 0):
         self.show()
+        self.clearStunnedIval()
         self.generateCog(isLose = 1)
         self.nametag.clearChatText()
         self.deleteNameTag()
