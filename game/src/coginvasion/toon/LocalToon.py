@@ -164,7 +164,6 @@ class LocalToon(DistributedPlayerToon):
         self.disableGags()
         self.hideBookButton()
         self.hideFriendButton()
-        self.disableChatInput()
 
         self.collisionsOff()
         if self.walkControls.getCollisionsActive():
