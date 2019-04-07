@@ -128,6 +128,8 @@ class GumballBlaster(BaseHitscan):
         
         if (ballsToShow > len(gumballs)):
             ballsToShow = len(gumballs)
+            
+        self.balls.show()
         
         for i, gumball in enumerate(gumballs):
             if adjustColors:
