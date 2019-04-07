@@ -86,8 +86,6 @@ class GumballBlaster_AI(BaseHitscanAI):
                 
                 if (gumballs > self.getAmmo()):
                     gumballs = self.getAmmo()
-            
-            self.takeAmmo(-gumballs)
 
             throwVector = PhysicsUtils.getThrowVector(self.traceOrigin,
                                                       self.traceVector,
@@ -103,7 +101,7 @@ class GumballBlaster_AI(BaseHitscanAI):
                 
     def __fireBurst(self, endPos, task):
         if self.hasAmmo():
-            #self.takeAmmo(-1)
+            self.takeAmmo(-1)
             self.fireProjectile(endPos + Point3(random.uniform(-2.5, 2.5), random.uniform(-2.5, 2.5), random.uniform(-2.5, 2.5)))
             task.delayTime = random.uniform(self.MIN_BURST_DELAY, self.MAX_BURST_DELAY)
             self.gumballsToFire = self.gumballsToFire - 1
