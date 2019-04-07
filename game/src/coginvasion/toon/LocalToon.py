@@ -762,7 +762,6 @@ class LocalToon(DistributedPlayerToon):
             self.selectGag(self.selectedGag, False)
         self.invGui.show()
         self.invGui.enableControls()
-        self.getFPSCam().showViewModel()
 
     def enableGagKeys(self):
         if not self.areGagsAllowed():
@@ -793,7 +792,6 @@ class LocalToon(DistributedPlayerToon):
         if self.invGui:
             self.invGui.hide()
             self.invGui.disableControls()
-        self.getFPSCam().hideViewModel()
         self.b_setEquippedAttack(-1)
 
     def resetHeadHpr(self, override = False):
