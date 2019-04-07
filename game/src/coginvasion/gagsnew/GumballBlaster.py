@@ -1,7 +1,7 @@
 from panda3d.core import Vec3
 
 from BaseHitscan import BaseHitscan
-from src.coginvasion.attack.Attacks import ATTACK_GUMBALLBLASTER, ATTACK_HOLD_LEFT
+from src.coginvasion.attack.Attacks import ATTACK_GUMBALLBLASTER, ATTACK_HOLD_RIGHT
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.base.Precache import precacheSound
 from src.coginvasion.globals import CIGlobals
@@ -13,12 +13,16 @@ import random
 class GumballBlaster(BaseHitscan):
     ID = ATTACK_GUMBALLBLASTER
     Name = GagGlobals.GumballBlaster
-    Hold = ATTACK_HOLD_LEFT
+    Hold = ATTACK_HOLD_RIGHT
 
     ModelPath = "phase_14/models/props/gumballShooter.bam"
     ModelVMOrigin = (-0.53, 0.28, 0.52)
     ModelVMAngles = (72.68, 350.58, 351.82)
     ModelVMScale = 0.169
+    
+    ModelOrigin = (-0.57, 1.01, 0.30)
+    ModelScale = ModelVMScale
+    ModelAngles = (60.0, 0.0, 90.0)
 
     FireSoundPath = "phase_14/audio/sfx/gumball_fire.ogg"
 
@@ -49,11 +53,9 @@ class GumballBlaster(BaseHitscan):
     def addPrimaryPressData(self, dg):
         BaseHitscan.addPrimaryPressData(self, dg)
         
-        model = None
+        model = self.model
         if self.isFirstPerson():
             model = self.getVMGag()
-        else:
-            model = self.model
         
         CIGlobals.putVec3(dg, model.find('**/Emitter1').getPos(render))
 
@@ -69,14 +71,18 @@ class GumballBlaster(BaseHitscan):
     def equip(self):
         if not BaseHitscan.equip(self):
             return False
+        
+        parent = self.model
 
         if self.isFirstPerson():
+            parent = self.getVMGag()
             self.getFPSCam().setViewModelFOV(54.0)
-            balls = loader.loadModel("phase_14/models/props/gumballShooter_balls.bam")
-            balls.reparentTo(self.getVMGag())
-            for gumball in balls.findAllMatches("**/+GeomNode"):
-                gumball.setColorScale(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), 1.0, 1)
-            balls.flattenStrong()
+        
+        balls = loader.loadModel("phase_14/models/props/gumballShooter_balls.bam")
+        balls.reparentTo(parent)
+        for gumball in balls.findAllMatches("**/+GeomNode"):
+            gumball.setColorScale(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), 1.0, 1)
+        balls.flattenStrong()
 
         base.audio3d.attachSoundToObject(self.fireSound, self.avatar)
         
