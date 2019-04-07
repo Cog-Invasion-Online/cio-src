@@ -72,7 +72,7 @@ class GumballBlaster(BaseHitscan):
         BaseHitscan.primaryFireRelease(self, data)
 
     def equip(self):
-        if not self.isLocal():
+        if not self.isLocal() or not self.isFirstPerson():
             self.Hold = ATTACK_HOLD_RIGHT
 
         if not BaseHitscan.equip(self):

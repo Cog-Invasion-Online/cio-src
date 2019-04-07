@@ -84,7 +84,6 @@ class Suit(Avatar):
             State('walk', self.enterWalk, self.exitWalk),
             State('die', self.enterDie, self.exitDie),
             State('win', self.enterWin, self.exitWin),
-            State('attack', self.enterAttack, self.exitAttack),
             State('flail', self.enterFlail, self.exitFlail),
             State('flyDown', self.enterFlyDown, self.exitFlyDown),
             State('flyAway', self.enterFlyAway, self.exitFlyAway),
@@ -186,8 +185,7 @@ class Suit(Avatar):
     # BEGIN STATES
 
     def enterOff(self, ts = 0):
-        self.anim = None
-        return
+        pass
 
     def exitOff(self):
         pass
@@ -239,51 +237,6 @@ class Suit(Avatar):
         if self.timestampAnimTrack:
             self.timestampAnimTrack.pause()
             self.timestampAnimTrack = None
-
-    def enterAttack(self, attack, target, ts = 0):
-        self.show()
-
-        self.headsUp(target)
-
-        if hasattr(self, 'uniqueName'):
-            doneEvent = self.uniqueName('suitAttackDone')
-        else:
-            doneEvent = 'suitAttackDone'
-        self.suitAttackState = SuitAttacks(doneEvent, self, target)
-        self.suitAttackState.load(attack)
-        self.suitAttackState.enter(ts)
-        
-        self.healthLabel['text_fg'] = CIGlobals.NegativeTextColor
-        self.healthLabel['text'] = self.suitAttackState.currentAttack.attackName + "!"
-        self.showAndMoveHealthLabel(2.0, 1.5)
-
-        self.acceptOnce(doneEvent, self.handleSuitAttackDone)
-
-    def handleSuitAttackDone(self):
-        self.exitAttack()
-
-    def exitAttack(self):
-        if hasattr(self, 'uniqueName'):
-            self.ignore(self.uniqueName('suitAttackDone'))
-        else:
-            self.ignore('suitAttackDone')
-        if hasattr(self, 'suitAttackState'):
-            self.suitAttackState.exit()
-        if hasattr(self, 'suitAttackState'):
-            self.suitAttackState.unload()
-        if hasattr(self, 'suitAttackState'):
-            del self.suitAttackState
-
-    def interruptAttack(self):
-        if hasattr(self, 'suitAttackState'):
-            self.suitAttackState.currentAttack.interruptAttack()
-            self.clearChatbox()
-
-    def handleWeaponTouch(self):
-        if hasattr(self, 'suitAttackState'):
-            currentAttack = self.suitAttackState.currentAttack
-            if hasattr(currentAttack, 'handleWeaponTouch'):
-                currentAttack.handleWeaponTouch()
 
     def enterFlyNeutral(self, ts = 0):
         self.disableRay()
@@ -524,7 +477,7 @@ class Suit(Avatar):
         self.healthBarGlow.setColor(SuitGlobals.healthGlowColors[3], 1)
         if self.condition == 5:
             self.healthBar.setScale(1.17)
-        return Task.done
+        return task.done
 
     def __blinkGray(self, task):
         if not self.healthBar:
@@ -533,7 +486,7 @@ class Suit(Avatar):
         self.healthBarGlow.setColor(SuitGlobals.healthGlowColors[4], 1)
         if self.condition == 5:
             self.healthBar.setScale(1.0)
-        return Task.done
+        return task.done
 
     def generateHealthBar(self):
         self.removeHealthBar()

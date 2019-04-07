@@ -97,6 +97,11 @@ class GenericThrowAttackAI(BaseAttackAI):
     
                 self.didThrow = True
                 
+    def isActionComplete(self):
+        if self.action == self.StateThrow:
+            return self.didThrow
+        return BaseAttackAI.isActionComplete(self)
+                
     def __calculateThrowAfterTime(self):
         timings = {
             SuitType.A : 3.083,

@@ -17,9 +17,7 @@ from direct.interval.IntervalGlobal import Sequence, Wait, Func
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE, ACT_VICTORY_DANCE
 from src.coginvasion.avatar.AvatarTypes import *
-from src.coginvasion.attack.TakeDamageInfo import TakeDamageInfo
 from src.coginvasion.cog.ai.AIGlobal import *
-from src.coginvasion.globals import CIGlobals
 
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.GagType import GagType
@@ -31,8 +29,6 @@ import SuitGlobals
 import Variant
 import GagEffects
 
-import types
-import random
 import math
 
 class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
@@ -48,17 +44,9 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
     def __init__(self, air):
         DistributedAvatarAI.__init__(self, air)
         BaseNPCAI.__init__(self)
-        self.anim = 'neutral'
         self.track = None
-        self.currentPath = None
-        self.currentPathQueue = []
-        self.suitMgr = None
         self.suitPlan = 0
         self.variant = Variant.NORMAL
-        self.suitState = 0
-        self.startPoint = -1
-        self.endPoint = -1
-        self.stateTimestamp = 0
         self.level = 0
         self.animStateChangeEvent = SuitGlobals.animStateChangeEvent
 
@@ -158,7 +146,7 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
             plan = SuitBank.getIdFromSuit(plan)
         self.sendUpdate('setSuit', [plan, variant])
 
-    def setSuit(self, plan, variant = 0, tutorial = None):
+    def setSuit(self, plan, variant = 0):
         self.suitPlan = plan
         self.variant = Variant.getVariantById(variant)
 
@@ -212,33 +200,29 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         if not self.isDead() or self.isDead() and self.deathTimeLeft > 0:
             self.d_announceHealth(0, prevHealth - self.health)
 
-    def stopSuitInPlace(self, killBrain = True):
-        #self.stopAI()
-        #self.b_setSuitState(0, -1, -1)
-        self.clearTrack()
-
-    def restartSuit(self):
-        self.startAI()
-
     def monitorHealth(self, task):
         if self.health <= 0:
-            self.stopSuitInPlace()
-            currentAnim = SuitGlobals.getAnimByName(self.anim)
-            if currentAnim:
-                if not self.deathAnim:
-                    self.deathAnim = currentAnim
-                    self.deathTimeLeft = currentAnim.getDeathHoldTime()
-                    self.deathTaskName = self.uniqueName('__handleDeath')
-                    taskMgr.doMethodLater(1, self.__handleDeath, name = self.deathTaskName)
-                else:
-                    taskMgr.remove(self.deathTaskName)
-                    delayTime = currentAnim.getDeathHoldTime()
-                    self.deathTimeLeft = delayTime
-                    taskMgr.doMethodLater(1, self.__handleDeath, name = self.deathTaskName)
-            else:
-                self.killSuit()
+            self.killSuit()
             return task.done
         return task.cont
+
+        """
+        
+        This was legacy code that held the suit on its last animation before it died.
+        
+        currentAnim = SuitGlobals.getAnimByName(self.anim)
+        if currentAnim:
+            if not self.deathAnim:
+                self.deathAnim = currentAnim
+                self.deathTimeLeft = currentAnim.getDeathHoldTime()
+                self.deathTaskName = self.uniqueName('__handleDeath')
+                taskMgr.doMethodLater(1, self.__handleDeath, name = self.deathTaskName)
+            else:
+                taskMgr.remove(self.deathTaskName)
+                delayTime = currentAnim.getDeathHoldTime()
+                self.deathTimeLeft = delayTime
+                taskMgr.doMethodLater(1, self.__handleDeath, name = self.deathTaskName)
+        """
 
     def clearComboData(self, task):
         self.comboData = {}
@@ -356,7 +340,7 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         taskMgr.remove(self.taskName('stunTask'))
         self.stunned = False
         if restart and not self.isDead():
-            self.restartSuit()
+            self.startAI()
 
     def __stunTask(self, task):
         self.stopStun(restart = True)
@@ -411,7 +395,7 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
 
             elif gagName in GagGlobals.Stunnables and not self.stunned:
                 # We have been stunned.
-                self.stopSuitInPlace(killBrain = False)
+                self.clearTrack()
 
                 animName = self.__getAnimForGag(track, gagName)
                 animB4Stun = SuitGlobals.getAnimIdByName(animName)
@@ -427,9 +411,6 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
                 # Sound will wake me up.
                 if self.stunned and track == GagType.SOUND:
                     self.stopStun(restart = True)
-
-                # I've been hit! Take appropriate actions.
-                #self.handleToonThreat(avatar, True)
 
             # Do appropriate gag effects.
             flags = 0
@@ -449,32 +430,6 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
             return task.again
         else:
             return task.done
-
-    def __resumeThinking(self, task):
-        self.startAI()
-        return task.done
-
-    def handleAvatarDefeat(self, av):
-        if av.isDead() and hasattr(self, 'brain') and self.brain != None:
-            #self.b_setAnimState('win')
-            self.stopAI()
-            taskMgr.doMethodLater(8.5, self.__resumeThinking, self.uniqueName('Resume Thinking'))
-
-    def toonHitByWeapon(self, weaponId, avId, distance):
-        weapon = SuitAttacks.SuitAttacks.attack2attackClass[weaponId]
-        dmg = CIGlobals.calcAttackDamage(distance, weapon.baseDamage, weapon.maxDist)
-
-        # Factor in class damage modifier
-        dmg *= self.suitPlan.getCogClassAttrs().dmgMod
-
-        dmg = int(round(max(1, dmg)))
-        print "Cog did {0} damage".format(dmg)
-
-        toon = self.air.doId2do.get(avId, None)
-        if toon:
-            dmgInfo = TakeDamageInfo(self, weaponId, dmg)
-            toon.takeDamage(dmgInfo)
-            self.handleAvatarDefeat(toon)
 
     def killSuit(self):
         if self.level > 0 and self.health <= 0:
@@ -544,19 +499,9 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         if self.tacticalSeq:
             self.tacticalSeq.pause()
             self.tacticalSeq = None
-        self.lateX = None
-        self.lateY = None
-        self.anim = None
-        self.currentPath = None
-        self.currentPathQueue = None
-        self.suitState = None
         self.suitPlan = None
         self.variant = None
-        self.stateTimestamp = None
-        self.startPoint = None
-        self.endPoint = None
         self.level = None
-        self.suitMgr = None
         self.animStateChangeEvent = None
         self.deathAnim = None
         self.deathTimeLeft = None
@@ -571,19 +516,9 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
     def delete(self):
         BaseNPCAI.delete(self)
         self.DELETED = True
-        del self.lateX
-        del self.lateY
-        del self.anim
-        del self.currentPath
-        del self.currentPathQueue
-        del self.suitState
         del self.suitPlan
         del self.variant
-        del self.stateTimestamp
-        del self.startPoint
-        del self.endPoint
         del self.level
-        del self.suitMgr
         del self.animStateChangeEvent
         del self.track
         del self.deathAnim
@@ -601,16 +536,3 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
     def printPos(self, task):
         self.notify.info('%s\n%s' % (self.getPos(render), self.getHpr(render)))
         return task.cont
-
-    def setCurrentPath(self, curPath):
-        self.currentPath = curPath
-
-    def getCurrentPath(self):
-        return self.currentPath
-
-    def getPosFromCurrentPath(self):
-        # Get the position of the path we are going to.
-        return CogBattleGlobals.SuitSpawnPoints[self.getHood()][self.getCurrentPath()]
-
-    def getCurrentPathQueue(self):
-        return self.currentPathQueue

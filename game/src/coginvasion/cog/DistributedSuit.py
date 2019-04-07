@@ -8,20 +8,15 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Point3, VBase4
+from panda3d.core import VBase4
 
 from direct.distributed.DelayDeletable import DelayDeletable
 from direct.directnotify.DirectNotifyGlobal import directNotify
-from direct.interval.IntervalGlobal import SoundInterval, LerpPosInterval, ProjectileInterval, LerpHprInterval
-from direct.interval.IntervalGlobal import Sequence, LerpColorScaleInterval, Func, Wait, Parallel
+from direct.interval.IntervalGlobal import SoundInterval, LerpPosInterval
+from direct.interval.IntervalGlobal import Sequence, LerpColorScaleInterval, Func, Wait
 from direct.distributed.ClockDelta import globalClockDelta
-from direct.fsm.ClassicFSM import ClassicFSM
-from direct.fsm.State import State
 
 from src.coginvasion.avatar.DistributedAvatar import DistributedAvatar
-from src.coginvasion.globals import CIGlobals
-from src.coginvasion.npc.NPCWalker import NPCWalkInterval
-from src.coginvasion.battle import BattleGlobals
 
 from SuitBank import SuitPlan
 from Suit import Suit
@@ -30,8 +25,6 @@ import SuitBank
 import SuitGlobals
 import Voice
 import Variant
-
-import types, random
 
 class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
     notify = directNotify.newCategory('DistributedSuit')
@@ -201,7 +194,6 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
             base.taskMgr.remove(self.uniqueName('monitorLocalAvDistance'))
             #if self.isInRange:
             #    self.isInRange = False
-            self.interruptAttack()
             #self.gruntSound.play()
 
         if self.getLevel() > 12:
@@ -262,26 +254,8 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
     def stun(self, animB4Stun):
         self.animFSM.request('stunned', [animB4Stun])
 
-    def doAttack(self, attackId, avId, timestamp = None):
-        if timestamp is None:
-            ts = 0.0
-        else:
-            ts = globalClockDelta.localElapsedTime(timestamp)
-        
-        attackCls = SuitAttacks.SuitAttacks.attack2attackClass[attackId]
-        taunts = attackCls.taunts
-        attackTaunt = random.choice(taunts)
-        avatar = self.cr.doId2do.get(avId)
-
-        shouldChat = random.randint(*BattleGlobals.AttackTauntChance) == BattleGlobals.AttackTauntChance[0]
-        if shouldChat:
-            self.setChat(attackTaunt)
-
-        self.animFSM.request('attack', [attackId, avatar, 0.0])
-
     def announceGenerate(self):
         DistributedAvatar.announceGenerate(self)
-        #self.setAnimState('neutral')
 
         # Picked up by DistributedBattleZone:
         messenger.send('suitCreate', [self])

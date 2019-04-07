@@ -10,25 +10,9 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import Point3, Point2
 
-from direct.distributed.ClockDelta import globalClockDelta
 from direct.interval.IntervalGlobal import Sequence, Func
 
 from src.coginvasion.npc.NPCWalker import NPCWalkInterval
-#import SuitAttacks
-
-import random
-"""
-def attack(suit, toon, attack = None):
-    suit.b_setAnimState('neutral')
-    suit.headsUp(toon)
-    if attack is None:
-        attack = random.choice(suit.suitPlan.getAttacks())
-    timestamp = globalClockDelta.getFrameNetworkTime()
-    if suit.isDead():
-        return None
-    suit.sendUpdate('doAttack', [attack, toon.doId, timestamp])
-    return attack
-"""
 
 def getMoveIvalFromPath(suit, path, elapsedT, isClient, seqName):
     baseSpeed = 5.0

@@ -498,12 +498,6 @@ class DistributedPlayerToonAI(DistributedToonAI):
         # Instead, let's send out a messenger event so that cogs that are interested
         # in hearing our events get it so we don't hold up the AI by searching.
         messenger.send(self.getGagStartEvent(), [gagId])
-        
-        # This operation could get a bit expensive so it was removed.
-        #for suit in self.air.doFindAll("DistributedSuitAI"):
-        #    if suit.zoneId == self.zoneId:
-        #        # Let this Suit know that we've started using a gag.
-        #        suit.handleToonThreat(self, False)
                 
     def getGagStartEvent(self):
         # This event is sent out just as we start using a gag.
