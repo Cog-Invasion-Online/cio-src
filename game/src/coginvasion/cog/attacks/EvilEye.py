@@ -5,16 +5,11 @@ from direct.interval.IntervalGlobal import LerpScaleInterval, LerpHprInterval
 
 from src.coginvasion.attack.BaseAttack import BaseAttack
 from src.coginvasion.cog.attacks import EvilEyeShared
-from src.coginvasion.attack.Attacks import ATTACK_HOLD_NONE, ATTACK_EVIL_EYE
+from src.coginvasion.attack.Attacks import ATTACK_HOLD_NONE
 from src.coginvasion.base.Precache import precacheSound
 
 class EvilEye(BaseAttack):
     Hold = ATTACK_HOLD_NONE
-    
-    #Name = "Evil-Eye"
-    #ID = ATTACK_EVIL_EYE
-    #ModelPath = "phase_5/models/props/evil-eye.bam"
-    #ModelScale = 11.0
     
     HoldStart = 1.06
     HoldStop = 1.69

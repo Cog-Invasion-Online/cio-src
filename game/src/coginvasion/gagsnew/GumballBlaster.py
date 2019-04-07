@@ -1,7 +1,7 @@
 from panda3d.core import Vec3
 
 from BaseHitscan import BaseHitscan
-from src.coginvasion.attack.Attacks import ATTACK_GUMBALLBLASTER, ATTACK_HOLD_LEFT
+from src.coginvasion.attack.Attacks import ATTACK_GUMBALLBLASTER, ATTACK_HOLD_LEFT, ATTACK_HOLD_RIGHT
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.base.Precache import precacheSound, precacheModel
 from src.coginvasion.globals import CIGlobals
@@ -72,6 +72,9 @@ class GumballBlaster(BaseHitscan):
         BaseHitscan.primaryFireRelease(self, data)
 
     def equip(self):
+        if not self.isLocal():
+            self.Hold = ATTACK_HOLD_RIGHT
+
         if not BaseHitscan.equip(self):
             return False
         

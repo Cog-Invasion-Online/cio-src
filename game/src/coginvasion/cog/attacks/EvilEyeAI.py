@@ -1,17 +1,15 @@
 from src.coginvasion.cog.attacks.GenericThrowAttackAI import GenericThrowAttackAI
 from src.coginvasion.cog.attacks import EvilEyeShared
-from src.coginvasion.attack.Attacks import ATTACK_EVIL_EYE
 
 class EvilEyeAI(GenericThrowAttackAI):
-    #ID = ATTACK_EVIL_EYE
     
     def __init__(self):
-        GenericThrowAttackAI.__init__(self, EvilEyeShared)
+        GenericThrowAttackAI.__init__(self, sharedMetadata = EvilEyeShared)
         
         self.ammo = 100
         self.maxAmmo = 100
         self.baseDamage = 21.0
-            
+    
     def calibrate(self, target):
         self.throwOrigin = self.avatar.getPos(render) + self.avatar.getEyePosition()
         self.traceOrigin = self.throwOrigin

@@ -56,7 +56,6 @@ class DistributedPlayerToon(DistributedToon):
         self.teleportAccess = []
         self.lastHood = 0
         self.defaultShard = 0
-        self.dmgFadeIval = None
         self.tunnelTrack = None
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
         
@@ -466,9 +465,6 @@ class DistributedPlayerToon(DistributedToon):
             self.ignore(self.tunnelTrack.getDoneEvent())
             self.tunnelTrack.finish()
             self.tunnelTrack = None
-        if self.dmgFadeIval:
-            self.dmgFadeIval.finish()
-            self.dmgFadeIval = None
         self.role = None
         self.ghost = None
         self.puInventory = None
@@ -499,7 +495,6 @@ class DistributedPlayerToon(DistributedToon):
             self.DistributedPlayerToon_deleted = 1
             del self.takeDmgSfx
             del self.tunnelTrack
-            del self.dmgFadeIval
             del self.role
             del self.ghost
             del self.puInventory

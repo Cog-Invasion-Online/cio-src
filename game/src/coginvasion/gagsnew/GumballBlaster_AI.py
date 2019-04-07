@@ -40,7 +40,8 @@ class GumballBlaster_AI(BaseHitscanAI):
         self.baseDamage = 5
         
         self.gumballsToFire = 0
-        self.fireBurstTask = None
+        self.nextFireTime = 0.0
+        self.target = None
 
         self.fireOrigin = Point3(0)
 
@@ -62,20 +63,17 @@ class GumballBlaster_AI(BaseHitscanAI):
         if not self.canUse():
             return
 
+        self.target = target
+        self.setNextAction(self.StateFire)
+        
+    def calibrate(self, target):
         self.fireOrigin = self.avatar.getPos(render) + (0, 2.0, self.avatar.getHeight() / 2.0)
         self.traceOrigin = self.fireOrigin
         self.traceVector = ((target.getPos(render) + (0, 0, target.getHeight() / 2.0)) - self.fireOrigin).normalized()
-        self.setNextAction(self.StateFire)
-        
-    def determineNextAction(self, completedAction):
-        if completedAction == self.StateDraw:
-            return self.StateIdle
-        elif completedAction == self.StateFire:
-            return self.StateDraw
-
-        return self.StateIdle
 
     def onSetAction(self, action):
+        self.nextFireTime = 0.0
+        
         if action == self.StateFire:
             gumballs = 1
             
@@ -86,30 +84,47 @@ class GumballBlaster_AI(BaseHitscanAI):
                 
                 if (gumballs > self.getAmmo()):
                     gumballs = self.getAmmo()
-
-            throwVector = PhysicsUtils.getThrowVector(self.traceOrigin,
-                                                      self.traceVector,
-                                                      self.fireOrigin,
-                                                      self.avatar,
-                                                      self.avatar.getBattleZone().getPhysicsWorld())
-            endPos = CIGlobals.extrude(self.fireOrigin, self.FirePower, throwVector) - (0, 0, 90)
             
             self.gumballsToFire = gumballs
-            self.fireBurstTask = base.taskMgr.add(self.__fireBurst, 
-                                                      self.avatar.uniqueName('GBlaster-Burst'), 
-                                                      extraArgs = [endPos], appendTask = True)
-                
-    def __fireBurst(self, endPos, task):
-        if self.hasAmmo():
-            self.takeAmmo(-1)
-            self.fireProjectile(endPos + Point3(random.uniform(-2.5, 2.5), random.uniform(-2.5, 2.5), random.uniform(-2.5, 2.5)))
-            task.delayTime = random.uniform(self.MIN_BURST_DELAY, self.MAX_BURST_DELAY)
-            self.gumballsToFire = self.gumballsToFire - 1
+        else:
+            self.gumballsToFire = 0
+            self.target = None
             
-            if (self.gumballsToFire > 0):
-                return task.again
+    def isActionComplete(self):
+        if self.action == self.StateFire:
+            return (self.gumballsToFire == 0)
+        return BaseHitscanAI.isActionComplete(self)
+    
+    def think(self):
+        BaseHitscanAI.think(self)
+        
+        if self.action == self.StateFire:
+            
+            if self.isAIUser():
+                if CIGlobals.isNodePathOk(self.target):
+                    self.avatar.headsUp(self.target)
+                    self.calibrate(self.target)
+                else: return
+            
+            if (self.gumballsToFire > 0 and globalClock.getFrameTime() >= self.nextFireTime):
+            
+                throwVector = PhysicsUtils.getThrowVector(self.traceOrigin,
+                                                          self.traceVector,
+                                                          self.fireOrigin,
+                                                          self.avatar,
+                                                          self.avatar.getBattleZone().getPhysicsWorld())
 
-        return task.done
+                endPos = CIGlobals.extrude(self.fireOrigin, self.FirePower, throwVector) - (0, 0, 90)
+                
+                if self.isAIUser():
+                    endPos = endPos + Point3(random.uniform(-2.5, 2.5), random.uniform(-2.5, 2.5), random.uniform(-2.5, 2.5))
+                
+                self.takeAmmo(-1)
+                self.fireProjectile(endPos)
+                self.gumballsToFire = self.gumballsToFire - 1
+                
+                if (self.gumballsToFire > 0):
+                    self.nextFireTime = globalClock.getFrameTime() + random.uniform(self.MIN_BURST_DELAY, self.MAX_BURST_DELAY)
                 
     def fireProjectile(self, endPos):
         proj = GumballProjectileAI(base.air)
@@ -117,16 +132,9 @@ class GumballBlaster_AI(BaseHitscanAI):
         proj.generateWithRequired(self.avatar.zoneId)
         proj.addHitCallback(self.onProjectileHit)
         proj.addExclusion(self.avatar)
-                
-    def unEquip(self):
-        if self.fireBurstTask:
-            base.taskMgr.remove(self.fireBurstTask)
-            self.gumballsToFire = 0
-
-        return BaseHitscanAI.unEquip(self)
             
     def checkCapable(self, dot, squaredDistance):
-        return 10 <= squaredDistance <= 30*30
+        return 10*10 <= squaredDistance <= 30*30
     
     def isAIUser(self):
         isAI = False
@@ -137,3 +145,12 @@ class GumballBlaster_AI(BaseHitscanAI):
         except: pass
         
         return isAI
+    
+    def cleanup(self):
+        del self.gumballsToFire
+        del self.nextFireTime
+        if self.target:
+            self.target = None
+        del self.target
+        del self.fireOrigin
+        BaseHitscanAI.cleanup(self)
