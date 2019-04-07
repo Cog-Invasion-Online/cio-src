@@ -101,7 +101,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
             
     def reqRefillLaff(self):
         if self.__requesterAuthorized():
-            self.b_setHealth(self.getMaxHealth())
+            self.toonUp(self.getMaxHealth())
         
     def reqSetWorldAccess(self, andTP):
         if self.__requesterAuthorized():
