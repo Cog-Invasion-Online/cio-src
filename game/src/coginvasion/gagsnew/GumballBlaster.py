@@ -3,7 +3,7 @@ from panda3d.core import Vec3
 from BaseHitscan import BaseHitscan
 from src.coginvasion.attack.Attacks import ATTACK_GUMBALLBLASTER, ATTACK_HOLD_RIGHT
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.base.Precache import precacheSound
+from src.coginvasion.base.Precache import precacheSound, precacheModel
 from src.coginvasion.globals import CIGlobals
 
 from direct.interval.IntervalGlobal import ActorInterval, Func
@@ -25,6 +25,7 @@ class GumballBlaster(BaseHitscan):
     ModelAngles = (60.0, 0.0, 90.0)
 
     FireSoundPath = "phase_14/audio/sfx/gumball_fire.ogg"
+    BallsModelPath = "phase_14/models/props/gumballShooter_balls.bam"
 
     AutoFireDelay = 0.1
 
@@ -36,11 +37,13 @@ class GumballBlaster(BaseHitscan):
         self.vmSpinNode = None
 
         self.fireSound = base.audio3d.loadSfx(self.FireSoundPath)
+        self.balls = None
 
     @classmethod
     def doPrecache(cls):
         super(GumballBlaster, cls).doPrecache()
         precacheSound(cls.FireSoundPath)
+        precacheModel(cls.BallsModelPath)
 
     def think(self):
         if not self.isLocal():
@@ -78,11 +81,12 @@ class GumballBlaster(BaseHitscan):
             parent = self.getVMGag()
             self.getFPSCam().setViewModelFOV(54.0)
         
-        balls = loader.loadModel("phase_14/models/props/gumballShooter_balls.bam")
-        balls.reparentTo(parent)
-        for gumball in balls.findAllMatches("**/+GeomNode"):
-            gumball.setColorScale(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), 1.0, 1)
-        balls.flattenStrong()
+        self.balls = loader.loadModel(self.BallsModelPath)
+        self.balls.reparentTo(parent)
+        self.adjustBalls(self.ammo, self.ammo, adjustColors=True)
+
+        # I'm not sure if you can change the color after you flatten geom nodes, so this line is commented out.
+        # self.balls.flattenStrong()
 
         base.audio3d.attachSoundToObject(self.fireSound, self.avatar)
         
@@ -100,10 +104,46 @@ class GumballBlaster(BaseHitscan):
             if self.vmSpinNode:
                 self.vmSpinNode.detachNode()
                 self.vmSpinNode = None
+                
+        if self.balls:
+            self.balls.removeNode()
+            self.balls = None
 
         base.audio3d.detachSound(self.fireSound)
 
         return True
+    
+    def adjustBalls(self, lastAmmo, newAmmo, adjustColors=False):
+        if not self.balls: return
+
+        if not self.hasAmmo():
+            self.balls.hide()
+            return
+        
+        if(lastAmmo <= 0 and newAmmo > 0):
+            adjustColors = True
+        
+        self.balls.show()
+        
+        gumballs = self.balls.findAllMatches("**/+GeomNode")
+        ballsToShow = int((float(newAmmo) / float(self.getMaxAmmo())) * len(gumballs))
+        
+        if (ballsToShow > len(gumballs)):
+            ballsToShow = len(gumballs)
+        
+        for i, gumball in enumerate(gumballs):
+            if adjustColors:
+                gumball.setColorScale(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), 1.0, 1)
+
+            if (i + 1) <= ballsToShow:
+                gumball.show()
+            else:
+                gumball.hide()
+                
+    def setAmmo(self, ammo):
+        curAmmo = self.ammo
+        BaseHitscan.setAmmo(self, ammo)
+        self.adjustBalls(curAmmo, self.ammo, adjustColors=False)
 
     def cleanup(self):
         self.firing = None

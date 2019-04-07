@@ -201,6 +201,8 @@ class BaseAttackShared:
         return self.maxAmmo
 
     def setAmmo(self, ammo):
+        if (ammo > self.maxAmmo):
+            ammo = self.maxAmmo
         self.ammo = ammo
 
     def getAmmo(self):
