@@ -74,7 +74,7 @@ class DistributedSZBossToonAI(DistributedEntityAI, DistributedToonAI, BaseNPCAI)
         self.setBattleZone(dispatch)
 
         from src.coginvasion.attack.Attacks import ATTACK_GAG_WHOLECREAMPIE, ATTACK_GUMBALLBLASTER
-        self.attackIds = [ATTACK_GUMBALLBLASTER]
+        self.attackIds = [ATTACK_GUMBALLBLASTER, ATTACK_GAG_WHOLECREAMPIE]
 
         self.died = False
         

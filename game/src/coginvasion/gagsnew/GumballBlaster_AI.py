@@ -62,7 +62,7 @@ class GumballBlaster_AI(BaseHitscanAI):
         if not self.canUse():
             return
 
-        self.fireOrigin = self.avatar.getPos(render) + (0, 0.75, self.avatar.getHeight() / 2.0)
+        self.fireOrigin = self.avatar.getPos(render) + (0, 2.0, self.avatar.getHeight() / 2.0)
         self.traceOrigin = self.fireOrigin
         self.traceVector = ((target.getPos(render) + (0, 0, target.getHeight() / 2.0)) - self.fireOrigin).normalized()
         self.setNextAction(self.StateFire)
@@ -128,7 +128,7 @@ class GumballBlaster_AI(BaseHitscanAI):
         return BaseHitscanAI.unEquip(self)
             
     def checkCapable(self, dot, squaredDistance):
-        return squaredDistance >= 25*25 and squaredDistance <= 50*50
+        return 10 <= squaredDistance <= 30*30
     
     def isAIUser(self):
         isAI = False
