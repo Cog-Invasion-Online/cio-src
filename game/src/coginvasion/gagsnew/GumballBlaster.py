@@ -1,7 +1,7 @@
 from panda3d.core import Vec3
 
 from BaseHitscan import BaseHitscan
-from src.coginvasion.attack.Attacks import ATTACK_GUMBALLBLASTER, ATTACK_HOLD_RIGHT
+from src.coginvasion.attack.Attacks import ATTACK_GUMBALLBLASTER, ATTACK_HOLD_LEFT
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.base.Precache import precacheSound, precacheModel
 from src.coginvasion.globals import CIGlobals
@@ -13,7 +13,7 @@ import random
 class GumballBlaster(BaseHitscan):
     ID = ATTACK_GUMBALLBLASTER
     Name = GagGlobals.GumballBlaster
-    Hold = ATTACK_HOLD_RIGHT
+    Hold = ATTACK_HOLD_LEFT
 
     ModelPath = "phase_14/models/props/gumballShooter.bam"
     ModelVMOrigin = (-0.53, 0.28, 0.52)
@@ -93,6 +93,7 @@ class GumballBlaster(BaseHitscan):
         self.doDrawAndHold('squirt', 0, 43, 1.0, 43, 43)
     
         return True
+        
 
     def unEquip(self):
         if not BaseHitscan.unEquip(self):
@@ -115,15 +116,12 @@ class GumballBlaster(BaseHitscan):
     
     def adjustBalls(self, lastAmmo, newAmmo, adjustColors=False):
         if not self.balls: return
-
-        if not self.hasAmmo():
+        
+        if (lastAmmo <= 0 and newAmmo > 0):
+            adjustColors = True
+        elif (newAmmo == 0):
             self.balls.hide()
             return
-        
-        if(lastAmmo <= 0 and newAmmo > 0):
-            adjustColors = True
-        
-        self.balls.show()
         
         gumballs = self.balls.findAllMatches("**/+GeomNode")
         ballsToShow = int((float(newAmmo) / float(self.getMaxAmmo())) * len(gumballs))
