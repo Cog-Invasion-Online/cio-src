@@ -56,10 +56,11 @@ class GenericThrowAttackAI(BaseAttackAI):
     def think(self):
         BaseAttackAI.think(self)
         
-        try:
-            time = self.__calculateThrowAfterTime()
-        except:
-            time = self.ThrowAfterTime
+        time = self.ThrowAfterTime
+        if not time:
+            try:
+                time = self.__calculateThrowAfterTime()
+            except: pass
             
         if self.action == self.StateThrow:
         
