@@ -236,6 +236,23 @@ class CIBase(ShowBase):
         base.transitions = CITransitions(loader)
         base.transitions.IrisModelName = "phase_3/models/misc/iris.bam"
         base.transitions.FadeModelName = "phase_3/models/misc/fade.bam"
+        
+        # Let's print out the Graphics information.        
+        gsg = base.win.getGsg()
+        
+        self.notify.info('Graphics Information:\n\tVendor: {0}\n\tRenderer: {1}\n\tVersion: {2}\n\tSupports Cube Maps: {3}\n\tSupports 3D Textures: {4}\n\tSupports Computational Shaders: {5}'
+                         .format(gsg.getDriverVendor(), 
+                                 gsg.getDriverRenderer(), 
+                                 gsg.getDriverVersion(), 
+                                 str(gsg.getSupportsCubeMap()), 
+                                 str(gsg.getSupports3dTexture()), 
+                                 str(gsg.getSupportsComputeShaders())))
+        
+        if gsg.getDriverVendor() == "Intel":
+            # Apply Intel-specific fixes
+            self.notify.info('Applying Intel Graphics-specific fixes...')
+            loadPrcFileData("", "vertex-buffers #f")
+            loadPrcFileData("", "gl-version 4 3")
 
         self.accept(self.inputStore.TakeScreenshot, ScreenshotHandler.takeScreenshot)
         
