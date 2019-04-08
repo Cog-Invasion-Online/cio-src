@@ -92,7 +92,7 @@ class GumballBlaster_AI(BaseHitscanAI):
             
     def isActionComplete(self):
         if self.action == self.StateFire:
-            return (self.gumballsToFire == 0)
+            return (self.gumballsToFire == 0 and BaseHitscanAI.isActionComplete(self))
         return BaseHitscanAI.isActionComplete(self)
     
     def think(self):
