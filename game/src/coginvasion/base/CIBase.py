@@ -42,27 +42,18 @@ from src.coginvasion.phys import PhysicsUtils
 
 import __builtin__
 import random
+import os
 
 class CIBase(ShowBase):
     notify = directNotify.newCategory("CIBase")
 
     def __init__(self):
-        gsg = self.win.getGsg()
-        
-        if gsg.getDriverVendor() == "Intel":
+        doIntelOverride = os.environ.get('INTEL_OVERRIDE', '').lower() in ['1', 'true']
+        if doIntelOverride:
             # Apply Intel-specific fixes
             self.notify.info('Applying Intel Graphics-specific fixes...')
             loadPrcFileData("", "vertex-buffers #f")
-            loadPrcFileData("", "gl-version 4 3")
-            
-        # Let's print out the Graphics information.
-        self.notify.info('Graphics Information:\n\tVendor: {0}\n\tRenderer: {1}\n\tVersion: {2}\n\tSupports Cube Maps: {3}\n\tSupports 3D Textures: {4}\n\tSupports Computational Shaders: {5}'
-                         .format(gsg.getDriverVendor(), 
-                                 gsg.getDriverRenderer(), 
-                                 gsg.getDriverVersion(), 
-                                 str(gsg.getSupportsCubeMap()), 
-                                 str(gsg.getSupports3dTexture()), 
-                                 str(gsg.getSupportsComputeShaders())))
+            #loadPrcFileData("", "gl-version 4 3")
         
         if metadata.USE_RENDER_PIPELINE:
             from rpcore import RenderPipeline
@@ -74,6 +65,17 @@ class CIBase(ShowBase):
             self.loader = CogInvasionLoader(self)
             __builtin__.loader = self.loader
             self.graphicsEngine.setDefaultLoader(self.loader.loader)
+            
+        gsg = self.win.getGsg()
+            
+        # Let's print out the Graphics information.
+        self.notify.info('Graphics Information:\n\tVendor: {0}\n\tRenderer: {1}\n\tVersion: {2}\n\tSupports Cube Maps: {3}\n\tSupports 3D Textures: {4}\n\tSupports Computational Shaders: {5}'
+                         .format(gsg.getDriverVendor(), 
+                                 gsg.getDriverRenderer(), 
+                                 gsg.getDriverVersion(), 
+                                 str(gsg.getSupportsCubeMap()), 
+                                 str(gsg.getSupports3dTexture()), 
+                                 str(gsg.getSupportsComputeShaders())))
 
         # Enable shader generation on all of the main scenes
         if gsg.getSupportsBasicShaders() and gsg.getSupportsGlsl():
