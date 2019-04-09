@@ -386,7 +386,7 @@ class QuestPoster(DirectFrame):
         elif objective.cog == QuestGlobals.Any:
             # We aren't fighting a Cog in particular.
             cogIcon = QuestGlobals.getCogIcon()
-            self.handleSimpleIcon(cogIcon, cogIcon.getScale(), iconElement)
+            self.handleSimpleIcon(cogIcon, 0.13, iconElement)
         
         # We're fighting a Cog in particular.
         if not objective.cog == QuestGlobals.Any:
