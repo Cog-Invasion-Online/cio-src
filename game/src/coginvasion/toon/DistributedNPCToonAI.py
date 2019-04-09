@@ -11,6 +11,7 @@ Copyright (c) Cog Invasion Online. All rights reserved.
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from DistributedToonAI import DistributedToonAI
+from src.coginvasion.distributed.AvatarWatcher import AvatarWatcher, MONITOR_CRASHED, MONITOR_DELETION, MONITOR_ZONE_CHANGE
 from src.coginvasion.npc import NPCGlobals
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.globals import ChatGlobals
@@ -19,7 +20,7 @@ from src.coginvasion.quest.Objectives import VisitNPCObjective
 
 import random
 
-class DistributedNPCToonAI(DistributedToonAI):
+class DistributedNPCToonAI(DistributedToonAI, AvatarWatcher):
     notify = directNotify.newCategory("DistributedNPCToonAI")
     ACCOUNT = 0
     
@@ -28,6 +29,7 @@ class DistributedNPCToonAI(DistributedToonAI):
 
     def __init__(self, air, npcId, originIndex):
         DistributedToonAI.__init__(self, air)
+        AvatarWatcher.__init__(self, air, flags = MONITOR_CRASHED | MONITOR_DELETION | MONITOR_ZONE_CHANGE)
         self.originIndex = originIndex
         self.npcId = npcId
         npcData = NPCGlobals.NPCToonDict.get(npcId)
@@ -38,6 +40,8 @@ class DistributedNPCToonAI(DistributedToonAI):
         self.currentAvatar = None
         # The id of the quest where the current objective is to visit me.
         self.currentAvatarQuestOfMe = None
+        
+        self.acceptEvents()
 
     def isHQOfficer(self):
         return NPCGlobals.NPCToonDict[self.npcId][3] == NPCGlobals.NPC_HQ
@@ -49,21 +53,9 @@ class DistributedNPCToonAI(DistributedToonAI):
         return self.originIndex
 
     def delete(self):
+        self.ignoreEvents()
         self.currentAvatar = None
         DistributedToonAI.delete(self)
-
-    def startWatchingCurrentAvatar(self):
-        base.taskMgr.add(self.__watchCurrAv, self.uniqueName('watchCurrentAv'))
-
-    def __watchCurrAv(self, task):
-        if not self.air.doId2do.get(self.currentAvatar):
-            self.currentAvatar = None
-            return task.done
-        task.delayTime = 5
-        return task.again
-
-    def stopWatchingCurrentAvatar(self):
-        base.taskMgr.remove(self.uniqueName('watchCurrentAv'))
 
     def requestEnter(self):
         avId = self.air.getAvatarIdFromSender()
@@ -74,10 +66,30 @@ class DistributedNPCToonAI(DistributedToonAI):
             self.currentAvatar = avId
             av = self.air.doId2do.get(avId)
             self.currentAvatarQuestOfMe = av.questManager.getVisitQuest(self.npcId)
-            self.startWatchingCurrentAvatar()
+            self.startTrackingAvatarId(avId)
             self.sendUpdateToAvatarId(avId, 'enterAccepted', [])
             self.sendUpdate('lookAtAvatar', [avId])
             self.doQuestStuffWithThisAvatar()
+            
+    def requestExit(self, avId = None):
+        if not avId:
+            avId = self.air.getAvatarIdFromSender()
+
+        if self.currentAvatar != None:
+            if avId == self.currentAvatar:
+                self.stopTrackingAvatarId(avId)
+                self.currentAvatar = None
+                self.sendUpdateToAvatarId(avId, 'exitAccepted', [])
+            else:
+                self.notify.warning("Toon %d requested to exit, but they're not the current avatar." % avId)
+                
+    def handleAvatarLeave(self, avatar, _):
+        av = self.air.doId2do.get(self.currentAvatar)
+        if av == avatar:
+            self.stopTrackingAvatarId(self.currentAvatar)
+            self.currentAvatar = None
+        else:
+            self.notify.warning("Received update that Toon %d has left, but they're not the current avatar." % avatar.doId)
                 
     def doQuestStuffWithThisAvatar(self):
         av = self.air.doId2do.get(self.currentAvatar)
@@ -111,15 +123,3 @@ class DistributedNPCToonAI(DistributedToonAI):
                         chat = chat.format(shopName = ZoneUtil.zone2TitleDict[self.zoneId][0])
                 self.d_setChat(chat)
             return chatArray is None
-
-    def requestExit(self, avId = None):
-        if not avId:
-            avId = self.air.getAvatarIdFromSender()
-
-        if self.currentAvatar != None:
-            if avId == self.currentAvatar:
-                self.stopWatchingCurrentAvatar()
-                self.currentAvatar = None
-                self.sendUpdateToAvatarId(avId, 'exitAccepted', [])
-            else:
-                self.notify.warning("Toon %d requested to exit, but they're not the current avatar." % avId)
