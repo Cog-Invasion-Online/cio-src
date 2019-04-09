@@ -375,7 +375,6 @@ class CogInvasionClientRepository(AstronClientRepository):
         status['hoodId'] = self._switchShardParams[1]
         status['zoneId'] = self._switchShardParams[2]
         status['avId'] = self._switchShardParams[3]
-        print status['avId']
         self.gameFSM.request('waitForGameEnterResponse', [status, self._switchShardParams[0]])
 
     def exitSwitchShards(self):

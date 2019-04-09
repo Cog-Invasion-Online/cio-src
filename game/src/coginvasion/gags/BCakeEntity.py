@@ -37,7 +37,6 @@ class BCakeEntity(Actor):
             lagX = math.atan2(delta[0], delta[1]) * 100
             lagY = math.atan2(delta[2], math.sqrt((delta[0] * delta[0]) + (delta[1] * delta[1]))) * 100
             hprGoal = Vec3(0, lagY, lagX)
-            print hprGoal
             flame['lastHpr'] = CIGlobals.lerpWithRatio(hprGoal, flame['lastHpr'], 0.7)
             flame['lastPos'] = pos
             flame['joint'].setHpr(flame['lastHpr'])

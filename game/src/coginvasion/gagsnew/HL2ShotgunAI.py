@@ -71,7 +71,6 @@ class HL2ShotgunAI(BaseHitscanAI, HL2ShotgunShared):
         return self.StateIdle
         
     def onSetAction(self, action):
-        print action
         if action == self.StateFire:
             self.takeAmmo(-1)
             self.clip -= 1

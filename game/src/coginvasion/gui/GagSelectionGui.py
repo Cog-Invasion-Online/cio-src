@@ -408,7 +408,6 @@ class GagSelectionGui(DirectFrame, FSM):
             if trackId not in tracks:
                 tracks.append(trackId)
         tracks.sort()
-        print tracks
         return tracks
 
     def load(self):

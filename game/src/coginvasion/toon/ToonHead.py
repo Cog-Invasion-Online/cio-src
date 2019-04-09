@@ -198,7 +198,6 @@ class ToonHead(Actor.Actor):
             stashMuzzles("long", stashNeutral=1)
             _pupilL = self.findAllMatches('**/joint_pupilL_long')
             _pupilR = self.findAllMatches('**/joint_pupilR_long')
-        print headType
         self.pupils.append(_pupilL)
         self.pupils.append(_pupilR)
         self.fixEyes()

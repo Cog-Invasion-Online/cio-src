@@ -82,7 +82,7 @@ class DistributedNPCToonAI(DistributedToonAI):
         
         if av and self.currentAvatarQuestOfMe:
             objective = self.currentAvatarQuestOfMe[2]
-            objective.handleVisitAI()
+            objective.incrementProgress()
 
     def hasValidReasonToEnter(self, avId):
         av = self.air.doId2do.get(avId)
