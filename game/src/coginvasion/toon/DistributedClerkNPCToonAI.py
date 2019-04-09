@@ -40,7 +40,7 @@ class DistributedClerkNPCToonAI(DistributedNPCToonAI):
         else:
             self.currentAvatar = avId
             av = self.air.doId2do.get(avId)
-            self.startWatchingCurrentAvatar()
+            self.startTrackingAvatarId(avId)
             self.d_setChat("Choose what you want to buy.")
             self.sendUpdateToAvatarId(avId, 'enterAccepted', [])
             self.sendUpdate('lookAtAvatar', [avId])
