@@ -74,9 +74,9 @@ connect-method net
 time-manager-freq 60
 
 # 150-300 ms latency
-simulated-latency 1
-simulated-latency-min 0.15
-simulated-latency-max 0.3
+simulated-latency 0
+simulated-latency-min 0.125
+simulated-latency-max 0.15
 
 # Performance...
 hardware-animated-vertices #t
@@ -128,6 +128,7 @@ pssm-shadow-depth-bias 0.0001
 pssm-max-distance 200
 pssm-sun-distance 400
 pssm-normal-offset-scale 3.0
+pssm-normal-offset-uv-space 1
 pssm-softness-factor 2.0
 pssm-cache-shaders 1
 pssm-ambient-light-identifier 0.2 0.2 0.2
