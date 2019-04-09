@@ -427,7 +427,10 @@ class Place(StateData):
             del self.watchTunnelSeq
         NametagGlobals.setWantActiveNametags(False)
         NametagGlobals.makeTagsInactive()
-        base.localAvatar.setBusy(1)
+        
+        if base.localAvatar.getMyBattle():
+            base.localAvatar.setBusy(1)
+        
         base.localAvatar.disablePicking()
         self.hideFriendsStuff()
         if base.localAvatar.invGui:

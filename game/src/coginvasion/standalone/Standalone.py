@@ -73,6 +73,12 @@ base.audio3d.setDropOffFactor(0.025)
 from src.coginvasion.nametag import NametagGlobals
 from direct.gui import DirectGuiGlobals
 
+DirectGuiGlobals.setDefaultFontFunc(CIGlobals.getToonFont)
+DirectGuiGlobals.setDefaultFont(CIGlobals.getToonFont())
+DirectGuiGlobals.setDefaultRolloverSound(loader.loadSfx("phase_3/audio/sfx/GUI_rollover.ogg"))
+DirectGuiGlobals.setDefaultClickSound(loader.loadSfx("phase_3/audio/sfx/GUI_create_toon_fwd.ogg"))
+DirectGuiGlobals.setDefaultDialogGeom(loader.loadModel("phase_3/models/gui/dialog_box_gui.bam"))
+
 NametagGlobals.setMe(base.cam)
 NametagGlobals.setCardModel('phase_3/models/props/panel.bam')
 NametagGlobals.setArrowModel('phase_3/models/props/arrow.bam')

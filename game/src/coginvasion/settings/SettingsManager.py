@@ -136,7 +136,6 @@ class SettingsManager:
             loadPrcFileData("", "pssm-size {0}".format(csmSizes[shadowIdx]))
             loadPrcFileData("", "pssm-splits {0}".format(cascades[shadowIdx]))
             metadata.USE_REAL_SHADOWS = 1
-            
     
     def __updateCursor(self, cursorName):
         wp = WindowProperties()
@@ -362,4 +361,3 @@ class SettingsManager:
                 render.clearAntialias()
                 aspect2d.clearAntialias()
                 render2d.clearAntialias()
-            
