@@ -21,6 +21,9 @@ textDownColor = Vec4(0.5, 0.9, 1, 1)
 
 class FriendsList(DirectFrame):
     notify = DirectNotifyGlobal.directNotify.newCategory("FriendsList")
+    
+    GRAYED_OUT_COLOR = (128.0 / 255.0, 128.0 / 255.0, 128.0 / 255.0, 1.0)
+    NORMAL_COLOR = (1.0, 1.0, 1.0, 1.0)
 
     def __init__(self):
         DirectFrame.__init__(self, parent = base.a2dTopRight, pos = (-0.2235, 0.0, -0.457))
@@ -103,17 +106,30 @@ class FriendsList(DirectFrame):
         if fwd:
             self.fwdBtn['extraArgs'] = [fwd]
             self.fwdBtn['state'] = DGG.NORMAL
+            self.fwdBtn.setColorScale(self.NORMAL_COLOR)
         else:
             self.fwdBtn['extraArgs'] = []
             self.fwdBtn['state'] = DGG.DISABLED
+            self.fwdBtn.setColorScale(self.GRAYED_OUT_COLOR)
 
         if back:
             self.backBtn['extraArgs'] = [back]
             self.backBtn['state'] = DGG.NORMAL
+            self.backBtn.setColorScale(self.NORMAL_COLOR)
         else:
             self.backBtn['extraArgs'] = []
             self.backBtn['state'] = DGG.DISABLED
-
+            self.backBtn.setColorScale(self.GRAYED_OUT_COLOR)
+            
+        if self.frameForNames.incButton['state'] == DGG.NORMAL:
+            self.frameForNames.incButton.setColorScale(self.NORMAL_COLOR)
+        else:
+            self.frameForNames.incButton.setColorScale(self.GRAYED_OUT_COLOR)
+            
+        if self.frameForNames.decButton['state'] == DGG.NORMAL:
+            self.frameForNames.decButton.setColorScale(self.NORMAL_COLOR)
+        else:
+            self.frameForNames.decButton.setColorScale(self.GRAYED_OUT_COLOR)
 
     def handleFriendsList(self, friendIdArray, nameArray, flags, accessLevels):
         self.friends = {}
