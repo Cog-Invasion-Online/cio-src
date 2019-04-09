@@ -15,6 +15,8 @@ from src.coginvasion.npc import NPCGlobals
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.globals import ChatGlobals
 
+from src.coginvasion.quest.Objectives import VisitNPCObjective
+
 import random
 
 class DistributedNPCToonAI(DistributedToonAI):
@@ -90,10 +92,11 @@ class DistributedNPCToonAI(DistributedToonAI):
             chatArray = None
             needsToVisit = av.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId)
             lastVisited = av.questManager.wasLastObjectiveToVisit(self.npcId)
-            if (len(av.questManager.quests.values()) == 0 or (not needsToVisit and not lastVisited) or (needsToVisit and needsToVisit.isComplete())):
+            
+            if not lastVisited and not needsToVisit:
                 # This avatar entered for no reason. They either have no quests or no objective to visit me.
                 chatArray = NPCGlobals.NPCEnter_Pointless_Dialogue
-            elif lastVisited or (needsToVisit and not needsToVisit.isPreparedToVisit()):
+            elif lastVisited or (needsToVisit and (isinstance(needsToVisit, VisitNPCObjective) and not needsToVisit.isPreparedToVisit())):
                 # This avatar entered, but still has to complete the objective I gave him/her.
                 chatArray = NPCGlobals.NPCEnter_MFCO_Dialogue
 

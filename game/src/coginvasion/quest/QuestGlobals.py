@@ -141,7 +141,6 @@ def getCogBuildingIcon():
 def getCogIcon():
     geom = loader.loadModel('phase_3/models/gui/cog_icons.bam')
     geom = geom.find('**/cog')
-    #geom.setScale(IMAGE_SCALE_SMALL)
     return geom
 
 def getJBIcon():

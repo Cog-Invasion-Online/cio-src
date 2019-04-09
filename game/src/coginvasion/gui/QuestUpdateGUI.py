@@ -18,6 +18,7 @@ class QuestUpdateGUI(DirectFrame):
     SHADOW_MODIFIER = 0.45
     YELLOW_COLOR = (243.0 / 255.0, 236.0 / 255.0, 32.0 / 255.0, 1.0)
     ORANGE_COLOR = (241.0 / 255.0, 127.0 / 255.0, 43.0 / 255.0, 1.0)
+    GREEN_COLOR = (51.0 / 255.0, 204 / 255.0, 51.0 / 255.0, 1.0)
     
     def __init__(self):
         DirectFrame.__init__(self, parent = aspect2d, pos = (0.0, 0.0, 0.0))

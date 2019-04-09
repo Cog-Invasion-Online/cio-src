@@ -81,7 +81,6 @@ class SmoothWalker(GravityWalker):
             else:
                 avatarControlForwardSpeed = min((timeSinceForwardSet / self.avatarControlForwardSpeed) * 750,
                                             self.avatarControlForwardSpeed)
-                print avatarControlForwardSpeed
         else:
             if self.hasSetForwardInitTime:
                 self.hasSetForwardInitTime = False
@@ -93,7 +92,6 @@ class SmoothWalker(GravityWalker):
                 avatarControlForwardSpeed = 16.0
             elif not self.isAtZeroForward:
                 avatarControlForwardSpeed = self.avatarControlForwardSpeed - (timeSinceForwardStop * 50)
-                print avatarControlForwardSpeed
                 if avatarControlForwardSpeed <= 0.5:
                     avatarControlForwardSpeed = 0.0
                     self.isAtZeroForward = True
@@ -111,7 +109,6 @@ class SmoothWalker(GravityWalker):
             else:
                 avatarControlReverseSpeed = min((timeSinceReverseSet / self.avatarControlReverseSpeed) * 400,
                                             self.avatarControlReverseSpeed)
-                print avatarControlReverseSpeed
         else:
             if self.hasSetReverseInitTime:
                 self.hasSetReverseInitTime = False
@@ -123,7 +120,6 @@ class SmoothWalker(GravityWalker):
                 avatarControlReverseSpeed = 16.0
             elif not self.isAtZeroReverse:
                 avatarControlReverseSpeed = self.avatarControlReverseSpeed - (timeSinceReverseStop * 20)
-                print avatarControlReverseSpeed
                 if avatarControlReverseSpeed <= 0.5:
                     avatarControlReverseSpeed = 0.0
                     self.isAtZeroReverse = True
@@ -141,7 +137,6 @@ class SmoothWalker(GravityWalker):
             else:
                 avatarControlSLeftSpeed = min((timeSinceSLeftSet / self.avatarControlForwardSpeed) * 750,
                                             self.avatarControlForwardSpeed)
-                print avatarControlSLeftSpeed
         else:
             if self.hasSetSLeftInitTime:
                 self.hasSetSLeftInitTime = False
@@ -153,7 +148,6 @@ class SmoothWalker(GravityWalker):
                 avatarControlSLeftSpeed = 16.0
             elif not self.isAtZeroSLeft:
                 avatarControlSLeftSpeed = self.avatarControlForwardSpeed - (timeSinceSLeftStop * 50)
-                print avatarControlSLeftSpeed
                 if avatarControlSLeftSpeed <= 0.5:
                     avatarControlSLeftSpeed = 0.0
                     self.isAtZeroSLeft = True
@@ -171,7 +165,6 @@ class SmoothWalker(GravityWalker):
             else:
                 avatarControlSRightSpeed = min((timeSinceSRightSet / self.avatarControlForwardSpeed) * 750,
                                             self.avatarControlForwardSpeed)
-                print avatarControlSRightSpeed
         else:
             if self.hasSetSRightInitTime:
                 self.hasSetSRightInitTime = False
@@ -183,7 +176,6 @@ class SmoothWalker(GravityWalker):
                 avatarControlSRightSpeed = 16.0
             elif not self.isAtZeroSRight:
                 avatarControlSRightSpeed = self.avatarControlForwardSpeed - (timeSinceSRightStop * 50)
-                print avatarControlSRightSpeed
                 if avatarControlSRightSpeed <= 0.5:
                     avatarControlSRightSpeed = 0.0
                     self.isAtZeroSRight = True
