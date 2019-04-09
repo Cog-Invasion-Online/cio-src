@@ -16,7 +16,6 @@ class GumballProjectile(LobProjectile):
 
     def announceGenerate(self):
         LobProjectile.announceGenerate(self)
-        self.model.setLightOff()
         self.model.setBSPMaterial("phase_14/materials/models/gumball.mat", 1)
         self.color = VBase4(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), 1.0)
         self.model.setColorScale(self.color, 1)

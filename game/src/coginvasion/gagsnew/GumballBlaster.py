@@ -1,4 +1,4 @@
-from panda3d.core import Vec3
+from panda3d.core import Vec3, VBase4
 
 from BaseHitscan import BaseHitscan
 from src.coginvasion.attack.Attacks import ATTACK_GUMBALLBLASTER, ATTACK_HOLD_LEFT, ATTACK_HOLD_RIGHT
@@ -70,6 +70,12 @@ class GumballBlaster(BaseHitscan):
     def primaryFireRelease(self, data = None):
         self.firing = False
         BaseHitscan.primaryFireRelease(self, data)
+        
+    def load(self):
+        self.balls = loader.loadModel(self.BallsModelPath)
+        self.adjustBalls(self.ammo, self.ammo, adjustColors=True)
+        # I'm not sure if you can change the color after you flatten geom nodes, so this line is commented out.
+        #self.balls.flattenStrong()
 
     def equip(self):
         if not self.isLocal() or not self.isFirstPerson():
@@ -84,13 +90,7 @@ class GumballBlaster(BaseHitscan):
             parent = self.getVMGag()
             self.getFPSCam().setViewModelFOV(54.0)
         
-        self.balls = loader.loadModel(self.BallsModelPath)
         self.balls.reparentTo(parent)
-        self.adjustBalls(self.ammo, self.ammo, adjustColors=True)
-
-        # I'm not sure if you can change the color after you flatten geom nodes, so this line is commented out.
-        # self.balls.flattenStrong()
-
         base.audio3d.attachSoundToObject(self.fireSound, self.avatar)
         
         self.doDrawAndHold('squirt', 0, 43, 1.0, 43, 43)
@@ -108,10 +108,6 @@ class GumballBlaster(BaseHitscan):
             if self.vmSpinNode:
                 self.vmSpinNode.detachNode()
                 self.vmSpinNode = None
-                
-        if self.balls:
-            self.balls.removeNode()
-            self.balls = None
 
         base.audio3d.detachSound(self.fireSound)
 
@@ -134,9 +130,16 @@ class GumballBlaster(BaseHitscan):
             
         self.balls.show()
         
+        colors = [VBase4(1, 0, 0, 1),
+                  VBase4(0, 1, 0, 1),
+                  VBase4(0, 0, 1, 1),
+                  VBase4(1, 1, 0, 1),
+                  VBase4(0, 1, 1, 1),
+                  VBase4(1, 0, 1, 1)]
+        
         for i, gumball in enumerate(gumballs):
             if adjustColors:
-                gumball.setColorScale(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), 1.0, 1)
+                gumball.setColorScale(random.choice(colors), 1)
 
             if (i + 1) <= ballsToShow:
                 gumball.show()
@@ -149,6 +152,9 @@ class GumballBlaster(BaseHitscan):
         self.adjustBalls(curAmmo, self.ammo, adjustColors=False)
 
     def cleanup(self):
+        if self.balls:
+            self.balls.removeNode()
+            self.balls = None
         self.firing = None
         self.lastFire = None
         self.fireSound = None
