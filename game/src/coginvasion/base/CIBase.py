@@ -52,8 +52,7 @@ class CIBase(ShowBase):
         if doIntelOverride:
             # Apply Intel-specific fixes
             self.notify.info('Applying Intel Graphics-specific fixes...')
-            loadPrcFileData("", "vertex-buffers #f")
-            #loadPrcFileData("", "gl-version 4 3")
+            loadPrcFileData("", "load-display pandadx9")
         
         if metadata.USE_RENDER_PIPELINE:
             from rpcore import RenderPipeline
