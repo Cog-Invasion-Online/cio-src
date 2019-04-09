@@ -84,7 +84,16 @@ class Hood(StateData):
         else:
             hoodText = self.id
             if self.id != ZoneUtil.MinigameArea:
-                hoodText += '\n' + ZoneUtil.getWhereName(zoneId).upper()
+                whereName = ZoneUtil.getWhereName(zoneId)
+                
+                if whereName == 'toonInterior':
+                    whereName = 'Unknown'
+                    try:
+                        whereName = ZoneUtil.zone2TitleDict.get(zoneId)[0]
+                        return whereName.upper() + '\n' + self.id
+                    except: pass
+                
+                hoodText += '\n' + whereName.upper()
         return hoodText
 
     def spawnTitleText(self, zoneId):

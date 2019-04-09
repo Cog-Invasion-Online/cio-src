@@ -31,7 +31,7 @@ class TownLoader(StateData):
         self.hood = hood
         self.parentFSMState = parentFSMState
         StateData.__init__(self, doneEvent)
-        self.fsm = ClassicFSM('TownLoader', [State('start', self.enterStart, self.exitStart, ['quietZone', 'street']),
+        self.fsm = ClassicFSM('TownLoader', [State('start', self.enterStart, self.exitStart, ['quietZone', 'street', 'toonInterior']),
             State('street', self.enterStreet, self.exitStreet, ['quietZone']),
             State('toonInterior', self.enterToonInterior, self.exitToonInterior, ['quietZone']),
             State('suitInterior', self.enterSuitInterior, self.exitSuitInterior, ['quietZone']),
