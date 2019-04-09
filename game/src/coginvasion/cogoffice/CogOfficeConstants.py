@@ -25,8 +25,9 @@ SELL_FLOOR_1 = "sellbot_floor_1"
 SELL_FLOOR_2 = "sellbot_floor_2"
 SELL_FLOOR_3 = "sellbot_floor_3"
 LAWBOT_TOP_FLOOR = "lawbot_windows_room"
+LAW_FLOOR_1 = "lawbot_floor_1"
 
-middleFloors = [SELL_FLOOR_3, LONG_TEST, SELL_FLOOR_1, SELL_FLOOR_2]
+middleFloors = [LAW_FLOOR_1, SELL_FLOOR_3, LONG_TEST, SELL_FLOOR_1, SELL_FLOOR_2]
 
 #numFloors2roomsVisited = {
 #    1: [EXECUTIVE_FLOOR],

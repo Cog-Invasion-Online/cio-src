@@ -134,7 +134,10 @@ class FireHose(BaseHitscan, FireHoseShared):
         BaseHitscan.primaryFirePress(self, None)
 
     def __updateParticleParent(self):
-        time = globalClock.getFrameTime()
+        if not CIGlobals.isNodePathOk(self.waterStreamParent):
+            return
+            
+        time = globalClock.getFrameTime()        
         
         streamPos = self.waterStreamParent.getPos(render)
         distance = self.sprayParticleDist
