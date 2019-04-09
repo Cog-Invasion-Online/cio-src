@@ -37,7 +37,8 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.distributed.CogInvasionDoGlobals import (DO_ID_DISTRICT_NAME_MANAGER,
                                                               DO_ID_HOLIDAY_MANAGER,
                                                               DO_ID_UNIQUE_INTEREST_NOTIFIER,
-                                                              DO_ID_CLIENT_SERVICES_MANAGER)
+                                                              DO_ID_CLIENT_SERVICES_MANAGER,
+                                                              DO_ID_STATS_MANAGER)
 
 #PStatClient.connect()
 
@@ -65,6 +66,7 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         self.holidayMgr = self.generateGlobalObject(DO_ID_HOLIDAY_MANAGER, 'HolidayManager')
         self.uin = self.generateGlobalObject(DO_ID_UNIQUE_INTEREST_NOTIFIER, 'UniqueInterestNotifier')
         self.csm = self.generateGlobalObject(DO_ID_CLIENT_SERVICES_MANAGER, 'ClientServicesManager')
+        self.statsMgr = self.generateGlobalObject(DO_ID_STATS_MANAGER, 'StatsManager')
         
         # Anything that is a DistributedAvatarAI (Toons, Suits, etc).
         # This is a per-zone list of avatars.

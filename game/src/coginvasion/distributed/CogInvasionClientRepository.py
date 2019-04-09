@@ -48,6 +48,7 @@ from src.coginvasion.holiday.HolidayManager import HolidayType
 from CogInvasionDoGlobals import DO_ID_COGINVASION, DO_ID_CLIENT_SERVICES_MANAGER
 from CogInvasionDoGlobals import DO_ID_FRIENDS_MANAGER, DO_ID_HOLIDAY_MANAGER
 from CogInvasionDoGlobals import DO_ID_NAME_SERVICES_MANAGER, DO_ID_UNIQUE_INTEREST_NOTIFIER
+from CogInvasionDoGlobals import DO_ID_STATS_MANAGER
 
 from CogInvasionErrorCodes import ErrorCode2ErrorMsg, UnknownErrorMsg
 
@@ -147,6 +148,7 @@ class CogInvasionClientRepository(AstronClientRepository):
         self.csm = self.generateGlobalObject(DO_ID_CLIENT_SERVICES_MANAGER, 'ClientServicesManager')
         self.friendsManager = self.generateGlobalObject(DO_ID_FRIENDS_MANAGER, 'FriendsManager')
         self.uin = self.generateGlobalObject(DO_ID_UNIQUE_INTEREST_NOTIFIER, 'UniqueInterestNotifier')
+        self.statsManager = self.generateGlobalObject(DO_ID_STATS_MANAGER, 'StatsManager')
 
         self.pingToggle = False
         self.currentPing = None

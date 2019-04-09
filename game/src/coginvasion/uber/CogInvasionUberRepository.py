@@ -149,6 +149,8 @@ class CogInvasionUberRepository(CogInvasionInternalRepository):
                                 'NameServicesManager')
         self.uin = self.generateGlobalObject(DO_ID_UNIQUE_INTEREST_NOTIFIER,
                                 'UniqueInterestNotifier')
+        self.statsManager = self.generateGlobalObject(DO_ID_STATS_MANAGER, 
+                                'StatsManager')
         
     def lostConnection(self):
         CogInvasionInternalRepository.lostConnection(self)
