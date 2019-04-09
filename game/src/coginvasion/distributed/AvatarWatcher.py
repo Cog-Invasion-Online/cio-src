@@ -19,11 +19,19 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 DELETED = 0
 ZONE_CHANGE = 1
 DIED = 2
+CRASHED = 3
+
+# These are the bitwise flags
+MONITOR_DELETION = 1 << 0
+MONITOR_ZONE_CHANGE = 1 << 1
+MONITOR_HEALTH = 1 << 2
+MONITOR_CRASHED = 1 << 3
 
 REASON_ID_2_REASON = {
     DELETED : "Deleted",
     ZONE_CHANGE : "Changed Zones",
-    DIED : "Died"
+    DIED : "Died",
+    CRASHED : "Crashed"
 }
 
 class AvatarInstance(DirectObject):
@@ -35,9 +43,14 @@ class AvatarInstance(DirectObject):
         self.avId = av.doId
         self.watcher = watcher
         
-        self.accept(av.getDeleteEvent(), self.__onPreDelete)
-        self.accept(av.getLogicalZoneChangeEvent(), self.__onZoneChange)
-        self.accept(av.getHealthChangeEvent(), self.__onHealthChange)
+        if watcher.flags & MONITOR_DELETION != 0:
+            self.accept(av.getDeleteEvent(), self.__onPreDelete)
+            
+        if watcher.flags & MONITOR_ZONE_CHANGE != 0:
+            self.accept(av.getLogicalZoneChangeEvent(), self.__onZoneChange)
+        
+        if watcher.flags & MONITOR_HEALTH != 0:
+            self.accept(av.getHealthChangeEvent(), self.__onHealthChange)
         
     def __onHealthChange(self, newHealth, oldHealth):
         self.watcher._avatarChangeHealthEvent(self, newHealth, oldHealth)
@@ -62,7 +75,7 @@ class AvatarWatcher(DirectObject):
     
     STOP_TRACKING_WHEN_DEAD = 0
     
-    def __init__(self, air, zoneId=None):
+    def __init__(self, air, zoneId=None, flags = MONITOR_DELETION | MONITOR_ZONE_CHANGE | MONITOR_HEALTH | MONITOR_CRASHED):
         DirectObject.__init__(self)
         self.air = air
         
@@ -76,13 +89,18 @@ class AvatarWatcher(DirectObject):
         # This is the zone ID we're working in.
         self.zoneId = zoneId
         
+        # These are the flags we're working with.
+        self.flags = flags
+        
         assert self.air != None, "Must have a valid pointer to AI!"
         
     def acceptEvents(self):
-        self.air.netMessenger.accept('avatarOffline', self, self.__handleUnexpectedNetCrash)
+        if self.flags & MONITOR_CRASHED != 0:
+            self.air.netMessenger.accept('avatarOffline', self, self.__handleUnexpectedNetCrash)
         
     def ignoreEvents(self):
-        self.air.netMessenger.ignore('avatarOffline', self)
+        if self.flags & MONITOR_CRASHED != 0:
+            self.air.netMessenger.ignore('avatarOffline', self)
         
     def getAvatarInstance(self, avId):
         return self.avId2instance.get(avId, None)
@@ -128,7 +146,7 @@ class AvatarWatcher(DirectObject):
     def __handleUnexpectedNetCrash(self, avId):
         inst = self.avId2instance.get(avId, None)
         if inst:
-            self.handleAvatarLeave(inst.avatar, None)
+            self.handleAvatarLeave(inst.avatar, CRASHED)
             self.notify.info('Handled premature unexpected net crash.')
             
     def handleAvatarLeave(self, avatar, reason):
