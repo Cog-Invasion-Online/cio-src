@@ -115,42 +115,46 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         
         if not zoneId in self.avatars:
             self.avatars[zoneId] = []
-            
-        self.avatars[zoneId].append(avatar)
-        self.numAvatars += 1
-
-        if zoneId in self.battleZones:
-            print "Adding avatar to battle zone at {0}".format(zoneId)
-            avatar.battleZone = self.battleZones[zoneId]
-            avatar.addToPhysicsWorld(avatar.battleZone.physicsWorld)
         
-        if DO_SIMULATION:
-            # Setup simulation physics environment for each
-            # zone, we will pretend they are battle zones
-            if zoneId not in self.zonePhysics:
-                print "Making phys world in zone {0}".format(zoneId)
-                physicsWorld = BulletWorld()
-                # Panda units are in feet, so the gravity is 32 feet per second,
-                # not 9.8 meters per second.
-                physicsWorld.setGravity(Vec3(0, 0, -32.1740))
-            
-                # Add the static collision world (worldspawn faces)
-                PhysicsUtils.attachBulletNodes(self.bspLoader.getResult(), physicsWorld)
-            
-                # Add objects that would be dynamic
-                # (Avatar capsules, weapon collisions, door collisions, etc)
-                dynObjects = 50#random.randint(15, 50)
-                for i in xrange(dynObjects):
-                    box = BulletCapsuleShape(0.5, 1.0, ZUp)
-                    rbnode = BulletRigidBodyNode("testrb")
-                    rbnode.setKinematic(True)
-                    rbnode.setDeactivationEnabled(True)
-                    rbnode.setDeactivationTime(5.0)
-                    rbnode.addShape(box, TransformState.makePos((0, 0, 0)))
-                    NodePath(rbnode).setPos(random.uniform(-100, 100), random.uniform(-100, 100), random.uniform(-50, 50))
-                    physicsWorld.attach(rbnode)
+        if not avatar in self.avatars[zoneId]:
+            self.avatars[zoneId].append(avatar)
+            self.numAvatars += 1
+    
+            if zoneId in self.battleZones:
+                print "Adding avatar to battle zone at {0}".format(zoneId)
                 
-                self.zonePhysics[zoneId] = physicsWorld
+                if not hasattr(avatar, 'battleZone') or hasattr(avatar, 'battleZone') and avatar.battleZone != self.battleZones[zoneId]:
+                    print "Adding avatar to battle zone at {0}".format(zoneId)
+                    avatar.battleZone = self.battleZones[zoneId]
+                    avatar.addToPhysicsWorld(avatar.battleZone.physicsWorld)
+            
+            if DO_SIMULATION:
+                # Setup simulation physics environment for each
+                # zone, we will pretend they are battle zones
+                if zoneId not in self.zonePhysics:
+                    print "Making phys world in zone {0}".format(zoneId)
+                    physicsWorld = BulletWorld()
+                    # Panda units are in feet, so the gravity is 32 feet per second,
+                    # not 9.8 meters per second.
+                    physicsWorld.setGravity(Vec3(0, 0, -32.1740))
+                
+                    # Add the static collision world (worldspawn faces)
+                    PhysicsUtils.attachBulletNodes(self.bspLoader.getResult(), physicsWorld)
+                
+                    # Add objects that would be dynamic
+                    # (Avatar capsules, weapon collisions, door collisions, etc)
+                    dynObjects = 50#random.randint(15, 50)
+                    for i in xrange(dynObjects):
+                        box = BulletCapsuleShape(0.5, 1.0, ZUp)
+                        rbnode = BulletRigidBodyNode("testrb")
+                        rbnode.setKinematic(True)
+                        rbnode.setDeactivationEnabled(True)
+                        rbnode.setDeactivationTime(5.0)
+                        rbnode.addShape(box, TransformState.makePos((0, 0, 0)))
+                        NodePath(rbnode).setPos(random.uniform(-100, 100), random.uniform(-100, 100), random.uniform(-50, 50))
+                        physicsWorld.attach(rbnode)
+                    
+                    self.zonePhysics[zoneId] = physicsWorld
         
     def removeAvatar(self, avatar):
         removed = False
