@@ -567,7 +567,9 @@ class Suit(Avatar):
         fadeIn.start()
 
     def doStunEffect(self):
-        SuitGlobals.createStunInterval(self, 0, 2).start()
+        self.clearStunnedIval()
+        self.stunnedIval = SuitGlobals.createStunInterval(self, 0, 2)
+        self.stunnedIval.start()
 
     def doGagEffect(self, flags):
         GagEffects.doGagEffect(self, flags)
