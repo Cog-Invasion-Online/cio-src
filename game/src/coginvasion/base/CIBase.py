@@ -48,12 +48,6 @@ class CIBase(ShowBase):
     notify = directNotify.newCategory("CIBase")
 
     def __init__(self):
-        doIntelOverride = os.environ.get('INTEL_OVERRIDE', '').lower() in ['1', 'true']
-        if doIntelOverride:
-            # Apply Intel-specific fixes
-            self.notify.info('Applying Intel Graphics-specific fixes...')
-            loadPrcFileData("", "load-display pandadx9")
-        
         if metadata.USE_RENDER_PIPELINE:
             from rpcore import RenderPipeline
             self.pipeline = RenderPipeline()
@@ -87,6 +81,11 @@ class CIBase(ShowBase):
             # I don't know how this could be possible
             self.notify.error("GLSL shaders unsupported by graphics driver.")
             return
+        
+        # Let's disable fog on Intel graphics
+        if gsg.getDriverVendor() == "Intel":
+            render.setFogOff(1)
+            self.notify.info('Applied Intel-specific graphical fix.')
             
         self.win.setClearColorActive(True)
         self.win.setClearStencilActive(False)
