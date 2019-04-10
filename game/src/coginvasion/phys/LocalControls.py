@@ -92,6 +92,14 @@ class LocalControls(DirectObject):
         self.charUpdateTaskName = "controllerUpdateTask-" + str(id(self))
         
         self.useInvalidSound = base.loadSfx("phase_4/audio/sfx/ring_miss.ogg")
+        
+        # Debug stuff
+        self.printFootstepInfo = False
+        #base.localAvatar.accept('i', self.toggleDiagnostic)
+        
+    def toggleDiagnostic(self):
+        self.printFootstepInfo = not self.printFootstepInfo
+        print "Toggled footstep info"
 
     def enterOff(self):
         pass
@@ -382,7 +390,7 @@ class LocalControls(DirectObject):
         self.ignore(base.inputStore.SecondaryFire)
         self.ignore(base.inputStore.SecondaryFire + '-up')
         
-        if base.localAvatar.isThirdPerson() or not base.localAvatar.battleControls:
+        if base.localAvatar.isThirdPerson() or not base.localAvatar.battleControls and not chat:
             base.localAvatar.stopSmartCamera()
         
         inputState.set('forward', False, inputSource = inputState.WASD)
@@ -444,6 +452,10 @@ class LocalControls(DirectObject):
             #    default.setVolume(volume * LocalControls.FootstepVolumeMod)
             #    default.play()
             self.currFootstepSound = sound
+            
+            if self.printFootstepInfo:
+                print "Playing Footstep"
+                print "Num Footstep Tasks: " + str(len(base.taskMgr.getTasksNamed("LocalControls.handleFootsteps")))
         self.lastFootstepTime = globalClock.getFrameTime()
         
     def __handleFootsteps(self, task):
