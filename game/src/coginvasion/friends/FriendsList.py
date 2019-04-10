@@ -121,15 +121,15 @@ class FriendsList(DirectFrame):
             self.backBtn['state'] = DGG.DISABLED
             self.backBtn.setColorScale(self.GRAYED_OUT_COLOR)
             
-        if self.frameForNames.incButton['state'] == DGG.NORMAL:
-            self.frameForNames.incButton.setColorScale(self.NORMAL_COLOR)
-        else:
+        if self.frameForNames.incButton['state'] == DGG.DISABLED:
             self.frameForNames.incButton.setColorScale(self.GRAYED_OUT_COLOR)
-            
-        if self.frameForNames.decButton['state'] == DGG.NORMAL:
-            self.frameForNames.decButton.setColorScale(self.NORMAL_COLOR)
         else:
+            self.frameForNames.incButton.setColorScale(self.NORMAL_COLOR)
+            
+        if self.frameForNames.decButton['state'] == DGG.DISABLED:
             self.frameForNames.decButton.setColorScale(self.GRAYED_OUT_COLOR)
+        else:
+            self.frameForNames.decButton.setColorScale(self.NORMAL_COLOR)
 
     def handleFriendsList(self, friendIdArray, nameArray, flags, accessLevels):
         self.friends = {}
