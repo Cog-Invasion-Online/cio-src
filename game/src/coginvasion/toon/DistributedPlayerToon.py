@@ -153,8 +153,7 @@ class DistributedPlayerToon(DistributedToon):
                     startHpr = currCamHpr,
                     blendType = 'easeOut'
                 ))
-            else:
-                self.stopSmooth()
+
             self.wrtReparentTo(pivotPointNode)
             self.setPos(x, y, z)
             self.resetTorsoRotation()
@@ -204,6 +203,8 @@ class DistributedPlayerToon(DistributedToon):
                 extraArgs = []
                 
                 exitSeq.append(Func(base.transitions.irisIn))
+            else:
+                self.stopSmooth()
                 
             self.reparentTo(pivotPointNode)
             self.setHpr(linkTunnel.toonOutHpr)
@@ -226,6 +227,7 @@ class DistributedPlayerToon(DistributedToon):
             )
             if base.localAvatar.doId != self.doId:
                 seq.append(Func(self.startSmooth))
+            seq.append(Func(self.wrtReparentTo, render))
             exitSeq.append(seq)
             self.tunnelTrack.append(exitSeq)
 
