@@ -390,7 +390,7 @@ class LocalControls(DirectObject):
         self.ignore(base.inputStore.SecondaryFire)
         self.ignore(base.inputStore.SecondaryFire + '-up')
         
-        if base.localAvatar.isThirdPerson() or not base.localAvatar.battleControls and not chat:
+        if not chat and (base.localAvatar.isThirdPerson() or not base.localAvatar.battleControls):
             base.localAvatar.stopSmartCamera()
         
         inputState.set('forward', False, inputSource = inputState.WASD)
