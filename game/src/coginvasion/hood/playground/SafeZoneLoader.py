@@ -166,11 +166,14 @@ class SafeZoneLoader(StateData):
         if not petShop.isEmpty():
             fish = petShop.find('**/animated_prop_PetShopFishAnimatedProp_DNARoot')
             if fish:
+                """
                 self.animatedFish = Actor('phase_4/models/props/exteriorfish-zero.bam', {'chan' :
                     'phase_4/models/props/exteriorfish-swim.bam'})
-                self.animatedFish.reparentTo(petShop)
-                self.animatedFish.setPos(fish.getPos())
-                self.animatedFish.loop('chan')
+                #self.animatedFish.reparentTo(hidden)#petShop)
+                #self.animatedFish.setPos(fish.getPos())
+                #self.animatedFish.loop('chan')
+                #self.animatedFish.cleanup()
+                """
                 fish.removeNode()
             #petShop.removeNode()
         #del petShop
