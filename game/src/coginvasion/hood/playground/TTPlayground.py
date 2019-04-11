@@ -49,7 +49,7 @@ class TTPlayground(Playground.Playground):
     def enter(self, requestStatus):
         Playground.Playground.enter(self, requestStatus)
         for tree in self.loader.trees:
-            tree.reparentTo(render)
+            tree.reparentTo(self.loader.geom)
         self.startBirds()
 
     def startBirds(self):
