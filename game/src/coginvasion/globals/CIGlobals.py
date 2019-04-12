@@ -530,6 +530,7 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
     
     from src.coginvasion.toon import ParticleLoader
     smoke = ParticleLoader.loadParticleEffect("phase_14/etc/explosion_smoke.ptf")
+    smoke.setDepthWrite(False, 1)
     smoke.setScale(scale)
     smoke.setPos(pos)
     smoke.start(render, getParticleRender())
