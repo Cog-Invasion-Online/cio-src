@@ -99,6 +99,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     </Compile>
     <Compile Include="src\coginvasion\base\CIStart.py" />
     <Compile Include="src\coginvasion\base\CIStartGlobal.py" />
+    <Compile Include="src\coginvasion\base\CITransitions.py" />
     <Compile Include="src\coginvasion\base\CogInvasionLoader.py" />
     <Compile Include="src\coginvasion\base\CubeMapManager.py" />
     <Compile Include="src\coginvasion\base\EnterLoad.py" />
@@ -131,11 +132,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\base\WaterManager.py" />
     <Compile Include="src\coginvasion\base\WaterReflectionManager.py" />
     <Compile Include="src\coginvasion\base\__init__.py" />
-    <Compile Include="src\coginvasion\battle\ArcadeMatchData.py" />
     <Compile Include="src\coginvasion\battle\BattleGlobals.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\coginvasion\battle\DistributedArcadeBattleZoneAI.py" />
     <Compile Include="src\coginvasion\battle\DistributedBattleTrolley.py" />
     <Compile Include="src\coginvasion\battle\DistributedBattleTrolleyAI.py" />
     <Compile Include="src\coginvasion\battle\DistributedBattleZone.py" />
@@ -150,6 +149,12 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\battle\DistributedPieTurretManagerAI.py" />
     <Compile Include="src\coginvasion\battle\DistributedRestockBarrel.py" />
     <Compile Include="src\coginvasion\battle\DistributedRestockBarrelAI.py" />
+    <Compile Include="src\coginvasion\battle\GameRules.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\battle\GameRulesAI.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\coginvasion\battle\RPToonData.py" />
     <Compile Include="src\coginvasion\battle\TurretGag.py" />
     <Compile Include="src\coginvasion\battle\__init__.py" />
@@ -289,6 +294,19 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\cog\Variant.py" />
     <Compile Include="src\coginvasion\cog\Voice.py" />
     <Compile Include="src\coginvasion\cog\__init__.py" />
+    <Compile Include="src\coginvasion\deathmatch\DeathmatchRules.py" />
+    <Compile Include="src\coginvasion\deathmatch\DeathmatchRulesAI.py" />
+    <Compile Include="src\coginvasion\deathmatch\DistributedDeathmatchBattle.py" />
+    <Compile Include="src\coginvasion\deathmatch\DistributedDeathmatchBattleAI.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\deathmatch\DistributedGagPickup.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\deathmatch\DistributedGagPickupAI.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\coginvasion\deathmatch\__init__.py" />
     <Compile Include="src\coginvasion\distributed\Account.py" />
     <Compile Include="src\coginvasion\distributed\AccountAI.py" />
     <Compile Include="src\coginvasion\distributed\AccountUD.py" />
@@ -457,6 +475,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\gui\LaffOMeter.py" />
     <Compile Include="src\coginvasion\gui\MoneyGui.py" />
     <Compile Include="src\coginvasion\gui\QuestEmblemGui.py" />
+    <Compile Include="src\coginvasion\gui\QuestUpdateGUI.py" />
     <Compile Include="src\coginvasion\gui\RewardPanel.py" />
     <Compile Include="src\coginvasion\gui\ToonPanel.py" />
     <Compile Include="src\coginvasion\gui\Viewfinder.py">
@@ -873,6 +892,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\toon\DistributedNPCToonAI.py" />
     <Compile Include="src\coginvasion\toon\DistributedPlayerToon.py" />
     <Compile Include="src\coginvasion\toon\DistributedPlayerToonAI.py" />
+    <Compile Include="src\coginvasion\toon\DistributedPlayerToonShared.py" />
     <Compile Include="src\coginvasion\toon\DistributedPlayerToonUD.py" />
     <Compile Include="src\coginvasion\toon\DistributedTailorNPCToon.py" />
     <Compile Include="src\coginvasion\toon\DistributedTailorNPCToonAI.py" />
@@ -920,6 +940,9 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Compile Include="src\coginvasion\uber\LoginTokenGenerator.py" />
     <Compile Include="src\coginvasion\uber\NameServicesManager.py" />
     <Compile Include="src\coginvasion\uber\NameServicesManagerUD.py" />
+    <Compile Include="src\coginvasion\uber\StatsManager.py" />
+    <Compile Include="src\coginvasion\uber\StatsManagerAI.py" />
+    <Compile Include="src\coginvasion\uber\StatsManagerUD.py" />
     <Compile Include="src\coginvasion\uber\TopToonsManagerUD.py" />
     <Compile Include="src\coginvasion\uber\UberStart.py" />
     <Compile Include="src\coginvasion\uber\UniqueInterestNotifier.py" />
@@ -967,6 +990,7 @@ LOGIN_TOKEN=aodnasoufnasouf</Environment>
     <Folder Include="src\coginvasion\cog\ai\tasks\" />
     <Folder Include="src\coginvasion\cog\activities\" />
     <Folder Include="src\coginvasion\cog\attacks\" />
+    <Folder Include="src\coginvasion\deathmatch\" />
     <Folder Include="src\coginvasion\distributed\" />
     <Folder Include="src\coginvasion\dna\" />
     <Folder Include="src\coginvasion\friends\" />
