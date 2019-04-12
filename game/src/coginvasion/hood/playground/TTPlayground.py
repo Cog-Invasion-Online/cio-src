@@ -47,9 +47,9 @@ class TTPlayground(Playground.Playground):
         self.christmasTree = None
 
     def enter(self, requestStatus):
-        Playground.Playground.enter(self, requestStatus)
         for tree in self.loader.trees:
             tree.reparentTo(self.loader.geom)
+        Playground.Playground.enter(self, requestStatus)
         self.startBirds()
 
     def startBirds(self):
@@ -73,7 +73,7 @@ class TTPlayground(Playground.Playground):
         return task.again
 
     def exit(self):
-        for tree in self.loader.trees:
-            tree.reparentTo(hidden)
         self.stopBirds()
         Playground.Playground.exit(self)
+        for tree in self.loader.trees:
+            tree.reparentTo(hidden)

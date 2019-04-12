@@ -8,8 +8,9 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import TextureStage, Material, TransparencyAttrib, TexGenAttrib
+from panda3d.core import TextureStage, Material, TransparencyAttrib, TexGenAttrib, TransformState
 from panda3d.bsp import TextureStages
+from panda3d.bullet import BulletRigidBodyNode, BulletCapsuleShape, ZUp
 
 from direct.actor.Actor import Actor
 
@@ -52,6 +53,16 @@ class TTSafeZoneLoader(SafeZoneLoader.SafeZoneLoader):
         self.geom.find('**/ground_coll').setCollideMask(CIGlobals.FloorGroup)
         for tree in self.geom.findAllMatches('**/prop_green_tree_*_DNARoot'):
             tree.wrtReparentTo(hidden)
+            
+            # Make corrected collisions
+            tree.find("**/+BulletRigidBodyNode").removeNode()
+            capsule = BulletCapsuleShape(2.0, 6.0, ZUp)
+            bnode = BulletRigidBodyNode("tree_collision")
+            bnode.addShape(capsule, TransformState.makePos((0, 0, 3.0)))
+            bnode.setKinematic(True)
+            bnode.setIntoCollideMask(CIGlobals.WallGroup)
+            tree.attachNewNode(bnode)
+            
             self.trees.append(tree)
             newShadow = loader.loadModel("phase_3/models/props/drop_shadow.bam")
             newShadow.reparentTo(tree)
