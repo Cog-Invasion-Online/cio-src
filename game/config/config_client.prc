@@ -148,8 +148,8 @@ pstats-gpu-timing 0
 pstats-host 127.0.0.1
 pstats-view-on-server 1
 
-preload-textures 0
-preload-simple-textures 1
+preload-textures 1
+preload-simple-textures 0
 texture-compression 1
 allow-incomplete-render 1
 allow-async-bind 1
