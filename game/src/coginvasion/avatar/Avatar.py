@@ -114,12 +114,19 @@ class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared):
         self.wasDoingActivity = False
 
         return
+        
+    def stopActivity(self):
+        if self.activityTrack:
+            self.activityTrack.pause()
+        self.activityTrack = None
+        self.doingActivity = False
 
     def setActivity(self, activity, timestamp):
         AvatarShared.setActivity(self, activity, timestamp)
+        
+        self.stopActivity()
 
         if activity == -1 or activity not in self.activities:
-            self.doingActivity = False
             return
 
         self.doingActivity = True
@@ -531,6 +538,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared):
                 base.avatars.remove(self)
             if self.dmgFadeIval:
                 self.dmgFadeIval.finish()
+            self.stopActivity()
             self.dmgFadeIval = None
             self.stopMovingHealthLabel()
             self.healthLabel = None
