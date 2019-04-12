@@ -135,7 +135,10 @@ class GagWidget(DirectButton):
             self.track.gsg.update()
             
     def hasAmmo(self):
-        return base.localAvatar.backpack.getSupply(self.gagId) > 0
+        if not base.localAvatar.hasAttackId(self.gagId):
+            return False
+            
+        return base.localAvatar.getAttack(self.gagId).hasAmmo()
 
     def deselect(self):
         if self.locked:
@@ -252,7 +255,7 @@ class GagTrack(DirectFrame):
             btn = GagWidget(self, gagId)
             btn.reparentTo(self)
             btn.setX(GAG_BTN_START + (GAG_BTN_OFFSET * i))
-            if not base.localAvatar.getBackpack().hasGag(gagId) or gagName not in GagGlobals.tempAllowedGags:
+            if not base.localAvatar.hasAttackId(gagId) or gagName not in GagGlobals.tempAllowedGags:
                 btn.setLocked(True)
             else:
                 btn.setLocked(False)
@@ -291,21 +294,18 @@ class GagSelectionGui(DirectFrame, FSM):
                                      align = TextNode.ARight, pos = (0.37 * 0.7, -0.015, 0))
 
     def update(self):
-        bp = base.localAvatar.backpack
-
-        if not bp:
-            return
+        plyr = base.localAvatar
         
         gagId = -1
         if self.getCurrentOrNextState() == 'Idle':
-            gagId = bp.getCurrentGag()
+            gagId = plyr.getEquippedAttack()
         elif self.getCurrentOrNextState() == 'Select' and self.currentGag:
             gagId = self.currentGag.gagId
         
         if gagId != -1:
             self.ammoFrame.showThrough()
-            if bp.hasGag(gagId):
-                self.ammoText.setText('%i/%i' % (bp.getSupply(gagId), bp.getMaxSupply(gagId)))
+            if plyr.hasAttackId(gagId):
+                self.ammoText.setText('%i/%i' % (plyr.getAttackAmmo(gagId), plyr.getAttackMaxAmmo(gagId)))
             else:
                 self.ammoText.setText('')
             col = GagGlobals.TrackColorByName[GagGlobals.getTrackOfGag(gagId)]
@@ -456,10 +456,9 @@ class GagSelectionGui(DirectFrame, FSM):
         self.keyScrollSound.stop()
         
         if self.currentGag is not None:
-            if base.localAvatar.backpack.getCurrentGag() == self.currentGag.gagId:
+            if base.localAvatar.getEquippedAttack() == self.currentGag.gagId:
                 selected = True
-            elif (self.currentGag.hasAmmo() and
-                  not self.currentGag.locked):
+            elif (not self.currentGag.locked and self.currentGag.hasAmmo()):
                 gagId = self.currentGag.gagId
                 base.localAvatar.needsToSwitchToGag = gagId
                 if base.localAvatar.gagsTimedOut == False:

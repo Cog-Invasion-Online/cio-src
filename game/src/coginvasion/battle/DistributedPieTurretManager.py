@@ -41,8 +41,8 @@ class DistributedPieTurretManager(DistributedObject):
             del self.makeTurretBtn
         self.destroyGui()
         self.myTurret = None
-        if base.localAvatar.getMyBattle():
-            base.localAvatar.getMyBattle().setTurretManager(None)
+        if base.localAvatar.getBattleZone():
+            base.localAvatar.getBattleZone().setTurretManager(None)
         DistributedObject.disable(self)
         
     def clearTurret(self):
@@ -108,8 +108,8 @@ class DistributedPieTurretManager(DistributedObject):
         base.localAvatar.sendUpdate('usedPU', [0])
 
     def __pollMyBattle(self, task):
-        if base.localAvatar.getMyBattle():
-            base.localAvatar.getMyBattle().setTurretManager(self)
+        if base.localAvatar.getBattleZone():
+            base.localAvatar.getBattleZone().setTurretManager(self)
             if base.localAvatar.getPUInventory()[0] > 0:
                 self.createTurretButton()
             return Task.done

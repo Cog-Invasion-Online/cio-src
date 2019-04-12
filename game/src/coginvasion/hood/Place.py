@@ -297,12 +297,12 @@ class Place(StateData):
         if doNeutral:
             base.localAvatar.b_setAnimState('neutral')
         base.localAvatar.createLaffMeter()
-        if base.localAvatar.inBattle:
+        if base.localAvatar.getBattleZone():
             base.localAvatar.enableGags(andKeys = 0)
 
     def exitStop(self):
         self.__disableInteraction()
-        if base.localAvatar.inBattle:
+        if base.localAvatar.getBattleZone():
             base.localAvatar.disableGags()
 
     def load(self):
@@ -391,7 +391,7 @@ class Place(StateData):
         NametagGlobals.setWantActiveNametags(True)
         NametagGlobals.makeTagsReady()
         
-        if base.localAvatar.getMyBattle():
+        if base.localAvatar.getBattleZone():
             if self.useFirstPerson:
                 base.localAvatar.stopSmartCamera()
                 camera.setPos(base.localAvatar.smartCamera.firstPersonCamPos)
@@ -428,7 +428,7 @@ class Place(StateData):
         NametagGlobals.setWantActiveNametags(False)
         NametagGlobals.makeTagsInactive()
         
-        if base.localAvatar.getMyBattle():
+        if base.localAvatar.getBattleZone():
             base.localAvatar.setBusy(1)
         
         base.localAvatar.disablePicking()
@@ -438,7 +438,7 @@ class Place(StateData):
         if base.localAvatar.questManager:
             base.localAvatar.questManager.disableShowQuestsHotkey()
         if self.useFirstPerson:
-            if base.localAvatar.getMyBattle():
+            if base.localAvatar.getBattleZone():
                 self.firstPerson.enableMouse()
                 self.firstPerson.end()
                 self.firstPerson.reallyEnd()

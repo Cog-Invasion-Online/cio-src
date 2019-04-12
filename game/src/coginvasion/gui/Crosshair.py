@@ -29,7 +29,9 @@ class Crosshair(DirectFrame):
         self['image_hpr'] = (0, 0, dat.crosshairRot)
 
     def show(self):
-        if not self.currData or not self.currData.wantCrosshair:
+        if (not self.currData or
+        not hasattr(self.currData, 'wantCrosshair') or
+        not self.currData.wantCrosshair):
             self.hide()
             return
         DirectFrame.show(self)

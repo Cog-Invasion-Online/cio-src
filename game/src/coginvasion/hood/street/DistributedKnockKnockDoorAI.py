@@ -51,7 +51,7 @@ class DistributedKnockKnockDoorAI(DistributedObjectAI):
             roll = random.randint(0, 100)
             laughterList = KnockKnockGlobals.Laughter
             
-            if roll < chance and avatar.health < avatar.maxHealth:
+            if roll < chance and avatar.getHealth() < avatar.getMaxHealth():
                 # Let's calculate how much to heal.
                 heal = random.randint(healRange[0], healRange[1])
                 laughterList = KnockKnockGlobals.HealedLaughter

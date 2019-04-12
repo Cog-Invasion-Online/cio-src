@@ -308,7 +308,7 @@ class DistributedPieTurret(DistributedAvatar, DistributedSmoothNode):
     def setHealth(self, hp):
         DistributedAvatar.setHealth(self, hp)
         if self.isLocal():
-            base.localAvatar.getMyBattle().getTurretManager().updateTurretGui()
+            base.localAvatar.getBattleZone().getTurretManager().updateTurretGui()
 
     def die(self):
         self.fsm.requestFinalState()

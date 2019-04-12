@@ -23,7 +23,8 @@ class BaseAttackShared:
     Name = "Base Attack"
 
     Server = False
-
+    
+    StateOff = -1
     StateIdle = 0
 
     PlayRate = 1.0
@@ -39,8 +40,8 @@ class BaseAttackShared:
         self.secondaryAmmo = 1
         self.secondaryMaxAmmo = 1
 
-        self.action = self.StateIdle
-        self.lastAction = self.StateIdle
+        self.action = self.StateOff
+        self.lastAction = self.StateOff
         self.actionStartTime = 0
         self.nextAction = None
 
@@ -48,6 +49,12 @@ class BaseAttackShared:
         self.thinkTask = None
 
         self.avatar = None
+        
+    def resetActions(self):
+        self.action = self.StateOff
+        self.lastAction = self.StateOff
+        self.actionStartTime = 0
+        self.nextAction = None
 
     def canUse(self):
         if self.HasClip:
@@ -94,6 +101,14 @@ class BaseAttackShared:
         self.lastAction = self.action
         self.action = action
         if not self.isServer() and self.isFirstPerson():
+            
+            # hack
+            if not self.getViewModel().isEmpty():
+                if action == self.StateOff:
+                    self.getViewModel().hide()
+                else:
+                    self.getViewModel().show()
+                    
             self.onSetAction_firstPerson(action)
         else:
             self.onSetAction(action)
@@ -136,6 +151,8 @@ class BaseAttackShared:
             return False
 
         self.equipped = False
+        
+        self.resetActions()
 
         if self.thinkTask:
             self.thinkTask.remove()
@@ -160,9 +177,15 @@ class BaseAttackShared:
 
     def reloadRelease(self, data = None):
         pass
+        
+    def setSecondaryAmmo(self, ammo2):
+        self.secondaryAmmo = ammo2
 
     def getSecondaryAmmo(self):
         return self.secondaryAmmo
+        
+    def setSecondaryMaxAmmo(self, maxAmmo2):
+        self.secondaryMaxAmmo = maxAmmo2
 
     def getSecondaryMaxAmmo(self):
         return self.getSecondaryMaxAmmo
@@ -175,6 +198,12 @@ class BaseAttackShared:
 
     def needsReload(self):
         return self.clip == 0
+        
+    def setMaxClip(self, maxClip):
+        self.maxClip = maxClip
+        
+    def setClip(self, clip):
+        self.clip = clip
 
     def usesClip(self):
         return self.HasClip
@@ -210,15 +239,27 @@ class BaseAttackShared:
 
     def hasAmmo(self):
         return self.ammo > 0
+        
+    def getAmmoValues(self):
+        return [self.ammo, self.maxAmmo,
+                self.secondaryAmmo, self.secondaryMaxAmmo,
+                self.clip, self.maxClip]
 
     def load(self):
         """
         Loads any models/sounds/data needed by this attack.
         """
         pass
+        
+    def doCleanup(self):
+        """
+        This is separated out so that unEquip() is always called before cleanup().
+        """
+        if self.equipped:
+            self.unEquip()
+        self.cleanup()
 
     def cleanup(self):
-        self.unEquip()
         del self.ammo
         del self.maxAmmo
         del self.avatar

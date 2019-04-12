@@ -141,26 +141,37 @@ class FPSCamera(DirectObject):
         self.idealFov = self.ViewModelFOV
         
     def swapViewModel(self, newViewModel, fov = 70.0):
-        isHidden = self.viewModel.isHidden()
-        self.viewModel.reparentTo(hidden)
+        if newViewModel.isEmpty():
+            return
+            
+        isHidden = False
+        if not self.viewModel.isEmpty():
+            self.viewModel.reparentTo(hidden)
+            isHidden = self.viewModel.isHidden()
+            
         self.viewModel = newViewModel
         self.viewModel.reparentTo(self.vmRoot2)
         if isHidden:
             self.viewModel.hide()
         else:
             self.viewModel.show()
+            
         self.setViewModelFOV(fov)
         
     def restoreViewModel(self):
-        isHidden = self.viewModel.isHidden()
-        self.viewModel.reparentTo(hidden)
+        isHidden = False
+        if not self.viewModel.isEmpty():
+            self.viewModel.reparentTo(hidden)
+            isHidden = self.viewModel.isHidden()
+            
         self.viewModel = self.defaultViewModel
         self.viewModel.reparentTo(self.vmRoot2)
-        self.restoreViewModelFOV()
         if isHidden:
             self.viewModel.hide()
         else:
             self.viewModel.show()
+            
+        self.restoreViewModelFOV()
         
     def addViewPunch(self, punch):
         self.punchAngleVel += punch * 20

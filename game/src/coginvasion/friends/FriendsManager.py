@@ -109,7 +109,7 @@ class FriendsManager(DistributedObjectGlobal):
 
     def d_myAvatarStatus(self, avatarId):
         busy = base.localAvatar.getBusy()
-        if base.localAvatar.getMyBattle():
+        if base.localAvatar.getBattleZone():
             busy = 1
         self.sendUpdate('myAvatarStatus', [avatarId, busy])
 

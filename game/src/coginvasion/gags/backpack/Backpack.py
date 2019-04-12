@@ -11,31 +11,16 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from src.coginvasion.gags.backpack.BackpackBase import BackpackBase
-from src.coginvasion.gags.GagManager import GagManager
-from src.coginvasion.gags.GagState import GagState
 
 from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
 
 class Backpack(BackpackBase):
 
-    def __init__(self, avatar):
-        BackpackBase.__init__(self, avatar)
-
-        # The GUI that shows the avatar's current loadout.
-        # This is used for calling update() when we changed
-        # the ammo of a gag.
-        self.loadoutGUI = None
-
-        # This is just used to create gag instances when
-        # necessary.
-        self.gagManager = GagManager()
-
     # Sets the current gag that's being used.
     # Requires a gag id or -1 to remove a current gag.
     def setCurrentGag(self, gagId = -1):
-        if self.loadoutGUI:
-            self.loadoutGUI.update()
+        pass
 
     # Returns the current gag.
     def getCurrentGag(self):
@@ -56,8 +41,6 @@ class Backpack(BackpackBase):
     # max supply was updated.
     def setMaxSupply(self, gagId, maxSupply):
         updatedMaxSupply = BackpackBase.setMaxSupply(self, gagId, maxSupply)
-        if updatedMaxSupply and self.loadoutGUI:
-            self.loadoutGUI.update()
         return updatedMaxSupply
 
     # When a gagId is specified, returns the max supply of a gag in the backpack or -1.
@@ -72,8 +55,6 @@ class Backpack(BackpackBase):
     # supply was updated.
     def setSupply(self, gagId, supply):
         updatedSupply = BackpackBase.setSupply(self, gagId, supply)
-        if updatedSupply and self.loadoutGUI:
-            self.loadoutGUI.update()
         return updatedSupply
 
     # When a gagId is specified, returns the supply of a gag in the backpack or -1.
@@ -96,6 +77,8 @@ class Backpack(BackpackBase):
     # Converts a net string blob back to useable data and then
     # updates supplies.
     def updateSuppliesFromNetString(self, netString):
+        self.netString = netString
+        
         dg = PyDatagram(netString)
         dgi = PyDatagramIterator(dg)
 
@@ -114,9 +97,3 @@ class Backpack(BackpackBase):
         if addedGag and self.avatar == base.localAvatar:
             if base.localAvatar.invGui:
                 base.localAvatar.reloadInvGui()
-
-    # Cleans up all the variables that are no longer needed.
-    def cleanup(self):
-        del self.loadoutGUI
-        del self.gagManager
-        BackpackBase.cleanup(self)

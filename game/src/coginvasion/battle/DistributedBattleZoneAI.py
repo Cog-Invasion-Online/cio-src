@@ -16,8 +16,9 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 from direct.distributed.ClockDelta import globalClockDelta
 
-from src.coginvasion.distributed.AvatarWatcher import AvatarWatcher
+from src.coginvasion.distributed.AvatarWatcher import AvatarWatcher, DIED, ZONE_CHANGE
 from src.coginvasion.battle.RPToonData import RPToonData
+from src.coginvasion.battle.GameRulesAI import GameRulesAI
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.quest.Objectives import DefeatCog, DefeatCogBuilding
 from src.coginvasion.phys.PhysicsUtils import makeBulletCollFromGeoms, detachAndRemoveBulletNodes
@@ -59,6 +60,60 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         
         self.physicsWorld = None
 
+        self.gameRules = self.makeGameRules()
+        
+        self.readyAvatars = []
+
+        self.map = ""
+        
+        # We have to put entities loaded from the BSP level in a separate zone.
+        # This is a workaround for an issue where the player would receive
+        # DistributedEntity generates but there is no BSP level loaded yet.
+        #
+        # The player will enter the battle zone, and then upon
+        # loading the BSP level, add interest into the entity zone.
+        self.entZone = self.air.allocateZone()
+        
+    def getEntZone(self):
+        return self.entZone
+
+    def loadedMap(self):
+        """
+        Sent by the client when they finish loading the map.
+        """
+        pass
+
+    def setMap(self, map):
+        self.map = map
+        if len(map) and self.bspLoader:
+            self.loadBSPLevel("phase_14/etc/{0}/{0}.bsp".format(map))
+
+    def b_setMap(self, map):
+        self.sendUpdate('setMap', [map])
+        self.setMap(map)
+
+    def getMap(self):
+        return self.map
+        
+    def handleAvatarsReady(self):
+        pass
+        
+    def readyToStart(self):
+        avId = self.air.getAvatarIdFromSender()
+        if not avId in self.readyAvatars:
+            avatar = self.air.doId2do.get(avId, None)
+            if avatar:
+                self.gameRules.setupPlayerAttackList(avatar)
+            self.readyAvatars.append(avId)
+        if len(self.readyAvatars) == len(self.watchingAvatarIds):
+            self.handleAvatarsReady()
+
+    def makeGameRules(self):
+        return GameRulesAI(self)
+
+    def getGameRules(self):
+        return self.gameRules
+
     def getCoverHints(self):
         return self.coverHints
 
@@ -77,9 +132,6 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
     def generate(self):
         DistributedObjectAI.generate(self)
         self.air.battleZones[self.zoneId] = self
-        
-    def announceGenerate(self):
-        DistributedObjectAI.announceGenerate(self)
 
         self.bspLoader = BSPLoader()
         self.bspLoader.setAi(True)
@@ -88,8 +140,26 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.bspLoader.setServerEntityDispatcher(self)
         AvatarWatcher.zoneId = self.zoneId
         
+        # Link up networked entities
+        from src.coginvasion.szboss import (DistributedTriggerAI, DistributedFuncDoorAI,
+                                            DistributedButtonAI, DistributedFuncRotatingAI, LogicCounter,
+                                            HintsAI, InfoTimer)
+        from src.coginvasion.szboss.InfoPlayerStart import InfoPlayerStart
+        self.bspLoader.linkServerEntityToClass("trigger_once",          DistributedTriggerAI.DistributedTriggerOnceAI)
+        self.bspLoader.linkServerEntityToClass("trigger_multiple",      DistributedTriggerAI.DistributedTriggerMultipleAI)
+        self.bspLoader.linkServerEntityToClass("func_door",             DistributedFuncDoorAI.DistributedFuncDoorAI)
+        self.bspLoader.linkServerEntityToClass("func_button",           DistributedButtonAI.DistributedButtonAI)
+        self.bspLoader.linkServerEntityToClass("func_rotating",         DistributedFuncRotatingAI.DistributedFuncRotatingAI)
+        self.bspLoader.linkServerEntityToClass("logic_counter",         LogicCounter.LogicCounter)
+        self.bspLoader.linkServerEntityToClass("info_hint_cover",       HintsAI.InfoHintCover)
+        self.bspLoader.linkServerEntityToClass("info_timer",            InfoTimer.InfoTimer)
+        self.bspLoader.linkServerEntityToClass("info_player_start",     InfoPlayerStart)
+        
         self.physicsWorld = BulletWorld()
         self.physicsWorld.setGravity(Vec3(0, 0, -32.1740))
+        
+    def announceGenerate(self):
+        DistributedObjectAI.announceGenerate(self)
 
         taskMgr.add(self.__updateTask, self.uniqueName('battleZoneUpdate'))
 
@@ -170,7 +240,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         dobj = cls(self.air, self)
         dobj.entnum = entnum
         dobj.bspLoader = self.bspLoader
-        dobj.zoneId = self.zoneId
+        dobj.zoneId = self.entZone
         return dobj
 
     def getBattleType(self):
@@ -245,10 +315,16 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
             
         self.resetPhysics()
         self.physicsWorld = None
+        
+        self.readyAvatars = None
 
         self.avId2suitsTargeting = None
         self.watchingAvatarIds = None
         self.avatarData = None
+        self.gameRules.cleanup()
+        self.gameRules = None
+        self.map = None
+        self.entZone = None
         DistributedObjectAI.delete(self)
 
     def resetStats(self):
@@ -267,8 +343,10 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.avatarData.update({avId : [{}, []]})
         self.avId2suitsTargeting[avId] = []
         
-    def handleAvatarLeave(self, avatar, _):
+    def handleAvatarLeave(self, avatar, reason):
         self.removeAvatar(avatar.doId)
+        if reason in [DIED, ZONE_CHANGE]:
+            self.gameRules.restorePlayerBackpack(avatar)
         
     def handleAvatarChangeHealth(self, avatar, newHealth, prevHealth):
         pass
@@ -318,6 +396,9 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         return self.watchingAvatarIds
     
     def handleGagUse(self, gagId, user):
+        if not self.gameRules.givesExperience():
+            return
+
         gagUses = {}
         currentKills = []
         uses = 0
@@ -335,6 +416,9 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.avatarData.update({user : [gagUses, currentKills]})
 
     def handleCogDeath(self, cog, killerId):
+        if not self.gameRules.countsTowardsQuests():
+            return
+
         plan = cog.suitPlan
         cogData = DeadCogData(plan.name, plan.dept, cog.level, cog.variant, cog.hood)
         gagUses = {}

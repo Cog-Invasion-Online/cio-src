@@ -13,6 +13,7 @@ from direct.distributed.ClockDelta import globalClockDelta
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.battle.RPToonData import RPToonData
+from src.coginvasion.battle.GameRules import GameRules
 from src.coginvasion.gui.RewardPanel import RewardPanel
 from src.coginvasion.globals import CIGlobals
 import BattleGlobals
@@ -23,6 +24,7 @@ from collections import OrderedDict
 
 class DistributedBattleZone(DistributedObject):
     notify = directNotify.newCategory('DistributedBattleZone')
+    notify.setInfo(True)
     
     def __init__(self, cr):
         DistributedObject.__init__(self, cr)
@@ -35,8 +37,75 @@ class DistributedBattleZone(DistributedObject):
         self.rewardPanelData = OrderedDict()
         self.rewardPanel = None
         self.rewardSeq = Sequence()
+
+        self.gameRules = self.makeGameRules()
         
         self.lastCameraIndex = 0
+
+        self.map = ""
+        
+        self.firstMapLoad = True
+        
+        self.entZoneHandle = None
+        self.entZone = 0
+        
+    def setEntZone(self, zone):
+        self.entZone = zone
+        
+    def enterEntZone(self, callback = None):
+        self.notify.info("Entering the ent zone")
+        if callback:
+            self.acceptOnce("enterEntZoneComplete", callback)
+        self.entZoneHandle = self.cr.addInterest(base.localAvatar.defaultShard, self.entZone,
+                                                 'entZone', 'enterEntZoneComplete')
+        
+    def leaveEntZone(self, callback = None):
+        if self.entZoneHandle:
+            self.notify.info("Leaving the ent zone")
+            if callback:
+                self.acceptOnce("leaveEntZoneComplete", callback)
+            self.cr.removeInterest(self.entZoneHandle, event = "leaveEntZoneComplete")
+            self.entZoneHandle = None
+        elif callback:
+            # We didn't have interest
+            callback()
+        
+    def getEntZone(self):
+        return self.entZone
+        
+    def __onEnterEntZone_loadMap(self):
+        self.notify.info("Map loaded, now in ent zone")
+        # We've loaded up the map and are now listening in the
+        # entity zone.
+        self.d_loadedMap()
+        
+    def loadTheMap(self):
+        base.loadBSPLevel("phase_14/etc/{0}/{0}.bsp".format(self.map))
+        base.bspLevel.reparentTo(render)
+
+    def setMap(self, map):
+        self.map = map
+        if len(map):
+            if self.firstMapLoad and self.entZoneHandle is None:
+                self.loadTheMap()
+                self.enterEntZone(self.__onEnterEntZone_loadMap)
+                self.firstMapLoad = False
+            else:
+                # We are already in the ent zone, just load the map.
+                self.loadTheMap()
+                self.d_loadedMap()
+
+    def d_loadedMap(self):
+        self.sendUpdate('loadedMap')
+
+    def getMap(self):
+        return self.map
+
+    def makeGameRules(self):
+        return GameRules(self)
+
+    def getGameRules(self):
+        return self.gameRules
         
     def addDebris(self, debris, creatorDoId):
         if debris and not debris.isEmpty():
@@ -71,15 +140,36 @@ class DistributedBattleZone(DistributedObject):
             self.removeDebris(debris, silently)
         
         self.debris = {}
+        
+    def d_readyToStart(self):
+        self.sendUpdate('readyToStart')
 
-    def announceGenerate(self):
+    def generate(self):
+        DistributedObject.generate(self)
+        
         self.accept('suitCreate', self.__handleSuitCreate)
         self.accept('suitDelete', self.__handleSuitDelete)
-        base.localAvatar.setMyBattle(self)
+        base.localAvatar.setBattleZone(self)
         self.lastCameraIndex = base.localAvatar.smartCamera.cameraIndex
         # Change to over the shoulder mode
         #base.localAvatar.smartCamera.setCameraPositionByIndex(base.localAvatar.smartCamera.OTSIndex)
         base.localAvatar.battleControls = True
+        
+        from src.coginvasion.szboss import AmbientGeneric, FuncWater, Ropes, InfoBgm, InfoPlayerRelocate, EnvLightGlow, EnvParticleSystem, PointSpotlight
+        #base.bspLoader.linkEntityToClass("ambient_generic", AmbientGeneric.AmbientGeneric)
+        base.bspLoader.linkEntityToClass("func_water", FuncWater.FuncWater)
+        base.bspLoader.linkEntityToClass("rope_begin", Ropes.RopeBegin)
+        base.bspLoader.linkEntityToClass("rope_keyframe", Ropes.RopeKeyframe)
+        base.bspLoader.linkEntityToClass("info_bgm", InfoBgm.InfoBgm)
+        base.bspLoader.linkEntityToClass("info_player_relocate", InfoPlayerRelocate.InfoPlayerRelocate)
+        base.bspLoader.linkEntityToClass("env_lightglow", EnvLightGlow.EnvLightGlow)
+        base.bspLoader.linkEntityToClass("env_particlesystem", EnvParticleSystem.EnvParticleSystem)
+        base.bspLoader.linkEntityToClass("point_spotlight", PointSpotlight.PointSpotlight)
+
+    def announceGenerate(self):
+        DistributedObject.announceGenerate(self)
+        
+        self.d_readyToStart()
 
     def __handleSuitCreate(self, obj):
         self.suits[obj.doId] = obj
@@ -92,10 +182,18 @@ class DistributedBattleZone(DistributedObject):
         self.reset()
         self.ignore('suitCreate')
         self.ignore('suitDelete')
-        base.localAvatar.setMyBattle(None)
+        self.ignore('enterEntZoneComplete')
+        self.ignore('leaveEntZoneComplete')
+        base.localAvatar.setBattleZone(None)
         #base.localAvatar.smartCamera.setCameraPositionByIndex(self.lastCameraIndex)
         base.localAvatar.battleControls = False
         self.lastCameraIndex = None
+        self.gameRules.cleanup()
+        self.gameRules = None
+        self.leaveEntZone()
+        self.firstMapLoad = None
+        self.entZone = None
+        self.entZoneHandle = None
         DistributedObject.disable(self)
         
     def setAvatars(self, avIds):

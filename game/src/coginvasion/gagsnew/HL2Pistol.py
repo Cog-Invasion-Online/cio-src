@@ -18,6 +18,7 @@ from direct.interval.IntervalGlobal import Sequence, Func, ActorInterval
 from BaseHitscan import BaseHitscan
 from HL2PistolShared import HL2PistolShared
 
+from src.coginvasion.globals import CIGlobals
 from src.coginvasion.base.Precache import precacheSound, precacheActor
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.attack.Attacks import ATTACK_HOLD_RIGHT, ATTACK_HL2PISTOL
@@ -54,6 +55,7 @@ class HL2Pistol(BaseHitscan, HL2PistolShared):
         self.fireSound = None
         self.emptySound = None
         self.reloadSound = None
+        self.fpMuzzleAttach = None
             
     @classmethod
     def doPrecache(cls):
@@ -75,16 +77,20 @@ class HL2Pistol(BaseHitscan, HL2PistolShared):
         
         if self.isLocal():
             self.sgViewModel = Actor(self.sgActorDef[0], self.sgActorDef[1])
+            self.sgViewModel.setPlayRate(self.Speed, "idle")
             self.sgViewModel.node().setBounds(OmniBoundingVolume())
             self.sgViewModel.node().setFinal(1)
             self.sgViewModel.setBlend(frameBlend = base.config.GetBool('interpolate-frames', False))
             self.sgViewModel.setH(180)
+            self.fpMuzzleAttach = self.sgViewModel.exposeJoint(None, "modelRoot", "ValveBiped.muzzle")
             
     def cleanup(self):
         if self.sgViewModel:
             self.sgViewModel.cleanup()
             self.sgViewModel.removeNode()
         self.sgViewModel = None
+        
+        self.fpMuzzleAttach = None
         
         if self.fireSound:
             base.audio3d.detachSound(self.fireSound)
@@ -136,13 +142,14 @@ class HL2Pistol(BaseHitscan, HL2PistolShared):
         if action == self.StateIdle:
             track.append(Func(vm.loop, "idle"))
         elif action == self.StateDraw:
-            track.append(ActorInterval(vm, "draw"))
+            track.append(ActorInterval(vm, "draw", playRate=self.Speed))
         elif action == self.StateReload:
             track.append(Func(self.reloadSound.play))
-            track.append(ActorInterval(vm, "reload"))
+            track.append(ActorInterval(vm, "reload", playRate=self.Speed))
         elif action == self.StateFire:
+            CIGlobals.makeMuzzleFlash(self.fpMuzzleAttach, (0, 0, 0), (-90, 0, 0), 7)
             fpsCam.resetViewPunch()
             fpsCam.addViewPunch(Vec3(random.uniform(-0.6, 0.6), random.uniform(-0.25, -0.5), 0.0))
             track.append(Func(self.fireSound.play))
-            track.append(ActorInterval(vm, "fire"))
+            track.append(ActorInterval(vm, "fire", playRate=self.Speed))
         fpsCam.setVMAnimTrack(track)

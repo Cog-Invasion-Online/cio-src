@@ -119,7 +119,7 @@ class MapPage(BookPage, DirectFrame):
 
         currHoodName = base.cr.playGame.hood.id
         currLocation = ''
-        if base.localAvatar.zoneId == ZoneUtil.MinigameAreaId or base.localAvatar.getMyBattle() is not None:
+        if base.localAvatar.zoneId == ZoneUtil.MinigameAreaId or base.localAvatar.getBattleZone() is not None:
             currLocation = ''
         elif ZoneUtil.getWhereName(base.localAvatar.zoneId) == 'playground':
             currLocation = 'Playground'

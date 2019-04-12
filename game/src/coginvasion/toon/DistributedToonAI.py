@@ -93,7 +93,7 @@ class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
         headScale = ToonGlobals.HeadScales[animal][2]
         shoulderHeight = ToonGlobals.LegHeightDict[self.getLegs()] * bodyScale + ToonGlobals.TorsoHeightDict[self.getTorso()] * bodyScale
         
-        self.setHeight(shoulderHeight + ToonGlobals.HeadHeightDict[self.getHead()] * headScale)
+        self.setHitboxData(0, 1, shoulderHeight + ToonGlobals.HeadHeightDict[self.getHead()] * headScale)
         
         if self.arePhysicsSetup():
             self.setupPhysics()

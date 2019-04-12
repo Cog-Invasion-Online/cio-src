@@ -28,18 +28,18 @@ class BattleShop(Shop):
         self.distShop.sendUpdate('confirmPurchase', [[base.localAvatar.getPUInventory()[0], base.localAvatar.getPUInventory()[1]], base.localAvatar.getMoney()])
         if self.upgradesPurchased:
             if base.localAvatar.getPUInventory()[0] > 0:
-                if base.localAvatar.getMyBattle():
-                    if base.localAvatar.getMyBattle().getTurretManager():
-                        if not base.localAvatar.getMyBattle().getTurretManager().myTurret:
-                            base.localAvatar.getMyBattle().getTurretManager().createTurretButton()
+                if base.localAvatar.getBattleZone():
+                    if base.localAvatar.getBattleZone().getTurretManager():
+                        if not base.localAvatar.getBattleZone().getTurretManager().myTurret:
+                            base.localAvatar.getBattleZone().getTurretManager().createTurretButton()
         Shop.confirmPurchase(self)
 
     def cancelPurchase(self):
         if self.upgradesPurchased:
             if self.originalUpgrades[0] < base.localAvatar.getPUInventory()[0]:
-                if base.localAvatar.getMyBattle():
-                    if base.localAvatar.getMyBattle().getTurretManager():
-                        base.localAvatar.getMyBattle().getTurretManager().destroyGui()
+                if base.localAvatar.getBattleZone():
+                    if base.localAvatar.getBattleZone().getTurretManager():
+                        base.localAvatar.getBattleZone().getTurretManager().destroyGui()
         base.localAvatar.setPUInventory(self.originalUpgrades)
         Shop.cancelPurchase(self)
 

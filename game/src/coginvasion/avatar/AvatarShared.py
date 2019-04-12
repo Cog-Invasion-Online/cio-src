@@ -40,6 +40,14 @@ class AvatarShared(BasePhysicsObject):
         self.activity = 0
         self.activityTimetamp = 0
         self.activities = {}
+        
+        self.battleZone = None
+        
+    def setBattleZone(self, bz):
+        self.battleZone = bz
+
+    def getBattleZone(self):
+        return self.battleZone
 
     def getEyePosition(self):
         return (0, 0, self.getHeight() * 0.8)
@@ -50,6 +58,9 @@ class AvatarShared(BasePhysicsObject):
 
     def getAttackIds(self):
         return self.attackIds
+
+    def hasAttackId(self, aId):
+        return aId in self.attacks
 
     def setActivities(self, actDict):
         """
@@ -142,13 +153,22 @@ class AvatarShared(BasePhysicsObject):
     def getEquippedAttack(self):
         return self.equippedAttack
 
-    def updateAttackAmmo(self, attackID, ammo):
+    def getEquippedAttackInstance(self):
+        return self.attacks[self.equippedAttack]
+
+    def updateAttackAmmo(self, attackID, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip):
         if not attackID in self.attacks:
             # ?
             self.notify.warning("Tried to update ammo on attack {0}, but not in attacks.".format(attackID))
             return
-
-        self.attacks[attackID].setAmmo(ammo)
+        
+        attack = self.attacks[attackID]
+        attack.setAmmo(ammo)
+        attack.setMaxAmmo(maxAmmo)
+        attack.setSecondaryAmmo(ammo2)
+        attack.setSecondaryMaxAmmo(maxAmmo2)
+        attack.setClip(clip)
+        attack.setMaxClip(maxClip)
 
     def setAttackState(self, state):
         if self.equippedAttack == -1:
@@ -161,6 +181,23 @@ class AvatarShared(BasePhysicsObject):
             return 0
 
         return self.attacks[self.equippedAttack].getAction()
+
+    def getAttack(self, aId):
+        if not aId in self.attacks:
+            return None
+        return self.attacks[aId]
+
+    def getAttackAmmo(self, aId):
+        if not aId in self.attacks:
+            return -1
+
+        return self.attacks[aId].getAmmo()
+
+    def getAttackMaxAmmo(self, aId):
+        if not aId in self.attacks:
+            return -1
+
+        return self.attacks[aId].getMaxAmmo()
 
     def setHeight(self, height):
         self.hitboxData[2] = height
@@ -206,7 +243,7 @@ class AvatarShared(BasePhysicsObject):
         return self.maxHealth
         
     def isDead(self):
-        return self.health <= 0
+        return self.getHealth() <= 0
       
     def isAlive(self):
         return not self.isDead()
@@ -249,8 +286,11 @@ class AvatarShared(BasePhysicsObject):
 
     def cleanupAttacks(self):
         for attack in self.attacks.values():
-            attack.cleanup()
+            attack.doCleanup()
         self.attacks = {}
+
+    def clearAttackIds(self):
+        self.attackIds = []
 
     def rebuildAttacks(self):
         self.cleanupAttacks()
@@ -277,3 +317,4 @@ class AvatarShared(BasePhysicsObject):
         del self.attacks
         del self.attackIds
         del self.equippedAttack
+        del self.battleZone

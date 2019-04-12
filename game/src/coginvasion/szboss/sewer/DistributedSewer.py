@@ -24,14 +24,11 @@ class DistributedSewer(DistributedBattleZone):
         self.skyNP = None
         self.skyEffect = None
 
-    def loadMap(self, mapFile):
+    def setMap(self, mapFile):
         self.stopPlayer()
-
         base.transitions.fadeScreen(1.0)
 
-        base.loadBSPLevel(mapFile)
-
-        self.sendUpdate('mapLoaded')
+        DistributedBattleZone.setMap(self, mapFile)
 
     def stopPlayer(self):
         base.localAvatar.stopPlay()
@@ -64,38 +61,4 @@ class DistributedSewer(DistributedBattleZone):
                 base.localAvatar.setPos(origin / 16.0)
                 base.localAvatar.setHpr(angles[1] - 90, angles[0], angles[2])
                 base.localAvatar.walkControls.controller.placeOnGround()
-
-    def announceGenerate(self):
-        DistributedBattleZone.announceGenerate(self)
-        self.linkSewerEntities()
-        self.sendUpdate('ready')
-
-    def disable(self):
-        base.bspLoader.cleanup()
-        if base.bspLevel and not base.bspLevel.isEmpty():
-            base.disableAndRemovePhysicsNodes(base.bspLevel)
-            base.bspLevel.removeNode()
-        base.bspLevel = None
-        base.materialData = {}
-        if self.skyEffect:
-            self.skyEffect.stopSky()
-            self.skyEffect.cleanup()
-            self.skyEffect = None
-        if self.skyNP:
-            self.skyNP.removeNode()
-            self.skyNP = None
-        DistributedBattleZone.disable(self)
-
-    def linkSewerEntities(self):
-        # Purely client-sided entities
-
-        from src.coginvasion.szboss import AmbientGeneric, FuncWater, Ropes, InfoBgm, InfoPlayerRelocate, EnvLightGlow, EnvParticleSystem, PointSpotlight
-        #base.bspLoader.linkEntityToClass("ambient_generic", AmbientGeneric.AmbientGeneric)
-        base.bspLoader.linkEntityToClass("func_water", FuncWater.FuncWater)
-        base.bspLoader.linkEntityToClass("rope_begin", Ropes.RopeBegin)
-        base.bspLoader.linkEntityToClass("rope_keyframe", Ropes.RopeKeyframe)
-        base.bspLoader.linkEntityToClass("info_bgm", InfoBgm.InfoBgm)
-        base.bspLoader.linkEntityToClass("info_player_relocate", InfoPlayerRelocate.InfoPlayerRelocate)
-        base.bspLoader.linkEntityToClass("env_lightglow", EnvLightGlow.EnvLightGlow)
-        base.bspLoader.linkEntityToClass("env_particlesystem", EnvParticleSystem.EnvParticleSystem)
-        base.bspLoader.linkEntityToClass("point_spotlight", PointSpotlight.PointSpotlight)
+        

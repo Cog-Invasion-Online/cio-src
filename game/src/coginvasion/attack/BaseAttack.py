@@ -262,7 +262,9 @@ class BaseAttack(Precacheable, BaseAttackShared):
                                       self.ModelVMAngles, self.ModelVMScale,
                                       self.Hold,
                                       self.ModelAnimPath is not None and self.ModelVMAnimate)
-            self.getViewModel().show()
+        if self.isFirstPerson():
+            if not self.getViewModel().isEmpty() and self.action != self.StateOff:
+                self.getViewModel().show()
 
     def __holdAttackModel(self):
         if not self.hasAvatar():
@@ -308,7 +310,8 @@ class BaseAttack(Precacheable, BaseAttackShared):
         if self.isFirstPerson():
             self.getFPSCam().clearVMGag()
             self.getFPSCam().clearVMAnimTrack()
-            self.getViewModel().hide()
+            if not self.getViewModel().isEmpty():
+                self.getViewModel().hide()
 
         return True
 

@@ -492,6 +492,27 @@ def getParticleRender():
         ParticleRender.setLightOff(1)
         ParticleRender.hide(ShadowCameraBitmask)
     return ParticleRender
+    
+def makeMuzzleFlash(node, pos, hpr, scale, color = (1, 1, 1, 1)):
+    import random
+    from panda3d.core import Quat, Point3
+    from src.coginvasion.base.MuzzleParticle import MuzzleParticle
+    quat = Quat()
+    quat.setHpr(hpr)
+    forward = quat.getForward()
+    
+    scale = random.uniform(scale-0.25, scale+0.25)
+    #scale = clamp(scale, 0.5, 8.0)
+    
+    for i in xrange(1, 9):
+        offset = Point3(pos) + (forward * (i*(2 / 16.0)*scale))
+        size = (random.uniform(6 / 16.0, 9 / 16.0) * (12-(i))/9) * scale
+        roll = random.randint(0, 360)
+        dur = 0.035
+        p = MuzzleParticle(size, size, roll, color, dur)
+        p.reparentTo(node)
+        p.setPos(offset)
+        p.setHpr(hpr)
 
 def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, duration = 1.0, soundVol = 1.0):
     explosion = loader.loadModel('phase_3.5/models/props/explosion.bam')

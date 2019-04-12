@@ -15,6 +15,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, SoundInterval
 from direct.interval.IntervalGlobal import Parallel, LerpPosInterval, LerpQuatInterval, LerpHprInterval
 
+from DistributedPlayerToonShared import DistributedPlayerToonShared
 from src.coginvasion.toon.DistributedToon import DistributedToon
 from src.coginvasion.gags.backpack.Backpack import Backpack
 from src.coginvasion.gags import GagGlobals
@@ -25,7 +26,7 @@ from src.coginvasion.quest.QuestGlobals import QUEST_DATA_UPDATE_EVENT
 from src.coginvasion.phys import PhysicsUtils
 from src.coginvasion.distributed import AdminCommands
 
-class DistributedPlayerToon(DistributedToon):
+class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
     notify = directNotify.newCategory('DistributedPlayerToon')
     
     def __init__(self, cr):
@@ -35,6 +36,7 @@ class DistributedPlayerToon(DistributedToon):
         except:
             self.DistributedPlayerToon_initialized = 1
         DistributedToon.__init__(self, cr)
+        DistributedPlayerToonShared.__init__(self)
         self.role = None
         self.ghost = 0
         self.puInventory = []
@@ -62,31 +64,38 @@ class DistributedPlayerToon(DistributedToon):
         self.takeDmgSfx = base.audio3d.loadSfx('phase_5/audio/sfx/tt_s_ara_cfg_toonHit.ogg')
         base.audio3d.attachSoundToObject(self.takeDmgSfx, self)
         return
+        
+    def getHealth(self):
+        return DistributedPlayerToonShared.getHealth(self)
+        
+    def getMaxHealth(self):
+        return DistributedPlayerToonShared.getMaxHealth(self)
     
     def stopSmooth(self):
         DistributedToon.stopSmooth(self)
         localAvatarReachable = (hasattr(base, 'localAvatar') and base.localAvatar)
         if localAvatarReachable and self.doId != base.localAvatar.doId:
             self.resetTorsoRotation()
-    
-    def setHealth(self, health):
-        if health < self.health and not self.firstTimeChangingHP:
-            # We took damage, make oof sound.
-            self.takeDmgSfx.play()
 
-        self.health = health
+    def handleHealthChange(self, hp, oldHp):
+        if hp < oldHp and not self.firstTimeChangingHP:
+            # We took damage, make oof sound.
+            self.takeDmgSfx.play()        
+
+    def setHealth(self, health):
+        self.handleHealthChange(health, self.getHealth())
+        DistributedToon.setHealth(self, health)
         if self.doId != base.localAvatar.doId:
             if not self.firstTimeChangingHP:
-                if health < self.getMaxHealth():
+                if hp < self.getMaxHealth():
                     if not self.headMeter:
                         self.__makeHeadMeter()
                     else:
                         self.__updateHeadMeter()
                 else:
                     self.__removeHeadMeter()
-
         self.firstTimeChangingHP = False
-    
+
     def announceHealthAndPlaySound(self, level, hp, extraId = -1):
         DistributedToon.announceHealth(self, level, hp, extraId)
         hpSfx = base.audio3d.loadSfx('phase_11/audio/sfx/LB_toonup.ogg')
@@ -311,7 +320,7 @@ class DistributedPlayerToon(DistributedToon):
 
     def maybeMakeHeadMeter(self):
         if base.localAvatar.doId != self.doId:
-            if self.health < self.getMaxHealth():
+            if self.getHealth() < self.getMaxHealth():
                 if not self.headMeter:
                     self.__makeHeadMeter()
 
@@ -424,11 +433,14 @@ class DistributedPlayerToon(DistributedToon):
             self.backpack.setLoadout(loadout)
     
     def setBackpackAmmo(self, netString):
-        self.backpack.updateSuppliesFromNetString(netString)
+        if len(self.attackIds) != 0 or len(self.attacks) != 0:
+            self.cleanupAttacks()
+            self.clearAttackIds()
+        return self.backpack.updateSuppliesFromNetString(netString)
     
     def getBackpackAmmo(self):
         if self.backpack:
-            return self.backpack.toNetString()
+            return self.backpack.netString
         return GagGlobals.getDefaultBackpack().toNetString()
     
     def setTrackExperience(self, netString):
@@ -440,8 +452,11 @@ class DistributedPlayerToon(DistributedToon):
     def getTrackExperience(self):
         return GagGlobals.trackExperienceToNetString(self.trackExperience)
 
-    def updateAttackAmmo(self, gagId, ammo):
-        self.backpack.setSupply(gagId, ammo)
+    def updateAttackAmmo(self, gagId, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip):
+        if self.useBackpack():
+            self.backpack.setSupply(gagId, ammo)
+        else:
+            DistributedToon.updateAttackAmmo(self, gagId, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip)
 
     def setMoney(self, money):
         self.money = money
@@ -495,6 +510,7 @@ class DistributedPlayerToon(DistributedToon):
             self.DistributedPlayerToon_deleted
         except:
             self.DistributedPlayerToon_deleted = 1
+            DistributedPlayerToonShared.delete(self)
             del self.takeDmgSfx
             del self.tunnelTrack
             del self.role

@@ -4,3 +4,5 @@ class HL2ShotgunShared:
     StateEndReload = 5
     StateReload = 6
     StateDblFire = 7
+    
+    Speed = (30.0 / 24.0)

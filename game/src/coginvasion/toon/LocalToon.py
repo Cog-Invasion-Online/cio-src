@@ -92,7 +92,6 @@ class LocalToon(DistributedPlayerToon):
         self.isMoving_back = False
         self.isMoving_jump = False
         self.gagThrowBtn = None
-        self.myBattle = None
         self.gagsTimedOut = False
         self.needsToSwitchToGag = None
         self.gagsEnabled = False
@@ -121,9 +120,6 @@ class LocalToon(DistributedPlayerToon):
         self.touchingWater = False
 
         self.jumpHardLandIval = None
-
-        # Modified by DistributedBattleZone.
-        self.inBattle = False
         
         # This is used by CutsceneGUI
         self.allowA2dToggle = True
@@ -140,7 +136,7 @@ class LocalToon(DistributedPlayerToon):
     def selectGag(self, gagId, record = True):
         if record:
             # Forget this gag if they ran out of ammo
-            if self.backpack.getSupply(self.lastSelectedGag) <= 0:
+            if self.lastSelectedGag != -1 and self.getAttackAmmo(self.lastSelectedGag) <= 0:
                 self.lastSelectedGag = -1
             else:
                 self.lastSelectedGag = self.selectedGag
@@ -247,7 +243,7 @@ class LocalToon(DistributedPlayerToon):
         DistributedPlayerToon.setEquippedAttack(self, gagId)
         if gagId != -1:
             if self.battleControls:
-                self.crosshair.setCrosshair(self.backpack.getGagByID(gagId).crosshair)
+                self.crosshair.setCrosshair(self.getAttack(gagId).crosshair)
                 self.crosshair.show()
                 self.b_setLookMode(self.LMCage)
         else:
@@ -259,7 +255,19 @@ class LocalToon(DistributedPlayerToon):
                 self.b_setLookMode(self.LMHead)
             else:
                 self.b_setLookMode(self.LMOff)
-        
+        if self.invGui:
+            self.invGui.update()
+
+    def updateAttackAmmo(self, attackId, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip):
+        DistributedPlayerToon.updateAttackAmmo(self, attackId, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip)
+        if self.invGui:
+            self.invGui.update()
+
+    def setupAttacks(self):
+        DistributedPlayerToon.setupAttacks(self)
+        if self.getBattleZone() and (not self.getBattleZone().getGameRules().useBackpack()):
+            self.reloadInvGui()
+
     def showCrosshair(self):
         self.crosshair.show()
         
@@ -398,13 +406,6 @@ class LocalToon(DistributedPlayerToon):
     def getBackpack(self):
         return DistributedPlayerToon.getBackpack(self)
 
-    def setMyBattle(self, battle):
-        self.myBattle = battle
-        self.inBattle = (not battle is None)
-
-    def getMyBattle(self):
-        return self.myBattle
-
     def enterReadBook(self, ts = 0, callback = None, extraArgs = []):
         self.stopLookAround()
         self.b_lookAtObject(0, -45, 0)
@@ -481,7 +482,7 @@ class LocalToon(DistributedPlayerToon):
             self.d_setAnimState(anim)
             DistributedPlayerToon.setAnimState(self, anim, callback = callback, extraArgs = extraArgs)
             
-            camTransitionStates = ['teleportIn', 'teleportOut']
+            camTransitionStates = ['teleportIn', 'teleportOut', 'died']
             if anim in camTransitionStates and not NO_TRANSITION in extraArgs:
                 self.doFirstPersonCameraTransition()
 
@@ -822,9 +823,8 @@ class LocalToon(DistributedPlayerToon):
         DistributedPlayerToon.secondaryFireRelease(self)
 
     def canUseGag(self):
-        return (self.backpack is not None
-                and self.backpack.getCurrentGag() != -1
-                and self.backpack.getSupply() > 0
+        return (self.getEquippedAttack() != -1
+                and self.getAttackAmmo(self.getEquippedAttack()) > 0
                 and self.gagsEnabled)
 
     def checkSuitHealth(self, suit):
@@ -872,22 +872,8 @@ class LocalToon(DistributedPlayerToon):
         else:
             base.cr.playGame.getPlace().shtickerBookStateData.finishedResume()
 
-    def startMonitoringHP(self):
-        taskMgr.add(self.monitorHealth, "localToon-monitorHealth")
-
-    def monitorHealth(self, task):
-        if self.isDead():
-            base.taskMgr.remove("LT.attackReactionDone")
-            if (self.cr.playGame.hood.id != ZoneUtil.getHoodId(self.zoneId)):
-                self.cr.playGame.getPlace().fsm.request('died', [{}, self.diedStateDone])
-            return task.done
-        return task.cont
-
-    def stopMonitoringHP(self):
-        taskMgr.remove("localToon-monitorHealth")
-
-    def setHealth(self, hp):
-        if hp > 0 and self.getHealth() < 1:
+    def handleHealthChange(self, hp, oldHp):
+        if hp > 0 and oldHp < 1:
             if self.cr.playGame and self.cr.playGame.getPlace():
                 if self.cr.playGame.getPlace().fsm.getCurrentState().getName() == 'walk':
                     if self.cr.playGame.getPlace().walkStateData.fsm.getCurrentState().getName() == 'deadWalking':
@@ -898,9 +884,22 @@ class LocalToon(DistributedPlayerToon):
                 self.b_setAnimState("run")
         
         if self.walkControls:
-            if hp < self.getHealth() and self.isFirstPerson():
+            if hp < oldHp and self.isFirstPerson():
                 self.getFPSCam().doDamageFade(1, 0, 0, (self.getHealth() - hp) / 30.0)
-        DistributedPlayerToon.setHealth(self, hp)
+
+        if hp <= 0 and oldHp > 0:
+            # Take appropriate action upon death.
+            if self.getBattleZone():
+                self.getBattleZone().getGameRules().onPlayerDied()
+
+        DistributedPlayerToon.handleHealthChange(self, hp, oldHp)
+
+    def setSessionHealth(self, hp):
+        currHp = self.getSessionHealth()
+
+        self.handleHealthChange(hp, currHp)
+
+        DistributedPlayerToon.setSessionHealth(self, hp)
 
     def reparentTo(self, parent):
         self.notify.debug("Local toon reparent to {0}".format(parent.node().getName()))
@@ -1042,8 +1041,6 @@ class LocalToon(DistributedPlayerToon):
         self.disablePicking()
         self.destroyFriendButton()
         self.stopMonitoringHP()
-        taskMgr.remove("resetHeadColorAfterFountainPen")
-        taskMgr.remove("LT.attackReactionDone")
         self.stopLookAround()
         self.disableAvatarControls()
         self.destroyControls()
@@ -1067,12 +1064,10 @@ class LocalToon(DistributedPlayerToon):
         self.stopMonitoringHP()
         self.hideBookButton()
         self.weaponType = None
-        self.myBattle = None
         self.runSfx = None
         self.walkSfx = None
         self.offset = None
         self.movementKeymap = None
-        self.inBattle = None
         self.minigame = None
         self.inTutorial = None
         self.avatarChoice = None
@@ -1095,11 +1090,12 @@ class LocalToon(DistributedPlayerToon):
         self.invGui = GagSelectionGui()
         self.invGui.load()
         self.invGui.hide()
-        self.backpack.loadoutGUI = self.invGui
 
     def reloadInvGui(self):
         self.destroyInvGui()
         self.createInvGui()
+        if self.areGagsAllowed():
+            self.enableGags(0)
 
     def destroyInvGui(self):
         if self.invGui:

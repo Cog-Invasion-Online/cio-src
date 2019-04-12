@@ -99,13 +99,6 @@ class Playground(Place.Place):
 
     def enterWalk(self, teleportIn = 0, wantMouse = 1):
         Place.Place.enterWalk(self, teleportIn, wantMouse)
-        if base.localAvatar.zoneId != ZoneUtil.RecoverAreaId:
-            base.localAvatar.startMonitoringHP()
-
-    def exitWalk(self):
-        if base.localAvatar.zoneId != ZoneUtil.RecoverAreaId:
-            base.localAvatar.stopMonitoringHP()
-        Place.Place.exitWalk(self)
 
     def enterTeleportIn(self, requestStatus):
         if base.localAvatar.getHealth() < 1:

@@ -81,8 +81,6 @@ class DistributedCogOfficeElevator(DistributedElevator, DistributedEntity):
         self.elev = Elevator(base.bspLoader.getEntityValueInt(self.entnum, "type"))
         self.elev.elevatorMdl.setPos(self.cEntity.getOrigin())
         self.elev.elevatorMdl.setHpr(self.cEntity.getAngles())
-        #if self.index == 1:
-        #    self.elev.elevatorMdl.hide()
 
         DistributedElevator.announceGenerate(self)
 
@@ -101,9 +99,6 @@ class DistributedCogOfficeElevator(DistributedElevator, DistributedEntity):
                 np.setColor(LIGHT_ON_COLOR)
 
         self.thebldg.elevators[self.index] = self.elev
-        # We've polled the building and found it, tell the building that this elevator is ready.
-        #self.thebldg.elevatorReady()
-        #self.accept(self.thebldg.uniqueName('prepareElevator'), self.__prepareElevator)
         self.__prepareElevator()
 
     def disable(self):
@@ -136,15 +131,11 @@ class DistributedCogOfficeElevator(DistributedElevator, DistributedEntity):
                 toon.setHpr(180, 0, 0)
 
     def onDoorCloseFinish(self):
-        print "Door close finish for index {0}".format(self.index)
-        print "Are we on this elevator? {0}".format(self.localAvOnElevator)
         if self.index == 1:
             if self.localAvOnElevator:
-                print "Ready for next floor."
                 self.thebldg.d_readyForNextFloor()
                 self.localAvOnElevator = False
             else:
-                print "Heading back to the playground."
                 requestStatus = {'zoneId': ZoneUtil.getZoneId(ZoneUtil.getHoodId(self.zoneId, street = 1)),
                             'hoodId': self.cr.playGame.hood.hoodId,
                             'where': 'playground',

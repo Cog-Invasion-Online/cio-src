@@ -19,13 +19,13 @@ class HL2ShotgunAI(BaseHitscanAI, HL2ShotgunShared):
     
     def __init__(self):
         BaseHitscanAI.__init__(self)
-        self.actionLengths.update({self.StatePump   :   0.666666666667,
-                                   self.StateReload :   0.5,
-                                   self.StateBeginReload    :   0.625,
-                                   self.StateEndReload  :   0.541666666667,
-                                   self.StateFire   :   0.416666666667,
-                                   self.StateDblFire    :   0.625,
-                                   self.StateDraw   :   0.916666666667})
+        self.actionLengths.update({self.StatePump   :   0.666666666667 / self.Speed,
+                                   self.StateReload :   0.5 / self.Speed,
+                                   self.StateBeginReload    :   0.625 / self.Speed,
+                                   self.StateEndReload  :   0.541666666667 / self.Speed,
+                                   self.StateFire   :   0.416666666667 / self.Speed,
+                                   self.StateDblFire    :   0.625 / self.Speed,
+                                   self.StateDraw   :   0.916666666667 / self.Speed})
         self.maxAmmo = 32
         self.ammo = 32
         self.maxClip = 6

@@ -30,8 +30,3 @@ class BackpackAI(BackpackBase):
     # Update the network ammo.
     def updateNetAmmo(self):
         self.avatar.b_setBackpackAmmo(self.toNetString())
-    
-    # Cleans up the backpack.
-    def cleanup(self):
-        self.updateNetAmmo()
-        BackpackBase.cleanup(self)

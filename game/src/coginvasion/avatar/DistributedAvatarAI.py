@@ -33,7 +33,6 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
     def __init__(self, air):
         DistributedSmoothNodeAI.DistributedSmoothNodeAI.__init__(self, air)
         AvatarShared.__init__(self)
-        self.battleZone = None
         
         self.lastPos = Point3(0)
         self.movementDelta = Vec3(0)
@@ -80,12 +79,6 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
 
     def d_playAnimation(self, animName):
         self.sendUpdate('playAnimation', [animName, globalClockDelta.getFrameNetworkTime()])
-
-    def setBattleZone(self, bz):
-        self.battleZone = bz
-
-    def getBattleZone(self):
-        return self.battleZone
 
     def b_setAttackState(self, state):
         self.sendUpdate('setAttackState', [state])
@@ -150,13 +143,13 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
     def setHealth(self, health):
         # Let's send out an event to let listeners know that our health changed.
         # The new health and the previous health are sent out in that order.
-        messenger.send(self.getHealthChangeEvent(), [health, self.health])
+        messenger.send(self.getHealthChangeEvent(), [health, self.getHealth()])
         AvatarShared.setHealth(self, health)
 
     def d_setHealth(self, health):
         self.sendUpdate("setHealth", [health])
 
-    def b_setHealth(self, health):
+    def b_setHealth(self, health):            
         self.d_setHealth(health)
         self.setHealth(health)
 
@@ -185,9 +178,9 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
             return 'DAvatarAI-healthChanged-{0}'.format(self.doId)
         return None
         
-    def b_updateAttackAmmo(self, attackID, ammo):
-        self.sendUpdate('updateAttackAmmo', [attackID, ammo])
-        self.updateAttackAmmo(attackID, ammo)
+    def b_updateAttackAmmo(self, attackID, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip):
+        self.sendUpdate('updateAttackAmmo', [attackID, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip])
+        self.updateAttackAmmo(attackID, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip)
         
     def handleLogicalZoneChange(self, newZoneId, oldZoneId):
         """Make sure the avatar lists are updated with our new zone."""
@@ -244,7 +237,6 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         if self.Moving:
             taskMgr.remove(self.uniqueName('avatarTick'))
 
-        self.battleZone = None
         self.movementVector = None
         self.movementDelta = None
         self.lastPos = None

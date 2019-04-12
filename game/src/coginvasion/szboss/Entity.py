@@ -3,7 +3,9 @@ from panda3d.core import NodePath, ModelNode
 from direct.showbase.DirectObject import DirectObject
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-class Entity(NodePath):
+from src.coginvasion.base.Precache import Precacheable
+
+class Entity(NodePath, Precacheable):
     notify = directNotify.newCategory("Entity")
     
     def __init__(self):

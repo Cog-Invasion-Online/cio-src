@@ -940,16 +940,15 @@ def getDefaultBackpack(isAI = False):
         
     return DefaultBackpack
     
-def getDefaultBackpackNetString(isAI = False):
-    from direct.distributed.PyDatagram import PyDatagram
-    
+def getDefaultBackpackNetString(isAI = False):    
     bp = getDefaultBackpack(isAI)
     
     dg = PyDatagram()
     for gagId, supply in bp.items():
         dg.addUint8(gagId)
         dg.addUint8(supply)
-    return dg.getMessage()
+    dgi = PyDatagramIterator(dg)
+    return dgi.getRemainingBytes()
 
 # Specifies which gags are allowed to be used. This should only be temporary until all the gags are implemented correctly.
 #tempAllowedGags = #[Cupcake, FruitPieSlice, CreamPieSlice, WholeFruitPie, WholeCreamPie, BirthdayCake,

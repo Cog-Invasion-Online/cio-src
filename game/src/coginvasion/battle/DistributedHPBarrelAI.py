@@ -54,8 +54,8 @@ class DistributedHPBarrelAI(DistributedRestockBarrelAI):
                     # Buildings can be difficult, let's multiply the heal amount by 2.
                     healAmt = (treasureData[1] * 2)
                     
-            if (avatar.health + healAmt > avatar.maxHealth):
-                healAmt = avatar.maxHealth - avatar.health
+            if (avatar.getHealth() + healAmt > avatar.getMaxHealth()):
+                healAmt = avatar.getMaxHealth() - avatar.getHealth()
             
             if healAmt > 0:
                 # Let's toon up the avatar that wants to grab health and announce it.

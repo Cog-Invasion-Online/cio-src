@@ -31,6 +31,8 @@ class BackpackBase:
     def __init__(self, avatar):
         # Must pass the avatar this backpack is associated with.
         self.avatar = avatar
+        
+        self.netString = ""
 
         # A list of gags immediately available in the avatar's loadout.
         self.loadout = []
@@ -143,6 +145,9 @@ class BackpackBase:
             gagId = GagGlobals.getIDByName(gagId)
         return gagId in self.avatar.attacks.keys()
         
+    def getNetString(self):
+        return self.netString
+        
     # Converts out backpack to a blob for storing.
     # Returns a blob of bytes.
     def toNetString(self):
@@ -163,6 +168,8 @@ class BackpackBase:
     # Converts a net string blob back to data that we can handle.
     # Returns a dictionary of {gagIds : supply}
     def fromNetString(self, netString):
+        self.netString = netString
+        
         dg = PyDatagram(netString)
         dgi = PyDatagramIterator(dg)
         dictionary = {}
@@ -174,6 +181,7 @@ class BackpackBase:
         return dictionary
         
     def cleanup(self):
+        del self.netString
         del self.loadout
         del self.avatar
         

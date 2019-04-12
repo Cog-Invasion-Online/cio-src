@@ -23,13 +23,12 @@ class BaseAttackAI(BaseAttackShared):
                 setattr(self, key, sharedMetadata.__dict__.get(key))
         
     def canDamage(self, obj):
-        canDamage = self.FriendlyFire
-        
-        try:
-            canDamage = self.avatar.getRelationshipTo(obj) != RELATIONSHIP_FRIEND
-        except: pass
-        
-        return canDamage
+        bz = self.avatar.getBattleZone()
+        if bz:
+            return bz.getGameRules().canDamage(self.avatar, obj, self)
+
+        # No GameRules to determine, just damage them.
+        return True
 
     def equip(self):
         if not BaseAttackShared.equip(self):
@@ -107,17 +106,24 @@ class BaseAttackAI(BaseAttackShared):
     def cleanup(self):
         del self.actionLengths
         BaseAttackShared.cleanup(self)
+        
+    def d_updateAttackAmmo(self):
+        if self.hasAvatar():
+            self.avatar.sendUpdate('updateAttackAmmo', [self.getID(), self.ammo, self.maxAmmo, self.secondaryAmmo,
+                                                        self.secondaryMaxAmmo, self.clip, self.maxClip])
 
     def takeAmmo(self, amount):
         self.ammo += amount
-        if self.hasAvatar():
-            self.avatar.sendUpdate('updateAttackAmmo', [self.getID(), self.ammo])
+        self.d_updateAttackAmmo()
+        
+    def getActionLength(self, action):
+        return self.actionLengths.get(action, -1)
             
     def isActionIndefinite(self):
-        return self.actionLengths[self.action] == -1
+        return self.getActionLength(self.action) == -1
 
     def isActionComplete(self):
-        length = self.actionLengths[self.action]
+        length = self.getActionLength(self.action)
         if length == -1:
             return False
         return self.getActionTime() >= length

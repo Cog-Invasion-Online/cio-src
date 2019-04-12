@@ -16,16 +16,16 @@ class HL2PistolAI(BaseHitscanAI, HL2PistolShared):
     
     def __init__(self):
         BaseHitscanAI.__init__(self)
-        self.actionLengths.update({self.StateDraw   :   1.0,
-                                   self.StateReload :   1.79,
-                                   self.StateFire   :   0.5})
+        self.actionLengths.update({self.StateDraw   :   1.0 / self.Speed,
+                                   self.StateReload :   1.79 / self.Speed,
+                                   self.StateFire   :   0.5 / self.Speed})
         self.maxAmmo = 150
         self.ammo = 150
         self.maxClip = 18
         self.clip = 18
-                                   
+                       
     def determineNextAction(self, completedAction):
-        if completedAction == self.StateIdle:
+        if completedAction in [self.StateFire, self.StateDraw]:
             if not self.hasClip() and self.hasAmmo():
                 # Need to refill clip
                 return self.StateReload

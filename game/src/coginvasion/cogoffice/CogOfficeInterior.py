@@ -29,29 +29,16 @@ class CogOfficeInterior(Place):
          State.State('teleportOut', self.enterTeleportOut, self.exitTeleportOut,
                     ['stop', 'final']),
          State.State('final', self.enterFinal, self.exitFinal, ['start'])], 'start', 'final')
-         
-    def enterWalk(self, teleportIn = 0, wantMouse = 1):
-        Place.enterWalk(self, teleportIn, wantMouse)
-        base.localAvatar.startMonitoringHP()
-        
-    def exitWalk(self):
-        base.localAvatar.stopMonitoringHP()
-        Place.exitWalk(self)
 
     def enter(self, requestStatus):
         Place.enter(self)
         self.fsm.enterInitialState()
-        
-    def exit(self):
-        print "Exit CogOfficeInterior"
-        Place.exit(self)
 
     def load(self):
         Place.load(self)
         self.parentFSM.getStateNamed('suitInterior').addChild(self.fsm)
 
     def unload(self):
-        print "Unload CogOfficeInterior"
         self.parentFSM.getStateNamed('suitInterior').removeChild(self.fsm)
         del self.fsm
         del self.parentFSM

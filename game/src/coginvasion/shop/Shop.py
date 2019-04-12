@@ -72,7 +72,7 @@ class Shop(StateData):
         hasTurret = False
         turretCount = 0
 
-        battle = base.localAvatar.getMyBattle()
+        battle = base.localAvatar.getBattleZone()
         if battle and battle.getTurretManager():
             turret = battle.getTurretManager().getTurret()
             turretCount = battle.getTurretCount()
@@ -92,7 +92,7 @@ class Shop(StateData):
             else:
                 upgrades += 1
             self.upgradesPurchased = True
-            base.localAvatar.getMyBattle().getTurretManager().setGag(upgradeID)
+            base.localAvatar.getBattleZone().getTurretManager().setGag(upgradeID)
             base.localAvatar.setMoney(base.localAvatar.getMoney() - values.get('price'))
             base.localAvatar.setPUInventory([upgrades, upgradeID])
         elif turretCount >= CogBattleGlobals.MAX_TURRETS:
@@ -276,7 +276,7 @@ class ItemButton(DirectButton):
                 supply = 0
                 maxSupply = values.get('maxUpgrades')
         
-                battle = base.localAvatar.getMyBattle()
+                battle = base.localAvatar.getBattleZone()
                 if battle and battle.getTurretManager():
                     turret = battle.getTurretManager().getTurret()
                     if turret and turret.getGagID() == upgradeID:
@@ -331,7 +331,7 @@ class ItemButton(DirectButton):
                 turretCount = 0
                 hasTurret = False
     
-                battle = base.localAvatar.getMyBattle()
+                battle = base.localAvatar.getBattleZone()
                 if battle and battle.getTurretManager():
                     turretCount = battle.getTurretCount()
                     turret = battle.getTurretManager().getTurret()
@@ -504,7 +504,7 @@ class ShopWindow(DirectFrame):
                 button.update()
         
     def updatePage(self):
-        battle = base.localAvatar.getMyBattle()
+        battle = base.localAvatar.getBattleZone()
 
         if battle and self.wantTurretCount:
             self.shop.distShop.sendUpdate('requestTurretCount', [])

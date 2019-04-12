@@ -20,7 +20,7 @@ from direct.interval.IntervalGlobal import Sequence, Func, ActorInterval
 from BaseHitscan import BaseHitscan
 from HL2ShotgunShared import HL2ShotgunShared
 
-from src.coginvasion.base.Precache import precacheSound, precacheActor
+from src.coginvasion.base.Precache import precacheSound, precacheActor, precacheModel
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.attack.Attacks import ATTACK_HOLD_RIGHT, ATTACK_HL2SHOTGUN
@@ -37,6 +37,10 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
     Name = GagGlobals.HL2Shotgun
     ID = ATTACK_HL2SHOTGUN
     Hold = ATTACK_HOLD_RIGHT
+    
+    ShellPath = "phase_14/hl2/casing.bam"
+    ShellContactSoundPath = "phase_14/hl2/shell{0}.wav"
+    ShellContactSoundRange = (1, 3)
     
     sgDir = 'phase_14/hl2/v_shotgun/panda/opt/'
     sgActorDef = [sgDir + 'v_shotgun.bam',
@@ -70,6 +74,8 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
         for rl in self.sgReloadPaths:
             self.reloadSounds.append(base.audio3d.loadSfx(rl))
             
+        self.fpMuzzleAttach = None
+            
     @classmethod
     def doPrecache(cls):
         super(HL2Shotgun, cls).doPrecache()
@@ -82,6 +88,10 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
         precacheSound(cls.sgEmptyPath)
         for rl in cls.sgReloadPaths:
             precacheSound(rl)
+            
+        precacheModel(cls.ShellPath)
+        for i in xrange(cls.ShellContactSoundRange[0], cls.ShellContactSoundRange[1] + 1):
+            precacheSound(cls.ShellContactSoundPath.format(i))
             
     def addPrimaryPressData(self, dg):
         CIGlobals.putVec3(dg, camera.getPos(render))
@@ -98,6 +108,8 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
             self.sgViewModel.cleanup()
             self.sgViewModel.removeNode()
         self.sgViewModel = None
+        
+        self.fpMuzzleAttach = None
         
         if self.fireSound:
             base.audio3d.detachSound(self.fireSound)
@@ -134,10 +146,12 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
             
         if self.isLocal():
             self.sgViewModel = Actor(self.sgActorDef[0], self.sgActorDef[1])
+            self.sgViewModel.setPlayRate(self.Speed, "idle")
             self.sgViewModel.node().setBounds(OmniBoundingVolume())
             self.sgViewModel.node().setFinal(1)
             self.sgViewModel.setBlend(frameBlend = base.config.GetBool('interpolate-frames', False))
             self.sgViewModel.setH(180)
+            self.fpMuzzleAttach = self.sgViewModel.exposeJoint(None, "modelRoot", "ValveBiped.Gun")
             
     def equip(self):
         if not BaseHitscan.equip(self):
@@ -146,7 +160,6 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
         if self.isFirstPerson():
             fpsCam = self.getFPSCam()
             fpsCam.swapViewModel(self.sgViewModel, 54.0)
-            self.getViewModel().show()
             
         toonTrack = Sequence(Func(self.avatar.setForcedTorsoAnim, 'firehose'),
                          self.getAnimationTrack('firehose', endFrame = 30),
@@ -161,7 +174,6 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
             
         if self.isFirstPerson():
             self.getFPSCam().restoreViewModel()
-            self.getViewModel().hide()
             
         return True
 
@@ -179,7 +191,7 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
                 contact = base.physicsWorld.contactTest(shell.node())
                 if contact.getNumContacts() > 0:
                     task.didHitNoise = True
-                    hitNoise = base.loadSfxOnNode("phase_14/hl2/shell{0}.wav".format(random.randint(1, 3)), shell)
+                    hitNoise = base.loadSfxOnNode(self.ShellContactSoundPath.format(random.randint(*self.ShellContactSoundRange)), shell)
                     hitNoise.play()
         
             return task.cont
@@ -193,7 +205,7 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
         rbnode.setCcdMotionThreshold(1e-7)
         rbnode.setCcdSweptSphereRadius(0.07 * scale)
         rbnp = render.attachNewNode(rbnode)
-        mdl = loader.loadModel("phase_14/hl2/casing.bam")
+        mdl = loader.loadModel(self.ShellPath)
         mdl.reparentTo(rbnp)
         mdl.setScale(0.3 * scale, 0.7 * scale, 0.3 * scale)
         mdl.setP(90)
@@ -224,29 +236,32 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
         vm = self.getViewModel()
         fpsCam = self.getFPSCam()
         
+        if action in [self.StateFire, self.StateDblFire]:
+            CIGlobals.makeMuzzleFlash(self.fpMuzzleAttach, (-0.03, 0.51, 32.45), (0, -90, 0), 7.5)
+        
         if action == self.StateIdle:
             track.append(Func(vm.loop, "idle"))
         elif action == self.StateDraw:
-            track.append(ActorInterval(vm, "draw"))
+            track.append(ActorInterval(vm, "draw", playRate=self.Speed))
         elif action == self.StatePump:
             track.append(Func(self.pumpSound.play))
             track.append(Func(self.__emitShell))
-            track.append(ActorInterval(vm, "pump"))
+            track.append(ActorInterval(vm, "pump", playRate=self.Speed))
         elif action == self.StateFire:
             fpsCam.addViewPunch(Vec3(random.uniform(-2, 2), random.uniform(2, 1), 0))
             track.append(Func(self.fireSound.play))
-            track.append(ActorInterval(vm, "fire"))
+            track.append(ActorInterval(vm, "fire", playRate=self.Speed))
         elif action == self.StateDblFire:
             fpsCam.addViewPunch(Vec3(0, random.uniform(-5, 5), 0))
             track.append(Func(self.dblFireSound.play))
-            track.append(ActorInterval(vm, "altfire"))
+            track.append(ActorInterval(vm, "altfire", playRate=self.Speed))
         elif action == self.StateReload:
             sound = random.choice(self.reloadSounds)
             track.append(Func(sound.play))
-            track.append(ActorInterval(vm, "reload2"))
+            track.append(ActorInterval(vm, "reload2", playRate=self.Speed))
         elif action == self.StateBeginReload:
-            track.append(ActorInterval(vm, "reload1"))
+            track.append(ActorInterval(vm, "reload1", playRate=self.Speed))
         elif action == self.StateEndReload:
-            track.append(ActorInterval(vm, "reload3"))
+            track.append(ActorInterval(vm, "reload3", playRate=self.Speed))
             
         fpsCam.setVMAnimTrack(track)

@@ -706,6 +706,8 @@ class Suit(Avatar):
             self.find('**/arms').setBSPMaterial(armTex, 1)
             self.find('**/torso').setBSPMaterial(blazTex, 1)
             
+            self.find('**/hands').setBSPMaterial("phase_3.5/maps/tt_t_ene_sellbotRental_hand.mat", 1)
+            
             if not self.variant == Variant.CORRODED:
                 self.find('**/hands').setColor(self.handColor)
             else:

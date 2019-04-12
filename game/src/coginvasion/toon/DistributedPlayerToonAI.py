@@ -22,10 +22,11 @@ from src.coginvasion.gags import GagGlobals
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.distributed import AdminCommands
 from src.coginvasion.tutorial.DistributedTutorialAI import DistributedTutorialAI
+from DistributedPlayerToonShared import DistributedPlayerToonShared
 import ToonDNA
 import types
 
-class DistributedPlayerToonAI(DistributedToonAI):
+class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
     notify = directNotify.newCategory('DistributedPlayerAI')
 
     def __init__(self, air):
@@ -35,6 +36,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
         except:
             self.DistributedPlayerToonAI_initialized = 1
         DistributedToonAI.__init__(self, air)
+        DistributedPlayerToonShared.__init__(self)
         self.questManager = QuestManagerAI(self)
         self.money = 0
         self.portal = None
@@ -45,6 +47,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
         self.puInventory = []
         self.equippedPU = -1
         self.backpack = BackpackAI(self)
+        self.backpackNetString = ""
         self.quests = ""
         self.questHistory = []
         self.tier = -1
@@ -57,14 +60,52 @@ class DistributedPlayerToonAI(DistributedToonAI):
         self.currentGag = -1
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
         return
+        
+    def getHealth(self):
+        return DistributedPlayerToonShared.getHealth(self)
+        
+    def getMaxHealth(self):
+        return DistributedPlayerToonShared.getMaxHealth(self)
+        
+    def b_setSessionHealth(self, health):
+        self.sendUpdate('setSessionHealth', [health])
+        self.setSessionHealth(health)
+        
+    def b_setSessionMaxHealth(self, health):
+        self.sendUpdate('setSessionMaxHealth', [health])
+        self.setSessionMaxHealth(health)
+        
+    def b_setHealth(self, hp):
+        if self.battleZone and not self.battleZone.getGameRules().useRealHealth():
+            self.b_setSessionHealth(hp)
+            return
+        
+        DistributedToonAI.b_setHealth(self, hp)
+        
+    def b_setMaxHealth(self, hp):
+        if self.battleZone and not self.battleZone.getGameRules().useRealHealth():
+            self.b_setSessionMaxHealth(hp)
+            return
+        
+        DistributedToonAI.b_setMaxHealth(self, hp)
 
     def reqMakeSewer(self):
         # TEMPORARY
-        from src.coginvasion.szboss.sewer.DistributedSewerAI import DistributedSewerAI
+        #from src.coginvasion.szboss.sewer.DistributedSewerAI import DistributedSewerAI
         zoneId = self.air.allocateZone()
-        sewer = DistributedSewerAI(self.air, self.doId)
-        sewer.generateWithRequired(zoneId)
-        self.sendUpdate('sewerHeadOff', [zoneId])
+        #sewer = DistributedSewerAI(self.air, self.doId)
+        #sewer.generateWithRequired(zoneId)
+        toons = []
+        for obj in self.air.doId2do.values():
+            if obj.zoneId == self.zoneId and isinstance(obj, DistributedPlayerToonAI):
+                toons.append(obj.doId)
+        from src.coginvasion.deathmatch.DistributedDeathmatchBattleAI import DistributedDeathmatchBattleAI
+        dm = DistributedDeathmatchBattleAI(self.air)
+        dm.setAvatars(toons)
+        dm.generateWithRequired(zoneId)
+        for toonId in toons:
+            toon = self.air.doId2do.get(toonId)
+            toon.sendUpdate('sewerHeadOff', [zoneId])
 
     def getCurrentGag(self):
         return self.getEquippedAttack()
@@ -433,8 +474,17 @@ class DistributedPlayerToonAI(DistributedToonAI):
         self.sendUpdate('setLoadout', [gagIds])
         self.setLoadout(gagIds)
 
-    def updateAttackAmmo(self, gagId, ammo):
-        self.backpack.setSupply(gagId, ammo)
+    def updateAttackAmmo(self, gagId, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip):
+        if self.useBackpack():
+            self.backpack.setSupply(gagId, ammo)
+        else:
+            DistributedToonAI.updateAttackAmmo(self, gagId, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip)
+            
+    def setupAttacks(self):
+        DistributedToonAI.setupAttacks(self)
+        # Update the player with the correct ammo numbers.
+        for attack in self.attacks.values():
+            attack.d_updateAttackAmmo()
     
     def setBackpackAmmo(self, netString):
         data = self.backpack.fromNetString(netString)
@@ -455,6 +505,11 @@ class DistributedPlayerToonAI(DistributedToonAI):
                 self.backpack.addGag(gagId, curSupply=supply)
             else:
                 self.backpack.setSupply(gagId, supply, updateEnabled=False)
+
+    def rebuildBackpack(self):
+        self.cleanupAttacks()
+        self.clearAttackIds()
+        self.setBackpackAmmo(self.backpack.netString)
     
     def b_setBackpackAmmo(self, netString):
         self.setBackpackAmmo(netString)
@@ -465,8 +520,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
         
     def getBackpackAmmo(self):
         if self.backpack:
-            netString = self.backpack.toNetString()
-            return netString
+            self.backpack.netString
         else:
             defaultBackpack = GagGlobals.getDefaultBackpack(isAI = True)
             return defaultBackpack.toNetString()
@@ -515,6 +569,7 @@ class DistributedPlayerToonAI(DistributedToonAI):
             self.DistributedPlayerToonAI_deleted
         except:
             self.DistributedPlayerToonAI_deleted = 1
+            DistributedPlayerToonShared.delete(self)
             self.questManager.cleanup()
             self.questManager = None
             self.money = None
@@ -558,5 +613,5 @@ class DistributedPlayerToonAI(DistributedToonAI):
             del self.lastHood
             del self.defaultShard
             del self.trackExperience
-            DistributedPlayerToonAI.delete(self)
+            DistributedToonAI.delete(self)
         return
