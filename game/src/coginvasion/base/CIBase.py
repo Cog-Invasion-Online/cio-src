@@ -402,7 +402,6 @@ class CIBase(ShowBase):
         for prop in base.bspLevel.findAllMatches("**/+BSPProp"):
             base.createAndEnablePhysicsNodes(prop)
         #base.setupNavMesh(base.bspLevel.find("**/model-0"))
-        CIGlobals.preRenderScene(base.bspLevel)
         
         try:    skyType = self.cr.playGame.hood.olc.skyType
         except: skyType = 1#self.bspLoader.getEntityValueInt(0, "skytype")
@@ -410,6 +409,8 @@ class CIBase(ShowBase):
         if skyType != OutdoorLightingConfig.STNone:
             skyCubemap = loader.loadCubeMap(OutdoorLightingConfig.SkyData[skyType][2])
             self.shaderGenerator.setIdentityCubemap(skyCubemap)
+            
+        CIGlobals.preRenderScene(render)
 
     def doNextFrame(self, func, extraArgs = []):
         taskMgr.add(self.__doNextFrameTask, "doNextFrame" + str(id(func)), extraArgs = [func, extraArgs], appendTask = True)
