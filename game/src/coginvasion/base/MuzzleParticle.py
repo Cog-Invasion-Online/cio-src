@@ -10,7 +10,7 @@ class MuzzleParticle(NodePath):
         NodePath.__init__(self, 'muzzleParticle')
         
         muzzles = [1, 4]
-        muzzleroot = "resources/phase_14/hl2/muzzleflash{0}.png"
+        muzzleroot = "phase_14/hl2/muzzleflash{0}.png"
         
         cm = CardMaker("muzzleSpriteCard")
         cm.setFrame(-1, 1, -1, 1)
