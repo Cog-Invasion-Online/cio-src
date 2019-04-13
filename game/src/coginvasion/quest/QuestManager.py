@@ -20,26 +20,21 @@ class QuestManager(QuestManagerBase, DirectObject):
         QuestManagerBase.__init__(self, avatar)
         DirectObject.__init__(self)
         
-        # The quest posters that are shown when hitting the hotkey.
-        self.posters = []
-        
     def enableShowQuestsHotkey(self):
         place = base.cr.playGame.getPlace()
         if place and (hasattr(place, 'fsm') and not place.fsm.getCurrentState() is None) \
                 and place.fsm.getCurrentState().getName() == 'walk':
-            self.accept(base.inputStore.ViewQuests, self.showQuests)
+            self.acceptOnce(base.inputStore.ViewQuests, self.showQuests)
         
     def disableShowQuestsHotkey(self):
         self.ignore(base.inputStore.ViewQuests)
-        
-        if len(self.posters) > 0:
-            self.hideQuests(andReEnableKey=False)
+        self.hideQuests(andEnableKey=False)
         
     def showQuests(self):
         assert self is base.localAvatar.questManager
         positions = [(-0.45, 0.75, 0.3), (0.45, 0.75, 0.3), (-0.45, 0.75, -0.3), (0.45, 0.75, -0.3)]
-        if len(self.posters) != 0:
-            self.hideQuests(False)
+        
+        self.hideQuests()
 
         for i in range(4):
             quest = None
@@ -47,27 +42,28 @@ class QuestManager(QuestManagerBase, DirectObject):
             if i < len(self.quests.values()):
                 quest = self.quests.values()[i]
             poster = QuestGlobals.generatePoster(quest, parent = aspect2d)
+            poster.setName('QPoster{0}'.format(i))
             poster.setPos(positions[i])
             poster.setScale(0.95)
+            poster.setPythonTag('Data', poster)
             poster.show()
-            self.posters.append(poster)
-        self.accept(base.inputStore.ViewQuests + '-up', self.hideQuests)
+        self.acceptOnce(base.inputStore.ViewQuests + '-up', self.hideQuests)
         
-    def hideQuests(self, andReEnableKey = True):
-        for poster in self.posters:
-            poster.destroy()
-        self.posters = []
-        
-        if andReEnableKey:
-            self.enableShowQuestsHotkey()
+    def hideQuests(self, andEnableKey=True):
+        posters = aspect2d.findAllMatches('**/QPoster*')
+        for poster in posters:
+            poster.getPythonTag('Data').destroy()
+            poster.removeNode()
+            
+        if andEnableKey:
+            self.acceptOnce(base.inputStore.ViewQuests, self.showQuests)
 
     def makeQuestsFromData(self):
         QuestManagerBase.makeQuestsFromData(self, base.localAvatar)
-        self.posters = []
         
     def cleanup(self):
         QuestManagerBase.cleanup(self)
-        self.hideQuests(andReEnableKey = False)
+        self.hideQuests(andEnableKey=False)
         self.ignoreAll()
 
     def getTaskInfo(self, objective, speech = False):
