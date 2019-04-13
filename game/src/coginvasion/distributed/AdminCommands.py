@@ -51,20 +51,30 @@ class Role:
 class Token:
     """ The circular icon that displays above a staff member """
     
-    def __init__(self, color, assetId):
-        """ Expects an RGBA color and the id of the icon within the model with all the tokens """
+    def __init__(self, color, matName):
+        """ Expects an RGBA color and the material name """
         self.color = color
-        self.assetId = assetId
+        self.matName = matName
+        
+    def getColor(self):
+        return self.color
+        
+    def getMaterialPath(self):
+        return 'phase_3/maps/{0}'.format(self.matName)
 
-DeveloperToken = Token((255.0 / 255, 154.0 / 255, 0.0 / 255, 1), 500)
-ModeratorToken = Token((0.0 / 255, 85.0 / 255, 255.0 / 255, 1), 300)
-CreativeTeamToken = Token((99.0 / 255, 192.0 / 255, 74.0 / 255, 1), 600)
+TeamLeadToken = Token((194.0 / 255.0, 9.0 / 255.0, 4.0 / 255.0, 1.0), 'team_lead.mat')
+DeveloperToken = Token((0.0 / 255, 134.0 / 255, 254.0 / 255, 1.0), 'developer.mat')
+ModeratorToken = Token((241.0 / 255, 183.0 / 255, 48.0 / 255, 1.0), 'moderator.mat')
+PublicRelationsToken = Token((231.0 / 255.0, 131.0 / 255.0, 46.0 / 255.0, 1.0), 'public_relations.mat')
+CreativeTeamToken = Token((100.0 / 255, 193.0 / 255, 75.0 / 255, 1.0), 'creative.mat')
 
 # Access Level : Role Instance
 # Keys should be identical to the actual access level passed into the Role class.
 Roles = {
-    1000 : Role("Developer", 1000, DeveloperToken, ['*']),
+    1000 : Role("Team Lead", 1000, TeamLeadToken, ['*']),
+    750 : Role("Developer", 750, DeveloperToken, ['*']),
     500 : Role("Creative", 500, CreativeTeamToken, ['*']),
+    250 : Role("Public Relations", 250, PublicRelationsToken, ['*']),
     100 : Role("Moderator", 100, ModeratorToken, ['*'])
 }
 

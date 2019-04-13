@@ -1040,7 +1040,6 @@ class LocalToon(DistributedPlayerToon):
             self.positionExaminer = None
         self.disablePicking()
         self.destroyFriendButton()
-        self.stopMonitoringHP()
         self.stopLookAround()
         self.disableAvatarControls()
         self.destroyControls()
@@ -1061,7 +1060,6 @@ class LocalToon(DistributedPlayerToon):
         self.disableLaffMeter()
         self.disableGags()
         self.disableChatInput()
-        self.stopMonitoringHP()
         self.hideBookButton()
         self.weaponType = None
         self.runSfx = None

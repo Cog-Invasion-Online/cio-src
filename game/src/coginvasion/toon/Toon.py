@@ -485,18 +485,35 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.flush()
 
     def setAdminToken(self, tokenInstance):
-        if tokenInstance and tokenInstance.assetId > -1:
-            icons = loader.loadModel("phase_3/models/props/gm_icons.bam")
-            self.tokenIcon = icons.find('**/access_level_%s' % (tokenInstance.assetId))
+        
+        if tokenInstance:
+            matPath = tokenInstance.getMaterialPath()
+            self.tokenIcon = loader.loadModel("phase_3/models/props/staffIcon.bam")
             self.tokenIcon.reparentTo(self)
-            x = self.nametag3d.getX()
-            y = self.nametag3d.getY()
-            z = self.nametag3d.getZ()
-            self.tokenIcon.setPos(Vec3(x, y, z) + (0, 0, 0.5))
-            self.tokenIcon.setScale(0.4)
+            self.tokenIcon.setScale(0.75)
+            self.tokenIcon.setShaderAuto()
+            
+            # Let's update the material.
+            self.tokenIcon.setBSPMaterial(matPath, 1)
+            
+            # Let's position the icon above the nametag.
+            x, y, z = self.nametag3d.getPos()
+            self.tokenIcon.setPos(Vec3(x, y, z + self.tokenIcon.getSz()))
+            
+            r, g, b, _ = tokenInstance.getColor()
+            
+            # Let's add the glow.
+            glow = loader.loadModel('phase_4/models/minigames/particleGlow.bam')
+            glow.reparentTo(self.tokenIcon)
+            glow.setScale(2.50)
+            glow.setColorScale((r, g, b, 0.50), 1)
+            glow.setBSPMaterial('phase_4/maps/particleGlow.mat', 1)
+            glow.setDepthWrite(False, 1)
+            glow.setShaderAuto()
+            glow.setTwoSided(1)
+            
             self.tokenIconIval = Sequence(LerpHprInterval(self.tokenIcon, duration = 3.0, hpr = Vec3(360, 0, 0), startHpr = Vec3(0, 0, 0)))
             self.tokenIconIval.loop()
-            icons.removeNode()
         else:
             self.removeAdminToken()
 
