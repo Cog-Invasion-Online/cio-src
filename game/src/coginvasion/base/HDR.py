@@ -146,7 +146,7 @@ class HDR(DirectObject):
         
         base.filters.setExposure(self.exposureTex)
 
-        taskMgr.add(self.__update, "hdrUpdate")
+        taskMgr.add(self.__update, "hdrUpdate", sort = -10000000)
 
         if base.config.GetBool("hdr-debug-histogram", False):
             self.debugTex = Texture('histogramDebugTex')
@@ -159,7 +159,7 @@ class HDR(DirectObject):
             self.debugCompute.setShader(Shader.loadCompute(Shader.SLGLSL, "phase_14/models/shaders/debug_histogram.compute.glsl"), 1)
             self.debugCompute.setShaderInput("histogram_texture", self.histogramTex)
             self.debugCompute.setShaderInput("debug_texture", self.debugTex)
-            self.debugCompute.setBin("fixed", 3)
+            self.debugCompute.setBin("fixed", 2)
             self.debugImg = OnscreenImage(image = self.debugTex, scale = 0.3, pos = (-0.6, -0.7, -0.7))
 
     def __update(self, task):          

@@ -85,6 +85,20 @@ MB_Moving = 1
 MB_Crouching = 2
 MB_Walking = 4
 
+def emitSound(soundPath, pos, volume = 1.0, other = None):
+    if isinstance(soundPath, list) or isinstance(soundPath, tuple):
+        if len(soundPath) == 0:
+            return
+        import random
+        soundPath = random.choice(soundPath)
+    from direct.interval.IntervalGlobal import Sequence, SoundInterval, Func
+    if not other:
+        other = render
+    soundNode = render.attachNewNode("sound")
+    soundNode.setPos(other, pos)
+    sound = base.loadSfxOnNode(soundPath, soundNode)
+    Sequence(SoundInterval(sound, volume = volume), Func(base.audio3d.detachSound, sound), Func(soundNode.removeNode)).start()
+
 def makeSprite(name, texture, scale):
     from panda3d.core import (GeomVertexFormat, GeomVertexData, GeomEnums,
                               InternalName, GeomVertexWriter, GeomPoints,

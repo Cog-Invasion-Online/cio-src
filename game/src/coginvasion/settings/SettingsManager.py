@@ -361,3 +361,8 @@ class SettingsManager:
                 render.clearAntialias()
                 aspect2d.clearAntialias()
                 render2d.clearAntialias()
+        elif sunrise == SHOWBASE_PREINIT:
+            if metadata.MULTITHREADED_PIPELINE:
+                print "Applying temporary multithreaded pipeline fixes."
+                # Until it's fixed, we can't do hardware skinning with multithreaded pipeline.
+                loadPrcFileData("", "hardware-animated-vertices #f")

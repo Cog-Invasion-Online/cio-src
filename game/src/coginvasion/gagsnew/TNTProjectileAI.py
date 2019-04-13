@@ -12,6 +12,7 @@ class TNTProjectileAI(DistributedPhysicsEntityAI):
         DistributedPhysicsEntityAI.__init__(self, air)
         self.avatar = avatar
         self.attack = attack
+        self.surfaceProp = "tossable"
     
     def getPhysBody(self):
         shape = BulletCylinderShape(0.3925, 1.4, ZUp)

@@ -49,6 +49,9 @@ class DistributedBattleZone(DistributedObject):
         self.entZoneHandle = None
         self.entZone = 0
         
+    def emitSound(self, soundPath, worldPos, volume):
+        CIGlobals.emitSound(soundPath, worldPos, volume)
+        
     def setEntZone(self, zone):
         self.entZone = zone
         

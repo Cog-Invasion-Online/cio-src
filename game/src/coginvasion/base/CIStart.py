@@ -12,7 +12,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import PandaSystem
 from panda3d.core import Thread, loadPrcFile, loadPrcFileData, CollisionTraverser, CullBinManager
-from panda3d.core import ConfigVariableDouble
+from panda3d.core import ConfigVariableDouble, ConfigVariableString
 #from panda3d.core import PStatClient, WindowProperties
 
 import Logger
@@ -49,6 +49,9 @@ else:
     
     loadPrcFileData('', 'model-path ./resources') # Don't require mounting of phases
     notify.info('Running Development Environment')
+    
+if ConfigVariableString("threading-model", "").getValue() == "Cull/Draw":
+    metadata.MULTITHREADED_PIPELINE = 1
     
 notify.info(metadata.getBuildInformation())
 notify.info('Phase directory: {0}'.format(metadata.PHASE_DIRECTORY))

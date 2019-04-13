@@ -67,6 +67,7 @@ class Suit(Avatar):
         self.suitPlan = None
         self.footstepSound = None
         self.showNametagInMargins = False
+        self.surfaceProp = "metal"
 
         self.activities = {ACT_WAKE_ANGRY   :   WakeAngry(self),
                            ACT_SMALL_FLINCH :   Flinch(self),

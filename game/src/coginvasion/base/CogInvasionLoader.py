@@ -31,7 +31,7 @@ class CogInvasionLoader(Loader.Loader):
               'phase_8', 'phase_9', 'phase_10', 'phase_11', 'phase_12', 'phase_13', 'phase_14',
               'phase_0']
     
-    LegalResourcePackExtensions = ['jpg', 'jpeg', 'png', 'ogg', 'rgb', 'mid', 'midi']
+    LegalResourcePackExtensions = ['jpg', 'jpeg', 'png', 'ogg', 'rgb', 'mid', 'midi', 'wav', 'mat']
 
     def __init__(self, base):
         Loader.Loader.__init__(self, base)

@@ -31,6 +31,7 @@ class Metadata:
     USE_REAL_SHADOWS = 1
     PHYS_FIXED_TIMESTEP = 1
     PHYS_SUBSTEPS = 1
+    MULTITHREADED_PIPELINE = 0
     
     def __init__(self):
         try:

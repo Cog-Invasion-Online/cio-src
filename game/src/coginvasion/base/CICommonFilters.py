@@ -377,7 +377,7 @@ class CommonFilters:
                     downsampler="phase_3/models/shaders/filter-copy.sha"
                 else:
                     scale=2
-                    downsampler="phase_3/models/shaders/ilter-copy.sha"
+                    downsampler="phase_3/models/shaders/filter-copy.sha"
                 self.bloom.append(self.manager.renderQuadInto(colortex=bloom0, div=2,     align=scale))
                 self.bloom.append(self.manager.renderQuadInto(colortex=bloom1, div=scale, align=scale))
                 self.bloom.append(self.manager.renderQuadInto(colortex=bloom2, div=scale, align=scale))
@@ -493,10 +493,7 @@ class CommonFilters:
                 text += "  result = lerp(tex2D(k_txblur1, %s), result, blurFactor);\n" % (texcoords["blur1"])
             if ("Bloom" in configuration):
                 #text += "  result = saturate(result);\n";
-                if ("Exposure" in configuration):
-                    text += "  float4 bloom = saturate(exposure) * tex2D(k_txbloom3, %s);\n" % (texcoords["bloom3"])
-                else:
-                    text += "  float4 bloom = 0.5 * tex2D(k_txbloom3, %s);\n" % (texcoords["bloom3"])
+                text += "  float4 bloom = 0.5 * tex2D(k_txbloom3, %s);\n" % (texcoords["bloom3"])
                 text += "  result = 1-((1-bloom)*(1-result));\n"
             if ("ViewGlow" in configuration):
                 text += "  result.r = result.a;\n"

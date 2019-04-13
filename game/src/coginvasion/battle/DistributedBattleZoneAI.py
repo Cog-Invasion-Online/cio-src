@@ -74,6 +74,14 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         # loading the BSP level, add interest into the entity zone.
         self.entZone = self.air.allocateZone()
         
+    def d_emitSound(self, soundPath, worldPos, volume = 1.0):
+        if isinstance(soundPath, list) or isinstance(soundPath, tuple):
+            if len(soundPath) == 0:
+                return
+            import random
+            soundPath = random.choice(soundPath)
+        self.sendUpdate('emitSound', [soundPath, [worldPos[0], worldPos[1], worldPos[2]], volume])
+        
     def getEntZone(self):
         return self.entZone
 

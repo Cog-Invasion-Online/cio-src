@@ -12,6 +12,7 @@ class BombProjectileAI(DistributedPhysicsEntityAI):
         DistributedPhysicsEntityAI.__init__(self, air)
         self.avatar = avatar
         self.attack = attack
+        self.surfaceProp = "tossable"
     
     def getPhysBody(self):
         bsph = BulletSphereShape(0.6)

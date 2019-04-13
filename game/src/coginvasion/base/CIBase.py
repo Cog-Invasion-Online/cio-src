@@ -62,7 +62,7 @@ class CIBase(ShowBase):
         gsg = self.win.getGsg()
             
         # Let's print out the Graphics information.
-        self.notify.info('Graphics Information:\n\tVendor: {0}\n\tRenderer: {1}\n\tVersion: {2}\n\tSupports Cube Maps: {3}\n\tSupports 3D Textures: {4}\n\tSupports Computational Shaders: {5}'
+        self.notify.info('Graphics Information:\n\tVendor: {0}\n\tRenderer: {1}\n\tVersion: {2}\n\tSupports Cube Maps: {3}\n\tSupports 3D Textures: {4}\n\tSupports Compute Shaders: {5}'
                          .format(gsg.getDriverVendor(), 
                                  gsg.getDriverRenderer(), 
                                  gsg.getDriverVersion(), 
@@ -588,7 +588,7 @@ class CIBase(ShowBase):
             return
 
         if flag:
-            self.filters.setBloom(desat = 1.0, intensity = 0.4)
+            self.filters.setBloom(desat = 0, intensity = 0.4, size = "large")
         else:
             self.filters.delBloom()
         

@@ -32,8 +32,8 @@ class DeathmatchRulesAI(GameRulesAI):
         
     def respawnPlayer(self, player):
         
-        from src.coginvasion.attack.Attacks import ATTACK_HL2PISTOL, ATTACK_HL2SHOTGUN
-        player.b_setAttackIds([ATTACK_HL2PISTOL, ATTACK_HL2SHOTGUN])
+        from src.coginvasion.attack.Attacks import ATTACK_HL2PISTOL, ATTACK_HL2SHOTGUN, ATTACK_GAG_TNT
+        player.b_setAttackIds([ATTACK_HL2PISTOL, ATTACK_HL2SHOTGUN, ATTACK_GAG_TNT])
         
         player.b_setMaxHealth(100)
         player.b_setHealth(100)

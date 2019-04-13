@@ -6,7 +6,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cog.ai.AIGlobal import RELATIONSHIP_FRIEND
 from TakeDamageInfo import TakeDamageInfo
 from src.coginvasion.attack.BaseAttackShared import BaseAttackShared
-from src.coginvasion.phys import PhysicsUtils
+from src.coginvasion.phys import PhysicsUtils, Surfaces
 
 class BaseAttackAI(BaseAttackShared):
     notify = directNotify.newCategory("BaseAttackAI")
@@ -39,6 +39,9 @@ class BaseAttackAI(BaseAttackShared):
         return True
 
     def onProjectileHit(self, contact, collider, intoNP):
+        surface = Surfaces.getSurface(intoNP.getSurfaceProp())
+        self.avatar.getBattleZone().d_emitSound(surface.getBulletImpacts(), contact.getHitPos(), 0.5)
+        
         avNP = intoNP.getParent()
 
         collider.d_impact(contact.getHitPos())
@@ -60,7 +63,11 @@ class BaseAttackAI(BaseAttackShared):
 
         collider.requestDelete()
 
-    def __handleHitSomething_trace(self, hitNode, hitPos, distance, origin, traces = 1):
+    def __handleHitSomething_trace(self, hitNode, hitPos, distance, origin, traces = 1, impact = True):
+        if impact:
+            surface = Surfaces.getSurface(hitNode.getSurfaceProp())
+            self.avatar.getBattleZone().d_emitSound(surface.getBulletImpacts(), hitPos, 0.5)
+            
         avNP = hitNode.getParent()
         
         try:
@@ -79,7 +86,7 @@ class BaseAttackAI(BaseAttackShared):
                     break
         except: pass
 
-    def doTraceAndDamage(self, origin, dir, dist, traces = 1):
+    def doTraceAndDamage(self, origin, dir, dist, traces = 1, impact = True):
         # Trace a line from the trace origin outward along the trace direction
         # to find out what we hit, and adjust the direction of the hitscan
         traceEnd = origin + (dir * dist)
@@ -92,7 +99,7 @@ class BaseAttackAI(BaseAttackShared):
             node = hit.getNode()
             hitPos = hit.getHitPos()
             distance = (hitPos - origin).length()
-            self.__handleHitSomething_trace(NodePath(node), hitPos, distance, origin, traces)
+            self.__handleHitSomething_trace(NodePath(node), hitPos, distance, origin, traces, impact)
 
     def getPostAttackSchedule(self):
         return None

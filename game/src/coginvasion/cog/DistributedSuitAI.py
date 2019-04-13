@@ -49,6 +49,8 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         self.variant = Variant.NORMAL
         self.level = 0
         self.animStateChangeEvent = SuitGlobals.animStateChangeEvent
+        
+        self.surfaceProp = "metal"
 
         # This is for handling death.
         self.deathAnim = None
