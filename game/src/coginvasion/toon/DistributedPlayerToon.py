@@ -80,14 +80,14 @@ class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
     def handleHealthChange(self, hp, oldHp):
         if hp < oldHp and not self.firstTimeChangingHP:
             # We took damage, make oof sound.
-            self.takeDmgSfx.play()        
+            self.takeDmgSfx.play()
 
     def setHealth(self, health):
         self.handleHealthChange(health, self.getHealth())
         DistributedToon.setHealth(self, health)
         if self.doId != base.localAvatar.doId:
             if not self.firstTimeChangingHP:
-                if hp < self.getMaxHealth():
+                if health < self.getMaxHealth():
                     if not self.headMeter:
                         self.__makeHeadMeter()
                     else:
