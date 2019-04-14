@@ -132,7 +132,7 @@ class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
 
         if requester:
             # The requester is only authorized if they have a higher access level than we do.
-            authorized = (requester.getAccessLevel() > self.getAccessLevel())
+            authorized = (requester.getAccessLevel() >= self.getAccessLevel())
         
         return authorized
 
