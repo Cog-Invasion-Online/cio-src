@@ -409,6 +409,7 @@ class Place(StateData):
             base.localAvatar.enablePicking()
             base.localAvatar.showFriendButton()
             base.localAvatar.questManager.enableShowQuestsHotkey()
+        messenger.send(CIGlobals.ENTER_WALK_EVENT, [])
 
     def hideFriendsStuff(self):
         base.localAvatar.hideFriendButton()

@@ -311,10 +311,12 @@ class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
     def setQuests(self, dataStr):
         oldDataStr = self.quests
         self.quests = dataStr
-        base.localAvatar.questManager.makeQuestsFromData()
         
-        # Let's send our quest data update event.
-        messenger.send(QUEST_DATA_UPDATE_EVENT, [oldDataStr, dataStr])
+        if self == base.localAvatar:
+            base.localAvatar.questManager.makeQuestsFromData()
+        
+            # Let's send our quest data update event.
+            messenger.send(QUEST_DATA_UPDATE_EVENT, [oldDataStr, dataStr])
 
     def getQuests(self):
         return self.quests

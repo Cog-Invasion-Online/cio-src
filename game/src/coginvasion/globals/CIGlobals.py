@@ -849,6 +849,8 @@ NegativeTextColor = (1, 0, 0, 1)
 OrangeTextColor = (1, 0.5, 0, 1)
 YellowTextColor = (1, 1, 0, 1)
 
+ENTER_WALK_EVENT = 'enterWalkEvent'
+
 def getHeadsUpAngle(fromNP, to):
     _oldHpr = fromNP.getHpr()
     fromNP.headsUp(to)

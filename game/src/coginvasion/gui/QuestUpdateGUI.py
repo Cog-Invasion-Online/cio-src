@@ -48,11 +48,18 @@ class QuestUpdateGUI(DirectFrame):
         self.initialiseoptions(QuestUpdateGUI)
         self.accept(QUEST_DATA_UPDATE_EVENT, self.__handleNewQuestData, [])
         self.accept(BATTLE_COMPLETE_EVENT, self.__handleBattleCompletion, [])
+        self.accept(CIGlobals.ENTER_WALK_EVENT, self.__handleEnterWalk, [])
         
-    def __handleBattleCompletion(self):
+    def __addQueuedLines(self):
         for text, color in self.queuedLines.iteritems():
             self.addLine(text, color)
         self.queuedLines.clear()
+        
+    def __handleBattleCompletion(self):
+        self.__addQueuedLines()
+        
+    def __handleEnterWalk(self):
+        self.__addQueuedLines()
         
     def __handleNewQuestData(self, oldDataStr, newDataStr):
         _, oldData = QuestData.extractDataAsIntegerLists(oldDataStr, None)
@@ -172,9 +179,12 @@ class QuestUpdateGUI(DirectFrame):
         
     def addLine(self, text, color):
         # Whilst in a battle, we don't want to display update text.
-        if base.localAvatarReachable() and base.localAvatar.getBattleZone():
-            self.queuedLines[text] = color
-            return
+        if base.localAvatarReachable():
+            place = base.cr.playGame.getPlace()
+            
+            if base.localAvatar.getBattleZone() or (place and place.fsm.getCurrentState().getName() != 'walk'):
+                self.queuedLines[text] = color
+                return
         
         if len(self.lines) == self.MAX_LINES:
             oldestLine = self.lines[len(self.lines)-1]
