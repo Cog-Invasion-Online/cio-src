@@ -11,6 +11,7 @@ from src.coginvasion.quest.Quest import Quest
 from src.coginvasion.quest import QuestData
 
 from collections import OrderedDict
+import itertools
 
 class QuestUpdateGUI(DirectFrame):
     
@@ -57,31 +58,35 @@ class QuestUpdateGUI(DirectFrame):
         _, oldData = QuestData.extractDataAsIntegerLists(oldDataStr, None)
         _, newData = QuestData.extractDataAsIntegerLists(newDataStr, None)
         
+        newQuests = {}
+        oldQuests = {}
+        
+        for newQuestData in newData:
+            questId = newQuestData[0]
+            quest = Quest(questId, None)
+            quest.setupCurrentObjectiveFromData(newQuestData[2], newQuestData[1], newQuestData[3])
+            newQuests.update({questId : quest})
+            
+        for oldQuestData in oldData:
+            questId = oldQuestData[0]
+            quest = Quest(questId, None)
+            quest.setupCurrentObjectiveFromData(oldQuestData[2], oldQuestData[1], oldQuestData[3])
+            oldQuests.update({questId : quest})
+        
         if len(oldDataStr) > 0:
             
             # Let's display the text for completed quests.
             if len(oldData) > len(newData):
-                for i in xrange(len(newData), len(oldData)):
-                    quest = Quest(oldData[i][0], None)
-                    
-                    self.addLine('{0}: \"{1}\"'.format(self.QUEST_COMPLETE, quest.name), self.GREEN_COLOR)
-                    quest.cleanup()
+                for questId, quest in oldQuests.iteritems():
+                    if not questId in newQuests.keys():
+                        # This quest isn't in our new dictionary. It must've been completed!
+                        quest = oldQuests.get(questId)
+                        self.addLine('{0}: \"{1}\"'.format(self.QUEST_COMPLETE, quest.name), self.GREEN_COLOR)
             
-            for i, newQuestData in enumerate(newData):
-                newQuest = Quest(newQuestData[0], None)
-                newQuest.setupCurrentObjectiveFromData(newQuestData[2], newQuestData[1], newQuestData[3])
-                
-                oldQuest = None
-                
-                try:
-                    oldQuestData = oldData[i]
-                    oldQuest = Quest(oldQuestData[0], None)
-                    oldQuest.setupCurrentObjectiveFromData(oldQuestData[2], oldQuestData[1], oldQuestData[3])
-                except IndexError:
-                    pass
+            for questId, newQuest in newQuests.iteritems():
+                oldQuest = oldQuests.get(questId, None)
                 
                 if oldQuest:
-                    print 'Working on Old Quest: {0} and New Quest: {1}'.format(oldQuest.name, newQuest.name)
                     # Let's handle when the quest is complete.
                     if newQuest.isComplete() and not oldQuest.isComplete():
                         objective = newQuest.accessibleObjectives[0]
@@ -127,10 +132,12 @@ class QuestUpdateGUI(DirectFrame):
                     
                     self.addLine('{0}: \"{1}\"'.format(self.NEW_QUEST, newQuest.name), self.YELLOW_COLOR)
                     self.addLine('{0}: {1}'.format(self.NEW_OBJECTIVE, objInfo), self.YELLOW_COLOR)
-                    
-                # Let's cleanup our garbage now.
-                newQuest.cleanup()
-                if oldQuest: oldQuest.cleanup()
+        
+        # Let's cleanup our garbage now.
+        for quest in itertools.chain(oldQuests.values(), newQuests.values()):
+            quest.cleanup()
+        newQuests.clear()
+        oldQuests.clear()
         
     def addLine(self, text, color):
         # Whilst in a battle, we don't want to display update text.
