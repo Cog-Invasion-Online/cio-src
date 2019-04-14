@@ -61,7 +61,7 @@ class QuestPoster(DirectFrame):
         self.defineoptions(kw, optiondefs)
         
         # Finally, initialize the DirectFrame.
-        DirectFrame.__init__(self, relief = None)
+        DirectFrame.__init__(self, parent, relief = None)
         self.initialiseoptions(QuestPoster)
         
         # Let's declare and initialize our barebone GUI element variables.
