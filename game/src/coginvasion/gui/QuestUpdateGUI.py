@@ -10,6 +10,8 @@ from src.coginvasion.quest.QuestGlobals import RETURN, QUEST_DATA_UPDATE_EVENT, 
 from src.coginvasion.quest.Quest import Quest
 from src.coginvasion.quest import QuestData
 
+from collections import OrderedDict
+
 class QuestUpdateGUI(DirectFrame):
     
     MAX_LINES = 4
@@ -40,7 +42,7 @@ class QuestUpdateGUI(DirectFrame):
         self.alertSfx = base.loadSfx('phase_5.5/audio/sfx/mailbox_alert.ogg')
         
         # Text as keys and colors as values
-        self.queuedLines = {}
+        self.queuedLines = OrderedDict()
         
         self.initialiseoptions(QuestUpdateGUI)
         self.accept(QUEST_DATA_UPDATE_EVENT, self.__handleNewQuestData, [])
@@ -133,7 +135,7 @@ class QuestUpdateGUI(DirectFrame):
     def addLine(self, text, color):
         # Whilst in a battle, we don't want to display update text.
         if base.localAvatarReachable() and base.localAvatar.getBattleZone():
-            self.queuedLines.update({text : color})
+            self.queuedLines[text] = color
             return
         
         if len(self.lines) == self.MAX_LINES:
@@ -210,7 +212,7 @@ class QuestUpdateGUI(DirectFrame):
         self.queuedLines.clear()
             
     def cleanup(self):
-        self.ignore(QUEST_DATA_UPDATE_EVENT)
+        self.ignoreAll()
         self.clear()
         self.lines = None
         self.ivalDict = None
