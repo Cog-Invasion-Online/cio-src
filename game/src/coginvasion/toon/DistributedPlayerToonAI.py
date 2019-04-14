@@ -126,14 +126,15 @@ class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
         self.air.clientAddSessionObject(sender, obj.doId)
         obj.b_setLocation(obj.parentId, self.zoneId)
 
-    def __requesterAuthorized(self, notDev = False):
+    def __requesterAuthorized(self):
         requester = self.air.doId2do.get(self.air.getAvatarIdFromSender())
+        authorized = False
+
         if requester:
-            hasAccess = requester.getAccessLevel() > AdminCommands.NoAccess
-            if ((not notDev and hasAccess) or
-                (notDev and hasAccess and self.getAccessLevel() != AdminCommands.RoleIdByName.get("Developer"))):
-                return True
-        return False
+            # The requester is only authorized if they have a higher access level than we do.
+            authorized = (requester.getAccessLevel() > self.getAccessLevel())
+        
+        return authorized
 
     def reqUnlockAllGags(self):
         if self.__requesterAuthorized():
@@ -154,7 +155,7 @@ class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
         if self.__requesterAuthorized():
             if flag:
                 # Apply the TSA uniform to this toon.
-                if self.getAccessLevel() != AdminCommands.RoleIdByName.get("Developer"):
+                if self.getAccessLevel() != AdminCommands.RoleIdByName.get(AdminCommands.DEVELOPER_ROLE):
                     if self.gender == 'girl':
                         self.shirt = ToonDNA.ToonDNA.femaleTopDNA2femaleTop['135'][0]
                         self.shorts = ToonDNA.ToonDNA.femaleBottomDNA2femaleBottom['43'][0]
@@ -328,7 +329,6 @@ class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
 
     ################################################
 
-
     def usedPU(self, index):
         self.puInventory[index] = 0
         self.puInventory[1] = 0
@@ -453,7 +453,9 @@ class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
         return self.money
 
     def setAccessLevel(self, accessLevel):
+        oldRole = self.role
         self.role = AdminCommands.Roles.get(accessLevel, None)
+        AdminCommands.handleRoleChange(self, oldRole, self.role)
         
     def b_setAccessLevel(self, accessLevel):
         self.sendUpdate('setAccessLevel', [accessLevel])
@@ -478,6 +480,12 @@ class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
         if self.useBackpack():
             self.backpack.setSupply(gagId, ammo)
         else:
+            
+            if ammo < 0:
+                ammo = abs(ammo)
+            if maxAmmo < 0:
+                maxAmmo = abs(maxAmmo)
+            
             DistributedToonAI.updateAttackAmmo(self, gagId, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip)
             
     def setupAttacks(self):

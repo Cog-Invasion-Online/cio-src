@@ -16,10 +16,11 @@ import __builtin__
 
 NoAccess = 0
 
-Kick = 0
-Ban = 1
-UnlockAllGags = 2
-RefillLaff = 3
+TEAM_LEAD_ROLE = "Team Lead"
+DEVELOPER_ROLE = "Programming Dept."
+CREATIVE_TEAM_ROLE = "Creative Dept."
+PR_TEAM_ROLE = "PR Dept."
+MOD_TEAM_ROLE = "Moderation Dept."
 
 PERM_TOGGLE_GHOST = "ADM_TOGGLE_GHOST"
 PERM_DIST_MSG = "ADM_DISTRICT_MESSAGE"
@@ -71,18 +72,17 @@ CreativeTeamToken = Token((100.0 / 255, 193.0 / 255, 75.0 / 255, 1.0), 'creative
 # Access Level : Role Instance
 # Keys should be identical to the actual access level passed into the Role class.
 Roles = {
-    1000 : Role("Team Lead", 1000, TeamLeadToken, ['*']),
-    750 : Role("Developer", 750, DeveloperToken, ['*']),
-    500 : Role("Creative", 500, CreativeTeamToken, ['*']),
-    250 : Role("Public Relations", 250, PublicRelationsToken, ['*']),
-    100 : Role("Moderator", 100, ModeratorToken, ['*'])
+    1000 : Role(TEAM_LEAD_ROLE, 1000, TeamLeadToken, ['*']),
+    750 : Role(DEVELOPER_ROLE, 750, DeveloperToken, ['*']),
+    500 : Role(CREATIVE_TEAM_ROLE, 500, CreativeTeamToken, ['*']),
+    250 : Role(PR_TEAM_ROLE, 250, PublicRelationsToken, ['*']),
+    100 : Role(MOD_TEAM_ROLE, 100, ModeratorToken, ['*'])
 }
 
-RoleIdByName = {
-    "Developer" : 1000,
-    "Creative" : 500,
-    "Moderator" : 100
-}
+RoleIdByName = {}
+
+for accessLevel, role in Roles.iteritems():
+    RoleIdByName[role.name] = accessLevel
 
 ########################################
 def precommandChecks(permission):
@@ -102,6 +102,19 @@ def precommandChecks(permission):
 def hasUpdateAuthorityOn():
     pass
 ########################################
+
+def handleRoleChange(avatar, prevRole, newRole):
+    
+    if newRole.hasPermission(PERM_SET_WORLD_ACCESS):
+        # Let's give the avatar access to all the neighborhoods if they
+        # have the permission to set world access.
+
+        from src.coginvasion.hood import ZoneUtil
+        
+        zoneIds = ZoneUtil.Hood2ZoneId.values()
+        
+        avatar.b_setTeleportAccess(zoneIds)
+        avatar.b_setHoodsDiscovered(zoneIds)
 
 # Command name followed by its 
 Commands = {}

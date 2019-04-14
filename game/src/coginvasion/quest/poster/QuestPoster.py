@@ -395,6 +395,7 @@ class QuestPoster(DirectFrame):
             cogHead.setName('%sHead' % CIGlobals.Suit)
             cogHead.setPythonTag('Settings', cogHeadInstance.head)
             cogHead.setScale(2)
+            cogHead.setLightOff()
             self.handleComplexIcon(cogHead, iconElement)
             
             # HACK FIX: Corrects the buggy Flunky glasses.

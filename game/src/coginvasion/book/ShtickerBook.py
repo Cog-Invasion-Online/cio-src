@@ -170,9 +170,8 @@ class ShtickerBook(DirectFrame, StateData):
             else:
                 lastBookPage = self.pages[lastBookPage]
 
-            # Hide our toon and put a blur filter on the scene.
+            # Hide our toon
             base.localAvatar.getGeomNode().hide()
-            base.filters.setBlurSharpen(0.0)
 
             # Create the main book image (frame) and play the
             # open sfx.
@@ -191,9 +190,6 @@ class ShtickerBook(DirectFrame, StateData):
             if self.currentPage:
                 self.currentPage.exit()
                 self.currentPage = None
-
-            # Remove that blur.
-            base.filters.delBlurSharpen()
 
             base.localAvatar.getGeomNode().show()
 

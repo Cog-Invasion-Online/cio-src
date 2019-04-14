@@ -14,8 +14,6 @@ from panda3d.bsp import BSPMaterialAttrib
 import TownLoader
 import TTStreet
 
-from src.coginvasion.globals import CIGlobals
-
 class TTTownLoader(TownLoader.TownLoader):
 
     def __init__(self, hood, parentFSM, doneEvent):

@@ -465,12 +465,16 @@ class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
         return self.money
 
     def setAccessLevel(self, value):
+        prevLevel = self.getAccessLevel()
         self.role = AdminCommands.Roles.get(value, None)
-        if self.role:
-            # Put an admin token above my head.
-            DistributedToon.setAdminToken(self, self.role.token)
-        else:
+        
+        if prevLevel != AdminCommands.NoAccess:
+            # Let's remove any tokens that already are showing up.
             DistributedToon.removeAdminToken(self)
+        
+        if self.role:
+            # Let's put a new token above our head.
+            DistributedToon.setAdminToken(self, self.role.token)
 
     def getAccessLevel(self):
         return AdminCommands.NoAccess if not self.role else self.role.accessLevel

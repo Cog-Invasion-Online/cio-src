@@ -139,7 +139,9 @@ class AdminTokenDialog(Dialog.GlobalDialog):
         pref = "Give"
         if accessLevel == AdminCommands.NoAccess:
             pref = "Remove"
-        self.choiceDialog.cleanup()
+        if self.choiceDialog:
+            self.choiceDialog.cleanup()
+            self.choiceDialog = None
         self.choiceDialog = Dialog.GlobalDialog(pref + " TSA uniform?", "tsaChoice", Dialog.YesNo)
         self.choiceDialog.show()
         self.acceptOnce("tsaChoice", self.__handleTSAChoice, [avId, accessLevel])

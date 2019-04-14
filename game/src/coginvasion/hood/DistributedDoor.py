@@ -29,7 +29,7 @@ class DistributedDoor(DistributedObject.DistributedObject):
     EXT_HQ = 3
     EXT_GAGSHOP = 4
     
-    LIT_INTERIOR_COLOR = Vec4(1.0, 229.0 / 255.0, 102.0 / 255.0, 0.35)
+    LIT_INTERIOR_COLOR = Vec4(1.0, 236.0 / 255.0, 142.0 / 255.0, 1.0)
 
     def __init__(self, cr):
         DistributedObject.DistributedObject.__init__(self, cr)
@@ -487,9 +487,30 @@ class DistributedDoor(DistributedObject.DistributedObject):
     def toggleDoorHole(self, side, show = False):
         side = side.title()
         if self.building:
+            isDDL = self.cr.playGame.hood.id == DonaldsDreamland
+            isExt = self.getDoorType() in [self.EXT_GAGSHOP, self.EXT_HQ, self.EXT_STANDARD]
+            holeColor = self.LIT_INTERIOR_COLOR if (isExt and isDDL) else (0.0, 0.0, 0.0, 1.0)
+            
             if self.getDoorType() == self.EXT_HQ:
                 hole = self.building.find('**/doorFrameHole%s_%d' % (side, self.doorIndex))
                 geom = self.building.find('**/doorFrameHole%sGeom_%d' % (side, self.doorIndex))
+                
+                if not hole or hole.isEmpty():
+                    doorFlats = self.building.findAllMatches('**/door_fla*;+s+i')
+                    
+                    for doorFlat in doorFlats:
+                        if not doorFlat.isEmpty() and int(doorFlat.getName()[len(doorFlat.getName()) - 1]) == self.doorIndex:
+                            # Let's reset the material to the default white.
+                            doorFlat.setBSPMaterial('phase_14/materials/white.mat', 1)
+
+                            # This is a hacky way to make sure the flat part is behind the door.
+                            # This took me like 2 hours to figure out this workaround. Don't question it
+                            # with some stupid #setPos() trash, depth write/depth test, or any of that. This works.
+                            doorFlat.setSy(0.995)
+
+                            hole = doorFlat
+                            break
+
             elif self.getDoorType() == self.INT_HQ:
                 hole = render.find('**/door_' + str(self.doorIndex) + '/**/doorFrameHole%s;+s+i' % side)
                 geom = render.find('**/door_' + str(self.doorIndex) + '/**/doorFrameHole%sGeom;+s+i' % side)
@@ -497,37 +518,16 @@ class DistributedDoor(DistributedObject.DistributedObject):
                 hole = self.building.find('**/doorFrameHole%s' % side)
                 geom = self.building.find('**/doorFrameHole%sGeom' % side)
                 
-            if not hole or hole.isEmpty():
-                doorFlats = self.building.findAllMatches('**/door_fla*;+s+i')
-                
-                for doorFlat in doorFlats:
-                    if not doorFlat.isEmpty() and int(doorFlat.getName()[len(doorFlat.getName()) - 1]) == self.doorIndex:
-                        doorFlat.setColor((0.0, 0.0, 0.0, 1.0), 1)
-                        doorFlat.clearMaterial()
-                        
-                        # This is a hacky way to make sure the flat part is behind the door.
-                        # This took me like 2 hours to figure out this workaround. Don't question it
-                        # with some stupid #setPos() trash, depth write/depth test, or any of that. This works.
-                        doorFlat.setSy(0.995)
-
-                        hole = doorFlat
+            nodes = [hole, geom]
             
-            if not hole.isEmpty():
-                if not show:
-                    hole.hide()
-                    if not geom.isEmpty():
-                        geom.hide()
-                else:
-                    hole.show()
-                    if not geom.isEmpty():
-                        geom.show()
-                    
-                    isDDL = self.cr.playGame.hood.id == DonaldsDreamland
-                    if isDDL and self.getDoorType() in [self.EXT_GAGSHOP, self.EXT_STANDARD, self.EXT_STANDARD]:
-                        hole.setColor(self.LIT_INTERIOR_COLOR, 1)
-                        
-                        if not geom.isEmpty():
-                            geom.setColor(self.LIT_INTERIOR_COLOR, 1)
+            for node in nodes:
+                if node and not node.isEmpty():
+                    if show:
+                        node.show()
+                    else:
+                        node.hide()
+
+                    node.setColor(holeColor, 1)
 
     def printBuildingPos(self):
         self.notify.info(self.building.getPos(render))

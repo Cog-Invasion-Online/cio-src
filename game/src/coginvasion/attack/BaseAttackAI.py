@@ -116,6 +116,18 @@ class BaseAttackAI(BaseAttackShared):
         
     def d_updateAttackAmmo(self):
         if self.hasAvatar():
+            
+            problematic = 0
+            if self.ammo < 0:
+                self.ammo = abs(self.ammo)
+                problematic = 1
+            if self.maxAmmo < 0:
+                self.maxAmmo = abs(self.maxAmmo)
+                problematic = 1
+            
+            if problematic: self.notify.info('Attack ID {0} had problematic data. Ammo or max ammo or both had values less than 0!'.format(self.getID(), self.ammo, self.maxAmmo))
+                
+            
             self.avatar.sendUpdate('updateAttackAmmo', [self.getID(), self.ammo, self.maxAmmo, self.secondaryAmmo,
                                                         self.secondaryMaxAmmo, self.clip, self.maxClip])
 
