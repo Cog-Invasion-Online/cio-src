@@ -61,7 +61,7 @@ class QuestUpdateGUI(DirectFrame):
             
             # Let's display the text for completed quests.
             if len(oldData) > len(newData):
-                for i in xrange(len(newData)-1, len(oldData)):
+                for i in xrange(len(newData), len(oldData)):
                     quest = Quest(oldData[i][0], None)
                     
                     self.addLine('{0}: \"{1}\"'.format(self.QUEST_COMPLETE, quest.name), self.GREEN_COLOR)
@@ -97,7 +97,7 @@ class QuestUpdateGUI(DirectFrame):
                     
                     # Let's handle when the current objective changes.
                     elif newQuest.currentObjectiveIndex > oldQuest.currentObjectiveIndex:
-                        objInfo = newQuest.accessibleObjectives[0].getTaskInfo().replace('\n', ' ')
+                        objInfo = newQuest.accessibleObjectives[0].getUpdateBrief()
                         color = self.ORANGE_COLOR
                         prefix = self.NEW_OBJECTIVE
                         
@@ -112,7 +112,7 @@ class QuestUpdateGUI(DirectFrame):
                             oldObjective = oldQuest.accessibleObjectives[objIndex]
                             
                             if newObjective.progress > oldObjective.progress:
-                                objInfo = newObjective.getProgressText()
+                                objInfo = newObjective.getProgressUpdateBrief()
                                 prefix = self.OBJECTIVE_UPDATE
                                 color = self.YELLOW_COLOR
                                 
@@ -123,7 +123,7 @@ class QuestUpdateGUI(DirectFrame):
                                 self.addLine('{0}: {1}'.format(prefix, objInfo), color)
                 else:
                     newObjective = newQuest.accessibleObjectives[0]
-                    objInfo = newObjective.getTaskInfo().replace('\n', ' ')
+                    objInfo = newObjective.getUpdateBrief()
                     
                     self.addLine('{0}: \"{1}\"'.format(self.NEW_QUEST, newQuest.name), self.YELLOW_COLOR)
                     self.addLine('{0}: {1}'.format(self.NEW_OBJECTIVE, objInfo), self.YELLOW_COLOR)

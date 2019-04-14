@@ -297,6 +297,7 @@ class QuestPoster(DirectFrame):
             self.lReward.setup()
             
             newLineInObjInfo = '\n' in self.objectiveInfo['text']
+            isShopLoc = QuestGlobals.isShopLocation(objective.area) if not complete else False
             
             if complete:
                 locationText = QuestGlobals.getLocationText(None, objective)
@@ -304,7 +305,7 @@ class QuestPoster(DirectFrame):
                 locationText = QuestGlobals.getLocationText(objective.area)
             
             self.locationInfo['text'] = locationText
-            self.locationInfo['text_pos'] = (0.0, -0.025 if newLineInObjInfo else 0.0)
+            self.locationInfo['text_pos'] = (0.0, -0.025 if newLineInObjInfo else (0.025 if isShopLoc else 0.0))
             self.locationInfo.show()
         else:
             # We want to be able to show empty quest posters.

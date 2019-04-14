@@ -22,8 +22,6 @@ import random
 DefeatCog = 1
 RecoverItem = 2
 DeliverItem = 6
-DefeatCogInvasion = 3
-DefeatCogTournament = 4
 DefeatCogBuilding = 13
 InspectLocation = 15
 
@@ -37,7 +35,7 @@ VisitHQOfficer = 12
 DefeatCogObjectives = [DefeatCog]
 
 # This is so we know which objectives you have to defeat stuff.
-DefeatObjectives = [DefeatCog, DefeatCogInvasion, DefeatCogTournament, DefeatCogBuilding]
+DefeatObjectives = [DefeatCog, DefeatCogBuilding]
 
 class Objective:
     """ [goal, area] """
@@ -83,6 +81,9 @@ class Objective:
         pass
 
     def getTaskInfo(self, speech = False):
+        return ""
+    
+    def getUpdateBrief(self):
         return ""
 
     def isComplete(self):
@@ -147,6 +148,9 @@ class VisitNPCObjective(Objective):
             return '{0} {1} at {2}'.format(QuestGlobals.VISIT, NPCGlobals.NPCToonNames[self.npcId], locationText)
         else:
             return '{0} a {1}'.format(QuestGlobals.VISIT, NPCGlobals.lHQOfficerM)
+        
+    def getUpdateBrief(self):
+        return self.getTaskInfo(speech=False).replace('\n', '')
 
 class DefeatObjective(Objective):
     Header = QuestGlobals.DEFEAT
@@ -245,6 +249,40 @@ class CogObjective(DefeatObjective):
             infoText = str('%s %s' % (infoText, nameText))
 
         return infoText
+    
+    def getProgressUpdateBrief(self):
+        infoText = ''
+        
+        if self.level:
+            infoText += 'Level %s' % (str(self.level))
+        elif self.levelRange:
+            infoText += 'Level %s+' % (str(self.levelRange[0]))
+            
+        if self.variant:
+            variantTxt = Variant.VariantToName.get(self.variant)
+            if self.goal > 1:
+                variantTxt = CIGlobals.makePlural(variantTxt)
+            infoText += variantTxt
+            
+        if self.dept:
+            deptName = self.dept.getName() if not self.goal > 1 else CIGlobals.makePlural(self.dept.getName())
+            infoText += deptName
+        elif self.cog == QuestGlobals.Any:
+            text = CIGlobals.Suit if not self.goal > 1 else CIGlobals.Suits
+            infoText += text
+        elif not self.cog == QuestGlobals.Any:
+            nameText = self.cog if not self.goal > 1 else CIGlobals.makePlural(self.cog)
+            infoText += nameText
+
+        return ('{0} of {1} {2} {3}'.format(self.progress, self.goal, infoText, CIGlobals.makePastTense(self.Header)))
+    
+    def getUpdateBrief(self):
+        taskInfo = self.getTaskInfo(speech=False)
+        locationText = QuestGlobals.getLocationText(self.area, verbose=False).replace('Any Street', '')
+        
+        if locationText[0].isspace():
+            locationText = locationText[1:]
+        return '{0} {1} in {2}'.format(QuestGlobals.DEFEAT, taskInfo, locationText).replace('\n', ' ')
 
 from abc import ABCMeta
 
@@ -324,40 +362,6 @@ class RecoverItemObjective(ItemObjective, CogObjective):
         infoText = str('%s from %s' % (infoText, cogObjInfo))
         return infoText
 
-class CogInvasionObjective(DefeatObjective):
-    """ [goal, area] """
-
-    Name = "Cog Invasion"
-
-    def handleProgress(self, hood):
-        if not self.isComplete() and self.isValidLocation(hood):
-            self.incrementProgress()
-
-    def getTaskInfo(self, speech = False):
-        if self.goal > 1:
-            taskInfo = QuestGlobals.QuestSubjects[1]
-        else:
-            taskInfo = CIGlobals.makeSingular(self.Name)
-
-        return taskInfo
-
-class CogTournamentObjective(DefeatObjective):
-    """ [goal, area] """
-
-    Name = "Cog Tournament"
-
-    def handleProgress(self, hood):
-        if not self.isComplete() and self.isValidLocation(hood):
-            self.incrementProgress()
-
-    def getTaskInfo(self, speech = False):
-        if self.goal > 1:
-            taskInfo = self.Name
-        else:
-            taskInfo = CIGlobals.makeSingular(self.Name)
-
-        return taskInfo
-
 class CogBuildingObjective(DefeatObjective):
     """ [dept, minFloors, goal, area] """
 
@@ -381,8 +385,7 @@ class CogBuildingObjective(DefeatObjective):
                 or self.minFloors == QuestGlobals.Any)
 
     def getTaskInfo(self, speech = False):
-        taskInfo = '' if speech else QuestGlobals.DEFEAT + ' '
-        taskInfo += 'A ' if self.goal == 1 else '%d ' % self.goal
+        taskInfo = ('A ' if not speech else 'a ') if self.goal == 1 else '%d ' % self.goal
         if self.minFloors != QuestGlobals.Any:
             taskInfo += "%s+ Story " % QuestGlobals.getNumName(self.minFloors)
         
@@ -401,6 +404,15 @@ class CogBuildingObjective(DefeatObjective):
         taskInfo += subject
 
         return taskInfo
+    
+    def getUpdateBrief(self):
+        taskInfo = self.getTaskInfo(speech=False)
+        locationText = QuestGlobals.getLocationText(self.area, verbose=False).replace('Any Street', '')
+        
+        if locationText[0].isspace():
+            locationText = locationText[1:]
+        
+        return '{0} {1} in {2}'.format(QuestGlobals.DEFEAT, taskInfo, locationText).replace('\n', ' ')
 
 class MinigameObjective(Objective):
     """ [minigameName, goal] """
@@ -445,12 +457,8 @@ ObjectiveType2ObjectiveClass = {
     DefeatCog:                  CogObjective,
     RecoverItem:                RecoverItemObjective,
     DeliverItem:                DeliverItemObjective,
-    DefeatCogInvasion:          CogInvasionObjective,
-    DefeatCogTournament:        CogTournamentObjective,
     DefeatCogBuilding:          CogBuildingObjective,
-
     PlayMinigame:               MinigameObjective,
-
     VisitNPC:                   VisitNPCObjective,
 }
 

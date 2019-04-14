@@ -187,7 +187,7 @@ class NPCDialogue:
     PickQuest = "Choose a ToonTask."
     CancelQuestPicker = "Come back later if you need a ToonTask, bye!"
 
-def getLocationText(location, objective = None):
+def getLocationText(location, objective = None, verbose = True):
     # Let's handle when the location is None, this means we want to go
     # to the objective's assigner. OR if we're looking for an HQ officer.
     if location == 0 or not location and objective:
@@ -195,7 +195,7 @@ def getLocationText(location, objective = None):
         if location == 0 or objective.assigner == 0:
             return 'Any Street\nAny Neighborhood'
         else:
-            return getLocationText(NPCGlobals.NPCToonDict[objective.assigner][0])
+            return getLocationText(NPCGlobals.NPCToonDict[objective.assigner][0], verbose = verbose)
     
     if location in ZoneUtil.ZoneId2Hood.keys():
         if location == ZoneUtil.MinigameAreaId:
@@ -213,7 +213,12 @@ def getLocationText(location, objective = None):
         else:
             streetName = PLAYGROUND
         hoodName = ZoneUtil.getHoodId(streetZone, 1)
-        return '%s\n%s\n%s' % (shop, streetName, hoodName)
+        
+        if verbose:
+            return '%s\n%s\n%s' % (shop, streetName, hoodName)
+        else:
+            return shop
+
     elif not location:
         return 'Any Street\nAny Playground'
     
