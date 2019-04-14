@@ -263,11 +263,6 @@ class QuestPoster(DirectFrame):
             self.objectiveInfo.show()
             self.auxFrame.show()
             
-            isShopLoc = QuestGlobals.isShopLocation(objective.area) if not complete else True
-            self.locationInfo['text'] = QuestGlobals.getLocationText(objective.area) if not complete else QuestGlobals.getLocationText(None, objective)
-            self.locationInfo['text_pos'] = (0, 0 if not isShopLoc else 0.025)
-            self.locationInfo.show()
-            
             # Let's setup the quest progress bar
             progress = objective.progress if hasattr(objective, 'progress') else None
             
@@ -300,6 +295,17 @@ class QuestPoster(DirectFrame):
                     frameColor = bgColor)
                 
             self.lReward.setup()
+            
+            newLineInObjInfo = '\n' in self.objectiveInfo['text']
+            
+            if complete:
+                locationText = QuestGlobals.getLocationText(None, objective)
+            else:
+                locationText = QuestGlobals.getLocationText(objective.area)
+            
+            self.locationInfo['text'] = locationText
+            self.locationInfo['text_pos'] = (0.0, -0.025 if newLineInObjInfo else 0.0)
+            self.locationInfo.show()
         else:
             # We want to be able to show empty quest posters.
             self.titleLabel.hide()
