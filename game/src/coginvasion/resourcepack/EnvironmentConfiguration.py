@@ -10,7 +10,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from panda3d.core import Vec3, VBase4
+from panda3d.core import Vec3
 
 from yaml import load
 
@@ -48,7 +48,7 @@ class Modifier:
             if len(data) < 3:
                 # if the user supplied less than 3 values for a color,
                 # fill in the missing values with the last supplied value.
-                for i in xrange(3 - len(data)):
+                for _ in xrange(3 - len(data)):
                     data.append(data[len(data) - 1])
             if len(data) < 4:
                 # user didn't supply a scalar.
@@ -230,6 +230,4 @@ class EnvironmentConfiguration:
         elif index > -1:
             return self.hoodData.get(HoodAbbr2Hood.keys()[index])
         return None
-            
-            
         
