@@ -16,11 +16,13 @@ class WaterCoolerAI(BaseAttackAI, WaterCoolerShared):
         
         self.ammo = 100
         self.maxAmmo = 100
-        self.baseDamage = 12.0
 
         self.traceOrigin = None
         self.traceVector = None
         self.didAttack = False
+
+    def getBaseDamage(self):
+        return 12.0
         
     def cleanup(self):
         del self.traceOrigin

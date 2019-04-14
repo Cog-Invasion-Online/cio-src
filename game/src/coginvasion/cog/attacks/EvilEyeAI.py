@@ -8,7 +8,9 @@ class EvilEyeAI(GenericThrowAttackAI):
         
         self.ammo = 100
         self.maxAmmo = 100
-        self.baseDamage = 21.0
+
+    def getBaseDamage(self):
+        return 21
     
     def calibrate(self, target):
         self.throwOrigin = self.avatar.getPos(render) + self.avatar.getEyePosition()

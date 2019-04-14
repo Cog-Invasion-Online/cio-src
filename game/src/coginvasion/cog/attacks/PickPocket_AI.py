@@ -13,10 +13,12 @@ class PickPocket_AI(BaseAttackAI, PickPocketShared):
     def __init__(self):
         BaseAttackAI.__init__(self)
         self.actionLengths.update({self.StateAttack  :   3.0})
-        self.baseDamage = 10.0
         self.traceOrigin = None
         self.traceVector = None
         self.didPick = False
+
+    def getBaseDamage(self):
+        return 10
         
     def getTauntChance(self):
         return 0.75

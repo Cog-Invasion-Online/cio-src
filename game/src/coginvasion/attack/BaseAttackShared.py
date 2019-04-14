@@ -34,11 +34,11 @@ class BaseAttackShared:
         self.clip = 10
         self.maxAmmo = 10
         self.ammo = 10
-        self.baseDamage = 10
-        self.damageMaxDistance = 40.0
 
         self.secondaryAmmo = 1
         self.secondaryMaxAmmo = 1
+
+        self.level = 1
 
         self.action = self.StateOff
         self.lastAction = self.StateOff
@@ -49,6 +49,12 @@ class BaseAttackShared:
         self.thinkTask = None
 
         self.avatar = None
+
+    def setLevel(self, level):
+        self.level = level
+    
+    def getLevel(self):
+        return self.level
         
     def resetActions(self):
         self.action = self.StateOff
@@ -62,10 +68,10 @@ class BaseAttackShared:
         return self.hasAmmo() and self.action == self.StateIdle
 
     def getBaseDamage(self):
-        return self.baseDamage
+        return 10
 
     def getDamageMaxDistance(self):
-        return self.damageMaxDistance
+        return 40.0
 
     def calcDamage(self, distance = 10.0):
         return CIGlobals.calcAttackDamage(distance, self.getBaseDamage(), self.getDamageMaxDistance())
@@ -260,6 +266,7 @@ class BaseAttackShared:
         self.cleanup()
 
     def cleanup(self):
+        del self.level
         del self.ammo
         del self.maxAmmo
         del self.avatar

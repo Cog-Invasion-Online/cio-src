@@ -37,10 +37,11 @@ class FiredAI(BaseAttackAI, Fired_Shared):
                                    self.StateAttack: self.EmitFlameIval * self.MaxFlames,
                                    self.StateEnd: 1.0})
 
-        self.baseDamage = 5
-
         self.lastFireTime = 0.0
         self.target = None
+
+    def getBaseDamage(self):
+        return 5
         
     def getTauntChance(self):
         return 0.5

@@ -187,6 +187,12 @@ class AvatarShared(BasePhysicsObject):
             return None
         return self.attacks[aId]
 
+    def getAttackLevel(self, aId):
+        if not aId in self.attacks:
+            return -1
+
+        return self.attacks[aId].getLevel()
+
     def getAttackAmmo(self, aId):
         if not aId in self.attacks:
             return -1

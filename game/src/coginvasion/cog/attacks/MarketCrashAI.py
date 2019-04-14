@@ -7,7 +7,9 @@ class MarketCrashAI(GenericThrowAttackAI):
         GenericThrowAttackAI.__init__(self, sharedMetadata = MarketCrashShared)
         self.ammo = 100
         self.maxAmmo = 100
-        self.baseDamage = 12.0
+
+    def getBaseDamage(self):
+        return 12
         
     def getTauntChance(self):
         return 0.5

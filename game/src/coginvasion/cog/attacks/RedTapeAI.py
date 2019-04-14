@@ -7,7 +7,9 @@ class RedTapeAI(GenericThrowAttackAI):
         GenericThrowAttackAI.__init__(self, RedTapeShared)
         self.ammo = 100
         self.maxAmmo = 100
-        self.baseDamage = 10.0
+
+    def getBaseDamage(self):
+        return 10
         
     def getTauntChance(self):
         return 0.5

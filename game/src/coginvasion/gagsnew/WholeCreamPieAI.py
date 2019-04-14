@@ -32,12 +32,13 @@ class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
 
         self.ammo = 100
         self.maxAmmo = 100
-        
-        self.baseDamage = 30
 
         self.__projs = []
 
         self.throwTime = 0
+
+    def getBaseDamage(self):
+        return 30
 
     def equip(self):
         if not BaseGagAI.equip(self):
