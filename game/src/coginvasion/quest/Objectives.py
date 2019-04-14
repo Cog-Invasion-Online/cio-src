@@ -96,7 +96,11 @@ class Objective:
         """ Helper method to increment objective progress on the QuestManager """
         questMgr = self.quest.questMgr
         
-        self.progress += 1
+        if self.HasProgress:
+            self.progress += 1
+        else:
+            self.goToNextObjective()
+            return
         
         if not questMgr.isOnLastObjectiveOfQuest(self.quest.id):
             questMgr.checkIfObjectiveIsComplete(self.quest.id)
