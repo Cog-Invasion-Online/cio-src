@@ -28,6 +28,8 @@ ArcadeId2Arena = {
     1 : TheBrrrgh
 }
 
+BATTLE_COMPLETE_EVENT = 'battleComplete'
+
 ArcadeArena2Id = {}
 
 def getArcadeArenaIdByName(arenaName):

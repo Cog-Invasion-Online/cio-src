@@ -361,6 +361,19 @@ class RecoverItemObjective(ItemObjective, CogObjective):
         infoText += CIGlobals.getAmountString(self.itemName, self.goal)
         infoText = str('%s from %s' % (infoText, cogObjInfo))
         return infoText
+    
+    def getUpdateBrief(self):
+        taskInfo = self.getTaskInfo(speech=False)
+        locationText = QuestGlobals.getLocationText(self.area, verbose=False).replace('Any Street', '')
+        
+        if locationText[0].isspace():
+            locationText = locationText[1:]
+        
+        return '{0} {1} in {2}'.format(self.Header, taskInfo, locationText)
+    
+    def getProgressUpdateBrief(self):
+        return ('{0} of {1} {2} {3}'.format(self.progress, self.goal, CIGlobals.makePlural(self.itemName), 
+            CIGlobals.makePastTense(self.Header)))
 
 class CogBuildingObjective(DefeatObjective):
     """ [dept, minFloors, goal, area] """
@@ -391,7 +404,7 @@ class CogBuildingObjective(DefeatObjective):
         
         name = self.Name
         if not speech:
-            name = '%s\nBuilding'
+            name = '%s Building'
         
         if self.dept == QuestGlobals.Any:
             subject = name % CIGlobals.Suit
@@ -412,7 +425,26 @@ class CogBuildingObjective(DefeatObjective):
         if locationText[0].isspace():
             locationText = locationText[1:]
         
-        return '{0} {1} in {2}'.format(QuestGlobals.DEFEAT, taskInfo, locationText).replace('\n', ' ')
+        return '{0} {1} in {2}'.format(QuestGlobals.DEFEAT, taskInfo, locationText)
+    
+    def getProgressUpdateBrief(self):
+        taskInfo = ''
+
+        if self.minFloors != QuestGlobals.Any:
+            taskInfo += "%s+ Story " % QuestGlobals.getNumName(self.minFloors)
+        
+        name = '%s Buildings'
+        
+        if self.dept == QuestGlobals.Any:
+            subject = name % CIGlobals.Suit
+        else:
+            subject = name % self.dept.getName()
+
+        if self.goal > 1:
+            subject = CIGlobals.makePlural(subject)
+
+        taskInfo += subject
+        return ('{0} of {1} {2} {3}'.format(self.progress, self.goal, taskInfo, CIGlobals.makePastTense(self.Header)))
 
 class MinigameObjective(Objective):
     """ [minigameName, goal] """

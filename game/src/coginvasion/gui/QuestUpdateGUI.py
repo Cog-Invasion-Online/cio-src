@@ -72,6 +72,17 @@ class QuestUpdateGUI(DirectFrame):
             quest = Quest(questId, None)
             quest.setupCurrentObjectiveFromData(oldQuestData[2], oldQuestData[1], oldQuestData[3])
             oldQuests.update({questId : quest})
+            
+        def acknowledgeLastObjectivesComplete(quest):
+            # Let's acknowledge that we finished our last objectives.
+            for objective in quest.accessibleObjectives:
+                objText = objective.getUpdateBrief()
+                if objective.HasProgress:
+                    # This is a bit hacky, but it just allows
+                    # #getProgressUpdateBrief() to show the correct stuff.
+                    objective.progress = objective.goal
+                    objText = objective.getProgressUpdateBrief()
+                self.addLine('{0}: {1}'.format(self.OBJECTIVE_COMPLETE, objText), self.GREEN_COLOR)
         
         if len(oldDataStr) > 0:
             
@@ -79,6 +90,21 @@ class QuestUpdateGUI(DirectFrame):
             if len(oldData) > len(newData):
                 for questId, quest in oldQuests.iteritems():
                     if not questId in newQuests.keys():
+                        # Let's acknowledge that we finished our last objective.
+                        if len(quest.accessibleObjectives) == 1:
+                            objective = quest.accessibleObjectives[0]
+                        else:
+                            objective = quest.accessibleObjectives[len(quest.accessibleObjectives)-1]
+                        
+                        npcId = objective.assigner if not hasattr(objective, 'npcId') else objective.npcId
+                        
+                        if npcId == 0:
+                            objInfo = '{0} to a {1}'.format(RETURN, NPCGlobals.lHQOfficerM)
+                        else:
+                            locationText = getLocationText(None, objective, verbose=False)
+                            objInfo = '{0} to {1} at {2}'.format(RETURN, NPCGlobals.NPCToonNames[npcId], locationText)
+                        self.addLine('{0}: {1}'.format(self.OBJECTIVE_COMPLETE, objInfo), self.GREEN_COLOR)
+                        
                         # This quest isn't in our new dictionary. It must've been completed!
                         quest = oldQuests.get(questId)
                         self.addLine('{0}: \"{1}\"'.format(self.QUEST_COMPLETE, quest.name), self.GREEN_COLOR)
@@ -91,6 +117,8 @@ class QuestUpdateGUI(DirectFrame):
                     if newQuest.isComplete() and not oldQuest.isComplete():
                         objective = newQuest.accessibleObjectives[0]
                         npcId = objective.assigner if not hasattr(objective, 'npcId') else objective.npcId
+                        
+                        acknowledgeLastObjectivesComplete(oldQuest)
                         
                         if npcId == 0:
                             objInfo = '{0} to a {1}'.format(RETURN, NPCGlobals.lHQOfficerM)
@@ -105,6 +133,9 @@ class QuestUpdateGUI(DirectFrame):
                         objInfo = newQuest.accessibleObjectives[0].getUpdateBrief()
                         color = self.ORANGE_COLOR
                         prefix = self.NEW_OBJECTIVE
+                    
+                        # Let's acknowledge that we finished our last objectives.
+                        acknowledgeLastObjectivesComplete(oldQuest)
                         
                         if newQuest.isComplete() and not oldQuest.isComplete():
                             color = self.GREEN_COLOR

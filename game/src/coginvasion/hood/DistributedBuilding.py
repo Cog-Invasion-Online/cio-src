@@ -23,6 +23,7 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cog import Dept
 from src.coginvasion.hood import ZoneUtil
 from src.coginvasion.base.Precache import Precacheable, precacheModel
+from src.coginvasion.battle import BattleGlobals
 
 from src.coginvasion.cogoffice.ElevatorConstants import *
 from src.coginvasion.cogoffice.ElevatorUtils import *
@@ -457,7 +458,8 @@ class DistributedBuilding(DistributedObject, Precacheable):
         if localToonIsVictor:
             freedomTrack1 = Func(self.cr.playGame.getPlace().fsm.request, 'walk')
             freedomTrack2 = Func(base.localAvatar.d_setParent, CIGlobals.SPRender)
-            self.transitionTrack = Parallel(camTrack, Sequence(victoryRunTrack, bldgMTrack, freedomTrack1, freedomTrack2), name = trackName)
+            freedomTrack3 = Func(messenger.send, BattleGlobals.BATTLE_COMPLETE_EVENT)
+            self.transitionTrack = Parallel(camTrack, Sequence(victoryRunTrack, bldgMTrack, freedomTrack1, freedomTrack2, freedomTrack3), name = trackName)
         else:
             self.transitionTrack = Sequence(victoryRunTrack, bldgMTrack, name = trackName)
         self.transitionTrack.delayDeletes = delayDeletes
