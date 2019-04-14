@@ -469,9 +469,6 @@ class CommonFilters:
                 text += "  float4 result = tex2D(k_txfxaa, %s);\n" % (texcoords["color"])
             else:
                 text += "  float4 result = tex2D(k_txcolor, %s);\n" % (texcoords["color"])
-            if ("Exposure" in configuration):
-                #text += "  result = saturate(result);\n"
-                text += "  float exposure = tex1D(k_exposuretex, 0).r;result.rgb *= exposure;\n"
             if ("CartoonInk" in configuration):
                 text += CARTOON_BODY % {"texcoord" : texcoords["aux"]}
             if ("AmbientOcclusion" in configuration):
@@ -528,7 +525,16 @@ class CommonFilters:
             if ("Inverted" in configuration):
                 text += "  result = float4(1, 1, 1, 1) - result;\n"
                 
-            text += "  o_color = saturate(result);\n"
+            if ("Exposure" in configuration):
+                #text += "  result = saturate(result);\n"
+                text += "  float exposure = tex1D(k_exposuretex, 0).r;\n"
+                text += "  result.rgb *= exposure;\n"
+                #text += "  result.rgb = float3(1.0) - exp(-result.rgb * exposure);\n"
+                #text += "  result.rgb = pow(result.rgb, float3(1.0 / 2.2));\n"
+            else:
+                text += "  result.rgb *= %ff;\n" % (base.config.GetFloat('hdr-tonemapscale', 1.75))
+                
+            text += "  o_color = result;\n"
             text += "}\n"
 
             shader = Shader.make(text, Shader.SL_Cg)

@@ -588,7 +588,7 @@ class CIBase(ShowBase):
             return
 
         if flag:
-            self.filters.setBloom(desat = 0, intensity = 0.4, size = "large")
+            self.filters.setBloom(desat = 0, intensity = 0.4, mintrigger = 0.85, maxtrigger = 1.0, size = "large")
         else:
             self.filters.delBloom()
         
