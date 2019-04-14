@@ -55,10 +55,7 @@ def toDataStump(quests, trackingId = -1, currentObjectives = [], objectiveProgre
         if len(objectiveProgresses) == 0 or len(objectiveProgresses) > 0 and len(objectiveProgresses[index]) == 0:
             # Let's use the objective progress inside of the quest.
             for i, objective in enumerate(quest.accessibleObjectives):
-                progress = 0
-                
-                if i in currentObjectives:
-                    progress = objective.progress
+                progress = objective.progress
                 
                 objProgressStr += str(progress)
                 if i < len(quest.accessibleObjectives) - 1:
