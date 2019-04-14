@@ -20,7 +20,7 @@ from src.coginvasion.distributed.AvatarWatcher import AvatarWatcher, DIED, ZONE_
 from src.coginvasion.battle.RPToonData import RPToonData
 from src.coginvasion.battle.GameRulesAI import GameRulesAI
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.quest.Objectives import DefeatCog, DefeatCogBuilding
+from src.coginvasion.quest.Objectives import DefeatCog, DefeatCogBuilding, RecoverItem
 from src.coginvasion.phys.PhysicsUtils import makeBulletCollFromGeoms, detachAndRemoveBulletNodes
 
 import BattleGlobals
@@ -524,6 +524,10 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
                             objectiveProgress[i] = progress
                         elif objective.type == DefeatCogBuilding and self.isCogOffice() and objective.isAcceptable(self.hood, self.dept, self.numFloors):
                             objectiveProgress[i] = objectiveProgress[i] + 1
+                        elif objective.type == RecoverItem:
+                            for killData in deadCogData:
+                                objective.handleProgressFromDeadCogData(killData)
+
                     objectiveProgresses.append(objectiveProgress)
                 questManager.updateQuestData(objectiveProgresses = objectiveProgresses)
                 

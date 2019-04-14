@@ -358,6 +358,10 @@ class RecoverItemObjective(ItemObjective, CogObjective):
     def handleProgress(self, cog):
         if not self.isComplete() and self.isNeededCog(cog) and random.randint(0, 101) < self.recoverChance:
             self.incrementProgress()
+            
+    def handleProgressFromDeadCogData(self, deadCogData):
+        if not self.isComplete() and self.isNeededCogFromDeadCogData(deadCogData) and random.randint(0, 101) < self.recoverChance:
+            self.incrementProgress()
         
     def getTaskInfo(self, speech = False):
         cogObjInfo = CogObjective.getTaskInfo(self)
