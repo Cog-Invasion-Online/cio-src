@@ -256,4 +256,4 @@ class QuestUpdateGUI(DirectFrame):
         self.ivalDict = None
         self.alertSfx = None
         self.queuedLines = None
-        DirectFrame.cleanup(self)
+        DirectFrame.destroy(self)
