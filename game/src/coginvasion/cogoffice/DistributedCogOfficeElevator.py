@@ -136,7 +136,9 @@ class DistributedCogOfficeElevator(DistributedElevator, DistributedEntity):
                 self.thebldg.d_readyForNextFloor()
                 self.localAvOnElevator = False
             else:
-                requestStatus = {'zoneId': ZoneUtil.getZoneId(ZoneUtil.getHoodId(self.zoneId, street = 1)),
+                # NOTE: we can't use self.zoneId because the elevator is in the ent zone, not the branch zone
+                zoneId = ZoneUtil.getZoneId(ZoneUtil.getHoodId(base.localAvatar.zoneId, street = 1))
+                requestStatus = {'zoneId': zoneId,
                             'hoodId': self.cr.playGame.hood.hoodId,
                             'where': 'playground',
                             'avId': base.localAvatar.doId,
