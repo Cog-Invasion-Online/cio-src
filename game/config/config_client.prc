@@ -86,6 +86,7 @@ smooth-prediction-lag 0.0
 basic-shaders-only #f
 framebuffer-multisample 0
 framebuffer-stencil 0
+framebuffer-float 1
 support-stencil 0
 framebuffer-srgb 0
 framebuffer-alpha 1
@@ -119,6 +120,7 @@ hdr-min-avglum 3.0
 hdr-percent-bright-pixels 2.0
 hdr-percent-target 60.0
 hdr-debug-histogram #f
+hdr-tonemapscale 1.0
 
 want-pssm 1
 pssm-debug-cascades 0
