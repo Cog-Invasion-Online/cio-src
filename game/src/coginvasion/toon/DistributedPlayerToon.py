@@ -22,7 +22,6 @@ from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
 from src.coginvasion.hood import LinkTunnel
 from src.coginvasion.globals import ChatGlobals
-from src.coginvasion.quest.QuestGlobals import QUEST_DATA_UPDATE_EVENT
 from src.coginvasion.phys import PhysicsUtils
 from src.coginvasion.distributed import AdminCommands
 
@@ -309,14 +308,7 @@ class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
         return self.questHistory
 
     def setQuests(self, dataStr):
-        oldDataStr = self.quests
         self.quests = dataStr
-        
-        if self == base.localAvatar:
-            base.localAvatar.questManager.makeQuestsFromData()
-        
-            # Let's send our quest data update event.
-            messenger.send(QUEST_DATA_UPDATE_EVENT, [oldDataStr, dataStr])
 
     def getQuests(self):
         return self.quests

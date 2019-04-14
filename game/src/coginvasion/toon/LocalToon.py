@@ -27,6 +27,7 @@ from src.coginvasion.friends.FriendRequestManager import FriendRequestManager
 from src.coginvasion.base.PositionExaminer import PositionExaminer
 from src.coginvasion.friends.FriendsList import FriendsList
 from src.coginvasion.quest.QuestManager import QuestManager
+from src.coginvasion.quest.QuestGlobals import QUEST_DATA_UPDATE_EVENT
 from src.coginvasion.gui.Crosshair import Crosshair
 from src.coginvasion.gui.QuestUpdateGUI import QuestUpdateGUI
 from src.coginvasion.toon.TPMouseMovement import TPMouseMovement
@@ -946,6 +947,14 @@ class LocalToon(DistributedPlayerToon):
                 'wantLaffMeter': 1,
                 'how': 'teleportIn'}
         self.cr.playGame.getPlace().fsm.request('teleportOut', [requestStatus])
+        
+    def setQuests(self, dataStr):
+        oldDataStr = dataStr
+        base.localAvatar.questManager.makeQuestsFromData()
+    
+        # Let's send our quest data update event.
+        messenger.send(QUEST_DATA_UPDATE_EVENT, [oldDataStr, dataStr])
+        DistributedPlayerToon.setQuests(self, dataStr)
 
     def createChatInput(self):
         if not self.chatInputState:
