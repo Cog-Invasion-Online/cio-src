@@ -84,6 +84,9 @@ class FireHose(BaseHitscan, FireHoseShared):
 
     def doSpraySoundIval(self, dir = 0):
         self.stopSpraySoundIval()
+        
+        if not self.spraySound:
+            return
 
         currVol = self.spraySound.getVolume()
         if dir == 0:
