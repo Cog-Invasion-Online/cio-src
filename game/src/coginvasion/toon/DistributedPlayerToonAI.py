@@ -128,7 +128,7 @@ class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
 
     def __requesterAuthorized(self):
         requester = self.air.doId2do.get(self.air.getAvatarIdFromSender())
-        authorized = False
+        authorized = (requester == self)
 
         if requester:
             # The requester is only authorized if they have a higher access level than we do.
