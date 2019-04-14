@@ -4,6 +4,11 @@ from direct.interval.IntervalGlobal import Sequence, Func, Wait
 from direct.interval.IntervalGlobal import LerpColorScaleInterval, LerpScaleInterval, LerpPosInterval, Parallel
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.npc import NPCGlobals
+from src.coginvasion.battle.BattleGlobals import BATTLE_COMPLETE_EVENT
+from src.coginvasion.quest.QuestGlobals import RETURN, QUEST_DATA_UPDATE_EVENT, getLocationText
+from src.coginvasion.quest.Quest import Quest
+from src.coginvasion.quest import QuestData
 
 class QuestUpdateGUI(DirectFrame):
     
@@ -20,6 +25,12 @@ class QuestUpdateGUI(DirectFrame):
     ORANGE_COLOR = (241.0 / 255.0, 127.0 / 255.0, 43.0 / 255.0, 1.0)
     GREEN_COLOR = (51.0 / 255.0, 204 / 255.0, 51.0 / 255.0, 1.0)
     
+    NEW_OBJECTIVE = 'New Objective'
+    OBJECTIVE_UPDATE = 'Objective Update'
+    OBJECTIVE_COMPLETE = 'Objective Complete'
+    NEW_QUEST = 'New Quest'
+    QUEST_COMPLETE = 'Quest Complete'
+    
     def __init__(self):
         DirectFrame.__init__(self, parent = aspect2d, pos = (0.0, 0.0, 0.0))
         
@@ -28,9 +39,103 @@ class QuestUpdateGUI(DirectFrame):
         self.ivalDict = {}
         self.alertSfx = base.loadSfx('phase_5.5/audio/sfx/mailbox_alert.ogg')
         
+        # Text as keys and colors as values
+        self.queuedLines = {}
+        
         self.initialiseoptions(QuestUpdateGUI)
+        self.accept(QUEST_DATA_UPDATE_EVENT, self.__handleNewQuestData, [])
+        self.accept(BATTLE_COMPLETE_EVENT, self.__handleBattleCompletion, [])
+        
+    def __handleBattleCompletion(self):
+        for text, color in self.queuedLines.iteritems():
+            self.addLine(text, color)
+        self.queuedLines.clear()
+        
+    def __handleNewQuestData(self, oldDataStr, newDataStr):
+        _, oldData = QuestData.extractDataAsIntegerLists(oldDataStr, None)
+        _, newData = QuestData.extractDataAsIntegerLists(newDataStr, None)
+        
+        if len(oldDataStr) > 0:
+            
+            # Let's display the text for completed quests.
+            if len(oldData) > len(newData):
+                for i in xrange(len(newData)-1, len(oldData)):
+                    quest = Quest(oldData[i][0], None)
+                    
+                    self.addLine('{0}: \"{1}\"'.format(self.QUEST_COMPLETE, quest.name), self.GREEN_COLOR)
+                    quest.cleanup()
+            
+            for i, newQuestData in enumerate(newData):
+                newQuest = Quest(newQuestData[0], None)
+                newQuest.setupCurrentObjectiveFromData(newQuestData[2], newQuestData[1], newQuestData[3])
+                
+                oldQuest = None
+                
+                try:
+                    oldQuestData = oldData[i]
+                    oldQuest = Quest(oldQuestData[0], None)
+                    oldQuest.setupCurrentObjectiveFromData(oldQuestData[2], oldQuestData[1], oldQuestData[3])
+                except IndexError:
+                    pass
+                
+                if oldQuest:
+                    print 'Working on Old Quest: {0} and New Quest: {1}'.format(oldQuest.name, newQuest.name)
+                    # Let's handle when the quest is complete.
+                    if newQuest.isComplete() and not oldQuest.isComplete():
+                        objective = newQuest.accessibleObjectives[0]
+                        npcId = objective.assigner if not hasattr(objective, 'npcId') else objective.npcId
+                        
+                        if npcId == 0:
+                            objInfo = '{0} to a {1}'.format(RETURN, NPCGlobals.lHQOfficerM)
+                        else:
+                            locationText = getLocationText(None, objective, verbose=False)
+                            objInfo = '{0} to {1} at {2}'.format(RETURN, NPCGlobals.NPCToonNames[npcId], locationText)
+
+                        self.addLine('{0}: {1}'.format(self.NEW_OBJECTIVE, objInfo), self.ORANGE_COLOR)
+                    
+                    # Let's handle when the current objective changes.
+                    elif newQuest.currentObjectiveIndex > oldQuest.currentObjectiveIndex:
+                        objInfo = newQuest.accessibleObjectives[0].getTaskInfo().replace('\n', ' ')
+                        color = self.ORANGE_COLOR
+                        prefix = self.NEW_OBJECTIVE
+                        
+                        if newQuest.isComplete() and not oldQuest.isComplete():
+                            color = self.GREEN_COLOR
+                            prefix = self.QUEST_COMPLETE
+                        
+                        self.addLine('{0}: {1}'.format(prefix, objInfo), color)
+
+                    elif newQuest.currentObjectiveIndex == oldQuest.currentObjectiveIndex:
+                        for objIndex, newObjective in enumerate(newQuest.accessibleObjectives):
+                            oldObjective = oldQuest.accessibleObjectives[objIndex]
+                            
+                            if newObjective.progress > oldObjective.progress:
+                                objInfo = newObjective.getProgressText()
+                                prefix = self.OBJECTIVE_UPDATE
+                                color = self.YELLOW_COLOR
+                                
+                                if newObjective.isComplete():
+                                    color = self.GREEN_COLOR
+                                    prefix = self.OBJECTIVE_COMPLETE
+                                
+                                self.addLine('{0}: {1}'.format(prefix, objInfo), color)
+                else:
+                    newObjective = newQuest.accessibleObjectives[0]
+                    objInfo = newObjective.getTaskInfo().replace('\n', ' ')
+                    
+                    self.addLine('{0}: \"{1}\"'.format(self.NEW_QUEST, newQuest.name), self.YELLOW_COLOR)
+                    self.addLine('{0}: {1}'.format(self.NEW_OBJECTIVE, objInfo), self.YELLOW_COLOR)
+                    
+                # Let's cleanup our garbage now.
+                newQuest.cleanup()
+                if oldQuest: oldQuest.cleanup()
         
     def addLine(self, text, color):
+        # Whilst in a battle, we don't want to display update text.
+        if base.localAvatarReachable() and base.localAvatar.getBattleZone():
+            self.queuedLines.update({text : color})
+            return
+        
         if len(self.lines) == self.MAX_LINES:
             oldestLine = self.lines[len(self.lines)-1]
             ival = self.ivalDict.get(oldestLine, None)
@@ -102,10 +207,13 @@ class QuestUpdateGUI(DirectFrame):
     def clear(self):
         for line in self.lines:
             self.deleteLine(line)
+        self.queuedLines.clear()
             
     def cleanup(self):
+        self.ignore(QUEST_DATA_UPDATE_EVENT)
         self.clear()
         self.lines = None
         self.ivalDict = None
         self.alertSfx = None
+        self.queuedLines = None
         DirectFrame.cleanup(self)

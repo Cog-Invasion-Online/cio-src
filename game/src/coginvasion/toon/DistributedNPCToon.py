@@ -329,9 +329,9 @@ class DistributedNPCToon(DistributedToon):
     def generateQuestEmblem(self):
         self.questEmblem = QuestEmblemGui.QuestEmblemGui(parent = self)
         self.questEmblem.setZ(self.getHeight() + 2.0)
-        self.__handleQuestDataUpdate()
+        self.__handleQuestDataUpdate(None, None)
         
-    def __handleQuestDataUpdate(self):
+    def __handleQuestDataUpdate(self, _, __):
         needsToVisit = base.localAvatar.questManager.hasAnObjectiveToVisit(self.npcId, self.zoneId)
         pickableQuestList = []
         

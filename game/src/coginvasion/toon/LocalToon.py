@@ -28,6 +28,7 @@ from src.coginvasion.base.PositionExaminer import PositionExaminer
 from src.coginvasion.friends.FriendsList import FriendsList
 from src.coginvasion.quest.QuestManager import QuestManager
 from src.coginvasion.gui.Crosshair import Crosshair
+from src.coginvasion.gui.QuestUpdateGUI import QuestUpdateGUI
 from src.coginvasion.toon.TPMouseMovement import TPMouseMovement
 from src.coginvasion.phys.LocalControls import LocalControls
 
@@ -64,6 +65,7 @@ class LocalToon(DistributedPlayerToon):
         self.friendRequestManager = FriendRequestManager()
         self.friendsList = FriendsList()
         self.questManager = QuestManager(self)
+        self.questUpdateGUI = QuestUpdateGUI()
         self.panel = ToonPanel()
         self.firstTimeGenerating = True
         friendsgui = loader.loadModel('phase_3.5/models/gui/friendslist_gui.bam')
@@ -1050,6 +1052,9 @@ class LocalToon(DistributedPlayerToon):
         if self.questManager:
             self.questManager.cleanup()
             self.questManager = None
+        if self.questUpdateGUI:
+            self.questUpdateGUI.cleanup()
+            self.questUpdateGUI = None
         if self.friendRequestManager:
             self.friendRequestManager.cleanup()
             self.friendRequestManager = None

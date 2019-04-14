@@ -132,8 +132,6 @@ class VisitNPCObjective(Objective):
         # This is called on the AI when an avatar visits the correct NPC
         # and we need to do the correct operations on it.
         
-        questMgr = self.quest.questMgr
-        
         if not self.showAsComplete and self.isPreparedToVisit():
             self.incrementProgress()
 
@@ -142,6 +140,13 @@ class VisitNPCObjective(Objective):
     
     def isComplete(self):
         return (self.progress == 1)
+    
+    def getTaskInfo(self, speech=False):
+        if self.npcZone != 0:
+            locationText = QuestGlobals.getLocationText(self.area, verbose=False)
+            return '{0} {1} at {2}'.format(QuestGlobals.VISIT, NPCGlobals.NPCToonNames[self.npcId], locationText)
+        else:
+            return '{0} a {1}'.format(QuestGlobals.VISIT, NPCGlobals.lHQOfficerM)
 
 class DefeatObjective(Objective):
     Header = QuestGlobals.DEFEAT
@@ -216,7 +221,7 @@ class CogObjective(DefeatObjective):
                     
     def getTaskInfo(self, speech = False):
         infoText = QuestGlobals.DEFEAT + ' ' if speech else ''
-        infoText += (str(self.goal)) if self.goal > 1 else 'A'
+        infoText += (str(self.goal)) if self.goal > 1 else ('A' if not speech else 'a')
         
         if self.level:
             infoText += (str('%s Level %s' % (infoText, str(self.level))))
@@ -376,7 +381,8 @@ class CogBuildingObjective(DefeatObjective):
                 or self.minFloors == QuestGlobals.Any)
 
     def getTaskInfo(self, speech = False):
-        taskInfo = 'A ' if self.goal == 1 else '%d ' % self.goal
+        taskInfo = '' if speech else QuestGlobals.DEFEAT + ' '
+        taskInfo += 'A ' if self.goal == 1 else '%d ' % self.goal
         if self.minFloors != QuestGlobals.Any:
             taskInfo += "%s+ Story " % QuestGlobals.getNumName(self.minFloors)
         
