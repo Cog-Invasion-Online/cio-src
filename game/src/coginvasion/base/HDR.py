@@ -38,7 +38,8 @@ class HDR(DirectObject):
         # We have to refuse HDR on all Intel cards until 
         # they fix their buggy drivers or we find a workaround.
         return (gsg.getSupportsComputeShaders() and
-        		gsg.getDriverVendor() != "Intel")
+        		gsg.getDriverVendor() != "Intel" and
+                not metadata.MULTITHREADED_PIPELINE)
 
     def disable(self):
         base.filters.delExposure()
