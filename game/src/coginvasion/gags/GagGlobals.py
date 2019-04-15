@@ -256,9 +256,9 @@ Trap = "Trap"
 gagData = {
     GumballBlaster : {'minDamage': 5,
                  'maxDamage': 8,
-                 'minMaxSupply': 100,
-                 'maxSupply': 150,
-                 'supply': 150,
+                 'minMaxSupply': 150,
+                 'maxSupply': 250,
+                 'supply': 250,
                  'track': Trap},
     Slap : {'minDamage': 2,
                  'maxDamage': 4,
