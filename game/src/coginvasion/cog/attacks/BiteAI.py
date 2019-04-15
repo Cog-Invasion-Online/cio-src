@@ -7,7 +7,9 @@ class BiteAI(GenericThrowAttackAI):
         GenericThrowAttackAI.__init__(self, sharedMetadata = BiteShared)
         self.ammo = 100
         self.maxAmmo = 100
-        self.baseDamage = 19.0
+
+    def getBaseDamage(self):
+        return 19.0
         
     def getTauntChance(self):
         return 0.75

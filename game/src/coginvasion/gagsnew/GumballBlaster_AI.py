@@ -37,13 +37,15 @@ class GumballBlaster_AI(BaseHitscanAI):
                                    self.StateFire: 0.5417})
         self.ammo = 150
         self.maxAmmo = 150
-        self.baseDamage = 5
         
         self.gumballsToFire = 0
         self.nextFireTime = 0.0
         self.target = None
 
         self.fireOrigin = Point3(0)
+
+    def getBaseDamage(self):
+        return 5
 
     def canUse(self):
         return self.hasAmmo() and self.action in [self.StateIdle, self.StateFire]

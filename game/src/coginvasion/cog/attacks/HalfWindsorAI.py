@@ -7,7 +7,9 @@ class HalfWindsorAI(GenericThrowAttackAI):
         GenericThrowAttackAI.__init__(self, sharedMetadata = HalfWindsorShared)
         self.ammo = 100
         self.maxAmmo = 100
-        self.baseDamage = 15.0
+
+    def getBaseDamage(self):
+        return 15
         
     def getTauntChance(self):
         return 0.75

@@ -68,8 +68,25 @@ class BackpackBase:
                 attack.setAvatar(self.avatar)
                 attack.setMaxAmmo(maxSupply)
                 attack.setAmmo(curSupply)
-                attack.baseDamage = GagGlobals.calcBaseDamage(self.avatar, GagGlobals.getGagByID(gagId), gagData)
-                attack.damageMaxDistance = float(gagData.get('distance', 10))
+                
+                # ============================================================ #
+                # Horrible hack until we start determining damage
+                # based on the Gag's level.
+                
+                import types
+                
+                baseDamage = GagGlobals.calcBaseDamage(self.avatar, GagGlobals.getGagByID(gagId), gagData)
+                def getBaseDamage(self):
+                    return baseDamage
+                attack.getBaseDamage = types.MethodType(getBaseDamage, attack)
+                
+                damageMaxDistance = float(gagData.get('distance', 10))
+                def getDamageMaxDistance(self):
+                    return damageMaxDistance
+                attack.getDamageMaxDistance = types.MethodType(getDamageMaxDistance, attack)
+                
+                # ============================================================ #
+                
                 attack.load()
                 self.avatar.attacks[gagId] = attack
                 return True

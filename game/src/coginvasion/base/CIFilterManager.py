@@ -307,7 +307,6 @@ class FilterManager(DirectObject):
         if depthbits:
             props.setDepthBits(32)
             props.setFloatDepth(True)
-        props.setFloatColor(True)
         props.setStereo(self.win.isStereo())
         depthtex, colortex, auxtex0, auxtex1 = texgroup
         if (auxtex0 != None):

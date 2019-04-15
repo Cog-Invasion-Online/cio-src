@@ -7,7 +7,9 @@ class ClipOnTieAI(GenericThrowAttackAI):
         GenericThrowAttackAI.__init__(self, sharedMetadata = ClipOnTieShared)
         self.ammo = 100
         self.maxAmmo = 100
-        self.baseDamage = 20
+
+    def getBaseDamage(self):
+        return 20
         
     def getTauntChance(self):
         return 0.5

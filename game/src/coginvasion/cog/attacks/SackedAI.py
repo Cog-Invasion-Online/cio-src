@@ -7,7 +7,9 @@ class SackedAI(GenericThrowAttackAI):
         GenericThrowAttackAI.__init__(self, sharedMetadata = SackedShared)
         self.ammo = 100
         self.maxAmmo = 100
-        self.baseDamage = 16.0
+
+    def getBaseDamage(self):
+        return 16.0
         
     def getTauntChance(self):
         return 0.5

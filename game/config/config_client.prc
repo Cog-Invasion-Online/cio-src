@@ -86,7 +86,6 @@ smooth-prediction-lag 0.0
 basic-shaders-only #f
 framebuffer-multisample 0
 framebuffer-stencil 0
-framebuffer-float 1
 support-stencil 0
 framebuffer-srgb 0
 framebuffer-alpha 1
