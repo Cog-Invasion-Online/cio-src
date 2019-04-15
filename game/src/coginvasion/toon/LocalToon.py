@@ -949,12 +949,12 @@ class LocalToon(DistributedPlayerToon):
         self.cr.playGame.getPlace().fsm.request('teleportOut', [requestStatus])
         
     def setQuests(self, dataStr):
-        oldDataStr = dataStr
-        base.localAvatar.questManager.makeQuestsFromData()
+        oldDataStr = self.quests
+        DistributedPlayerToon.setQuests(self, dataStr)
+        self.questManager.makeQuestsFromData()
     
         # Let's send our quest data update event.
         messenger.send(QUEST_DATA_UPDATE_EVENT, [oldDataStr, dataStr])
-        DistributedPlayerToon.setQuests(self, dataStr)
 
     def createChatInput(self):
         if not self.chatInputState:
