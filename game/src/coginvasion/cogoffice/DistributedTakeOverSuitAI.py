@@ -93,7 +93,6 @@ class DistributedTakeOverSuitAI(DistributedSuitAI):
             Wait(2.5),
             Func(self.planner.takeOverBuilding, self.bldg, self.suitPlan.getDept(), self.level),
             Func(self.planner.deadSuit, self.doId),
-            Func(self.disable),
             Func(self.requestDelete)
         )
         self.takeOverTrack.start()
