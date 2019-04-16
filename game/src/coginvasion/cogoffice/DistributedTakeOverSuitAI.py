@@ -63,11 +63,11 @@ class DistributedTakeOverSuitAI(DistributedSuitAI):
                 self.takeOverTrack = None
         return DistributedSuitAI.monitorHealth(self, task)
 
-    def disable(self):
+    def delete(self):
         if self.takeOverTrack:
             self.takeOverTrack.pause()
             self.takeOverTrack = None
-        DistributedSuitAI.disable(self)
+        DistributedSuitAI.delete(self)
 
     def announceGenerate(self):
         DistributedAvatarAI.announceGenerate(self)

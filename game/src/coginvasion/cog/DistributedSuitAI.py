@@ -447,7 +447,6 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         self.notify.debug('Closing suit')
         if self.battleZone:
             self.battleZone.deadSuit(self.doId)
-        self.disable()
         self.requestDelete()
 
     def clearTrack(self):
@@ -488,10 +487,10 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
 
         self.startPosHprBroadcast()
 
-    def disable(self):
+    def delete(self):
+        BaseNPCAI.delete(self)
+
         self.stopPosHprBroadcast()
-        DistributedAvatarAI.disable(self)
-        self.stopAI()
         self.clearTrack()
         self.stopStun()
         taskMgr.remove(self.uniqueName('__handleDeath'))
@@ -514,9 +513,7 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         self.showWeaknessBonusDamageTime = None
         self.stunned = None
         self.damagers = []
-
-    def delete(self):
-        BaseNPCAI.delete(self)
+        
         self.DELETED = True
         del self.suitPlan
         del self.variant

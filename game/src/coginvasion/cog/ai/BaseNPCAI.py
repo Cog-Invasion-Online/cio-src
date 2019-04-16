@@ -46,18 +46,6 @@ class TakeDamageInfo:
         
 class BaseCombatCharacterAI:
     notify = directNotify.newCategory("BaseCombatCharacterAI")
-    
-    def __init__(self, battleZone = None):
-        self.battleZone = battleZone
-        
-    def setBattleZone(self, zone):
-        self.battleZone = zone
-        
-    def getBattleZone(self):
-        return self.battleZone
-        
-    def delete(self):
-        self.battleZone = None
         
     def getAvailableAttacks(self):
         """
@@ -85,7 +73,6 @@ class BaseNPCAI(BaseCombatCharacterAI):
     MAX_OLD_ENEMIES = 4
 
     def __init__(self, battleZone = None):
-        BaseCombatCharacterAI.__init__(self, battleZone)
         self.lastConditions = 0
         self.conditionsMask = 0
 
@@ -456,7 +443,6 @@ class BaseNPCAI(BaseCombatCharacterAI):
         self.conditionsMask = None
         self.lastHPPerct = None
         self.avatarsInSight = None
-        BaseCombatCharacterAI.delete(self)
         
     #def setTarget(self, target):
     #    self.clearTarget()

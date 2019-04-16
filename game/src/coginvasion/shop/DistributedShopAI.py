@@ -62,9 +62,6 @@ class DistributedShopAI(DistributedNodeAI):
             self.sendUpdate('setClerkChat', [0])
             self.avatars.remove(avId)
 
-    def disable(self):
-        self.avatars = []
-
     def delete(self):
         DistributedNodeAI.delete(self)
         self.avatars = []

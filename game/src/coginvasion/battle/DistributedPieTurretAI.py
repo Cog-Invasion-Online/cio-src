@@ -188,7 +188,7 @@ class DistributedPieTurretAI(DistributedAvatarAI, DistributedSmoothNodeAI):
             return True
         return False
 
-    def disable(self):
+    def delete(self):
         base.taskMgr.removeTasksMatching(self.uniqueName('DistributedPieTurretAI-scan'))
         base.taskMgr.removeTasksMatching(self.uniqueName('DistributedPieTurretAI-shootClosestTarget'))
         self.owner = None
@@ -199,5 +199,5 @@ class DistributedPieTurretAI(DistributedAvatarAI, DistributedSmoothNodeAI):
         self.piesShot = None
         self.currentTarget = None
         self.deathEvent = None
-        DistributedSmoothNodeAI.disable(self)
-        DistributedAvatarAI.disable(self)
+        DistributedSmoothNodeAI.delete(self)
+        DistributedAvatarAI.delete(self)

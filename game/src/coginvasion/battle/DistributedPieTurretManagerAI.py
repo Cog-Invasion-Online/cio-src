@@ -47,12 +47,11 @@ class DistributedPieTurretManagerAI(DistributedObjectAI):
         self.turretId2turret[turret.doId] = turret
         self.sendUpdateToAvatarId(avId, 'turretPlaced', [turret.doId])
 
-    def disable(self):
+    def delete(self):
         for turret in self.turretId2turret.values():
             turret.requestDelete()
-            turret.disable()
-            turret.delete()
         self.turretId2turret = None
+        DistributedObjectAI.delete(self)
         
     def getTurretCount(self):
         turrets = 0

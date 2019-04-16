@@ -123,10 +123,6 @@ class DistributedDistrictAI(DistributedObjectAI):
     def getAvailable(self):
         return self.available
 
-    def disable(self):
-        DistributedObjectAI.disable(self)
-        self.available = 0
-
     def delete(self):
         DistributedObjectAI.delete(self)
         del self.available

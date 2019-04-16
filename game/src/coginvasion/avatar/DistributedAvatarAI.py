@@ -226,9 +226,6 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         if self.Moving:
             self.lastPos = self.getPos(render)
             taskMgr.add(self.__avatarTick, self.uniqueName('avatarTick'))
-        
-    def disable(self):
-        pass
     
     def delete(self):
         self.__stopActivityTask()
