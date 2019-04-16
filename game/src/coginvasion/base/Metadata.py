@@ -32,6 +32,7 @@ class Metadata:
     PHYS_FIXED_TIMESTEP = 1
     PHYS_SUBSTEPS = 1
     MULTITHREADED_PIPELINE = 0
+    NO_FOG = 0
     
     def __init__(self):
         try:

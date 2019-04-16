@@ -84,7 +84,7 @@ class CIBase(ShowBase):
         
         # Let's disable fog on Intel graphics
         if gsg.getDriverVendor() == "Intel":
-            render.setFogOff(1)
+            metadata.NO_FOG = 1
             self.notify.info('Applied Intel-specific graphical fix.')
             
         self.win.setClearColorActive(True)

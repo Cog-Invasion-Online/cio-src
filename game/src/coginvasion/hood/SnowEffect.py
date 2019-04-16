@@ -67,7 +67,7 @@ class SnowEffect:
         # Only use the fog if it's christmas.
         # This class is used by the Brrrgh all the time, but
         # it will use the OutdoorLightingConfig fog.
-        if base.cr.isChristmas():
+        if base.cr.isChristmas() and not metadata.NO_FOG:
             base.render.setFog(self.fog)
 
         self.startWind()
@@ -77,14 +77,15 @@ class SnowEffect:
         if self.particles:
             self.particles.softStop()
             self.particles = None
-        if base.cr.isChristmas():
+        if base.cr.isChristmas() and not metadata.NO_FOG:
             base.render.clearFog()
 
     def unload(self):
         if not self.loaded:
             return
 
-        base.render.clearFog()
+        if base.cr.isChristmas() and not metadata.NO_FOG:
+            base.render.clearFog()
         self.fog = None
 
         if self.particlesRender:

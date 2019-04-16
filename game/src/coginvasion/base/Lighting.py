@@ -111,14 +111,16 @@ class OutdoorLightingConfig(LightingConfig):
             self.skyData = OutdoorLightingConfig.SkyData[self.skyType]
 
     def modifyFog(self, color, density):
-        render.clearFog()
-        self.fogNode = CIGlobals.makeFog('config', color, density)
-        render.setFog(self.fogNode)
+        if not metadata.NO_FOG:
+            render.clearFog()
+            self.fogNode = CIGlobals.makeFog('config', color, density)
+            render.setFog(self.fogNode)
 
     def resetFog(self):
-        render.clearFog()
-        self.fogNode = CIGlobals.makeFog('config', self.fog, self.fogDensity)
-        render.setFog(self.fogNode)
+        if not metadata.NO_FOG:
+            render.clearFog()
+            self.fogNode = CIGlobals.makeFog('config', self.fog, self.fogDensity)
+            render.setFog(self.fogNode)
 
     @staticmethod
     def makeDefault():
@@ -137,7 +139,7 @@ class OutdoorLightingConfig(LightingConfig):
         self.sunNP = CIGlobals.makeDirectionalLight('config', self.sun, self.sunAngle)
         
         #self.shadows = ShadowCaster(self.sunNP)
-        if not self.winterOverride:
+        if not self.winterOverride and not metadata.NO_FOG:
             self.fogNode = CIGlobals.makeFog('config', self.fog, self.fogDensity)
 
         if self.skyType != OutdoorLightingConfig.STNone:
@@ -165,7 +167,7 @@ class OutdoorLightingConfig(LightingConfig):
                 base.shaderGenerator.setSunLight(self.sunNP)
 
             #base.filters.setVolumetricLighting(self.sunNP)
-            if not self.winterOverride:
+            if not self.winterOverride and not metadata.NO_FOG:
                 render.setFog(self.fogNode)
 
         if self.skyType != OutdoorLightingConfig.STNone:
@@ -191,7 +193,7 @@ class OutdoorLightingConfig(LightingConfig):
             render.clearLight(self.sunNP)
             if metadata.USE_REAL_SHADOWS:
                 base.shaderGenerator.setSunLight(NodePath())
-            if not self.winterOverride:
+            if not self.winterOverride and not metadata.NO_FOG:
                 render.clearFog()
 
         if self.skyType != OutdoorLightingConfig.STNone:
