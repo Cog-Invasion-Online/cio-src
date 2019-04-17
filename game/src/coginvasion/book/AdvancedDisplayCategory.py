@@ -21,19 +21,22 @@ class AdvancedDisplayCategory(OptionsCategory):
             widgetName = "HDR Lighting", settingKeyName = 'hdr', 
             requirement = base.hdr.isSupported)
 
-        self.bloom = ChoiceWidget(page, None, pos = (0, 0, 0.24), 
+        self.bloom = ChoiceWidget(page, None, pos = (0, 0, 0.28), 
             widgetName = "Bloom Filter", settingKeyName = 'bloom')
         
-        self.waterRefl = ChoiceWidget(page, None, pos = (0, 0, 0.01), 
+        self.waterRefl = ChoiceWidget(page, None, pos = (0, 0, 0.09), 
             widgetName = "Water Reflections", settingKeyName = 'refl')
             
-        self.shadows = ChoiceWidget(page, None, pos = (0, 0, -0.22), settingKeyName = 'shadows',
+        self.shadows = ChoiceWidget(page, None, pos = (0, 0, -0.1), settingKeyName = 'shadows',
                                  widgetName = "Shadows", choiceTextScale = 0.058, mode = INDEX)
                                  
-        self.ao = ChoiceWidget(page, None, pos = (0, 0, -0.45), settingKeyName = 'ao',
+        self.ao = ChoiceWidget(page, None, pos = (0, 0, -0.29), settingKeyName = 'ao',
                                 widgetName = "Ambient Occlusion")
+                                
+        self.shaders = ChoiceWidget(page, None, pos = (0, 0, -0.48), settingKeyName = 'shaderquality',
+                                widgetName = "Shader Quality", mode = INDEX, choiceTextScale = 0.075)
         
-        self.widgets = [self.waterRefl, self.hdr, self.bloom, self.shadows, self.ao]
+        self.widgets = [self.waterRefl, self.hdr, self.bloom, self.shadows, self.ao, self.shaders]
 
         self.discardChanges()
 
@@ -56,5 +59,6 @@ class AdvancedDisplayCategory(OptionsCategory):
         del self.widgets
         del self.shadows
         del self.ao
+        del self.shaders
 
         OptionsCategory.cleanup(self)
