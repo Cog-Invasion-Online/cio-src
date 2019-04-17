@@ -18,7 +18,7 @@ class TNT_AI(BaseGagAI, TNTShared):
 
     def __init__(self):
         BaseGagAI.__init__(self)
-        self.actionLengths.update({self.StateDraw   :   1.0,
+        self.actionLengths.update({self.StateDraw   :   0.71,
                                    self.StateThrow  :   1.0})
 
         self.throwOrigin = Point3(0)
@@ -44,13 +44,15 @@ class TNT_AI(BaseGagAI, TNTShared):
     def onSetAction(self, action):
         if action == self.StateThrow:
             self.takeAmmo(-1)
+            
+            av = self.getAvatar()
 
             throwVector = PhysicsUtils.getThrowVector(
                 self.traceOrigin,
                 self.traceVector,
                 self.throwOrigin,
-                self.getAvatar(),
-                self.getAvatar().getBattleZone().getPhysicsWorld()) + (0, 0, 0.1)
+                av,
+                av.getBattleZone().getPhysicsWorld()) + (0, 0, 0.1)
 
             proj = TNTProjectileAI(base.air, self.avatar, self)
             proj.generateWithRequired(self.avatar.zoneId)

@@ -30,7 +30,7 @@ class FireHoseAI(BaseHitscanAI, FireHoseShared):
     def __init__(self):
         BaseHitscanAI.__init__(self)
         self.actionLengths = {self.StateIdle: -1,
-                              self.StateDraw: 1.0,
+                              self.StateDraw: 0.71,
                               self.StateFire: -1}
 
         self.lastSprayTraceTime = 0.0

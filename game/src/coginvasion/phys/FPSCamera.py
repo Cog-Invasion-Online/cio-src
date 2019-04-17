@@ -30,6 +30,8 @@ class FPSCamera(DirectObject):
     
     PunchDamping = 9.0
     PunchSpring = 65.0
+    
+    PrintAnimLengths = False
 
     def __init__(self):
         DirectObject.__init__(self)
@@ -131,6 +133,11 @@ class FPSCamera(DirectObject):
         #self.accept('v', self.vmRender.ls)
 
         #base.bspLoader.addDynamicNode(self.vmRoot)
+        
+        if self.PrintAnimLengths:
+            print "v_toon_arms animation lengths:"
+            for anim in self.viewModel.getAnimNames():
+                print "\t{0}\t:\t{1}".format(anim, self.viewModel.getDuration(anim))
 
         taskMgr.add(self.__vpDebugTask, "vpdebutask", sort = -100)
 
