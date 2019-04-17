@@ -523,7 +523,7 @@ class ToonHead(Actor.Actor):
         for pupil in self.pupils:
             pupil.show()
         if hasattr(self, 'getHealth'):
-            if self.getHealth() > 1:
+            if self.getHealth() > 0:
                 try:
                     self.findAllMatches('**/eyes*').setBSPMaterial(self.EyesOpen, 1)
                 except:
