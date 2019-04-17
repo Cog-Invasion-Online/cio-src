@@ -46,6 +46,8 @@ import os
 
 class CIBase(ShowBase):
     notify = directNotify.newCategory("CIBase")
+    
+    DebugShaderQualities = False
 
     def __init__(self):
         if metadata.USE_RENDER_PIPELINE:
@@ -614,6 +616,8 @@ class CIBase(ShowBase):
         self.shaderGenerator.addShader(csm)
         self.shaderGenerator.addShader(skb)
         
+        self.shaderGenerator.setShaderQuality(CIGlobals.getSettingsMgr().getSetting("shaderquality").getValue())
+        
         if metadata.USE_REAL_SHADOWS and self.config.GetBool('pssm-debug-cascades', False):
             from panda3d.core import CardMaker, Shader#, Camera, Trackball
             cm = CardMaker('cm')
@@ -647,6 +651,12 @@ class CIBase(ShowBase):
 
         from src.coginvasion.attack import AttackClasses
         self.attackMgr = AttackClasses.AttackManager()
+        
+        if self.DebugShaderQualities:
+            from panda3d.bsp import SHADERQUALITY_HIGH, SHADERQUALITY_MEDIUM, SHADERQUALITY_LOW
+            self.accept('1', self.shaderGenerator.setShaderQuality, [SHADERQUALITY_LOW])
+            self.accept('2', self.shaderGenerator.setShaderQuality, [SHADERQUALITY_MEDIUM])
+            self.accept('3', self.shaderGenerator.setShaderQuality, [SHADERQUALITY_HIGH])
         
     def precacheStuff(self):
         from src.coginvasion.toon import ToonGlobals

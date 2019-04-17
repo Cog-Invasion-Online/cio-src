@@ -15,6 +15,7 @@ from Setting import DATATYPE_INT, DATATYPE_STR, DATATYPE_LIST, DATATYPE_TUPLE, D
 from src.coginvasion.globals import CIGlobals
 
 from panda3d.core import WindowProperties, AntialiasAttrib, loadPrcFileData
+from panda3d.bsp import SHADERQUALITY_HIGH
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
 import json
@@ -115,6 +116,15 @@ class SettingsManager:
                         callback = self.__updateBattlePOV, sunrise = SHOWBASE_POSTINIT,
                         options = ["Third Person", "First Person"],
                         description = "Battle camera point-of-view.")
+        self.addSetting("shaderquality", optionType = DATATYPE_INT, default = SHADERQUALITY_HIGH,
+                        callback = self.__updateShaderQuality, sunrise = SHOWBASE_POSTINIT,
+                        options = ["Low", "Medium", "High"],
+                        description = ("Quality of shaders.\nLower this setting if"
+                        " your frame rate is dependent on your sceen resolution."))
+                        
+    def __updateShaderQuality(self, quality):
+        try:    base.shaderGenerator.setShaderQuality(quality)
+        except: pass
     
     def __updateBattlePOV(self, pov):
         try:    base.localAvatar.walkControls.setMode(pov)
