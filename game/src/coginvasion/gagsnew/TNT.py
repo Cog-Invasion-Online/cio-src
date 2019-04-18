@@ -24,7 +24,16 @@ class TNT(BaseGag, TNTShared):
         return Vec3(random.uniform(.5, 1), random.uniform(-.5, -1), 0)
 
     def addPrimaryPressData(self, dg):
-        CIGlobals.putVec3(dg, self.avatar.getRightHandNode().getPos(render))
+        # Start the TNT in the middle of the avatar, in front of the hitbox.
+        tntRadius = 0.393
+        avWidth = 1.0
+        throwOrigin = (
+            self.avatar.getPos(render) +
+            (0, 0, self.avatar.getHeight() / 2.0) +
+            (self.avatar.getQuat().getForward() * (avWidth + tntRadius))
+        )
+                       
+        CIGlobals.putVec3(dg, throwOrigin)
         CIGlobals.putVec3(dg, camera.getPos(render))
         CIGlobals.putVec3(dg, camera.getQuat(render).getForward())
         
@@ -46,7 +55,8 @@ class TNT(BaseGag, TNTShared):
             fpsCam.setVMAnimTrack(ActorInterval(vm, 'tnt_throw', startFrame = 27))
 
     def onSetAction(self, action):
-
+        self.model.show()
+        
         if action == self.StateDraw:
             self.doDrawNoHold('toss', 0, 30)
 
@@ -54,4 +64,5 @@ class TNT(BaseGag, TNTShared):
             self.doHold('toss', 30, 30, 1.0)
 
         elif action == self.StateThrow:
+            self.model.hide()
             self.setAnimTrack(self.getAnimationTrack('toss', 60), startNow = True)
