@@ -105,8 +105,15 @@ class Playground(Place.Place):
             requestStatus['nextState'] = 'acknowledgeDeath'
         else:
             requestStatus['nextState'] = 'walk'
+
         x, y, z, h, p, r = base.cr.hoodMgr.getPlaygroundCenterFromId(self.loader.hood.id)
-        #base.localAvatar.detachNode()
-        base.localAvatar.setPosHpr(render, x, y, z, h, p, r)
+        dropLocation = self.loader.geom.attachNewNode('dropLocation')
+        dropLocation.setPos(x, y, z)
+        dropLocation.setHpr(h, p, r)
+        
+        base.localAvatar.gotoNode(dropLocation)
+        base.localAvatar.setHpr(h, p, r)
+        dropLocation.removeNode()
+
         Place.Place.enterTeleportIn(self, requestStatus)
         return
