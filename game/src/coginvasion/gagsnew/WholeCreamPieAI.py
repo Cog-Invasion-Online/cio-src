@@ -19,7 +19,7 @@ class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
     Name = GagGlobals.WholeCreamPie
     ID = ATTACK_GAG_WHOLECREAMPIE
 
-    ThrowPower = 200.0
+    ThrowPower = 300.0
 
     def __init__(self):
         BaseGagAI.__init__(self)
