@@ -23,7 +23,7 @@ class GumballBlaster_AI(BaseHitscanAI):
     UsesAmmo = True
     HasClip = False
 
-    FirePower = 200.0
+    FirePower = 300.0
     
     MIN_BURST_SIZE = 3
     MAX_BURST_SIZE = 15
