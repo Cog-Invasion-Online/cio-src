@@ -18,7 +18,7 @@ NoAccess = 0
 
 TEAM_LEAD_ROLE = "Team Lead"
 DEVELOPER_ROLE = "Programming Dept."
-CREATIVE_TEAM_ROLE = "Creative Dept."
+CREATIVE_TEAM_ROLE = "Art Dept."
 PR_TEAM_ROLE = "PR Dept."
 MOD_TEAM_ROLE = "Moderation Dept."
 
@@ -105,7 +105,7 @@ def hasUpdateAuthorityOn():
 
 def handleRoleChange(avatar, prevRole, newRole):
     
-    if newRole.hasPermission(PERM_SET_WORLD_ACCESS):
+    if newRole and newRole.hasPermission(PERM_SET_WORLD_ACCESS):
         # Let's give the avatar access to all the neighborhoods if they
         # have the permission to set world access.
 
