@@ -1,6 +1,10 @@
+from panda3d.core import Vec3
+
 from BaseTaskAI import BaseTaskAI
 
 from src.coginvasion.cog.ai.ScheduleResultsAI import SCHED_COMPLETE, SCHED_CONTINUE, SCHED_FAILED
+from src.coginvasion.cog.ai.RelationshipsAI import RELATIONSHIP_FRIEND
+from src.coginvasion.cog.ai.ConditionsAI import COND_SEE_TARGET
 from src.coginvasion.globals import CIGlobals
 
 import random
@@ -178,16 +182,29 @@ class Task_StopMoving(BaseTaskAI):
         return SCHED_COMPLETE
 
 class Task_AwaitMovement(BaseTaskAI):
+    
+    def __init__(self, npc, watchTarget = False):
+        BaseTaskAI.__init__(self, npc)
+        self.watchTarget = watchTarget
 
     def runTask(self):
         if len(self.npc.getMotor().getWaypoints()) == 0:
             self.npc.getMotor().stopMotor()
             return SCHED_COMPLETE
-
+        
+        if self.watchTarget:
+            if self.npc.hasConditions(COND_SEE_TARGET) and self.npc.target:
+                if CIGlobals.isNodePathOk(self.npc.target.entity):
+                    self.npc.makeIdealYaw(self.npc.target.entity.getPos())
+                
         # Continue looking in our ideal direction
         self.npc.changeYaw()
 
         return SCHED_CONTINUE
+        
+    def cleanup(self):
+        del self.watchTarget
+        BaseTaskAI.cleanup(self)
 
 class Task_FindCoverFromTarget(BaseTaskAI):
 
@@ -271,6 +288,15 @@ class Task_SetSchedule(BaseTaskAI):
         del self.schedName
         BaseTaskAI.cleanup(self)
         
+class Task_RestartLastSchedule(BaseTaskAI):
+    
+    def runTask(self):
+        if self.npc.lastSchedule is None:
+            return SCHED_FAILED
+            
+        self.npc.changeSchedule(self.npc.lastSchedule)
+        return SCHED_COMPLETE
+        
 class Task_RememberPosition(BaseTaskAI):
     
     def runTask(self):
@@ -331,6 +357,36 @@ class Task_Speak(BaseTaskAI):
         del self.chance
         del self.phrases
         BaseTaskAI.cleanup(self)
+        
+class Task_GetPathYieldToFriend(BaseTaskAI):
+    
+    def runTask(self):
+        moveVector = Vec3()
+        currPos = self.npc.getPos()
+        for i in xrange(len(self.npc.avatarsInSight)):
+            av = self.npc.avatarsInSight[i]
+            if self.npc.getRelationshipTo(av) != RELATIONSHIP_FRIEND:
+                continue
+            otherPos = av.getPos()
+            moveAway = currPos - otherPos
+            
+            if moveAway.length() > self.npc.getYieldDistance():
+                continue
+            moveMag = 1.0 / max(moveAway.lengthSquared(), 0.1)
+            moveAway.normalize()
+            moveAway *= moveMag
+
+            moveVector += moveAway
+
+        moveVector.normalize()
+        newPos = currPos + (moveVector * self.npc.getYieldDistance())
+        
+        path = self.npc.getBattleZone().planPath(currPos, newPos)
+        if len(path) < 2:
+            return SCHED_FAILED
+
+        self.npc.getMotor().setWaypoints(path)
+        return SCHED_COMPLETE
 
 def task_oneOff(task):
     task.startTask()

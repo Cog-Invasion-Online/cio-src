@@ -63,4 +63,4 @@ class DistributedSewerAI(DistributedBattleZoneAI):
         #self.b_loadMap('phase_14/etc/testmats/testmats.bsp')
         #self.b_loadMap('phase_14/etc/estate_interior/estate_interior.bsp')
         #self.b_loadMap("phase_14/etc/test_attacks/test_attacks.bsp")
-        self.b_setMap('phase_14/etc/test_ai_arena/test_ai_arena.bsp')
+        self.b_setMap('test_ai_arena')

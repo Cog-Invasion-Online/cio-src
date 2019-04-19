@@ -16,6 +16,7 @@ COND_TARGET_CHARGING    = 1 << 13 # target is moving towards me
 COND_TASK_FAILED        = 1 << 14
 COND_SCHEDULE_DONE      = 1 << 15
 COND_CAN_ATTACK         = 1 << 16
+COND_FRIEND_IN_WAY      = 1 << 17
 
 AllConditions = [
     COND_SEE_HATE,
@@ -34,5 +35,6 @@ AllConditions = [
     COND_TARGET_CHARGING,
     COND_TASK_FAILED,
     COND_SCHEDULE_DONE,
-    COND_CAN_ATTACK
+    COND_CAN_ATTACK,
+    COND_FRIEND_IN_WAY
 ]

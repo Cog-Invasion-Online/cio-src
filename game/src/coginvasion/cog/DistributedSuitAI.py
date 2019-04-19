@@ -107,6 +107,20 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
             )
         
         })
+        
+    def shouldYield(self, av):
+        if isinstance(av, DistributedSuitAI):
+            theirClass = av.suitPlan.getCogClass()
+            myClass = self.suitPlan.getCogClass()
+            if theirClass < myClass:
+                # Lower class than me. Don't yield
+                return False
+            elif theirClass == myClass and av.getLevel() < self.getLevel():
+                # Same class, but lower level. Don't yield
+                return False
+                
+        return BaseNPCAI.shouldYield(self, av)
+            
 
     def setNPCState(self, state):
         if state != self.npcState:

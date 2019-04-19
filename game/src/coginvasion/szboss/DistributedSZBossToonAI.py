@@ -26,7 +26,6 @@ class Task_FindBestHPBarrel(BaseTaskAI):
                 closest = len2
                 closestBarrel = barrel
         if closestBarrel:
-            print "Found hp barrel", closestBarrel
             self.npc.hpBarrel = closestBarrel
             return SCHED_COMPLETE
             
@@ -41,8 +40,6 @@ class Task_GetPathToHPBarrel(BaseTaskAI):
         path = self.npc.getBattleZone().planPath(self.npc.getPos(), self.npc.hpBarrel.getPos())
         if len(path) < 2:
             return SCHED_FAILED
-            
-        print "Got path to hp barrel"
 
         self.npc.getMotor().setWaypoints(path)
         return SCHED_COMPLETE
@@ -53,14 +50,12 @@ class Task_GrabHPBarrel(BaseTaskAI):
         if not self.npc.hpBarrel:
             return SCHED_FAILED
             
-        print "Grabbing barrel"
         self.npc.hpBarrel.requestGrab(self.npc.doId)
         return SCHED_COMPLETE
         
 class Task_ClearHPBarrel(BaseTaskAI):
     
     def runTask(self):
-        print "Clearing barrel"
         self.npc.hpBarrel = None
         return SCHED_COMPLETE
 

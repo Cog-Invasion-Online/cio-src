@@ -84,6 +84,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
         # Must be derived from the Avatar class
         self.target = None
         
+        self.lastSchedule = None
         self.schedule = None
         self.npcState = STATE_IDLE
         self.idealState = STATE_IDLE
@@ -117,7 +118,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_SetActivity(self, ACT_NONE),
                     Task_Wait(-1)
                 ],
-                interruptMask = COND_NEW_TARGET|COND_SEE_FEAR|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE
+                interruptMask = COND_NEW_TARGET|COND_SEE_FEAR|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE|COND_FRIEND_IN_WAY
             ),
 
             "WAKE_ANGRY"    :   Schedule(
@@ -150,7 +151,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_Remember(self, MEMORY_IN_COVER),
                     Task_Func(self.setIdealYaw, [179])
                 ],
-                interruptMask = COND_NEW_TARGET
+                interruptMask = COND_NEW_TARGET|COND_FRIEND_IN_WAY
             ),
 
             "TAKE_COVER_FROM_TARGET"    :   Schedule(
@@ -165,7 +166,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_FaceTarget(self),
                     Task_Wait(1.0)
                 ],
-                interruptMask = COND_NEW_TARGET
+                interruptMask = COND_NEW_TARGET|COND_FRIEND_IN_WAY
             ),
 
             "CHASE_TARGET_FAILED"   :   Schedule(
@@ -179,7 +180,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_FaceTarget(self),
                     Task_Wait(1.0)
                 ],
-                interruptMask = COND_NEW_TARGET|COND_CAN_ATTACK
+                interruptMask = COND_NEW_TARGET|COND_CAN_ATTACK|COND_FRIEND_IN_WAY
             ),
 
             "CHASE_TARGET"  :   Schedule(
@@ -190,7 +191,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_AwaitMovement(self)
                 ],
                 failSched = "CHASE_TARGET_FAILED",
-                interruptMask = COND_NEW_TARGET | COND_TASK_FAILED | COND_CAN_ATTACK
+                interruptMask = COND_NEW_TARGET | COND_TASK_FAILED | COND_CAN_ATTACK | COND_FRIEND_IN_WAY
             ),
             "ATTACK"        :   Schedule(
                 [
@@ -233,8 +234,19 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_AwaitMovement(self),
                     Task_FaceIdeal(self)
                 ],
-                interruptMask=COND_NEW_TARGET|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE|COND_SEE_HATE|COND_SEE_DISLIKE
+                interruptMask=COND_NEW_TARGET|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE|COND_SEE_HATE|COND_SEE_DISLIKE|COND_FRIEND_IN_WAY
             ),
+            "YIELD_TO_FRIEND"   :   Schedule(
+                [
+                    Task_StopMoving(self),
+                    Task_StopAttack(self),
+                    Task_GetPathYieldToFriend(self),
+                    Task_RunPath(self),
+                    Task_AwaitMovement(self, watchTarget = True),
+                    Task_RestartLastSchedule(self)
+                ],
+                interruptMask=COND_NEW_TARGET|COND_SCHEDULE_DONE|COND_TASK_FAILED
+            )
         }
 
         self.motor = Motor(self)
@@ -443,6 +455,8 @@ class BaseNPCAI(BaseCombatCharacterAI):
         self.conditionsMask = None
         self.lastHPPerct = None
         self.avatarsInSight = None
+        self.schedule = None
+        self.lastSchedule = None
         
     #def setTarget(self, target):
     #    self.clearTarget()
@@ -758,8 +772,14 @@ class BaseNPCAI(BaseCombatCharacterAI):
         return self.idealState
 
     def getSchedule(self):
+        
         if self.npcState == STATE_NONE:
             return None
+            
+        elif (self.npcState not in [STATE_SCRIPT, STATE_DEAD] and
+        self.hasConditions(COND_FRIEND_IN_WAY)):
+            # We can yield to a friend in any active state
+            return self.getScheduleByName("YIELD_TO_FRIEND")
 
         elif self.npcState == STATE_IDLE:
         #    if self.hasConditions(COND_HEAR_SOUND):
@@ -809,10 +829,29 @@ class BaseNPCAI(BaseCombatCharacterAI):
 
         return None
         
+    def shouldYield(self, av):
+        if av.getHealth() < self.getHealth():
+            # Don't yield to someone who has less health than me.
+            # We should probably protect them.
+            return False
+        elif hasattr(self, 'doId') and hasattr(av, 'doId') and self.doId < av.doId:
+            # Don't yield to a younger friend (higher doId)
+            return False
+        elif id(self) < id(av):
+            # Don't yield to a younger friend
+            # (higher memory address? if that even means they are younger)
+            return False
+        
+        return (self.getPos() - av.getPos()).length() < self.getYieldDistance()
+        
+    def getYieldDistance(self):
+        return 5.0
+        
     def look(self):
         """Look at the world in front of me."""
 
-        self.clearConditions(COND_SEE_HATE | COND_SEE_FEAR | COND_SEE_DISLIKE | COND_SEE_TARGET | COND_SEE_FRIEND)
+        self.clearConditions(COND_SEE_HATE | COND_SEE_FEAR | COND_SEE_DISLIKE |
+                             COND_SEE_TARGET | COND_SEE_FRIEND | COND_FRIEND_IN_WAY)
         
         bits = 0
         
@@ -850,6 +889,9 @@ class BaseNPCAI(BaseCombatCharacterAI):
             elif relationship == RELATIONSHIP_FEAR:
                 bits |= COND_SEE_FEAR
             elif relationship == RELATIONSHIP_FRIEND:
+                if (bits & COND_FRIEND_IN_WAY) == 0 and self.shouldYield(av):
+                    # We need to move out of the way of our friend
+                    bits |= COND_FRIEND_IN_WAY
                 bits |= COND_SEE_FRIEND
             elif relationship == RELATIONSHIP_DISLIKE:
                 bits |= COND_SEE_DISLIKE
@@ -882,7 +924,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
             sched.reset()
 
         #print "Change schedule to", self.getScheduleName(sched)
-
+        self.lastSchedule = self.schedule
         self.schedule = sched
         self.conditionsMask = 0
 

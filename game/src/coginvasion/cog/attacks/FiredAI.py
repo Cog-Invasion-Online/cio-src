@@ -83,7 +83,7 @@ class FiredAI(BaseAttackAI, Fired_Shared):
         self.setNextAction(self.StateBegin)
 
     def checkCapable(self, dot, squaredDistance):
-        return squaredDistance >= 25*25 and squaredDistance <= 50*50
+        return squaredDistance >= 25*25 and squaredDistance <= 40*40
 
     def think(self):
         BaseAttackAI.think(self)

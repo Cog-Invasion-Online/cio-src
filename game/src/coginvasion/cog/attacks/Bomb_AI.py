@@ -29,10 +29,6 @@ class Bomb_AI(BaseAttackAI, BombShared):
     def getTauntPhrases(self):
         return ["Bombs away!"]
 
-    def getPostAttackSchedule(self):
-        # Take cover after we throw our bomb
-        return "TAKE_COVER_FROM_ORIGIN"
-
     def onSetAction(self, action):
         if action == self.StateThrow:
             self.takeAmmo(-1)
