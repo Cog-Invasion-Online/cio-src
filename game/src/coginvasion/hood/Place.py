@@ -48,12 +48,14 @@ class Place(StateData):
     
     def __handleChatInputOpened(self):
         if base.localAvatarReachable():
-            if self.fsm.getCurrentState().getName() == 'walk':
+            currentState = self.fsm.getCurrentState()
+            if currentState and currentState.getName() == 'walk':
                 base.localAvatar.disableAvatarControls(True)
             
     def __handleChatInputClosed(self):
         if base.localAvatarReachable():
-            if self.fsm.getCurrentState().getName() == 'walk':
+            currentState = self.fsm.getCurrentState()
+            if currentState and currentState.getName() == 'walk':
                 base.localAvatar.enableAvatarControls(True)
     
     def __acceptEvents(self):
@@ -66,24 +68,23 @@ class Place(StateData):
 
     def maybeUpdateAdminPage(self):
         if self.fsm:
-            if self.fsm.getCurrentState():
-                if self.fsm.getCurrentState().getName() == 'shtickerBook':
-                    if hasattr(self, 'shtickerBookStateData'):
-                        if self.shtickerBookStateData.getCurrentPage() and self.shtickerBookStateData.getCurrentPage().title == 'Admin Page':
-                            if base.cr.playGame.suitManager:
-                                text2Change2 = 'Turn Suit Spawner '
-                                if base.cr.playGame.suitManager.getSpawner():
-                                    text2Change2 += 'Off'
-                                else:
-                                    text2Change2 += 'On'
-                                self.shtickerBookStateData.getCurrentPage().suitSpawnerBtn['text'] = text2Change2
+            currentState = self.fsm.getCurrentState()
+            if currentState and currentState.getName() == 'shtickerBook':
+                if hasattr(self, 'shtickerBookStateData'):
+                    if self.shtickerBookStateData.getCurrentPage() and self.shtickerBookStateData.getCurrentPage().title == 'Admin Page':
+                        if base.cr.playGame.suitManager:
+                            text2Change2 = 'Turn Suit Spawner '
+                            if base.cr.playGame.suitManager.getSpawner():
+                                text2Change2 += 'Off'
+                            else:
+                                text2Change2 += 'On'
+                            self.shtickerBookStateData.getCurrentPage().suitSpawnerBtn['text'] = text2Change2
     
     # Used to disable all GUI interaction.   
     def __disableInteraction(self):
         if base.localAvatar.invGui:
             base.localAvatar.invGui.disable()
         base.localAvatar.disableLaffMeter()
-        
 
     def enterStart(self):
         pass
