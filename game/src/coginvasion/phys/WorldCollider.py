@@ -1,4 +1,4 @@
-from panda3d.bullet import BulletGhostNode, BulletSphereShape
+from panda3d.bullet import BulletGhostNode, BulletSphereShape, BulletRigidBodyNode
 from panda3d.core import NodePath, Point3, TransformState
 
 from src.coginvasion.globals import CIGlobals
@@ -12,11 +12,15 @@ class WorldCollider(NodePath):
                  offset = Point3(0), needSelfInArgs = False,
                  startNow = True, myMask = CIGlobals.EventGroup,
                  exclusions = [], resultInArgs = False, useSweep = False,
-                 world = None, initNp = True):
+                 world = None, initNp = True, useGhost = True):
 
         if self.WantNPInit:
             NodePath.__init__(self)
-        self.assign(NodePath(BulletGhostNode(name)))
+        if useGhost:
+            node = BulletGhostNode(name)
+        else:
+            node = BulletRigidBodyNode(name)
+        self.assign(NodePath(node))
 
         self.needSelfInArgs = needSelfInArgs
         self.resultInArgs = resultInArgs

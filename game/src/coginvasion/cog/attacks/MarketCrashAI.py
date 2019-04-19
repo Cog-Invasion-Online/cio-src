@@ -4,7 +4,7 @@ from src.coginvasion.cog.attacks.GenericThrowAttackAI import GenericThrowAttackA
 class MarketCrashAI(GenericThrowAttackAI):
 
     def __init__(self):
-        GenericThrowAttackAI.__init__(self, sharedMetadata = MarketCrashShared)
+        GenericThrowAttackAI.__init__(self, sharedMetadata = MarketCrashShared.Metadata)
         self.ammo = 100
         self.maxAmmo = 100
 

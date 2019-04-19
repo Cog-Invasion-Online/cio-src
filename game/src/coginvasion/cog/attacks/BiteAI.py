@@ -4,7 +4,7 @@ from src.coginvasion.cog.attacks.GenericThrowAttackAI import GenericThrowAttackA
 class BiteAI(GenericThrowAttackAI):
 
     def __init__(self):
-        GenericThrowAttackAI.__init__(self, sharedMetadata = BiteShared)
+        GenericThrowAttackAI.__init__(self, sharedMetadata = BiteShared.Metadata)
         self.ammo = 100
         self.maxAmmo = 100
 

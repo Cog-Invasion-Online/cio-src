@@ -29,7 +29,7 @@ class BaseAttackShared:
 
     PlayRate = 1.0
 
-    def __init__(self):
+    def __init__(self, sharedMetadata = None):
         self.maxClip = 10
         self.clip = 10
         self.maxAmmo = 10
@@ -49,6 +49,10 @@ class BaseAttackShared:
         self.thinkTask = None
 
         self.avatar = None
+
+        if sharedMetadata:
+            for key, value in sharedMetadata.items():
+                setattr(self, key, value)
 
     def setLevel(self, level):
         self.level = level

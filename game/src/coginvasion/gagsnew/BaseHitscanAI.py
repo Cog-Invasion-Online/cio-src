@@ -37,7 +37,7 @@ class BaseHitscanAI(BaseGagAI, BaseHitscanShared):
         return self.StateIdle
 
     def doTraceAndDamage(self, traces = 1):
-        BaseGagAI.doTraceAndDamage(self, self.traceOrigin, self.traceVector, self.AttackRange, traces)
+        return BaseGagAI.doTraceAndDamage(self, self.traceOrigin, self.traceVector, self.AttackRange, traces)
         
     def onSetAction(self, action):
         

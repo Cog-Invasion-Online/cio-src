@@ -20,8 +20,13 @@ class FiredProjectileAI(LobProjectileAI):
     def doInitCollider(self):
 
         WorldCollider.__init__(self, "FiredProjectileCollider", 0.75, needSelfInArgs = True,
-                          useSweep = True, resultInArgs = True, startNow = False, mask = CIGlobals.WorldGroup | CIGlobals.CharacterGroup)
+                          useSweep = True, resultInArgs = True, startNow = False,
+                          mask = CIGlobals.WorldGroup | CIGlobals.CharacterGroup)
         self.world = self.air.getPhysicsWorld(self.zoneId)
+
+    def diffuseFlame(self):
+        self.d_impact(self.getPos())
+        self.requestDelete()
 
 class FiredAI(BaseAttackAI, Fired_Shared):
 

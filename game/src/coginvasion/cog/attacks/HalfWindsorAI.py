@@ -4,7 +4,7 @@ from src.coginvasion.cog.attacks.GenericThrowAttackAI import GenericThrowAttackA
 class HalfWindsorAI(GenericThrowAttackAI):
 
     def __init__(self):
-        GenericThrowAttackAI.__init__(self, sharedMetadata = HalfWindsorShared)
+        GenericThrowAttackAI.__init__(self, sharedMetadata = HalfWindsorShared.Metadata)
         self.ammo = 100
         self.maxAmmo = 100
 

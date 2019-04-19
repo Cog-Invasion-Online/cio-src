@@ -4,7 +4,7 @@ from src.coginvasion.cog.attacks.GenericThrowAttackAI import GenericThrowAttackA
 class HardballAI(GenericThrowAttackAI):
 
     def __init__(self):
-        GenericThrowAttackAI.__init__(self, sharedMetadata = HardballShared)
+        GenericThrowAttackAI.__init__(self, sharedMetadata = HardballShared.Metadata)
         self.ammo = 100
         self.maxAmmo = 100
 

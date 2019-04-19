@@ -20,7 +20,7 @@ class EvilEye(BaseAttack):
     EyeSoundPath = "phase_5/audio/sfx/SA_evil_eye.ogg"
     
     def __init__(self):
-        BaseAttack.__init__(self, EvilEyeShared)
+        BaseAttack.__init__(self, EvilEyeShared.Metadata)
         self.eyeSfx = None
         self.eyeRoot = None
         
@@ -53,11 +53,11 @@ class EvilEye(BaseAttack):
         return True
     
     def cleanup(self):
-        if hasattr(self, 'eyeSfx'):
+        if hasattr(self, 'eyeSfx') and self.eyeSfx:
             base.audio3d.detachSound(self.eyeSfx)
             del self.eyeSfx
         
-        if hasattr(self, 'eyeRoot'):
+        if hasattr(self, 'eyeRoot') and self.eyeRoot:
             self.eyeRoot.removeNode()
             del self.eyeRoot
         

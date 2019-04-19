@@ -5,13 +5,20 @@ from src.coginvasion.attack.Attacks import ATTACK_HOLD_RIGHT
 from src.coginvasion.cog.SuitType import SuitType
 from src.coginvasion.base.Precache import precacheSound
 
+GenericMetadata = {
+    "Hold" : ATTACK_HOLD_RIGHT
+}
+
 class GenericThrowAttack(BaseAttack):
-    Hold = ATTACK_HOLD_RIGHT
     PlayRate = 1.0
     ThrowAnim = 'throw-paper'
     
     def __init__(self, sharedMetadata = None):
-        BaseAttack.__init__(self, sharedMetadata)
+        metadata = {}
+        metadata.update(GenericMetadata)
+        if sharedMetadata:
+            metadata.update(sharedMetadata)
+        BaseAttack.__init__(self, metadata)
         
         self.suitType2ReleaseFrame = {
             SuitType.A : {'throw-paper' : 73, 'throw-object' : 73},
@@ -52,17 +59,18 @@ class GenericThrowAttack(BaseAttack):
         self.avatar.doingActivity = False
 
         if action == self.StateThrow:
+
             self.avatar.doingActivity = True
             
             releaseFrame = self.suitType2ReleaseFrame.get(self.avatar.suitPlan.getSuitType()).get(self.ThrowAnim)
-            avatarTrack = self.getAnimationTrack(self.ThrowAnim, endFrame = releaseFrame, playRate = self.PlayRate, fullBody = False)
+            startTrack = self.getAnimationTrack(self.ThrowAnim, endFrame = releaseFrame, playRate = self.PlayRate, fullBody = False)
+            releaseTrack = self.getAnimationTrack(self.ThrowAnim, startFrame = releaseFrame, playRate = self.PlayRate, fullBody = False)
 
             self.setAnimTrack(
-                Parallel(
-                    Sequence(
-                        avatarTrack,
-                        self.getAnimationTrack(self.ThrowAnim, startFrame = releaseFrame, playRate = self.PlayRate, fullBody = False)
-                    ),
-                    Sequence(Wait(self.ThrowAfterTime / self.PlayRate), Func(self.model.hide))
+                Sequence(
+                    startTrack,
+                    Func(self.model.hide),
+                    releaseTrack
                 ),
-            startNow = True)
+                startNow = True
+            )

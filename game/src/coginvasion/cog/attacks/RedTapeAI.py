@@ -4,7 +4,7 @@ from src.coginvasion.cog.attacks import RedTapeShared
 class RedTapeAI(GenericThrowAttackAI):
     
     def __init__(self):
-        GenericThrowAttackAI.__init__(self, RedTapeShared)
+        GenericThrowAttackAI.__init__(self, RedTapeShared.Metadata)
         self.ammo = 100
         self.maxAmmo = 100
 

@@ -4,7 +4,7 @@ from src.coginvasion.cog.attacks import EvilEyeShared
 class EvilEyeAI(GenericThrowAttackAI):
     
     def __init__(self):
-        GenericThrowAttackAI.__init__(self, sharedMetadata = EvilEyeShared)
+        GenericThrowAttackAI.__init__(self, sharedMetadata = EvilEyeShared.Metadata)
         
         self.ammo = 100
         self.maxAmmo = 100

@@ -15,6 +15,7 @@ from direct.distributed.PyDatagramIterator import PyDatagramIterator
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.attack.Attacks import ATTACK_GAG_FIREHOSE
+from src.coginvasion.cog.attacks.FiredAI import FiredProjectileAI
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gagsnew.BaseHitscanAI import BaseHitscanAI
 
@@ -26,6 +27,8 @@ class FireHoseAI(BaseHitscanAI, FireHoseShared):
     Name = GagGlobals.FireHose
 
     AttackRange = 50.0
+
+    TraceMask = CIGlobals.WorldGroup | CIGlobals.CharacterGroup | CIGlobals.EventGroup
 
     def __init__(self):
         BaseHitscanAI.__init__(self)
@@ -67,7 +70,16 @@ class FireHoseAI(BaseHitscanAI, FireHoseShared):
             now = globalClock.getFrameTime()
             if now - self.lastSprayTraceTime >= self.SprayTraceIval:
                 #self.takeAmmo(-1)
-                self.doTraceAndDamage()
+                hitNode = self.doTraceAndDamage()
+
+                if hitNode:
+                    if hitNode.hasPythonTag("projectile"):
+                        proj = hitNode.getPythonTag("projectile")
+
+                        # Fire hose can put out a flame from the Fired Cog attack.
+                        if isinstance(proj, FiredProjectileAI):
+                            proj.diffuseFlame()
+
                 self.lastSprayTraceTime = now
 
     def cleanup(self):

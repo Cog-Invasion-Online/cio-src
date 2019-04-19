@@ -4,7 +4,7 @@ from src.coginvasion.cog.attacks.GenericThrowAttackAI import GenericThrowAttackA
 class ClipOnTieAI(GenericThrowAttackAI):
 
     def __init__(self):
-        GenericThrowAttackAI.__init__(self, sharedMetadata = ClipOnTieShared)
+        GenericThrowAttackAI.__init__(self, sharedMetadata = ClipOnTieShared.Metadata)
         self.ammo = 100
         self.maxAmmo = 100
 

@@ -29,6 +29,7 @@ class BaseProjectileAI(DistributedSmoothNodeAI, BaseProjectileShared, WorldColli
     def announceGenerate(self):
         pos = self.getPos(render)
         self.doInitCollider()
+        self.setPythonTag("projectile", self)
         self.reparentTo(render)
         self.setPos(pos)
         DistributedSmoothNodeAI.announceGenerate(self)

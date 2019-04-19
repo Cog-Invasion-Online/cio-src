@@ -48,6 +48,8 @@ class GenericThrowableLinearProjectile(LinearProjectile):
             
         if hasattr(attackCls, 'WantLight'):
             self.WantLight = attackCls.WantLight
+
+        attackCls.cleanup()
             
     def getData(self):
         return self.attackID

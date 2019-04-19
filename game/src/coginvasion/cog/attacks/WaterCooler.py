@@ -6,7 +6,6 @@ from src.coginvasion.attack.BaseAttack import BaseAttack
 from src.coginvasion.attack.Attacks import ATTACK_HOLD_LEFT, ATTACK_WATER_COOLER
 from src.coginvasion.cog.attacks.WaterCoolerShared import WaterCoolerShared
 from src.coginvasion.base.Precache import precacheSound, precacheModel
-from src.coginvasion.phys.WorldCollider import WorldCollider
 from src.coginvasion.globals import CIGlobals
 
 class WaterCooler(BaseAttack, WaterCoolerShared):
@@ -27,7 +26,6 @@ class WaterCooler(BaseAttack, WaterCoolerShared):
         self.sprayOnlySfx = None
         self.coolerAppearSfx = None
         self.sprayMdl = None
-        self.sprayCollider = None
         self.splash = None
         
     @classmethod
@@ -56,12 +54,6 @@ class WaterCooler(BaseAttack, WaterCoolerShared):
             self.sprayMdl.reparentTo(self.model.find('**/joint_toSpray'))
             self.sprayMdl.hide()
             
-        if not self.sprayCollider:
-            self.sprayCollider = WorldCollider(str(self.Name), radius = 1, mask = CIGlobals.WallGroup | CIGlobals.LocalAvGroup,
-                myMask = CIGlobals.WeaponGroup, exclusions = [self.avatar])
-            self.sprayCollider.reparentTo(self.sprayMdl)
-            self.sprayCollider.setY(1.0)
-            
         if not self.splash:
             self.splash = CIGlobals.makeSplat(Point3(0), (0.75, 0.75, 1.0, 0.8), 0.3, None)
             
@@ -74,10 +66,7 @@ class WaterCooler(BaseAttack, WaterCoolerShared):
         self.avatar.doingActivity = False
         
         return True
-    
-    def sprayCollision(self, entry = None):
-        pass
-    
+
     def onSetAction(self, action):
         self.model.show()
         self.model.setPos(self.ModelOrigin)
@@ -97,14 +86,9 @@ class WaterCooler(BaseAttack, WaterCoolerShared):
                         Func(self.model.show),
                         LerpScaleInterval(self.model, 0.5, Point3(1.15, 1.15, 1.15)),
                         Wait(1.6),
-                        #Func(self.sprayMdl.setPos, self.model.find('**/joint_toSpray').getPos(render)),
                         Func(self.sprayMdl.show),
-                        Func(self.avatar.acceptOnce, self.sprayCollider.getCollideEvent(), self.sprayCollision),
-                        #Func(self.sprayCollider.start),
                         LerpScaleInterval(self.sprayMdl, duration = 0.3, scale = (1.0, 20.0, 1.0), startScale = (1.0, 1.0, 1.0)),
                         Func(self.sprayMdl.hide),
-                        #Func(self.sprayCollider.stop),
-                        Func(self.avatar.ignore, self.sprayCollider.getCollideEvent())
                     ),
                     Sequence(
                         Wait(1.1),
@@ -128,12 +112,6 @@ class WaterCooler(BaseAttack, WaterCoolerShared):
             if self.sprayMdl:
                 self.sprayMdl.removeNode()
             del self.sprayMdl
-            
-        if hasattr(self, 'sprayCollider'):
-            if self.sprayCollider:
-                self.sprayCollider.stop()
-                self.sprayCollider.removeNode()
-            del self.sprayCollider
         
         if hasattr(self, 'splash') and self.splash:
             self.splash.cleanup()

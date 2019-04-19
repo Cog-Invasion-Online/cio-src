@@ -2,12 +2,14 @@
 from src.coginvasion.attack.BaseAttackAI import BaseAttackAI
 from src.coginvasion.cog.attacks.WaterCoolerShared import WaterCoolerShared
 from src.coginvasion.attack.Attacks import ATTACK_WATER_COOLER
+from src.coginvasion.globals import CIGlobals
 
 class WaterCoolerAI(BaseAttackAI, WaterCoolerShared):
     Name = "Water Cooler"
     ID = ATTACK_WATER_COOLER
     
-    WaitForSprayTime = 2.76
+    WaitForSprayTime = 3.11
+    StopLockOnTime = 2.5
     AttackRange = 40.0
     
     def __init__(self):
@@ -20,6 +22,9 @@ class WaterCoolerAI(BaseAttackAI, WaterCoolerShared):
         self.traceOrigin = None
         self.traceVector = None
         self.didAttack = False
+        self.calibrated = False
+
+        self.target = None
 
     def getBaseDamage(self):
         return 12.0
@@ -27,7 +32,18 @@ class WaterCoolerAI(BaseAttackAI, WaterCoolerShared):
     def cleanup(self):
         del self.traceOrigin
         del self.traceVector
+        del self.target
+        del self.didAttack
+        del self.calibrated
         BaseAttackAI.cleanup(self)
+
+    def calibrate(self):
+        self.traceOrigin = self.avatar.getPos() + (0, 0, self.avatar.getHeight() / 2)
+
+        if CIGlobals.isNodePathOk(self.target):
+            self.traceVector = ((self.target.getPos() + (0, 0, self.target.getHeight() / 2.0)) - self.traceOrigin).normalized()
+        else:
+            self.traceVector = self.avatar.getQuat().getForward()
         
     def think(self):
         BaseAttackAI.think(self)
@@ -38,7 +54,20 @@ class WaterCoolerAI(BaseAttackAI, WaterCoolerShared):
             
             self.didAttack = True
             self.doTraceAndDamage(self.traceOrigin, self.traceVector, self.AttackRange)
-            
+            self.target = None
+
+        elif (self.action == self.StateAttack and
+              self.getActionTime() < self.StopLockOnTime):
+
+            if CIGlobals.isNodePathOk(self.target):
+                self.avatar.headsUp(self.target)
+
+        elif (self.action == self.StateAttack and
+              not self.calibrated):
+
+            self.calibrate()
+            self.calibrated = True
+
     def checkCapable(self, dot, squaredDistance):
         return squaredDistance <= 20*20 and squaredDistance > 8*8
 
@@ -48,14 +77,14 @@ class WaterCoolerAI(BaseAttackAI, WaterCoolerShared):
     def onSetAction(self, action):
         if action == self.StateAttack:
             self.didAttack = False
+            self.calibrated = False
 
     def npcUseAttack(self, target):
         if not self.canUse():
             return
 
-        self.traceOrigin = self.avatar.getPos() + (0, 0, self.avatar.getHeight() / 2)
-        self.traceVector = ((target.getPos() + (0, 0, target.getHeight() / 2.0)) - self.traceOrigin).normalized()
         self.setNextAction(self.StateAttack)
+        self.target = target
     
     def getTauntChance(self):
         return 0.75

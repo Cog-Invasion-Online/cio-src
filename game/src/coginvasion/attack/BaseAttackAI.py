@@ -14,13 +14,11 @@ class BaseAttackAI(BaseAttackShared):
     Server = True
     FriendlyFire = False
 
+    TraceMask = CIGlobals.WorldGroup | CIGlobals.CharacterGroup
+
     def __init__(self, sharedMetadata = None):
-        BaseAttackShared.__init__(self)
+        BaseAttackShared.__init__(self, sharedMetadata)
         self.actionLengths = {self.StateIdle: -1}
-        
-        if sharedMetadata:
-            for key in sharedMetadata.__dict__.keys():
-                setattr(self, key, sharedMetadata.__dict__.get(key))
         
     def canDamage(self, obj):
         bz = self.avatar.getBattleZone()
@@ -93,13 +91,16 @@ class BaseAttackAI(BaseAttackShared):
         hit = PhysicsUtils.rayTestClosestNotMe(self.avatar,
                                                 origin,
                                                 traceEnd,
-                                                CIGlobals.WorldGroup | CIGlobals.CharacterGroup,
+                                                self.TraceMask,
                                                 self.avatar.getBattleZone().getPhysicsWorld())
         if hit is not None:
             node = hit.getNode()
             hitPos = hit.getHitPos()
             distance = (hitPos - origin).length()
             self.__handleHitSomething_trace(NodePath(node), hitPos, distance, origin, traces, impact)
+            return node
+
+        return None
 
     def getPostAttackSchedule(self):
         return None
