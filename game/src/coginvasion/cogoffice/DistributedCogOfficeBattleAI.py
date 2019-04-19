@@ -281,7 +281,6 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
 
     def cleanupGuardSuits(self):
         for suit in self.guardSuits:
-            suit.disable()
             suit.requestDelete()
         self.guardSuits = []
 
