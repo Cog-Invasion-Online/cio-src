@@ -96,7 +96,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
             self.stopLookTask()
 
     def getLookMode(self):
-        return self.mode
+        return self.lookMode
 
     def getCageBone(self, makeIfEmpty = True):
         if self.isEmpty():
