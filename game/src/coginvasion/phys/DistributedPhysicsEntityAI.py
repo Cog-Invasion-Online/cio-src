@@ -9,13 +9,13 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from direct.distributed.DistributedSmoothNodeAI import DistributedSmoothNodeAI
-from PhysicsNodePath import PhysicsNodePath
+from PhysicsNodePathAI import PhysicsNodePathAI
 
-class DistributedPhysicsEntityAI(DistributedSmoothNodeAI, PhysicsNodePath):
+class DistributedPhysicsEntityAI(DistributedSmoothNodeAI, PhysicsNodePathAI):
     
     def __init__(self, air):
         DistributedSmoothNodeAI.__init__(self, air)
-        PhysicsNodePath.__init__(self, 'physEntity')
+        PhysicsNodePathAI.__init__(self, 'physEntity')
 
     def doSetupPhysics(self):
         self.setupPhysics(self.getPhysBody(), False)

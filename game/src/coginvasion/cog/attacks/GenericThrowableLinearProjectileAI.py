@@ -13,7 +13,7 @@ This will make our lives easier and our workspace cleaner.
 
 from src.coginvasion.attack.LinearProjectileAI import LinearProjectileAI
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.phys.WorldCollider import WorldCollider
+from src.coginvasion.phys.WorldColliderAI import WorldColliderAI
 
 class GenericThrowableLinearProjectileAI(LinearProjectileAI):
 
@@ -22,7 +22,7 @@ class GenericThrowableLinearProjectileAI(LinearProjectileAI):
         self.attackID = -1
     
     def doInitCollider(self):
-        WorldCollider.__init__(self, "throwableCollider", 1.0, needSelfInArgs = True,
+        WorldColliderAI.__init__(self, "throwableCollider", 1.0, needSelfInArgs = True,
                           useSweep = True, resultInArgs = True, startNow = False,
                           mask = CIGlobals.WorldGroup | CIGlobals.CharacterGroup)
         self.world = self.air.getPhysicsWorld(self.zoneId)

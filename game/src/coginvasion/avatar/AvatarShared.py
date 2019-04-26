@@ -1,12 +1,10 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.phys.PhysicsNodePath import BasePhysicsObject
-
 from src.coginvasion.globals import CIGlobals
 
 from src.coginvasion.attack import AttackClasses
 
-class AvatarShared(BasePhysicsObject):
+class AvatarShared:
     """
     Base class shared between Server and Client implementations of the Avatar.
     
@@ -16,7 +14,6 @@ class AvatarShared(BasePhysicsObject):
     notify = directNotify.newCategory("AvatarShared")
 
     def __init__(self):
-        BasePhysicsObject.__init__(self)
         self.shapeGroup = CIGlobals.CharacterGroup
         self.health = 100
         self.maxHealth = 100

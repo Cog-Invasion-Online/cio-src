@@ -18,6 +18,7 @@ import sys
 class Metadata:
     PROCESS_NAME = 'coginvasion'
     PROCESS = 'client'
+    DEDICATED_SERVER = False
     SERVER_ADDRESS = os.environ.get('GAME_SERVER')
     RESOURCE_ENCRYPTION_PASSWORD = 'cio-03-06-16_lsphases'
     BUILD_NUMBER = 0

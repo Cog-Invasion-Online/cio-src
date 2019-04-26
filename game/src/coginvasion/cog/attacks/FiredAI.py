@@ -12,14 +12,14 @@ from src.coginvasion.attack.BaseAttackAI import BaseAttackAI
 from src.coginvasion.attack.Attacks import ATTACK_FIRED
 from src.coginvasion.attack.LobProjectileAI import LobProjectileAI
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.phys.WorldCollider import WorldCollider
+from src.coginvasion.phys.WorldColliderAI import WorldColliderAI
 from Fired_Shared import Fired_Shared
 
 class FiredProjectileAI(LobProjectileAI):
 
     def doInitCollider(self):
 
-        WorldCollider.__init__(self, "FiredProjectileCollider", 0.75, needSelfInArgs = True,
+        WorldColliderAI.__init__(self, "FiredProjectileCollider", 0.75, needSelfInArgs = True,
                           useSweep = True, resultInArgs = True, startNow = False,
                           mask = CIGlobals.WorldGroup | CIGlobals.CharacterGroup)
         self.world = self.air.getPhysicsWorld(self.zoneId)

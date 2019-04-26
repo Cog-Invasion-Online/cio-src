@@ -1,10 +1,10 @@
 from direct.distributed.DistributedSmoothNodeAI import DistributedSmoothNodeAI
 
-from src.coginvasion.phys.WorldCollider import WorldCollider
+from src.coginvasion.phys.WorldColliderAI import WorldColliderAI
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.attack.BaseProjectileShared import BaseProjectileShared
 
-class BaseProjectileAI(DistributedSmoothNodeAI, BaseProjectileShared, WorldCollider):
+class BaseProjectileAI(DistributedSmoothNodeAI, BaseProjectileShared, WorldColliderAI):
 
     WantNPInit = False
 
@@ -22,7 +22,7 @@ class BaseProjectileAI(DistributedSmoothNodeAI, BaseProjectileShared, WorldColli
         self.sendUpdate('impact', [pos])
 
     def doInitCollider(self):
-        WorldCollider.__init__(self, "none", 1.0, needSelfInArgs = True, resultInArgs = True,
+        WorldColliderAI.__init__(self, "none", 1.0, needSelfInArgs = True, resultInArgs = True,
                           useSweep = True, startNow = False, initNp = False, mask = CIGlobals.WorldGroup | CIGlobals.CharacterGroup)
         self.world = self.air.getPhysicsWorld(self.zoneId)
 

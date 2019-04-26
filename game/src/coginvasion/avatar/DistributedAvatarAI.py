@@ -18,9 +18,10 @@ from src.coginvasion.globals import CIGlobals
 from AvatarTypes import AVATAR_NONE
 from AvatarShared import AvatarShared
 from Activities import ACT_NONE
+from src.coginvasion.phys.PhysicsNodePathAI import BasePhysicsObjectAI
 from src.coginvasion.cog.ai.RelationshipsAI import RELATIONSHIP_NONE
 
-class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, AvatarShared):
+class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, AvatarShared, BasePhysicsObjectAI):
     notify = directNotify.newCategory("DistributedAvatarAI")
     
     AvatarType = AVATAR_NONE
@@ -32,6 +33,7 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
 
     def __init__(self, air):
         DistributedSmoothNodeAI.DistributedSmoothNodeAI.__init__(self, air)
+        BasePhysicsObjectAI.__init__(self)
         AvatarShared.__init__(self)
         
         self.lastPos = Point3(0)
@@ -212,7 +214,7 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         
         self.notify.debug("setupPhysics(r{0}, h{1}) hitboxData: {2}".format(radius, height, self.hitboxData))
         
-        AvatarShared.setupPhysics(self, bodyNode, True)
+        BasePhysicsObjectAI.setupPhysics(self, bodyNode, True)
         
     def announceGenerate(self):
         DistributedSmoothNodeAI.DistributedSmoothNodeAI.announceGenerate(self)
@@ -221,6 +223,8 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         self.setupPhysics()
 
         # Add ourself to the avatar list for the zone
+        # But if we somehow are already in there, remove us.
+        base.air.removeAvatar(self)
         base.air.addAvatar(self)
         
         if self.Moving:

@@ -68,6 +68,7 @@ loadPrcFileData('Command-line', localconfig)
 from src.coginvasion.base.Metadata import Metadata
 __builtins__.metadata = Metadata()
 metadata.PROCESS = 'server'
+metadata.DEDICATED_SERVER = True
 
 loadPrcFileData('', 'window-type none')
 loadPrcFileData('', 'audio-library-name none')

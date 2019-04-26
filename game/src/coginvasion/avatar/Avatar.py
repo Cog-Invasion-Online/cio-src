@@ -28,7 +28,7 @@ from src.coginvasion.avatar.AvatarShared import AvatarShared
 
 notify = directNotify.newCategory("Avatar")
 
-class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared):
+class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared, BasePhysicsObject):
     """
     Client side implementation of the base Avatar.
 	
@@ -47,6 +47,7 @@ class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared):
             self.Avatar_initialized = 1
 
         ToonTalker.ToonTalker.__init__(self)
+        BasePhysicsObject.__init__(self)
         AvatarShared.__init__(self)
         Actor.__init__(self, None, None, None, flattenable=0, setFinal=1)
         
