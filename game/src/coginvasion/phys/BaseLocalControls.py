@@ -450,23 +450,16 @@ class BaseLocalControls(DirectObject):
                 print "Num Footstep Tasks: " + str(len(base.taskMgr.getTasksNamed("LocalControls.handleFootsteps")))
         self.lastFootstepTime = globalClock.getFrameTime()
         
+    def getFootstepIval(self, speed):
+        return 0.4 - (0.1 * ((speed - self.BattleNormalSpeed) / (self.BattleRunSpeed - self.BattleNormalSpeed)))
+        
     def __handleFootsteps(self, task):
         time = globalClock.getFrameTime()
         speeds = self.speeds.length()
         if speeds > 0.1 and (self.isOnGround() or self.scheme == self.SSwim):
-            # 8 frames in between footsteps in run animation
-            # take absolute value, running backwards would give us a negative footstep ival
-            if base.localAvatar.playingAnim == 'run':
-                self.footstepIval = (8 / 24.0) * abs(base.localAvatar.playingRate) 
-            elif base.localAvatar.playingAnim == 'walk':
-                self.footstepIval = (11 / 24.0) * abs(base.localAvatar.playingRate)
-            elif base.localAvatar.playingAnim == 'dwalk':
-                self.footstepIval = (15 / 24.0) * abs(base.localAvatar.playingRate)
-
+            self.footstepIval = self.getFootstepIval(speeds)
             if self.scheme == self.SSwim:
                 self.footstepIval *= 6.0
-            if speeds > self.BattleNormalSpeed + 0.1:
-                self.footstepIval *= 0.8
                 
             if time - self.lastFootstepTime >= self.footstepIval:
                 self.playFootstep(min(1, speeds / self.BattleNormalSpeed))
