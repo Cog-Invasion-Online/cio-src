@@ -15,7 +15,7 @@ import math
 import random
 import sys
 
-class LocalControls(DirectObject):
+class BaseLocalControls(DirectObject):
     SlideFactor = 0.75
     DiagonalFactor = math.sqrt(2.0) / 2.0
     CrouchSpeedFactor = 0.3
@@ -70,7 +70,7 @@ class LocalControls(DirectObject):
         self.defaultOverride = None#"concrete"
 
         self.standingUp = True
-        self.footstepIval = LocalControls.FootstepIval
+        self.footstepIval = self.FootstepIval
         self.lastFootstepTime = 0
         self.currentSurface = None
         self.footstepSounds = {}
@@ -81,8 +81,8 @@ class LocalControls(DirectObject):
         self.currentObjectUsing = None
         self.lastUseObjectTime = 0.0
 
-        self.mode = LocalControls.MFirstPerson
-        self.scheme = LocalControls.SDefault
+        self.mode = self.MFirstPerson
+        self.scheme = self.SDefault
         self.fpsCam = FPSCamera()
 
         self.movementTokens = []
@@ -109,7 +109,7 @@ class LocalControls(DirectObject):
 
     def setControlScheme(self, scheme):
         self.scheme = scheme
-        if scheme == LocalControls.SSwim:
+        if scheme == self.SSwim:
             self.controller.movementState = "swimming"
             self.controller.gravity = base.physicsWorld.getGravity()[2] * LocalControls.SwimGravityMod
             self.staticFriction = 0.15
@@ -191,9 +191,9 @@ class LocalControls(DirectObject):
     def setMode(self, mode):
         self.mode = mode
         
-        if mode == LocalControls.MFirstPerson:
+        if mode == self.MFirstPerson:
             self.fsm.request('firstperson')
-        elif mode == LocalControls.MThirdPerson:
+        elif mode == self.MThirdPerson:
             self.fsm.request('thirdperson')
         else:
             self.notify.warning("unknown control mode {0}".format(mode))
@@ -202,10 +202,10 @@ class LocalControls(DirectObject):
         self.watchMovementInputs()
 
     def switchMode(self):
-        if self.mode == LocalControls.MFirstPerson:
-            self.setMode(LocalControls.MThirdPerson)
-        elif self.mode == LocalControls.MThirdPerson:
-            self.setMode(LocalControls.MFirstPerson)
+        if self.mode == self.MFirstPerson:
+            self.setMode(self.MThirdPerson)
+        elif self.mode == self.MThirdPerson:
+            self.setMode(self.MFirstPerson)
 
     def getCollisionsActive(self):
         return self.active
@@ -278,16 +278,13 @@ class LocalControls(DirectObject):
 
         if base.localAvatar.battleControls:
             base.taskMgr.add(self.__handleUse, "LocalControls.handleUse", taskChain = "fpsIndependentStuff")
-            #self.accept(base.inputStore.NextCameraPosition, self.switchMode)
-            self.accept(base.inputStore.LastGag, base.localAvatar.switchToLastSelectedGag)
 
-            if self.mode == LocalControls.MFirstPerson:
+            if self.mode == self.MFirstPerson:
                 self.fp_enable(wantMouse)
-            elif self.mode == LocalControls.MThirdPerson:
+            elif self.mode == self.MThirdPerson:
                 self.fp_enable(wantMouse)
                 base.localAvatar.startSmartCamera()
                 
-            base.localAvatar.setWalkSpeedNormal()
             self.idealFwd = self.BattleNormalSpeed
             self.idealRev = self.BattleNormalSpeed
             self.fwdSpeed = self.idealFwd
@@ -299,10 +296,6 @@ class LocalControls(DirectObject):
             self.accept(base.inputStore.PreviousCameraPosition, base.localAvatar.smartCamera.nextCameraPos, [0])
             self.accept(base.inputStore.LookUp, base.localAvatar.smartCamera.pageUp)
             self.accept(base.inputStore.LookDown, base.localAvatar.smartCamera.pageDown)
-            if base.localAvatar.getHealth() > 0: 
-                base.localAvatar.setWalkSpeedNormal()
-            else:
-                base.localAvatar.setWalkSpeedSlow()
 
         self.controlsEnabled = True
         self.exitControlsWhenGrounded = False
@@ -347,7 +340,7 @@ class LocalControls(DirectObject):
         base.localAvatar.assign(self.controller.movementParent)
         base.cr.doId2do[base.localAvatar.doId] = base.localAvatar
 
-        self.setControlScheme(LocalControls.SDefault)
+        self.setControlScheme(self.SDefault)
 
     def releaseMovementInputs(self):
         for tok in self.movementTokens:
@@ -443,7 +436,7 @@ class LocalControls(DirectObject):
             if self.currFootstepSound:
                 self.currFootstepSound.stop()
             sound = random.choice(choices)
-            sound.setVolume(volume * LocalControls.FootstepVolumeMod)
+            sound.setVolume(volume * self.FootstepVolumeMod)
             sound.play()
             #if self.currentSurface != self.getDefaultSurface():
             #    # if it's not the default footstep sound, put the default toon step sound behind it
@@ -461,7 +454,7 @@ class LocalControls(DirectObject):
     def __handleFootsteps(self, task):
         time = globalClock.getFrameTime()
         speeds = self.speeds.length()
-        if speeds > 0.1 and (self.isOnGround() or self.scheme == LocalControls.SSwim):
+        if speeds > 0.1 and (self.isOnGround() or self.scheme == self.SSwim):
             # 8 frames in between footsteps in run animation
             # take absolute value, running backwards would give us a negative footstep ival
             if base.localAvatar.playingAnim == 'run':
@@ -471,7 +464,7 @@ class LocalControls(DirectObject):
             elif base.localAvatar.playingAnim == 'dwalk':
                 self.footstepIval = (15 / 24.0) * abs(base.localAvatar.playingRate)
 
-            if self.scheme == LocalControls.SSwim:
+            if self.scheme == self.SSwim:
                 self.footstepIval *= 6.0
             if speeds > self.BattleNormalSpeed + 0.1:
                 self.footstepIval *= 0.8
@@ -493,7 +486,7 @@ class LocalControls(DirectObject):
             camQuat = base.camera.getQuat(render)
             camFwd = camQuat.xform(Vec3.forward())
             camPos = base.camera.getPos(render)
-            if self.mode == LocalControls.MFirstPerson:
+            if self.mode == self.MFirstPerson:
                 start = camPos
             else:
                 # Move the line out to their character.
@@ -560,19 +553,19 @@ class LocalControls(DirectObject):
             speed.setY(0)
             
         if reverse and slideLeft:
-            speed.setX(-self.revSpeed * LocalControls.SlideFactor)
+            speed.setX(-self.revSpeed * self.SlideFactor)
         elif reverse and slideRight:
-            speed.setX(self.revSpeed * LocalControls.SlideFactor)
+            speed.setX(self.revSpeed * self.SlideFactor)
         elif slideLeft:
-            speed.setX(-self.fwdSpeed * LocalControls.SlideFactor)
+            speed.setX(-self.fwdSpeed * self.SlideFactor)
         elif slideRight:
-            speed.setX(self.fwdSpeed * LocalControls.SlideFactor)
+            speed.setX(self.fwdSpeed * self.SlideFactor)
         else:
             speed.setX(0)
             
         if speed.getX() != 0 and speed.getY() != 0:
-            speed.setX(speed.getX() * LocalControls.DiagonalFactor)
-            speed.setY(speed.getY() * LocalControls.DiagonalFactor)
+            speed.setX(speed.getX() * self.DiagonalFactor)
+            speed.setY(speed.getY() * self.DiagonalFactor)
 
         if turnLeft:
             speed.setZ(self.turnSpeed)
@@ -617,7 +610,7 @@ class LocalControls(DirectObject):
 
         linearSpeed = Vec3(self.speeds[0], self.speeds[1], 0.0)
         
-        if self.scheme == LocalControls.SSwim and self.mode == LocalControls.MFirstPerson:
+        if self.scheme == self.SSwim and self.mode == self.MFirstPerson:
             # When swimming in first person, move in the direction we are looking, like flying.
             linearSpeed = self.fpsCam.camRoot.getQuat(render).xform(linearSpeed)
         else:
@@ -647,7 +640,7 @@ class LocalControls(DirectObject):
             self.revSpeed = self.idealRev
             
         if crouch and not self.crouching and self.allowCrouch:
-            fctr = LocalControls.CrouchSpeedFactor
+            fctr = self.CrouchSpeedFactor
             self.fwdSpeed = self.idealFwd * fctr
             self.revSpeed = self.idealRev * fctr
             self.controller.startCrouch()

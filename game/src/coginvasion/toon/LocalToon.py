@@ -31,7 +31,7 @@ from src.coginvasion.quest.QuestGlobals import QUEST_DATA_UPDATE_EVENT
 from src.coginvasion.gui.Crosshair import Crosshair
 from src.coginvasion.gui.QuestUpdateGUI import QuestUpdateGUI
 from src.coginvasion.toon.TPMouseMovement import TPMouseMovement
-from src.coginvasion.phys.LocalControls import LocalControls
+from src.coginvasion.phys.CILocalControls import CILocalControls
 
 from src.coginvasion.nametag import NametagGlobals
 
@@ -428,7 +428,7 @@ class LocalToon(DistributedPlayerToon):
         return self.walkControls.isMoving()
 
     def setupControls(self):
-        self.walkControls = LocalControls()
+        self.walkControls = CILocalControls()
         self.walkControls.setupControls()
         self.walkControls.setMode(CIGlobals.getSettingsMgr().getSetting("bpov").getValue())
 
