@@ -56,6 +56,9 @@ class AvatarShared:
 
     def hasAttackId(self, aId):
         return aId in self.attacks
+        
+    def hasAttacks(self):
+        return len(self.attacks.keys()) > 0
 
     def setActivities(self, actDict):
         """

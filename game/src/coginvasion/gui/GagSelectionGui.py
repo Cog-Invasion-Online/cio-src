@@ -296,6 +296,9 @@ class GagSelectionGui(DirectFrame, FSM):
     def update(self):
         plyr = base.localAvatar
         
+        if not base.localAvatar.hasAttacks():
+            return
+        
         gagId = -1
         if self.getCurrentOrNextState() == 'Idle':
             gagId = plyr.getEquippedAttack()
@@ -437,8 +440,9 @@ class GagSelectionGui(DirectFrame, FSM):
 
         self.fwdShakeIval = Effects.createXBounce(self, 1, Vec3(self.midpoint, 0, 0.93), 0.05, 0.05)
         self.revShakeIval = Effects.createXBounce(self, 1, Vec3(self.midpoint, 0, 0.93), 0.05, -0.05)
-
-        self.updateCurrentTrack(0)
+        
+        if base.localAvatar.hasAttacks():
+            self.updateCurrentTrack(0)
 
     def enableControls(self):
         self.accept('wheel_up', self.__handleScrollUp)
@@ -487,6 +491,9 @@ class GagSelectionGui(DirectFrame, FSM):
             self.request('Select')
 
     def __handleTrackChoose(self, idx):
+        if not base.localAvatar.hasAttacks():
+            return
+            
         self.__maybeDoSelect()
         self.resetTimeout()
 
@@ -502,6 +509,9 @@ class GagSelectionGui(DirectFrame, FSM):
             self.newTrackSound.play()
 
     def __handleScrollUp(self):
+        if not base.localAvatar.hasAttacks():
+            return
+            
         self.__maybeDoSelect()
         self.resetTimeout()
 
@@ -515,6 +525,9 @@ class GagSelectionGui(DirectFrame, FSM):
         self.keyScrollSound.play()
 
     def __handleScrollDown(self):
+        if not base.localAvatar.hasAttacks():
+            return
+            
         self.__maybeDoSelect()
         self.resetTimeout()
 
