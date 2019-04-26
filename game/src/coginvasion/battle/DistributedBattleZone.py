@@ -26,6 +26,8 @@ class DistributedBattleZone(DistributedObject):
     notify = directNotify.newCategory('DistributedBattleZone')
     notify.setInfo(True)
     
+    MapFormatString = "phase_14/etc/{0}/{0}.bsp"
+    
     def __init__(self, cr):
         DistributedObject.__init__(self, cr)
         self.avIds = []
@@ -83,7 +85,7 @@ class DistributedBattleZone(DistributedObject):
         self.d_loadedMap()
         
     def loadTheMap(self):
-        base.loadBSPLevel("phase_14/etc/{0}/{0}.bsp".format(self.map))
+        base.loadBSPLevel(self.MapFormatString.format(self.map))
         base.bspLevel.reparentTo(render)
 
     def setMap(self, map):

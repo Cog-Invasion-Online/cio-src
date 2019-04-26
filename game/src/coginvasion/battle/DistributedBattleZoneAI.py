@@ -35,6 +35,8 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
     notify = directNotify.newCategory('DistributedBattleZoneAI')
 
     battleType = BattleGlobals.BTBattle
+    
+    MapFormatString = "phase_14/etc/{0}/{0}.bsp"
 
     def __init__(self, air):
         DistributedObjectAI.__init__(self, air)
@@ -94,7 +96,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
     def setMap(self, map):
         self.map = map
         if len(map) and self.bspLoader:
-            self.loadBSPLevel("phase_14/etc/{0}/{0}.bsp".format(map))
+            self.loadBSPLevel(self.MapFormatString.format(map))
 
     def b_setMap(self, map):
         self.sendUpdate('setMap', [map])
