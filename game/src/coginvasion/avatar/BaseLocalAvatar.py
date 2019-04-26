@@ -26,6 +26,7 @@ class BaseLocalAvatar:
         self.lastSelectedGag = -1
         self.needsToSwitchToGag = None
         self.gagsEnabled = False
+        self.gagsTimedOut = False
         
     def updateAttackAmmo(self, attackId, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip):
         if self.invGui:

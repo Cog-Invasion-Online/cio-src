@@ -95,7 +95,6 @@ class LocalToon(DistributedPlayerToon, BaseLocalAvatar):
         self.isMoving_back = False
         self.isMoving_jump = False
         self.gagThrowBtn = None
-        self.gagsTimedOut = False
 
         self.pickerTrav = None
         self.pickerRay = None
