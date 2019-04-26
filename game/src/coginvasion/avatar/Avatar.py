@@ -115,6 +115,9 @@ class Avatar(ToonTalker.ToonTalker, Actor, AvatarShared, BasePhysicsObject):
         self.wasDoingActivity = False
 
         return
+
+    def getAttackMgr(self):
+        return base.cr.attackMgr
         
     def stopActivity(self):
         if self.activityTrack:

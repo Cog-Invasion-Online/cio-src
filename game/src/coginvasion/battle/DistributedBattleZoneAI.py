@@ -470,7 +470,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
                     trackIncrements[track] = 0
                 
                 for gagId, uses in data[0].iteritems():
-                    gagName = GagGlobals.getGagByID(gagId)
+                    gagName = self.air.attackMgr.getAttackName(gagId)
                     gagData = GagGlobals.gagData.get(gagName)
                     track = gagData['track']
                     if uses > favGagUses:
@@ -483,7 +483,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
                         incr = incr + trackIncrements[track]
                     trackIncrements[track] = incr
                     
-                rpData.favoriteGag = GagGlobals.getGagByID(favGagId)
+                rpData.favoriteGag = self.air.attackMgr.getAttackName(favGagId)
                 
                 for track, exp in avatar.trackExperience.iteritems():
                     rpDataTrack = rpData.getTrackByName(track)
@@ -499,7 +499,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
                         # We've unlocked a gag.
                         maxExpIndex = GagGlobals.TrackExperienceAmounts.get(track).index(incrMaxExp)
                         newGagName = GagGlobals.TrackGagNamesByTrackName.get(track)[maxExpIndex]
-                        gagId = GagGlobals.getIDByName(newGagName)
+                        gagId = self.air.attackMgr.getAttackIDByName(newGagName)
                         avatar.backpack.addGag(gagId, 1)
                         gagUnlocked = True
                 avatar.b_setTrackExperience(GagGlobals.trackExperienceToNetString(avatar.trackExperience))

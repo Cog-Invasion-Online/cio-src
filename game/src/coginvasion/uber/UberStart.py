@@ -90,12 +90,11 @@ loadPrcFileData('', 'audio-library-name none')
 
 from src.coginvasion.ai.AIBaseGlobal import *
 
-# We deal with attacks on the server side as well
-from src.coginvasion.attack import AttackClasses
-base.attackMgr = AttackClasses.AttackManager()
-
 from src.coginvasion.uber.CogInvasionUberRepository import CogInvasionUberRepository as CIUR
 base.air = CIUR(config.GetInt('air-base-channel', 400000000), config.GetInt('air-stateserver', 10000))
+# We deal with attacks on the server side as well
+from src.coginvasion.attack.AttackManagerAI import AttackManagerAI
+base.air.attackMgr = AttackManagerAI()
 base.air.holiday = int(args.holiday)
 host = args.astron_ip
 port = DEFAULT_UBER_PORT

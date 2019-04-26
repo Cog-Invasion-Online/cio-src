@@ -99,7 +99,7 @@ class Shop(StateData):
             self.window.showInfo("The maximum amount of turrets has been reached.", 1, 2)
 
     def __purchaseGagItem(self, gag, values):
-        gagID = GagGlobals.getIDByName(gag)
+        gagID = base.cr.attackMgr.getAttackIDByName(gag)
         supply = self.backpack.getSupply(gagID)
         maxSupply = self.backpack.getMaxSupply(gagID)
         vowels = ['a', 'e', 'i', 'o', 'u']
@@ -263,7 +263,7 @@ class ItemButton(DirectButton):
             self['geom'] = image
             
             if values.get('type') == ItemType.GAG:
-                gagId = GagGlobals.getIDByName(item)
+                gagId = base.cr.attackMgr.getAttackIDByName(item)
                 supply = base.localAvatar.getBackpack().getSupply(gagId)
                 maxSupply = base.localAvatar.getBackpack().getMaxSupply(gagId)
                 self.setScale(1.3)
@@ -316,7 +316,7 @@ class ItemButton(DirectButton):
                 self.setColorScale(GRAYED_OUT_COLOR)
             if itemType == ItemType.GAG:
                 backpack = base.localAvatar.getBackpack()
-                gagId = GagGlobals.getIDByName(self.item)
+                gagId = base.cr.attackMgr.getAttackIDByName(self.item)
                 supply = backpack.getSupply(gagId)
                 maxSupply = backpack.getMaxSupply(gagId)
                 inBackpack = backpack.hasGag(gagId)
@@ -463,7 +463,7 @@ class ShopWindow(DirectFrame):
             crcGags = OrderedDict(newItems)
             for item, values in newItems.items():
                 if values and values.get('type') == ItemType.GAG:
-                    gagId = GagGlobals.getIDByName(item)
+                    gagId = base.cr.attackMgr.getAttackIDByName(item)
                     hasGag = base.localAvatar.getBackpack().hasGag(gagId)
                     if gagId not in loadout or not hasGag:
                         del crcGags[item]

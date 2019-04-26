@@ -55,7 +55,7 @@ class DistributedGagBarrelAI(DistributedRestockBarrelAI):
         if self.gagId == -1:
             # Gets the gag ids of gags in this gag track.
             for trackGag in trackGags:
-                gagId = GagGlobals.getIDByName(trackGag)
+                gagId = self.air.attackMgr.getAttackIDByName(trackGag)
                 if backpack.hasGag(gagId):
                     availableGags.append(gagId)
             # The strongest gags should be first.
@@ -79,7 +79,7 @@ class DistributedGagBarrelAI(DistributedRestockBarrelAI):
                     giveAmount = restockLeft
                 restockGags[gagId] = supply + giveAmount
                 restockLeft -= giveAmount
-                self.notify.info('Requesting to give %s %ss.' % (str(giveAmount), GagGlobals.getGagByID(gagId)))
+                self.notify.info('Requesting to give %s %ss.' % (str(giveAmount), self.air.attackMgr.getAttackName(gagId)))
                 
         for gagId in restockGags.keys():
             attack = avatar.getAttack(gagId)

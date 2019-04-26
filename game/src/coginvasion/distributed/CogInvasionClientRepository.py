@@ -137,6 +137,8 @@ class CogInvasionClientRepository(AstronClientRepository):
         #self.http.addPreapprovedServerCertificateFilename(self.serverURL, Filename('phase_3/etc/gameserver.crt'))
         #self.tournamentMusicChunks = {}
         #self.threadedTaskChain = taskMgr.setupTaskChain("threadedTaskChainForSoundIntervals", numThreads = 2)
+        
+        self.attackMgr = base.cl_attackMgr
 
         base.minigame = None
 

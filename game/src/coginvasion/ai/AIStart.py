@@ -89,15 +89,14 @@ nmMgr.start_default_update()
 nmMgr.get_reference_node_path_debug().reparentTo(render)
 base.nmMgr = nmMgr
 
-# We deal with attacks on the server side as well
-from src.coginvasion.attack import AttackClasses
-base.attackMgr = AttackClasses.AttackManager()
-
 from direct.distributed.ClockDelta import globalClockDelta
 __builtins__.globalClockDelta = globalClockDelta
 
 from src.coginvasion.ai.CogInvasionAIRepository import CogInvasionAIRepository as CIAIR
-base.air = CIAIR(config.GetInt('air-base-channel', 401000000), config.GetInt('air-stateserver', 10000))
+base.air = CIAIR(config.GetInt('air-base-channel', 401000000), config.GetInt('air-stateserver', 10000))\
+# We deal with attacks on the server side as well
+from src.coginvasion.attack.AttackManagerAI import AttackManagerAI
+base.air.attackMgr = AttackManagerAI()
 host = args.astron_ip
 port = 7033
 if ':' in host:

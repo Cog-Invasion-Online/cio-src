@@ -2,8 +2,6 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 
 from src.coginvasion.globals import CIGlobals
 
-from src.coginvasion.attack import AttackClasses
-
 class AvatarShared:
     """
     Base class shared between Server and Client implementations of the Avatar.
@@ -278,9 +276,12 @@ class AvatarShared:
     def d_setChat(self, chat):
         self.sendUpdate("setChat", [chat])
 
+    def getAttackMgr(self):
+        return None
+
     def setupAttacks(self):
         for aId in self.attackIds:
-            attackCls = base.attackMgr.getAttackClassByID(aId)
+            attackCls = self.getAttackMgr().getAttackClassByID(aId)
             if attackCls:
                 attack = attackCls()
                 attack.setAvatar(self)

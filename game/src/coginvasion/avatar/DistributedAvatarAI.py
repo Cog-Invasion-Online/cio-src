@@ -41,6 +41,9 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         self.movementVector = Vec3(0)
         return
 
+    def getAttackMgr(self):
+        return self.air.attackMgr
+
     def getActivityDuration(self, act):
         return self.activities.get(act, 0.0)
 

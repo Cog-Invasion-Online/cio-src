@@ -38,7 +38,7 @@ class DistributedGagPickup(DistributedEntity):
             self.gagMdl.removeNode()
             self.gagMdl = None
 
-        attackCls = base.attackMgr.getAttackClassByID(gagId)
+        attackCls = self.cr.attackMgr.getAttackClassByID(gagId)
         if attackCls and attackCls.ModelPath:
             self.gagMdl = loader.loadModel(attackCls.ModelPath)
             self.gagMdl.setScale(attackCls.ModelScale)

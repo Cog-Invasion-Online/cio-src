@@ -116,7 +116,7 @@ class DistributedRestockBarrel(DistributedEntity, DistributedNode):
             purchaseModels.removeNode()
         elif labelId < 1000:
             gagId = labelId - 2
-            iconName = GagGlobals.InventoryIconByName.get(GagGlobals.getGagByID(gagId))
+            iconName = GagGlobals.InventoryIconByName.get(self.cr.attackMgr.getAttackName(gagId))
             invModel = loader.loadModel('phase_3.5/models/gui/inventory_icons.bam').find('**/%s' % iconName)
             if invModel:
                 self.gagModel = invModel

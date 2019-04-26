@@ -48,7 +48,7 @@ class RPToonData:
     def toNetString(self, avDoId):
         dg = PyDatagram()
         dg.addUint32(avDoId)
-        dg.addUint8(base.attackMgr.getAttackIDByName(self.favoriteGag))
+        dg.addUint8(base.air.attackMgr.getAttackIDByName(self.favoriteGag))
         
         for trackName in self.tracks.keys():
             track = self.getTrackByName(trackName)
@@ -70,7 +70,7 @@ class RPToonData:
         self.avatar = base.cr.doId2do.get(avDoId, None)
         self.avatarName = None if not self.avatar else self.avatar.getName()
         
-        self.favoriteGag = base.attackMgr.getAttackName(favGagId)
+        self.favoriteGag = base.cr.attackMgr.getAttackName(favGagId)
         
         while dgi.getRemainingSize() > 0:
             track = GagGlobals.TrackNameById.get(dgi.getUint8())

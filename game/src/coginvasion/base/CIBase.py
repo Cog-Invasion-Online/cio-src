@@ -175,7 +175,7 @@ class CIBase(ShowBase):
 
         base.lightingCfg = None
 
-        self.attackMgr = None
+        self.cl_attackMgr = None
         
         #self.accept('/', self.projectShadows)
         
@@ -649,8 +649,11 @@ class CIBase(ShowBase):
         #from src.coginvasion.globals import BSPUtility
         #BSPUtility.applyUnlitOverride(render)
 
-        from src.coginvasion.attack import AttackClasses
-        self.attackMgr = AttackClasses.AttackManager()
+        # We define this here (naming it cl_ to avoid trying to use the old base.attackMgr)
+        # in order to precache attacks. The ClientRepository will then take our self.cl_attackMgr
+        # and use it as base.cr.attackMgr.
+        from src.coginvasion.attack.AttackManager import AttackManager
+        self.cl_attackMgr = AttackManager()
         
         if self.DebugShaderQualities:
             from panda3d.bsp import SHADERQUALITY_HIGH, SHADERQUALITY_MEDIUM, SHADERQUALITY_LOW
@@ -662,7 +665,7 @@ class CIBase(ShowBase):
         from src.coginvasion.toon import ToonGlobals
         ToonGlobals.precacheToons()
 
-        self.attackMgr.precache()
+        self.cl_attackMgr.precache()
             
         from src.coginvasion.gags.LocationSeeker import LocationSeeker
         LocationSeeker.precache()

@@ -785,16 +785,23 @@ def loadProp(phase, name):
 def getProp(phase, name):
     return 'phase_%s/models/props/%s.bam' % (str(phase), name)
 
-def getGagByID(gId):
-    return base.attackMgr.getAttackName(gId)
 
-def getIDByName(name):
-    for aID, cls in base.attackMgr.AttackClasses.items():
-        if cls.Name == name:
-            return aID
+def getGagByID(gagId, isAI = False):
+    if isAI:
+        return base.air.attackMgr.getAttackName(gagId)
+    return base.cr.attackMgr.getAttackName(gagId)
 
-def getGagData(gagId):
-    return gagData.get(getGagByID(gagId))
+def getIDByName(gagName, isAI = False):
+    if isAI:
+        return base.air.attackMgr.getAttackIDByName(gagName)
+    return base.cr.attackMgr.getAttackIDByName(gagName)
+
+def getGagData(gagName):
+    if isinstance(gagName, int):
+        raise RuntimeError("Attack ID can't be passed into this function because I don't know "
+                           "if we're client or AI. You need to pass the attack name instead.")
+
+    return gagData.get(gagName)
 
 # Expecting a dictionary like so:
 # TRACK_NAME : EXP
@@ -809,7 +816,7 @@ def trackExperienceToNetString(tracks):
     return dgi.getRemainingBytes()
 
 # Expects a TRACK_NAME : EXP dictionary and the backpack that should get updates.
-def processTrackData(trackData, backpack):
+def processTrackData(trackData, backpack, isAI = False):
     addedGag = False
 
     for track, exp in trackData.iteritems():
@@ -820,14 +827,14 @@ def processTrackData(trackData, backpack):
             maxEXP = expAmounts[i]
             if exp >= maxEXP and len(gags) > i:
                 gagAtLevel = gags[i]
-                gagId = getIDByName(gagAtLevel)
+                gagId = getIDByName(gagAtLevel, isAI)
                 
                 if not backpack.hasGag(gagAtLevel):
                     addedGag = True
                     backpack.addGag(gagId, 1, None)
                 
     for gagId in backpack.avatar.attacks.keys():
-        gagName = getGagByID(gagId)
+        gagName = backpack.avatar.getAttackMgr().getAttackName(gagId)
         maxSupply = calculateMaxSupply(backpack.avatar, gagName, gagData.get(gagName))
         backpack.setMaxSupply(gagId, maxSupply)
 
@@ -861,13 +868,13 @@ def getMaxExperienceValue(exp, track):
 def getTrackName(tId):
     return TrackNameById.get(tId, "not found")
     
-def getTrackOfGag(arg, getId = False):
+def getTrackOfGag(arg, getId = False, isAI = False):
     if type(arg) == types.IntType:
 
         # This is a gag id.
         for trackName, gagList in TrackGagNamesByTrackName.items():
 
-            if getGagByID(arg) in gagList:
+            if getGagByID(arg, isAI = isAI) in gagList:
 
                 if not getId:
                     # Return the name of the track as a string
@@ -935,7 +942,10 @@ def getDefaultBackpack(isAI = False):
             # or 10 if it wasn't specified.
             supply = data.get('supply', 10)
             
-            ID = base.attackMgr.getAttackIDByName(tempGag)
+            if isAI:
+                ID = base.air.attackMgr.getAttackIDByName(tempGag)
+            else:
+                ID = base.cr.attackMgr.getAttackIDByName(tempGag)
             DefaultBackpack[ID] = supply
         
     return DefaultBackpack

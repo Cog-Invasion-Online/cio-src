@@ -27,7 +27,7 @@ class DistributedGagPickupAI(DistributedEntityAI):
 
     def __pickGagId(self):
         gagName = random.choice(self.Pickups)
-        gagId = base.attackMgr.getAttackIDByName(gagName)
+        gagId = self.air.attackMgr.getAttackIDByName(gagName)
         return gagId
 
     def delete(self):

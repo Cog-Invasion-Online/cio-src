@@ -163,8 +163,8 @@ class Goon(Avatar, FSM):
         if self.isDead():
             return
 
-        gagName = GagGlobals.getGagByID(gagId)
-        data = dict(GagGlobals.getGagData(gagId))
+        gagName = base.cr.attackMgr.getAttackName(gagId)
+        data = dict(GagGlobals.getGagData(gagName))
         data['distance'] = distance
         baseDmg = GagGlobals.calculateDamage(player, gagName, data)
         hp = self.health - baseDmg

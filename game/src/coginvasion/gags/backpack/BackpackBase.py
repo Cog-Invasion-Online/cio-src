@@ -45,24 +45,25 @@ class BackpackBase:
     # TODO: work with new system
     def addGag(self, gagId, curSupply = None, maxSupply = None):
         if isinstance(gagId, str):
-            gagId = GagGlobals.getIDByName(gagId)
+            gagId = self.avatar.getAttackMgr().getAttackIDByName(gagId)
+        gagName = self.avatar.getAttackMgr().getAttackName(gagId)
         # Make sure the gag is actually a registered attack and we
         # don't already have it in our backpack
-        if not self.hasGag(gagId) and gagId in base.attackMgr.AttackClasses.keys():
+        if not self.hasGag(gagId) and gagId in self.avatar.getAttackMgr().AttackClasses.keys():
             if maxSupply is None:
                 # Sets the max supply if one is not specified.
                 maxSupply = GagGlobals.calculateMaxSupply(self.avatar,
-                    GagGlobals.getGagByID(gagId),
-                GagGlobals.getGagData(gagId))
+                    gagName,
+                GagGlobals.getGagData(gagName))
                 
             # Sets the current supply to the max supply if current supply isn't
             # specified.
             if curSupply is None:
                 curSupply = maxSupply
 
-            gagData = GagGlobals.getGagData(gagId)
+            gagData = GagGlobals.getGagData(gagName)
 
-            attackCls = base.attackMgr.getAttackClassByID(gagId)
+            attackCls = self.avatar.getAttackMgr().getAttackClassByID(gagId)
             if attackCls:
                 attack = attackCls()
                 attack.setAvatar(self.avatar)
@@ -75,7 +76,7 @@ class BackpackBase:
                 
                 import types
                 
-                baseDamage = GagGlobals.calcBaseDamage(self.avatar, GagGlobals.getGagByID(gagId), gagData)
+                baseDamage = GagGlobals.calcBaseDamage(self.avatar, self.avatar.getAttackMgr().getAttackName(gagId), gagData)
                 def getBaseDamage(self):
                     return baseDamage
                 attack.getBaseDamage = types.MethodType(getBaseDamage, attack)
@@ -101,7 +102,7 @@ class BackpackBase:
     # was updated or not.
     def setMaxSupply(self, gagId, maxSupply):
         if isinstance(gagId, str):
-            gagId = GagGlobals.getIDByName(gagId)
+            gagId = self.avatar.getAttackMgr().getAttackIDByName(gagId)
         if self.hasGag(gagId) and 0 <= maxSupply <= MAXIMUM_SUPPLY:
             attack = self.avatar.attacks.get(gagId)
             attack.setMaxAmmo(maxSupply)
@@ -113,7 +114,7 @@ class BackpackBase:
     # -1 if the gag isn't in the backpack.
     def getMaxSupply(self, gagId):
         if isinstance(gagId, str):
-            gagId = GagGlobals.getIDByName(gagId)
+            gagId = self.avatar.getAttackMgr().getAttackIDByName(gagId)
         if self.hasGag(gagId):
             return self.avatar.attacks[gagId].getMaxAmmo()
         return -1
@@ -132,7 +133,7 @@ class BackpackBase:
     # supply was updated.
     def setSupply(self, gagId, supply):
         if isinstance(gagId, str):
-            gagId = GagGlobals.getIDByName(gagId)
+            gagId = self.avatar.getAttackMgr().getAttackIDByName(gagId)
         if self.hasGag(gagId) and 0 <= supply <= MAXIMUM_SUPPLY:
             attack = self.avatar.attacks.get(gagId)
 
@@ -150,7 +151,7 @@ class BackpackBase:
     # If gagId is not in the backpack, -1 is returned.
     def getSupply(self, gagId):
         if isinstance(gagId, str):
-            gagId = GagGlobals.getIDByName(gagId)
+            gagId = self.avatar.getAttackMgr().getAttackIDByName(gagId)
         if self.hasGag(gagId):
             return self.avatar.attacks[gagId].getAmmo()
         return -1
@@ -159,7 +160,7 @@ class BackpackBase:
     # is in the backpack.
     def hasGag(self, gagId):
         if isinstance(gagId, str):
-            gagId = GagGlobals.getIDByName(gagId)
+            gagId = self.avatar.getAttackMgr().getAttackIDByName(gagId)
         return gagId in self.avatar.attacks.keys()
         
     def getNetString(self):

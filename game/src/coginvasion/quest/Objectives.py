@@ -319,7 +319,7 @@ class DeliverItemObjective(ItemObjective, VisitNPCObjective):
         if False: #self.itemName in GagGlobals.gagIds.values():
             # Yes, we are. Let's subtract the quantity from our backpack.
             avatar = self.quest.questMgr.avatar
-            gagId = GagGlobals.getIDByName(self.itemName)
+            gagId = avatar.getAttackMgr().getAttackIDByName(self.itemName)
             
             avatar.backpack.setSupply(gagId, (avatar.backpack.getSupply(gagId) - self.goal))
 
@@ -331,7 +331,7 @@ class DeliverItemObjective(ItemObjective, VisitNPCObjective):
         else:
             # We need to deliver a certain quantity of a gag to the NPC this objective pertains to.
             avatar = self.quest.questMgr.avatar
-            gagId = GagGlobals.getIDByName(self.itemName)
+            gagId = avatar.getAttackMgr().getAttackIDByName(self.itemName)
             
             return avatar and avatar.backpack.getSupply(gagId) >= self.goal
     

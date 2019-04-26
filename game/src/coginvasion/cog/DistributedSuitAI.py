@@ -286,7 +286,7 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
     def __getGagEffectOnMe(self, avId, gagName, gagData, damageInfo, isPlayer):
         """ Returns the base damage and the damage offset a specified gag name used by "avId" has on this Cog """
         weaknessFactor = self.suitPlan.getGagWeaknesses().get(gagName, 1.0)
-        classWeakness = self.suitPlan.getCogClassAttrs().getGagDmgRamp(GagGlobals.getTrackOfGag(gagName))
+        classWeakness = self.suitPlan.getCogClassAttrs().getGagDmgRamp(GagGlobals.getTrackOfGag(gagName, isAI = True))
         if isPlayer:
             baseDmg = GagGlobals.calculateDamage(avId, gagName, gagData)
         else:
@@ -368,10 +368,10 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         distance = damageInfo.damageDistance
         avId = damageInfo.damager.doId
         avatar = damageInfo.damager
-        gagName = GagGlobals.getGagByID(gagId)
-        data = dict(GagGlobals.getGagData(gagId))
+        gagName = self.air.attackMgr.getAttackName(gagId)
+        data = dict(GagGlobals.getGagData(gagName))
         data['distance'] = distance
-        track = GagGlobals.getTrackOfGag(gagId, getId = True)
+        track = GagGlobals.getTrackOfGag(gagId, getId = True, isAI = True)
 
         isPlayer = hasattr(avatar, "trackExperience")
 

@@ -42,7 +42,7 @@ class GagWidget(DirectButton):
     def __init__(self, track, gagId):
         self.track = track
         self.gagId = gagId
-        self.gagName = GagGlobals.getGagByID(gagId)
+        self.gagName = base.cr.attackMgr.getAttackName(gagId)
 
         self.lastScale = 1.0
         self.goalScale = 1.0
@@ -251,7 +251,7 @@ class GagTrack(DirectFrame):
         gags = GagGlobals.TrackGagNamesByTrackName[self.trackName]
         for i in xrange(len(gags)):
             gagName = gags[i]
-            gagId = GagGlobals.getIDByName(gagName)
+            gagId = base.cr.attackMgr.getAttackIDByName(gagName)
             btn = GagWidget(self, gagId)
             btn.reparentTo(self)
             btn.setX(GAG_BTN_START + (GAG_BTN_OFFSET * i))

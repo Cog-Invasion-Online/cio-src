@@ -500,7 +500,7 @@ class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
         for gagId in data.keys():
             supply = data[gagId]
             
-            if not gagId in base.attackMgr.AttackClasses.keys():
+            if not gagId in self.getAttackMgr().AttackClasses.keys():
                 # This is like an integrity check making sure that the avatar
                 # only has access to attacks we want them to have access to.
                 # This also is an automatic way to correct old backpack data
@@ -535,7 +535,7 @@ class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
         
     def setTrackExperience(self, netString):
         self.trackExperience = GagGlobals.getTrackExperienceFromNetString(netString)
-        GagGlobals.processTrackData(self.trackExperience, self.backpack)
+        GagGlobals.processTrackData(self.trackExperience, self.backpack, isAI = True)
         
     def d_setTrackExperience(self, netString):
         self.sendUpdate('setTrackExperience', [netString])

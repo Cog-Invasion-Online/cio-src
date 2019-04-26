@@ -26,7 +26,7 @@ class GenericThrowableLinearProjectile(LinearProjectile):
         self.attackID = -1
         
     def setData(self, attackID):
-        attackCls = base.attackMgr.getAttackClassByID(attackID)()
+        attackCls = self.cr.attackMgr.getAttackClassByID(attackID)()
         
         if hasattr(attackCls, 'ThrowSoundPath'):
             self.ThrowSoundPath = attackCls.ThrowSoundPath

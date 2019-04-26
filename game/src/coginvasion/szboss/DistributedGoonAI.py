@@ -191,8 +191,8 @@ class DistributedGoonAI(DistributedEntityAI, DistributedAvatarAI, BaseNPCAI):
         if not player:
             return
             
-        gagName = GagGlobals.getGagByID(gagId)
-        data = dict(GagGlobals.getGagData(gagId))
+        gagName = self.air.attackMgr.getAttackName(gagId)
+        data = dict(GagGlobals.getGagData(gagName))
         data['distance'] = distance
         baseDmg = GagGlobals.calculateDamage(player, gagName, data)
         hp = self.health - baseDmg
