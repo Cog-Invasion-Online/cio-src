@@ -14,7 +14,6 @@ from DistributedPlayerToon import DistributedPlayerToon
 from SmartCamera import SmartCamera
 from src.coginvasion.gui.ChatInput import ChatInput
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
-from src.coginvasion.gui.GagSelectionGui import GagSelectionGui
 from src.coginvasion.gags import GagGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval, LerpPosHprInterval
 from direct.gui.DirectGui import DirectButton, OnscreenText
@@ -32,6 +31,7 @@ from src.coginvasion.gui.Crosshair import Crosshair
 from src.coginvasion.gui.QuestUpdateGUI import QuestUpdateGUI
 from src.coginvasion.toon.TPMouseMovement import TPMouseMovement
 from src.coginvasion.phys.CILocalControls import CILocalControls
+from src.coginvasion.avatar.BaseLocalAvatar import BaseLocalAvatar
 
 from src.coginvasion.nametag import NametagGlobals
 
@@ -45,7 +45,7 @@ lightwarps = ["phase_3/maps/toon_lightwarp.jpg", "phase_3/maps/toon_lightwarp_2.
 
 NO_TRANSITION = 1
 
-class LocalToon(DistributedPlayerToon):
+class LocalToon(DistributedPlayerToon, BaseLocalAvatar):
     neverDisable = 1
 
     GTAControls = ConfigVariableBool('want-gta-controls', False)
@@ -57,9 +57,9 @@ class LocalToon(DistributedPlayerToon):
         except:
             self.LocalToon_initialized = 1
         DistributedPlayerToon.__init__(self, cr)
+        BaseLocalAvatar.__init__(self)
         self.chatInputState = False
         self.avatarChoice = cr.localAvChoice
-        self.smartCamera = SmartCamera()
         self.chatInput = ChatInput()
         self.laffMeter = LaffOMeter()
         self.positionExaminer = PositionExaminer()
@@ -96,11 +96,6 @@ class LocalToon(DistributedPlayerToon):
         self.isMoving_jump = False
         self.gagThrowBtn = None
         self.gagsTimedOut = False
-        self.needsToSwitchToGag = None
-        self.gagsEnabled = False
-        
-        self.crosshair = Crosshair()
-        self.crosshair.hide()
 
         self.pickerTrav = None
         self.pickerRay = None
@@ -110,17 +105,10 @@ class LocalToon(DistributedPlayerToon):
         
         self.clickToonCallback = None
 
-        self.walkControls = None
-
         self.inTutorial = False
         self.hasDoneJump = False
         self.lastState = None
         self.lastAction = None
-
-        self.invGui = None
-
-        self.isSwimming = False
-        self.touchingWater = False
 
         self.jumpHardLandIval = None
         
@@ -129,30 +117,30 @@ class LocalToon(DistributedPlayerToon):
         
         # This is used by the animation traverser.
         self.__traverseGUI = None
+            
+    def primaryFirePress(self):
+        if not self.canUseGag():
+            return
 
-        self.playState = False
-        self.battleControls = False
+        DistributedPlayerToon.primaryFirePress(self)
+
+    def primaryFireRelease(self):
+        if not self.canUseGag():
+            return
+
+        DistributedPlayerToon.primaryFireRelease(self)
+
+    def secondaryFirePress(self):
+        if not self.canUseGag():
+            return
         
-        self.selectedGag = -1
-        self.lastSelectedGag = -1
-        
-    def selectGag(self, gagId, record = True):
-        if record:
-            # Forget this gag if they ran out of ammo
-            if self.lastSelectedGag != -1 and self.getAttackAmmo(self.lastSelectedGag) <= 0:
-                self.lastSelectedGag = -1
-            else:
-                self.lastSelectedGag = self.selectedGag
-                
-        self.selectedGag = gagId
-        self.needsToSwitchToGag = gagId
-        self.b_setEquippedAttack(gagId)
-        
-    def setBattleControls(self, flag):
-        self.battleControls = flag
-        if self.playState:
-            self.disableAvatarControls()
-            self.enableAvatarControls(1)
+        DistributedPlayerToon.secondaryFirePress(self)
+
+    def secondaryFireRelease(self):
+        if not self.canUseGag():
+            return
+
+        DistributedPlayerToon.secondaryFireRelease(self)
 
     def stopPlay(self):
         if not self.playState:
@@ -160,18 +148,12 @@ class LocalToon(DistributedPlayerToon):
             return
 
         self.disableLaffMeter()
-        self.disableGags()
         self.hideBookButton()
         self.hideFriendButton()
 
-        self.collisionsOff()
-        if self.walkControls.getCollisionsActive():
-            self.walkControls.setCollisionsActive(0, andPlaceOnGround=1)
-        self.disableAvatarControls()
+        BaseLocalAvatar.stopPlay(self)
+        
         self.stopTrackAnimToSpeed()
-        self.stopPosHprBroadcast()
-
-        self.playState = False
 
     def startPlay(self, gags = False, book = False, friends = False, laff = False, chat = False, wantMouse = 1):
         if self.playState:
@@ -187,22 +169,9 @@ class LocalToon(DistributedPlayerToon):
         if chat:
             self.createChatInput()
 
-        self.collisionsOn()
-        if not self.walkControls.getCollisionsActive():
-            self.walkControls.setCollisionsActive(1)
-        self.enableAvatarControls(wantMouse)
-        
-        if gags:
-            self.enableGags(1)
-        
-        self.startPosHprBroadcast()
-        self.d_broadcastPositionNow()
         self.startTrackAnimToSpeed()
-
-        self.playState = True
         
-    def startSmooth(self):
-        self.notify.warning("Tried to call startSmooth() on LocalToon!")
+        BaseLocalAvatar.startPlay(self, gags, wantMouse)
 
     def handleSuitAttack(self, attack):
         if self.isFirstPerson():
@@ -219,68 +188,22 @@ class LocalToon(DistributedPlayerToon):
                                blendType = 'easeInOut').start()
 
     def areGagsAllowed(self):
-        state = (self.isFirstPerson() and self.getFPSCam().mouseEnabled) or (self.isThirdPerson() and base.localAvatar.battleControls)
-        return (self.avatarMovementEnabled and self.walkControls.controlsEnabled and
-                (self.chatInput is not None and self.chatInput.fsm.getCurrentState().getName() == 'idle') and
-                (self.invGui is not None and self.invGui.getCurrentOrNextState() != 'Select') and state)
-
-    def isFirstPerson(self):
-        return self.walkControls.mode == self.walkControls.MFirstPerson and base.localAvatar.battleControls
-
-    def isThirdPerson(self):
-        return self.walkControls.mode == self.walkControls.MThirdPerson or not base.localAvatar.battleControls
-
-    def getViewModel(self):
-        return self.walkControls.fpsCam.viewModel
-
-    def getFPSCam(self):
-        return self.walkControls.fpsCam
-
-    def b_unEquipGag(self):
-        self.b_setEquippedAttack(-1)
-       
-    def switchToLastSelectedGag(self):
-        self.selectGag(self.lastSelectedGag)
+        return (
+            BaseLocalAvatar.areGagsAllowed(self) and
+            (self.chatInput is not None and self.chatInput.fsm.getCurrentState().getName() == 'idle')
+        )
 
     def setEquippedAttack(self, gagId):
         DistributedPlayerToon.setEquippedAttack(self, gagId)
-        if gagId != -1:
-            if self.battleControls:
-                self.crosshair.setCrosshair(self.getAttack(gagId).crosshair)
-                self.crosshair.show()
-                self.b_setLookMode(self.LMCage)
-        else:
-            # We've unequipped
-            if not self.walkControls:
-                return
-            if self.battleControls:
-                self.crosshair.hide()
-                self.b_setLookMode(self.LMHead)
-            else:
-                self.b_setLookMode(self.LMOff)
-        if self.invGui:
-            self.invGui.update()
+        BaseLocalAvatar.setEquippedAttack(self, gagId)
 
     def updateAttackAmmo(self, attackId, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip):
         DistributedPlayerToon.updateAttackAmmo(self, attackId, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip)
-        if self.invGui:
-            self.invGui.update()
+        BaseLocalAvatar.updateAttackAmmo(self, attackId, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip)
 
     def setupAttacks(self):
         DistributedPlayerToon.setupAttacks(self)
-        if self.getBattleZone() and (not self.getBattleZone().getGameRules().useBackpack()):
-            self.reloadInvGui()
-
-    def showCrosshair(self):
-        self.crosshair.show()
-        
-    def hideCrosshair(self):
-        self.crosshair.hide()
-        
-    def resetSpeeds(self):
-        self.walkControls.speed = 0.0
-        self.walkControls.rotationSpeed = 0.0
-        self.walkControls.slideSpeed = 0.0
+        BaseLocalAvatar.setupAttacks(self)
 
     def _handleWentInTunnel(self, requestStatus):
         self.cr.playGame.getPlace().doneStatus = requestStatus
@@ -424,18 +347,10 @@ class LocalToon(DistributedPlayerToon):
     def getAirborneHeight(self):
         return self.offset + 0.025000000000000001
 
-    def isMoving(self):
-        return self.walkControls.isMoving()
-
     def setupControls(self):
         self.walkControls = CILocalControls()
         self.walkControls.setupControls()
         self.walkControls.setMode(CIGlobals.getSettingsMgr().getSetting("bpov").getValue())
-
-    def destroyControls(self):
-        self.walkControls.disableControls()
-        self.walkControls.stopControllerUpdate()
-        self.walkControls = None
 
     def setWalkSpeedNormal(self):
         self.walkControls.setWalkSpeed(
@@ -455,13 +370,6 @@ class LocalToon(DistributedPlayerToon):
             CIGlobals.ToonReverseSlowSpeed, CIGlobals.ToonRotateSlowSpeed
         )
 
-    def setupCamera(self):
-        base.camLens.setMinFov(CIGlobals.DefaultCameraFov / (4./3.))
-        base.camLens.setNearFar(CIGlobals.DefaultCameraNear, CIGlobals.DefaultCameraFar)
-        self.smartCamera.initializeSmartCamera()
-        self.smartCamera.initCameraPositions()
-        self.smartCamera.setCameraPositionByIndex(0)
-
     def setDNAStrand(self, dnaStrand):
         DistributedPlayerToon.setDNAStrand(self, dnaStrand)
         if self.firstTimeGenerating:
@@ -478,11 +386,6 @@ class LocalToon(DistributedPlayerToon):
         self.nametag.setActive(0)
         self.nametag.updateAll()
 
-    def d_broadcastPositionNow(self):
-        self.d_clearSmoothing()
-        if self.d_broadcastPosHpr:
-            self.d_broadcastPosHpr()
-
     def b_setAnimState(self, anim, callback = None, extraArgs = []):
         if self.anim != anim:
             self.d_setAnimState(anim)
@@ -492,53 +395,9 @@ class LocalToon(DistributedPlayerToon):
             if anim in camTransitionStates and not NO_TRANSITION in extraArgs:
                 self.doFirstPersonCameraTransition()
 
-    def attachCamera(self):
-        self.walkControls.attachCamera()
-
-    def startSmartCamera(self):
-        #self.notify.info("Starting camera...")
-        self.smartCamera.startUpdateSmartCamera()
-        pass
-
-    def resetSmartCamera(self):
-        #self.notify.info("Resetting camera...")
-        self.stopSmartCamera()
-        self.startSmartCamera()
-        pass
-
-    def stopSmartCamera(self):
-        #self.notify.info("Stopping camera...")
-        self.smartCamera.stopUpdateSmartCamera()
-        pass
-
-    def detachCamera(self):
-        camera.reparentTo(render)
-        camera.setPos(0, 0, 0)
-        camera.setHpr(0, 0, 0)
-
-    def printPos(self):
-        x, y, z = self.getPos(render)
-        h, p, r = self.getHpr(render)
-        print "Pos: (%s, %s, %s), Hpr: (%s, %s, %s)" % (x, y, z, h, p, r)
-        
-    def printPos_cam(self):
-        x, y, z = camera.getPos(render)
-        h, p, r = camera.getHpr(render)
-        print "Pos: (%s, %s, %s), Hpr: (%s, %s, %s)" % (x, y, z, h, p, r)
-
     def enableAvatarControls(self, wantMouse = 0):
-        self.walkControls.enableControls(wantMouse)
-        #self.accept("control", self.updateMovementKeymap, ["jump", 1])
-        #self.accept("control-up", self.updateMovementKeymap, ["jump", 0])
-        #self.accept(base.inputStore.NextCameraPosition, self.smartCamera.nextCameraPos, [1])
-        #self.accept(base.inputStore.PreviousCameraPosition, self.smartCamera.nextCameraPos, [0])
-        #self.accept(base.inputStore.LookUp, self.smartCamera.pageUp)
-        #self.accept(base.inputStore.LookDown, self.smartCamera.pageDown)
+        BaseLocalAvatar.enableAvatarControls(self, wantMouse)
         self.accept('jumpStart', self.__jump)
-        self.avatarMovementEnabled = True
-        #self.mouseMov.enableMovement()
-        #if self.smartCamera.isOverTheShoulder():
-        #    self.crosshair.show()
 
     def handleJumpLand(self):
         if self.jumpHardLandIval:
@@ -557,37 +416,12 @@ class LocalToon(DistributedPlayerToon):
         self.jumpHardLandIval.start()
 
     def disableAvatarControls(self, chat = False):
-        #self.mouseMov.disableMovement(False)
-        self.walkControls.disableControls(chat)
-        self.ignore('tab')
-        self.ignore('shift-tab')
-        self.ignore('page_up')
-        self.ignore('page_down')
-        self.ignore("arrow_up")
-        self.ignore("arrow_up-up")
-        self.ignore("arrow_down")
-        self.ignore("arrow_down-up")
-        self.ignore("arrow_left")
-        self.ignore("arrow_left-up")
-        self.ignore("arrow_right")
-        self.ignore("arrow_right-up")
-        self.ignore("control")
-        self.ignore("control-up")
+        BaseLocalAvatar.disableAvatarControls(self, chat)
         self.ignore('jumpStart')
-        self.ignore('jumpLand')
-        self.ignore('jumpHardLand')
-        taskMgr.remove("avatarMovementTask")
-        self.isMoving_forward = False
-        self.isMoving_side = False
-        self.isMoving_back = False
-        self.isMoving_jump = False
-        self.avatarMovementEnabled = False
         for k, _ in self.movementKeymap.items():
             self.updateMovementKeymap(k, 0)
-        self.resetSpeeds()
         self.resetTorsoRotation()
         self.resetHeadHpr()
-        #self.crosshair.hide()
 
     def updateMovementKeymap(self, key, value):
         self.movementKeymap[key] = value
@@ -758,80 +592,9 @@ class LocalToon(DistributedPlayerToon):
                     if stateData.getCurrentPage().title == 'Gags':
                         stateData.getCurrentPage().gui.fsm.request('idle')
 
-    def b_setLookMode(self, mode):
-        self.setLookMode(mode)
-        self.sendUpdate('setLookMode', [mode])
-
-    def enableGags(self, andKeys = 0):
-        if self.avatarMovementEnabled and andKeys:
-            self.enableGagKeys()
-            self.selectGag(self.selectedGag, False)
-        self.invGui.show()
-        self.invGui.enableControls()
-
-    def enableGagKeys(self):
-        if not self.areGagsAllowed():
-            return
-
-        # Using attacks
-        CIGlobals.acceptWithModifiers(self, base.inputStore.PrimaryFire,            self.primaryFirePress)
-        CIGlobals.acceptWithModifiers(self, base.inputStore.PrimaryFire + '-up',    self.primaryFireRelease)
-        CIGlobals.acceptWithModifiers(self, base.inputStore.SecondaryFire,          self.secondaryFirePress)
-        CIGlobals.acceptWithModifiers(self, base.inputStore.SecondaryFire + '-up',  self.secondaryFireRelease)
-        CIGlobals.acceptWithModifiers(self, base.inputStore.Reload,                 self.reloadPress)
-        CIGlobals.acceptWithModifiers(self, base.inputStore.Reload + '-up',         self.reloadRelease)
-        
-        self.gagsEnabled = True
-
-    def disableGagKeys(self):
-        self.gagsEnabled = False
-
-        CIGlobals.ignoreWithModifiers(self, base.inputStore.PrimaryFire)
-        CIGlobals.ignoreWithModifiers(self, base.inputStore.PrimaryFire + '-up')
-        CIGlobals.ignoreWithModifiers(self, base.inputStore.SecondaryFire)
-        CIGlobals.ignoreWithModifiers(self, base.inputStore.SecondaryFire + '-up')
-        CIGlobals.ignoreWithModifiers(self, base.inputStore.Reload)
-        CIGlobals.ignoreWithModifiers(self, base.inputStore.Reload + '-up')
-
-    def disableGags(self):
-        self.disableGagKeys()
-        if self.invGui:
-            self.invGui.hide()
-            self.invGui.disableControls()
-        self.b_setEquippedAttack(-1)
-
     def resetHeadHpr(self, override = False):
         if self.lookMode == self.LMOff or not self.walkControls.controlsEnabled or override:
             self.b_lookAtObject(0, 0, 0, blink = 0)
-
-    def primaryFirePress(self):
-        if not self.canUseGag():
-            return
-
-        DistributedPlayerToon.primaryFirePress(self)
-
-    def primaryFireRelease(self):
-        if not self.canUseGag():
-            return
-
-        DistributedPlayerToon.primaryFireRelease(self)
-
-    def secondaryFirePress(self):
-        if not self.canUseGag():
-            return
-        
-        DistributedPlayerToon.secondaryFirePress(self)
-
-    def secondaryFireRelease(self):
-        if not self.canUseGag():
-            return
-
-        DistributedPlayerToon.secondaryFireRelease(self)
-
-    def canUseGag(self):
-        return (self.getEquippedAttack() != -1
-                and self.getAttackAmmo(self.getEquippedAttack()) > 0
-                and self.gagsEnabled)
 
     def checkSuitHealth(self, suit):
         pass
@@ -889,14 +652,7 @@ class LocalToon(DistributedPlayerToon):
             elif self.animFSM.getCurrentState().getName() == 'deadWalk':
                 self.b_setAnimState("run")
         
-        if self.walkControls:
-            if hp < oldHp and self.isFirstPerson():
-                self.getFPSCam().doDamageFade(1, 0, 0, (self.getHealth() - hp) / 30.0)
-
-        if hp <= 0 and oldHp > 0:
-            # Take appropriate action upon death.
-            if self.getBattleZone():
-                self.getBattleZone().getGameRules().onPlayerDied()
+        BaseLocalAvatar.handleHealthChange(self, hp, oldHp)
 
         DistributedPlayerToon.handleHealthChange(self, hp, oldHp)
 
@@ -970,14 +726,6 @@ class LocalToon(DistributedPlayerToon):
             self.chatInput.exit()
             self.chatInput.unload()
             self.chatInputState = False
-
-    def collisionsOn(self):
-        pass
-        #self.controlManager.collisionsOn()
-
-    def collisionsOff(self):
-        pass
-        #self.controlManager.collisionsOff()
 
     def toggleAspect2d(self):
         if self.allowA2dToggle:
@@ -1100,22 +848,6 @@ class LocalToon(DistributedPlayerToon):
         del base.localAvatar
         del __builtins__['localAvatar']
         print "Local avatar finally deleted"
-
-    def createInvGui(self):
-        self.invGui = GagSelectionGui()
-        self.invGui.load()
-        self.invGui.hide()
-
-    def reloadInvGui(self):
-        self.destroyInvGui()
-        self.createInvGui()
-        if self.areGagsAllowed():
-            self.enableGags(0)
-
-    def destroyInvGui(self):
-        if self.invGui:
-            self.invGui.cleanup()
-            self.invGui = None
 
     def sewerHeadOff(self, zoneId):
         # TEMPORARY
