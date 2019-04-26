@@ -24,6 +24,16 @@ class DistributedGagPickupAI(DistributedEntityAI):
         DistributedEntityAI.__init__(self, air, dispatch)
         self.pickupState = 1
         self.gagId = self.__pickGagId()
+        self.oneTimePickup = False
+        
+    def load(self):
+        DistributedEntityAI.load(self)
+        
+        gagName = self.getEntityValue("gagName")
+        if len(gagName) > 0:
+            self.gagId = self.air.attackMgr.getAttackIDByName(gagName)
+            
+        self.oneTimePickup = self.getEntityValueBool("oneTimePickup")
 
     def __pickGagId(self):
         gagName = random.choice(self.Pickups)
@@ -34,6 +44,7 @@ class DistributedGagPickupAI(DistributedEntityAI):
         taskMgr.remove(self.taskName("doRespawn"))
         self.pickupState = None
         self.gagId = None
+        self.oneTimePickup = None
         DistributedEntityAI.delete(self)
 
     def setPickupState(self, state):
@@ -57,6 +68,11 @@ class DistributedGagPickupAI(DistributedEntityAI):
         return self.gagId
 
     def onPickup(self):
+        if self.oneTimePickup:
+            # See ya!
+            self.requestDelete()
+            return
+            
         self.b_setPickupState(0)
         taskMgr.doMethodLater(random.uniform(self.RespawnMin, self.RespawnMax),
                               self.__doRespawnTask, self.taskName("doRespawn"))
