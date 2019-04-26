@@ -142,11 +142,10 @@ class BaseLocalControls(DirectObject):
         else:
             # At least allow them to engage the mouse.
             self.fpsCam.acceptEngageKeys()
-
+            
         base.localAvatar.resetHeadHpr(True)
-
-        bp = base.localAvatar.getBackpack()
-        if bp and bp.getCurrentGag():
+            
+        if base.localAvatar.hasEquippedAttack():
             base.localAvatar.showCrosshair()
             if base.localAvatar.isFirstPerson():
                 self.fpsCam.getViewModel().show()
@@ -155,7 +154,7 @@ class BaseLocalControls(DirectObject):
             base.localAvatar.b_setLookMode(base.localAvatar.LMHead)
 
         base.camLens.setMinFov(70.0 / (4. / 3.))
-            
+        
         base.localAvatar.enableGagKeys()
 
     def exitFirstPerson(self):
