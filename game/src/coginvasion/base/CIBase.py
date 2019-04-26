@@ -415,7 +415,7 @@ class CIBase(ShowBase):
         CIGlobals.preRenderScene(render)
 
     def doNextFrame(self, func, extraArgs = []):
-        taskMgr.add(self.__doNextFrameTask, "doNextFrame" + str(id(func)), extraArgs = [func, extraArgs], appendTask = True)
+        taskMgr.add(self.__doNextFrameTask, "doNextFrame" + str(id(func)), extraArgs = [func, extraArgs], appendTask = True, sort = 100000)
 
     def __doNextFrameTask(self, func, extraArgs, task):
         func(*extraArgs)
