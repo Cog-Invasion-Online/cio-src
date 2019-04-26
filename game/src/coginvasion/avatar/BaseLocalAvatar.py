@@ -103,6 +103,7 @@ class BaseLocalAvatar:
         CIGlobals.acceptWithModifiers(self, base.inputStore.SecondaryFire + '-up',  self.secondaryFireRelease)
         CIGlobals.acceptWithModifiers(self, base.inputStore.Reload,                 self.reloadPress)
         CIGlobals.acceptWithModifiers(self, base.inputStore.Reload + '-up',         self.reloadRelease)
+        CIGlobals.acceptWithModifiers(self, base.inputStore.LastGag,                self.switchToLastSelectedGag)
         
         self.gagsEnabled = True
 
@@ -115,6 +116,7 @@ class BaseLocalAvatar:
         CIGlobals.ignoreWithModifiers(self, base.inputStore.SecondaryFire + '-up')
         CIGlobals.ignoreWithModifiers(self, base.inputStore.Reload)
         CIGlobals.ignoreWithModifiers(self, base.inputStore.Reload + '-up')
+        CIGlobals.ignoreWithModifiers(self, base.inputStore.LastGag)
 
     def disableGags(self):
         self.disableGagKeys()

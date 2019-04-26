@@ -24,7 +24,6 @@ class CILocalControls(BaseLocalControls):
         BaseLocalControls.enableControls(self, wantMouse)
 
         if base.localAvatar.battleControls:
-            self.accept(base.inputStore.LastGag, base.localAvatar.switchToLastSelectedGag)
             base.localAvatar.setWalkSpeedNormal()
             self.idealFwd = self.BattleNormalSpeed
             self.idealRev = self.BattleNormalSpeed

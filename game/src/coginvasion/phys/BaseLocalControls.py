@@ -372,15 +372,10 @@ class BaseLocalControls(DirectObject):
 
         if base.localAvatar.battleControls:
             self.fpsCam.disableMouseMovement(False, not chat)
-            self.ignore(base.inputStore.LastGag)
 
         self.ignore('alt')
         self.ignore(base.inputStore.NextCameraPosition)
         self.ignore(base.inputStore.PreviousCameraPosition)
-        self.ignore(base.inputStore.PrimaryFire)
-        self.ignore(base.inputStore.PrimaryFire + '-up')
-        self.ignore(base.inputStore.SecondaryFire)
-        self.ignore(base.inputStore.SecondaryFire + '-up')
         
         if not chat and (base.localAvatar.isThirdPerson() or not base.localAvatar.battleControls):
             base.localAvatar.stopSmartCamera()
