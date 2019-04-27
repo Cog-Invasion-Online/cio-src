@@ -37,10 +37,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
             self.DistributedToon_initialized = 1
         Toon.Toon.__init__(self, cr)
         DistributedAvatar.__init__(self, cr)
-        self.animState2animId = {}
-        for index in range(len(self.animFSM.getStates())):
-            self.animState2animId[self.animFSM.getStates()[index].getName()] = index
-        self.animId2animState = {v: k for k, v in self.animState2animId.items()}
 
         self.lookMode = self.LMOff
         self.cageBone = None
@@ -169,9 +165,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
             ts = 0.0
         else:
             ts = globalClockDelta.localElapsedTime(timestamp)
-
-        if type(anim) == types.IntType:
-            anim = self.animId2animState[anim]
         if self.animFSM.getStateNamed(anim):
             self.animFSM.request(anim, [ts, callback, extraArgs])
 
@@ -180,13 +173,11 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
         self.setAnimState(anim, None)
 
     def d_setAnimState(self, anim):
-        if type(anim) == types.StringType:
-            anim = self.animState2animId[anim]
         timestamp = globalClockDelta.getFrameNetworkTime()
         self.sendUpdate('setAnimState', [anim, timestamp])
 
     def getAnimState(self):
-        return self.anim
+        return [self.anim, 0.0]
 
     def setName(self, name):
         Toon.Toon.setName(self, name)
@@ -224,9 +215,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
     def disable(self):
         self.stopLookTask()
 
-        self.animState2animId = None
-        self.animId2animState = None
-
         taskMgr.remove(self.uniqueName('blinkOnTurn'))
         if self.track != None:
             self.track.finish()
@@ -243,8 +231,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
             self.DistributedToon_deleted
         except:
             self.DistributedToon_deleted = 1
-            del self.animState2animId
-            del self.animId2animState
             del self.track
             Toon.Toon.delete(self)
             DistributedAvatar.delete(self)

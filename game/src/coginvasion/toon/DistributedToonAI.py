@@ -115,7 +115,7 @@ class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
         self.anim = anim
 
     def getAnimState(self):
-        return self.anim
+        return [self.anim, 0.0]
 
     def announceGenerate(self):
         DistributedAvatarAI.announceGenerate(self)

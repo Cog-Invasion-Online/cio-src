@@ -28,6 +28,8 @@ class DistributedSZBossToon(DistributedEntity, DistributedToon):
         DistributedToon.announceGenerate(self)
         self.activateSmoothing(True, False)
         self.startSmooth()
+        
+        self.reparentTo(render)
 
         self.setAnimState('Happy')
 

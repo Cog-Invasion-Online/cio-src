@@ -166,7 +166,7 @@ class DistributedSZBossToonAI(DistributedEntityAI, DistributedToonAI, BaseNPCAI)
         DistributedEntityAI.announceGenerate(self)
         DistributedToonAI.announceGenerate(self)
 
-        self.b_setParent(CIGlobals.SPRender)
+        #self.b_setParent(CIGlobals.SPRender)
         self.startPosHprBroadcast()
 
         self.startAI()
