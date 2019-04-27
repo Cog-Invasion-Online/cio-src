@@ -47,7 +47,7 @@ class ScriptedSequenceAI(EntityAI):
         elif not isinstance(self.targetEnt, BaseNPCAI):
             self.notify.error("target entity `{0}` is not an NPC!".format(entname))
 
-        self.nextScript = self.bspLoader.getPyEntityPyTargetName(self.getEntityValue("nextScript"))
+        self.nextScript = self.bspLoader.getPyEntityByTargetName(self.getEntityValue("nextScript"))
 
         self.entryAnimation = Activities.getActivityByName(self.getEntityValue("entryAnimation"))
         self.actionAnimation = Activities.getActivityByName(self.getEntityValue("actionAnimation"))
@@ -76,13 +76,13 @@ class ScriptedSequenceAI(EntityAI):
 
     def __performSequence(self):
         seq = Sequence(
-            Func(self.targetEnt.b_setActivity, self.entryAnimation.value),
+            Func(self.targetEnt.b_setActivity, self.entryAnimation),
             Wait(self.targetEnt.getActivityDuration(self.entryAnimation)),
 
-            Func(self.targetEnt.b_setActivity, self.actionAnimation.value),
+            Func(self.targetEnt.b_setActivity, self.actionAnimation),
             Wait(self.targetEnt.getActivityDuration(self.actionAnimation)),
 
-            Func(self.targetEnt.b_setActivity, self.exitAnimation.value),
+            Func(self.targetEnt.b_setActivity, self.exitAnimation),
             Wait(self.targetEnt.getActivityDuration(self.exitAnimation)),
 
             Func(self.__maybeStartNextScript),
