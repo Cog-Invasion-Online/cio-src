@@ -45,4 +45,4 @@ class DistributedDeathmatchBattleAI(DistributedBattleZoneAI):
 
     def announceGenerate(self):
         DistributedBattleZoneAI.announceGenerate(self)
-        self.b_setMap("test_ai_arena")
+        self.b_setMap("sellbot_third_floor")
