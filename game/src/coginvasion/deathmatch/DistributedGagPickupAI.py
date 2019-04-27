@@ -68,7 +68,7 @@ class DistributedGagPickupAI(DistributedEntityAI):
         return self.gagId
 
     def onPickup(self):
-        self.DispatchOutput("OnPickup")
+        self.dispatchOutput("OnPickup")
         
         if self.oneTimePickup:
             # See ya!
@@ -84,7 +84,7 @@ class DistributedGagPickupAI(DistributedEntityAI):
         self.b_setGagId(self.__pickGagId())
         self.b_setPickupState(1)
         
-        self.DispatchOutput("OnRespawn")
+        self.dispatchOutput("OnRespawn")
         
         return task.done
 
