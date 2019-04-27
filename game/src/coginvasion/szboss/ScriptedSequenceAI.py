@@ -61,7 +61,7 @@ class ScriptedSequenceAI(EntityAI):
     def __maybeStartNextScript(self):
         if self.nextScript:
             # A script to start after we finish was specified.
-            self.nextScript.Start()
+            self.nextScript.StartSequence()
             self.shouldRestartAI = False
 
     def __awaitMovement(self, task):
@@ -111,6 +111,7 @@ class ScriptedSequenceAI(EntityAI):
         if self.seq:
             self.seq.pause()
         self.seq = None
+        self.dispatchOutput("OnStopSequence")
         
     def unload(self):
         if self.seq:

@@ -27,6 +27,7 @@ class ScriptedSpeechAI(EntityAI):
 
     def Speak(self):
         self.targetEnt.d_setChat(self.speech)
+        self.dispatchOutput("OnSpeak")
 
     def unload(self):
         del self.speech
