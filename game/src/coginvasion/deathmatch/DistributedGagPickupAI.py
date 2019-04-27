@@ -26,9 +26,7 @@ class DistributedGagPickupAI(DistributedEntityAI):
         self.gagId = self.__pickGagId()
         self.oneTimePickup = False
         
-    def load(self):
-        DistributedEntityAI.load(self)
-        
+    def loadEntityValues(self):
         gagName = self.getEntityValue("gagName")
         if len(gagName) > 0:
             self.gagId = self.air.attackMgr.getAttackIDByName(gagName)

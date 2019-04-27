@@ -160,12 +160,11 @@ class DistributedBattleZone(DistributedObject):
         #base.localAvatar.smartCamera.setCameraPositionByIndex(base.localAvatar.smartCamera.OTSIndex)
         base.localAvatar.battleControls = True
         
-        from src.coginvasion.szboss import AmbientGeneric, FuncWater, Ropes, InfoBgm, InfoPlayerRelocate, EnvLightGlow, EnvParticleSystem, PointSpotlight
+        from src.coginvasion.szboss import AmbientGeneric, FuncWater, Ropes, InfoPlayerRelocate, EnvLightGlow, EnvParticleSystem, PointSpotlight
         #base.bspLoader.linkEntityToClass("ambient_generic", AmbientGeneric.AmbientGeneric)
         base.bspLoader.linkEntityToClass("func_water", FuncWater.FuncWater)
         base.bspLoader.linkEntityToClass("rope_begin", Ropes.RopeBegin)
         base.bspLoader.linkEntityToClass("rope_keyframe", Ropes.RopeKeyframe)
-        base.bspLoader.linkEntityToClass("info_bgm", InfoBgm.InfoBgm)
         base.bspLoader.linkEntityToClass("info_player_relocate", InfoPlayerRelocate.InfoPlayerRelocate)
         base.bspLoader.linkEntityToClass("env_lightglow", EnvLightGlow.EnvLightGlow)
         base.bspLoader.linkEntityToClass("env_particlesystem", EnvParticleSystem.EnvParticleSystem)
@@ -199,6 +198,7 @@ class DistributedBattleZone(DistributedObject):
         self.firstMapLoad = None
         self.entZone = None
         self.entZoneHandle = None
+        base.stopMusic()
         DistributedObject.disable(self)
         
     def setAvatars(self, avIds):

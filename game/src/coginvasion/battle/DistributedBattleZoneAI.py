@@ -153,7 +153,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         # Link up networked entities
         from src.coginvasion.szboss import (DistributedTriggerAI, DistributedFuncDoorAI,
                                             DistributedButtonAI, DistributedFuncRotatingAI, LogicCounter,
-                                            HintsAI, InfoTimer)
+                                            HintsAI, InfoTimer, InfoBgmAI)
         from src.coginvasion.szboss.InfoPlayerStart import InfoPlayerStart
         self.bspLoader.linkServerEntityToClass("trigger_once",          DistributedTriggerAI.DistributedTriggerOnceAI)
         self.bspLoader.linkServerEntityToClass("trigger_multiple",      DistributedTriggerAI.DistributedTriggerMultipleAI)
@@ -164,6 +164,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.bspLoader.linkServerEntityToClass("info_hint_cover",       HintsAI.InfoHintCover)
         self.bspLoader.linkServerEntityToClass("info_timer",            InfoTimer.InfoTimer)
         self.bspLoader.linkServerEntityToClass("info_player_start",     InfoPlayerStart)
+        self.bspLoader.linkServerEntityToClass("info_bgm",              InfoBgmAI.InfoBgmAI)
         
         self.physicsWorld = BulletWorld()
         self.physicsWorld.setGravity(Vec3(0, 0, -32.1740))
