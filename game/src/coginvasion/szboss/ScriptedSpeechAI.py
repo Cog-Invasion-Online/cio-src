@@ -23,7 +23,7 @@ class ScriptedSpeechAI(EntityAI):
         EntityAI.load(self)
 
         self.speech = self.getEntityValue("speech")
-        self.targetEnt = self.bspLoader.getPyEntityByTargetname(self.getEntityValue("targetEntity"))
+        self.targetEnt = self.bspLoader.getPyEntityByTargetName(self.getEntityValue("targetEntity"))
 
     def Speak(self):
         self.targetEnt.d_setChat(self.speech)
