@@ -15,9 +15,10 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
-from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE, ACT_VICTORY_DANCE
+from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE, ACT_VICTORY_DANCE, ACT_COG_FLY_DOWN
 from src.coginvasion.avatar.AvatarTypes import *
 from src.coginvasion.cog.ai.AIGlobal import *
+from src.coginvasion.cog.ai.tasks.BaseTaskAI import BaseTaskAI
 
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gags.GagType import GagType
@@ -30,6 +31,21 @@ import Variant
 import GagEffects
 
 import math
+
+class Task_GetFlyDownPath(BaseTaskAI):
+    
+    def runTask(self):
+        maxFly = 20.0
+        groundPos = self.npc.getPos()
+        skyPos = self.npc.getBattleZone().bspLoader.clipLine(groundPos, groundPos + (0, 0, maxFly))
+        self.npc.getMotor().setFwdSpeed(5.0)
+        self.npc.getMotor().lookAtWaypoints = False
+        self.npc.getMotor().setWaypoints([skyPos, groundPos])
+        self.npc.setPos(skyPos)
+        self.npc.d_clearSmoothing()
+        if self.npc.d_broadcastPosHpr:
+            self.npc.d_broadcastPosHpr()
+        return SCHED_COMPLETE
 
 class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
     notify = directNotify.newCategory('DistributedSuitAI')
@@ -89,7 +105,8 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         self.activities = {ACT_WAKE_ANGRY   :   0.564,
                            ACT_SMALL_FLINCH :   2.25,
                            ACT_DIE          :   6.0,
-                           ACT_VICTORY_DANCE:   9.0}
+                           ACT_VICTORY_DANCE:   9.0,
+                           ACT_COG_FLY_DOWN :   6.834}
                            
         self.schedules.update({
         
@@ -104,9 +121,30 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
                     Task_AwaitActivity(self)
                 ],
                 interruptMask = COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE
+            ),
+            
+            "SUPA_FLY_IN_MOVE"    :   Schedule(
+                [
+                    Task_StopMoving(self),
+                    Task_StopAttack(self),
+                    Task_GetFlyDownPath(self),
+                    Task_SetActivity(self, ACT_COG_FLY_DOWN),
+                    Task_RunPath(self),
+                    Task_AwaitMovement(self, changeYaw = False),
+                    Task_AwaitActivity(self),
+                    Task_Func(self.resetFwdSpeed)
+                ],
+                interruptMask = COND_SCHEDULE_DONE|COND_TASK_FAILED
             )
         
         })
+        
+    def resetFwdSpeed(self):
+        baseSpeed = 10.0
+        classAttrs = self.suitPlan.getCogClassAttrs()
+
+        self.motor.fwdSpeed = baseSpeed * classAttrs.walkMod
+        self.motor.lookAtWaypoints = True
         
     def shouldYield(self, av):
         if isinstance(av, DistributedSuitAI):
@@ -188,7 +226,7 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
             from src.coginvasion.attack.Attacks import ATTACK_WATER_COOLER
             self.attackIds.append(ATTACK_WATER_COOLER)
 
-        self.motor.fwdSpeed *= classAttrs.walkMod
+        self.resetFwdSpeed()
 
     def getSuit(self):
         if isinstance(self.suitPlan, int):
@@ -369,7 +407,12 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         avId = damageInfo.damager.doId
         avatar = damageInfo.damager
         gagName = self.air.attackMgr.getAttackName(gagId)
-        data = dict(GagGlobals.getGagData(gagName))
+        
+        dataRef = GagGlobals.getGagData(gagName)
+        if dataRef:
+            data = dict(dataRef)
+        else:
+            data = {}
         data['distance'] = distance
         track = GagGlobals.getTrackOfGag(gagId, getId = True, isAI = True)
 
@@ -472,7 +515,7 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         DistributedAvatarAI.generate(self)
         
     def spawnGeneric(self):
-        self.b_setParent(CIGlobals.SPRender)
+        #self.b_setParent(CIGlobals.SPRender)
         taskMgr.add(self.monitorHealth, self.uniqueName('monitorHealth'))
 
     def announceGenerate(self):

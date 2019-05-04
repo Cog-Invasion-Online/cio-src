@@ -97,6 +97,11 @@ class BaseLocalControls(DirectObject):
         self.printFootstepInfo = False
         #base.localAvatar.accept('i', self.toggleDiagnostic)
         
+    def cleanup(self):
+        if self.fpsCam:
+            self.fpsCam.cleanup()
+        self.fpsCam = None
+        
     def toggleDiagnostic(self):
         self.printFootstepInfo = not self.printFootstepInfo
         print "Toggled footstep info"

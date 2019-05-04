@@ -741,3 +741,24 @@ def chooseLevelAndGetAvailableSuits(levelRange, dept, boss = False):
             availableSuits.append(suit)
 
     return [level, availableSuits]
+    
+def precacheSuits():
+    from src.coginvasion.cog import Variant
+    from src.coginvasion.cog.Suit import Suit
+    from src.coginvasion.base.Precache import precacheActor
+    suit = Suit()
+    for suitPlan in totalSuits:
+        print "Precaching", suitPlan.name
+        suit.suitPlan = suitPlan
+        suit.suit = suitPlan.getSuitType()
+        suit.head = suitPlan.getHead()
+        suit.dept = suitPlan.getDept()
+        suit.handColor = suitPlan.getHandColor()
+        suit.variant = Variant.NORMAL
+        suit.level = 0
+        suit.generateCog(nameTag = False)
+        precacheActor(suit)
+        suit.generateCog(isLose = 1, nameTag = False)
+        precacheActor(suit)
+    suit.disable()
+    suit.delete()

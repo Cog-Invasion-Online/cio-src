@@ -12,7 +12,7 @@ Revamped on June 15, 2018
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from src.coginvasion.avatar.Activities import ACT_DIE
+from src.coginvasion.avatar.Activities import ACT_DIE, ACT_VICTORY_DANCE, ACT_TOON_BOW, ACT_JUMP
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from src.coginvasion.avatar.AvatarTypes import *
 from src.coginvasion.cog.ai.RelationshipsAI import *
@@ -43,7 +43,7 @@ class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
         DistributedAvatarAI.__init__(self, air)
         ToonDNA.ToonDNA.__init__(self)
         self.avatarType = CIGlobals.Toon
-        self.anim = "neutral"
+        self.anim = "Happy"
         self.chat = ""
         self.health = 50
         self.height = 3
@@ -77,9 +77,17 @@ class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
         self.toon_head = None
         self.lookMode = 2 # LMOff
 
-        self.activities = {ACT_DIE: 7.0}
+        self.activities = {ACT_DIE: 7.0, ACT_VICTORY_DANCE: 5.125,
+                           ACT_TOON_BOW: 4.0, ACT_JUMP: 2.5}
 
         return
+        
+    def onActivityFinish(self):
+        self.b_setAnimState("Happy")
+        
+    def b_setAnimState(self, anim):
+        self.sendUpdate('setAnimState', [anim, globalClockDelta.getFrameNetworkTime()])
+        self.anim = anim
         
     def b_setLookMode(self, mode):
         self.setLookMode(mode)

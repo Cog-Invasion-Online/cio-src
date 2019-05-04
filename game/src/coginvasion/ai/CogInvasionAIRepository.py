@@ -111,7 +111,10 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
         
     def addAvatar(self, avatar, zoneId = None):
         if zoneId is None:
-            zoneId = avatar.zoneId
+            if hasattr(avatar, 'getZoneId'):
+                zoneId = avatar.getZoneId()
+            else:
+                zoneId = avatar.zoneId
         
         if not zoneId in self.avatars:
             self.avatars[zoneId] = []

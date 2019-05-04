@@ -15,6 +15,7 @@ from src.coginvasion.szboss.DistributedEntity import DistributedEntity
 
 class DistributedGagPickup(DistributedEntity):
 
+    #PickupSoundPath = "phase_4/audio/sfx/SZ_DD_treasure.ogg"
     PickupSoundPath = "phase_14/audio/sfx/ammo_pickup.wav"
 
     def __init__(self, cr):

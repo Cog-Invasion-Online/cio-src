@@ -56,7 +56,7 @@ class Task_Wait(BaseTaskAI):
 
 class Task_Func(BaseTaskAI):
 
-    def __init__(self, func, args):
+    def __init__(self, func, args = []):
         BaseTaskAI.__init__(self, None)
         self.func = func
         self.args = args
@@ -183,9 +183,10 @@ class Task_StopMoving(BaseTaskAI):
 
 class Task_AwaitMovement(BaseTaskAI):
     
-    def __init__(self, npc, watchTarget = False):
+    def __init__(self, npc, watchTarget = False, changeYaw = True):
         BaseTaskAI.__init__(self, npc)
         self.watchTarget = watchTarget
+        self.changeYaw = changeYaw
 
     def runTask(self):
         if len(self.npc.getMotor().getWaypoints()) == 0:
@@ -197,13 +198,15 @@ class Task_AwaitMovement(BaseTaskAI):
                 if CIGlobals.isNodePathOk(self.npc.target.entity):
                     self.npc.makeIdealYaw(self.npc.target.entity.getPos())
                 
-        # Continue looking in our ideal direction
-        self.npc.changeYaw()
+        if self.changeYaw:
+            # Continue looking in our ideal direction
+            self.npc.changeYaw()
 
         return SCHED_CONTINUE
         
     def cleanup(self):
         del self.watchTarget
+        del self.changeYaw
         BaseTaskAI.cleanup(self)
 
 class Task_FindCoverFromTarget(BaseTaskAI):

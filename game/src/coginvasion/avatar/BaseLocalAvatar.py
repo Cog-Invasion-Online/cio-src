@@ -1,8 +1,10 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
+from direct.interval.IntervalGlobal import LerpPosHprInterval
 
 from src.coginvasion.toon.SmartCamera import SmartCamera
 from src.coginvasion.gui.Crosshair import Crosshair
 from src.coginvasion.gui.GagSelectionGui import GagSelectionGui
+from src.coginvasion.gui.LaffOMeter import LaffOMeter
 
 from src.coginvasion.globals import CIGlobals
 
@@ -11,6 +13,7 @@ class BaseLocalAvatar:
 
     def __init__(self):
         self.walkControls = None
+        self.laffMeter = LaffOMeter()
         self.smartCamera = SmartCamera()
         self.crosshair = Crosshair()
         self.crosshair.hide()
@@ -27,6 +30,21 @@ class BaseLocalAvatar:
         self.needsToSwitchToGag = None
         self.gagsEnabled = False
         self.gagsTimedOut = False
+        
+    def createLaffMeter(self):
+        r, g, b, _ = self.getHeadColor()
+        animal = self.getAnimal()
+        maxHp = self.getMaxHealth()
+        hp = self.getHealth()
+        self.laffMeter.generate(r, g, b, animal, maxHP = maxHp, initialHP = hp)
+        self.laffMeter.start()
+
+    def disableLaffMeter(self):
+        self.laffMeter.stop()
+        self.laffMeter.disable()
+
+    def deleteLaffMeter(self):
+        self.laffMeter.delete()
         
     def updateAttackAmmo(self, attackId, ammo, maxAmmo, ammo2, maxAmmo2, clip, maxClip):
         if self.invGui:
@@ -69,6 +87,16 @@ class BaseLocalAvatar:
         if self.invGui:
             self.invGui.cleanup()
             self.invGui = None
+            
+    def doFirstPersonCameraTransition(self):
+        if self.isFirstPerson():
+            # Fancy little camera transition for first person
+            camHeight = max(self.getHeight(), 3.0)
+            heightScaleFactor = camHeight * 0.3333333333
+
+            LerpPosHprInterval(nodePath = camera, other = self, duration = 1.0,
+                               pos = (0, -9.0 * heightScaleFactor, camHeight), hpr = (0, 0, 0),
+                               blendType = 'easeInOut').start()
         
     def handleHealthChange(self, hp, oldHp):
         if self.walkControls:
@@ -192,6 +220,7 @@ class BaseLocalAvatar:
             
         self.walkControls.disableControls()
         self.walkControls.stopControllerUpdate()
+        self.walkControls.cleanup()
         self.walkControls = None
         
     def isMoving(self):
@@ -274,9 +303,12 @@ class BaseLocalAvatar:
         self.walkControls.rotationSpeed = 0.0
         self.walkControls.slideSpeed = 0.0
         
-    def startPlay(self, gags = False, wantMouse = 1):
+    def startPlay(self, gags = False, laff = False, wantMouse = 1):
         if self.playState:
             return
+            
+        if laff:
+            self.createLaffMeter()
             
         if not self.walkControls.getCollisionsActive():
             self.walkControls.setCollisionsActive(1)
@@ -295,6 +327,7 @@ class BaseLocalAvatar:
             return
             
         self.disableGags()
+        self.disableLaffMeter()
             
         self.collisionsOff()
         if self.walkControls.getCollisionsActive():

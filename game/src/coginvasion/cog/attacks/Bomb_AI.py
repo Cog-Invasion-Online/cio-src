@@ -11,6 +11,7 @@ class Bomb_AI(BaseAttackAI, BombShared):
     Name = "Blast"
 
     ThrowPower = 100.0
+    FriendlyFire = True
 
     def __init__(self):
         BaseAttackAI.__init__(self)
@@ -41,7 +42,7 @@ class Bomb_AI(BaseAttackAI, BombShared):
                 self.getAvatar().getBattleZone().getPhysicsWorld()) + (0, 0, 0.1)
 
             proj = BombProjectileAI(base.air, self.avatar, self)
-            proj.generateWithRequired(self.avatar.zoneId)
+            proj.generateWithRequired(self.avatar.getBattleZone().zoneId)
             proj.setPos(self.throwOrigin)
             proj.lookAt(throwVector)
             proj.node().setLinearVelocity(throwVector * self.ThrowPower)

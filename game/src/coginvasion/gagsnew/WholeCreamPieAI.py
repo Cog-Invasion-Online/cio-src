@@ -74,7 +74,7 @@ class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
             
             proj = WholeCreamPieProjectileAI(base.air)
             proj.setProjectile(2.5, self.throwOrigin, endPos, 1.07, globalClockDelta.getFrameNetworkTime())
-            proj.generateWithRequired(self.avatar.zoneId)
+            proj.generateWithRequired(self.avatar.getBattleZone().zoneId)
             proj.addHitCallback(self.onProjectileHit)
             proj.addExclusion(self.avatar)
 

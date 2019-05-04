@@ -68,7 +68,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
     LOW_HP_PERCT = 0.5
     REACHABLE_DIST_SQR = 30*30
     MAX_VISION_ANGLE = 90
-    MAX_VISION_DISTANCE_SQR = 75*75
+    MAX_VISION_DISTANCE_SQR = 400*400
     MAX_HEAR_DISTANCE_SQR = 50*50
     MAX_OLD_ENEMIES = 4
 
@@ -345,17 +345,17 @@ class BaseNPCAI(BaseCombatCharacterAI):
         coverChecks = 5 # how many checks are made
         coverDelta = 48 / 16.0 # distance between checks
 
-        stepRight = Vec3.right() * coverDelta
+        stepRight = self.getQuat().getRight() * coverDelta
         stepRight[2] = 0
-        testLeft = testRight = Vec3.zero()
+        testLeft = testRight = self.getPos()
 
         world = self.getBattleZone().getPhysicsWorld()
 
         #print "findLateralCover"
 
         for i in xrange(coverChecks):
-            testLeft = testLeft - stepRight
-            testRight = testRight + stepRight
+            testLeft -= stepRight
+            testRight += stepRight
             
             result = world.rayTestClosest(threatPos + viewOffset, testLeft + self.getEyePosition(), CIGlobals.WorldGroup)
             #print "findLateralCover left result:", result, result.hasHit(), result.getNode()
@@ -493,16 +493,16 @@ class BaseNPCAI(BaseCombatCharacterAI):
         if not CIGlobals.isNodePathOk(plyr) or not CIGlobals.isNodePathOk(self):
             return False
 
-        plLeaf = self.battleZone.bspLoader.findLeaf(plyr)
-        myLeaf = self.battleZone.bspLoader.findLeaf(self)
+        plLeaf = self.battleZone.bspLoader.findLeaf(plyr.getPos() + (0, 0, 0.05))
+        myLeaf = self.battleZone.bspLoader.findLeaf(self.getPos() + (0, 0, 0.05))
         return plLeaf == myLeaf
 
     def isPlayerInPVS(self, plyr):
         if not CIGlobals.isNodePathOk(plyr) or not CIGlobals.isNodePathOk(self):
             return False
         
-        plLeaf = self.battleZone.bspLoader.findLeaf(plyr)
-        myLeaf = self.battleZone.bspLoader.findLeaf(self)
+        plLeaf = self.battleZone.bspLoader.findLeaf(plyr.getPos() + (0, 0, 0.05))
+        myLeaf = self.battleZone.bspLoader.findLeaf(self.getPos() + (0, 0, 0.05))
         return self.battleZone.bspLoader.isClusterVisible(myLeaf, plLeaf)
         
     def getDistanceSquared(self, other):
@@ -788,10 +788,10 @@ class BaseNPCAI(BaseCombatCharacterAI):
 
         elif self.npcState == STATE_ALERT:
             if self.hasConditions(COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE):
-                if abs(self.getYawDiff()) < self.MAX_VISION_ANGLE * 0.5:
-                    return self.getScheduleByName("TAKE_COVER_FROM_ORIGIN")
-                else:
-                    return self.getScheduleByName("ALERT_SMALL_FLINCH")
+                #if abs(self.getYawDiff()) < self.MAX_VISION_ANGLE * 0.5:
+                return self.getScheduleByName("TAKE_COVER_FROM_ORIGIN")
+                #else:
+                #    return self.getScheduleByName("ALERT_SMALL_FLINCH")
             return self.getScheduleByName("IDLE_STAND")
 
         elif self.npcState == STATE_COMBAT:
@@ -1005,7 +1005,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
         """
         
         if not self.battleZone:
-            #self.notify.warning("Cannot run AI without a battle zone!")
+            self.notify.warning("Cannot run AI without a battle zone!")
             return
 
         if self.isDead():

@@ -2,6 +2,12 @@ from src.coginvasion.szboss.EntityAI import EntityAI
 
 class SuitSpawn(EntityAI):
     
+    ForceBoss           = 1 << 0
+    SpawnImmediately    = 1 << 1
+    DontIgnore          = 1 << 2
+    NoHangout           = 1 << 3
+    DoSupaFlyIn         = 1 << 4
+    
     def __init__(self, air = None, dispatch = None):
         EntityAI.__init__(self, air, dispatch)
         self.spawned = []
@@ -13,6 +19,9 @@ class SuitSpawn(EntityAI):
         self.spawned = None
         
         EntityAI.unload(self)
+        
+    def load(self):
+        EntityAI.load(self)
     
     def Spawn(self, dept = None):
         from src.coginvasion.cog.DistributedSuitAI import DistributedSuitAI
@@ -20,7 +29,7 @@ class SuitSpawn(EntityAI):
         import random
         
         level, availableSuits = SuitBank.chooseLevelAndGetAvailableSuits(
-            [1, 12], random.choice([Dept.BOSS, Dept.SALES, Dept.CASH, Dept.LAW]) if not dept else dept, False)
+            [1, 4], random.choice([Dept.BOSS, Dept.SALES, Dept.CASH, Dept.LAW]) if not dept else dept, False)
 
         plan = random.choice(availableSuits)
         suit = DistributedSuitAI(self.air)
@@ -36,6 +45,11 @@ class SuitSpawn(EntityAI):
         suit.setHpr(self.cEntity.getAngles())
         suit.spawnGeneric()
         self.spawned.append(suit)
+        
+        if self.hasSpawnFlags(self.DoSupaFlyIn):
+            suit.changeSchedule(suit.getScheduleByName("SUPA_FLY_IN_MOVE"))
+        
+        self.dispatchOutput("OnSpawnCog")
         
         return suit
 

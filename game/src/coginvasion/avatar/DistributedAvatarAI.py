@@ -77,8 +77,12 @@ class DistributedAvatarAI(DistributedSmoothNodeAI.DistributedSmoothNodeAI, Avata
         self.doingActivity = True
         taskMgr.doMethodLater(self.activities[activity], self.__activityTask, "activityTask-" + str(id(self)))
         
+    def onActivityFinish(self):
+        pass
+        
     def __activityTask(self, task):
         self.doingActivity = False
+        self.onActivityFinish()
         self.b_setActivity(ACT_NONE)
         return task.done
 

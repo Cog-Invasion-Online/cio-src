@@ -144,10 +144,11 @@ class WorldColliderShared(NodePath):
                 intoNode = node
                 break
         
-        if currPos != self.lastPos:
-            self.lastPos = currPos
+        
         
         if intoNode is None:
+            if currPos != self.lastPos:
+                self.lastPos = currPos
             return task.cont
         
         mask = intoNode.getIntoCollideMask()
@@ -163,5 +164,8 @@ class WorldColliderShared(NodePath):
             for clbk in self.hitCallbacks:
                 clbk(*args)
             return task.done
+            
+        if currPos != self.lastPos:
+            self.lastPos = currPos
             
         return task.cont

@@ -7,6 +7,7 @@ class Motor:
         self.fwdSpeed = 10.0
         self.rotSpeed = 75.0
         self.waypoints = []
+        self.lookAtWaypoints = True
 
     def setFwdSpeed(self, spd):
         self.fwdSpeed = spd
@@ -66,7 +67,7 @@ class Motor:
             self.waypoints.pop(0)
 
             # Look at the new waypoint
-            if len(self.waypoints) > 0:
+            if len(self.waypoints) > 0 and self.lookAtWaypoints:
                 self.node.makeIdealYaw(self.waypoints[0])
         else:
             self.node.setPos(currPos + moveAmount)

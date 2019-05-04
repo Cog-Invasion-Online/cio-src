@@ -457,10 +457,12 @@ class FPSCamera(DirectObject):
             vmRaise = Point3(0)
             camBob = Point3(0)
             
-            speed = base.localAvatar.walkControls.speeds.length() * 16.0
-            speed = max(-416, min(416, speed))
+            maxSpeed = base.localAvatar.walkControls.BattleRunSpeed * 16.0
             
-            bobOffset = CIGlobals.remapVal(speed, 0, 416, 0.0, 1.0)
+            speed = base.localAvatar.walkControls.speeds.length() * 16.0
+            speed = max(-maxSpeed, min(maxSpeed, speed))
+            
+            bobOffset = CIGlobals.remapVal(speed, 0, maxSpeed, 0.0, 1.0)
             
             self.bobTime += (time - self.lastBobTime) * bobOffset
             self.lastBobTime = time
@@ -568,3 +570,45 @@ class FPSCamera(DirectObject):
     
     def __getMouseSensitivity(self):
         return CIGlobals.getSettingsMgr().getSetting('fpmgms').getValue()
+        
+    def cleanup(self):
+        taskMgr.remove("vpdebutask")
+        self.disableMouseMovement(False, False)
+        self.clearVMAnimTrack()
+        self.clearVMGag()
+        if self.viewModel:
+            self.viewModel.cleanup()
+            self.viewModel.removeNode()
+        self.viewModel = None
+        if self.vmRender:
+            self.vmRender.removeNode()
+        self.vmRender = None
+        self.vmRoot = None
+        self.vmRoot2 = None
+        self.viewportLens = None
+        if self.viewportCam:
+            self.viewportCam.removeNode()
+        self.viewportCam = None
+        if self.camRoot:
+            self.camRoot.removeNode()
+        self.camRoot = None
+        self.camRoot2 = None
+        self.lastEyeHeight = None
+        self.lastPitch = None
+        self.bobTime = None
+        self.lastBobTime = None
+        self.mouseEnabled = None
+        self.lastCamRoot2Quat = None
+        self.punchAngleVel = None
+        self.punchAngle = None
+        self.lastFacing = None
+        self.lastMousePos = None
+        self.currMousePos = None
+        self.lastVMPos = None
+        self.defaultViewModel = None
+        self.idealFov = None
+        self.vmGag = None
+        self.vmAnimTrack = None
+        self.dmgFade = None
+        self.dmgFadeIval = None
+        self.ignoreAll()

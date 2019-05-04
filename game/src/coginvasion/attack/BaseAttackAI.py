@@ -51,7 +51,7 @@ class BaseAttackAI(BaseAttackShared):
         
         try:
             # Sometimes the avatar could be deleted unexpectedly.
-            for obj in base.air.avatars[self.avatar.zoneId]:
+            for obj in base.air.avatars[self.avatar.getBattleZone().zoneId]:
                 if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and
                     self.canDamage(obj)):
     
@@ -70,7 +70,7 @@ class BaseAttackAI(BaseAttackShared):
         
         try:
             # Again, sometimes the avatar can be deleted unexpectedly.
-            for obj in base.air.avatars[self.avatar.zoneId]:
+            for obj in base.air.avatars[self.avatar.getBattleZone().zoneId]:
                 if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and 
                 self.canDamage(obj)):
                     

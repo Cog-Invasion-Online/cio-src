@@ -29,6 +29,7 @@ class BatchCogSpawnerAI(EntityAI):
             self.Start()
         
     def unload(self):
+        self.Stop()
         del self.ivalMin
         del self.ivalMax
         del self.maxBatchMin
@@ -52,12 +53,13 @@ class BatchCogSpawnerAI(EntityAI):
         
     def __batchSpawn(self, task):
         spawned = 0
-        for sp in self.bspLoader.findAllEntities("cogoffice_suitspawn"):
-            if spawned >= self.batchSize:
-                break
-            sp.Spawn()
+        ents = self.bspLoader.findAllEntities("cogoffice_suitspawn")
+        while spawned < self.batchSize and len(ents):
+            ent = random.choice(ents)
+            ent.Spawn()
             spawned += 1
-        self.dispatchOutput("OnSpawn")
+            ents.remove(ent)
+        self.dispatchOutput("OnSpawnBatch")
         
         if self.looping:
             self.getIval()

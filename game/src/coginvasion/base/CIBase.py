@@ -676,6 +676,9 @@ class CIBase(ShowBase):
         from src.coginvasion.hood.DistributedBuilding import DistributedBuilding
         DistributedBuilding.precache()
         
+        from src.coginvasion.cog import SuitBank
+        SuitBank.precacheSuits()
+        
     def setAmbientOcclusion(self, toggle):
         self.aoToggle = toggle
         if not hasattr(self, 'filters'):

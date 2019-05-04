@@ -13,7 +13,6 @@ from direct.task import Task
 from DistributedPlayerToon import DistributedPlayerToon
 from SmartCamera import SmartCamera
 from src.coginvasion.gui.ChatInput import ChatInput
-from src.coginvasion.gui.LaffOMeter import LaffOMeter
 from src.coginvasion.gags import GagGlobals
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, ActorInterval, LerpPosHprInterval
 from direct.gui.DirectGui import DirectButton, OnscreenText
@@ -61,7 +60,6 @@ class LocalToon(DistributedPlayerToon, BaseLocalAvatar):
         self.chatInputState = False
         self.avatarChoice = cr.localAvChoice
         self.chatInput = ChatInput()
-        self.laffMeter = LaffOMeter()
         self.positionExaminer = PositionExaminer()
         self.friendRequestManager = FriendRequestManager()
         self.friendsList = FriendsList()
@@ -146,7 +144,6 @@ class LocalToon(DistributedPlayerToon, BaseLocalAvatar):
             self.notify.warning("Redundant call to stopPlay()")
             return
 
-        self.disableLaffMeter()
         self.hideBookButton()
         self.hideFriendButton()
 
@@ -159,8 +156,6 @@ class LocalToon(DistributedPlayerToon, BaseLocalAvatar):
             self.notify.warning("Redundant call to startPlay()")
             return
 
-        if laff:
-            self.createLaffMeter()
         if book:
             self.showBookButton()
         if friends:
@@ -170,22 +165,12 @@ class LocalToon(DistributedPlayerToon, BaseLocalAvatar):
 
         self.startTrackAnimToSpeed()
         
-        BaseLocalAvatar.startPlay(self, gags, wantMouse)
+        BaseLocalAvatar.startPlay(self, gags, laff, wantMouse)
 
     def handleSuitAttack(self, attack):
         if self.isFirstPerson():
             self.getFPSCam().handleSuitAttack(attack)
-
-    def doFirstPersonCameraTransition(self):
-        if self.isFirstPerson():
-            # Fancy little camera transition for first person
-            camHeight = max(self.getHeight(), 3.0)
-            heightScaleFactor = camHeight * 0.3333333333
-
-            LerpPosHprInterval(nodePath = camera, other = self, duration = 1.0,
-                               pos = (0, -9.0 * heightScaleFactor, camHeight), hpr = (0, 0, 0),
-                               blendType = 'easeInOut').start()
-
+            
     def areGagsAllowed(self):
         return (
             BaseLocalAvatar.areGagsAllowed(self) and
@@ -565,21 +550,6 @@ class LocalToon(DistributedPlayerToon, BaseLocalAvatar):
                     if state == 'Happy':
                         self.startLookAround()
         return task.cont
-
-    def createLaffMeter(self):
-        r, g, b, _ = self.getHeadColor()
-        animal = self.getAnimal()
-        maxHp = self.getMaxHealth()
-        hp = self.getHealth()
-        self.laffMeter.generate(r, g, b, animal, maxHP = maxHp, initialHP = hp)
-        self.laffMeter.start()
-
-    def disableLaffMeter(self):
-        self.laffMeter.stop()
-        self.laffMeter.disable()
-
-    def deleteLaffMeter(self):
-        self.laffMeter.delete()
 
     def setLoadout(self, gagIds):
         DistributedPlayerToon.setLoadout(self, gagIds)

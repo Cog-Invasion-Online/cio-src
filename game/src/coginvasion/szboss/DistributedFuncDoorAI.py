@@ -1,3 +1,5 @@
+from panda3d.core import Point3
+
 from direct.fsm.FSM import FSM
 
 from DistributedEntityAI import DistributedEntityAI

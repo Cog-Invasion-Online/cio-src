@@ -19,7 +19,8 @@ class BaseProjectileAI(DistributedSmoothNodeAI, BaseProjectileShared, WorldColli
 
     def d_impact(self, pos):
         pos = [pos[0], pos[1], pos[2]]
-        self.sendUpdate('impact', [pos])
+        lastPos = [self.lastPos[0], self.lastPos[1], self.lastPos[2]]
+        self.sendUpdate('impact', [pos, lastPos])
 
     def doInitCollider(self):
         WorldColliderAI.__init__(self, "none", 1.0, needSelfInArgs = True, resultInArgs = True,

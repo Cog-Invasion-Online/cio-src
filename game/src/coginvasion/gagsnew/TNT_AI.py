@@ -55,7 +55,7 @@ class TNT_AI(BaseGagAI, TNTShared):
                 av.getBattleZone().getPhysicsWorld()) + (0, 0, 0.1)
 
             proj = TNTProjectileAI(base.air, self.avatar, self)
-            proj.generateWithRequired(self.avatar.zoneId)
+            proj.generateWithRequired(self.avatar.getBattleZone().zoneId)
             proj.setPos(self.throwOrigin)
             proj.lookAt(throwVector)
             proj.node().setLinearVelocity(throwVector * self.ThrowPower)

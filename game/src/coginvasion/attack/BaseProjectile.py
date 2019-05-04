@@ -28,7 +28,7 @@ class BaseProjectile(DistributedSmoothNode, BaseProjectileShared, BasePhysicsObj
         self.model = None
         self.impactSound = None
 
-    def impact(self, pos):
+    def impact(self, pos, lastPos):
         pass
 
     @classmethod

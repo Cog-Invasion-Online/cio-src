@@ -65,7 +65,7 @@ class DistributedRestockBarrel(DistributedEntity, DistributedNode):
         base.physicsWorld.attach(self.collNodePath.node())
         self.accept('enter' + self.collNodePath.getName(), self.__handleCollision)
         
-        self.setParent(SPRender)
+        self.reparentTo(render)
         
     def disable(self):
         DistributedEntity.disable(self)

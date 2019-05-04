@@ -91,7 +91,7 @@ class GenericThrowAttackAI(BaseAttackAI):
                 proj = GenericThrowableLinearProjectileAI(base.air)
                 proj.setData(self.ID)
                 proj.setLinear(1.5, self.throwOrigin, endPos, globalClockDelta.getFrameNetworkTime())
-                proj.generateWithRequired(self.avatar.zoneId)
+                proj.generateWithRequired(self.avatar.getBattleZone().zoneId)
                 proj.addHitCallback(self.onProjectileHit)
                 proj.addExclusion(self.avatar)
     

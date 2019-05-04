@@ -153,6 +153,11 @@ class DistributedFuncDoor(DistributedEntity, UseableObject, FSM):
 
         self.updateTask = taskMgr.add(self.__updateTask, self.uniqueName("updateTask"))
         
+    def startUse(self):
+        UseableObject.startUse(self)
+        if self.hasSpawnFlags(self.UseOpens):
+            self.sendUpdate('requestOpen')
+        
     def __updateTask(self, task):
         if not (self.spawnflags & DistributedFuncDoor.TouchOpens):
             return task.cont

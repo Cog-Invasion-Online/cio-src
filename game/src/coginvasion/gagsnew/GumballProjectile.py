@@ -1,4 +1,4 @@
-from panda3d.core import VBase4
+from panda3d.core import VBase4, Point3
 
 from src.coginvasion.attack.LobProjectile import LobProjectile
 from src.coginvasion.globals import CIGlobals
@@ -20,5 +20,13 @@ class GumballProjectile(LobProjectile):
         self.color = VBase4(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), 1.0)
         self.model.setColorScale(self.color, 1)
 
-    def impact(self, pos):
+    def impact(self, pos, lastPos):
+        pos = Point3(pos)
+        lastPos = Point3(lastPos)
+        
         CIGlobals.makeSplat(pos, self.color, self.SplatScale, self.impactSound)
+        
+        dir = (pos - lastPos).normalized()
+        splatDecal = base.bspLoader.traceDecal("phase_14/materials/pie_splat.mat", 2, random.randint(1, 360), lastPos, pos + (dir * 2))
+        if not splatDecal.isEmpty():
+            splatDecal.setColorScale(self.color, 1)

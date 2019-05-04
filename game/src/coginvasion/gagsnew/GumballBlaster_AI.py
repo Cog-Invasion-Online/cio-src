@@ -45,7 +45,7 @@ class GumballBlaster_AI(BaseHitscanAI):
         self.fireOrigin = Point3(0)
 
     def getBaseDamage(self):
-        return 5
+        return 8
 
     def canUse(self):
         return self.hasAmmo() and self.action in [self.StateIdle, self.StateFire]
@@ -131,7 +131,7 @@ class GumballBlaster_AI(BaseHitscanAI):
     def fireProjectile(self, endPos):
         proj = GumballProjectileAI(base.air)
         proj.setProjectile(2.5, self.fireOrigin, endPos, 1.07, globalClockDelta.getFrameNetworkTime())
-        proj.generateWithRequired(self.avatar.zoneId)
+        proj.generateWithRequired(self.avatar.getBattleZone().zoneId)
         proj.addHitCallback(self.onProjectileHit)
         proj.addExclusion(self.avatar)
             

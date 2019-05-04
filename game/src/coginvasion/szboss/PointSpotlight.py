@@ -1,6 +1,6 @@
 from panda3d.core import (Point3, Vec3, Quat, GeomPoints, GeomVertexWriter, GeomVertexFormat,
                           GeomVertexData, GeomEnums, InternalName, TextureStage, TexGenAttrib,
-                          Geom, GeomNode, BoundingSphere, CallbackNode, CallbackObject)
+                          Geom, GeomNode, BoundingSphere, CallbackNode, CallbackObject, TextureAttrib)
 
 from src.coginvasion.globals import CIGlobals
 from Entity import Entity
@@ -28,6 +28,7 @@ class PointSpotlight(Entity):
         else:
             self.spotlight.show()
             self.halo.show()
+        
         self.spotlight.setAlphaScale(1.0 - blend, 1)
         self.halo.setAlphaScale(blend, 1)
 
@@ -37,7 +38,7 @@ class PointSpotlight(Entity):
         self.setPos(self.cEntity.getOrigin())
         self.setHpr(self.cEntity.getAngles())
         
-        self.setColorScale(self.getEntityValueColor("_light") * 0.75, 1)
+        self.setColorScale(self.getEntityValueColor("_light") * 2, 1)
         
         self.hide(CIGlobals.ShadowCameraBitmask)
         
@@ -51,8 +52,16 @@ class PointSpotlight(Entity):
         self.spotlight.reparentTo(spotlightroot)
         self.spotlight.setDepthWrite(False)
         
+        ts = TextureStage('spotlight')
+        ts.setMode(TextureStage.MAdd)
+        state = self.spotlight.node().getGeomState(0)
+        attr = TextureAttrib.make()
+        attr = attr.addOnStage(ts, loader.loadTexture("phase_14/maps/glow_test02.png"), 1)
+        state = state.setAttrib(attr)
+        self.spotlight.node().setGeomState(0, state)
+        
         self.halo = CIGlobals.makeSprite(
-            "halo", loader.loadTexture("phase_14/maps/light_glow03.png"), 20.0)
+            "halo", loader.loadTexture("phase_14/maps/light_glow03.png"), 5, True)
         self.halo.reparentTo(self)
         
         beamAndHalo.removeNode()

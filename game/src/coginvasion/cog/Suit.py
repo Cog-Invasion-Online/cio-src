@@ -28,11 +28,12 @@ from src.coginvasion.cog.SuitType import SuitType
 from src.coginvasion.toon import ParticleLoader
 from src.coginvasion.cog import GagEffects
 
-from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE, ACT_VICTORY_DANCE
+from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE, ACT_VICTORY_DANCE, ACT_COG_FLY_DOWN
 from src.coginvasion.cog.activities.WakeAngry import WakeAngry
 from src.coginvasion.cog.activities.Flinch import Flinch
 from src.coginvasion.cog.activities.Die import Die
 from src.coginvasion.cog.activities.VictoryDance import VictoryDance
+from src.coginvasion.cog.activities.FlyDown import FlyDown
 
 import random
 
@@ -72,7 +73,8 @@ class Suit(Avatar):
         self.activities = {ACT_WAKE_ANGRY   :   WakeAngry(self),
                            ACT_SMALL_FLINCH :   Flinch(self),
                            ACT_DIE          :   Die(self),
-                           ACT_VICTORY_DANCE:   VictoryDance(self)}
+                           ACT_VICTORY_DANCE:   VictoryDance(self),
+                           ACT_COG_FLY_DOWN :   FlyDown(self)}
 
         self.standWalkRunReverse = [('neutral', 'walk', 0.0, 5.0, 1.0, 1.0)]
 
@@ -575,7 +577,7 @@ class Suit(Avatar):
     def doGagEffect(self, flags):
         GagEffects.doGagEffect(self, flags)
 
-    def generateCog(self, isLose = 0):
+    def generateCog(self, isLose = 0, nameTag = True):
         self.cleanup()
         if not isLose:
             if self.variant == Variant.SKELETON or self.variant == Variant.ZOMBIE:
@@ -620,7 +622,8 @@ class Suit(Avatar):
         classScale = 1.0#self.suitPlan.getCogClassAttrs().scaleMod
         self.setAvatarScale((self.suitPlan.getScale() / SuitGlobals.scaleFactors[self.suit]) * classScale)
         #self.setHeight(self.suitPlan.getHeight())
-        self.setupNameTag()
+        if nameTag:
+            self.setupNameTag()
 
         Avatar.initShadow(self)
 

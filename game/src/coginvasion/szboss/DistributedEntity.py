@@ -16,6 +16,8 @@ class DistributedEntity(DistributedObject, Entity):
         if isinstance(self.cEntity, CPointEntity):
             self.setPos(self.cEntity.getOrigin())
             self.setHpr(self.cEntity.getAngles())
+            
+        self.reparentTo(render)
         
     def setEntnum(self, entnum):
         self.entnum = entnum

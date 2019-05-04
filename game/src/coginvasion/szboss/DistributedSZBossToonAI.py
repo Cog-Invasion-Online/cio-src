@@ -68,8 +68,8 @@ class DistributedSZBossToonAI(DistributedEntityAI, DistributedToonAI, BaseNPCAI)
         BaseNPCAI.__init__(self, dispatch)
         self.setBattleZone(dispatch)
 
-        from src.coginvasion.attack.Attacks import ATTACK_GAG_WHOLECREAMPIE, ATTACK_GUMBALLBLASTER
-        self.attackIds = [ATTACK_GUMBALLBLASTER, ATTACK_GAG_WHOLECREAMPIE]
+        from src.coginvasion.attack.Attacks import ATTACK_GAG_WHOLECREAMPIE
+        self.attackIds = [ATTACK_GAG_WHOLECREAMPIE]
 
         self.died = False
         
@@ -92,7 +92,7 @@ class DistributedSZBossToonAI(DistributedEntityAI, DistributedToonAI, BaseNPCAI)
                     Task_ClearHPBarrel(self),
                     Task_SetSchedule(self, "RETURN_TO_MEMORY_POSITION")
                 ],
-                interruptMask = COND_NEW_TARGET|COND_HEAVY_DAMAGE
+                interruptMask = COND_HEAVY_DAMAGE
             )
         
         })
@@ -131,7 +131,8 @@ class DistributedSZBossToonAI(DistributedEntityAI, DistributedToonAI, BaseNPCAI)
                                                     "That's going to leave a mark!",
                                                     "Rock and roll!"]))
         
-        if not self.target and self.getHealthPercentage() <= self.LOW_HP_PERCT:
+        if ((self.target and self.getHealthPercentage() <= self.LOW_HP_PERCT) or
+            (not self.target and self.hasConditions(COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE))):
             # we need some health
             return self.getScheduleByName("GET_HP_FROM_BARREL")
         

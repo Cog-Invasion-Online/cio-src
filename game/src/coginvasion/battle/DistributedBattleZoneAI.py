@@ -181,7 +181,11 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
             self.physicsWorld.doPhysics(dt, 0)
         except:
             pass
+        self.update()
         return task.cont
+        
+    def update(self):
+        pass
 
     def getPhysicsWorld(self):
         return self.physicsWorld

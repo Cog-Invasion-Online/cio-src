@@ -99,7 +99,7 @@ def emitSound(soundPath, pos, volume = 1.0, other = None):
     sound = base.loadSfxOnNode(soundPath, soundNode)
     Sequence(SoundInterval(sound, volume = volume), Func(base.audio3d.detachSound, sound), Func(soundNode.removeNode)).start()
 
-def makeSprite(name, texture, scale):
+def makeSprite(name, texture, scale, add = False):
     from panda3d.core import (GeomVertexFormat, GeomVertexData, GeomEnums,
                               InternalName, GeomVertexWriter, GeomPoints,
                               Geom, GeomNode, NodePath, TextureStage,
@@ -120,8 +120,12 @@ def makeSprite(name, texture, scale):
     np.setLightOff(1)
     np.setMaterialOff(1)
     np.setRenderModePerspective(True)
-    np.setTexture(texture, 1)
-    np.setTexGen(TextureStage.getDefault(), TexGenAttrib.MPointSprite)
+    ts = TextureStage('sprite')
+    if add:
+        ts.setMode(TextureStage.MAdd)
+    np.setTexture(ts, texture)
+    np.setTexGen(ts, TexGenAttrib.MPointSprite)
+    
     np.setDepthWrite(False)
     np.setDepthOffset(1)
     np.setTransparency(True)

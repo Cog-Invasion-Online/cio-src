@@ -25,11 +25,13 @@ class DistributedGagPickupAI(DistributedEntityAI):
         self.pickupState = 1
         self.gagId = self.__pickGagId()
         self.oneTimePickup = False
+        self.random = True
         
     def loadEntityValues(self):
         gagName = self.getEntityValue("gagName")
         if len(gagName) > 0:
             self.gagId = self.air.attackMgr.getAttackIDByName(gagName)
+            self.random = False
             
         self.oneTimePickup = self.getEntityValueBool("oneTimePickup")
 
@@ -43,6 +45,7 @@ class DistributedGagPickupAI(DistributedEntityAI):
         self.pickupState = None
         self.gagId = None
         self.oneTimePickup = None
+        self.random = None
         DistributedEntityAI.delete(self)
 
     def setPickupState(self, state):
@@ -79,7 +82,8 @@ class DistributedGagPickupAI(DistributedEntityAI):
 
     def __doRespawnTask(self, task):
         
-        self.b_setGagId(self.__pickGagId())
+        if self.random:
+            self.b_setGagId(self.__pickGagId())
         self.b_setPickupState(1)
         
         self.dispatchOutput("OnRespawn")

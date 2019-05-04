@@ -74,7 +74,7 @@ class GenericThrowableLinearProjectile(LinearProjectile):
         if not self.WantLight:
             self.model.setLightOff(1)
 
-    def impact(self, _):
+    def impact(self, pos, lastPos):
         if self.impactSound:
             base.audio3d.attachSoundToObject(self.impactSound, self)
             self.impactSound.play()

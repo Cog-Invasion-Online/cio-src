@@ -262,6 +262,7 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
 
         self.activateSmoothing(True, False)
         self.startSmooth()
+        self.reparentTo(render)
 
     def generate(self):
         DistributedAvatar.generate(self)

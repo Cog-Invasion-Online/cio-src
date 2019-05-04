@@ -75,7 +75,7 @@ ANIMATIONS = {
     "left" : [4, "left"],
     #"strafe" : [3, "strafe"],
     "pout" : [6, "badloop-putt"],
-    #"bow"   :   [4, "bow"],
+    "bow"   :   [4, "bow"],
     "shrug" :   [3.5, "shrug"],
     "bored" :   [4, "bored"],
     "start-dig" : [5.5, "into_dig"],

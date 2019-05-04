@@ -21,8 +21,11 @@ from src.coginvasion.toon.ToonHead import ToonHead
 from src.coginvasion.distributed import AdminCommands
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.avatar import Avatar
-from src.coginvasion.avatar.Activities import ACT_DIE
+from src.coginvasion.avatar.Activities import ACT_DIE, ACT_VICTORY_DANCE, ACT_TOON_BOW, ACT_JUMP, ACT_NONE
+from src.coginvasion.toon.activities.VictoryDance import VictoryDance
 from src.coginvasion.toon.activities.Die import Die
+from src.coginvasion.toon.activities.Bow import Bow
+from src.coginvasion.toon.activities.Jump import Jump
 
 import AccessoryGlobals
 
@@ -82,6 +85,7 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             State('swim', self.enterSwim, self.exitSwim),
             State('walk', self.enterWalk, self.exitWalk),
             State('run', self.enterRun, self.exitRun),
+            State('bow', self.enterBow, self.exitBow),
             State('openBook', self.enterOpenBook, self.exitOpenBook),
             State('readBook', self.enterReadBook, self.exitReadBook),
             State('closeBook', self.enterCloseBook, self.exitCloseBook),
@@ -118,7 +122,15 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         if not hasattr(self, 'uniqueName'):
             self.uniqueName = types.MethodType(uniqueName, self)
 
-        self.activities = {ACT_DIE  :   Die(self)}
+        self.activities = {ACT_DIE  :   Die(self),
+                           ACT_VICTORY_DANCE    :   VictoryDance(self),
+                           ACT_TOON_BOW         :   Bow(self),
+                           ACT_JUMP             :   Jump(self)}
+                           
+    def setActivity(self, act, timestamp = 0):
+        Avatar.Avatar.setActivity(self, act, timestamp)
+        if act == ACT_NONE:
+            self.animFSM.request("Happy")
 
     def getUpperBodySubpart(self):
         if self.getAnimal() == "dog":
@@ -1132,6 +1144,14 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.enableGags()
 
         self.rescaleToon()
+        self.playingAnim = 'neutral'
+        
+    def enterBow(self, ts = 0, callback = None, extraArgs = []):
+        self.play("bow")
+        self.playingAnim = 'bow'
+        
+    def exitBow(self):
+        self.exitGeneral()
         self.playingAnim = 'neutral'
 
     def enterJump(self, ts = 0, callback = None, extraArgs = []):

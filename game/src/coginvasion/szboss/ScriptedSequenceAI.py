@@ -46,8 +46,10 @@ class ScriptedSequenceAI(EntityAI):
             self.notify.error("target entity `{0}` not found!".format(entname))
         elif not isinstance(self.targetEnt, BaseNPCAI):
             self.notify.error("target entity `{0}` is not an NPC!".format(entname))
-
-        self.nextScript = self.bspLoader.getPyEntityByTargetName(self.getEntityValue("nextScript"))
+        
+        nextName = self.getEntityValue("nextScript")
+        if len(nextName) > 0:
+            self.nextScript = self.bspLoader.getPyEntityByTargetName(nextName)
 
         self.entryAnimation = Activities.getActivityByName(self.getEntityValue("entryAnimation"))
         self.actionAnimation = Activities.getActivityByName(self.getEntityValue("actionAnimation"))
@@ -69,6 +71,7 @@ class ScriptedSequenceAI(EntityAI):
             return task.done
 
         if len(self.targetEnt.getMotor().getWaypoints()) == 0:
+            print "Movement done, performing sequence"
             self.__performSequence()
             return task.done
 
@@ -95,6 +98,7 @@ class ScriptedSequenceAI(EntityAI):
     def StartSequence(self):
         # Disable the AI on this entity
         self.targetEnt.setNPCState(STATE_SCRIPT)
+        self.shouldRestartAI = True
 
         if self.moveToPosition:
             self.targetEnt.planPath(self.cEntity.getOrigin())
@@ -107,6 +111,7 @@ class ScriptedSequenceAI(EntityAI):
 
     def StopSequence(self):
         if self.shouldRestartAI:
+            print "restarting AI"
             self.targetEnt.setNPCState(STATE_IDLE)
         if self.seq:
             self.seq.pause()

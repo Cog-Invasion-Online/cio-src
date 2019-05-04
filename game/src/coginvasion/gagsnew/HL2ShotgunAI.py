@@ -31,6 +31,9 @@ class HL2ShotgunAI(BaseHitscanAI, HL2ShotgunShared):
         self.maxClip = 6
         self.clip = 6
         self.needsPump = False
+        
+    def getBaseDamage(self):
+        return 60
 
     def shouldGoToNextAction(self, complete):
         return ((complete) or

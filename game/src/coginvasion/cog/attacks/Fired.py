@@ -65,7 +65,7 @@ class FiredProjectile(LobProjectile):
         self.emitSound = None
         LobProjectile.disable(self)
 
-    def impact(self, pos):
+    def impact(self, pos, lastPos):
         CIGlobals.makeDustCloud(pos, scale = (0.25, 0.9, 1),
                                         sound = self.impactSound,
                                         color = (0.2, 0.2, 0.2, 0.6))

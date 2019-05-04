@@ -41,6 +41,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
         self.lookMode = self.LMOff
         self.cageBone = None
         self.lookTask = None
+        self.anim = ""
 
         return
         
@@ -165,7 +166,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
             ts = 0.0
         else:
             ts = globalClockDelta.localElapsedTime(timestamp)
-        if self.animFSM.getStateNamed(anim):
+        if self.animFSM.getStateNamed(anim):            
             self.animFSM.request(anim, [ts, callback, extraArgs])
 
     def b_setAnimState(self, anim):
@@ -206,7 +207,7 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
     def announceGenerate(self):
         DistributedAvatar.announceGenerate(self)
         if self.animFSM.getCurrentState().getName() == 'off':
-            self.setAnimState('neutral')
+            self.setAnimState('Happy')
 
     def generate(self):
         DistributedAvatar.generate(self)

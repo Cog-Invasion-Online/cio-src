@@ -12,6 +12,12 @@ class DistributedEntityAI(DistributedObjectAI, Entity):
         self.bspLoader = None
         self.spawnflags = 0
         
+    def getZoneId(self):
+        return self.dispatch.zoneId
+        
+    def getEntZoneId(self):
+        return self.zoneId
+        
     def getEntnum(self):
         return self.entnum
         
