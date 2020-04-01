@@ -600,7 +600,7 @@ class CIBase(ShowBase):
         
         self.bspLoader.setWantShadows(metadata.USE_REAL_SHADOWS)
         
-        self.shaderGenerator = BSPShaderGenerator(self.win.getGsg(), self.camera, self.render)
+        self.shaderGenerator = BSPShaderGenerator(self.win, self.win.getGsg(), self.camera, self.render)
         self.win.getGsg().setShaderGenerator(self.shaderGenerator)
         self.shaderGenerator.startUpdate()
         vlg = VertexLitGenericSpec()    # models

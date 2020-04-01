@@ -83,7 +83,7 @@ hardware-animated-vertices #t
 sync-video #f
 smooth-lag 0.2
 smooth-prediction-lag 0.0
-basic-shaders-only #t
+basic-shaders-only #f
 framebuffer-multisample 0
 framebuffer-stencil 0
 support-stencil 0
