@@ -1,7 +1,0 @@
-UnlitGeneric
-{
-    "$basetexture"  "materials/dev/toolsplayerclip.png"
-    "$translucent"  "1"
-    
-    "$contents"     "slime"
-}

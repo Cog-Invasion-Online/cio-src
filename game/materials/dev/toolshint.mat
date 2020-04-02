@@ -1,7 +1,0 @@
-UnlitGeneric
-{
-    "$basetexture"  "materials/dev/toolshint.png"
-    "$translucent"  "1"
-    
-    "$contents"     "hint"
-}
