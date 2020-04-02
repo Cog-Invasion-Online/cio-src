@@ -1,0 +1,7 @@
+SkyBox
+{
+    "$basetexture"  "materials/dev/toolsskybox.png"
+    "$translucent"  "1"
+    
+    "$contents"     "sky"
+}

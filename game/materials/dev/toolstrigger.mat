@@ -1,0 +1,7 @@
+UnlitGeneric
+{
+    "$basetexture"  "materials/dev/toolstrigger.png"
+    "$translucent"  "1"
+    
+    "$contents"     "null"
+}
