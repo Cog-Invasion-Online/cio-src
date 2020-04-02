@@ -1,0 +1,74 @@
+keyword broadcast;
+keyword ram;
+keyword p2p;
+
+from direct.distributed import DistributedObject/AI/UD
+from direct.distributed import DistributedNode/AI/UD
+from direct.distributed import DistributedSmoothNode/AI
+from direct.distributed import DistributedCartesianGrid/AI
+from direct.distributed import DistributedCamera/AI/OV
+from direct.distributed import TimeManager/AI
+
+struct BarrierData {
+  uint16 context;
+  string name;
+  uint32 avIds[];
+};
+
+dclass DistributedObject {
+  setBarrierData(BarrierData []) broadcast ram;
+  setBarrierReady(uint16 barrierContext) airecv clsend;
+};
+
+dclass TimeManager : DistributedObject {
+  requestServerTime(uint8 context) airecv clsend;
+  serverTime(uint8 context, int32 timestap);
+};
+
+dclass DistributedNode : DistributedObject {
+  setParentStr(blob) broadcast ram ownsend airecv;
+  setParent(uint32) broadcast ram ownsend airecv;
+  setX(int16/10) broadcast ram required ownsend airecv;
+  setY(int16/10) broadcast ram required ownsend airecv;
+  setZ(int16/10) broadcast ram required ownsend airecv;
+  setH(int16%360/10) broadcast required ram ownsend airecv;
+  setP(int16%360/10) broadcast required ram ownsend airecv;
+  setR(int16%360/10) broadcast required ram ownsend airecv;
+  setPos : setX, setY, setZ;
+  setHpr : setH, setP, setR;
+  setPosHpr : setX, setY, setZ, setH, setP, setR;
+  setXY : setX, setY;
+  setXZ : setX, setZ;
+  setXYH : setX, setY, setH;
+  setXYZH : setX, setY, setZ, setH;
+};
+
+dclass DistributedSmoothNode : DistributedNode {
+  setComponentL(uint64) broadcast ram required ownsend airecv;
+  setComponentX(int16/10) broadcast ram required ownsend airecv;
+  setComponentY(int16/10) broadcast ram required ownsend airecv;
+  setComponentZ(int16/10) broadcast ram required ownsend airecv;
+  setComponentH(int16%360/10) broadcast required ram ownsend airecv;
+  setComponentP(int16%360/10) broadcast required ram ownsend airecv;
+  setComponentR(int16%360/10) broadcast required ram ownsend airecv;
+  setComponentT(int16) broadcast ram required ownsend airecv;
+  setSmStop : setComponentT;
+  setSmH : setComponentH, setComponentT;
+  setSmZ : setComponentZ, setComponentT;
+  setSmXY : setComponentX, setComponentY, setComponentT;
+  setSmXZ : setComponentX, setComponentZ, setComponentT;
+  setSmPos : setComponentX, setComponentY, setComponentZ, setComponentT;
+  setSmHpr : setComponentH, setComponentP, setComponentR, setComponentT;
+  setSmXYH : setComponentX, setComponentY, setComponentH, setComponentT;
+  setSmXYZH : setComponentX, setComponentY, setComponentZ, setComponentH, setComponentT;
+  setSmPosHpr : setComponentX, setComponentY, setComponentZ, setComponentH, setComponentP, setComponentR, setComponentT;
+  setSmPosHprL : setComponentL, setComponentX, setComponentY, setComponentZ, setComponentH, setComponentP, setComponentR, setComponentT;
+  clearSmoothing(int8) broadcast ownsend;
+  suggestResync(uint32, int16, int16, int32, uint16, uint16/100) ownrecv clsend;
+  returnResync(uint32, int16, int32, uint16, uint16/100) ownrecv clsend;
+};
+
+dclass DistributedCartesianGrid : DistributedNode {
+  setCellWidth(uint32) required broadcast ram;
+  setParentingRules(string, string) broadcast ram;
+};

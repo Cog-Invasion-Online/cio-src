@@ -26,7 +26,6 @@ game/tournament_music/**
 game/models/**
 game/icons/**
 # Ignore everything in the astron folder.
-game/astron/**
 game/tools/libcoginvasion.pyd
 game/tools/libcoginvasion.c
 game/tools/libcoginvasion.lib
