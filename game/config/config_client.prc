@@ -87,7 +87,7 @@ basic-shaders-only #f
 framebuffer-multisample 0
 framebuffer-stencil 0
 support-stencil 0
-framebuffer-srgb 0
+framebuffer-srgb 1
 framebuffer-alpha 1
 default-texture-color-space sRGB
 textures-srgb 1
@@ -188,7 +188,7 @@ assert-abort 0
 
 textures-power-2 none
 
-precache-assets 1
+precache-assets 0
 
 mat_rimlight 1
 mat_envmaps 1
