@@ -16,8 +16,8 @@ class DistributedCutsceneAI(DistributedEntityAI):
         DistributedEntityAI.delete(self)
 
     def loadEntityValues(self):
-        self.cutsceneId = self.bspLoader.getEntityValue(self.getEntnum(), "cutsceneId")
-        self.length = self.bspLoader.getEntityValueFloat(self.getEntnum(), "length")
+        self.cutsceneId = self.getEntityValue("cutsceneId")
+        self.length = self.getEntityValueFloat("length")
 
     def DoCutscene(self):
         if self.inProgress:

@@ -1,0 +1,62 @@
+general:
+    eventlogger: 127.0.0.1:7030
+    dc_files:
+        - ../direct.dc
+        - ../toon.dc
+
+messagedirector:
+    bind: 127.0.0.1:7031
+
+uberdogs:
+    - id: 1001
+      class: ClientServicesManager
+      anonymous: true
+    - id: 1003
+      class: DistrictNameManager
+      anonymous: false
+    - id: 1004
+      class: FriendsManager
+      anonymous: false
+    - id: 1005
+      class: HolidayManager
+      anonymous: false
+    - id: 1006
+      class: NameServicesManager
+      anonymous: false
+
+roles:
+    - type: clientagent
+      bind: 0.0.0.0:7032
+      version: "ver-0.0.0"
+      #tls:
+      #  certificate: ../../phase_3/etc/gameserver.crt
+      #  key_file: ../rsakey.key
+      manual_dc_hash: 0x6f57a9e6
+      client:
+       relocate: true
+       add_interest: enabled
+      channels:
+        min: 1000000000
+        max: 1009999999
+
+    - type: stateserver
+      control: 4002
+
+    - type: database
+      control: 4003
+      generate:
+        min: 100000000
+        max: 399999999
+      backend:
+        type: yaml
+        directory: ../databases/astrondb
+
+    - type: dbss
+      database: 4003
+      ranges:
+        - min: 100000000
+          max: 399999999
+
+    - type: eventlogger
+      bind: 127.0.0.1:7030
+      output: ../logs/events-%y%m%d_%H%M%S.log

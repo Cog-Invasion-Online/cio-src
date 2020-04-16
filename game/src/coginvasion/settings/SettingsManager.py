@@ -15,6 +15,8 @@ from Setting import DATATYPE_INT, DATATYPE_STR, DATATYPE_LIST, DATATYPE_TUPLE, D
 from src.coginvasion.globals import CIGlobals
 
 from panda3d.core import WindowProperties, AntialiasAttrib, loadPrcFileData
+from panda3d.bullet import *
+
 from panda3d.bsp import SHADERQUALITY_HIGH
 from direct.directnotify.DirectNotifyGlobal import directNotify
 

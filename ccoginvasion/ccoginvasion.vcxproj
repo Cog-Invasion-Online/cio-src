@@ -1,22 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release Static|Win32">
-      <Configuration>Release Static</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release Static|x64">
-      <Configuration>Release Static</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -25,260 +12,479 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{0DED181D-1026-4EE3-9C7E-308BE4AF387D}</ProjectGuid>
+    <ProjectGuid>{662A215D-3AA6-3E76-BD28-D7716A7FCF1F}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ccoginvasion</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ccoginvasion</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>Windows7.1SDK</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Static|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>Windows7.1SDK</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Static|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="Shared">
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Static|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Static|x64'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ccoginvasion.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ccoginvasion</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.pyd</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ccoginvasion.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ccoginvasion</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.pyd</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">ccoginvasion.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">ccoginvasion</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.pyd</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">ccoginvasion.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">ccoginvasion</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.pyd</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\OTHER\lachb\Documents\cio\ccoginvasion\source;D:\OTHER\lachb\Documents\cio\Panda3D-CI\python\include;D:\OTHER\lachb\Documents\cio\Panda3D-CI\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\OTHER\lachb\Documents\cio\cio-panda3d\built_static\python\libs;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_static\lib;$(LibraryPath)</LibraryPath>
-    <TargetExt>.lib</TargetExt>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Static|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\OTHER\lachb\Documents\cio\ccoginvasion\source;D:\OTHER\lachb\Documents\cio\Panda3D-CI\python\include;D:\OTHER\lachb\Documents\cio\Panda3D-CI\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\OTHER\lachb\Documents\cio\cio-panda3d\built_static\python\libs;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_static\lib;$(LibraryPath)</LibraryPath>
-    <TargetExt>.lib</TargetExt>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
-    <TargetExt>.pyd</TargetExt>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Static|x64'">
-    <LinkIncremental>false</LinkIncremental>
-    <TargetExt>.lib</TargetExt>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\.\source;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WITHIN_PANDA;WIN32;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\base;C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\suit;C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\components;C:\Users\brian\Documents\cog-invasion-online\Panda3D-CI\include;D:\OTHER\lachb\Documents\cio\Panda3D-CI\python\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;BUILDING_CCOGINVASION;WITHIN_PANDA;CMAKE_INTDIR="Debug";ccoginvasion_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libp3framework.lib;libpanda.lib;libpandaexpress.lib;libp3dtool.lib;libp3dtoolconfig.lib;libp3direct.lib;libp3pystub.lib;libp3interrogatedb.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;BUILDING_CCOGINVASION;WITHIN_PANDA;CMAKE_INTDIR=\"Debug\";ccoginvasion_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\.\source;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\.\source;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
     <PreBuildEvent>
-      <Command>echo Interrogating...
-interrogate.bat</Command>
+      <Message>
+      </Message>
+      <Command>setlocal
+call interrogate.bat
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
     </PreBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Static|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WITHIN_PANDA;WIN32;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\base;C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\suit;C:\Users\brian\Documents\DesktopBackup\Documents\libpandadna-master\src\components;C:\Users\brian\Documents\cog-invasion-online\Panda3D-CI\include;D:\OTHER\lachb\Documents\cio\Panda3D-CI\python\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+      <Command>setlocal
+copy /Y Release\ccoginvasion.pyd ..\..\cio-panda3d-3\built_x64\bin\ccoginvasion.pyd
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+copy /Y Release\ccoginvasion.pdb ..\..\cio-panda3d-3\built_x64\bin\ccoginvasion.pdb
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
     <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>libpanda.lib;libpandaexpress.lib;libp3dtool.lib;libp3dtoolconfig.lib;libp3interrogatedb.lib;python27.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/lib;C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/lib/$(Configuration);C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/python/libs;C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/python/libs/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libp3framework.lib;libpanda.lib;libpandaexpress.lib;libp3dtool.lib;libp3dtoolconfig.lib;libp3direct.lib;libp3pystub.lib;libp3interrogatedb.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/Debug/ccoginvasion.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/Debug/ccoginvasion.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
     </Link>
-    <PreBuildEvent>
-      <Command>echo Interrogating...
-interrogate.bat</Command>
-    </PreBuildEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>BUILDING_CCOGINVASION;NDEBUG;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\OTHER\lachb\Documents\cio\ccoginvasion\source;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_x64\python\include;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\OTHER\lachb\Documents\cio\cio-panda3d\built_x64\python\libs;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libpanda.lib;libpandaexpress.lib;libp3dtool.lib;libp3dtoolconfig.lib;libp3pystub.lib;libp3interrogatedb.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Static|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>BUILDING_CCOGINVASION;LINK_ALL_STATIC;NDEBUG;_WINDOWS;_USRDLL;CCOGINVASION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\OTHER\lachb\Documents\cio\ccoginvasion\source;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_x64_static\python\include;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_x64_static\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cio-panda3d-3\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cio-panda3d-3\built_x64\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\.\source;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;BUILDING_CCOGINVASION;WITHIN_PANDA;CMAKE_INTDIR="Release";ccoginvasion_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;BUILDING_CCOGINVASION;WITHIN_PANDA;CMAKE_INTDIR=\"Release\";ccoginvasion_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\.\source;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\.\source;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+      <Command>setlocal
+call interrogate.bat
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+      <Command>setlocal
+copy /Y Release\ccoginvasion.pyd ..\..\cio-panda3d-3\built_x64\bin\ccoginvasion.pyd
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+copy /Y Release\ccoginvasion.pdb ..\..\cio-panda3d-3\built_x64\bin\ccoginvasion.pdb
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
     <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>libpanda.lib;libpandaexpress.lib;libp3dtool.lib;libp3dtoolconfig.lib;libp3interrogatedb.lib;python27.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cio-panda3d-3\built_x64\python\libs;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cio-panda3d-3\built_x64\lib;C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/lib;C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/lib/$(Configuration);C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/python/libs;C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/python/libs/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/Release/ccoginvasion.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/Release/ccoginvasion.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
     </Link>
-    <Lib>
-      <AdditionalDependencies>libpanda.lib;libpandaexpress.lib;libp3dtool.lib;libp3dtoolconfig.lib;libp3interrogatedb.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
-    <Lib>
-      <AdditionalLibraryDirectories>D:\OTHER\lachb\Documents\cio\cio-panda3d\built_x64_static\python\libs;D:\OTHER\lachb\Documents\cio\cio-panda3d\built_x64_static\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\.\source;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;BUILDING_CCOGINVASION;WITHIN_PANDA;CMAKE_INTDIR="MinSizeRel";ccoginvasion_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;BUILDING_CCOGINVASION;WITHIN_PANDA;CMAKE_INTDIR=\"MinSizeRel\";ccoginvasion_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\.\source;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\.\source;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+      <Command>setlocal
+call interrogate.bat
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+      <Command>setlocal
+copy /Y Release\ccoginvasion.pyd ..\..\cio-panda3d-3\built_x64\bin\ccoginvasion.pyd
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+copy /Y Release\ccoginvasion.pdb ..\..\cio-panda3d-3\built_x64\bin\ccoginvasion.pdb
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>libpanda.lib;libpandaexpress.lib;libp3dtool.lib;libp3dtoolconfig.lib;libp3interrogatedb.lib;python27.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/lib;C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/lib/$(Configuration);C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/python/libs;C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/python/libs/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/MinSizeRel/ccoginvasion.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/MinSizeRel/ccoginvasion.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\.\source;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;BUILDING_CCOGINVASION;WITHIN_PANDA;CMAKE_INTDIR="RelWithDebInfo";ccoginvasion_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;BUILDING_CCOGINVASION;WITHIN_PANDA;CMAKE_INTDIR=\"RelWithDebInfo\";ccoginvasion_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\.\source;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\.\source;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\python\include;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\..\cio-panda3d\built_x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+      <Command>setlocal
+call interrogate.bat
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+      <Command>setlocal
+copy /Y Release\ccoginvasion.pyd ..\..\cio-panda3d-3\built_x64\bin\ccoginvasion.pyd
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+copy /Y Release\ccoginvasion.pdb ..\..\cio-panda3d-3\built_x64\bin\ccoginvasion.pdb
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>libpanda.lib;libpandaexpress.lib;libp3dtool.lib;libp3dtoolconfig.lib;libp3interrogatedb.lib;python27.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/lib;C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/lib/$(Configuration);C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/python/libs;C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/../cio-panda3d/built_x64/python/libs/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/RelWithDebInfo/ccoginvasion.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/RelWithDebInfo/ccoginvasion.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <CustomBuild Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion -BC:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion --check-stamp-file C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\WindowsPaths.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeCCompiler.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeCXXCompiler.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeRCCompiler.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion -BC:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion --check-stamp-file C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\WindowsPaths.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeCCompiler.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeCXXCompiler.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeRCCompiler.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion -BC:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion --check-stamp-file C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\WindowsPaths.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeCCompiler.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeCXXCompiler.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeRCCompiler.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion -BC:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion --check-stamp-file C:/Users/Rocket/Desktop/Projects/Games/Disney/Toontown/Sources/CogInvasionOnline/Final/cog-invasion-online/ccoginvasion/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.17\Modules\Platform\WindowsPaths.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeCCompiler.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeCXXCompiler.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeRCCompiler.cmake;C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\3.17.0-rc1\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\audioclip.h" />
-    <ClInclude Include="source\cnametag.h" />
-    <ClInclude Include="source\cnametag3d.h" />
-    <ClInclude Include="source\config_ccoginvasion.h" />
-    <ClInclude Include="source\ct_musicdata.h" />
-    <ClInclude Include="source\ct_musicmgr.h" />
-    <ClInclude Include="source\lerper.h" />
-    <ClInclude Include="source\smartcamera_bullet.h" />
-    <ClInclude Include="source\suitpathfinder_ai.h" />
+    <ClCompile Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\audioclip.cpp" />
+    <ClCompile Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\cnametag.cpp" />
+    <ClCompile Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\cnametag3d.cpp" />
+    <ClCompile Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\config_ccoginvasion.cpp" />
+    <ClCompile Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\ct_musicdata.cpp" />
+    <ClCompile Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\ct_musicmgr.cpp" />
+    <ClCompile Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\lerper.cpp" />
+    <ClCompile Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\smartcamera_bullet.cpp" />
+    <ClCompile Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\suitpathfinder_ai.cpp" />
+    <ClCompile Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\tools.cpp" />
+    <ClInclude Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\audioclip.h" />
+    <ClInclude Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\cNametag.h" />
+    <ClInclude Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\cNametag3d.h" />
+    <ClInclude Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\config_ccoginvasion.h" />
+    <ClInclude Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\ct_musicdata.h" />
+    <ClInclude Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\ct_musicmgr.h" />
+    <ClInclude Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\lerper.h" />
+    <ClInclude Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\smartcamera_bullet.h" />
+    <ClInclude Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\source\suitpathfinder_ai.h" />
+    <ClCompile Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\ccoginvasion_module.cpp" />
+    <ClCompile Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\ccoginvasion_igate.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ccoginvasion_igate.cpp" />
-    <ClCompile Include="ccoginvasion_module.cpp" />
-    <ClCompile Include="source\audioclip.cpp" />
-    <ClCompile Include="source\cnametag.cpp" />
-    <ClCompile Include="source\cnametag3d.cpp" />
-    <ClCompile Include="source\config_ccoginvasion.cpp" />
-    <ClCompile Include="source\ct_musicdata.cpp" />
-    <ClCompile Include="source\ct_musicmgr.cpp" />
-    <ClCompile Include="source\lerper.cpp" />
-    <ClCompile Include="source\smartcamera_bullet.cpp" />
-    <ClCompile Include="source\suitpathfinder_ai.cpp" />
-    <ClCompile Include="source\tools.cpp" />
+    <ProjectReference Include="C:\Users\Rocket\Desktop\Projects\Games\Disney\Toontown\Sources\CogInvasionOnline\Final\cog-invasion-online\ccoginvasion\ZERO_CHECK.vcxproj">
+      <Project>{1DF7C18C-82C7-3109-B4F0-F7CA10BE8ED3}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

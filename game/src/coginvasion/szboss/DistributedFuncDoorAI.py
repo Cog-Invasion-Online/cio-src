@@ -30,9 +30,9 @@ class DistributedFuncDoorAI(DistributedEntityAI, FSM):
         self.b_setDoorState(DOORSTATE_CLOSING)
         
     def loadEntityValues(self):
-        self.wait = self.bspLoader.getEntityValueInt(self.entnum, "wait")
-        moveDir = self.bspLoader.getEntityValueVector(self.entnum, "movedir")
-        speed = self.bspLoader.getEntityValueFloat(self.entnum, "speed")
+        self.wait = self.getEntityValueInt("wait")
+        moveDir = self.getEntityValueVector("movedir")
+        speed = self.getEntityValueFloat("speed")
         
         mins = Point3(0)
         maxs = Point3(0)

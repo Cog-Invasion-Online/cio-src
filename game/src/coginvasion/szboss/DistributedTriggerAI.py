@@ -8,7 +8,7 @@ class DistributedTriggerOnceAI(DistributedEntityAI):
 
     def load(self):
         DistributedEntityAI.load(self)
-        self.enabled = not bool(self.bspLoader.getEntityValueInt(self.entnum, "StartDisabled"))
+        self.enabled = not bool(self.getEntityValueInt("StartDisabled"))
 
     def Disable(self):
         self.enabled = False
@@ -38,7 +38,7 @@ class DistributedTriggerMultipleAI(DistributedTriggerOnceAI):
 
     def load(self):
         DistributedTriggerOnceAI.load(self)
-        self.delay = self.bspLoader.getEntityValueFloat(self.entnum, "delay")
+        self.delay = self.getEntityValueFloat("delay")
 
     def onPlayerEnter(self):
         if self.enabled:

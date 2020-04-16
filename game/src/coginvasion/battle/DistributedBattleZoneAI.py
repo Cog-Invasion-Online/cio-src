@@ -21,7 +21,7 @@ from src.coginvasion.battle.RPToonData import RPToonData
 from src.coginvasion.battle.GameRulesAI import GameRulesAI
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.quest.Objectives import DefeatCog, DefeatCogBuilding, RecoverItem
-from src.coginvasion.phys.PhysicsUtils import makeBulletCollFromGeoms, detachAndRemoveBulletNodes
+from src.coginvasion.phys.PhysicsUtils import detachAndRemoveBulletNodes
 
 import BattleGlobals
 import itertools
@@ -168,6 +168,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         
         self.physicsWorld = BulletWorld()
         self.physicsWorld.setGravity(Vec3(0, 0, -32.1740))
+        self.bspLoader.setPhysicsWorld(self.physicsWorld)
         
     def announceGenerate(self):
         DistributedObjectAI.announceGenerate(self)
@@ -193,7 +194,6 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
     def loadBSPLevel(self, lfile):
         self.bspLoader.read(lfile)
         self.setupNavMesh(self.bspLoader.getResult())
-        makeBulletCollFromGeoms(self.bspLoader.getResult(), world = self.physicsWorld)
 
         coverPositions = []
         self.coverHints = []

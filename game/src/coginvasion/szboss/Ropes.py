@@ -19,21 +19,21 @@ class RopeBegin(Entity, Rope):
     def load(self):
         Entity.load(self)
         
-        entnum = self.cEntity.getEntnum()
+        entnum = self.cEntity.getBspEntnum()
         loader = base.bspLoader
         
-        color = loader.getEntityValueColor(entnum, "color")
-        thick = loader.getEntityValueInt(entnum, "thickness")
-        order = loader.getEntityValueInt(entnum, "resolution")
+        color = self.getEntityValueColor("color")
+        thick = self.getEntityValueInt("thickness")
+        order = self.getEntityValueInt( "resolution")
         verts = [{'node': render, 'point': self.cEntity.getOrigin(), 'color': color, 'thickness': thick}]
-        nextKeyframe = loader.getEntityValue(entnum, "nextKeyframe").split(";")[0]
+        nextKeyframe = self.getEntityValue("nextKeyframe").split(";")[0]
         while len(nextKeyframe):
             ent = loader.getPyEntityByTargetName(nextKeyframe)
             if ent and type(ent) is RopeKeyframe:
                 verts.append({'node': render, 'point': ent.cEntity.getOrigin(), 'color': color, 'thickness': thick})
             else:
                 print "BSP rope error: keyframe entity {0} not found or invalid".format(nextKeyframe)
-            nextKeyframe = loader.getEntityValue(ent.cEntity.getEntnum(), "nextKeyframe").split(";")[0]
+            nextKeyframe = self.getEntityValue("nextKeyframe").split(";")[0]
         if len(verts) <= 1:
             print "BSP rope error: no keyframes, there will be no rope"
         self.ropeNode.setUseVertexColor(1)

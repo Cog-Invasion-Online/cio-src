@@ -110,7 +110,7 @@ class FiredAI(BaseAttackAI, Fired_Shared):
                 flame = FiredProjectileAI(base.air)
                 flame.setProjectile(duration, startPos, endPos, 0.9,
                                     globalClockDelta.getFrameNetworkTime())
-                flame.generateWithRequired(self.avatar.zoneId)
+                flame.generateWithRequired(self.avatar.getBattleZone().zoneId)
                 flame.addHitCallback(self.onProjectileHit)
                 flame.addExclusion(self.avatar)
 

@@ -18,8 +18,8 @@ class DistributedFuncRotatingAI(DistributedEntityAI, FSM):
             self.b_setState(1)
         
     def loadEntityValues(self):
-        self.timeToWind = self.bspLoader.getEntityValueFloat(self.entnum, "timeToFull")
-        self.spawnflags = self.bspLoader.getEntityValueInt(self.entnum, "spawnflags")
+        self.timeToWind = self.getEntityValueFloat("timeToFull")
+        self.spawnflags = self.getEntityValueInt("spawnflags")
         
     def Start(self):
         self.b_setState(2)

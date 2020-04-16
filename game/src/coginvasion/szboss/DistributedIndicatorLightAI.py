@@ -30,9 +30,9 @@ class DistributedIndicatorLightAI(DistributedEntityAI):
         return self.lightState
         
     def loadEntityValues(self):
-        lightColor = self.bspLoader.getEntityValueColor(self.entnum, "_light")
+        lightColor = self.getEntityValueColor("_light")
         self.lightColor = (lightColor[0], lightColor[1], lightColor[2])
-        self.spawnflags = self.bspLoader.getEntityValueInt(self.entnum, "spawnflags")
+        self.spawnflags = self.getEntityValueInt("spawnflags")
         
     ######## Inputs ########
         

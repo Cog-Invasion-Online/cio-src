@@ -58,9 +58,16 @@ class DistributedSewerAI(DistributedBattleZoneAI):
     def loadedMap(self):
         self.sendUpdate('startLevel')
 
+        av = self.air.doId2do.get(self.air.getAvatarIdFromSender())
+        start = self.bspLoader.findAllEntities("info_player_start")[0]
+        av.setPos(start.cEntity.getOrigin())
+        av.setHpr(start.cEntity.getAngles())
+        av.b_clearSmoothing()
+        av.sendCurrentPosition()
+
     def handleAvatarsReady(self):
-        #self.b_loadMap('phase_14/etc/sewer_entrance_room_indoors/sewer_entrance_room_indoors.bsp')
-        #self.b_loadMap('phase_14/etc/testmats/testmats.bsp')
-        #self.b_loadMap('phase_14/etc/estate_interior/estate_interior.bsp')
-        #self.b_loadMap("phase_14/etc/test_attacks/test_attacks.bsp")
+        #self.b_setMap('sewer_entrance_room_indoors')
+        #self.b_setMap('phase_14/etc/testmats/testmats.bsp')
+        #self.b_setMap('phase_14/etc/estate_interior/estate_interior.bsp')
+        #elf.b_setMap("phase_14/etc/test_attacks/test_attacks.bsp")
         self.b_setMap('test_ai_arena')
