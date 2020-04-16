@@ -25,14 +25,14 @@ class DistributedCogOfficeElevatorAI(DistributedElevatorAI, DistributedEntityAI)
         self.index = 0
         
     def loadEntityValues(self):
-        self.index = self.bspLoader.getEntityValueInt(self.entnum, "index")
+        self.index = self.bspLoader.getEntityValueInt("index")
         self.type = self.index
-        
+
     def enterClosing(self):
         base.taskMgr.doMethodLater(ElevatorData[self.type]['closeTime'], self.closingTask, self.uniqueName('closingTask'))
         if self.index == 1:
             self.bldg.b_setAvatars(self.getSortedAvatarList())
-        
+
     def closingTask(self, task):
         if self.index == 1:
             self.slotTakenByAvatarId = {}

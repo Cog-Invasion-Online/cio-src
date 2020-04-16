@@ -212,4 +212,4 @@ class DistributedGoonAI(DistributedEntityAI, DistributedAvatarAI, BaseNPCAI):
         DistributedAvatarAI.delete(self)
 
     def loadEntityValues(self):
-        self.spawnflags = self.bspLoader.getEntityValueInt(self.entnum, "spawnflags")
+        self.spawnflags = self.getEntityValueInt("spawnflags")

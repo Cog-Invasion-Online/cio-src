@@ -38,11 +38,11 @@ class DistributedSZBossSuitAI(DistributedSuitAI, DistributedEntityAI):
         self.battleZone = None
         
     def announceGenerate(self):
-        entnum = self.cEntity.getEntnum()
-        suitId = self.bspLoader.getEntityValueInt(entnum, "suitPlan")
+        entnum = self.cEntity.getBspEntnum()
+        suitId = self.getEntityValueInt("suitPlan")
         suitPlan = SuitBank.getSuitById(suitId)
-        level = self.bspLoader.getEntityValueInt(entnum, "level")
-        variant = self.bspLoader.getEntityValueInt(entnum, "variant")
+        level = self.getEntityValueInt("level")
+        variant = self.getEntityValueInt("variant")
         self.b_setLevel(level)
         self.b_setSuit(suitPlan, variant)
         self.b_setPlace(self.zoneId)
@@ -62,7 +62,7 @@ class DistributedSZBossSuitAI(DistributedSuitAI, DistributedEntityAI):
         taskMgr.add(self.monitorHealth, self.uniqueName('monitorHealth'))
         self.startPosHprBroadcast()
         
-        spawnflags = self.bspLoader.getEntityValueInt(self.entnum, "spawnflags")
+        spawnflags = self.getEntityValueInt("spawnflags")
         if spawnflags & self.StartsActive:
             self.Activate()
         #elif spawnflags & self.GuardSuit:

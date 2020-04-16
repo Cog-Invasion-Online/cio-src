@@ -49,9 +49,9 @@ class LogicCounter(Entity):
     def load(self):
         self.cEntity = self.bspLoader.getCEntity(self.entnum)
         Entity.load(self)
-        self.startVal = self.bspLoader.getEntityValueInt(self.entnum, "startVal")
-        self.maxVal = self.bspLoader.getEntityValueInt(self.entnum, "maxVal")
-        self.minVal = self.bspLoader.getEntityValueInt(self.entnum, "minVal")
+        self.startVal = self.getEntityValueInt("startVal")
+        self.maxVal = self.getEntityValueInt("maxVal")
+        self.minVal = self.getEntityValueInt("minVal")
         
         self.val = self.startVal
         

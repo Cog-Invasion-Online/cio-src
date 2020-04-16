@@ -37,13 +37,13 @@ class DistributedButton(DistributedEntity, UseableObject, FSM):
         DistributedEntity.load(self)
         UseableObject.load(self)
 
-        entnum = self.cEntity.getEntnum()
+        entnum = self.cEntity.getBspEntnum()
         loader = self.cEntity.getLoader()
-        self.moveDir = loader.getEntityValueVector(entnum, "movedir")
-        self.speed = loader.getEntityValueFloat(entnum, "speed")
-        self.wait = loader.getEntityValueFloat(entnum, "wait")
+        self.moveDir = self.getEntityValueVector("movedir")
+        self.speed = self.getEntityValueFloat("speed")
+        self.wait = self.getEntityValueFloat("wait")
 
-        movesnd = loader.getEntityValue(entnum, "sounds")
+        movesnd = self.getEntityValue("sounds")
         if len(movesnd) > 0:
             self.pressSound = base.audio3d.loadSfx(movesnd)
             base.audio3d.attachSoundToObject(self.pressSound, self.cEntity.getModelNp())

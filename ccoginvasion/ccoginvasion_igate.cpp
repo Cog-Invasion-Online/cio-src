@@ -3060,7 +3060,7 @@ extern const struct LibraryDef ccoginvasion_moddef = {python_simple_funcs, expor
 extern const struct LibraryDef ccoginvasion_moddef = {python_simple_funcs, exports, imports};
 #endif
 static InterrogateModuleDef _in_module_def = {
-  1585805127,  /* file_identifier */
+  1585862591,  /* file_identifier */
   "ccoginvasion",  /* library_name */
   "_5Dz",  /* library_hash_name */
   "ccoginvasion",  /* module_name */

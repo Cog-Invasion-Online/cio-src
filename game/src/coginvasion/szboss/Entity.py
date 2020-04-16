@@ -25,57 +25,60 @@ class Entity(NodePath, Precacheable):
 
     def getLoader(self):
         return self.bspLoader
-        
+
     def entityTaskName(self, taskName):
-        return taskName + "-entity_" + str(self.getEntnum())
-        
-    def getEntnum(self):
+        return taskName + "-entity_" + str(self.getBspEntnum())
+
+    def getBspEntnum(self):
         assert self.cEntity
-        return self.cEntity.getEntnum()
-        
+        return self.cEntity.getBspEntnum()
+
     def getEntityValue(self, key):
-        assert self.bspLoader
         assert self.cEntity
-        
-        return self.bspLoader.getEntityValue(self.cEntity.getEntnum(), key)
-        
+
+        return self.cEntity.getEntityValue(key)
+
     def getEntityValueInt(self, key):
-        assert self.bspLoader
         assert self.cEntity
-        
-        return self.bspLoader.getEntityValueInt(self.cEntity.getEntnum(), key)
+
+        try:
+            return int(self.cEntity.getEntityValue(key))
+        except:
+            return 0
 
     def getEntityValueBool(self, key):
-        assert self.bspLoader
         assert self.cEntity
-        
-        return bool(self.bspLoader.getEntityValueInt(self.cEntity.getEntnum(), key))
-        
+
+        try:
+            return bool(int(self.cEntity.getEntityValue(key)))
+        except:
+            return False
+
     def getEntityValueFloat(self, key):
-        assert self.bspLoader
         assert self.cEntity
-        
-        return self.bspLoader.getEntityValueFloat(self.cEntity.getEntnum(), key)
-        
+
+        try:
+            return float(self.cEntity.getEntityValue(key))
+        except:
+            return 0.0
+
     def getEntityValueVector(self, key):
-        assert self.bspLoader
         assert self.cEntity
         
-        return self.bspLoader.getEntityValueVector(self.cEntity.getEntnum(), key)
-        
+        return self.cEntity.getEntityValueVector(key)
+
     def getEntityValueColor(self, key):
-        assert self.bspLoader
         assert self.cEntity
-        
-        return self.bspLoader.getEntityValueColor(self.cEntity.getEntnum(), key)
-        
+
+        return self.cEntity.getEntityValueColor(key)
+
     def task_dispatchOutput(self, target, op, extraArgs, task):
         param = op['parameter']
         params = param.split(';') if len(param) > 0 else []
         params += extraArgs
         getattr(target, op['input']).__call__(*params)
         return task.done
-        
+
     def dispatchOutput(self, outputName, extraArgs = []):
         for op in self.outputs:
             if op['output'] == outputName and op['active']:
@@ -86,15 +89,15 @@ class Entity(NodePath, Precacheable):
                                               extraArgs = [target, op, extraArgs], appendTask = True)
                         if op['once']:
                             op['active'] = False
-        
+
     def load(self):
         self.loaded = True
-        
+
         if hasattr(base, 'bspLoader') and not self.bspLoader:
             self.bspLoader = base.bspLoader
-        
+
         keyvalues = []
-        self.bspLoader.getEntityKeyvalues(keyvalues, self.cEntity.getEntnum())
+        self.bspLoader.getEntityKeyvalues(keyvalues, self.cEntity.getBspEntnum())
         for k, v in keyvalues:
             if k[:2] != "On":
                 continue
@@ -106,9 +109,9 @@ class Entity(NodePath, Precacheable):
                                  'once': bool(int(data[4])), 'active': True})
 
         self.spawnflags = self.getEntityValueInt("spawnflags")
-                                 
+
         self.dispatchOutput("OnSpawn")
-                                     
+
     def unload(self):
         self.loaded = False
         self.outputs = None

@@ -91,21 +91,11 @@ class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
 
     def reqMakeSewer(self):
         # TEMPORARY
-        #from src.coginvasion.szboss.sewer.DistributedSewerAI import DistributedSewerAI
+        from src.coginvasion.szboss.sewer.DistributedSewerAI import DistributedSewerAI
         zoneId = self.air.allocateZone()
-        #sewer = DistributedSewerAI(self.air, self.doId)
-        #sewer.generateWithRequired(zoneId)
-        toons = []
-        for obj in self.air.doId2do.values():
-            if obj.zoneId == self.zoneId and isinstance(obj, DistributedPlayerToonAI):
-                toons.append(obj.doId)
-        from src.coginvasion.deathmatch.DistributedDeathmatchBattleAI import DistributedDeathmatchBattleAI
-        dm = DistributedDeathmatchBattleAI(self.air)
-        dm.setAvatars(toons)
-        dm.generateWithRequired(zoneId)
-        for toonId in toons:
-            toon = self.air.doId2do.get(toonId)
-            toon.sendUpdate('sewerHeadOff', [zoneId])
+        sewer = DistributedSewerAI(self.air, self.doId)
+        sewer.generateWithRequired(zoneId)
+        self.sendUpdate('sewerHeadOff', [zoneId])
 
     def getCurrentGag(self):
         return self.getEquippedAttack()

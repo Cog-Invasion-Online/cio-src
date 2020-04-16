@@ -65,10 +65,10 @@ class DistributedButtonAI(DistributedEntityAI, FSM):
         taskMgr.remove(self.uniqueName('btndepresstask'))
         
     def loadEntityValues(self):
-        self.wait = self.bspLoader.getEntityValueInt(self.entnum, "wait")
-        moveDir = self.bspLoader.getEntityValueVector(self.entnum, "movedir")
-        speed = self.bspLoader.getEntityValueFloat(self.entnum, "speed")
-        self.spawnflags = self.bspLoader.getEntityValueInt(self.entnum, "spawnflags")
+        self.wait = self.getEntityValueInt("wait")
+        moveDir = self.getEntityValueVector("movedir")
+        speed = self.getEntityValueFloat("speed")
+        self.spawnflags = self.getEntityValueInt("spawnflags")
         
         mins = Point3(0)
         maxs = Point3(0)

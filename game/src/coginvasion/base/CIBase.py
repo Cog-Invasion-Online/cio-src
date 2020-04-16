@@ -151,6 +151,7 @@ class CIBase(ShowBase):
         self.bspLoader.setWantLightmaps(True)
         #self.bspLoader.setShadowCamPos(Point3(-15, 5, 40))
         #self.bspLoader.setShadowResolution(60 * 2, 1024 * 1)
+        self.bspLoader.setPhysicsWorld(self.physicsWorld)
         self.bspLevel = None
         self.materialData = {}
         self.skyBox = None
@@ -400,7 +401,6 @@ class CIBase(ShowBase):
         base.bspLoader.read(mapFile)
         base.bspLevel = base.bspLoader.getResult()
         base.bspLoader.doOptimizations()
-        base.materialData = PhysicsUtils.makeBulletCollFromGeoms(base.bspLevel.find("**/model-0"))
         for prop in base.bspLevel.findAllMatches("**/+BSPProp"):
             base.createAndEnablePhysicsNodes(prop)
         #base.setupNavMesh(base.bspLevel.find("**/model-0"))
