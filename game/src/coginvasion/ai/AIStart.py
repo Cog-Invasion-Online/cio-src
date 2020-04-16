@@ -80,6 +80,15 @@ base = ShowBase()
 # Limit server to a certain number of ticks per second
 #base.setSleep(1 / base.config.GetFloat('server-ticks', 30))
 
+from p3recastnavigation import RNNavMeshManager
+
+nmMgr = RNNavMeshManager.get_global_ptr()
+nmMgr.set_root_node_path(render)
+nmMgr.get_reference_node_path().reparentTo(render)
+nmMgr.start_default_update()
+nmMgr.get_reference_node_path_debug().reparentTo(render)
+base.nmMgr = nmMgr
+
 from direct.distributed.ClockDelta import globalClockDelta
 __builtins__.globalClockDelta = globalClockDelta
 
