@@ -11,6 +11,6 @@ set RESOURCE_ENCRYPTION=cio-03-06-16_lsphases
 cls
 
 :main
-..\..\cio-panda3d-3\built_x64\python\ppython.exe -B -m src.coginvasion.base.CIStartGlobal
+..\cio-panda3d\built_x64\python\ppython.exe -B -m src.coginvasion.base.CIStartGlobal
 pause
 goto :main
