@@ -99,3 +99,4 @@ Packages
 ccoginvasion/ccoginvasion.in
 ccoginvasion/ccoginvasion_igate.cxx
 ccoginvasion/ccoginvasion_module.cxx
+*.sdf
