@@ -1,6 +1,8 @@
 from panda3d.core import (Point3, Vec3, Quat, GeomPoints, GeomVertexWriter, GeomVertexFormat,
                           GeomVertexData, GeomEnums, InternalName, TextureStage, TexGenAttrib,
-                          Geom, GeomNode, BoundingSphere, CallbackNode, CallbackObject, TextureAttrib)
+                          Geom, GeomNode, BoundingSphere, CallbackNode, CallbackObject, TextureAttrib,
+                          ColorBlendAttrib, ColorWriteAttrib, Vec4, TransparencyAttrib, ColorWriteAttrib)
+from libpandabsp import GlowNode
 
 from src.coginvasion.globals import CIGlobals
 from Entity import Entity
@@ -17,6 +19,7 @@ class PointSpotlight(Entity):
         self.spotlight = None
         self.halo = None
         self.callback = None
+        self.rgbColor = Vec3(0)
         
     def setBeamHaloFactor(self, blend):
         if blend <= 0.001:
@@ -29,8 +32,8 @@ class PointSpotlight(Entity):
             self.spotlight.show()
             self.halo.show()
         
-        self.spotlight.setAlphaScale(1.0 - blend, 1)
-        self.halo.setAlphaScale(blend, 1)
+        self.spotlight.setColorScale(self.rgbColor * (1.0 - blend), 1)
+        self.halo.setColorScale(self.rgbColor, 1)
 
     def load(self):
         Entity.load(self)
@@ -38,37 +41,30 @@ class PointSpotlight(Entity):
         self.setPos(self.cEntity.getOrigin())
         self.setHpr(self.cEntity.getAngles())
         
-        self.setColorScale(self.getEntityValueColor("_light") * 2, 1)
+        self.setDepthWrite(False, 1)
+        col = self.getEntityValueColor("_light")
+        self.rgbColor = col
+        self.setAttrib(ColorBlendAttrib.make(ColorBlendAttrib.MAdd, ColorBlendAttrib.OOne, ColorBlendAttrib.OOne), 1)
         
         self.hide(CIGlobals.ShadowCameraBitmask)
+
+        self.spotlightLength = self.getEntityValueFloat("SpotlightLength") / 16.0
+        self.spotlightWidth = self.getEntityValueFloat("SpotlightWidth") / 16.0
         
         beamAndHalo = loader.loadModel("phase_14/models/misc/light_beam_and_halo.bam")
-        
+     
         # Blend between halo and beam
         spotlightroot = self.attachNewNode('spotlightRoot')
         spotlightroot.setP(90)
         self.spotlight = beamAndHalo.find("**/beam")
         self.spotlight.setBillboardAxis()
         self.spotlight.reparentTo(spotlightroot)
-        self.spotlight.setDepthWrite(False)
         
-        ts = TextureStage('spotlight')
-        ts.setMode(TextureStage.MAdd)
-        state = self.spotlight.node().getGeomState(0)
-        attr = TextureAttrib.make()
-        attr = attr.addOnStage(ts, loader.loadTexture("phase_14/maps/glow_test02.png"), 1)
-        state = state.setAttrib(attr)
-        self.spotlight.node().setGeomState(0, state)
-        
-        self.halo = CIGlobals.makeSprite(
-            "halo", loader.loadTexture("phase_14/maps/light_glow03.png"), 5, True)
+        self.halo = CIGlobals.makeLightGlow(self.spotlightWidth)
         self.halo.reparentTo(self)
         
         beamAndHalo.removeNode()
-        
-        self.spotlightLength = self.getEntityValueFloat("SpotlightLength") / 16.0
-        self.spotlightWidth = self.getEntityValueFloat("SpotlightWidth") / 16.0
-        
+
         entPos = self.getPos()
         
         spotDir = self.getQuat().getForward()

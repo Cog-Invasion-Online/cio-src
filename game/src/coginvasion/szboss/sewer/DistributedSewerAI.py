@@ -66,8 +66,8 @@ class DistributedSewerAI(DistributedBattleZoneAI):
         av.sendCurrentPosition()
 
     def handleAvatarsReady(self):
-        #self.b_setMap('sewer_entrance_room_indoors')
+        self.b_setMap('sewer_entrance_room_indoors')
         #self.b_setMap('phase_14/etc/testmats/testmats.bsp')
         #self.b_setMap('phase_14/etc/estate_interior/estate_interior.bsp')
         #elf.b_setMap("phase_14/etc/test_attacks/test_attacks.bsp")
-        self.b_setMap('test_ai_arena')
+        #self.b_setMap('test_ai_arena')

@@ -38,7 +38,7 @@ class DistributedIndicatorLight(DistributedEntity):
     def load(self):
         DistributedEntity.load(self)
         
-        self.sound = base.loadSfxOnNode(base.bspLoader.getEntityValue(self.entnum, "changeSound"), self)
+        self.sound = base.loadSfxOnNode(self.getEntityValue("changeSound"), self)
         self.lightMdl = loader.loadModel("phase_14/models/props/indicator_light.bam")
         self.lightMdl.find("**/__lightsrc__").setTransparency(1)
         self.lightMdl.reparentTo(self)
@@ -56,5 +56,5 @@ class DistributedIndicatorLight(DistributedEntity):
         self.setPos(self.cEntity.getOrigin())
         self.setHpr(self.cEntity.getAngles())
         
-        self.setScale(base.bspLoader.getEntityValueFloat(self.entnum, "scale"))
+        self.setScale(self.getEntityValueFloat("scale"))
         

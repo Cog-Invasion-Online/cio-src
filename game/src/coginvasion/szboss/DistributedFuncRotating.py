@@ -41,9 +41,9 @@ class DistributedFuncRotating(DistributedEntity, FSM):
     def load(self):
         DistributedEntity.load(self)
         
-        self.axis = base.bspLoader.getEntityValueVector(self.entnum, "axis")
-        self.speed = base.bspLoader.getEntityValueFloat(self.entnum, "speed")
-        self.timeToFull = base.bspLoader.getEntityValueFloat(self.entnum, "timeToFull")
+        self.axis = self.getEntityValueVector("axis")
+        self.speed = self.getEntityValueFloat("speed")
+        self.timeToFull = self.getEntityValueFloat("timeToFull")
         
         base.materialData.update(PhysicsUtils.makeBulletCollFromGeoms(self.cEntity.getModelNp()))
         

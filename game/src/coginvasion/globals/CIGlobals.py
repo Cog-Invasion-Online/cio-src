@@ -98,6 +98,17 @@ def emitSound(soundPath, pos, volume = 1.0, other = None):
     soundNode.setPos(other, pos)
     sound = base.loadSfxOnNode(soundPath, soundNode)
     Sequence(SoundInterval(sound, volume = volume), Func(base.audio3d.detachSound, sound), Func(soundNode.removeNode)).start()
+    
+def makeLightGlow(scale = 10):
+    from panda3d.core import NodePath
+    from libpandabsp import GlowNode
+    mdl = loader.loadModel("phase_14/models/misc/light_beam_and_halo.bam")
+    halo = NodePath(GlowNode(mdl.find("**/halo").node(), 16.0))
+    halo.setDepthTest(False)
+    halo.setScale(scale)
+    #halo.setShaderOff(1)
+    halo.setBillboardPointEye()
+    return halo
 
 def makeSprite(name, texture, scale, add = False):
     from panda3d.core import (GeomVertexFormat, GeomVertexData, GeomEnums,

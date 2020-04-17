@@ -130,20 +130,18 @@ class DistributedFuncDoor(DistributedEntity, UseableObject, FSM):
         DistributedEntity.load(self)
         UseableObject.load(self)
 
-        entnum = self.cEntity.getEntnum()
-        loader = self.cEntity.getLoader()
-        self.spawnflags = loader.getEntityValueInt(entnum, "spawnflags")
-        self.moveDir = loader.getEntityValueVector(entnum, "movedir")
-        self.speed = loader.getEntityValueFloat(entnum, "speed")
-        self.wait = loader.getEntityValueFloat(entnum, "wait")
+        self.spawnflags = self.getEntityValueInt("spawnflags")
+        self.moveDir = self.getEntityValueVector("movedir")
+        self.speed = self.getEntityValueFloat("speed")
+        self.wait = self.getEntityValueFloat("wait")
 
-        movesnd = loader.getEntityValue(entnum, "movesnd")
+        movesnd = self.getEntityValue("movesnd")
         if len(movesnd) > 0:
             self.moveSound = base.audio3d.loadSfx(movesnd)
-            self.moveSound.setLoop(bool(loader.getEntityValueInt(entnum, "loop_movesnd")))
+            self.moveSound.setLoop(bool(self.getEntityValueInt("loop_movesnd")))
             base.audio3d.attachSoundToObject(self.moveSound, self.cEntity.getModelNp())
 
-        stopsnd = loader.getEntityValue(entnum, "stopsnd")
+        stopsnd = self.getEntityValue("stopsnd")
         if len(stopsnd) > 0:
             self.stopSound = base.audio3d.loadSfx(stopsnd)
             base.audio3d.attachSoundToObject(self.stopSound, self.cEntity.getModelNp())

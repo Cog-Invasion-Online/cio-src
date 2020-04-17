@@ -263,7 +263,8 @@ class DistributedCogOfficeBattle(DistributedBattleZone):
 
     def __doFloorTextPulse(self):
         # worldspawn `message` property
-        floorTitle = base.bspLoader.getEntityValue(0, "message")
+        worldspawn = base.bspLoader.getCEntity(0)
+        floorTitle = worldspawn.getEntityValue("message")
 
         self.floorNameText.setText(floorTitle)
         ival = DistributedMinigame.getAlertPulse(self.floorNameText, 0.17, 0.15)

@@ -116,7 +116,7 @@ class BaseLocalControls(DirectObject):
         self.scheme = scheme
         if scheme == self.SSwim:
             self.controller.movementState = "swimming"
-            self.controller.gravity = base.physicsWorld.getGravity()[2] * LocalControls.SwimGravityMod
+            self.controller.gravity = base.physicsWorld.getGravity()[2] * self.SwimGravityMod
             self.staticFriction = 0.15
             self.dynamicFriction = 0.08
             self.allowCrouch = False

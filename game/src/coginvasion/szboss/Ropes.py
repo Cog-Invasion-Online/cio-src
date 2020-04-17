@@ -27,7 +27,7 @@ class RopeBegin(Entity, Rope):
         order = self.getEntityValueInt( "resolution")
         verts = [{'node': render, 'point': self.cEntity.getOrigin(), 'color': color, 'thickness': thick}]
         nextKeyframe = self.getEntityValue("nextKeyframe").split(";")[0]
-        while len(nextKeyframe):
+        if len(nextKeyframe):
             ent = loader.getPyEntityByTargetName(nextKeyframe)
             if ent and type(ent) is RopeKeyframe:
                 verts.append({'node': render, 'point': ent.cEntity.getOrigin(), 'color': color, 'thickness': thick})

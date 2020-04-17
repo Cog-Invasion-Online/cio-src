@@ -433,12 +433,12 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         hangouts = self.bspLoader.findAllEntities("cogoffice_hangoutpoint")
         for spawn in spawns:
             
-            spawnflags = self.bspLoader.getEntityValueInt(spawn.entnum, "spawnflags")
+            spawnflags = spawn.getEntityValueInt("spawnflags")
             if not (spawnflags & spawnImmediately):
                 # Doesn't want us to spawn a cog here upon level load.
                 continue
 
-            section = self.bspLoader.getEntityValueInt(spawn.entnum, "section")
+            section = spawn.getEntityValueInt("section")
             pos = spawn.cEntity.getOrigin()
             hpr = spawn.cEntity.getAngles()
             
@@ -478,7 +478,7 @@ class DistributedCogOfficeBattleAI(DistributedBattleZoneAI):
         self.elevators = [None, None]
         elevs = self.bspLoader.findAllEntities("cogoffice_elevator")
         for elev in elevs:
-            self.elevators[self.bspLoader.getEntityValueInt(elev.entnum, "index")] = elev
+            self.elevators[elev.getEntityValueInt("index")] = elev
 
     # Sent by the player telling us that they have finished loading/setting up the floor.
     def loadedMap(self):

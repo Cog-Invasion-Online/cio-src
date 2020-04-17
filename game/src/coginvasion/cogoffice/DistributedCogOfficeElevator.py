@@ -78,7 +78,7 @@ class DistributedCogOfficeElevator(DistributedElevator, DistributedEntity):
     def announceGenerate(self):
         DistributedEntity.announceGenerate(self)
 
-        self.elev = Elevator(base.bspLoader.getEntityValueInt(self.entnum, "type"))
+        self.elev = Elevator(self.getEntityValueInt("type"))
         self.elev.elevatorMdl.setPos(self.cEntity.getOrigin())
         self.elev.elevatorMdl.setHpr(self.cEntity.getAngles())
 

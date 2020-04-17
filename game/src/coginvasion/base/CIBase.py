@@ -653,6 +653,7 @@ class CIBase(ShowBase):
         
         self.shaderGenerator = BSPShaderGenerator(self.win, self.win.getGsg(), self.camera, self.render)
         self.win.getGsg().setShaderGenerator(self.shaderGenerator)
+        self.bspLoader.setShaderGenerator(self.shaderGenerator)
         vlg = VertexLitGenericSpec()    # models
         ulg = UnlitGenericSpec()        # ui elements, particles, etc
         lmg = LightmappedGenericSpec()  # brushes, displacements
