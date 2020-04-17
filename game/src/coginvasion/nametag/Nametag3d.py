@@ -9,8 +9,6 @@ from Nametag import Nametag
 from src.coginvasion.gui.Clickable3d import Clickable3d
 from src.coginvasion.globals import CIGlobals
 
-from ccoginvasion import CNametag3d
-
 class Nametag3d(Nametag, Clickable3d):
     SCALING_MIN_DISTANCE = 1
     SCALING_MAX_DISTANCE = 100
@@ -24,8 +22,6 @@ class Nametag3d(Nametag, Clickable3d):
         self.contents.setLightOff(1)
         self.contents.hide(CIGlobals.ShadowCameraBitmask)
         CIGlobals.applyNoGlow(self.contents)
-        
-        self.cTag = CNametag3d()
 
         self.distance = 0
 
@@ -39,8 +35,6 @@ class Nametag3d(Nametag, Clickable3d):
 
     def destroy(self):
         self.ignoreAll()
-        
-        self.cTag = None
 
         Nametag.destroy(self)
         Clickable3d.destroy(self)
@@ -72,21 +66,24 @@ class Nametag3d(Nametag, Clickable3d):
 
     def updateClickRegion(self):
         if self.chatBalloon is not None:
-            reg = []
-            self.cTag.get_chatballoon_region(self.chatBalloon.center, NametagGlobals.chatBalloon3dHeight, reg)
-            self.setClickRegionFrame(*reg)
-        elif self.panel is not None:
-            # FIXME
-            #reg = []
-            #self.cTag.get_panel_region(self.textNode, reg)
-            #self.setClickRegionFrame(*reg)
+            left = self.chatBalloon.center[0] - (self.chatBalloon.width/2)
+            right = left + self.chatBalloon.width
 
-            centerX = (self.textNode.getLeft() + self.textNode.getRight()) / 2.0
-            centerY = (self.textNode.getBottom() + self.textNode.getTop()) / 2.0
-            left = centerX - (self.panelWidth / 2.0)
-            right = centerX + (self.panelWidth / 2.0)
-            bottom = centerY - (self.panelHeight / 2.0)
-            top = centerY + (self.panelHeight / 2.0)
+            # Calculate the bottom of the region based on constants.
+            # 2.4 is the padded height of a single-line message:
+            bottom = NametagGlobals.chatBalloon3dHeight - 2.4
+            top = bottom + self.chatBalloon.height
+
+            self.setClickRegionFrame(left, right, bottom, top)
+        elif self.panel is not None:
+            centerX = (self.textNode.getLeft()+self.textNode.getRight()) / 2.0
+            centerY = (self.textNode.getBottom()+self.textNode.getTop()) / 2.0
+
+            left = centerX - (self.panelWidth/2.0)
+            right = centerX + (self.panelWidth/2.0)
+            bottom = centerY - (self.panelHeight/2.0)
+            top = centerY + (self.panelHeight/2.0)
+
             self.setClickRegionFrame(left, right, bottom, top)
 
     def isClickable(self):
@@ -125,7 +122,7 @@ class Nametag3d(Nametag, Clickable3d):
             distance = self.SCALING_MAX_DISTANCE
 
         if distance != self.distance:
-            self.contents.setScale(self.cTag.get_scale(distance, self.SCALING_FACTOR))
+            self.contents.setScale(math.sqrt(distance) * self.SCALING_FACTOR)
             self.distance = distance
             
         if self.isClickable():
@@ -155,7 +152,7 @@ class Nametag3d(Nametag, Clickable3d):
             button=self.chatButton[self.clickState])
         self.chatBalloon.reparentTo(self.contents)
         
-        self.cTag.set_chatballoon_size(self.chatBalloon.width, self.chatBalloon.height)
+        #self.cTag.set_chatballoon_size(self.chatBalloon.width, self.chatBalloon.height)
         
         if not base.config.GetBool('want-nametags', True):
             self.contents.show()
@@ -198,7 +195,7 @@ class Nametag3d(Nametag, Clickable3d):
         self.panelHeight = self.textNode.getHeight() + self.PANEL_Z_PADDING
         self.panel.setScale(self.panelWidth, 1, self.panelHeight)
         
-        self.cTag.set_panel_size(self.panelWidth, self.panelHeight)
+        #self.cTag.set_panel_size(self.panelWidth, self.panelHeight)
         
         if not base.config.GetBool('want-nametags', True):
             self.contents.hide()

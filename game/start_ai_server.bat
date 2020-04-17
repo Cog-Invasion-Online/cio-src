@@ -18,7 +18,7 @@ echo EVENT_LOGGER: %EVENT_LOGGER_IP%
 echo -----------------------------------
 
 :main
-..\cio-panda3d\built_x64\python\ppython.exe -m src.coginvasion.ai.AIStart --base-channel %BASE_CHANNEL% ^
+%CIOENGINE%\python\ppython.exe -m src.coginvasion.ai.AIStart --base-channel %BASE_CHANNEL% ^
                      --max-channels %MAX_CHANNELS% --stateserver %STATE_SERVER% ^
                      --astron-ip %ASTRON_IP% --eventlogger-ip %EVENT_LOGGER_IP%
 pause

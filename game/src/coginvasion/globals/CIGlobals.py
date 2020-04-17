@@ -846,6 +846,14 @@ FloorMask = FloorGroup | StreetVisGroup
 # For just colliding with the general world.
 WorldGroup = WallGroup | FloorGroup | StreetVisGroup
 
+from libpandabsp import CAMERA_MAIN, CAMERA_SHADOW, CAMERA_REFLECTION, CAMERA_VIEWMODEL, CAMERA_COMPUTE, CAMERA_REFRACTION
+MainCameraBitmask = BitMask32(CAMERA_MAIN)
+ShadowCameraBitmask = BitMask32(CAMERA_SHADOW)
+ReflectionCameraBitmask = BitMask32(CAMERA_REFLECTION)
+RefractionCameraBitmask = BitMask32(CAMERA_REFRACTION)
+ViewModelCameraBitmask = BitMask32(CAMERA_VIEWMODEL)
+ComputeCameraBitmask = BitMask32(CAMERA_COMPUTE)
+
 DialogColor = (1, 1, 0.75, 1)
 DefaultBackgroundColor = (0.3, 0.3, 0.3, 1)
 PositiveTextColor = (0, 1, 0, 1)

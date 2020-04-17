@@ -1,4 +1,5 @@
 from panda3d.core import VBase4, NodePath, DepthWriteAttrib, AntialiasAttrib, BitMask32
+from libpandabsp import BloomAttrib
 
 from src.coginvasion.globals import CIGlobals
 
@@ -27,7 +28,9 @@ class ChatBalloon(NodePath):
                  reversed=False, button=None, is2d = False):
         NodePath.__init__(self, 'chatBalloon')
         # We don't want chat bubbles to glow from the bloom filter, it looks terrible.
-        CIGlobals.applyNoGlow(self)
+        #CIGlobals.applyNoGlow(self)
+        
+        self.setAttrib(BloomAttrib.make(False), 3)
 
         self.setLightOff(1)
         self.hide(CIGlobals.ShadowCameraBitmask)
@@ -107,7 +110,7 @@ class ChatBalloon(NodePath):
             self.buttonNodePath = None
 
         # Finally, enable anti-aliasing:
-        self.setAntialias(AntialiasAttrib.MMultisample)
+        #self.setAntialias(AntialiasAttrib.MMultisample)
 
     def setForeground(self, foreground):
         self.foreground = foreground

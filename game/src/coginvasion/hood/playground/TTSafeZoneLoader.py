@@ -9,7 +9,6 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import TextureStage, Material, TransparencyAttrib, TexGenAttrib, TransformState
-from panda3d.bsp import TextureStages
 from panda3d.bullet import BulletRigidBodyNode, BulletCapsuleShape, ZUp
 
 from direct.actor.Actor import Actor

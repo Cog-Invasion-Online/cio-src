@@ -9,7 +9,6 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import TextureStage
-from panda3d.bsp import BSPMaterialAttrib
 
 import TownLoader
 import TTStreet

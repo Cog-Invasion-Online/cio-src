@@ -17,7 +17,7 @@ from src.coginvasion.cog.DistributedSuitAI import DistributedSuitAI
 #from src.coginvasion.cog.SuitPursueToonBehaviorAI import SuitPursueToonBehaviorAI
 from src.coginvasion.globals import CIGlobals
 from CogOfficeConstants import POINTS
-from CogOfficePathDataAI import *
+#from CogOfficePathDataAI import *
 import random
 
 CHAIR_2_BATTLE_TIME = 9.0

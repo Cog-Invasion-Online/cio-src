@@ -52,8 +52,6 @@ from CogInvasionDoGlobals import DO_ID_STATS_MANAGER
 
 from CogInvasionErrorCodes import ErrorCode2ErrorMsg, UnknownErrorMsg
 
-import ccoginvasion
-
 import os, sys
 import random
 import math

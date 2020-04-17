@@ -25,7 +25,7 @@ class DistributedCogOfficeElevatorAI(DistributedElevatorAI, DistributedEntityAI)
         self.index = 0
         
     def loadEntityValues(self):
-        self.index = self.bspLoader.getEntityValueInt("index")
+        self.index = self.getEntityValueInt("index")
         self.type = self.index
 
     def enterClosing(self):

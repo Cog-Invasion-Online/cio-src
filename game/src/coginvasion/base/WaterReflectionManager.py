@@ -18,15 +18,12 @@ from panda3d.core import (BitMask32, Plane, NodePath, CullFaceAttrib, Texture,
                           VirtualFileSystem, DirectionalLight, GeomVertexArrayFormat, InternalName, FrameBufferProperties)
 
 from direct.gui.DirectGui import OnscreenImage
-from direct.filter.FilterManager import FilterManager
 
 import math
 import random
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.base.Lighting import LightingConfig, OutdoorLightingConfig
-
-REFL_CAM_BITMASK = BitMask32.bit(10)
 
 class FogSpec:
 
@@ -183,7 +180,7 @@ class WaterNode(NodePath):
 
     def setup(self):
         self.reparentTo(render)
-        self.hide(REFL_CAM_BITMASK)
+        self.hide(CIGlobals.ReflectionCameraBitmask)
         #self.setLightOff(1)
         self.setMaterialOff(1)
         self.setTransparency(1)
@@ -274,6 +271,7 @@ class WaterScene:
 
     def __init__(self, name, reso, height, planeVec, reflection = False, needDepth = False):
         fbp = FrameBufferProperties()
+        fbp.clear()
         fbp.set_depth_bits( 8 )
         fbp.set_force_hardware( True )
         fbp.set_rgba_bits( 8, 8, 8, 8 )
@@ -290,15 +288,14 @@ class WaterScene:
         
         buffer = base.win.makeTextureBuffer(name, reso, reso, None, False, fbp)
         buffer.setSort(-10000)
-        buffer.setClearColorActive(False)
-        buffer.setClearStencilActive(False)
+        buffer.disableClears()
         buffer.setClearDepthActive(True)
 
         self.buffer = buffer
         
         self.camera = base.makeCamera(buffer)
         self.camera.node().setLens(base.camLens)
-        self.camera.node().setCameraMask(REFL_CAM_BITMASK)
+        self.camera.node().setCameraMask(CIGlobals.ReflectionCameraBitmask)
 
         self.texture = buffer.getTexture()
         self.texture.setWrapU(Texture.WMClamp)

@@ -9,7 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.bullet import BulletWorld
-from panda3d.bsp import BSPLoader
+from libpandabsp import Py_AI_BSPLoader
 from panda3d.core import Vec3
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -143,7 +143,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         DistributedObjectAI.generate(self)
         self.air.battleZones[self.zoneId] = self
 
-        self.bspLoader = BSPLoader()
+        self.bspLoader = Py_AI_BSPLoader()
         self.bspLoader.setAi(True)
         self.bspLoader.setMaterialsFile("phase_14/etc/materials.txt")
         #self.bspLoader.setTextureContentsFile("phase_14/etc/texturecontents.txt")

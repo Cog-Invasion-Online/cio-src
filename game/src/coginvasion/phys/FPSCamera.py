@@ -1,5 +1,5 @@
 from panda3d.core import ModelRoot, Point2, WindowProperties, ConfigVariableDouble, Point3, NodePath, CharacterJointEffect, BitMask32, PerspectiveLens, Quat, Vec3
-from panda3d.bsp import BSPRender, BSPLoader
+from libpandabsp import BSPRender, BSPLoader
 
 from direct.showbase.DirectObject import DirectObject
 from direct.actor.Actor import Actor
@@ -117,10 +117,10 @@ class FPSCamera(DirectObject):
         self.viewportLens.setNear(0.3)
         # Updates to the transform of base.camera
         self.viewportCam = base.makeCamera(base.win, clearDepth = True, camName = 'fpsViewport',
-                                           mask = CIGlobals.ViewModelCamMask, lens = self.viewportLens)
+                                           mask = CIGlobals.ViewModelCameraBitmask, lens = self.viewportLens)
         # Pretend to be the main camera so the viewmodel gets ambient probes updated
-        self.viewportCam.node().setTag("__mainpass__", "1")
         self.viewportCam.reparentTo(self.vmRoot)
+        base.filters.addCamera(self.viewportCam)
 
         self.vmGag = None
         self.vmAnimTrack = None

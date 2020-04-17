@@ -9,7 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.bullet import *
-from panda3d.bsp import *
+from libpandabsp import *
 
 from src.coginvasion.distributed.CogInvasionInternalRepository import CogInvasionInternalRepository
 from src.coginvasion.distributed.DistributedDistrictAI import DistributedDistrictAI

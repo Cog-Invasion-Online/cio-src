@@ -1,9 +1,0 @@
-*.pyd
-*.pyc
-*.so
-*.pdb
-
-# Various output names
-win_*/
-linux_*/
-Source/Interrogate*

@@ -12,7 +12,7 @@ class DistributedEntity(DistributedObject, Entity):
     def announceGenerate(self):
         DistributedObject.announceGenerate(self)
 
-        from panda3d.bsp import CPointEntity
+        from libpandabsp import CPointEntity
         if isinstance(self.cEntity, CPointEntity):
             self.setPos(self.cEntity.getOrigin())
             self.setHpr(self.cEntity.getAngles())

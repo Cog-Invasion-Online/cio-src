@@ -15,6 +15,8 @@ from direct.gui.DirectGui import DirectFrame, DirectLabel
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from panda3d.core import Vec4
 
+from libpandabsp import BloomAttrib
+
 notify = directNotify.newCategory("LaffOMeter")
 
 class LaffOMeter(DirectFrame):
@@ -32,6 +34,7 @@ class LaffOMeter(DirectFrame):
             self.setLightOff()
             self.setFogOff()
             self.setMaterialOff()
+            self.setAttrib(BloomAttrib.make(False))
             self.hide(CIGlobals.ShadowCameraBitmask)
         self.forRender = forRender
 

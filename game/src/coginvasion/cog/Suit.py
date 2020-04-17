@@ -9,7 +9,7 @@ Copyright (c) CIO Team. All rights reserved.
 """
 
 from panda3d.core import Vec4, VBase4, Texture, TextureStage, TexGenAttrib
-from panda3d.bsp import TextureStages, BSPMaterialAttrib, BSPMaterial
+from libpandabsp import TextureStages, BSPMaterialAttrib, BSPMaterial
 
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Parallel, ActorInterval, SoundInterval, Wait, Func

@@ -10,9 +10,16 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3, MemoryUsage, MemoryUsagePointers, RescaleNormalAttrib
 from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState, Vec4, Point3
-from panda3d.core import CollisionTraverser, CullBinManager, LightRampAttrib, Camera, OmniBoundingVolume, Texture, GraphicsOutput
+from panda3d.core import CollisionTraverser, CullBinManager, LightRampAttrib, Camera, OmniBoundingVolume, Texture, GraphicsOutput, PerspectiveLens, ModelNode, BitMask32, OrthographicLens
 from panda3d.bullet import BulletWorld, BulletDebugNode
-from panda3d.bsp import BSPLoader, BSPRender, BSPShaderGenerator, VertexLitGenericSpec, LightmappedGenericSpec, UnlitGenericSpec, UnlitNoMatSpec, CSMRenderSpec, SkyBoxSpec
+from libpandabsp import Py_CL_BSPLoader, BSPLoader, BSPRender, BSPShaderGenerator, VertexLitGenericSpec, LightmappedGenericSpec, UnlitGenericSpec, UnlitNoMatSpec, CSMRenderSpec, SkyBoxSpec
+from libpandabsp import Audio3DManager, DecalModulateSpec
+
+import sys
+if sys.version_info >= (3, 0):
+    import builtins
+else:
+    import __builtin__ as builtins
 
 #from p3recastnavigation import RNNavMeshManager
 
@@ -27,16 +34,14 @@ from src.coginvasion.globals import CIGlobals
 from src.coginvasion.base.CogInvasionLoader import CogInvasionLoader
 from src.coginvasion.base.ShadowCaster import ShadowCaster
 from src.coginvasion.base.CITransitions import CITransitions
+from src.coginvasion.base.CIPostProcess import CIPostProcess
 from src.coginvasion.base import ScreenshotHandler
 from src.coginvasion.base import MusicCache
 from src.coginvasion.hood.SkyUtil import SkyUtil
 from Lighting import OutdoorLightingConfig
 
-from CIAudio3DManager import CIAudio3DManager
-from CICommonFilters import CommonFilters
 from HDR import HDR
 from ShakeCamera import ShakeCamera
-from CubeMapManager import CubeMapManager
 from WaterReflectionManager import WaterReflectionManager
 from src.coginvasion.phys import PhysicsUtils
 
@@ -50,6 +55,9 @@ class CIBase(ShowBase):
     DebugShaderQualities = False
 
     def __init__(self):
+        self.bspLoader = Py_CL_BSPLoader()
+        self.bspLoader.setGlobalPtr(self.bspLoader)
+    
         if metadata.USE_RENDER_PIPELINE:
             from rpcore import RenderPipeline
             self.pipeline = RenderPipeline()
@@ -60,6 +68,16 @@ class CIBase(ShowBase):
             self.loader = CogInvasionLoader(self)
             __builtin__.loader = self.loader
             self.graphicsEngine.setDefaultLoader(self.loader.loader)
+            
+        self.cam.node().getDisplayRegion(0).setClearDepthActive(1)
+            
+        from panda3d.core import RenderAttribRegistry
+        from panda3d.core import ShaderAttrib, TransparencyAttrib
+        from libpandabsp import BSPMaterialAttrib
+        attribRegistry = RenderAttribRegistry.getGlobalPtr()
+        attribRegistry.setSlotSort(BSPMaterialAttrib.getClassSlot(), 0)
+        attribRegistry.setSlotSort(ShaderAttrib.getClassSlot(), 1)
+        attribRegistry.setSlotSort(TransparencyAttrib.getClassSlot(), 2)
             
         gsg = self.win.getGsg()
             
@@ -77,8 +95,6 @@ class CIBase(ShowBase):
             render.setShaderAuto()
             render2d.setShaderAuto()
             render2dp.setShaderAuto()
-            aspect2d.setShaderAuto()
-            pixel2d.setShaderAuto()
         else:
             # I don't know how this could be possible
             self.notify.error("GLSL shaders unsupported by graphics driver.")
@@ -89,13 +105,9 @@ class CIBase(ShowBase):
             metadata.NO_FOG = 1
             self.notify.info('Applied Intel-specific graphical fix.')
             
-        self.win.setClearColorActive(True)
-        self.win.setClearStencilActive(False)
-        self.win.setClearDepthActive(True)
+        self.win.disableClears()
         
-        # Hack to only run BSP ambient probe logic in
-        # the Cull traversal for the main camera and no other.
-        self.camNode.setTag("__mainpass__", "1")
+        self.camNode.setCameraMask(CIGlobals.MainCameraBitmask)
 
         from direct.distributed.ClockDelta import globalClockDelta
         __builtin__.globalClockDelta = globalClockDelta
@@ -139,7 +151,6 @@ class CIBase(ShowBase):
         #self.shadowCaster = ShadowCaster(Vec3(163, -67, 0))
         #self.shadowCaster.enable()
 
-        self.bspLoader = BSPLoader.getGlobalPtr()
         self.bspLoader.setGamma(2.2)
         self.bspLoader.setWin(self.win)
         self.bspLoader.setCamera(self.camera)
@@ -165,8 +176,9 @@ class CIBase(ShowBase):
         self.navMeshNp = None
 
         # Setup 3d audio                                 run before igLoop so 3d positioning doesn't lag behind
-        base.audio3d = CIAudio3DManager(base.sfxManagerList[0], camera, taskPriority = 40)
-        base.audio3d.setDropOffFactor(0.1)
+        base.audio3d = Audio3DManager(base.sfxManagerList[0], camera, render)
+        base.audio3d.setDropOffFactor(0.15)
+        base.audio3d.setDopplerFactor(0.15)
 
         # Setup collision handlers
         base.cTrav = CollisionTraverser()
@@ -186,10 +198,6 @@ class CIBase(ShowBase):
         self.userInputStorage = uis
         __builtin__.inputStore = uis
         __builtin__.userInputStorage = uis
-        
-        cbm = CubeMapManager()
-        self.cubeMapMgr = cbm
-        __builtin__.cubeMapMgr = cbm
 
         self.credits2d = self.render2d.attachNewNode(PGTop("credits2d"))
         self.credits2d.setScale(1.0 / self.getAspectRatio(), 1.0, 1.0)
@@ -266,6 +274,25 @@ class CIBase(ShowBase):
         #self.accept('o', self.oobeCull)
         #self.accept('c', self.reportCam)
         
+        self.taskMgr.add(self.__updateShadersAndPostProcess, 'CIBase.updateShadersAndPostProcess', 47)
+        self.taskMgr.add(self.__update3DAudio, 'CIBase.update3DAudio', 59)
+        
+    def windowEvent(self, win):
+        ShowBase.windowEvent(self, win)
+        if hasattr(self, 'filters'):
+            self.filters.windowEvent()
+        
+    def __update3DAudio(self, task):
+        self.audio3d.update()
+        return task.cont
+        
+    def __updateShadersAndPostProcess(self, task):
+        if self.shaderGenerator:
+            self.shaderGenerator.update()
+        if hasattr(self, 'filters'):
+            self.filters.update()
+        return task.cont
+    
     def hideHood(self):
         base.cr.playGame.hood.loader.geom.hide()
         
@@ -487,6 +514,15 @@ class CIBase(ShowBase):
         
         print "---------------------------------------------------------------------"
         
+    def hideMouseCursor(self):
+        props = WindowProperties()
+        props.setCursorHidden(True)
+        self.win.requestProperties(props)
+        
+    def showMouseCursor(self):
+        props = WindowProperties()
+        props.setCursorHidden(False)
+        self.win.requestProperties(props)
         
     def doCamShake(self, intensity = 1.0, duration = 0.5, loop = False):
         shake = ShakeCamera(intensity, duration)
@@ -544,6 +580,23 @@ class CIBase(ShowBase):
         self.music.setLoop(looping)
         self.music.setVolume(volume)
         self.music.play()
+        
+    def fadeOutMusic(self, time = 1.0, music = None):
+        if not music:
+            music = self.music
+            
+        if not music:
+            return
+            
+        self.fadeAudio(time, music, music.getVolume(), 0.0)
+            
+    def fadeAudio(self, time, audio, start, end):
+        from direct.interval.IntervalGlobal import LerpFunc
+        
+        def __changeMusicVolume(vol):
+            audio.setVolume(vol)
+            
+        LerpFunc(__changeMusicVolume, time, start, end).start()
 
     def enablePhysicsNodes(self, rootNode):
         PhysicsUtils.attachBulletNodes(rootNode)
@@ -566,16 +619,14 @@ class CIBase(ShowBase):
 
     def __physicsUpdate(self, task):
         dt = globalClock.getDt()
-        if metadata.PHYS_FIXED_TIMESTEP:
-            try:
-                self.physicsWorld.doPhysics(dt, metadata.PHYS_SUBSTEPS, 0.016)
-            except:
-                pass
+
+        if dt <= 0.016:
+            self.physicsWorld.doPhysics(dt, metadata.PHYS_SUBSTEPS, 0.016)
+        elif dt <= 0.033:
+            self.physicsWorld.doPhysics(dt, metadata.PHYS_SUBSTEPS, 0.033)
         else:
-            try:
-                self.physicsWorld.doPhysics(dt, metadata.PHYS_SUBSTEPS, dt / (metadata.PHYS_SUBSTEPS + 1))
-            except:
-                pass
+            self.physicsWorld.doPhysics(dt, 0)
+
         return task.cont
      
     def projectShadows(self):
@@ -585,14 +636,14 @@ class CIBase(ShowBase):
     def setBloom(self, flag):
         self.bloomToggle = flag
 
-        if not hasattr(self, 'filters'):
-            # Sanity check
-            return
+        #if not hasattr(self, 'filters'):
+        #    # Sanity check
+        #    return
 
-        if flag:
-            self.filters.setBloom(desat = 0, intensity = 0.4, mintrigger = 0.85, maxtrigger = 1.0, size = "large")
-        else:
-            self.filters.delBloom()
+        #if flag:
+        #    self.filters.setBloom(desat = 0, intensity = 0.4, mintrigger = 0.85, maxtrigger = 1.0, size = "large")
+        #else:
+        #    self.filters.delBloom()
         
     def initStuff(self):
         # Precache water bar shader, prevents crash from running out of GPU registers
@@ -602,19 +653,20 @@ class CIBase(ShowBase):
         
         self.shaderGenerator = BSPShaderGenerator(self.win, self.win.getGsg(), self.camera, self.render)
         self.win.getGsg().setShaderGenerator(self.shaderGenerator)
-        self.shaderGenerator.startUpdate()
         vlg = VertexLitGenericSpec()    # models
         ulg = UnlitGenericSpec()        # ui elements, particles, etc
         lmg = LightmappedGenericSpec()  # brushes, displacements
         unm = UnlitNoMatSpec()          # when there's no material
         csm = CSMRenderSpec()           # renders the shadow scene for CSM
         skb = SkyBoxSpec()              # renders the skybox onto faces
+        dcm = DecalModulateSpec()       # blends decals
         self.shaderGenerator.addShader(vlg)
         self.shaderGenerator.addShader(ulg)
         self.shaderGenerator.addShader(unm)
         self.shaderGenerator.addShader(lmg)
         self.shaderGenerator.addShader(csm)
         self.shaderGenerator.addShader(skb)
+        self.shaderGenerator.addShader(dcm)
         
         self.shaderGenerator.setShaderQuality(CIGlobals.getSettingsMgr().getSetting("shaderquality").getValue())
         
@@ -638,7 +690,11 @@ class CIBase(ShowBase):
         
         self.waterReflectionMgr.load()
 
-        self.filters = CommonFilters(self.win, self.cam)
+        self.filters = CIPostProcess()
+        self.filters.startup(self.win)
+        self.filters.addCamera(self.cam)
+        self.filters.setup()
+        
         self.hdr = HDR()
         self.setHDR(self.hdrToggle)
         self.setBloom(self.bloomToggle)
@@ -656,10 +712,147 @@ class CIBase(ShowBase):
         self.cl_attackMgr = AttackManager()
         
         if self.DebugShaderQualities:
-            from panda3d.bsp import SHADERQUALITY_HIGH, SHADERQUALITY_MEDIUM, SHADERQUALITY_LOW
+            from libpandabsp import SHADERQUALITY_HIGH, SHADERQUALITY_MEDIUM, SHADERQUALITY_LOW
             self.accept('1', self.shaderGenerator.setShaderQuality, [SHADERQUALITY_LOW])
             self.accept('2', self.shaderGenerator.setShaderQuality, [SHADERQUALITY_MEDIUM])
             self.accept('3', self.shaderGenerator.setShaderQuality, [SHADERQUALITY_HIGH])
+            
+    def makeCamera(self, win, sort = 0, scene = None,
+                   displayRegion = (0, 1, 0, 1), stereo = None,
+                   aspectRatio = None, clearDepth = 0, clearColor = None,
+                   lens = None, camName = 'cam', mask = None,
+                   useCamera = None):
+        """
+        Makes a new 3-d camera associated with the indicated window,
+        and creates a display region in the indicated subrectangle.
+
+        If stereo is True, then a stereo camera is created, with a
+        pair of DisplayRegions.  If stereo is False, then a standard
+        camera is created.  If stereo is None or omitted, a stereo
+        camera is created if the window says it can render in stereo.
+
+        If useCamera is not None, it is a NodePath to be used as the
+        camera to apply to the window, rather than creating a new
+        camera.
+        """
+        # self.camera is the parent node of all cameras: a node that
+        # we can move around to move all cameras as a group.
+        if self.camera == None:
+            # We make it a ModelNode with the PTLocal flag, so that
+            # a wayward flatten operations won't attempt to mangle the
+            # camera.
+            self.camera = self.render.attachNewNode(ModelNode('camera'))
+            self.camera.node().setPreserveTransform(ModelNode.PTLocal)
+            builtins.camera = self.camera
+
+            self.mouse2cam.node().setNode(self.camera.node())
+
+        if useCamera:
+            # Use the existing camera node.
+            cam = useCamera
+            camNode = useCamera.node()
+            assert(isinstance(camNode, Camera))
+            lens = camNode.getLens()
+            cam.reparentTo(self.camera)
+
+        else:
+            # Make a new Camera node.
+            camNode = Camera(camName)
+            if lens == None:
+                lens = PerspectiveLens()
+
+                if aspectRatio == None:
+                    aspectRatio = self.getAspectRatio(win)
+                lens.setAspectRatio(aspectRatio)
+
+            cam = self.camera.attachNewNode(camNode)
+
+        if lens != None:
+            camNode.setLens(lens)
+
+        if scene != None:
+            camNode.setScene(scene)
+
+        if mask != None:
+            if (isinstance(mask, int)):
+                mask = BitMask32(mask)
+            camNode.setCameraMask(mask)
+
+        if self.cam == None:
+            self.cam = cam
+            self.camNode = camNode
+            self.camLens = lens
+
+        self.camList.append(cam)
+
+        # Now, make a DisplayRegion for the camera.
+        if stereo is not None:
+            if stereo:
+                dr = win.makeStereoDisplayRegion(*displayRegion)
+            else:
+                dr = win.makeMonoDisplayRegion(*displayRegion)
+        else:
+            dr = win.makeDisplayRegion(*displayRegion)
+
+        dr.setSort(sort)
+        
+        dr.disableClears()
+
+        # By default, we do not clear 3-d display regions (the entire
+        # window will be cleared, which is normally sufficient).  But
+        # we will if clearDepth is specified.
+        if clearDepth:
+            dr.setClearDepthActive(1)
+
+        if clearColor:
+            dr.setClearColorActive(1)
+            dr.setClearColor(clearColor)
+
+        dr.setCamera(cam)
+
+        return cam
+            
+    def makeCamera2d(self, win, sort = 10,
+                     displayRegion = (0, 1, 0, 1), coords = (-1, 1, -1, 1),
+                     lens = None, cameraName = None):
+        """
+        Makes a new camera2d associated with the indicated window, and
+        assigns it to render the indicated subrectangle of render2d.
+        """
+        dr = win.makeMonoDisplayRegion(*displayRegion)
+        dr.setSort(sort)
+        dr.disableClears()
+
+        # Make any texture reloads on the gui come up immediately.
+        dr.setIncompleteRender(False)
+
+        left, right, bottom, top = coords
+
+        # Now make a new Camera node.
+        if (cameraName):
+            cam2dNode = Camera('cam2d_' + cameraName)
+        else:
+            cam2dNode = Camera('cam2d')
+
+        if lens == None:
+            lens = OrthographicLens()
+            lens.setFilmSize(right - left, top - bottom)
+            lens.setFilmOffset((right + left) * 0.5, (top + bottom) * 0.5)
+            lens.setNearFar(-1000, 1000)
+        cam2dNode.setLens(lens)
+
+        # self.camera2d is the analog of self.camera, although it's
+        # not as clear how useful it is.
+        if self.camera2d == None:
+            self.camera2d = self.render2d.attachNewNode('camera2d')
+
+        camera2d = self.camera2d.attachNewNode(cam2dNode)
+        dr.setCamera(camera2d)
+
+        if self.cam2d == None:
+            self.cam2d = camera2d
+
+        return camera2d
         
     def precacheStuff(self):
         from src.coginvasion.toon import ToonGlobals
@@ -681,71 +874,44 @@ class CIBase(ShowBase):
         
     def setAmbientOcclusion(self, toggle):
         self.aoToggle = toggle
-        if not hasattr(self, 'filters'):
-            # Sanity check
-            return
-        if toggle:
-            self.filters.setAmbientOcclusion()
-        else:
-            self.filters.delAmbientOcclusion()
+        #if not hasattr(self, 'filters'):
+        #    # Sanity check
+        #    return
+        #if toggle:
+        #    self.filters.setAmbientOcclusion()
+        #else:
+        #    self.filters.delAmbientOcclusion()
         
     def setFXAA(self, toggle):
         self.fxaaToggle = toggle
         
-        if not hasattr(self, 'filters'):
-            # Sanity check
-            return
+        #if not hasattr(self, 'filters'):
+        #    # Sanity check
+        #    return
         
-        if toggle:
-            self.filters.setFXAA()
-        else:
-            self.filters.delFXAA()
+        #if toggle:
+        #    self.filters.setFXAA()
+        #else:
+        #    self.filters.delFXAA()
 
     def setHDR(self, toggle):
         self.hdrToggle = toggle
 
-        if not hasattr(self, 'hdr'):
-            return
+        #if not hasattr(self, 'hdr'):
+        #    return
 
         if toggle:
             # Don't clamp lighting calculations with hdr.
             render.setAttrib(LightRampAttrib.makeIdentity())
-            self.hdr.enable()
+            #self.hdr.enable()
         else:
             render.setAttrib(LightRampAttrib.makeDefault())
-            self.hdr.disable()
+            #self.hdr.disable()
         
     def setCellsActive(self, cells, active):
         for cell in cells:
             cell.setActive(active)
         self.marginManager.reorganize()
-
-    def saveCubeMap(self, namePrefix = None, size = 1024):
-        if not namePrefix:
-            namePrefix = raw_input("Cube map file: ")
-
-        if hasattr(self, 'localAvatar'):
-            base.localAvatar.stopSmooth()
-            base.localAvatar.setHpr(0, 0, 0)
-
-        # Hide all objects from our cubemap.
-        if hasattr(self, 'cr'):
-            for do in self.cr.doId2do.values():
-                if isinstance(do, NodePath):
-                    do.hide()
-
-        self.notify.info("Cube map position: {0}".format(camera.getPos(render)))
-
-        ShowBase.saveCubeMap(self, namePrefix, size = size)
-
-        # Reshow the objects.
-        if hasattr(self, 'cr'):
-            for do in self.cr.doId2do.values():
-                if isinstance(do, NodePath):
-                    do.show()
-        
-        if hasattr(self, 'localAvatar'):
-            base.localAvatar.startSmooth()
 
     def setTimeOfDay(self, time):
         if self.metadata.USE_RENDER_PIPELINE:
