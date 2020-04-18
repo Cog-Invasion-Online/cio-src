@@ -82,7 +82,7 @@ class GumballBlaster(BaseHitscan):
     def load(self):
         BaseHitscan.load(self)
 
-        if self.isFirstPerson():
+        if self.isLocal():
             self.specialViewModel.exposeJoint(None, "modelRoot", "def_weapon_muzzle")
             self.specialViewModel.find("**/def_weapon_muzzle").setName("Emitter1")
 

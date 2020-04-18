@@ -324,7 +324,7 @@ class BaseLocalControls(DirectObject):
 
     def __controllerUpdate(self, task):
         if self.controller:
-            self.controller.update()
+            self.controller.update(globalClock.getDt())
             self.setCurrentSurface(self.controller.getCurrentMaterial())
 
         return task.cont
@@ -341,7 +341,7 @@ class BaseLocalControls(DirectObject):
         self.active = False
 
     def setupControls(self):
-        self.controller = PhysicsCharacterController(base.physicsWorld, render, render, base.localAvatar.getHeight(),
+        self.controller = PhysicsCharacterController(base.bspLoader, base.physicsWorld, render, render, base.localAvatar.getHeight(),
                                                     base.localAvatar.getHeight() / 2.0, 0.3, 1.0, base.physicsWorld.getGravity()[2],
                                                     CIGlobals.WallGroup, CIGlobals.FloorGroup|CIGlobals.StreetVisGroup, CIGlobals.EventGroup)
         self.controller.setDefaultMaterial(self.getDefaultSurface())
@@ -640,7 +640,7 @@ class BaseLocalControls(DirectObject):
             linearSpeed = base.localAvatar.getQuat(render).xform(linearSpeed)
 
         self.controller.setLinearMovement(linearSpeed)
-        self.controller.setAngularMovement(self.speeds.getZ())
+        self.controller.setAngularMovement(self.speeds.getZ() * dt)
 
         onGround = self.isOnGround()
         if jump and onGround and not self.airborne and (self.allowJump and not base.localAvatar.isDead()):

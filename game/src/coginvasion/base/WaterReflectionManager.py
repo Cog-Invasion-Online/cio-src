@@ -208,8 +208,8 @@ class WaterNode(NodePath):
         static = loader.loadTexture(self.spec.staticTex)
         
         if not self.spec.cheap:
-            self.topNP.setShader(Shader.load(Shader.SL_GLSL, "shaders/water_v.glsl",
-                                             "shaders/water_f.glsl"), 2)
+            self.topNP.setShader(Shader.load(Shader.SL_GLSL, "phase_14/models/shaders/water_v.glsl",
+                                             "phase_14/models/shaders/water_f.glsl"), 2)
             self.topNP.setShaderInput("dudv", static)
             self.topNP.setShaderInput("dudv_tile", self.spec.dudvTile)
             self.topNP.setShaderInput("dudv_strength", self.spec.dudvStrength)
@@ -223,8 +223,8 @@ class WaterNode(NodePath):
             self.topNP.setShaderInput("reflect_factor", self.spec.reflectFactor)
             self.topNP.setShaderInput("static_depth", self.depth)
 
-            self.botNP.setShader(Shader.load(Shader.SL_GLSL, "shaders/water_bottom_v.glsl",
-                                             "shaders/water_bottom_f.glsl"), 2)
+            self.botNP.setShader(Shader.load(Shader.SL_GLSL, "phase_14/models/shaders/water_bottom_v.glsl",
+                                             "phase_14/models/shaders/water_bottom_f.glsl"), 2)
             self.botNP.setShaderInput("dudv", static)
             self.botNP.setShaderInput("dudv_tile", self.spec.dudvTile)
             self.botNP.setShaderInput("dudv_strength", self.spec.dudvStrength)
@@ -232,8 +232,8 @@ class WaterNode(NodePath):
             self.botNP.setShaderInput("water_tint", self.spec.tint)
         else:
             # We are doing cheap water
-            self.topNP.setShader(Shader.load(Shader.SL_GLSL, "shaders/water_cheap_v.glsl",
-                                             "shaders/water_cheap_f.glsl"), 2)
+            self.topNP.setShader(Shader.load(Shader.SL_GLSL, "phase_14/models/shaders/water_cheap_v.glsl",
+                                             "phase_14/models/shaders/water_cheap_f.glsl"), 2)
             self.topNP.setShaderInput("tex_scale", self.spec.dudvTile)
             self.topNP.setShaderInput("cube_map", self.cubemap)
             self.topNP.setShaderInput("normal_map", static)

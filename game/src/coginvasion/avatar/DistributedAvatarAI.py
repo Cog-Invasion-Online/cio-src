@@ -100,7 +100,7 @@ class DistributedAvatarAI(DistributedEntityAI, AvatarShared):
     def setChat(self, chat):
         """For when chat is set from the client."""
         
-        AvatarShared.setChat(self, chat)
+        #AvatarShared.setChat(self, chat)
         
         self.emitSound(SOUND_SPEECH)
 

@@ -199,17 +199,6 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
             return
         
         Toon.Toon.lerpLookAt(self, head, tuple((h, p, r)))
-        if blink:
-            maxBlinks = random.randint(1, 2)
-            numBlinks = 0
-            delay = 0
-            for blink in range(maxBlinks):
-                if numBlinks == 0:
-                    taskMgr.add(self.doBlink, self.uniqueName("blinkOnTurn"))
-                else:
-                    delay += 0.22
-                    taskMgr.doMethodLater(delay, self.doBlink, self.doBlinkTaskName)
-                numBlinks += 1
 
     def b_lookAtObject(self, h, p, r, blink=1):
         self.d_lookAtObject(h, p, r, blink)

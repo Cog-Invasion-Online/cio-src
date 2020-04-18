@@ -318,7 +318,8 @@ class DistributedDisneyChar(DistributedAvatar):
             self.rpupil.reparentTo(pupilOffsetNode)
 
         self.initShadow()
-        self.shadow.setScale(0.6)
+        if self.shadow:
+            self.shadow.setScale(0.6)
         
         self.disableShadowRay()
         
