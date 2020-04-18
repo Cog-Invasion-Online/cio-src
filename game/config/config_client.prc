@@ -88,11 +88,12 @@ framebuffer-multisample 0
 framebuffer-stencil 0
 support-stencil 0
 framebuffer-srgb 1
-framebuffer-alpha 1
+framebuffer-alpha 0
 framebuffer-float 0
+accum-bits 0
 depth-bits 8
 color-bits 8 8 8
-alpha-bits 8
+alpha-bits 0
 multisamples 0
 garbage-collect-states-rate 0.5
 

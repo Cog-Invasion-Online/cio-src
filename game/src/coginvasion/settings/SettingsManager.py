@@ -191,6 +191,10 @@ class SettingsManager:
             loadPrcFileData("", "fullscreen {0}".format(int(flag)))
     
     def __updateAA(self, degree):
+        loadPrcFileData("", "framebuffer-multisample 0")
+        loadPrcFileData("", "multisamples 0")
+        loadPrcFileData("", "accum-bits 0")
+
         if "FXAA" in degree:
             # fxaa
             try:    base.setFXAA(True)
@@ -204,10 +208,7 @@ class SettingsManager:
                 render.setAntialias(AntialiasAttrib.MMultisample)
                 aspect2d.setAntialias(AntialiasAttrib.MMultisample)
             except: pass
-        else:
-            loadPrcFileData("", "framebuffer-multisample 0")
-            loadPrcFileData("", "multisamples 0")
-            
+        else:          
             try:
                 render.clearAntialias()
                 aspect2d.clearAntialias()

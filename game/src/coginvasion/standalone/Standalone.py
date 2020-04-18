@@ -21,7 +21,7 @@ metadata.USE_LIGHTING = 1
 loadPrcFile('config/Confauto.prc')
 loadPrcFile('config/config_client.prc')
 loadPrcFileData('', 'framebuffer-multisample 0')
-loadPrcFileData('', 'multisamples 16')
+loadPrcFileData('', 'multisamples 0')
 loadPrcFileData('', 'tk-main-loop 0')
 loadPrcFileData('', 'egg-load-old-curves 0')
 loadPrcFileData('', 'model-path resources')
