@@ -100,11 +100,11 @@ class WaterCooler(BaseAttack, WaterCoolerShared):
             , startNow = True)
     
     def cleanup(self):
-        if hasattr(self, 'sprayOnlySfx'):
+        if hasattr(self, 'sprayOnlySfx') and self.sprayOnlySfx:
             base.audio3d.detachSound(self.sprayOnlySfx)
             del self.sprayOnlySfx
             
-        if hasattr(self, 'coolerAppearSfx'):
+        if hasattr(self, 'coolerAppearSfx') and self.coolerAppearSfx:
             base.audio3d.detachSound(self.coolerAppearSfx)
             del self.coolerAppearSfx
         
