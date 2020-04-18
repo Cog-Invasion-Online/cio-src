@@ -164,20 +164,25 @@ base.accept("PandaPaused", maybeDoSomethingWithMusic, [0])
 base.accept("PandaRestarted", maybeDoSomethingWithMusic, [1])
 base.accept('MusicEnabled', handleMusicEnabled)
 
-def doneInitLoad():
-    notify.info("Initial game load finished.")
-    from src.coginvasion.distributed import CogInvasionClientRepository
-    base.cr = CogInvasionClientRepository.CogInvasionClientRepository("ver-" + metadata.VERSION)
-
-notify.info("Starting initial game load...")
-from InitialLoad import InitialLoad
-il = InitialLoad(doneInitLoad)
-
 from src.coginvasion.base import MusicCache
 print "Precaching music..."
 MusicCache.precacheMusic()
 
-base.playMusic(CIGlobals.getThemeSong(), volume = 2.0)
-il.load()
+from src.coginvasion.base.SplashScreen import SplashScreen
+
+def splDone():
+    def doneInitLoad():
+        notify.info("Initial game load finished.")
+        from src.coginvasion.distributed import CogInvasionClientRepository
+        base.cr = CogInvasionClientRepository.CogInvasionClientRepository("ver-" + metadata.VERSION)
+    
+    notify.info("Starting initial game load...")
+    from InitialLoad import InitialLoad
+    il = InitialLoad(doneInitLoad)
+    
+    il.load()
+    
+base.playMusic(CIGlobals.getThemeSong(), volume = 1.9)
+spl = SplashScreen(splDone)
 
 base.run()

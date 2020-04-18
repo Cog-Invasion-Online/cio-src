@@ -76,7 +76,9 @@ AttackEnum = {
     'ATTACK_SACKED'                   : 62,
     'ATTACK_HARDBALL'                 : 63,
     'ATTACK_MARKET_CRASH'             : 64,
-    'ATTACK_BITE'                     : 65
+    'ATTACK_BITE'                     : 65,
+    
+    'ATTACK_SOUND'                    : 66
 }
 
 globals().update(AttackEnum)

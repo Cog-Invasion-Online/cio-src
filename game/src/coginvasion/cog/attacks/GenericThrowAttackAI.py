@@ -42,7 +42,7 @@ class GenericThrowAttackAI(BaseAttackAI):
         if not hasattr(self, 'ThrowPower'):
             raise RuntimeError('Expected a `ThrowPower` member to define the power a projectile should be thrown with.')
         
-        self.actionLengths.update({self.StateThrow : self.AttackDuration})
+        self.actionLengths.update({self.StateThrow : self.AttackDuration / self.PlayRate})
         
     def cleanup(self):
         del self.throwOrigin
@@ -98,9 +98,14 @@ class GenericThrowAttackAI(BaseAttackAI):
                 self.didThrow = True
                 
     def isActionComplete(self):
-        if self.action == self.StateThrow:
-            return self.didThrow
+        #if self.action == self.StateThrow:
+            #return self.didThrow
         return BaseAttackAI.isActionComplete(self)
+        
+    def determineNextAction(self, completedAction):
+        if completedAction == self.StateThrow:
+            self.avatar.npcFinishAttack()
+        return self.StateIdle
                 
     def __calculateThrowAfterTime(self):
         timings = {
@@ -131,10 +136,12 @@ class GenericThrowAttackAI(BaseAttackAI):
     
     def npcUseAttack(self, target):
         if not self.canUse():
-            return
+            return False
         
         self.target = target
         self.setNextAction(self.StateThrow)
+        
+        return True
             
     def checkCapable(self, _, squaredDistance):
         return squaredDistance <= 20*20 and squaredDistance > 8*8

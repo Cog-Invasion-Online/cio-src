@@ -10,7 +10,7 @@ class DistributedButton(DistributedEntity, UseableObject, FSM):
     
     def __init__(self, cr):
         DistributedEntity.__init__(self, cr)
-        UseableObject.__init__(self)
+        UseableObject.__init__(self, False)
         FSM.__init__(self, 'button')
         self.state = 0
         self.moveDir = Vec3(0)
@@ -32,7 +32,6 @@ class DistributedButton(DistributedEntity, UseableObject, FSM):
         self.sendUpdate('requestPress')
         
     def load(self):
-        self.assign(self.cEntity.getModelNp())
 
         DistributedEntity.load(self)
         UseableObject.load(self)

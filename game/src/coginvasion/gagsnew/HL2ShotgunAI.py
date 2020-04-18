@@ -7,6 +7,7 @@ from BaseHitscanAI import BaseHitscanAI
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.attack.Attacks import ATTACK_HL2SHOTGUN
+from src.coginvasion.battle.SoundEmitterSystemAI import SOUND_COMBAT
 
 class HL2ShotgunAI(BaseHitscanAI, HL2ShotgunShared):
 
@@ -16,6 +17,7 @@ class HL2ShotgunAI(BaseHitscanAI, HL2ShotgunShared):
     AttackRange = 10000
     FireDelay = 0.5
     FriendlyFire = True
+    Cost = 1000
     
     def __init__(self):
         BaseHitscanAI.__init__(self)
@@ -74,6 +76,9 @@ class HL2ShotgunAI(BaseHitscanAI, HL2ShotgunShared):
         return self.StateIdle
         
     def onSetAction(self, action):
+        if action in [self.StateFire, self.StateDblFire]:
+            self.avatar.emitSound(SOUND_COMBAT, volume = 3.5, duration = 0.25)
+            
         if action == self.StateFire:
             self.takeAmmo(-1)
             self.clip -= 1
@@ -103,12 +108,17 @@ class HL2ShotgunAI(BaseHitscanAI, HL2ShotgunShared):
     def secondaryFirePress(self, data):
         if not self.canUseSecondary():
             return
-
-        dg = PyDatagram(data)
-        dgi = PyDatagramIterator(dg)
-        self.traceOrigin = CIGlobals.getVec3(dgi)
-        self.traceVector = CIGlobals.getVec3(dgi)
-        self.setNextAction(self.StateDblFire)
+            
+        secondary = self.canUseSecondary()
+        primary = self.canUse()
+        
+        if secondary or primary:
+            if secondary:
+                # >= 2 in clip
+                self.setNextAction(self.StateDblFire)
+            elif primary:
+                # Can't use secondary, but can use primary (1 in clip)
+                self.setNextAction(self.StateFire)
 
     def reloadPress(self, data):
         if self.action == self.StateIdle and not self.isClipFull() and self.ammo > self.clip:

@@ -14,6 +14,7 @@ This will make our lives easier and our workspace cleaner.
 from panda3d.core import Point3
 
 from src.coginvasion.attack.LinearProjectile import LinearProjectile
+from src.coginvasion.globals import CIGlobals
 
 class GenericThrowableLinearProjectile(LinearProjectile):
     
@@ -71,13 +72,14 @@ class GenericThrowableLinearProjectile(LinearProjectile):
         self.model.reparentTo(self)
         self.model.setHpr(rot[0], 0, 0)
         
-        if not self.WantLight:
-            self.model.setLightOff(1)
+        #if not self.WantLight:
+        #    self.model.setLightOff(1)
 
     def impact(self, pos, lastPos):
         if self.impactSound:
             base.audio3d.attachSoundToObject(self.impactSound, self)
             self.impactSound.play()
+        CIGlobals.makeDustCloud(pos)
     
     def disable(self):
         if self.throwSound:

@@ -19,6 +19,7 @@ from src.coginvasion.cog.attacks.Sacked import Sacked
 from src.coginvasion.cog.attacks.Hardball import Hardball
 from src.coginvasion.cog.attacks.MarketCrash import MarketCrash
 from src.coginvasion.cog.attacks.Bite import Bite
+from src.coginvasion.gagsnew.Sound import Sound
 
 from AttackManagerShared import AttackManagerShared
 
@@ -43,5 +44,6 @@ class AttackManager(AttackManagerShared):
         ATTACK_SACKED               :   Sacked,
         ATTACK_HARDBALL             :   Hardball,
         ATTACK_MARKET_CRASH         :   MarketCrash,
-        ATTACK_BITE                 :   Bite
+        ATTACK_BITE                 :   Bite,
+        ATTACK_SOUND                :   Sound
     }

@@ -14,7 +14,6 @@ from src.coginvasion.globals import CIGlobals
 from direct.gui.DirectGui import DirectFrame, DirectLabel
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from panda3d.core import Vec4
-
 from libpandabsp import BloomAttrib
 
 notify = directNotify.newCategory("LaffOMeter")
@@ -31,11 +30,8 @@ class LaffOMeter(DirectFrame):
 
         if forRender:
             self.container.setY(0)
-            self.setLightOff()
-            self.setFogOff()
-            self.setMaterialOff()
             self.setAttrib(BloomAttrib.make(False))
-            self.hide(CIGlobals.ShadowCameraBitmask)
+            self.hide(CIGlobals.ShadowCameraBitmask|CIGlobals.ReflectionCameraBitmask)
         self.forRender = forRender
 
     def generate(self, r, g, b, animal, maxHP = 50, initialHP = 50):
@@ -93,25 +89,29 @@ class LaffOMeter(DirectFrame):
             self.currentHealthLbl.setY(-0.01)
             self.maxHealthLbl.setY(-0.01)
 
-        self.updateMeter(self.initialHP)
+        self.updateMeter(self.initialHP, self.initialHP)
         gui.removeNode()
         return
 
     def start(self):
-        taskMgr.add(self.updateMeterTask, "updateMeterTask")
+        pass
+        
+    def updateMeterNewMax(self, newMax):
+        self.maxHP = newMax
+        if hasattr(self, 'maxHealthLbl'):
+            self.maxHealthLbl['text'] = str(self.maxHP)
+            self.adjustFace(self.initialHP, newMax)
+            self.animatedEffect(1)
 
-    def updateMeterTask(self, task):
-        if hasattr(base, 'localAvatar'):
-            if str(base.localAvatar.getHealth()) != self.currentHealthLbl['text']:
-                self.updateMeter(base.localAvatar.getHealth())
-        else:
-            return task.done
-        return task.cont
+    def updateMeter(self, health, oldHp):
+        self.adjustFace(health, oldHp)
 
-    def updateMeter(self, health):
-        self.adjustFace(health)
-
-    def adjustFace(self, health):
+    def adjustFace(self, health, oldHp):
+        if not hasattr(self, 'frown'):
+            return
+        
+        self.initialHP = health
+            
         self.frown.hide()
         self.smile.hide()
         self.openSmile.hide()
@@ -132,7 +132,7 @@ class LaffOMeter(DirectFrame):
             self.currentHealthLbl.show()
             self.container['image_color'] = self.color
             self.adjustTeeth(health)
-        self.animatedEffect(health - self.initialHP)
+        self.animatedEffect(health - oldHp)
         self.adjustText(health)
 
     def animatedEffect(self, delta):
@@ -156,7 +156,7 @@ class LaffOMeter(DirectFrame):
             self.currentHealthLbl['text'] = str(health)
 
     def stop(self):
-        taskMgr.remove("updateMeterTask")
+        pass
 
     def disable(self):
         if not hasattr(self, 'frown'):

@@ -11,6 +11,7 @@ class SuitSpawn(EntityAI):
     def __init__(self, air = None, dispatch = None):
         EntityAI.__init__(self, air, dispatch)
         self.spawned = []
+        self.spawnScript = None
     
     def unload(self):
         for suit in self.spawned:
@@ -18,14 +19,21 @@ class SuitSpawn(EntityAI):
                 suit.requestDelete()
         self.spawned = None
         
+        self.spawnScript = None
+        
         EntityAI.unload(self)
         
     def load(self):
         EntityAI.load(self)
+        
+        ssName = self.getEntityValue("spawnScript")
+        if len(ssName):
+            self.spawnScript = self.bspLoader.getPyEntityByTargetName(ssName)
     
     def Spawn(self, dept = None):
         from src.coginvasion.cog.DistributedSuitAI import DistributedSuitAI
         from src.coginvasion.cog import Dept, SuitBank, Variant
+        from src.coginvasion.arcade.BatchCogSpawnerAI import BatchCogSpawnerAI
         import random
         
         level, availableSuits = SuitBank.chooseLevelAndGetAvailableSuits(
@@ -33,6 +41,8 @@ class SuitSpawn(EntityAI):
 
         plan = random.choice(availableSuits)
         suit = DistributedSuitAI(self.air)
+        suit.setPos(self.cEntity.getOrigin())
+        suit.setHpr(self.cEntity.getAngles())
         suit.setBattleZone(self.dispatch)
         variant = Variant.NORMAL
         suit.setLevel(level)
@@ -41,13 +51,16 @@ class SuitSpawn(EntityAI):
         #suit.d_setHood(suit.hood)
         suit.b_setPlace(self.dispatch.zoneId)
         suit.b_setName(plan.getName())
-        suit.setPos(self.cEntity.getOrigin())
-        suit.setHpr(self.cEntity.getAngles())
         suit.spawnGeneric()
         self.spawned.append(suit)
         
         if self.hasSpawnFlags(self.DoSupaFlyIn):
             suit.changeSchedule(suit.getScheduleByName("SUPA_FLY_IN_MOVE"))
+            
+        if self.spawnScript:
+            self.spawnScript.ExecuteScript(suit)
+            
+        BatchCogSpawnerAI.NumSuits += 1
         
         self.dispatchOutput("OnSpawnCog")
         

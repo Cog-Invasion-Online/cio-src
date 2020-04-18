@@ -15,6 +15,8 @@ class TNT_AI(BaseGagAI, TNTShared):
     Name = GagGlobals.TNT
 
     ThrowPower = 100.0
+    
+    Cost = 500
 
     def __init__(self):
         BaseGagAI.__init__(self)
@@ -24,6 +26,12 @@ class TNT_AI(BaseGagAI, TNTShared):
         self.throwOrigin = Point3(0)
         self.traceOrigin = Point3(0)
         self.traceVector = Vec3(0)
+        
+    def getBaseDamage(self):
+        return 180
+        
+    def getDamageMaxDistance(self):
+        return 10
 
     def equip(self):
         if not BaseGagAI.equip(self):

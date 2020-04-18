@@ -14,6 +14,8 @@ class RagdollJointDesc:
         self.axis1 = axis1
         self.swing = swing
         self.twist = twist
+        
+        self.constraint = None
 
 class RagdollLimbDesc:
 
@@ -21,6 +23,7 @@ class RagdollLimbDesc:
         self.jointName = jointName
         self.mass = mass
         self.shapes = shapes
+        self.bodyNode = None
         
 # Limbs are capsules
 class RagdollLimbShapeDesc:
@@ -65,6 +68,44 @@ class Ragdoll(DirectObject):
         self.blendParallel = []
         self.blendActor = None
         self.updateTask = None
+        
+    def getMainLimb(self):
+        return ""
+        
+    def applyForce(self, force, pos):
+        for limb in self.limbs.values():
+            mat = limb.bodyNode.getMat(render)
+            mat.invertInPlace()
+            limb.bodyNode.node().applyImpulse(force, mat.xformPoint(pos))
+        
+    def cleanup(self):
+        if self.updateTask:
+            self.updateTask.remove()
+        self.updateTask = None
+        if self.blendActor:
+            self.blendActor.cleanup()
+        self.blendActor = None
+        self.blendParallel = None
+        self.lastBlendTime = None
+        self.enabled = None
+        self.attached = None
+        
+        for joint in self.joints:
+            if joint.constraint:
+                base.physicsWorld.removeConstraint(joint.constraint)
+        self.joints = None
+        
+        for limb in self.limbs.values():
+            if limb.bodyNode:
+                base.physicsWorld.remove(limb.bodyNode.node())
+                limb.bodyNode.removeNode()
+        self.limbs = None
+        
+        self.jointsOrder = None
+        self.actorJoints = None
+        self.mode = None
+        self.partName = None
+        self.actor = None
 
     def setup(self):
         self.setupLimbs()
@@ -158,6 +199,7 @@ class Ragdoll(DirectObject):
             constraint.setLimit(float(jointDesc.swing[0]), float(jointDesc.swing[1]), float(jointDesc.twist))
             constraint.setEnabled(True)
             constraint.setDebugDrawSize(1.5)
+            jointDesc.constraint = constraint
             base.physicsWorld.attachConstraint(constraint)
 
     def attachActor(self):

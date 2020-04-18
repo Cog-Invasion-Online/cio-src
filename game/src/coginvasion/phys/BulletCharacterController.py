@@ -4,6 +4,7 @@ from panda3d.bullet import BulletCapsuleShape, BulletRigidBodyNode, BulletGhostN
 from direct.showbase.DirectObject import DirectObject
 
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.phys import PhysicsUtils
 
 import math
 
@@ -68,6 +69,7 @@ class BulletCharacterController(DirectObject):
         self.__spam = False
         self.__aboveGround = True
         self.__prevOverlapping = []
+        self.__eyeRayNode = None
         
         self.noClip = False
 
@@ -216,7 +218,7 @@ class BulletCharacterController(DirectObject):
     
     def update(self):
         """
-        Update method. Call this around doPhysics.
+;        Update method. Call this around doPhysics.
         """
         updateCollector.start()
         
@@ -233,7 +235,7 @@ class BulletCharacterController(DirectObject):
         testDnCollector.start()
         pFrom = self.capsuleNP.getPos(render) + (0, 0, 0.1)
         pTo = pFrom - (0, 0, 2000)
-        result = base.physicsWorld.rayTestClosest(pFrom, pTo, CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
+        result = self.__world.rayTestClosest(pFrom, pTo, CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
         # Only fall if there is a ground for us to fall onto.
         # Prevents the character from falling out of the world.
         self.__aboveGround = result.hasHit()
@@ -242,6 +244,7 @@ class BulletCharacterController(DirectObject):
         self.__timeStep = globalClock.getDt()
         
         self.__updateEventSphere()
+        self.__updateEyeRay()
         self.__updateFootContact()
         self.__updateHeadContact()
 
@@ -256,13 +259,30 @@ class BulletCharacterController(DirectObject):
             self.__standUp()
             
         updateCollector.stop()
+        
+    def __updateEyeRay(self):
+        fromOrigin = camera.getPos(render)
+        toOrigin = fromOrigin + (camera.getQuat(render).getForward() * 100)
+        result = PhysicsUtils.rayTestClosestNotMe(self.movementParent, fromOrigin, toOrigin)
+        if self.__eyeRayNode and ((not result) or (result.getNode() != self.__eyeRayNode)):
+            node = self.__eyeRayNode
+            messenger.send('rayexit' + node.getName(), [NodePath(node)])
+            self.__eyeRayNode = None
+            
+        if result:
+            if (self.__eyeRayNode != result.getNode()):
+                node = result.getNode()
+                messenger.send('rayenter' + node.getName(), [NodePath(node)])
+                self.__eyeRayNode = node
+        else:
+            self.__eyeRayNode = None
 
     def __updateEventSphere(self):
         updEventSphCollector.start()
         
         overlapping = []
 
-        result = base.physicsWorld.contactTest(self.eventSphereNP.node())
+        result = self.__world.contactTest(self.eventSphereNP.node())
         for contact in result.getContacts():
             overlapping.append(contact.getNode1())
 
@@ -447,7 +467,7 @@ class BulletCharacterController(DirectObject):
         if not self.__aboveGround:
             pFrom = self.capsuleNP.getPos(render)
             pTo = pFrom + (0, 0, 2000)
-            result = base.physicsWorld.rayTestClosest(pFrom, pTo, CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
+            result = self.__world.rayTestClosest(pFrom, pTo, CIGlobals.FloorGroup | CIGlobals.StreetVisGroup)
             if result.hasHit():
                 self.__footContact = [result.getHitPos(), result.getNode(), result.getHitNormal()]
                 self.__targetPos.z = self.__footContact[0].z
@@ -489,10 +509,9 @@ class BulletCharacterController(DirectObject):
             
             if self.__spam and self.movementState != "swimming" and not base.localAvatar.touchingWater:
                 mat = base.localAvatar.walkControls.getDefaultSurface()
-                if node in base.materialData:
-                    dat = base.materialData[node]
-                    if idx in dat:
-                        mat = dat[idx]
+                if base.bspLoader.hasBrushCollisionNode(node):
+                    if base.bspLoader.hasBrushCollisionTriangle(node, idx):
+                        mat = base.bspLoader.getBrushTriangleMaterial(node, idx)
                 base.localAvatar.walkControls.setCurrentSurface(mat)
             
             self.__footContact = [hit.getHitPos(), node, hit.getHitNormal()]
@@ -710,7 +729,7 @@ class BulletCharacterController(DirectObject):
         # Walk Capsule
         self.__walkCapsule = BulletCapsuleShape(self.__walkCapsuleR, self.__walkCapsuleH)
         
-        self.__walkCapsuleNP = self.movementParent.attachNewNode(BulletRigidBodyNode('Capsule'))
+        self.__walkCapsuleNP = self.movementParent.attachNewNode(BulletRigi_dBodyNode('Capsule'))
         self.__walkCapsuleNP.node().addShape(self.__walkCapsule)
         self.__walkCapsuleNP.node().setKinematic(True)
         self.__walkCapsuleNP.node().setCcdMotionThreshold(1e-7)

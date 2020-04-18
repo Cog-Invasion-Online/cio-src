@@ -7,6 +7,7 @@ from BaseHitscanShared import BaseHitscanShared
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.attack.Attacks import ATTACK_NONE
+from src.coginvasion.battle.SoundEmitterSystemAI import SOUND_COMBAT
 
 class BaseHitscanAI(BaseGagAI, BaseHitscanShared):
 
@@ -37,7 +38,8 @@ class BaseHitscanAI(BaseGagAI, BaseHitscanShared):
         return self.StateIdle
 
     def doTraceAndDamage(self, traces = 1):
-        return BaseGagAI.doTraceAndDamage(self, self.traceOrigin, self.traceVector, self.AttackRange, traces)
+        return BaseGagAI.doTraceAndDamage(self, self.avatar.getViewOrigin(),
+            self.avatar.getViewVector(1), self.AttackRange, traces)
         
     def onSetAction(self, action):
         
@@ -46,7 +48,9 @@ class BaseHitscanAI(BaseGagAI, BaseHitscanShared):
                 self.takeAmmo(-1)
             if self.HasClip:
                 self.clip -= 1
+                
             self.doTraceAndDamage()
+            self.avatar.emitSound(SOUND_COMBAT, volume = 3.5, duration = 0.25)
             
     def canUse(self):
         # Hitscan gags do not have ammo, and thus, are always usable
@@ -56,10 +60,6 @@ class BaseHitscanAI(BaseGagAI, BaseHitscanShared):
         if not self.canUse():
             return
 
-        dg = PyDatagram(data)
-        dgi = PyDatagramIterator(dg)
-        self.traceOrigin = CIGlobals.getVec3(dgi)
-        self.traceVector = CIGlobals.getVec3(dgi)
         self.setNextAction(self.StateFire)
         
     def equip(self):

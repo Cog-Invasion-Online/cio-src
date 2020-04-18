@@ -4,6 +4,7 @@ from panda3d.bullet import BulletBoxShape, BulletRigidBodyNode, BulletGhostNode
 from Useable import Useable
 from src.coginvasion.phys.PhysicsNodePath import PhysicsNodePath
 from src.coginvasion.phys import PhysicsUtils
+from src.coginvasion.globals import CIGlobals
 
 class UseableObject(PhysicsNodePath, Useable):
     
@@ -16,6 +17,8 @@ class UseableObject(PhysicsNodePath, Useable):
         
         self.maxDistance = 10.0
         
+        self.shapeGroup = CIGlobals.UseableGroup
+        
     def getUseableBounds(self, min, max):
         self.calcTightBounds(min, max)
 
@@ -24,11 +27,11 @@ class UseableObject(PhysicsNodePath, Useable):
             return False
             
         result = base.physicsWorld.contactTestPair(
-                base.localAvatar.walkControls.controller.capsuleNP.node(), self.bodyNode)
+                base.localAvatar.walkControls.controller.getCapsule().node(), self.bodyNode)
         touching = result.getNumContacts() != 0
         return touching
         
-    def load(self):
+    def load(self, physName = 'useableObject'):
         if self.autoPhysBox:
             min = Point3(0)
             max = Point3(0)
@@ -37,19 +40,28 @@ class UseableObject(PhysicsNodePath, Useable):
             min -= Point3(0.1, 0.1, 0.1)
             max += Point3(0.1, 0.1, 0.1)
 
-            center = PhysicsUtils.centerFromMinMax(min, max)
             extents = PhysicsUtils.extentsFromMinMax(min, max)
 
             shape = BulletBoxShape(extents)
             # Use the box as a trigger and collision geometry.
             if self.hasPhysGeom:
-                bodyNode = BulletGhostNode('useableObject')
+                bodyNode = BulletGhostNode(physName)
             else:
-                bodyNode = BulletRigidBodyNode('useableObject')
+                bodyNode = BulletRigidBodyNode(physName)
             bodyNode.setKinematic(True)
-            bodyNode.addShape(shape, TransformState.makePos(center))
+
+            if not self.underneathSelf:
+                center = PhysicsUtils.centerFromMinMax(min, max)
+                bodyNode.addShape(shape, TransformState.makePos(center))
+            else:
+                bodyNode.addShape(shape)
 
             self.setupPhysics(bodyNode)
+        else:
+            for np in self.findAllMatches("**/+BulletRigidBodyNode"):
+                np.setPythonTag('useableObject', self)
+                np.setCollideMask(np.getCollideMask() | CIGlobals.UseableGroup)
+                
         if self.bodyNP:
             self.bodyNP.setPythonTag('useableObject', self)
 

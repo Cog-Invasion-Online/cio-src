@@ -19,6 +19,7 @@ class Crosshair(DirectFrame):
 
     def __init__(self):
         DirectFrame.__init__(self, parent = aspect2d)
+        self.setBin('fixed', 59)
         self.setTransparency(True)
         self.currData = None
 

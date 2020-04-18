@@ -5,9 +5,10 @@ from src.coginvasion.globals import BSPUtility, CIGlobals
 from Entity import Entity
         
 class RopeKeyframe(Entity):
-    pass
+    NeedNode = False
 
 class RopeBegin(Entity, Rope):
+    NeedNode = False
     
     def __init__(self):
         Entity.__init__(self)
@@ -23,17 +24,17 @@ class RopeBegin(Entity, Rope):
         loader = base.bspLoader
         
         color = self.getEntityValueColor("color")
-        thick = self.getEntityValueInt("thickness")
-        order = self.getEntityValueInt( "resolution")
+        thick = self.getEntityValueFloat("thickness")
+        order = self.getEntityValueInt("resolution")
         verts = [{'node': render, 'point': self.cEntity.getOrigin(), 'color': color, 'thickness': thick}]
         nextKeyframe = self.getEntityValue("nextKeyframe").split(";")[0]
-        if len(nextKeyframe):
+        while len(nextKeyframe):
             ent = loader.getPyEntityByTargetName(nextKeyframe)
             if ent and type(ent) is RopeKeyframe:
                 verts.append({'node': render, 'point': ent.cEntity.getOrigin(), 'color': color, 'thickness': thick})
             else:
                 print "BSP rope error: keyframe entity {0} not found or invalid".format(nextKeyframe)
-            nextKeyframe = self.getEntityValue("nextKeyframe").split(";")[0]
+            nextKeyframe = ent.getEntityValue("nextKeyframe").split(";")[0]
         if len(verts) <= 1:
             print "BSP rope error: no keyframes, there will be no rope"
         self.ropeNode.setUseVertexColor(1)

@@ -29,7 +29,6 @@ class DistributedPhysicsEntity(DistributedSmoothNode, PhysicsNodePath):
     def announceGenerate(self):
         self.doSetupPhysics()
         DistributedSmoothNode.announceGenerate(self)
-        self.activateSmoothing(True, False)
         self.reparentTo(render)
         self.startSmooth()
         self.startWaterCheck()

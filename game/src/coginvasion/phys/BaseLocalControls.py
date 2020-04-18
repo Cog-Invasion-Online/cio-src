@@ -1,13 +1,13 @@
 from panda3d.core import Vec3, VirtualFileSystem, BitMask32
+from libpandabsp import PhysicsCharacterController, MOVEMENTSTATE_GROUND, MOVEMENTSTATE_SWIMMING
+
 from direct.showbase.InputStateGlobal import inputState
 from direct.showbase.DirectObject import DirectObject
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 
-from src.coginvasion.phys.BulletCharacterController import BulletCharacterController
 from src.coginvasion.globals import CIGlobals
-from src.coginvasion.phys.TestBananaPeel import TestBananaPeel, TestCan, TestSafe
 from src.coginvasion.phys.FPSCamera import FPSCamera
 from src.coginvasion.phys import PhysicsUtils
 
@@ -81,7 +81,7 @@ class BaseLocalControls(DirectObject):
         self.currentObjectUsing = None
         self.lastUseObjectTime = 0.0
 
-        self.mode = self.MFirstPerson
+        self.mode = self.MThirdPerson
         self.scheme = self.SDefault
         self.fpsCam = FPSCamera()
 
@@ -96,6 +96,9 @@ class BaseLocalControls(DirectObject):
         # Debug stuff
         self.printFootstepInfo = False
         #base.localAvatar.accept('i', self.toggleDiagnostic)
+
+    def getHighestSpeed(self):
+        return self.BattleRunSpeed
         
     def cleanup(self):
         if self.fpsCam:
@@ -115,16 +118,16 @@ class BaseLocalControls(DirectObject):
     def setControlScheme(self, scheme):
         self.scheme = scheme
         if scheme == self.SSwim:
-            self.controller.movementState = "swimming"
-            self.controller.gravity = base.physicsWorld.getGravity()[2] * self.SwimGravityMod
+            self.controller.setMovementState(MOVEMENTSTATE_SWIMMING)
+            self.controller.setGravity(base.physicsWorld.getGravity()[2] * LocalControls.SwimGravityMod)
             self.staticFriction = 0.15
             self.dynamicFriction = 0.08
             self.allowCrouch = False
             self.allowJump = False
         else:
-            if self.controller.movementState == "swimming":
-                self.controller.movementState = "ground"
-            self.controller.gravity = base.physicsWorld.getGravity()[2]
+            if self.controller.getMovementState() == MOVEMENTSTATE_SWIMMING:
+                self.controller.setMovementState(MOVEMENTSTATE_GROUND)
+            self.controller.setGravity(base.physicsWorld.getGravity()[2])
             self.staticFriction = 0.8
             self.dynamicFriction = 0.3
             self.allowCrouch = True
@@ -247,21 +250,31 @@ class BaseLocalControls(DirectObject):
     def isCrouching(self):
         return self.crouching
 
+    def getFootstepSoundsDir(self):
+        return "phase_14/audio/sfx/footsteps/"
+
+    def footstepSoundCompare(self, surface, basename):
+        return surface == basename[:len(surface)]
+
+    def getCorrectedFootstepSound(self, surface):
+        return surface
+
     def setCurrentSurface(self, surface):
+        surface = self.getCorrectedFootstepSound(surface)
         if self.currentSurface == surface:
             return
             
         self.currentSurface = surface
         
-        if surface == "default" and self.defaultOverride is not None:
-            surface = self.defaultOverride
+        if surface == self.getCorrectedFootstepSound("default") and self.defaultOverride is not None:
+            surface = self.getCorrectedFootstepSound(self.defaultOverride)
         
         if not surface in self.footstepSounds:
             self.footstepSounds[surface] = []
             vfs = VirtualFileSystem.getGlobalPtr()
-            for vFile in vfs.scanDirectory("phase_14/audio/sfx/footsteps/"):
+            for vFile in vfs.scanDirectory(self.getFootstepSoundsDir()):
                 fullPath = vFile.getFilename().getFullpath()
-                if surface == vFile.getFilename().getBasenameWoExtension()[:len(surface)]:
+                if self.footstepSoundCompare(surface, vFile.getFilename().getBasenameWoExtension()):
                     sound = base.loadSfx(fullPath)
                     self.footstepSounds[surface].append(sound)
 
@@ -304,10 +317,6 @@ class BaseLocalControls(DirectObject):
         self.controlsEnabled = True
         self.exitControlsWhenGrounded = False
 
-    def __throwTestBPeel(self):
-        cls = random.choice([TestBananaPeel, TestCan, TestSafe])
-        cls()
-
     def isOnGround(self):
         if self.controller:
             return self.controller.isOnGround()
@@ -316,6 +325,7 @@ class BaseLocalControls(DirectObject):
     def __controllerUpdate(self, task):
         if self.controller:
             self.controller.update()
+            self.setCurrentSurface(self.controller.getCurrentMaterial())
 
         return task.cont
         
@@ -331,20 +341,38 @@ class BaseLocalControls(DirectObject):
         self.active = False
 
     def setupControls(self):
-        self.controller = BulletCharacterController(base.physicsWorld, render, base.localAvatar.getHeight(),
-                                                    base.localAvatar.getHeight() / 2.0, 0.3, 1.0)
+        self.controller = PhysicsCharacterController(base.physicsWorld, render, render, base.localAvatar.getHeight(),
+                                                    base.localAvatar.getHeight() / 2.0, 0.3, 1.0, base.physicsWorld.getGravity()[2],
+                                                    CIGlobals.WallGroup, CIGlobals.FloorGroup|CIGlobals.StreetVisGroup, CIGlobals.EventGroup)
+        self.controller.setDefaultMaterial(self.getDefaultSurface())
         self.controller.setMaxSlope(75.0, False)
-        self.controller.shapeGroup = CIGlobals.LocalAvGroup
         self.controller.setCollideMask(CIGlobals.LocalAvGroup)
-        self.controller.setPythonTag("localAvatar", base.localAvatar)
+        
+        capsules = [self.controller.getWalkCapsule(), self.controller.getCrouchCapsule(),
+                    self.controller.getEventSphere()]
+        for cap in capsules:
+            cap.setPythonTag("localAvatar", base.localAvatar)
+            
         self.controller.setStandUpCallback(self.__handleStandUp)
         self.controller.setFallCallback(self.__handleLand)
-        self.controller.enableSpam()
-        base.localAvatar.reparentTo(self.controller.movementParent)
-        base.localAvatar.assign(self.controller.movementParent)
+        self.controller.setEventEnterCallback(self.__handleEventEnter)
+        self.controller.setEventExitCallback(self.__handleEventExit)
+        
+        base.localAvatar.reparentTo(self.controller.getMovementParent())
+        base.localAvatar.assign(self.controller.getMovementParent())
         base.cr.doId2do[base.localAvatar.doId] = base.localAvatar
+        
+        print taskMgr
 
         self.setControlScheme(self.SDefault)
+        
+    def __handleEventEnter(self, np):
+        print 'enter' + np.getName()
+        messenger.send('enter' + np.getName(), [np])
+        
+    def __handleEventExit(self, np):
+        print 'exit' + np.getName()
+        messenger.send('exit' + np.getName(), [np])
 
     def releaseMovementInputs(self):
         for tok in self.movementTokens:
@@ -406,10 +434,10 @@ class BaseLocalControls(DirectObject):
 
     def __handleLand(self, fallDistance):
         if self.controlsEnabled:
-            self.playFootstep(1.5)
-            
+
             if fallDistance > 8:
                 base.localAvatar.handleJumpHardLand()
+                self.playFootstep(1.5)
                 #if self.mode == LocalControls.MFirstPerson:
                 #    self.fpsCam.handleJumpHardLand()
             else:
@@ -436,13 +464,13 @@ class BaseLocalControls(DirectObject):
                 self.currFootstepSound.stop()
             sound = random.choice(choices)
             sound.setVolume(volume * self.FootstepVolumeMod)
-            sound.play()
-            #if self.currentSurface != self.getDefaultSurface():
-            #    # if it's not the default footstep sound, put the default toon step sound behind it
-            #    # to sound more like feet running
-            #    default = self.defaultSounds[int(self.lastFoot)]
-            #    default.setVolume(volume * LocalControls.FootstepVolumeMod)
-            #    default.play()
+            #sound.play()
+            if True:#self.currentSurface != self.getDefaultSurface():
+                # if it's not the default footstep sound, put the default toon step sound behind it
+                # to sound more like feet running
+                default = self.defaultSounds[int(self.lastFoot)]
+                default.setVolume(volume * self.FootstepVolumeMod)
+                default.play()
             self.currFootstepSound = sound
             
             if self.printFootstepInfo:
@@ -451,7 +479,10 @@ class BaseLocalControls(DirectObject):
         self.lastFootstepTime = globalClock.getFrameTime()
         
     def getFootstepIval(self, speed):
-        return 0.4 - (0.1 * ((speed - self.BattleNormalSpeed) / (self.BattleRunSpeed - self.BattleNormalSpeed)))
+        return CIGlobals.remapVal(speed, self.BattleNormalSpeed, self.BattleRunSpeed, 0.4, 0.3)
+
+    def getFootstepVolume(self, speed):
+        return min(1, speed / self.BattleNormalSpeed)
         
     def __handleFootsteps(self, task):
         time = globalClock.getFrameTime()
@@ -462,7 +493,7 @@ class BaseLocalControls(DirectObject):
                 self.footstepIval *= 6.0
                 
             if time - self.lastFootstepTime >= self.footstepIval:
-                self.playFootstep(min(1, speeds / self.BattleNormalSpeed))
+                self.playFootstep(self.getFootstepVolume(speeds))
         return task.cont
         
     def __handleUse(self, task):
@@ -489,7 +520,7 @@ class BaseLocalControls(DirectObject):
                 camToPlyr = (camPos.getXy() - laPos.getXy()).length()
                 start = camPos + (camFwd * camToPlyr)
             stop = start + (camFwd * distance)
-            hit = PhysicsUtils.rayTestClosestNotMe(base.localAvatar, start, stop, BitMask32.allOn())
+            hit = PhysicsUtils.rayTestClosestNotMe(base.localAvatar, start, stop, CIGlobals.UseableGroup)
             
             somethingToUse = False
             if hit is not None:
@@ -613,10 +644,10 @@ class BaseLocalControls(DirectObject):
 
         onGround = self.isOnGround()
         if jump and onGround and not self.airborne and (self.allowJump and not base.localAvatar.isDead()):
-            self.controller.startJump(5.0)
+            self.controller.startJump(3.0)
             self.playFootstep(1.5)
             self.airborne = True
-        elif onGround and self.controller.movementState == "ground":
+        elif onGround and self.controller.getMovementState() == MOVEMENTSTATE_GROUND:
             # We landed
             self.airborne = False
             

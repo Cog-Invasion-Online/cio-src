@@ -5,8 +5,11 @@ from src.coginvasion.toon.SmartCamera import SmartCamera
 from src.coginvasion.gui.Crosshair import Crosshair
 from src.coginvasion.gui.GagSelectionGui import GagSelectionGui
 from src.coginvasion.gui.LaffOMeter import LaffOMeter
+from src.coginvasion.gui.DirectionalDamageIndicator import DirectionalDamageIndicator
 
 from src.coginvasion.globals import CIGlobals
+
+from panda3d.core import Point3
 
 class BaseLocalAvatar:
     notify = directNotify.newCategory("BaseLocalAvatar")
@@ -30,6 +33,9 @@ class BaseLocalAvatar:
         self.needsToSwitchToGag = None
         self.gagsEnabled = False
         self.gagsTimedOut = False
+        
+    def handleDamage(self, x, y, z):
+        DirectionalDamageIndicator.make(Point3(x, y, z))
         
     def createLaffMeter(self):
         r, g, b, _ = self.getHeadColor()
@@ -99,6 +105,9 @@ class BaseLocalAvatar:
                                blendType = 'easeInOut').start()
         
     def handleHealthChange(self, hp, oldHp):
+        if self.laffMeter:
+            self.laffMeter.updateMeter(hp, oldHp)
+            
         if self.walkControls:
             if hp < oldHp and self.isFirstPerson():
                 self.getFPSCam().doDamageFade(1, 0, 0, (self.getHealth() - hp) / 30.0)

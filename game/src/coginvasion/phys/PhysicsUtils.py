@@ -58,6 +58,16 @@ def makeBulletBoxColl(node, extents):
     rbnodeNp.setCollideMask(WallGroup)
     base.physicsWorld.attachRigidBody(rbnode)
 
+def makeBulletConvexHullFromCollisionSolids(cnode):
+    from panda3d.core import CollisionPolygon
+    from panda3d.bullet import BulletConvexHullShape
+    shape = BulletConvexHullShape()
+    for solid in cnode.getSolids():
+        if isinstance(solid, CollisionPolygon):
+            for point in solid.getPoints():
+                shape.addPoint(point)
+    return shape
+
 def makeBulletCollFromGeoms(rootNode, exclusions = [], enableNow = True, world = None):
     """
     Creates and attaches bullet triangle mesh nodes underneath each GeomNode
@@ -124,6 +134,7 @@ def makeBulletCollFromGeoms(rootNode, exclusions = [], enableNow = True, world =
             rbnode.addShape(shape)
             rbnodeNp = NodePath(rbnode)
             rbnodeNp.reparentTo(faceNp)
+            print rbnodeNp
             if facetype == BSPFaceAttrib.FACETYPE_WALL:
                 rbnodeNp.setCollideMask(CIGlobals.WallGroup)
             elif facetype == BSPFaceAttrib.FACETYPE_FLOOR:

@@ -76,16 +76,20 @@ class FiredAI(BaseAttackAI, Fired_Shared):
             return self.StateAttack
         elif completedAction == self.StateAttack:
             return self.StateEnd
+        elif completedAction == self.StateEnd:
+            self.avatar.npcFinishAttack()
         
         return self.StateIdle
 
     def npcUseAttack(self, target):
         if not self.canUse():
-            return
+            return False
 
         self.target = target
         self.lastFireTime = 0.0
         self.setNextAction(self.StateBegin)
+        
+        return True
 
     def checkCapable(self, dot, squaredDistance):
         return squaredDistance >= 25*25 and squaredDistance <= 40*40

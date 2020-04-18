@@ -19,6 +19,7 @@ from src.coginvasion.cog.attacks.SackedAI import SackedAI
 from src.coginvasion.cog.attacks.HardballAI import HardballAI
 from src.coginvasion.cog.attacks.MarketCrashAI import MarketCrashAI
 from src.coginvasion.cog.attacks.BiteAI import BiteAI
+from src.coginvasion.gagsnew.SoundAI import SoundAI
 
 from AttackManagerShared import AttackManagerShared
 
@@ -43,5 +44,6 @@ class AttackManagerAI(AttackManagerShared):
         ATTACK_SACKED               :   SackedAI,
         ATTACK_HARDBALL             :   HardballAI,
         ATTACK_MARKET_CRASH         :   MarketCrashAI,
-        ATTACK_BITE                 :   BiteAI
+        ATTACK_BITE                 :   BiteAI,
+        ATTACK_SOUND                :   SoundAI
     }

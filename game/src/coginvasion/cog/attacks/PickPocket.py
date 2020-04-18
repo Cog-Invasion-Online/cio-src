@@ -43,7 +43,7 @@ class PickPocket(BaseAttack, PickPocketShared):
         return True
 
     def cleanup(self):
-        if hasattr(self, 'pickSound') and self.pickSound:
+        if self.pickSound:
             base.audio3d.detachSound(self.pickSound)
         del self.pickSound
         BaseAttack.cleanup(self)

@@ -11,17 +11,33 @@ from src.coginvasion.globals import CIGlobals
 
 import random
 
+#########################################################################
+
+from src.coginvasion.szboss.DistributedEntity import DistributedEntity
+
+class PieGib(DistributedEntity):
+    
+    def announceGenerate(self):
+        DistributedEntity.announceGenerate(self)
+        self.startSmooth()
+
+    def disable(self):
+        self.stopSmooth()
+        DistributedEntity.disable(self)
+    
+#########################################################################
+
 class WholeCreamPie(BaseGag, WholeCreamPieShared):
     ModelPath = "phase_14/models/props/creampie.bam"
-    ModelScale = 0.85
+    ModelScale = 1
     Hold = ATTACK_HOLD_RIGHT
 
     Name = GagGlobals.WholeCreamPie
     ID = ATTACK_GAG_WHOLECREAMPIE
 
-    ModelVMOrigin = (0.07, 0.17, -0.01)
+    ModelVMOrigin = (0.07, 0.335, -0.01)
     ModelVMAngles = (0, -100, -10)
-    ModelVMScale = ModelScale * 0.567
+    ModelVMScale = ModelScale * 0.675
 
     ReleaseSpeed = 1.0
     ReleasePlayRateMultiplier = 1.0
@@ -48,7 +64,7 @@ class WholeCreamPie(BaseGag, WholeCreamPieShared):
     def addPrimaryPressData(self, dg):
         # Send our precise hand position to the server
         # so the pie launches from the correct spot.
-        CIGlobals.putVec3(dg, self.avatar.getRightHandNode().getPos(render))
+        #CIGlobals.putVec3(dg, self.avatar.getRightHandNode().getPos(render))
         CIGlobals.putVec3(dg, camera.getPos(render))
         CIGlobals.putVec3(dg, camera.getQuat(render).getForward())
         

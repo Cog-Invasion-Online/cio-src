@@ -15,7 +15,6 @@ from panda3d.core import Vec3
 from yaml import load
 
 from src.coginvasion.globals.CIGlobals import colorFromRGBScalar255
-from src.coginvasion.hood.ZoneUtil import HoodAbbr2Hood
 
 boolean = 'boolean'
 color = 'color'
@@ -169,9 +168,9 @@ class EnvironmentConfiguration:
         }
         
         self.hoodData = {}
-        
-        for hood in HoodAbbr2Hood.keys():
-            self.hoodData[hood] = HoodData(self)
+
+    def addHood(self, hoodId):
+        self.hoodData[hoodId] = HoodData(self)
             
     def processData(self, data):
         # This is the section where our environment data can be found.
@@ -224,10 +223,5 @@ class EnvironmentConfiguration:
             self.processData(load(self.configStream))
                     
     def getHoodSection(self, key):
-        index = -1 if not key in HoodAbbr2Hood.values() else HoodAbbr2Hood.values().index(key)
-        if key.upper() in HoodAbbr2Hood.keys():
-            return self.hoodData.get(HoodAbbr2Hood.keys()[HoodAbbr2Hood.keys().index(key.upper())])
-        elif index > -1:
-            return self.hoodData.get(HoodAbbr2Hood.keys()[index])
-        return None
+        return self.hoodData.get(key, None)
         

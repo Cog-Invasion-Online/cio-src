@@ -7,6 +7,9 @@ from panda3d.core import NodePath, CollisionTraverser
 
 from src.coginvasion.globals import CIGlobals
 
+DynamicZonesBegin = 61000
+DynamicZonesEnd = 1 << 20
+
 class AIZoneData:
     notify = directNotify.newCategory('AIZoneData')
 

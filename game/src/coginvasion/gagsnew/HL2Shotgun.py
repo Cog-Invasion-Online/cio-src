@@ -42,8 +42,18 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
     ShellContactSoundPath = "phase_14/hl2/shell{0}.wav"
     ShellContactSoundRange = (1, 3)
     
+    sgFirePath = 'phase_14/hl2/v_shotgun/shotgun_fire7.wav'
+    sgEmptyPath = 'phase_14/hl2/v_shotgun/shotgun_empty.wav'
+    sgDblFirePath = 'phase_14/hl2/v_shotgun/shotgun_dbl_fire7.wav'
+    sgPumpPath = 'phase_14/hl2/v_shotgun/shotgun_cock.wav'
+    sgReloadPaths = ['phase_14/hl2/v_shotgun/shotgun_reload1.wav',
+                     'phase_14/hl2/v_shotgun/shotgun_reload2.wav',
+                     'phase_14/hl2/v_shotgun/shotgun_reload3.wav']
+
+    SpecialVM = True
+    SpecialVMCull = False
     sgDir = 'phase_14/hl2/v_shotgun/panda/opt/'
-    sgActorDef = [sgDir + 'v_shotgun.bam',
+    SpecialVMActor = [sgDir + 'v_shotgun.bam',
 	    {'draw': sgDir + 'v_shotgun-draw.egg',
 	     'idle': sgDir + 'v_shotgun-idle01.egg',
 	     'pump': sgDir + 'v_shotgun-pump.egg',
@@ -52,20 +62,11 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
 	     'reload1': sgDir + 'v_shotgun-reload1.egg',
 	     'reload2': sgDir + 'v_shotgun-reload2.egg',
 	     'reload3': sgDir + 'v_shotgun-reload3.egg'}]
-    sgFirePath = 'phase_14/hl2/v_shotgun/shotgun_fire7.wav'
-    sgEmptyPath = 'phase_14/hl2/v_shotgun/shotgun_empty.wav'
-    sgDblFirePath = 'phase_14/hl2/v_shotgun/shotgun_dbl_fire7.wav'
-    sgPumpPath = 'phase_14/hl2/v_shotgun/shotgun_cock.wav'
-    sgReloadPaths = ['phase_14/hl2/v_shotgun/shotgun_reload1.wav',
-                     'phase_14/hl2/v_shotgun/shotgun_reload2.wav',
-                     'phase_14/hl2/v_shotgun/shotgun_reload3.wav']
-                     
-    SpecialVM = True
+    SpecialVMFov = 54.0
+    SpecialVMAngles = (180, 0, 0)
     
     def __init__(self):
         BaseHitscan.__init__(self)
-        
-        self.sgViewModel = None 
         self.fireSound = base.audio3d.loadSfx(self.sgFirePath)
         self.dblFireSound = base.audio3d.loadSfx(self.sgDblFirePath)
         self.pumpSound = base.audio3d.loadSfx(self.sgPumpPath)
@@ -79,8 +80,6 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
     @classmethod
     def doPrecache(cls):
         super(HL2Shotgun, cls).doPrecache()
-        
-        precacheActor(cls.sgActorDef)
         
         precacheSound(cls.sgFirePath)
         precacheSound(cls.sgDblFirePath)
@@ -103,12 +102,7 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
     def __doBob(self):
         self.setAnimTrack(self.getBobSequence('firehose', 30, 30, 1.0), startNow = True, looping = True)
         
-    def cleanup(self):
-        if self.sgViewModel:
-            self.sgViewModel.cleanup()
-            self.sgViewModel.removeNode()
-        self.sgViewModel = None
-        
+    def cleanup(self):        
         self.fpMuzzleAttach = None
         
         if self.fireSound:
@@ -144,22 +138,12 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
         for s in self.reloadSounds:
             base.audio3d.attachSoundToObject(s, self.avatar)
             
-        if self.isLocal():
-            self.sgViewModel = Actor(self.sgActorDef[0], self.sgActorDef[1])
-            self.sgViewModel.setPlayRate(self.Speed, "idle")
-            self.sgViewModel.node().setBounds(OmniBoundingVolume())
-            self.sgViewModel.node().setFinal(1)
-            self.sgViewModel.setBlend(frameBlend = base.config.GetBool('interpolate-frames', False))
-            self.sgViewModel.setH(180)
-            self.fpMuzzleAttach = self.sgViewModel.exposeJoint(None, "modelRoot", "ValveBiped.Gun")
-            
     def equip(self):
         if not BaseHitscan.equip(self):
-            return False        
+            return False
             
         if self.isFirstPerson():
-            fpsCam = self.getFPSCam()
-            fpsCam.swapViewModel(self.sgViewModel, 54.0)
+            self.fpMuzzleAttach = self.specialViewModel.exposeJoint(None, "modelRoot", "ValveBiped.Gun")
             
         toonTrack = Sequence(Func(self.avatar.setForcedTorsoAnim, 'firehose'),
                          self.getAnimationTrack('firehose', endFrame = 30),
@@ -173,7 +157,8 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
             return False
             
         if self.isFirstPerson():
-            self.getFPSCam().restoreViewModel()
+            self.specialViewModel.releaseJoint(None, "modelRoot", "ValveBiped.Gun")
+            self.fpMuzzleAttach.removeNode()
             
         return True
 
@@ -203,7 +188,7 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
         rbnode.setMass(1.0)
         rbnode.addShape(shape)
         rbnode.setCcdMotionThreshold(1e-7)
-        rbnode.setCcdSweptSphereRadius(0.07 * scale)
+        rbnode.setCcdSweptSphereRadius(0.1)
         rbnp = render.attachNewNode(rbnode)
         mdl = loader.loadModel(self.ShellPath)
         mdl.reparentTo(rbnp)

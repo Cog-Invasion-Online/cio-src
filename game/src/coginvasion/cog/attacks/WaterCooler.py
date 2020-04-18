@@ -78,6 +78,12 @@ class WaterCooler(BaseAttack, WaterCoolerShared):
         if action == self.StateAttack:
             self.avatar.doingActivity = True
             
+            joint = self.model.find('**/joint_toSpray')
+            
+            def positionAndOrientSpray():
+                self.sprayMdl.setPos(joint.getPos(render))
+                self.sprayMdl.setHpr(joint.getHpr(render))
+            
             self.setAnimTrack(
                 Parallel(
                     self.getAnimationTrack('watercooler', fullBody = False),
@@ -87,8 +93,11 @@ class WaterCooler(BaseAttack, WaterCoolerShared):
                         LerpScaleInterval(self.model, 0.5, Point3(1.15, 1.15, 1.15)),
                         Wait(1.6),
                         Func(self.sprayMdl.show),
-                        LerpScaleInterval(self.sprayMdl, duration = 0.3, scale = (1.0, 20.0, 1.0), startScale = (1.0, 1.0, 1.0)),
+                        Func(self.sprayMdl.reparentTo, render),
+                        Func(positionAndOrientSpray),
+                        LerpScaleInterval(self.sprayMdl, duration = 0.3, scale = (1.0, 15.0, 1.0), startScale = (1.0, 1.0, 1.0)),
                         Func(self.sprayMdl.hide),
+                        Func(self.sprayMdl.reparentTo, hidden)
                     ),
                     Sequence(
                         Wait(1.1),

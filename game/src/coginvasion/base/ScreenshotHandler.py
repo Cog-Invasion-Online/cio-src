@@ -44,7 +44,7 @@ def __doEffects():
 
 def __saveScreenshot(shot):
     now = datetime.now().strftime(FILEPATH + 'screenshot-%a-%b-%d-%Y-%I-%M-%S-%f')
-    shot.write(Filename(now + '.jpeg'))
+    shot.write(Filename(now + '.png'))
     return
 
 def takeScreenshot():
@@ -52,3 +52,4 @@ def takeScreenshot():
     thread = Thread(target = __saveScreenshot, args = (shot,))
     thread.start()
     __doEffects()
+    #base.win.saveScreenshot('screenshot.png')

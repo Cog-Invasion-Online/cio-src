@@ -1,26 +1,88 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
-from panda3d.core import NodePath
+from panda3d.core import NodePath, TransformState, Vec3
+from panda3d.bullet import BulletSphereShape
 
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.cog.ai.AIGlobal import RELATIONSHIP_FRIEND
 from TakeDamageInfo import TakeDamageInfo
 from src.coginvasion.attack.BaseAttackShared import BaseAttackShared
 from src.coginvasion.phys import PhysicsUtils, Surfaces
+from src.coginvasion.battle.SoundEmitterSystemAI import SOUND_COMBAT
+
+import random
 
 class BaseAttackAI(BaseAttackShared):
     notify = directNotify.newCategory("BaseAttackAI")
+    
+    Cost = 0
 
     Server = True
     FriendlyFire = False
+    
+    HealFriends = False
+    HealAmount = 0
+    
+    HasCooldown = False
+    CooldownTime = 0.0
 
     TraceMask = CIGlobals.WorldGroup | CIGlobals.CharacterGroup
 
     def __init__(self, sharedMetadata = None):
         BaseAttackShared.__init__(self, sharedMetadata)
         self.actionLengths = {self.StateIdle: -1}
+        self.cooldownStart = 0.0
+        self.coolingDown = False
+        
+    def npc_testAttackLOS(self, startPos, endPos):
+        # Makes sure the NPC has a line-of-sight to endPos for this attack
+        # If not, tries to find a new position either directly to the left
+        # or right of startPos that has a line-of-sight to endPos.
+        
+        losChecks = 5
+        losStep = 1.0
+        
+        stepRight = self.avatar.getQuat().getRight() * losStep
+        stepRight[2] = 0
+        testLeft = Vec3(startPos)
+        testRight = Vec3(startPos)
+        
+        sphere = BulletSphereShape(1.0)
+        
+        # Test center
+        result = self.avatar.battleZone.physicsWorld.sweepTestClosest(
+            sphere, TransformState.makePos(startPos), TransformState.makePos(endPos), CIGlobals.WorldGroup)
+        if not result.hasHit():
+            # We have a line-of-sight from start to end
+            return [True, Vec3()]
+        
+        for i in xrange(losChecks):
+            testLeft -= stepRight
+            testRight += stepRight
+            
+            # Test to the left
+            result = self.avatar.battleZone.physicsWorld.sweepTestClosest(
+                sphere, TransformState.makePos(testLeft), TransformState.makePos(endPos), CIGlobals.WorldGroup)
+            if not result.hasHit():
+                # We now have a line-of-sight, move to the new position
+                vecMove = testLeft - startPos
+                return [False, vecMove]
+                
+            # Test to the right
+            result = self.avatar.battleZone.physicsWorld.sweepTestClosest(
+                sphere, TransformState.makePos(testRight), TransformState.makePos(endPos), CIGlobals.WorldGroup)
+            if not result.hasHit():
+                # We now have a line-of-sight, move to the new position
+                vecMove = testRight - startPos
+                return [False, vecMove]
+        
+        # Couldn't get a line-of-sight, randomly choose left or right and try again
+        return [False, random.choice([testLeft, testRight]) - startPos]
         
     def canDamage(self, obj):
+        if not hasattr(self, 'avatar'):
+            return False
+            
         bz = self.avatar.getBattleZone()
         if bz:
             return bz.getGameRules().canDamage(self.avatar, obj, self)
@@ -36,35 +98,56 @@ class BaseAttackAI(BaseAttackShared):
 
         return True
 
-    def onProjectileHit(self, contact, collider, intoNP):
-        surface = Surfaces.getSurface(intoNP.getSurfaceProp())
-        self.avatar.getBattleZone().d_emitSound(surface.getBulletImpacts(), contact.getHitPos(), 0.5)
+    def onProjectileHit(self, contact, collider, intoNP, deleteIt = True):
+        bz = base.air.getBattleZone(collider.zoneId)
+        surface = Surfaces.getSurfaceFromContact(contact, bz)
+        bz.d_emitSound(surface.getBulletImpacts(), contact.getHitPos(), 0.5)
         
         avNP = intoNP.getParent()
 
         collider.d_impact(contact.getHitPos())
 
         currProj = collider.getPos(render)
-        dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
-                                 self.calcDamage((currProj - collider.getInitialPos()).length()),
-                                 currProj, collider.getInitialPos())
-        
         try:
+            dmgInfo = TakeDamageInfo(self.avatar, self.getID(),
+                                     self.calcDamage((currProj - collider.getInitialPos()).length()),
+                                     currProj, collider.getInitialPos())
+        
+        
             # Sometimes the avatar could be deleted unexpectedly.
             for obj in base.air.avatars[self.avatar.getBattleZone().zoneId]:
-                if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey() and
-                    self.canDamage(obj)):
-    
-                    obj.takeDamage(dmgInfo)
+                if (CIGlobals.isAvatar(obj) and obj.getKey() == avNP.getKey()):
+                    if self.canDamage(obj):
+                        obj.takeDamage(dmgInfo)
+                    elif self.avatar.getRelationshipTo(obj) == RELATIONSHIP_FRIEND and self.HealFriends:
+                        obj.heal(self.HealAmount)
+                        obj.handleRule("HealedByFriend")
                     break
         except: pass
 
-        collider.requestDelete()
+        if deleteIt:
+            collider.requestDelete()
+            
+        # Emit a sound at the hit point
+        self.avatar.emitSound(SOUND_COMBAT, contact.getHitPos(), duration = 0.25)
 
-    def __handleHitSomething_trace(self, hitNode, hitPos, distance, origin, traces = 1, impact = True):
-        if impact:
-            surface = Surfaces.getSurface(hitNode.getSurfaceProp())
+    def __handleHitSomething_trace(self, hitNode, hitPos, hitNormal, distance, origin, contact, traces = 1, impact = True):
+        traceDir = (hitPos - origin).normalized()
+        
+        if impact and hasattr(self, 'avatar'):
+            surface = Surfaces.getSurfaceFromContact(contact, self.avatar.getBattleZone())
             self.avatar.getBattleZone().d_emitSound(surface.getBulletImpacts(), hitPos, 0.5)
+            decals = surface.getImpactDecals()
+            if len(decals):
+                self.avatar.getBattleZone().getTempEnts().makeDecalTrace(
+                    random.choice(decals), 0.3, 0, origin, hitPos + (traceDir * 0.1))
+
+            if "metal" in Surfaces.getSurfaceName(surface):
+                for _ in xrange(traces * random.randint(2, 4)):
+                    self.avatar.getBattleZone().getTempEnts().makeBulletRicochet(hitPos, traceDir, hitNormal)
+                    
+            # Emit a sound at the hit point
+            self.avatar.emitSound(SOUND_COMBAT, contact.getHitPos(), duration = 0.25)
             
         avNP = hitNode.getParent()
         
@@ -97,7 +180,8 @@ class BaseAttackAI(BaseAttackShared):
             node = hit.getNode()
             hitPos = hit.getHitPos()
             distance = (hitPos - origin).length()
-            self.__handleHitSomething_trace(NodePath(node), hitPos, distance, origin, traces, impact)
+            norm = hit.getHitNormal()
+            self.__handleHitSomething_trace(NodePath(node), hitPos, norm, distance, origin, hit, traces, impact)
             return node
 
         return None
@@ -170,6 +254,20 @@ class BaseAttackAI(BaseAttackShared):
               self.shouldGoToNextAction(complete or self.isActionIndefinite())):
             self.b_setAction(self.nextAction)
             self.nextAction = None
+        
+        now = globalClock.getFrameTime()
+        if self.coolingDown and now - self.cooldownStart >= self.CooldownTime:
+            self.coolingDown = False
+            
+    def startCooldown(self):
+        self.coolingDown = True
+        self.cooldownStart = globalClock.getFrameTime()
+        
+    def stopCooldown(self):
+        self.coolingDown = False
+        
+    def isCoolingDown(self):
+        return self.HasCooldown and self.coolingDown
 
     def checkCapable(self, dot, squaredDistance):
         """
@@ -187,4 +285,4 @@ class BaseAttackAI(BaseAttackShared):
         specific functionality for how an NPC aims and fires
         this attack.
         """
-        pass
+        return False

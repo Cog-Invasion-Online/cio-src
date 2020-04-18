@@ -19,7 +19,7 @@ from direct.showbase.DirectObject import DirectObject
 
 from src.coginvasion.holiday.HolidayManager import HolidayType
 from src.coginvasion.toon import ParticleLoader
-from src.coginvasion.toon.Toon import Toon
+from src.coginvasion.toon.Toon import Toon, ClientToon
 from src.coginvasion.gui import Dialog
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.nametag import NametagGlobals
@@ -122,7 +122,7 @@ class CharSelection(DirectObject):
 
     def __setupStageToon(self):
         self.stageToonRoot = render.attachNewNode('stageToonRoot')
-        self.stageToon = Toon(base.cr)
+        self.stageToon = ClientToon(base.cr)
         self.stageToon.setPosHpr(0, 0, 0, 0, 0, 0)
         self.stageToon.reparentTo(self.stageToonRoot)
 

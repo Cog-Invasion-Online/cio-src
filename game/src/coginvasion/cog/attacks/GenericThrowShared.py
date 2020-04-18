@@ -5,5 +5,5 @@ StateThrow = 1
 ThrowAfterTime = 0
 
 AttackDuration = 4.0
-ThrowPower = 100.0
-PlayRate = 2.5
+ThrowPower = 75.0
+PlayRate = 2.0

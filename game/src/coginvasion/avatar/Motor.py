@@ -8,6 +8,8 @@ class Motor:
         self.rotSpeed = 75.0
         self.waypoints = []
         self.lookAtWaypoints = True
+        self.snapIdeal = False
+        self.turnThenRun = True
 
     def setFwdSpeed(self, spd):
         self.fwdSpeed = spd
@@ -34,9 +36,17 @@ class Motor:
         del self.fwdSpeed
         del self.rotSpeed
         del self.waypoints
+        del self.snapIdeal
+        del self.turnThenRun
 
-    def startMotor(self):
+    def startMotor(self, snapIdeal = False, turnThenRun = True):
         self.stopMotor()
+        
+        self.snapIdeal = snapIdeal
+        self.turnThenRun = turnThenRun
+        if snapIdeal:
+            self.node.makeIdealYaw(self.waypoints[0])
+            self.node.setH(self.node.idealYaw)
 
         self.task = taskMgr.add(self.__update, "MotorUpdate-" + str(id(self)))
 
@@ -47,6 +57,10 @@ class Motor:
 
     def __update(self, task):
         if len(self.waypoints) == 0:
+            return task.cont
+            
+        if self.turnThenRun and (not self.node.isFacingIdeal()):
+            self.node.changeYaw()
             return task.cont
 
         dt = globalClock.getDt()

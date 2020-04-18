@@ -18,14 +18,29 @@ class ScriptedSpeechAI(EntityAI):
         EntityAI.__init__(self, air, dispatch)
         self.speech = None
         self.targetEnt = None
+        self.talkTo = None
 
     def load(self):
         EntityAI.load(self)
 
         self.speech = self.getEntityValue("speech")
         self.targetEnt = self.bspLoader.getPyEntityByTargetName(self.getEntityValue("targetEntity"))
+        
+        talkToStr = self.getEntityValue("talkTo")
+        if len(talkToStr) > 0:
+            if talkToStr == "!player":
+                self.talkTo = base.localAvatar
+            else:
+                self.talkTo = self.bspLoader.getPyEntityByTargetName()
 
     def Speak(self):
+        if self.talkTo:
+            try:
+                self.targetEnt.setEyeLookType(self.targetEnt.EyeLookType_Manual)
+                self.targetEnt.setEyeTarget(self.talkTo)
+            except:
+                pass
+                
         self.targetEnt.d_setChat(self.speech)
         self.dispatchOutput("OnSpeak")
 

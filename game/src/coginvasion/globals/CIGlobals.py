@@ -15,6 +15,8 @@ Where to find moved globals:
     - NPC Globals/Dialogue: src.coginvasion.npc -> NPCGlobals.py
 """
 
+from panda3d.bullet import *
+
 from panda3d.core import BitMask32, LPoint3f, Point3, VirtualFileSystem, ConfigVariableBool, Fog, OmniBoundingVolume
 from panda3d.core import Material, PNMImage, Texture, AmbientLight, PointLight, Spotlight, DirectionalLight
 from panda3d.core import TextureStage, VBase4, TransparencyAttrib, Vec3, deg2Rad, Point2, DecalEffect, ModelNode, rad2Deg, Vec2
@@ -56,8 +58,8 @@ OriginalCameraFov = 52.0
 OriginalActionFov = 70.0
 
 DefaultCameraFov = 52.0
-DefaultCameraFar = 2500.0
-DefaultCameraNear = 1.0
+DefaultCameraFar = 1000.0
+DefaultCameraNear = 0.1
 PortalScale = 1.5
 SPInvalid = 0
 SPHidden = 1
@@ -81,9 +83,69 @@ EagleGame = "Eagle Summit"
 DeliveryGame = "Delivery!"
 DodgeballGame = "Winter Dodgeball"
 
+LoadingScreen = None
+def makeLoadingScreen(firstTime = False):
+    global LoadingScreen
+    if firstTime:
+        base.transitions.fadeScreen(1.0)
+        
+    from direct.gui.DirectGui import OnscreenText, DGG, OnscreenImage
+    
+    if not firstTime:
+        # Freeze the current frame
+        ss = base.win.getScreenshot()
+        img = OnscreenImage(image = ss)
+        img.reparentTo(render2d, DGG.FADE_SORT_INDEX - 1)
+        base.transitions.fadeScreen(0.5)
+    else:
+        img = None
+    
+    txt = OnscreenText(text = "Loading...", fg = (1, 1, 1, 1), mayChange = False)
+    txt.reparentTo(aspect2d, DGG.NO_FADE_SORT_INDEX)
+    
+    base.renderFrames()
+    
+    LoadingScreen = (img, txt)
+    
+def clearLoadingScreen():
+    global LoadingScreen
+    base.transitions.noTransitions()
+    img, txt = LoadingScreen
+    if img:
+        img.destroy()
+    if txt:
+        txt.destroy()
+    LoadingScreen = None
+
 MB_Moving = 1
 MB_Crouching = 2
 MB_Walking = 4
+
+def vec3LinearToGamma(vec):
+    import math
+    vec[0] = math.pow(vec[0], 1.0 / 2.2)
+    vec[1] = math.pow(vec[1], 1.0 / 2.2)
+    vec[2] = math.pow(vec[2], 1.0 / 2.2)
+    return vec
+    
+def vec3GammaToLinear(vec):
+    import math
+    vec[0] = math.pow(vec[0], 2.2)
+    vec[1] = math.pow(vec[1], 2.2)
+    vec[2] = math.pow(vec[2], 2.2)
+    return vec
+
+def getZoneId(obj):
+    if hasattr(obj, 'getZoneId'):
+        return obj.getZoneId()
+    else:
+        return obj.zoneId
+        
+def getDoId(obj):
+    if hasattr(obj, 'getDoId'):
+        return obj.getDoId()
+    else:
+        return obj.doId
 
 def emitSound(soundPath, pos, volume = 1.0, other = None):
     if isinstance(soundPath, list) or isinstance(soundPath, tuple):
@@ -91,14 +153,13 @@ def emitSound(soundPath, pos, volume = 1.0, other = None):
             return
         import random
         soundPath = random.choice(soundPath)
-    from direct.interval.IntervalGlobal import Sequence, SoundInterval, Func
     if not other:
         other = render
     soundNode = render.attachNewNode("sound")
     soundNode.setPos(other, pos)
     sound = base.loadSfxOnNode(soundPath, soundNode)
     Sequence(SoundInterval(sound, volume = volume), Func(base.audio3d.detachSound, sound), Func(soundNode.removeNode)).start()
-    
+
 def makeLightGlow(scale = 10):
     from panda3d.core import NodePath
     from libpandabsp import GlowNode
@@ -127,7 +188,6 @@ def makeSprite(name, texture, scale, add = False):
     geomNode = GeomNode(name)
     geomNode.addGeom(geom)
     np = NodePath(geomNode)
-    np.setShaderOff(1)
     np.setLightOff(1)
     np.setMaterialOff(1)
     np.setRenderModePerspective(True)
@@ -153,6 +213,9 @@ def getDGIForBlob(blob):
     dg = PyDatagram(blob)
     dgi = PyDatagramIterator(dg)
     return dgi
+    
+def reflect(dir, normal):
+    return dir - (normal * (dir.dot(normal) * 2.0))
 
 def extrude(start, scale, direction):
     return start + (direction * scale)
@@ -336,13 +399,16 @@ def doSceneCleanup():
         
     base.graphicsEngine.renderFrame()
 
-def lerpWithRatio(v0, v1, ratio):
+def lerpWithRatio(goal, val, ratio):
     dt = globalClock.getDt()
     amt = 1 - math.pow(1 - ratio, dt * 30.0)
-    return lerp(v0, v1, amt)
+    return lerp(goal, val, amt)
 
 def lerp(v0, v1, amt):
     return v0 * amt + v1 * (1 - amt)
+
+def lerp2(a, b, c):
+    return a + ((b - a) * c)
 
 NoGlowTS = None
 NoGlowTex = None
@@ -471,12 +537,16 @@ def isEmptyString(string):
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-def makeSplat(pos, color, scale, sound = None):
+def getSplat():
     from direct.actor.Actor import Actor
+    return Actor("phase_3.5/models/props/splat-mod.bam", {"chan": "phase_3.5/models/props/splat-chan.bam"})
+
+def makeSplat(pos, color, scale, sound = None):
+    
     from direct.interval.IntervalGlobal import ActorInterval
     from panda3d.core import AudioSound
 
-    splat = Actor("phase_3.5/models/props/splat-mod.bam", {"chan": "phase_3.5/models/props/splat-chan.bam"})
+    splat = getSplat()
     splat.setBillboardPointEye()
     splat.setScale(scale)
     splat.setColor(color)
@@ -484,7 +554,7 @@ def makeSplat(pos, color, scale, sound = None):
     splat.setPos(pos)
     splat.setLightOff(1)
     splat.setTransparency(TransparencyAttrib.MDual)
-    splat.hide(ShadowCameraBitmask)
+    splat.hide(ShadowCameraBitmask|ReflectionCameraBitmask)
 
     if sound:
         if isinstance(sound, str):
@@ -519,7 +589,8 @@ def getParticleRender():
     if not ParticleRender:
         ParticleRender = render.attachNewNode('particleRender')
         ParticleRender.setLightOff(1)
-        ParticleRender.hide(ShadowCameraBitmask)
+        ParticleRender.setDepthWrite(False, 1)
+        ParticleRender.hide(ShadowCameraBitmask|ReflectionCameraBitmask)
     return ParticleRender
     
 def makeMuzzleFlash(node, pos, hpr, scale, color = (1, 1, 1, 1)):
@@ -543,8 +614,9 @@ def makeMuzzleFlash(node, pos, hpr, scale, color = (1, 1, 1, 1)):
         p.setPos(offset)
         p.setHpr(hpr)
 
-def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, duration = 1.0, soundVol = 1.0):
+def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, duration = 1.0, soundVol = 1.0, decal = True, smoke = True):
     explosion = loader.loadModel('phase_3.5/models/props/explosion.bam')
+    explosion.setDepthWrite(False, 1)
     explosion.setScale(scale)
     explosion.reparentTo(render)
     explosion.setBillboardPointEye()
@@ -557,12 +629,13 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
     duration = frames / fps
     explosion.find("**/+SequenceNode").node().play()
     
-    from src.coginvasion.toon import ParticleLoader
-    smoke = ParticleLoader.loadParticleEffect("phase_14/etc/explosion_smoke.ptf")
-    smoke.setDepthWrite(False, 1)
-    smoke.setScale(scale)
-    smoke.setPos(pos)
-    smoke.start(render, getParticleRender())
+    if smoke:
+        from src.coginvasion.toon import ParticleLoader
+        smoke = ParticleLoader.loadParticleEffect("phase_14/etc/explosion_smoke.ptf")
+        smoke.setDepthWrite(False, 1)
+        smoke.setScale(scale * 0.25)
+        smoke.setPos(pos)
+        smoke.start(render, getParticleRender())
     
     track = Parallel()
 
@@ -572,7 +645,7 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
         hlsounds = base.config.GetBool('explosion-hlsounds', False)
         if hlsounds:
             hldir = "phase_14/audio/sfx/"
-            snd = base.audio3d.loadSfx(hldir + random.choice(['explode3_hl2', 'explode4_hl2', 'explode5_hl2']) + ".ogg")
+            snd = base.audio3d.loadSfx(hldir + random.choice(['explode3', 'explode4', 'explode5']) + ".ogg")
         else:
             snd = base.audio3d.loadSfx("phase_3.5/audio/sfx/ENC_cogfall_apart.ogg")
 
@@ -598,10 +671,34 @@ def makeExplosion(pos = (0, 0, 0), scale = 1, sound = True, shakeCam = True, dur
             base.doCamShake(maxIntense - (maxIntense * (dist / maxDist)), duration)
     
     track.append(Sequence(Wait(duration), Func(explosion.removeNode)))
-    track.append(Sequence(Wait(duration), Func(smoke.softStop)))
+    if smoke:
+        track.append(Sequence(Wait(duration), Func(smoke.softStop)))
     track.start()
+    
+    if decal:
+        base.bspLoader.traceDecal("materials/scorch1.mat", 20 * scale, 0, pos, pos + (0, 0, -8), (1, 1, 1, 0.5))
 
-def makeDustCloud(pos, scale = (0.1, 0.9, 1), sound = None, color = (1, 1, 1, 1)):
+def makeDustCloud(pos, scale = 0.15, sound = None, color = (1, 1, 1, 1)):
+    
+    dust = loader.loadModel("phase_3.5/models/props/dust_cloud.bam")
+    dust.setColorScale(color, 1)
+    dust.setScale(scale)
+    dust.setPos(Point3(pos) + (0, 0, 1))
+    dust.reparentTo(render)
+    dust.setLightOff(1)
+    dust.setDepthWrite(False)
+    dust.setBillboardAxis(1)
+    dust.hide(ShadowCameraBitmask|ReflectionCameraBitmask)
+    seq = dust.find("**/+SequenceNode")
+    seq.node().play()
+    Sequence(Wait(seq.node().getNumFrames() / float(seq.node().getFrameRate())), Func(dust.removeNode)).start()
+    if sound:
+        base.audio3d.attachSoundToObject(sound, dust)
+        sound.play()
+    
+    #return # UNDONE: this is horribly unoptimized and I'm turning it off
+    
+    """
     from direct.actor.Actor import Actor
     dust = Actor('phase_5/models/props/dust-mod.bam', {'chan' : 'phase_5/models/props/dust-chan.bam'})
     dust.hide(ShadowCameraBitmask)
@@ -617,11 +714,15 @@ def makeDustCloud(pos, scale = (0.1, 0.9, 1), sound = None, color = (1, 1, 1, 1)
     dust.setScale(scale)
     dust.reparentTo(render)
     dust.setPos(pos)
+    dust.flattenStrong()
+    
     if sound:
         base.audio3d.attachSoundToObject(sound, dust)
         sound.play()
+    
     dustTrack = Sequence(ActorInterval(dust, "chan"), Func(dust.cleanup))
     dustTrack.start()
+    """
 
 def getShinyMaterial(shininess = 250.0):
     mat = Material()
@@ -844,13 +945,11 @@ FloorGroup = BitMask32.bit(2)
 WallGroup = BitMask32.bit(1)
 EventGroup = BitMask32.bit(3)
 CameraGroup = BitMask32.bit(4)
-ShadowCameraBitmask = BitMask32.bit(5)
-ReflectionCameraBitmask = BitMask32.bit(10)
 WeaponGroup = BitMask32.bit(6)
 LocalAvGroup = BitMask32.bit(7)
 StreetVisGroup = BitMask32.bit(8)
-ViewModelCamMask = BitMask32.bit(15)
 CharacterGroup = BitMask32.bit(9)
+UseableGroup = BitMask32.bit(10)
 
 FloorMask = FloorGroup | StreetVisGroup
 
@@ -1232,6 +1331,31 @@ def getExitButton(cmd = None, extraArgs = [], pos = (0, 0, 0)):
                               scale = 0.15, command = cmd, extraArgs = extraArgs,
                               image_color = (1, 0, 0, 1))
     return exitButton
+    
+def makeDeltaTextEffect(delta, parent, pos):
+    from direct.gui.DirectGui import OnscreenText
+    text = OnscreenText(text = "", font = getMickeyFont())
+    if delta > 0:
+        text['fg'] = (0, 1, 0, 1)
+        textstr = "+"
+    else:
+        text['fg'] = (1, 0, 0, 1)
+        textstr = ""
+    textstr += str(delta)
+    text['text'] = textstr
+    text.reparentTo(parent)
+    text.setPos(pos[0], pos[2])
+    text.setTransparency(True, 1)
+    
+    from panda3d.core import Point3
+    from direct.interval.IntervalGlobal import Sequence, LerpPosInterval, LerpColorScaleInterval, Wait, Parallel
+    seq = Parallel()
+    seq.append(LerpPosInterval(text, 1.0, Point3(pos) + (0, 0, 0.1), pos))
+    seq.append(Sequence(LerpColorScaleInterval(text, 0.25, (1, 1, 1, 1), (1, 1, 1, 0)),
+                        Wait(0.5),
+                        LerpColorScaleInterval(text, 0.25, (1, 1, 1, 0), (1, 1, 1, 1)),
+                        Func(text.destroy)))
+    seq.start()
 
 ShadowScales = {Suit: 0.375,
                 Toon: 0.375,

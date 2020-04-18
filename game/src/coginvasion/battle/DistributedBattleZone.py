@@ -15,6 +15,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from src.coginvasion.battle.RPToonData import RPToonData
 from src.coginvasion.battle.GameRules import GameRules
 from src.coginvasion.gui.RewardPanel import RewardPanel
+from src.coginvasion.battle.TempEnts import TempEnts
 from src.coginvasion.globals import CIGlobals
 import BattleGlobals
 
@@ -41,6 +42,7 @@ class DistributedBattleZone(DistributedObject):
         self.rewardSeq = Sequence()
 
         self.gameRules = self.makeGameRules()
+        self.tempEnts = self.makeTempEnts()
         
         self.lastCameraIndex = 0
 
@@ -80,11 +82,38 @@ class DistributedBattleZone(DistributedObject):
         
     def __onEnterEntZone_loadMap(self):
         self.notify.info("Map loaded, now in ent zone")
+
+        taskMgr.doMethodLater(1.0, self.__precacheMap, self.taskName("precacheMap"))
+
+    def doPrecacheMap(self):
+        pass
+
+    def __precacheMap(self, task):
+
+        if self.firstMapLoad:
+            self.doPrecacheMap()
+
+        # Put the camera in the center of each leaf and render a frame.
+        from src.coginvasion.base.Precache import precacheScene
+        curPos = camera.getPos(render)
+        visLeafs = base.bspLoader.getNumVisleafs()
+        for i in xrange(1, visLeafs):
+            center = base.bspLoader.getLeafCenter(i)
+            camera.setPos(render, center)
+            #base.bspLoader.update()
+            precacheScene(render)
+        camera.setPos(render, curPos)
+
         # We've loaded up the map and are now listening in the
         # entity zone.
         self.d_loadedMap()
         
+        self.firstMapLoad = False
+
+        return task.done
+        
     def loadTheMap(self):
+        CIGlobals.makeLoadingScreen(self.firstMapLoad)
         base.loadBSPLevel(self.MapFormatString.format(self.map))
         base.bspLevel.reparentTo(render)
 
@@ -94,17 +123,27 @@ class DistributedBattleZone(DistributedObject):
             if self.firstMapLoad and self.entZoneHandle is None:
                 self.loadTheMap()
                 self.enterEntZone(self.__onEnterEntZone_loadMap)
-                self.firstMapLoad = False
             else:
                 # We are already in the ent zone, just load the map.
                 self.loadTheMap()
+                #taskMgr.doMethodLater(1.0, self.__precacheMap, self.taskName("precacheMap"))
                 self.d_loadedMap()
 
     def d_loadedMap(self):
+        CIGlobals.clearLoadingScreen()
         self.sendUpdate('loadedMap')
 
     def getMap(self):
         return self.map
+        
+    def makeTempEnts(self):
+        return TempEnts(self)
+        
+    def makeTempEnt(self, te, data):
+        self.tempEnts.recvTempEnt(te, data)
+        
+    def getTempEnts(self):
+        return self.tempEnts
 
     def makeGameRules(self):
         return GameRules(self)
@@ -159,16 +198,6 @@ class DistributedBattleZone(DistributedObject):
         # Change to over the shoulder mode
         #base.localAvatar.smartCamera.setCameraPositionByIndex(base.localAvatar.smartCamera.OTSIndex)
         base.localAvatar.battleControls = True
-        
-        from src.coginvasion.szboss import AmbientGeneric, FuncWater, Ropes, InfoPlayerRelocate, EnvLightGlow, EnvParticleSystem, PointSpotlight
-        #base.bspLoader.linkEntityToClass("ambient_generic", AmbientGeneric.AmbientGeneric)
-        base.bspLoader.linkEntityToClass("func_water", FuncWater.FuncWater)
-        base.bspLoader.linkEntityToClass("rope_begin", Ropes.RopeBegin)
-        base.bspLoader.linkEntityToClass("rope_keyframe", Ropes.RopeKeyframe)
-        base.bspLoader.linkEntityToClass("info_player_relocate", InfoPlayerRelocate.InfoPlayerRelocate)
-        base.bspLoader.linkEntityToClass("env_lightglow", EnvLightGlow.EnvLightGlow)
-        base.bspLoader.linkEntityToClass("env_particlesystem", EnvParticleSystem.EnvParticleSystem)
-        base.bspLoader.linkEntityToClass("point_spotlight", PointSpotlight.PointSpotlight)
 
     def announceGenerate(self):
         DistributedObject.announceGenerate(self)
@@ -198,6 +227,8 @@ class DistributedBattleZone(DistributedObject):
         self.firstMapLoad = None
         self.entZone = None
         self.entZoneHandle = None
+        self.tempEnts.cleanup()
+        self.tempEnts = None
         base.stopMusic()
         DistributedObject.disable(self)
         

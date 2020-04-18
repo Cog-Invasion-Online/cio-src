@@ -33,3 +33,7 @@ class InfoBgmAI(DistributedEntityAI):
         
     def StopMusic(self):
         self.sendUpdate('stopMusic')
+        
+    def FadeOut(self, time = 1.0):
+        time = float(time)
+        self.sendUpdate('fadeOut', [time])

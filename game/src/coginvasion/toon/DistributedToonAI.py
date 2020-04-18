@@ -10,15 +10,20 @@ Revamped on June 15, 2018
 
 """
 
-from direct.directnotify.DirectNotifyGlobal import directNotify
+from panda3d.core import Point3, PerspectiveLens, LensNode, NodePath, Vec3
 
-from src.coginvasion.avatar.Activities import ACT_DIE, ACT_VICTORY_DANCE, ACT_TOON_BOW, ACT_JUMP
+from direct.directnotify.DirectNotifyGlobal import directNotify
+from direct.distributed.DistributedNodeAI import DistributedNodeAI
+
+from src.coginvasion.avatar.Activities import ACT_DIE, ACT_VICTORY_DANCE, ACT_TOON_BOW, ACT_JUMP, ACT_TOON_POINT, ACT_TOON_PRESENT, ACT_PRESS_BUTTON, ACT_TOON_FALL
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
 from src.coginvasion.avatar.AvatarTypes import *
 from src.coginvasion.cog.ai.RelationshipsAI import *
 from src.coginvasion.globals import CIGlobals
 import ToonGlobals
 import ToonDNA
+
+import random
 
 class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
     notify = directNotify.newCategory('DistributedToonAI')
@@ -33,6 +38,11 @@ class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
         AVATAR_SUIT     :   RELATIONSHIP_HATE,
         AVATAR_CCHAR    :   RELATIONSHIP_FRIEND
     }
+    
+    ClosedDuration = 0.15
+    MaxPupilLook = 0.7 # dot
+    EyeLookType_Auto = 0
+    EyeLookType_Manual = 1
 
     def __init__(self, air):
         try:
@@ -44,41 +54,27 @@ class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
         ToonDNA.ToonDNA.__init__(self)
         self.avatarType = CIGlobals.Toon
         self.anim = "Happy"
-        self.chat = ""
-        self.health = 50
-        self.height = 3
-        self.gender = "boy"
-        self.headtype = "dgm_skirt"
-        self.head = "dog"
-        self.legtype = "dgm"
-        self.torsotype = "dgm_shorts"
-        self.hr = 1
-        self.hg = 1
-        self.hb = 1
-        self.tr = 1
-        self.tg = 1
-        self.tb = 1
-        self.lr = 1
-        self.lg = 1
-        self.lb = 1
-        self.shir = 1
-        self.shig = 1
-        self.shib = 1
-        self.shor = 1
-        self.shog = 1
-        self.shob = 1
-        self.shirt = "phase_3/maps/desat_shirt_1.mat"
-        self.short = "phase_3/maps/desat_shorts_1.mat"
-        self.sleeve = "phase_3/maps/desat_sleeve_1.mat"
-        self.isdying = False
-        self.isdead = False
-        self.toon_legs = None
-        self.toon_torso = None
-        self.toon_head = None
+        
         self.lookMode = 2 # LMOff
+        
+        # Eyes stuff
+        self.eyeLensNP = None
+        self.eyeTarget = None
+        self.targetIsNew = True
+        self.lastEyeTarget = None
+        self.eyeTargetLastPos = Point3(0)
+        self.eyeTargetBoredTime = 0.0
+        self.eyeTargetLastMove = 0
+        self.eyeTargetTime = 0
+        self.eyeStateTime = 0
+        self.eyeState = ToonGlobals.EyeStateOpened
+        self.eyesOpenDuration = 5
+        self.eyeLookType = self.EyeLookType_Auto
 
         self.activities = {ACT_DIE: 7.0, ACT_VICTORY_DANCE: 5.125,
-                           ACT_TOON_BOW: 4.0, ACT_JUMP: 2.5}
+                           ACT_TOON_BOW: 4.0, ACT_JUMP: 2.5,
+                           ACT_TOON_POINT: 10.0, ACT_TOON_PRESENT: 10.0,
+                           ACT_PRESS_BUTTON: 10.0, ACT_TOON_FALL: 2.5}
 
         return
         
@@ -105,6 +101,9 @@ class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
         
         if self.arePhysicsSetup():
             self.setupPhysics()
+            
+        if self.eyeLensNP:
+            self.eyeLensNP.setZ(self.getHeight() * 0.85)
 
     def b_setDNAStrand(self, strand):
         self.d_setDNAStrand(strand)
@@ -127,75 +126,179 @@ class DistributedToonAI(DistributedAvatarAI, ToonDNA.ToonDNA):
 
     def announceGenerate(self):
         DistributedAvatarAI.announceGenerate(self)
+        
+        if not self.eyeLensNP:
+            lens = PerspectiveLens()
+            lens.setMinFov(180.0 / (4./3.))
+            node = LensNode('toonEyes', lens)
+            node.activateLens(0)
+            self.eyeLensNP = self.attachNewNode(node)
+            self.eyeLensNP.setZ(self.getHeight() - 0.5)
+            self.eyeLensNP.setY(-1)
+            
+        self.setEyesOpenDuration()
+        
+        taskMgr.add(self.__eyesLookTask, self.taskName("eyesLookTask"))
 
     def delete(self):
-        try:
-            self.DistributedToonAI_deleted
-        except:
-            self.DistributedToonAI_deleted = 1
-            DistributedAvatarAI.delete(self)
-            self.avatarType = None
-            self.anim = None
-            self.chat = None
-            self.height = None
-            self.gender = None
-            self.headtype = None
-            self.head = None
-            self.legtype = None
-            self.torsotype = None
-            self.hr = None
-            self.hg = None
-            self.hb = None
-            self.tr = None
-            self.tg = None
-            self.tb = None
-            self.lr = None
-            self.lg = None
-            self.lb = None
-            self.shir = None
-            self.shig = None
-            self.shib = None
-            self.shor = None
-            self.shog = None
-            self.shob = None
-            self.shirt = None
-            self.short = None
-            self.sleeve = None
-            self.isdying = None
-            self.isdead = None
-            self.toon_legs = None
-            self.toon_torso = None
-            self.toon_head = None
-            del self.avatarType
-            del self.anim
-            del self.chat
-            del self.height
-            del self.gender
-            del self.headtype
-            del self.head
-            del self.legtype
-            del self.torsotype
-            del self.hr
-            del self.hg
-            del self.hb
-            del self.tr
-            del self.tg
-            del self.tb
-            del self.lr
-            del self.lg
-            del self.lb
-            del self.shir
-            del self.shig
-            del self.shib
-            del self.shor
-            del self.shog
-            del self.shob
-            del self.shirt
-            del self.short
-            del self.sleeve
-            del self.isdying
-            del self.isdead
-            del self.toon_legs
-            del self.toon_torso
-            del self.toon_head
-        return
+        taskMgr.remove(self.taskName("eyesLookTask"))
+        if self.eyeLensNP:
+            self.eyeLensNP.removeNode()
+        self.eyeLensNP = None
+        self.anim = None
+        self.eyeLookType = None
+        
+        DistributedAvatarAI.delete(self)
+        
+    ##########################################################################################
+    # Eyes look-around stuff
+    
+    def hasEyeTarget(self):
+        if isinstance(self.eyeTarget, NodePath):
+            return CIGlobals.isNodePathOk(self.eyeTarget)
+            
+        return self.eyeTarget is not None
+        
+    def getDotToPupilTarget(self, target = None):
+        if not target:
+            target = self.eyeTarget
+            
+        if isinstance(target, NodePath):
+            toTarget = (target.getPos(render) - self.eyeLensNP.getPos(render)).normalized()
+        else:
+            return 1.0
+        fwd = self.eyeLensNP.getQuat(render).getForward()
+        
+        return fwd.dot(toTarget)
+        
+    def setEyesOpenDuration(self):
+        self.eyesOpenDuration = random.uniform(0.5, 7.0)
+        
+    def setEyeState(self, state):
+        self.eyeState = state
+        self.eyeStateTime = globalClock.getFrameTime()
+        self.sendUpdate('setEyeState', [state])
+        
+    def getEyeState(self):
+        return self.eyeState
+        
+    def openEyes(self):
+        self.setEyeState(ToonGlobals.EyeStateOpened) # opened
+        
+    def blink(self):
+        self.setEyeState(ToonGlobals.EyeStateClosed) # closed
+        
+    def d_lookPupilsMiddle(self):
+        self.sendUpdate('lookPupilsMiddle')
+        
+    def clearEyeTarget(self):
+        self.lastEyeTarget = self.eyeTarget
+        self.eyeTarget = None
+        self.eyeTargetTime = 0
+        self.eyeTargetLastMove = 0
+        self.eyeTargetLastPos = Point3(0)
+        
+    def setEyeLookType(self, elt):
+        self.eyeLookType = elt
+        
+    def setEyeTarget(self, target):
+        self.lastEyeTarget = self.eyeTarget
+        self.targetIsNew = True
+        self.eyeTarget = target
+        self.eyeTargetTime = globalClock.getFrameTime()
+        self.eyeTargetLastMove = self.eyeTargetTime
+        if isinstance(target, NodePath):
+            self.eyeTargetLastPos = target.getPos(render)
+        else:
+            self.eyeTargetLastPos = target
+        # How long until we get bored of this eye target?
+        self.eyeTargetBoredTime = random.uniform(6.0, 10.0)
+        
+        # Blink when we get a new eye target, so our eyes don't strangely teleport
+        self.blink()
+        if isinstance(target, DistributedNodeAI):
+            self.sendUpdate('lookEyesAtObject', [target.doId])
+        else:
+            self.sendUpdate('lookEyesAt', [[target[0], target[1], target[2]]])
+        
+    def __eyesLookTask(self, task):
+        
+                  
+        now = globalClock.getFrameTime()
+        
+        eyeStateElapsed = now - self.eyeStateTime
+        # Should we blink?
+        if self.eyeState == ToonGlobals.EyeStateClosed and eyeStateElapsed >= self.ClosedDuration:
+            self.openEyes()
+        elif self.eyeState == ToonGlobals.EyeStateOpened and eyeStateElapsed >= self.eyesOpenDuration:
+            self.blink()
+           
+        if self.hasEyeTarget():
+            if self.targetIsNew:
+                self.d_lookPupilsMiddle()
+                self.targetIsNew = False
+
+            pDot = self.getDotToPupilTarget()
+            # did our eye target move?
+            if isinstance(self.eyeTarget, NodePath):
+                targetIsPoint = False
+                # actual objects are more interesting, look longer
+                boredTime = self.eyeTargetBoredTime * 2
+                currTargetPos = self.eyeTarget.getPos(self.eyeLensNP)
+            else:
+                targetIsPoint = True
+                boredTime = self.eyeTargetBoredTime * 0.5
+                currTargetPos = self.eyeTarget
+            
+            if pDot < self.MaxPupilLook or not self.eyeLensNP.node().isInView(currTargetPos):
+                # Target no longer in line-of-sight
+                if self.eyeLookType == self.EyeLookType_Auto:
+                    self.clearEyeTarget()
+                return task.cont
+            
+            if self.eyeLookType == self.EyeLookType_Auto:
+                if not targetIsPoint:
+                    if (currTargetPos - self.eyeTargetLastPos).lengthSquared() > 0.01:
+                        self.eyeTargetLastMove = now
+                    elif (now - self.eyeTargetLastMove) > boredTime * 0.5:
+                        # We get bored twice as fast if our eye target is not moving
+                        self.clearEyeTarget()
+                        return task.cont
+                    
+                if (now - self.eyeTargetTime) > boredTime:
+                    self.clearEyeTarget()
+                    return task.cont
+
+            self.eyeTargetLastPos = currTargetPos
+        else:
+            # find a new eye target
+            target = None
+            
+            avOrPoint = random.randint(0, 1)
+            if avOrPoint == 0:
+                visible = []
+                avs = list(self.air.avatars[CIGlobals.getZoneId(self)])
+                for avatar in avs:
+                    if avatar == self.lastEyeTarget or avatar == self:
+                        continue
+                    apos = avatar.getPos(self.eyeLensNP)
+                    pDot = self.getDotToPupilTarget(avatar)
+                    if pDot >= self.MaxPupilLook and self.eyeLensNP.node().isInView(apos):
+                        visible.append(avatar)
+                if len(visible):
+                    target = random.choice(visible)
+                
+            if not target:
+                target = random.choice([Vec3(0, 25, 0),
+                                        Vec3(10, 25, 0),
+                                        Vec3(10, 25, 10),
+                                        Vec3(0, 25, 10),
+                                        Vec3(0, 25, -10),
+                                        Vec3(-10, 25, -10),
+                                        Vec3(-10, 25, 10),
+                                        Vec3(-10, 25, 0),
+                                        Vec3(10, 25, -10)])
+                                        
+            self.setEyeTarget(target)
+            
+        return task.cont

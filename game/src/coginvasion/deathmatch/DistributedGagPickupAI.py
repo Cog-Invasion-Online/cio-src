@@ -26,11 +26,23 @@ class DistributedGagPickupAI(DistributedEntityAI):
         self.gagId = self.__pickGagId()
         self.oneTimePickup = False
         self.random = True
+        self.cost = self.air.attackMgr.getAttackClassByID(self.gagId).Cost
+        
+    def setCost(self, cost):
+        self.cost = cost
+        
+    def b_setCost(self, cost):
+        self.sendUpdate('setCost', [cost])
+        self.setCost(cost)
+        
+    def getCost(self):
+        return self.cost
         
     def loadEntityValues(self):
         gagName = self.getEntityValue("gagName")
         if len(gagName) > 0:
             self.gagId = self.air.attackMgr.getAttackIDByName(gagName)
+            self.cost = self.air.attackMgr.getAttackClassByID(self.gagId).Cost
             self.random = False
             
         self.oneTimePickup = self.getEntityValueBool("oneTimePickup")
@@ -46,6 +58,7 @@ class DistributedGagPickupAI(DistributedEntityAI):
         self.gagId = None
         self.oneTimePickup = None
         self.random = None
+        self.cost = None
         DistributedEntityAI.delete(self)
 
     def setPickupState(self, state):
@@ -84,6 +97,7 @@ class DistributedGagPickupAI(DistributedEntityAI):
         
         if self.random:
             self.b_setGagId(self.__pickGagId())
+            self.b_setCost(self.air.attackMgr.getAttackClassByID(self.gagId).Cost)
         self.b_setPickupState(1)
         
         self.dispatchOutput("OnRespawn")
@@ -97,9 +111,13 @@ class DistributedGagPickupAI(DistributedEntityAI):
         avId = self.air.getAvatarIdFromSender()
         avatar = self.air.doId2do.get(avId)
         if avatar:
+            #if avatar.getMoney() < self.cost:
+                # Not enough money!
+            #    return
             currAttacks = avatar.getAttackIds()
             if not avatar.hasAttackId(self.gagId):
                 # Add to arsenal
+                #avatar.b_setMoney(avatar.getMoney() - self.cost)
                 avatar.b_setAttackIds(currAttacks + [self.gagId])
                 avatar.b_setEquippedAttack(self.gagId)
             else:

@@ -37,21 +37,23 @@ class HL2Pistol(BaseHitscan, HL2PistolShared):
     Hold = ATTACK_HOLD_RIGHT
     
     sgDir = 'phase_14/hl2/v_pistol/'
-    sgActorDef = [sgDir + 'v_pistol.bam',
-	    {'draw': sgDir + 'v_pistol-draw.egg',
-	     'idle': sgDir + 'v_pistol-idle01.egg',
-	     'fire': sgDir + 'v_pistol-fire.egg',
-	     'reload': sgDir + 'v_pistol-reload.egg'}]
     sgFirePath = 'phase_14/hl2/v_pistol/pistol_fire2.wav'
     sgEmptyPath = 'phase_14/hl2/v_pistol/pistol_empty.wav'
     sgReloadPath = 'phase_14/hl2/v_pistol/pistol_reload1.wav'
                      
     SpecialVM = True
+    SpecialVMCull = False
+    SpecialVMActor = [sgDir + 'v_pistol.bam',
+	    {'draw': sgDir + 'v_pistol-draw.egg',
+	     'idle': sgDir + 'v_pistol-idle01.egg',
+	     'fire': sgDir + 'v_pistol-fire.egg',
+	     'reload': sgDir + 'v_pistol-reload.egg'}]
+    SpecialVMAngles = (180, 0, 0)
+    SpecialVMFov = 54.0
     
     def __init__(self):
         BaseHitscan.__init__(self)
-        
-        self.sgViewModel = None 
+    
         self.fireSound = None
         self.emptySound = None
         self.reloadSound = None
@@ -61,35 +63,21 @@ class HL2Pistol(BaseHitscan, HL2PistolShared):
     def doPrecache(cls):
         super(HL2Pistol, cls).doPrecache()
         
-        precacheActor(cls.sgActorDef)
-        
         precacheSound(cls.sgFirePath)
         precacheSound(cls.sgEmptyPath)
         precacheSound(cls.sgReloadPath)
         
     def load(self):
+        BaseHitscan.load(self)
+
         self.fireSound = base.audio3d.loadSfx(self.sgFirePath)
         self.emptySound = base.audio3d.loadSfx(self.sgEmptyPath)
         self.reloadSound = base.audio3d.loadSfx(self.sgReloadPath)
         base.audio3d.attachSoundToObject(self.fireSound, self.avatar)
         base.audio3d.attachSoundToObject(self.emptySound, self.avatar)
         base.audio3d.attachSoundToObject(self.reloadSound, self.avatar)
-        
-        if self.isLocal():
-            self.sgViewModel = Actor(self.sgActorDef[0], self.sgActorDef[1])
-            self.sgViewModel.setPlayRate(self.Speed, "idle")
-            self.sgViewModel.node().setBounds(OmniBoundingVolume())
-            self.sgViewModel.node().setFinal(1)
-            self.sgViewModel.setBlend(frameBlend = base.config.GetBool('interpolate-frames', False))
-            self.sgViewModel.setH(180)
-            self.fpMuzzleAttach = self.sgViewModel.exposeJoint(None, "modelRoot", "ValveBiped.muzzle")
             
     def cleanup(self):
-        if self.sgViewModel:
-            self.sgViewModel.cleanup()
-            self.sgViewModel.removeNode()
-        self.sgViewModel = None
-        
         self.fpMuzzleAttach = None
         
         if self.fireSound:
@@ -111,9 +99,7 @@ class HL2Pistol(BaseHitscan, HL2PistolShared):
             return False
             
         if self.isFirstPerson():
-            fpsCam = self.getFPSCam()
-            fpsCam.swapViewModel(self.sgViewModel, 54.0)
-            self.getViewModel().show()
+            self.fpMuzzleAttach = self.specialViewModel.exposeJoint(None, "modelRoot", "ValveBiped.muzzle")
 
         self.doDrawAndHold('squirt', 0, 43, 1.0, 43, 43)
             
@@ -124,8 +110,8 @@ class HL2Pistol(BaseHitscan, HL2PistolShared):
             return False
             
         if self.isFirstPerson():
-            self.getFPSCam().restoreViewModel()
-            self.getViewModel().hide()
+            self.specialViewModel.releaseJoint(None, "modelRoot", "ValveBiped.muzzle")
+            self.fpMuzzleAttach.removeNode()
             
         return True
         

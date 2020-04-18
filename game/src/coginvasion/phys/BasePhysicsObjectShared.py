@@ -11,6 +11,12 @@ class BasePhysicsObjectShared:
         self.__physicsSetup = False
         
         self.surfaceProp = "default"
+
+    def getPhysNP(self):
+        return self.bodyNP
+    
+    def getPhysNode(self):
+        return self.bodyNode
         
     def addToPhysicsWorld(self, world):
         if self.bodyNode and world:
@@ -38,10 +44,13 @@ class BasePhysicsObjectShared:
             
         self.__physicsSetup = False
 
-    def setupPhysics(self, bodyNode, underneathSelf = False):
+    def setupPhysics(self, bodyNode, underneathSelf = None):
         self.cleanupPhysics()
 
-        self.underneathSelf = underneathSelf
+        if underneathSelf is not None:
+            self.underneathSelf = underneathSelf
+        else:
+            underneathSelf = self.underneathSelf
 
         self.bodyNode = bodyNode
 

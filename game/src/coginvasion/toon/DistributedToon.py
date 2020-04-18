@@ -18,6 +18,7 @@ from direct.distributed import DelayDelete
 
 from src.coginvasion.avatar.DistributedAvatar import DistributedAvatar
 from src.coginvasion.toon import Toon
+from src.coginvasion.gui.LaffOMeter import LaffOMeter
 
 import random
 import types
@@ -42,8 +43,65 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
         self.cageBone = None
         self.lookTask = None
         self.anim = ""
+        
+        self.headMeter = None
+        self.firstTimeChangingHP = True
+        
+        self.addSound('oof', 'phase_5/audio/sfx/tt_s_ara_cfg_toonHit.ogg')
 
         return
+        
+    def handleHealthChange(self, hp, oldHp):
+        if hp < oldHp and not self.firstTimeChangingHP:
+            # We took damage, make oof sound.
+            self.playSound('oof')
+
+    def setHealth(self, health):
+        oldHp = self.getHealth()
+        self.handleHealthChange(health, self.getHealth())
+        DistributedAvatar.setHealth(self, health)
+        if self.doId != base.localAvatar.doId:
+            if not self.firstTimeChangingHP:
+                if health < self.getMaxHealth():
+                    if not self.headMeter:
+                        self.__makeHeadMeter()
+                    else:
+                        self.__updateHeadMeter(oldHp)
+                else:
+                    self.__removeHeadMeter()
+        self.firstTimeChangingHP = False
+        
+    def maybeMakeHeadMeter(self):
+        if base.localAvatar.doId != self.doId:
+            if self.getHealth() < self.getMaxHealth():
+                if not self.headMeter:
+                    self.__makeHeadMeter()
+
+    def __makeHeadMeter(self):
+        self.headMeter = LaffOMeter(forRender = True)
+        r, g, b, _ = self.getHeadColor()
+        animal = self.getAnimal()
+        maxHp = self.getMaxHealth()
+        hp = self.getHealth()
+        self.headMeter.generate(r, g, b, animal, maxHP = maxHp, initialHP = hp)
+        self.headMeter.reparentTo(self)
+        self.headMeter.setZ(self.getHeight() + 2)
+        self.headMeter.setScale(0.4)
+        self.headMeter.setBillboardAxis()
+        self.__updateHeadMeter(self.getHealth())
+
+    def __removeHeadMeter(self):
+        if self.headMeter:
+            self.headMeter.disable()
+            self.headMeter.delete()
+        self.headMeter = None
+
+    def __updateHeadMeter(self, oldHp):
+        if self.headMeter:
+            self.headMeter.updateMeter(self.getHealth(), oldHp)
+        
+    def getEyeState(self):
+        return 0
         
     def handleHitByToon(self, player, gagId, distance):
         # I was hit by another toon.
@@ -224,6 +282,10 @@ class DistributedToon(Toon.Toon, DistributedAvatar, DelayDeletable):
         self.ignore('showAvId')
         self.ignore('showName')
         self.stopSmooth()
+        
+        self.__removeHeadMeter()
+        self.firstTimeChangingHP = None
+        
         Toon.Toon.disable(self)
         DistributedAvatar.disable(self)
 

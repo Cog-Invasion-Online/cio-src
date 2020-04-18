@@ -1,7 +1,7 @@
 from panda3d.core import Point3
 
 from src.coginvasion.attack.Attacks import ATTACK_RED_TAPE
-from src.coginvasion.cog.attacks.GenericThrowShared import ThrowAfterTime, AttackDuration, PlayRate, StateThrow
+from src.coginvasion.cog.attacks.GenericThrowShared import ThrowAfterTime, AttackDuration, PlayRate, StateThrow, ThrowPower
 
 Metadata = {
     "Name" : "Red Tape",
@@ -13,7 +13,7 @@ Metadata = {
     "ModelAngles" : Point3(0.0, 90.0, 0.0),
 
     "ThrowSoundPath" : "phase_5/audio/sfx/SA_red_tape.ogg",
-    "ThrowPower" : 200.0,
+    "ThrowPower" : ThrowPower,
     "ThrowAfterTime" : ThrowAfterTime,
     "AttackDuration" : AttackDuration,
     "PlayRate" : PlayRate

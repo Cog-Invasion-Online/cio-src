@@ -19,7 +19,6 @@ from DistributedPlayerToonShared import DistributedPlayerToonShared
 from src.coginvasion.toon.DistributedToon import DistributedToon
 from src.coginvasion.gags.backpack.Backpack import Backpack
 from src.coginvasion.gags import GagGlobals
-from src.coginvasion.gui.LaffOMeter import LaffOMeter
 from src.coginvasion.hood import LinkTunnel
 from src.coginvasion.globals import ChatGlobals
 from src.coginvasion.phys import PhysicsUtils
@@ -42,8 +41,6 @@ class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
         self.equippedPU = -1
         self.backpack = Backpack(self)
         self.battleMeter = None
-        self.headMeter = None
-        self.firstTimeChangingHP = True
         
         # Quest-related variables.
         self.quests = ""
@@ -59,9 +56,6 @@ class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
         self.defaultShard = 0
         self.tunnelTrack = None
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
-        
-        self.takeDmgSfx = base.audio3d.loadSfx('phase_5/audio/sfx/tt_s_ara_cfg_toonHit.ogg')
-        base.audio3d.attachSoundToObject(self.takeDmgSfx, self)
         return
         
     def getHealth(self):
@@ -75,25 +69,6 @@ class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
         localAvatarReachable = (hasattr(base, 'localAvatar') and base.localAvatar)
         if localAvatarReachable and self.doId != base.localAvatar.doId:
             self.resetTorsoRotation()
-
-    def handleHealthChange(self, hp, oldHp):
-        if hp < oldHp and not self.firstTimeChangingHP:
-            # We took damage, make oof sound.
-            self.takeDmgSfx.play()
-
-    def setHealth(self, health):
-        self.handleHealthChange(health, self.getHealth())
-        DistributedToon.setHealth(self, health)
-        if self.doId != base.localAvatar.doId:
-            if not self.firstTimeChangingHP:
-                if health < self.getMaxHealth():
-                    if not self.headMeter:
-                        self.__makeHeadMeter()
-                    else:
-                        self.__updateHeadMeter()
-                else:
-                    self.__removeHeadMeter()
-        self.firstTimeChangingHP = False
 
     def announceHealthAndPlaySound(self, level, hp, extraId = -1):
         DistributedToon.announceHealth(self, level, hp, extraId)
@@ -312,35 +287,6 @@ class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
 
     def getQuests(self):
         return self.quests
-
-    def maybeMakeHeadMeter(self):
-        if base.localAvatar.doId != self.doId:
-            if self.getHealth() < self.getMaxHealth():
-                if not self.headMeter:
-                    self.__makeHeadMeter()
-
-    def __makeHeadMeter(self):
-        self.headMeter = LaffOMeter(forRender = True)
-        r, g, b, _ = self.getHeadColor()
-        animal = self.getAnimal()
-        maxHp = self.getMaxHealth()
-        hp = self.getHealth()
-        self.headMeter.generate(r, g, b, animal, maxHP = maxHp, initialHP = hp)
-        self.headMeter.reparentTo(self)
-        self.headMeter.setZ(self.getHeight() + 2)
-        self.headMeter.setScale(0.4)
-        self.headMeter.setBillboardAxis()
-        self.__updateHeadMeter()
-
-    def __removeHeadMeter(self):
-        if self.headMeter:
-            self.headMeter.disable()
-            self.headMeter.delete()
-            self.headMeter = None
-
-    def __updateHeadMeter(self):
-        if self.headMeter:
-            self.headMeter.updateMeter(self.getHealth())
             
     def d_createBattleMeter(self):
         self.sendUpdate('makeBattleMeter', [])
@@ -475,8 +421,6 @@ class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
         return AdminCommands.NoAccess if not self.role else self.role.accessLevel
     
     def disable(self):
-        base.audio3d.detachSound(self.takeDmgSfx)
-        self.takeDmgSfx = None
         if self.tunnelTrack:
             self.ignore(self.tunnelTrack.getDoneEvent())
             self.tunnelTrack.finish()
@@ -500,7 +444,6 @@ class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
         self.lastHood = None
         self.defaultShard = None
         self.trackExperience = None
-        self.__removeHeadMeter()
         self.destroyBattleMeter()
         DistributedToon.disable(self)
     
@@ -510,14 +453,13 @@ class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
         except:
             self.DistributedPlayerToon_deleted = 1
             DistributedPlayerToonShared.delete(self)
-            del self.takeDmgSfx
+
             del self.tunnelTrack
             del self.role
             del self.ghost
             del self.puInventory
             del self.equippedPU
             del self.backpack
-            del self.firstTimeChangingHP
             del self.quests
             del self.tier
             del self.questHistory
@@ -530,6 +472,5 @@ class DistributedPlayerToon(DistributedToon, DistributedPlayerToonShared):
             del self.defaultShard
             del self.trackExperience
             del self.battleMeter
-            del self.headMeter
             DistributedToon.delete(self)
         return

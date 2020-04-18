@@ -28,7 +28,7 @@ base.bspLoader.linkEntityToClass("rope_keyframe", Ropes.RopeKeyframe)
 base.bspLoader.setWantLightmaps(True)
 #base.bspLoader.setVisualizeLeafs(True)
 
-lvl = "sellbot_floor_2"
+lvl = "sewer_entrance_room_indoors"
 #base.loadBSPLevel("resources/museum/maps/{0}/{0}.bsp".format(lvl))
 base.loadBSPLevel("resources/phase_14/etc/{0}/{0}.bsp".format(lvl))
 base.bspLevel.reparentTo(render)

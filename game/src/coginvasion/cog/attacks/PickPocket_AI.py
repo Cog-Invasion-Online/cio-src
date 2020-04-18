@@ -16,6 +16,11 @@ class PickPocket_AI(BaseAttackAI, PickPocketShared):
         self.traceOrigin = None
         self.traceVector = None
         self.didPick = False
+        
+    def determineNextAction(self, completedAction):
+        if completedAction == self.StateAttack:
+            self.avatar.npcFinishAttack()
+        return BaseAttackAI.determineNextAction(self, completedAction)
 
     def getBaseDamage(self):
         return 10
@@ -66,8 +71,10 @@ class PickPocket_AI(BaseAttackAI, PickPocketShared):
 
     def npcUseAttack(self, target):
         if not self.canUse():
-            return
+            return False
 
         self.traceOrigin = self.avatar.getPos() + (0, 0, self.avatar.getHeight() / 2)
         self.traceVector = ((target.getPos() + (0, 0, target.getHeight() / 2.0)) - self.traceOrigin).normalized()
         self.setNextAction(self.StateAttack)
+        
+        return True

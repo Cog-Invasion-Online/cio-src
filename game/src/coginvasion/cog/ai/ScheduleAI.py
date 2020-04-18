@@ -20,6 +20,15 @@ class Schedule:
         self.failSchedule = failSched
         
         self.__newTask = True
+        
+    def appendTask(self, task):
+        self.tasks.append(task)
+        
+    def prependTask(self, task):
+        self.tasks.insert(0, task)
+        
+    def insertTask(self, pos, task):
+        self.tasks.insert(pos, task)
 
     def cleanup(self):
         for task in self.tasks:

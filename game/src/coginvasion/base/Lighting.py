@@ -13,7 +13,6 @@ from panda3d.core import Point3, NodePath
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.hood.SkyUtil import SkyUtil
 from src.coginvasion.hood.SnowEffect import SnowEffect
-from src.coginvasion.base.ShadowCaster import ShadowCaster
 
 class LightingConfig:
     ActiveConfig = None
@@ -138,7 +137,6 @@ class OutdoorLightingConfig(LightingConfig):
         LightingConfig.setup(self)
         self.sunNP = CIGlobals.makeDirectionalLight('config', self.sun, self.sunAngle)
         
-        #self.shadows = ShadowCaster(self.sunNP)
         if not self.winterOverride and not metadata.NO_FOG:
             self.fogNode = CIGlobals.makeFog('config', self.fog, self.fogDensity)
 

@@ -10,7 +10,7 @@ class WaterCoolerAI(BaseAttackAI, WaterCoolerShared):
     
     WaitForSprayTime = 3.11
     StopLockOnTime = 2.5
-    AttackRange = 40.0
+    AttackRange = 15.0
     
     def __init__(self):
         BaseAttackAI.__init__(self)
@@ -25,6 +25,11 @@ class WaterCoolerAI(BaseAttackAI, WaterCoolerShared):
         self.calibrated = False
 
         self.target = None
+        
+    def determineNextAction(self, ca):
+        if ca == self.StateAttack:
+            self.avatar.npcFinishAttack()
+        return self.StateIdle
 
     def getBaseDamage(self):
         return 12.0
@@ -69,7 +74,7 @@ class WaterCoolerAI(BaseAttackAI, WaterCoolerShared):
             self.calibrated = True
 
     def checkCapable(self, dot, squaredDistance):
-        return squaredDistance <= 20*20 and squaredDistance > 8*8
+        return squaredDistance <= 15*15 and squaredDistance > 3*3
 
     def canUse(self):
         return self.getAction() == self.StateIdle
@@ -81,10 +86,11 @@ class WaterCoolerAI(BaseAttackAI, WaterCoolerShared):
 
     def npcUseAttack(self, target):
         if not self.canUse():
-            return
+            return False
 
         self.setNextAction(self.StateAttack)
         self.target = target
+        return True
     
     def getTauntChance(self):
         return 0.75

@@ -12,7 +12,7 @@ Metadata = {
     "StateThrow" : StateThrow,
     "ThrowPower" : 75.0,
     "ThrowAfterTime" : 2.81,
-    "AttackDuration" : AttackDuration,
+    "AttackDuration" : 8.0,
     "PlayRate" : PlayRate,
     "WantLight" : False
 }

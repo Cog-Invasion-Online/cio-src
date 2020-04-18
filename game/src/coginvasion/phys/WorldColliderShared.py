@@ -35,6 +35,7 @@ class WorldColliderShared(NodePath):
         
         self.initialPos = Point3(0)
         self.lastPos = Point3(0)
+        self.lastPosTime = 0.0
         
         self.hitCallbacks = []
 
@@ -49,6 +50,10 @@ class WorldColliderShared(NodePath):
 
         if startNow:
             self.start()
+
+    def getAbsVelocity(self):
+        now = globalClock.getFrameTime()
+        return (self.getPos(render) - self.lastPos) / (now - self.lastPosTime)
 
     def addExclusion(self, excl):
         #print "Add exclusion", self, id(self), self.__exclusions, id(self.__exclusions)
@@ -118,6 +123,8 @@ class WorldColliderShared(NodePath):
                 #print "has hit"
                 intoNode = result.getNode()
                 for excl in self.__exclusions:
+                    if excl.isEmpty():
+                        continue
                     if excl.isAncestorOf(NodePath(intoNode)) or excl == NodePath(intoNode):
                         #print "Collided with exclusion", excl
                         intoNode = None
@@ -135,6 +142,8 @@ class WorldColliderShared(NodePath):
                     continue
                 isExcluded = False
                 for excl in self.__exclusions:
+                    if excl.isEmpty():
+                        continue
                     if excl.isAncestorOf(NodePath(node)) or excl == NodePath(node):
                         isExcluded = True
                         break
@@ -149,6 +158,7 @@ class WorldColliderShared(NodePath):
         if intoNode is None:
             if currPos != self.lastPos:
                 self.lastPos = currPos
+                self.lastPosTime = globalClock.getFrameTime()
             return task.cont
         
         mask = intoNode.getIntoCollideMask()
@@ -167,5 +177,6 @@ class WorldColliderShared(NodePath):
             
         if currPos != self.lastPos:
             self.lastPos = currPos
+            self.lastPosTime = globalClock.getFrameTime()
             
         return task.cont

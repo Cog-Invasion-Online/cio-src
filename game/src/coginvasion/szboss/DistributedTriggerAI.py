@@ -8,7 +8,7 @@ class DistributedTriggerOnceAI(DistributedEntityAI):
 
     def load(self):
         DistributedEntityAI.load(self)
-        self.enabled = not bool(self.getEntityValueInt("StartDisabled"))
+        self.enabled = not self.getEntityValueBool("StartDisabled")
 
     def Disable(self):
         self.enabled = False

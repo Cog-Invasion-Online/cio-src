@@ -1,16 +1,23 @@
-from panda3d.core import NodePath, CardMaker
+from panda3d.core import NodePath, CardMaker, ColorBlendAttrib
 
+from src.coginvasion.base.Precache import Precacheable, precacheTexture
 from src.coginvasion.globals import CIGlobals
 
 import random
 
-class MuzzleParticle(NodePath):
+class MuzzleParticle(NodePath, Precacheable):
+    
+    muzzles = [1, 4]
+    muzzleroot = "phase_14/hl2/muzzleflash{0}.png"
+    
+    @classmethod
+    def doPrecache(cls):
+        super(MuzzleParticle, cls).doPrecache()
+        for i in range(cls.muzzles[0], cls.muzzles[1] + 1):
+            precacheTexture(cls.muzzleroot.format(i))
     
     def __init__(self, startSize, endSize, roll, color, duration):
         NodePath.__init__(self, 'muzzleParticle')
-        
-        muzzles = [1, 4]
-        muzzleroot = "phase_14/hl2/muzzleflash{0}.png"
         
         cm = CardMaker("muzzleSpriteCard")
         cm.setFrame(-1, 1, -1, 1)
@@ -19,11 +26,13 @@ class MuzzleParticle(NodePath):
         cmnp = self.attachNewNode(cm.generate())
         cmnp.setBillboardAxis()
         
-        self.setTexture(loader.loadTexture(muzzleroot.format(random.randint(*muzzles))), 1)
+        self.setTexture(loader.loadTexture(self.muzzleroot.format(random.randint(*self.muzzles))), 1)
         #self.setShaderOff(1)
         self.setLightOff(1)
         self.setMaterialOff(1)
-        self.setTransparency(1)
+        self.setAttrib(ColorBlendAttrib.make(ColorBlendAttrib.MAdd, ColorBlendAttrib.OOne, ColorBlendAttrib.OOne), 1)
+        self.setDepthWrite(False, 1)
+        #self.setTransparency(1)
         
         self.startAlpha = 0.5
         self.endAlpha = 0.0

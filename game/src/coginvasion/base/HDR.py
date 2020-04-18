@@ -39,7 +39,6 @@ class HDR(DirectObject):
                 not metadata.MULTITHREADED_PIPELINE)
 
     def disable(self):
-        base.filters.delExposure()
 
         taskMgr.remove("hdrUpdate")
 
@@ -65,7 +64,6 @@ class HDR(DirectObject):
         self.sceneTex = None
 
         self.ptaBucketRange = None
-		
         
     def __cleanupSceneQuad(self):
         if self.sceneQuad:
@@ -75,9 +73,9 @@ class HDR(DirectObject):
             self.sceneBuf.clearRenderTextures()
             base.filters.manager.engine.removeWindow(self.sceneBuf)
         self.sceneBuf = None
-		
+        
     def __setupSceneQuad(self):
-        self.sceneQuad, self.sceneBuf = base.filters.manager.renderQuadInto(colortex = self.sceneTex, size = (self.Size, self.Size), addToList = False)
+        self.sceneQuad, self.sceneBuf = base.filters.manager.renderQuadInto(colortex = self.sceneTex, size = (self.Size, self.Size), addToList = False, fullscreen = False)
         self.sceneQuad.setShader(Shader.load(Shader.SLGLSL, "phase_14/models/shaders/hdr_scene.vert.glsl",
                                              "phase_14/models/shaders/hdr_scene.frag.glsl"))
         self.sceneQuad.setShaderInput("scene_tex", base.filters.textures["color"])
@@ -134,15 +132,15 @@ class HDR(DirectObject):
         self.exposureCompute.setShaderInput("histogram_texture", self.histogramTex)
         self.exposureCompute.setShaderInput("avg_lum_texture", self.exposureTex)
         self.exposureCompute.setShaderInput("bucketrange", self.ptaBucketRange)
-        self.exposureCompute.setShaderInput("exposure_minmax", Vec2(1.0, 2.0))
+        self.exposureCompute.setShaderInput("exposure_minmax", Vec2(0.5, 2.0))
         self.exposureCompute.setShaderInput("adaption_rate_brightdark", Vec2(0.6, 0.6))
-        self.exposureCompute.setShaderInput("exposure_scale", base.config.GetFloat("hdr-tonemapscale", 1.75))
+        self.exposureCompute.setShaderInput("exposure_scale", base.config.GetFloat("hdr-tonemapscale", 1))
         self.exposureCompute.setShaderInput("config_minAvgLum", base.config.GetFloat("hdr-min-avglum", 3.0))
         self.exposureCompute.setShaderInput("config_perctBrightPixels", base.config.GetFloat("hdr-percent-bright-pixels", 2.0))
         self.exposureCompute.setShaderInput("config_perctTarget", base.config.GetFloat("hdr-percent-target", 60.0))
         self.exposureCompute.setBin("fixed", 1)
-        
-        base.filters.setExposure(self.exposureTex)
+
+        base.shaderGenerator.setExposureTexture(self.exposureTex)
 
         taskMgr.add(self.__update, "hdrUpdate", sort = -10000000)
 
@@ -164,5 +162,5 @@ class HDR(DirectObject):
         # We need to calculate a brand new histogram each frame,
         # so let's clear the one from last frame.
         self.histogramTex.clearImage()
-			
+        
         return task.cont

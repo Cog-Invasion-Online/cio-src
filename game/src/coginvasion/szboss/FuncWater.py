@@ -11,9 +11,6 @@ class FuncWater(Entity):
     def load(self):
         Entity.load(self)
         
-        loader = self.cEntity.getLoader()
-        entnum = self.cEntity.getBspEntnum()
-        
         specname = self.getEntityValue("waterspec")
         spec = base.waterReflectionMgr.getDefaultSpec(specname)
 

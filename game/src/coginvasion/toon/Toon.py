@@ -15,17 +15,20 @@ from direct.interval.IntervalGlobal import Wait, Parallel, SoundInterval, LerpPo
 from direct.interval.IntervalGlobal import ActorInterval, LerpHprInterval, Func
 from direct.distributed import DelayDelete
 
-from src.coginvasion.gags.GagState import GagState
 from src.coginvasion.toon import ToonGlobals
 from src.coginvasion.toon.ToonHead import ToonHead
-from src.coginvasion.distributed import AdminCommands
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.avatar import Avatar
-from src.coginvasion.avatar.Activities import ACT_DIE, ACT_VICTORY_DANCE, ACT_TOON_BOW, ACT_JUMP, ACT_NONE
+from src.coginvasion.avatar.ChatTypes import *
+from src.coginvasion.avatar.Activities import ACT_DIE, ACT_VICTORY_DANCE, ACT_TOON_BOW, ACT_JUMP, ACT_NONE, ACT_TOON_PRESENT, ACT_TOON_POINT, ACT_PRESS_BUTTON, ACT_TOON_FALL
 from src.coginvasion.toon.activities.VictoryDance import VictoryDance
 from src.coginvasion.toon.activities.Die import Die
 from src.coginvasion.toon.activities.Bow import Bow
 from src.coginvasion.toon.activities.Jump import Jump
+from src.coginvasion.toon.activities.Present import Present
+from src.coginvasion.toon.activities.Point import Point
+from src.coginvasion.toon.activities.PressButton import PressButton
+from src.coginvasion.toon.activities.Fall import Fall
 
 import AccessoryGlobals
 
@@ -77,7 +80,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.soundChatBubble = loader.loadSfx("phase_3/audio/sfx/GUI_balloon_popup.ogg")
         self.shadowCaster = None
         self.accessories = []
-        self.chatSoundDict = {}
         self.backpack = None
         self.forceRunSpeed = False
         self.animFSM = ClassicFSM('Toon', [State('off', self.enterOff, self.exitOff),
@@ -125,7 +127,11 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         self.activities = {ACT_DIE  :   Die(self),
                            ACT_VICTORY_DANCE    :   VictoryDance(self),
                            ACT_TOON_BOW         :   Bow(self),
-                           ACT_JUMP             :   Jump(self)}
+                           ACT_JUMP             :   Jump(self),
+                           ACT_TOON_PRESENT     :   Present(self),
+                           ACT_TOON_POINT       :   Point(self),
+                           ACT_PRESS_BUTTON     :   PressButton(self),
+                           ACT_TOON_FALL        :   Fall(self)}
                            
     def setActivity(self, act, timestamp = 0):
         Avatar.Avatar.setActivity(self, act, timestamp)
@@ -318,18 +324,19 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
         return 0
 
     def updateChatSoundDict(self):
-        self.chatSoundDict['exclaim'] = base.audio3d.loadSfx(self.getToonAnimalNoise('exclaim'))
-        self.chatSoundDict['question'] = base.audio3d.loadSfx(self.getToonAnimalNoise('question'))
-        self.chatSoundDict['short'] = base.audio3d.loadSfx(self.getToonAnimalNoise('short'))
-        self.chatSoundDict['medium'] = base.audio3d.loadSfx(self.getToonAnimalNoise('med'))
-        self.chatSoundDict['long'] = base.audio3d.loadSfx(self.getToonAnimalNoise('long'))
-        self.chatSoundDict['howl'] = base.audio3d.loadSfx(self.getToonAnimalNoise('howl'))
-        base.audio3d.attachSoundToObject(self.chatSoundDict['exclaim'], self.getPart('head'))
-        base.audio3d.attachSoundToObject(self.chatSoundDict['question'], self.getPart('head'))
-        base.audio3d.attachSoundToObject(self.chatSoundDict['short'], self.getPart('head'))
-        base.audio3d.attachSoundToObject(self.chatSoundDict['medium'], self.getPart('head'))
-        base.audio3d.attachSoundToObject(self.chatSoundDict['long'], self.getPart('head'))
-        base.audio3d.attachSoundToObject(self.chatSoundDict['howl'], self.getPart('head'))
+        head = self.getPart('head')
+        self.addSound("exclaim", self.getToonAnimalNoise('exclaim'), node = head)
+        self.addSound("question", self.getToonAnimalNoise('question'), node = head)
+        self.addSound("short", self.getToonAnimalNoise('short'), node = head)
+        self.addSound("medium", self.getToonAnimalNoise('med'), node = head)
+        self.addSound("long", self.getToonAnimalNoise('long'), node = head)
+        self.addSound("howl", self.getToonAnimalNoise('howl'), node = head)
+        self.chatSoundTable[CHAT_EXCLAIM] = "exclaim"
+        self.chatSoundTable[CHAT_QUESTION] = "question"
+        self.chatSoundTable[CHAT_SHORT] = "short"
+        self.chatSoundTable[CHAT_MEDIUM] = "medium"
+        self.chatSoundTable[CHAT_LONG] = "long"
+        self.chatSoundTable[CHAT_HOWL] = "howl"
         
     def __actAsGone(self):
         if self.nametag3d:
@@ -398,7 +405,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.removeAdminToken()
             ToonHead.delete(self)
             self.deleteCurrentToon()
-            self.chatSoundDict = {}
             Avatar.Avatar.disable(self)
 
     def delete(self):
@@ -408,7 +414,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.Toon_deleted = 1
             del self.animFSM
             self.forwardSpeed = None
-            self.chatSoundDict = None
             self.rotateSpeed = None
             self.avatarType = None
             self.track = None
@@ -535,26 +540,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.tokenIcon.removeNode()
             self.tokenIconIval = None
             self.tokenIcon = None
-
-    def playChatSfx(self, chatString):
-        if not self.getGhost() or self.doId == base.localAvatar.doId:
-            if "ooo" in chatString.lower():
-                sfx = self.chatSoundDict['howl']
-            elif "!" in chatString.lower():
-                sfx = self.chatSoundDict['exclaim']
-            elif "?" in chatString.lower():
-                sfx = self.chatSoundDict['question']
-            elif len(chatString) <= 9:
-                sfx = self.chatSoundDict['short']
-            elif 10 <= len(chatString) <= 19:
-                sfx = self.chatSoundDict['medium']
-            elif len(chatString) >= 20:
-                sfx = self.chatSoundDict['long']
-            base.playSfx(sfx, node = self)
-
-    def chatStompComplete(self, chatString):
-        if not self.thoughtInProg and CIGlobals.getSettingsMgr().getSetting("chs").getValue():
-            self.playChatSfx(chatString)
 
     def setName(self, nameString):
         Avatar.Avatar.setName(self, nameString)
@@ -1140,8 +1125,6 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
             self.track.finish()
             DelayDelete.cleanupDelayDeletes(self.track)
             self.track = None
-        if hasattr(self, 'enableGags'):
-            self.enableGags()
 
         self.rescaleToon()
         self.playingAnim = 'neutral'
@@ -1181,4 +1164,13 @@ class Toon(Avatar.Avatar, ToonHead, ToonDNA.ToonDNA):
 
     def exitConked(self):
         self.exitGeneral()
+
+from src.coginvasion.szboss.Entity import Entity
+from src.coginvasion.phys.PhysicsNodePath import BasePhysicsObject
+class ClientToon(Entity, Toon, BasePhysicsObject):
+    
+    def __init__(self, cr, mat = 0):
+        Entity.__init__(self)
+        Toon.__init__(self, cr, mat = 0)
+        BasePhysicsObject.__init__(self)
 

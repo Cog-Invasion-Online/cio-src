@@ -5,6 +5,7 @@ from src.coginvasion.gags import GagGlobals
 from src.coginvasion.attack.Attacks import ATTACK_GAG_TNT
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.attack.TakeDamageInfo import TakeDamageInfo
+from src.coginvasion.battle.SoundEmitterSystemAI import SOUND_COMBAT
 
 class TNTProjectileAI(DistributedPhysicsEntityAI):
 
@@ -38,12 +39,20 @@ class TNTProjectileAI(DistributedPhysicsEntityAI):
 
     def __explodeTask(self, task):
         self.sendUpdate('explode')
+        
+        self.avatar.emitSound(SOUND_COMBAT, self.getPos(), volume = 2.0)
 
         for obj in self.air.avatars[self.zoneId]:
             if CIGlobals.isAvatar(obj) and self.attack.canDamage(obj):
                 dist = obj.getDistance(self)
                 if dist <= GagGlobals.TNT_RANGE:
-                    info = TakeDamageInfo(self.avatar, ATTACK_GAG_TNT, self.attack.calcDamage(dist), self.getPos())
+                    dmgPos = obj.getPos(render) + (0, 0, obj.getHeight() / 2.0)
+                    dmgForce = (dmgPos - self.getPos(render)).normalized()
+                    dmgForce *= 750.0
+                    dmgForce *= max(0, 1 - (dist / GagGlobals.TNT_RANGE))
+                    print "TNT force", dmgForce
+                    info = TakeDamageInfo(self.avatar, ATTACK_GAG_TNT, self.attack.calcDamage(dist),
+                                          damagePos = dmgPos, damageOrigin = self.getPos(), dmgForce = dmgForce)
                     obj.takeDamage(info)
 
         self.requestDelete()

@@ -10,7 +10,6 @@ Copyright (c) CIO Team. All rights reserved.
 
 from panda3d.core import VBase4, Point4, Point3
 from src.coginvasion.gags.GagType import GagType
-from src.coginvasion.npc.DisneyCharGlobals import Mickey, Goofy, Pluto, Donald
 from src.coginvasion.globals.CIGlobals import calcAttackDamage
 
 from direct.distributed.PyDatagram import PyDatagram
@@ -19,6 +18,8 @@ from direct.distributed.PyDatagramIterator import PyDatagramIterator
 from collections import OrderedDict
 import types
 import math
+
+Mickey, Goofy, Pluto, Donald = "Mickey", "Goofy", "Pluto", "Donald"
 
 WholeCreamPie = "Whole Cream Pie"
 WholeFruitPie = "Whole Fruit Pie"
@@ -30,6 +31,7 @@ TNT = "TNT"
 SeltzerBottle = "Seltzer Bottle"
 GrandPiano = "Grand Piano"
 Safe = "Safe"
+Sound = "Sound"
 BambooCane = "Bamboo Cane"
 JugglingBalls = "Juggling Balls"
 Megaphone = "Megaphone"
@@ -525,7 +527,8 @@ InventoryIconByName = {WholeCreamPie : '**/inventory_creampie',
  HL2Shotgun : '**/inventory_water_gun',
  HL2Pistol : '**/inventory_water_gun',
  Slap : '**/inventory_anvil',
- GumballBlaster: '**/inventory_juggling_cubes'}
+ GumballBlaster: '**/inventory_juggling_cubes',
+ Sound : '**/inventory_aoogah',}
 
 TrackIdByName = {Throw : GagType.THROW,
                  Squirt : GagType.SQUIRT,

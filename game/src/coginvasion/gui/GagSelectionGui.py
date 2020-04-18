@@ -167,15 +167,28 @@ class GagWidget(DirectButton):
 
 class GagTrack(DirectFrame):
 
-    def __init__(self, gsg, trackId):
+    def __init__(self, gsg, trackId = None, name = None, color = None, trackBarScale = None):
         DirectFrame.__init__(self)
         self.gsg = gsg
         self.trackId = trackId
-        self.trackName = GagGlobals.TrackNameById[trackId]
+        if trackId is not None:
+            self.trackName = GagGlobals.TrackNameById[trackId]
+            color = GagGlobals.TrackColorByName[self.trackName]
+        else:
+            if name:
+                self.trackName = name
+            if not color:
+                color = (1, 1, 1, 1)
+                
+        self.trackColor = color
+            
         self['image'] = 'phase_14/maps/track_bar.png'
         self['image_scale'] = (1.119, 0, 0.152)
+        if trackBarScale:
+            self['image_scale'][0] *= trackBarScale[0]
+            self['image_scale'][2] *= trackBarScale[1]
         self['relief'] = None
-        color = GagGlobals.TrackColorByName[self.trackName]
+        
         self['image_color'] = (color[0], color[1], color[2], 1)
 
         self.trackText = OnscreenText(text = self.trackName.upper(), fg = (0, 0, 0, 0.65), shadow = (0, 0, 0, 0),
@@ -248,17 +261,18 @@ class GagTrack(DirectFrame):
             btn.unstash()
 
     def load(self):
-        gags = GagGlobals.TrackGagNamesByTrackName[self.trackName]
+        gags = base.localAvatar.attackIds#GagGlobals.TrackGagNamesByTrackName[self.trackName]
         for i in xrange(len(gags)):
-            gagName = gags[i]
-            gagId = base.cr.attackMgr.getAttackIDByName(gagName)
+            gagId = gags[i]
+            gagName = base.cr.attackMgr.getAttackName(gagId)
             btn = GagWidget(self, gagId)
             btn.reparentTo(self)
             btn.setX(GAG_BTN_START + (GAG_BTN_OFFSET * i))
-            if not base.localAvatar.hasAttackId(gagId) or gagName not in GagGlobals.tempAllowedGags:
-                btn.setLocked(True)
-            else:
-                btn.setLocked(False)
+            #if not base.localAvatar.hasAttackId(gagId) or gagName not in GagGlobals.tempAllowedGags:
+            #    btn.setLocked(True)
+            #else:
+                #btn.setLocked(False)
+            btn.setLocked(False)
             self.gagBtns.append(btn)
         self.stashContents()
 
@@ -311,7 +325,7 @@ class GagSelectionGui(DirectFrame, FSM):
                 self.ammoText.setText('%i/%i' % (plyr.getAttackAmmo(gagId), plyr.getAttackMaxAmmo(gagId)))
             else:
                 self.ammoText.setText('')
-            col = GagGlobals.TrackColorByName[GagGlobals.getTrackOfGag(gagId)]
+            col = self.tracks[0].trackColor
             self.ammoFrame['image_color'] = (col[0], col[1], col[2], 1.0)
         else:
             self.ammoFrame.hide()
@@ -414,13 +428,18 @@ class GagSelectionGui(DirectFrame, FSM):
         return tracks
 
     def load(self):
-        tracks = self.__accumulateTracks()
-        for i in xrange(len(tracks)):
-            track = GagTrack(self, tracks[i])
-            track.load()
-            track.reparentTo(self)
-            track.setX(FRAME_OFFSET * i)
-            self.tracks.append(track)
+        #tracks = self.__accumulateTracks()
+        #for i in xrange(len(tracks)):
+        #    track = GagTrack(self, tracks[i])
+        #    track.load()
+        #    track.reparentTo(self)
+        #    track.setX(FRAME_OFFSET * i)
+        #    self.tracks.append(track)
+        track = GagTrack(self, name = "Gags", color = (67 / 255.0, 243 / 255.0, 255 / 255.0))
+        track.load()
+        track.reparentTo(self)
+        track.setX(FRAME_OFFSET)
+        self.tracks.append(track)
 
         self.midpoint = (len(self.tracks) / 2.0) * -FRAME_OFFSET
         # Center the gui horizontally

@@ -21,7 +21,7 @@ class BasePhysicsObject(BasePhysicsObjectShared):
             self.waterCheckTask.remove()
             self.waterCheckTask = None
             
-    def setupPhysics(self, bodyNode, underneathSelf = False):
+    def setupPhysics(self, bodyNode, underneathSelf = None):
         BasePhysicsObjectShared.setupPhysics(self, bodyNode, underneathSelf)
         if hasattr(base, 'physicsWorld'):
             self.needsWaterCheck = True

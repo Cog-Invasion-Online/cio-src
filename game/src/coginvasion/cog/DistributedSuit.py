@@ -20,7 +20,6 @@ from src.coginvasion.avatar.DistributedAvatar import DistributedAvatar
 
 from SuitBank import SuitPlan
 from Suit import Suit
-from SuitUtils import getMoveIvalFromPath
 import SuitBank
 import SuitGlobals
 import Voice
@@ -65,8 +64,7 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
         # We will make a sequence of NPCWalkIntervals for each point2 in the path.
 
         self.clearMoveTrack()
-        self.moveIval = getMoveIvalFromPath(self, path, elapsedT, True, 'suitMoveIval')
-        self.moveIval.start()#elapsedT) # don't do the timestamp for now
+        
 
     def clearMoveTrack(self):
         if self.moveIval:
@@ -232,7 +230,7 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
         else:
             plan = SuitBank.getSuitById(arg)
 
-        voice = Voice.NORMAL
+        voice = None
         if variant:
             if isinstance(variant, (int, long, float, complex)):
                 variant = Variant.getVariantById(variant)
@@ -260,7 +258,6 @@ class DistributedSuit(Suit, DistributedAvatar, DelayDeletable):
         # Picked up by DistributedBattleZone:
         messenger.send('suitCreate', [self])
 
-        self.activateSmoothing(True, False)
         self.startSmooth()
         self.reparentTo(render)
 

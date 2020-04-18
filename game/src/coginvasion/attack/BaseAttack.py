@@ -1,5 +1,5 @@
 
-from panda3d.core import NodePath, Vec3, Point3
+from panda3d.core import NodePath, Vec3, Point3, OmniBoundingVolume
 
 from direct.actor.Actor import Actor
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -30,12 +30,41 @@ class BaseAttack(Precacheable, BaseAttackShared):
     ModelVMAnimate = True
     
     SpecialVM = False
+    SpecialVMCull = True
+    SpecialVMActor = None
+    SpecialVMFov = 54.0
+    SpecialVMOrigin = Point3(0)
+    SpecialVMAngles = Vec3(0)
+    SpecialVMScale = 1
 
     def __init__(self, sharedMetadata = None):
         BaseAttackShared.__init__(self, sharedMetadata)
         self.model = None
+        self.specialViewModel = None
         self.crosshair = CrosshairData()
         self.animTrack = None
+    
+    def hasSpecialViewModel(self):
+        return self.SpecialVM and (self.specialViewModel is not None) and self.isFirstPerson()
+
+    def unloadViewModel(self):
+        if self.specialViewModel:
+            self.specialViewModel.cleanup()
+        self.specialViewModel = None
+
+    def loadViewModel(self):
+        self.unloadViewModel()
+
+        if self.SpecialVM and self.SpecialVMActor:
+            modelName, anims = self.SpecialVMActor
+            self.specialViewModel = Actor(modelName, anims)
+            self.specialViewModel.setPos(self.SpecialVMOrigin)
+            self.specialViewModel.setHpr(self.SpecialVMAngles)
+            self.specialViewModel.setScale(self.SpecialVMScale)
+            self.specialViewModel.setBlend(frameBlend = base.config.GetBool('interpolate-frames', False))
+            if not self.SpecialVMCull:
+                self.specialViewModel.node().setBounds(OmniBoundingVolume())
+                self.specialViewModel.node().setFinal(1)
 
     def doDrawNoHold(self, drawAnim, drawAnimStart = None, drawAnimEnd = None,
                      drawAnimSpeed = 1.0):
@@ -208,10 +237,14 @@ class BaseAttack(Precacheable, BaseAttackShared):
 
     @classmethod
     def doPrecache(cls):
+        print "BaseAttack(%s).doPrecache()" % cls.ModelPath
         if cls.ModelAnimPath:
             precacheActor([cls.ModelPath, {'chan' : cls.ModelAnimPath, 'zero' : cls.ModelPath}])
         elif cls.ModelPath:
             precacheModel(cls.ModelPath)
+
+        if cls.SpecialVM and cls.SpecialVMActor:
+            precacheActor(cls.SpecialVMActor)
 
     def getName(self):
         return self.Name
@@ -238,27 +271,37 @@ class BaseAttack(Precacheable, BaseAttackShared):
         """
         return Vec3.zero()
 
+    def load(self):
+        BaseAttackShared.load(self)
+        if self.isLocal():
+            self.loadViewModel()
+
     def __loadAttackModel(self):
         if self.model:
             self.model.removeNode()
             self.model = None
 
-        if self.ModelAnimPath:
-            self.model = Actor(self.ModelPath, {'chan': self.ModelAnimPath, 'zero': self.ModelPath})
-        else:
-            self.model = loader.loadModel(self.ModelPath)
-        self.model.setPos(self.ModelOrigin)
-        self.model.setHpr(self.ModelAngles)
-        self.model.setScale(self.ModelScale)
-        self.model.setName(self.Name + "-model")
+        if self.ModelPath:
+            if self.ModelAnimPath:
+                self.model = Actor(self.ModelPath, {'chan': self.ModelAnimPath, 'zero': self.ModelPath})
+            else:
+                self.model = loader.loadModel(self.ModelPath)
+            self.model.setPos(self.ModelOrigin)
+            self.model.setHpr(self.ModelAngles)
+            self.model.setScale(self.ModelScale)
+            self.model.setName(self.Name + "-model")
 
         # copy the attack model to first person
-        if not self.SpecialVM and self.isFirstPerson():
-            self.getFPSCam().setVMGag(self.model, self.ModelVMOrigin,
-                                      self.ModelVMAngles, self.ModelVMScale,
-                                      self.Hold,
-                                      self.ModelAnimPath is not None and self.ModelVMAnimate)
         if self.isFirstPerson():
+
+            if self.hasSpecialViewModel():
+                self.getFPSCam().swapViewModel(self.specialViewModel, self.SpecialVMFov)
+            elif self.model:
+                self.getFPSCam().setVMGag(self.model, self.ModelVMOrigin,
+                                          self.ModelVMAngles, self.ModelVMScale,
+                                          self.Hold,
+                                          self.ModelAnimPath is not None and self.ModelVMAnimate)
+
             if not self.getViewModel().isEmpty() and self.action != self.StateOff:
                 self.getViewModel().show()
 
@@ -285,9 +328,8 @@ class BaseAttack(Precacheable, BaseAttackShared):
             self.notify.warning("Tried to equip attack, but no valid avatar.")
             return False
 
-        if self.ModelPath:
-            self.__loadAttackModel()
-            self.__holdAttackModel()
+        self.__loadAttackModel()
+        self.__holdAttackModel()
 
         return True
 
@@ -306,6 +348,9 @@ class BaseAttack(Precacheable, BaseAttackShared):
         if self.isFirstPerson():
             self.getFPSCam().clearVMGag()
             self.getFPSCam().clearVMAnimTrack()
+            self.getFPSCam().restoreViewModelFOV()
+            if self.hasSpecialViewModel():
+                self.getFPSCam().restoreViewModel()
             if not self.getViewModel().isEmpty():
                 self.getViewModel().hide()
 
@@ -313,6 +358,7 @@ class BaseAttack(Precacheable, BaseAttackShared):
 
     def cleanup(self):
         BaseAttackShared.cleanup(self)
+        self.unloadViewModel()
         self.crosshair.cleanup()
         del self.crosshair
         del self.model

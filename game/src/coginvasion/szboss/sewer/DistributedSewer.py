@@ -35,13 +35,30 @@ class DistributedSewer(DistributedBattleZone):
 
     def startPlayer(self):
         #render.setRenderModeWireframe()
-
+        
         #base.bspLevel.writeBamFile("bspLevel.bam")
     
         base.localAvatar.startPlay(gags = True, laff = True)
 
     def startLevel(self):
         base.bspLevel.reparentTo(render)
+        self.putPlayerAtStart()
         self.startPlayer()
 
         base.transitions.irisIn()
+
+    def putPlayerAtStart(self):
+        base.localAvatar.disableAvatarControls()
+        base.localAvatar.collisionsOff()
+        if base.localAvatar.walkControls.getCollisionsActive():
+            base.localAvatar.walkControls.setCollisionsActive(0)
+
+        for entnum in xrange(base.bspLoader.getNumEntities()):
+            classname = base.bspLoader.getEntityValue(entnum, "classname")
+            if classname == "info_player_start":
+                origin = base.bspLoader.getEntityValueVector(entnum, "origin")
+                angles = base.bspLoader.getEntityValueVector(entnum, "angles")
+                base.localAvatar.setPos(origin / 16.0)
+                base.localAvatar.setHpr(angles[1] - 90, angles[0], angles[2])
+                base.localAvatar.walkControls.controller.placeOnGround()
+        

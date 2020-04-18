@@ -53,8 +53,8 @@ class GenericThrowAttack(BaseAttack):
     def onSetAction(self, action):
         self.model.show()
         
-        if hasattr(self, 'WantLight') and not self.WantLight:
-            self.model.setLightOff(1)
+        #if hasattr(self, 'WantLight') and not self.WantLight:
+        #    self.model.setLightOff(1)
 
         self.avatar.doingActivity = False
 
@@ -63,8 +63,8 @@ class GenericThrowAttack(BaseAttack):
             self.avatar.doingActivity = True
             
             releaseFrame = self.suitType2ReleaseFrame.get(self.avatar.suitPlan.getSuitType()).get(self.ThrowAnim)
-            startTrack = self.getAnimationTrack(self.ThrowAnim, endFrame = releaseFrame, playRate = self.PlayRate, fullBody = False)
-            releaseTrack = self.getAnimationTrack(self.ThrowAnim, startFrame = releaseFrame, playRate = self.PlayRate, fullBody = False)
+            startTrack = self.getAnimationTrack(self.ThrowAnim, endFrame = releaseFrame, playRate = self.PlayRate, fullBody = True)
+            releaseTrack = self.getAnimationTrack(self.ThrowAnim, startFrame = releaseFrame, playRate = self.PlayRate, fullBody = True)
 
             self.setAnimTrack(
                 Sequence(

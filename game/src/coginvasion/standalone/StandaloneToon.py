@@ -12,11 +12,11 @@ from panda3d.core import NodePath
 
 import Standalone
 
-from src.coginvasion.toon import LocalToon
-from src.coginvasion.login.AvChoice import AvChoice
+#from src.coginvasion.toon import LocalToon
+#from src.coginvasion.login.AvChoice import AvChoice
 
 base.minigame = None
-base.cr.localAvChoice = AvChoice("00/01/05/19/01/19/01/19/13/05/27/27/00", "Dog", 0, 0, 0)#"00/08/00/10/01/12/01/10/13/05/27/27/00", "Ducky", 0, 0)
+#base.cr.localAvChoice = AvChoice("00/01/05/19/01/19/01/19/13/05/27/27/00", "Dog", 0, 0, 0)#"00/08/00/10/01/12/01/10/13/05/27/27/00", "Ducky", 0, 0)
 base.musicManager.setVolume(0.65)
 
 base.cr.playGame = None

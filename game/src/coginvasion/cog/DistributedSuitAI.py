@@ -15,7 +15,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
 from src.coginvasion.avatar.DistributedAvatarAI import DistributedAvatarAI
-from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE, ACT_VICTORY_DANCE, ACT_COG_FLY_DOWN
+from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_SMALL_FLINCH, ACT_DIE, ACT_VICTORY_DANCE, ACT_COG_FLY_DOWN, ACT_SIT, ACT_STUN
 from src.coginvasion.avatar.AvatarTypes import *
 from src.coginvasion.cog.ai.AIGlobal import *
 from src.coginvasion.cog.ai.tasks.BaseTaskAI import BaseTaskAI
@@ -31,6 +31,8 @@ import Variant
 import GagEffects
 
 import math
+
+STATE_STUNNED = BASENPC_STATE_LAST + 1
 
 class Task_GetFlyDownPath(BaseTaskAI):
     
@@ -98,15 +100,17 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         from src.coginvasion.attack.Attacks import ATTACK_EVIL_EYE, ATTACK_RED_TAPE, ATTACK_SACKED, ATTACK_HARDBALL, ATTACK_MARKET_CRASH
         from src.coginvasion.attack.Attacks import ATTACK_BITE
         
-        self.attackIds = [ATTACK_RED_TAPE, ATTACK_CLIPONTIE, ATTACK_BOMB, 
-                          ATTACK_PICKPOCKET, ATTACK_FIRED, ATTACK_EVIL_EYE, ATTACK_SACKED,
+        self.attackIds = [ATTACK_RED_TAPE, ATTACK_CLIPONTIE,
+                          ATTACK_PICKPOCKET, ATTACK_EVIL_EYE, ATTACK_SACKED,
                           ATTACK_HARDBALL, ATTACK_MARKET_CRASH, ATTACK_HALF_WINDSOR, ATTACK_BITE]
 
         self.activities = {ACT_WAKE_ANGRY   :   0.564,
                            ACT_SMALL_FLINCH :   2.25,
-                           ACT_DIE          :   6.0,
+                           ACT_DIE          :   9.0,
                            ACT_VICTORY_DANCE:   9.0,
-                           ACT_COG_FLY_DOWN :   6.834}
+                           ACT_COG_FLY_DOWN :   6.834,
+                           ACT_SIT          :   -1,
+                           ACT_STUN         :   10}
                            
         self.schedules.update({
         
@@ -135,32 +139,45 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
                     Task_Func(self.resetFwdSpeed)
                 ],
                 interruptMask = COND_SCHEDULE_DONE|COND_TASK_FAILED
+            ),
+            
+            "STUN"  :   Schedule(
+                [
+                    Task_StopMoving(self),
+                    Task_StopAttack(self),
+                    Task_SetActivity(self, ACT_STUN),
+                    Task_AwaitActivity(self),
+                    Task_SuggestState(self, STATE_IDLE)
+                ],
+                interruptMask = COND_SCHEDULE_DONE|COND_TASK_FAILED
             )
         
         })
         
-    def resetFwdSpeed(self):
-        baseSpeed = 10.0
-        classAttrs = self.suitPlan.getCogClassAttrs()
-
-        self.motor.fwdSpeed = baseSpeed * classAttrs.walkMod
-        self.motor.lookAtWaypoints = True
+        self.makeScheduleNames()
+        
+    def npcStun(self):
+        self.setNPCState(STATE_STUNNED)
+        self.changeSchedule(self.getScheduleByName("STUN"))
         
     def shouldYield(self, av):
         if isinstance(av, DistributedSuitAI):
-            theirClass = av.suitPlan.getCogClass()
-            myClass = self.suitPlan.getCogClass()
-            if theirClass < myClass:
+            #theirClass = av.suitPlan.getCogClass()
+            #myClass = self.suitPlan.getCogClass()
+            #if theirClass < myClass:
                 # Lower class than me. Don't yield
-                return False
-            elif theirClass == myClass and av.getLevel() < self.getLevel():
-                # Same class, but lower level. Don't yield
+            #    return False
+            #elif theirClass == myClass and av.getLevel() < self.getLevel():
+            #    # Same class, but lower level. Don't yield
+            #    return False
+            
+            if av.getLevel() < self.getLevel():
                 return False
                 
         return BaseNPCAI.shouldYield(self, av)
             
 
-    def setNPCState(self, state):
+    def setNPCState(self, state, makeIdeal = True):
         if state != self.npcState:
             if state == STATE_COMBAT:
                 if self.hasConditions(COND_NEW_TARGET):
@@ -168,9 +185,11 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
                                                        "Contact confirmed. Subject: Anarchy",
                                                        "Toon spotted!",
                                                        "Cogs, catch that Toon!"]))
-        BaseNPCAI.setNPCState(self, state)
+        BaseNPCAI.setNPCState(self, state, makeIdeal)
         
     def getSchedule(self):
+        if self.npcState == STATE_STUNNED:
+            return self.getScheduleByName("STUN")
         if self.npcState == STATE_COMBAT:
             if self.hasConditions(COND_TARGET_DEAD):
                 return self.getScheduleByName("VICTORY_TAUNT")
@@ -207,10 +226,11 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
         # setup the hitbox
         self.setHitboxData(0, 2, self.suitPlan.getHeight())
 
-        classAttrs = plan.getCogClassAttrs()
-        self.maxHealth = classAttrs.baseHp
-        self.maxHealth += SuitGlobals.calculateHP(self.level)
-        self.maxHealth *= classAttrs.hpMod
+        #classAttrs = plan.getCogClassAttrs()
+        #self.maxHealth = classAttrs.baseHp
+        #self.maxHealth += SuitGlobals.calculateHP(self.level)
+        #self.maxHealth *= classAttrs.hpMod
+        self.maxHealth = SuitGlobals.calculateHP(self.level)
 
         self.health = self.maxHealth
 
@@ -430,6 +450,10 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
                 
                 if gagLevel <= self.level:
                     self.battleZone.handleGagUse(gagId, avId)
+                    
+            # Mod hack
+            if avatar.__class__.__name__ == "ModPlayerAI":
+                self.battleZone.playerDealDamage(damage, avId)
             
             if isPlayer and not avId in self.damagers:
                 self.damagers.append(avId)
@@ -439,6 +463,14 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
 
                 #if self.firstTimeDead:
                 #    self.sendUpdate('doStunEffect')
+
+                from src.coginvasion.attack.DamageTypes import DMG_FORCE
+                if damageInfo.damageType == DMG_FORCE:
+                    # Killed by a stomper or something with great force.
+                    # Explode and be gone.
+                    self.getBattleZone().getTempEnts().makeExplosion(self.getPos(render), 0.5, soundVol = 0.32)
+                    self.closeSuit()
+                    return
 
                 deathAnim = self.__getAnimForGag(track, gagName)
                 #self.b_setAnimState(deathAnim, 0)
@@ -497,8 +529,11 @@ class DistributedSuitAI(DistributedAvatarAI, BaseNPCAI):
             #print "Setting death activity"
             #self.b_setActivity(ACT_DIE)
             self.clearTrack()
-            self.track = Sequence(Wait(6.0), Func(self.closeSuit))
+            self.track = Sequence(Wait(8.5), Func(self.closeSuit))
             self.track.start()
+            if self.battleZone:
+                self.battleZone.suitHPAtZero(self.doId)
+            messenger.send('suitDied', [self.doId])
 
     def closeSuit(self):
         self.notify.debug('Closing suit')

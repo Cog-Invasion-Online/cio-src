@@ -1,36 +1,55 @@
-from direct.distributed.DistributedObject import DistributedObject
+from direct.distributed.DistributedSmoothNode import DistributedSmoothNode
 
+from src.coginvasion.phys.PhysicsNodePath import BasePhysicsObject
 from Entity import Entity
 
-class DistributedEntity(DistributedObject, Entity):
+class DistributedEntity(DistributedSmoothNode, BasePhysicsObject, Entity):
     
-    def __init__(self, cr):
-        DistributedObject.__init__(self, cr)
-        Entity.__init__(self)
-        self.entnum = None
+    def __init__(self, cr, initNode = True):
+        DistributedSmoothNode.__init__(self, cr)
+        Entity.__init__(self, initNode)
+        BasePhysicsObject.__init__(self)
+        self.entnum = 0
+        
+    def setIsMapEnt(self, mapEnt):
+        self.mapEnt = bool(mapEnt)
         
     def announceGenerate(self):
-        DistributedObject.announceGenerate(self)
+        DistributedSmoothNode.announceGenerate(self)
 
-        from libpandabsp import CPointEntity
-        if isinstance(self.cEntity, CPointEntity):
-            self.setPos(self.cEntity.getOrigin())
-            self.setHpr(self.cEntity.getAngles())
-            
-        self.reparentTo(render)
+        self.enableThink()
+
+        if self.mapEnt:
+            from libpandabsp import CPointEntity
+            if isinstance(self.cEntity, CPointEntity):
+                self.setPos(render, self.cEntity.getOrigin())
+                self.setHpr(render, self.cEntity.getAngles())
+               
+            self.tryEntityParent()
         
     def setEntnum(self, entnum):
         self.entnum = entnum
         
-        self.cEntity = base.bspLoader.getCEntity(self.entnum)
-        base.bspLoader.linkCentToPyent(self.entnum, self)
+        if self.mapEnt:
+            self.cEntity = base.bspLoader.getCEntity(self.entnum)
+        self.preLinkLoad()
+        if self.mapEnt:
+            from libpandabsp import CBrushEntity
+            if isinstance(self.cEntity, CBrushEntity):
+                self.assign(self.cEntity.getModelNp())
+                #self.setupBrushEntityPhysics()
+            base.bspLoader.linkCentToPyent(self.entnum, self)
         self.load()
+        
+    def preLinkLoad(self):
+        pass
         
     def getEntnum(self):
         return self.entnum
         
     def disable(self):
+        self.cleanupPhysics()
         self.entnum = None
         self.unload()
-        DistributedObject.disable(self)
+        DistributedSmoothNode.disable(self)
         

@@ -17,8 +17,7 @@ class Nametag3d(Nametag, Clickable3d):
     def __init__(self):
         Nametag.__init__(self)
         Clickable3d.__init__(self, 'Nametag3d')
-        
-        self.contents.setShaderOff(1)
+
         self.contents.setLightOff(1)
         self.contents.hide(CIGlobals.ShadowCameraBitmask)
         CIGlobals.applyNoGlow(self.contents)
@@ -113,6 +112,8 @@ class Nametag3d(Nametag, Clickable3d):
         Nametag.update(self)
 
     def tick(self, task):
+        if not self.contents:
+            return task.cont
             
         distance = self.contents.getPos(base.cam).length()
 

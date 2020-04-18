@@ -1,6 +1,8 @@
 from Entity import Entity
 
 class LogicCounter(Entity):
+    
+    NeedNode = False
 
     def __init__(self, air = None, dispatch = None):
         Entity.__init__(self)

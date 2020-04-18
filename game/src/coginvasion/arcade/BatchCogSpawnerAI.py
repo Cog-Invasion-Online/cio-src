@@ -1,8 +1,13 @@
 from src.coginvasion.szboss.EntityAI import EntityAI
 
+from direct.showbase.DirectObject import DirectObject
+
 import random
 
-class BatchCogSpawnerAI(EntityAI):
+class BatchCogSpawnerAI(EntityAI, DirectObject):
+    
+    MaxSuits = 10
+    NumSuits = 0
     
     def __init__(self, air = None, dispatch = None):
         EntityAI.__init__(self, air, dispatch)
@@ -25,10 +30,16 @@ class BatchCogSpawnerAI(EntityAI):
         self.maxBatchMax = self.getEntityValueInt("maxBatchMax")
         self.looping = bool(self.getEntityValueInt("looping"))
         
+        self.accept('suitDied', self.__handleSuitDied)
+        
         if bool(self.getEntityValueInt("startNow")):
             self.Start()
+            
+    def __handleSuitDied(self, doId):
+        BatchCogSpawnerAI.NumSuits -= 1
         
     def unload(self):
+        self.ignore('suitDied')
         self.Stop()
         del self.ivalMin
         del self.ivalMax
@@ -54,7 +65,7 @@ class BatchCogSpawnerAI(EntityAI):
     def __batchSpawn(self, task):
         spawned = 0
         ents = self.bspLoader.findAllEntities("cogoffice_suitspawn")
-        while spawned < self.batchSize and len(ents):
+        while spawned < self.batchSize and len(ents) and BatchCogSpawnerAI.NumSuits < BatchCogSpawnerAI.MaxSuits and BatchCogSpawnerAI.NumSuits < self.dispatch.waveSuitsRemaining:
             ent = random.choice(ents)
             ent.Spawn()
             spawned += 1

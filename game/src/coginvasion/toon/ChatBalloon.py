@@ -29,11 +29,12 @@ class ChatBalloon(NodePath):
         NodePath.__init__(self, 'chatBalloon')
         # We don't want chat bubbles to glow from the bloom filter, it looks terrible.
         #CIGlobals.applyNoGlow(self)
-        
-        self.setAttrib(BloomAttrib.make(False), 3)
 
-        self.setLightOff(1)
-        self.hide(CIGlobals.ShadowCameraBitmask)
+        #self.setLightOff(1)
+        self.hide(CIGlobals.ShadowCameraBitmask | CIGlobals.ReflectionCameraBitmask)
+        # Disable bloom on the chat bubbles so you can actually read the text
+        self.setAttrib(BloomAttrib.make(False))
+        #self.setColorScale(0.8, 0.8, 0.8, 1.0, 1)
 
         self.model = model
         self.modelWidth = modelWidth
@@ -51,18 +52,18 @@ class ChatBalloon(NodePath):
         self.balloon = self.model.copyTo(self)
         self.balloon.setColor(self.background)
         self.balloon.setTransparency(self.background[3] < 1)
-        if is2d:
+       # self.balloon.setLightOff(1)
+       # if is2d:
             # Don't use the black outline on 2d chat balloons (old toontown).
-            self.balloon.setTextureOff(1)
-            self.balloon.setShaderOff(1)
-        else:
-            self.balloon.setShaderAuto(2)
+            #self.balloon.setTextureOff(1)
+            #self.balloon.setShaderOff(1)
+        #else:
+            #self.balloon.setShaderAuto(2)
 
         # Attach the TextNode:
         self.textNodePath = self.attachNewNode(self.textNode.generate())
         self.textNodePath.setTransparency(self.foreground[3] < 1)
         self.textNodePath.setAttrib(DepthWriteAttrib.make(0))
-        self.textNodePath.setShaderOff(1)
 
         # Resize the balloon as necessary:
         middle = self.balloon.find('**/middle')
@@ -108,6 +109,9 @@ class ChatBalloon(NodePath):
             self.buttonNodePath.setScale(ChatBalloon.BUTTON_SCALE)
         else:
             self.buttonNodePath = None
+
+        self.balloon.clearModelNodes()
+        self.balloon.flattenStrong()
 
         # Finally, enable anti-aliasing:
         #self.setAntialias(AntialiasAttrib.MMultisample)

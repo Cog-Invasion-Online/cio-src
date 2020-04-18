@@ -48,11 +48,7 @@ class DistributedHPBarrelAI(DistributedRestockBarrelAI):
             healAmt = self.hp
             
             if healAmt == -1:
-                # no specific heal amount, use the neighborhood amount
-                treasureData = TreasureGlobals.treasureSpawns.get(self.hoodId, None)
-                if treasureData is not None:
-                    # Buildings can be difficult, let's multiply the heal amount by 2.
-                    healAmt = (treasureData[1] * 2)
+                healAmt = 100
                     
             if (avatar.getHealth() + healAmt > avatar.getMaxHealth()):
                 healAmt = avatar.getMaxHealth() - avatar.getHealth()

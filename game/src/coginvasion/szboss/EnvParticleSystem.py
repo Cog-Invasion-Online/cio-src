@@ -1,61 +1,49 @@
-from Entity import Entity
+from DistributedEntity import DistributedEntity
 
 from src.coginvasion.toon import ParticleLoader
 from src.coginvasion.globals import BSPUtility, CIGlobals
 
-class EnvParticleSystem(Entity):
+class EnvParticleSystem(DistributedEntity):
 
-    StartsEnabled = 1
-    WorldVelocities = 2
+    WorldVelocities = 1 << 1
+    
+    StateDead = 0
+    StateAlive = 1
 
-    def __init__(self):
-        Entity.__init__(self)
+    def __init__(self, cr):
+        DistributedEntity.__init__(self, cr)
         self.setLightOff(1)
         self.hide(CIGlobals.ShadowCameraBitmask)
-        BSPUtility.applyUnlitOverride(self)
         
         self.system = None
-        self.spawnflags = 0
         
-    def Start(self):
+    def setEntityState(self, state):
+        oldState = self.getEntityState()
+        DistributedEntity.setEntityState(self, state)
+        
         if not self.system:
             return
             
-        if self.spawnflags & self.WorldVelocities:
-            self.system.start(self)#, render)
-        else:
-            self.system.start(self)
-            
-    def Stop(self):
-        if not self.system:
-            return
-            
-        self.system.softStop()
+        if state == self.StateAlive:
+            self.system.clearToInitial()
+            if self.hasSpawnFlags(self.WorldVelocities):
+                self.system.start(self)#, render)
+            else:
+                self.system.start(self)
+        elif state == self.StateDead and oldState == self.StateAlive:
+            self.system.softStop()
         
     def load(self):
-        Entity.load(self)
+        DistributedEntity.load(self)
         
-        entnum = self.cEntity.getEntnum()
-        loader = base.bspLoader
-        
-        ptfFile = loader.getEntityValue(entnum, "file")
-        scale = loader.getEntityValueFloat(entnum, "scale")
-        self.spawnflags = loader.getEntityValueInt(entnum, "spawnflags")
+        ptfFile = self.getEntityValue("file")
+        scale = self.getEntityValueFloat("scale")
         self.system = ParticleLoader.loadParticleEffect(ptfFile)
-        BSPUtility.applyUnlitOverride(self.system)
-        self.system.setLightOff(1)
         self.system.setScale(scale)
-        
-        self.setPos(self.cEntity.getOrigin())
-        self.setHpr(self.cEntity.getAngles())
-        self.reparentTo(render)
-        
-        if self.spawnflags & self.StartsEnabled:
-            self.Start()
             
     def unload(self):
-        self.Stop()
+        if self.system:
+            self.system.softStop()
         self.system = None
-        self.spawnflags = None
-        Entity.unload(self)
+        DistributedEntity.unload(self)
         

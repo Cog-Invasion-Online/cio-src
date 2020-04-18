@@ -3,7 +3,7 @@ from direct.interval.IntervalGlobal import Sequence, Func
 
 from panda3d.core import Point3
 
-from src.coginvasion.minigame.FlightProjectileInterval import FlightProjectileInterval
+from FlightProjectileInterval import FlightProjectileInterval
 
 class LobProjectileShared:
 
@@ -25,7 +25,11 @@ class LobProjectileShared:
 
     def playProjectile(self):
         ts = globalClockDelta.localElapsedTime(self.projTimestamp)
-        self.ival = Sequence(FlightProjectileInterval(self, startPos = Point3(*self.projStart), endPos = Point3(*self.projEnd),
+        p3Start = Point3(*self.projStart)
+        p3End = Point3(*self.projEnd)
+        self.setPos(p3Start)
+        self.headsUp(p3End)
+        self.ival = Sequence(FlightProjectileInterval(self, startPos = p3Start, endPos = p3End,
                                                 duration = self.projDuration, gravityMult = self.projGravity),
                              Func(self.ivalFinished))
         self.ival.start(0)#ts)

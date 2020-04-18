@@ -1,4 +1,4 @@
-from panda3d.core import Vec3, Quat
+from panda3d.core import Vec3, Quat, NodePath
 
 from direct.showbase.DirectObject import DirectObject
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -8,6 +8,8 @@ from src.coginvasion.cog.ai.tasks.BaseTaskAI import BaseTaskAI
 from src.coginvasion.cog.ai.tasks.TasksAI import *
 from src.coginvasion.avatar.Activities import ACT_WAKE_ANGRY, ACT_NONE, ACT_SMALL_FLINCH, ACT_DIE
 from src.coginvasion.avatar.Motor import Motor
+from src.coginvasion.battle.SoundEmitterSystemAI import *
+from src.coginvasion.phys import PhysicsUtils
 from ScheduleAI import Schedule
 from ConditionsAI import *
 from RelationshipsAI import *
@@ -44,6 +46,16 @@ class TakeDamageInfo:
         self.damage = None
         self.damageType = None
         
+class Hearing:
+    
+    def __init__(self):
+        self.soundList = []
+        self.soundBits = 0
+        
+    def cleanup(self):
+        self.soundList = None
+        self.soundBits = None
+        
 class BaseCombatCharacterAI:
     notify = directNotify.newCategory("BaseCombatCharacterAI")
         
@@ -71,6 +83,8 @@ class BaseNPCAI(BaseCombatCharacterAI):
     MAX_VISION_DISTANCE_SQR = 400*400
     MAX_HEAR_DISTANCE_SQR = 50*50
     MAX_OLD_ENEMIES = 4
+    
+    BASE_SPEED = 10
 
     def __init__(self, battleZone = None):
         self.lastConditions = 0
@@ -79,14 +93,20 @@ class BaseNPCAI(BaseCombatCharacterAI):
         self.memory = 0
         self.memoryPosition = None
         
+        self.wallPoints = None
+        
+        self.attackLOSData = [True, Vec3()]
+        
         self.lastHPPerct = 1.0
         
         # Must be derived from the Avatar class
         self.target = None
         
+        self.rememberCurrentSchedule = True
         self.lastSchedule = None
         self.schedule = None
         self.npcState = STATE_IDLE
+        self.npcStateTime = 0.0
         self.idealState = STATE_IDLE
 
         self.path = []
@@ -118,16 +138,16 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_SetActivity(self, ACT_NONE),
                     Task_Wait(-1)
                 ],
-                interruptMask = COND_NEW_TARGET|COND_SEE_FEAR|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE|COND_FRIEND_IN_WAY
+                interruptMask = COND_NEW_TARGET|COND_SEE_FEAR|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE|COND_FRIEND_IN_WAY|COND_HEAR_SOMETHING|COND_IN_WALL
             ),
 
             "WAKE_ANGRY"    :   Schedule(
                 [
                     Task_StopMoving(self),
                     Task_StopAttack(self),
-                    Task_Remember(self, MEMORY_COMBAT_WAKE),
-                    Task_SetActivity(self, ACT_WAKE_ANGRY),
-                    Task_AwaitActivity(self)#,
+                    Task_Remember(self, MEMORY_COMBAT_WAKE)#,
+                    #Task_SetActivity(self, ACT_WAKE_ANGRY),
+                    #Task_AwaitActivity(self)#,
                     #Task_FaceIdeal(self)
                 ]
             ),
@@ -138,7 +158,8 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_StopAttack(self),
                     Task_SetActivity(self, ACT_NONE),
                     Task_FaceTarget(self)
-                ]
+                ],
+                interruptMask = COND_SCHEDULE_DONE|COND_TASK_FAILED|COND_IN_WALL
             ),
 
             "TAKE_COVER_FROM_ORIGIN"    :   Schedule(
@@ -151,7 +172,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_Remember(self, MEMORY_IN_COVER),
                     Task_Func(self.setIdealYaw, [179])
                 ],
-                interruptMask = COND_NEW_TARGET|COND_FRIEND_IN_WAY
+                interruptMask = COND_NEW_TARGET|COND_FRIEND_IN_WAY|COND_IN_WALL
             ),
 
             "TAKE_COVER_FROM_TARGET"    :   Schedule(
@@ -166,7 +187,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_FaceTarget(self),
                     Task_Wait(1.0)
                 ],
-                interruptMask = COND_NEW_TARGET|COND_FRIEND_IN_WAY
+                interruptMask = COND_NEW_TARGET|COND_FRIEND_IN_WAY|COND_IN_WALL
             ),
 
             "CHASE_TARGET_FAILED"   :   Schedule(
@@ -180,7 +201,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_FaceTarget(self),
                     Task_Wait(1.0)
                 ],
-                interruptMask = COND_NEW_TARGET|COND_CAN_ATTACK|COND_FRIEND_IN_WAY
+                interruptMask = COND_NEW_TARGET|COND_CAN_ATTACK|COND_FRIEND_IN_WAY|COND_IN_WALL
             ),
 
             "CHASE_TARGET"  :   Schedule(
@@ -188,22 +209,36 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_StopAttack(self),
                     Task_GetPathToTarget(self),
                     Task_RunPath(self),
-                    Task_AwaitMovement(self)
+                    Task_AwaitMovement(self, toTarget = True)
                 ],
                 failSched = "CHASE_TARGET_FAILED",
-                interruptMask = COND_NEW_TARGET | COND_TASK_FAILED | COND_CAN_ATTACK | COND_FRIEND_IN_WAY
+                interruptMask = COND_NEW_TARGET | COND_TASK_FAILED | COND_CAN_ATTACK | COND_FRIEND_IN_WAY | COND_IN_WALL
             ),
             "ATTACK"        :   Schedule(
                 [
                     Task_StopMoving(self),
                     Task_FaceTarget(self),
                     Task_EquipAttack(self),
-                    Task_SpeakAttack(self),
+                    Task_SetFailSchedule(self, "MAKE_ATTACK_LOS"),
+                    Task_TestAttackLOS(self),
+                    Task_SetFailSchedule(self, "FAIL"),
                     Task_FireAttack(self),
+                    Task_SpeakAttack(self),
                     Task_AwaitAttack(self),
                     Task_SetPostAttackSchedule(self)
                 ],
-                interruptMask=COND_HEAVY_DAMAGE|COND_LIGHT_DAMAGE|COND_TARGET_OCCLUDED|COND_TARGET_DEAD|COND_NEW_TARGET
+                interruptMask=COND_FRIEND_IN_WAY|COND_HEAVY_DAMAGE|COND_LIGHT_DAMAGE|COND_TARGET_OCCLUDED|COND_TARGET_DEAD|COND_NEW_TARGET|COND_IN_WALL
+            ),
+            "MAKE_ATTACK_LOS"   :   Schedule(
+                [
+                    Task_StopMoving(self),
+                    Task_StopAttack(self),
+                    Task_GetPathAttackLOS(self),
+                    Task_RunPath(self, turnThenRun = False),
+                    Task_AwaitMovement(self),
+                    Task_RestartLastSchedule(self)
+                ],
+                interruptMask = COND_SCHEDULE_DONE|COND_TASK_FAILED
             ),
             "ALERT_FACE"    :   Schedule(
                 [
@@ -212,7 +247,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_SetActivity(self, ACT_NONE),
                     Task_FaceIdeal(self)
                 ],
-                interruptMask=COND_NEW_TARGET|COND_SEE_FEAR|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE
+                interruptMask=COND_NEW_TARGET|COND_SEE_FEAR|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE|COND_IN_WALL
             ),
             "ALERT_SMALL_FLINCH"    :   Schedule(
                 [
@@ -234,24 +269,35 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     Task_AwaitMovement(self),
                     Task_FaceIdeal(self)
                 ],
-                interruptMask=COND_NEW_TARGET|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE|COND_SEE_HATE|COND_SEE_DISLIKE|COND_FRIEND_IN_WAY
+                interruptMask=COND_NEW_TARGET|COND_LIGHT_DAMAGE|COND_HEAVY_DAMAGE|COND_SEE_HATE|COND_SEE_DISLIKE|COND_FRIEND_IN_WAY|COND_IN_WALL
             ),
             "YIELD_TO_FRIEND"   :   Schedule(
                 [
                     Task_StopMoving(self),
                     Task_StopAttack(self),
                     Task_GetPathYieldToFriend(self),
-                    Task_RunPath(self),
-                    Task_AwaitMovement(self, watchTarget = True),
-                    Task_RestartLastSchedule(self)
+                    Task_RunPath(self, turnThenRun = False),
+                    Task_AwaitMovement(self, watchTarget = True)#,
+                    #Task_RestartLastSchedule(self)
                 ],
-                interruptMask=COND_NEW_TARGET|COND_SCHEDULE_DONE|COND_TASK_FAILED
+                interruptMask=COND_NEW_TARGET|COND_SCHEDULE_DONE|COND_TASK_FAILED|COND_IN_WALL
+            ),
+            "CLEAR_WALL"    :   Schedule(
+                [
+                    Task_StopMoving(self),
+                    Task_StopAttack(self),
+                    Task_GetPathToClearWall(self),
+                    Task_RunPath(self, turnThenRun = False),
+                    Task_AwaitMovement(self),
+                    Task_RestartLastSchedule(self)
+                ]
             )
         }
 
         self.motor = Motor(self)
+        
+        self.makeScheduleNames()
 
-        self.scheduleNames = {v : k for k,v in self.schedules.items()}
         #print self.schedules
         #print self.scheduleNames
 
@@ -261,10 +307,20 @@ class BaseNPCAI(BaseCombatCharacterAI):
         self.avatarsInSight = []
         
         self.capableAttacks = []
+        self.hearing = Hearing()
         
         self.oldTargets = deque(maxlen = self.MAX_OLD_ENEMIES)
         
         self.runAITask = None
+        
+    def resetFwdSpeed(self):
+        baseSpeed = self.BASE_SPEED
+
+        self.motor.fwdSpeed = baseSpeed
+        self.motor.lookAtWaypoints = True
+        
+    def makeScheduleNames(self):
+        self.scheduleNames = {v : k for k,v in self.schedules.items()}
 
     def remember(self, bits):
         self.memory |= bits
@@ -377,12 +433,18 @@ class BaseNPCAI(BaseCombatCharacterAI):
          
     def getMotor(self):
         return self.motor
+        
+    def getYaw(self):
+        return self.getH()
+        
+    def setYaw(self, yaw):
+        self.setH(yaw)
 
     def changeYaw(self, yawSpeed = None):
         if not yawSpeed:
             yawSpeed = self.yawSpeed
 
-        current = CIGlobals.angleMod(self.getH())
+        current = CIGlobals.angleMod(self.getYaw())
         ideal = self.idealYaw
         #print current, ideal
         if current != ideal:
@@ -404,7 +466,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
                     # turning right
                     move = -speed
 
-            self.setH(CIGlobals.angleMod(current + move))
+            self.setYaw(CIGlobals.angleMod(current + move))
         else:
             move = 0
 
@@ -417,14 +479,14 @@ class BaseNPCAI(BaseCombatCharacterAI):
         self.idealYaw = CIGlobals.angleMod(yaw)
 
     def getYawDiff(self):
-        currentYaw = CIGlobals.angleMod(self.getH())
+        currentYaw = CIGlobals.angleMod(self.getYaw())
         if currentYaw == self.idealYaw:
             return 0
 
         return CIGlobals.angleDiff(self.idealYaw, currentYaw)
 
-    def isFacingIdeal(self):
-        return abs(self.getYawDiff()) <= 0.006
+    def isFacingIdeal(self, epsilon = 0.006):
+        return abs(self.getYawDiff()) <= epsilon
 
     def getScheduleName(self, schedInst):
         return self.scheduleNames.get(schedInst, "Not found")
@@ -445,8 +507,10 @@ class BaseNPCAI(BaseCombatCharacterAI):
             sched.cleanup()
         self.motor.cleanup()
         self.motor = None
+        self.rememberCurrentSchedule = None
         self.memoryPosition = None
         self.npcState = None
+        self.npcStateTime = None
         self.idealState = None
         self.capableAttacks = None
         self.schedules = None
@@ -457,6 +521,8 @@ class BaseNPCAI(BaseCombatCharacterAI):
         self.avatarsInSight = None
         self.schedule = None
         self.lastSchedule = None
+        self.hearing.cleanup()
+        self.hearing = None
         
     #def setTarget(self, target):
     #    self.clearTarget()
@@ -512,15 +578,26 @@ class BaseNPCAI(BaseCombatCharacterAI):
         return self.isPlayerInPVS(plyr) and self.getDistanceSquared(plyr) < self.MAX_HEAR_DISTANCE_SQR
         
     def doesLineTraceToPlayer(self, plyr):
-        # Is the player occluded by any BSP faces?
-        return self.battleZone.traceLine(self.getPos(render) + (0, 0, 3.5 / 2), plyr.getPos(render) + (0, 0, 2.0))
+        # Do we have a clear LOS to the player?
+        world = self.battleZone.physicsWorld
+        result = PhysicsUtils.rayTestClosestNotMe(self,
+            self.getPos(render) + self.getEyePosition(), plyr.getPos(render) + plyr.getEyePosition(),
+            CIGlobals.WorldGroup | CIGlobals.CharacterGroup, world)
+            
+        # Assume clear LOS if ray hit nothing
+        if not result:
+            return True
+        
+        # Also clear LOS if ray hits the player
+        np = NodePath(result.getNode()).getParent()
+        return np.getKey() == plyr.getKey()
         
     def isPlayerInVisionCone(self, plyr):
         # Is the player in my angle of vision?
 
         toPlyr = plyr.getPos() - self.getPos()
         yaw = CIGlobals.angleMod(CIGlobals.vecToYaw(toPlyr))
-        diff = CIGlobals.angleDiff(yaw, CIGlobals.angleMod(self.getH()))
+        diff = CIGlobals.angleDiff(yaw, CIGlobals.angleMod(self.getYaw()))
 
         #print "Vision cone from self->player:", diff
 
@@ -554,13 +631,16 @@ class BaseNPCAI(BaseCombatCharacterAI):
 
         return self.doesLineTraceToPlayer(plyr)
         
-    def getBestVisibleTarget(self):
+    def getBestVisibleTarget(self, avs = None):
         target = None
         bestRelationship = RELATIONSHIP_NONE
         nearest = 9999999
         
-        for i in xrange(len(self.avatarsInSight)):
-            av = self.avatarsInSight[i]
+        if not avs:
+            avs = self.avatarsInSight
+        
+        for i in xrange(len(avs)):
+            av = avs[i]
             if av.getHealth() <= 0:
                 continue
             
@@ -628,6 +708,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
         if isDead:
             self.setConditions(COND_TARGET_DEAD)
             self.clearConditions(COND_SEE_TARGET | COND_TARGET_OCCLUDED)
+            self.clearTarget()
             return False
             
         targetPos = self.target.entity.getPos(render)
@@ -692,7 +773,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
         attacks = self.getAvailableAttacks()
         for i in xrange(len(attacks)):
             attack = attacks[i]
-            if attack.checkCapable(dot, distSqr) and attack.hasAmmo():
+            if attack.checkCapable(dot, distSqr) and attack.hasAmmo() and not attack.isCoolingDown():
                 #print attack, "is capable"
                 self.capableAttacks.append(attack.getID())
         
@@ -707,20 +788,17 @@ class BaseNPCAI(BaseCombatCharacterAI):
             #print "we see hate or dislike"
             target, relationship = self.getBestVisibleTarget()
             #print target, relationship
-            if ((self.target is None or target != self.target.entity) and target is not None):
+            if ((self.target is None or target != self.target.entity) and target is not None and target.takesDamage()):
                 if ((self.schedule and ((self.schedule.interruptMask & COND_NEW_TARGET) != 0)) or
                     not self.schedule):
-                    #print "pushing target"
                     self.pushTarget(self.target)
                     self.setConditions(COND_NEW_TARGET)
                     self.target = AITarget(target, relationship)
                         
         # Remember old targets
         if not self.target and self.popTarget():
-            #print "remembering old target"
             if ((self.schedule and ((self.schedule.interruptMask & COND_NEW_TARGET) != 0)) or
                not self.schedule):
-                #print "selected old target"
                 self.setConditions(COND_NEW_TARGET)
                     
         return self.target is not None
@@ -741,6 +819,7 @@ class BaseNPCAI(BaseCombatCharacterAI):
         if self.npcState == STATE_IDLE:
 
             # IDLE goes to ALERT upon being injured
+            # IDLE goes to ALERT upon hearing a sound
             # IDLE goes to COMBAT upon sighting an enemy
 
             if conditions & COND_NEW_TARGET:
@@ -752,6 +831,16 @@ class BaseNPCAI(BaseCombatCharacterAI):
                 self.idealState = STATE_ALERT
             elif conditions & COND_HEAVY_DAMAGE:
                 self.idealState = STATE_ALERT
+                
+            elif conditions & COND_HEAR_SOMETHING:
+                bestSound = self.bestSound()
+                if bestSound:
+                    self.makeIdealYaw(bestSound.origin)
+                    if ((bestSound.soundType & SOUND_COMBAT) or
+                    (self.getRelationshipTo(bestSound.emitter) == RELATIONSHIP_HATE and (bestSound.soundType & SOUND_SPEECH))):
+                        
+                        # We just heart sounds of combat or somebody that we hate.
+                        self.idealState = STATE_ALERT
 
         elif self.npcState == STATE_ALERT:
 
@@ -761,6 +850,12 @@ class BaseNPCAI(BaseCombatCharacterAI):
             if conditions & (COND_NEW_TARGET|COND_SEE_TARGET):
                 # If we see an enemy, we must attack
                 self.idealState = STATE_COMBAT
+                
+            elif conditions & COND_HEAR_SOMETHING:
+                self.idealState = STATE_ALERT
+                bestSound = self.bestSound()
+                if bestSound:
+                    self.makeIdealYaw(bestSound.origin)
         
         elif self.npcState == STATE_COMBAT:
             if not self.target:
@@ -776,14 +871,16 @@ class BaseNPCAI(BaseCombatCharacterAI):
         if self.npcState == STATE_NONE:
             return None
             
-        elif (self.npcState not in [STATE_SCRIPT, STATE_DEAD] and
-        self.hasConditions(COND_FRIEND_IN_WAY)):
+        #elif (self.npcState not in [STATE_SCRIPT, STATE_DEAD]) and self.hasConditions(COND_FRIEND_IN_WAY):
             # We can yield to a friend in any active state
-            return self.getScheduleByName("YIELD_TO_FRIEND")
+        #    return self.getScheduleByName("YIELD_TO_FRIEND")
+        if (self.npcState not in [STATE_SCRIPT, STATE_DEAD]) and self.hasConditions(COND_IN_WALL):
+            # Get out of the wall
+            return self.getScheduleByName("CLEAR_WALL")
 
         elif self.npcState == STATE_IDLE:
-        #    if self.hasConditions(COND_HEAR_SOUND):
-        #        return self.getScheduleByName("ALERT_FACE")
+            if self.hasConditions(COND_HEAR_SOMETHING):
+                return self.getScheduleByName("ALERT_FACE")
             return self.getScheduleByName("IDLE_STAND")
 
         elif self.npcState == STATE_ALERT:
@@ -792,6 +889,8 @@ class BaseNPCAI(BaseCombatCharacterAI):
                 return self.getScheduleByName("TAKE_COVER_FROM_ORIGIN")
                 #else:
                 #    return self.getScheduleByName("ALERT_SMALL_FLINCH")
+            elif self.hasConditions(COND_HEAR_SOMETHING):
+                return self.getScheduleByName("ALERT_FACE")
             return self.getScheduleByName("IDLE_STAND")
 
         elif self.npcState == STATE_COMBAT:
@@ -808,7 +907,6 @@ class BaseNPCAI(BaseCombatCharacterAI):
             elif self.hasConditions(COND_LIGHT_DAMAGE) and not self.hasMemory(MEMORY_FLINCHED):
                 return self.getScheduleByName("SMALL_FLINCH")
             elif self.hasConditions(COND_HEAVY_DAMAGE):
-                #print "We need to take cover from our target"
                 return self.getScheduleByName("TAKE_COVER_FROM_TARGET")
             elif not self.hasConditions(COND_SEE_TARGET):
                 if not self.hasConditions(COND_TARGET_OCCLUDED):
@@ -830,7 +928,11 @@ class BaseNPCAI(BaseCombatCharacterAI):
         return None
         
     def shouldYield(self, av):
-        if av.getHealth() < self.getHealth():
+        if not self.canMove():
+            return False
+        elif self.canMove() and not av.canMove():
+            return False
+        elif av.getHealth() < self.getHealth():
             # Don't yield to someone who has less health than me.
             # We should probably protect them.
             return False
@@ -846,6 +948,74 @@ class BaseNPCAI(BaseCombatCharacterAI):
         
     def getYieldDistance(self):
         return 5.0
+        
+    def getHearingSensitivity(self):
+        return 1.0
+        
+    def bestSound(self):
+        """Returns the closest sound to the NPC."""
+        
+        closestSoundDist = 500*500
+        closestSound = None
+        for sound in self.battleZone.soundEmitterSystem.getSounds():
+            distToSound = (sound.origin - self.getPos()).lengthSquared()
+            if distToSound < closestSoundDist:
+                closestSound = sound
+                closestSoundDist = distToSound
+                
+        return closestSound
+        
+    def listen(self):
+        """Listen for nearby sounds."""
+        
+        self.clearConditions(COND_HEAR_DANGER | COND_HEAR_SOMETHING | COND_VP_JUMPING)
+        
+        self.hearing.soundList = []
+        self.hearing.soundBits = 0
+        
+        myLeaf = self.battleZone.bspLoader.findLeaf(self.getPos() + (0, 0, 0.05))
+        
+        hearingSensitivity = self.getHearingSensitivity()
+        
+        bits = 0
+        
+        for sound in self.battleZone.soundEmitterSystem.getSounds():
+            if sound.emitter == self:
+                # I don't care about sounds I make
+                continue
+                
+            soundLeaf = self.battleZone.bspLoader.findLeaf(sound.origin + (0, 0, 0.05))
+            if not self.battleZone.bspLoader.isClusterVisible(myLeaf, soundLeaf):
+                # Not potentially audible
+                continue
+            distToSound = (sound.origin - self.getPos()).length()
+            maxHearDistance = sound.volume * hearingSensitivity
+            if distToSound > maxHearDistance:
+                # Too far to hear it
+                continue
+            # Well, we hear something
+            bits |= COND_HEAR_SOMETHING
+            if (sound.soundType & SOUND_VP_JUMP) != 0:
+                bits |= COND_VP_JUMPING
+                
+            self.hearing.soundList.append(sound)
+            self.hearing.soundBits |= sound.soundType
+            
+        self.setConditions(bits)
+        
+    def checkWalls(self):
+        result = self.battleZone.physicsWorld.contactTest(self.bodyNode)
+        for i in range(result.getNumContacts()):
+            contact = result.getContact(i)
+            other = contact.getNode1()
+            mfld = contact.getManifoldPoint()
+            if (other.getIntoCollideMask() & CIGlobals.CharacterGroup) != 0:
+                self.wallPoints = [mfld.getPositionWorldOnA(), mfld.getPositionWorldOnB()]
+                self.setConditions(COND_IN_WALL)
+                return
+                
+        self.clearConditions(COND_IN_WALL)
+        #self.wallPoints = None
         
     def look(self):
         """Look at the world in front of me."""
@@ -919,16 +1089,17 @@ class BaseNPCAI(BaseCombatCharacterAI):
     def scheduleChange(self):
         pass
 
-    def changeSchedule(self, sched):
+    def changeSchedule(self, sched, remember = True):
         if sched:
             sched.reset()
 
-        #print "Change schedule to", self.getScheduleName(sched)
-        self.lastSchedule = self.schedule
+        if self.rememberCurrentSchedule:
+            self.lastSchedule = self.schedule
+        self.rememberCurrentSchedule = remember
         self.schedule = sched
         self.conditionsMask = 0
 
-    def setNPCState(self, state):
+    def setNPCState(self, state, makeIdeal = True):
 
         #print "Set state to", state
 
@@ -939,6 +1110,11 @@ class BaseNPCAI(BaseCombatCharacterAI):
             self.forget(MEMORY_COMBAT_WAKE)
 
         self.npcState = state
+        self.npcStateTime = globalClock.getFrameTime()
+        if makeIdeal:
+            self.idealState = state
+            
+    def setIdealState(self, state):
         self.idealState = state
 
     def maintainSchedule(self):
@@ -976,14 +1152,11 @@ class BaseNPCAI(BaseCombatCharacterAI):
         if self.schedule:
             run = self.schedule.runSchedule()
             if run == SCHED_COMPLETE:
-                #print "schedule complete"
                 self.setConditions(COND_SCHEDULE_DONE)
             elif run == SCHED_FAILED:
-                #print "task failed"
                 self.setConditions(COND_TASK_FAILED)
             else:
                 pass
-                #print "schedule still running"
         
     def startAI(self):
         self.stopAI()
@@ -1008,12 +1181,15 @@ class BaseNPCAI(BaseCombatCharacterAI):
             self.notify.warning("Cannot run AI without a battle zone!")
             return
 
-        if self.isDead():
-            self.npcState = STATE_DEAD
+        if self.isDead() and self.npcState != STATE_DEAD:
+            self.setNPCState(STATE_DEAD, makeIdeal = False)
             
         # Don't bother with this crap if we are dead.
         if self.npcState != STATE_DEAD and self.npcState != STATE_NONE:
             self.look()
+            self.listen()
+            if self.canMove():
+                self.checkWalls()
             self.clearConditions(self.getIgnoreConditions())
             self.getTarget()
             

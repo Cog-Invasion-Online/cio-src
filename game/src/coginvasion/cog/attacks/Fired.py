@@ -8,10 +8,11 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import Point3
+from panda3d.core import Point3, NodePath, ColorBlendAttrib
 
 from direct.interval.IntervalGlobal import Func, ActorInterval, LerpScaleInterval, LerpColorScaleInterval, Sequence, Wait
 
+from src.coginvasion.base.Precache import precacheModel, precacheSound, precacheScene
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.attack.BaseAttack import BaseAttack
 from src.coginvasion.attack.LobProjectile import LobProjectile
@@ -21,9 +22,26 @@ import SuitAttacks
 
 GlowMdl = "phase_14/models/props/lightglow.egg"
 
+FireProj = None
+def getFireProj():
+    global FireProj
+    if not FireProj:
+        fireroot = NodePath('fireroot')
+        fireroot.setScale(1.25)
+        fireroot.setBillboardAxis()
+        #glow = loader.loadModel(GlowMdl)
+        #glow.reparentTo(fireroot)
+        #glow.setTransparency(1)
+        #glow.setColorScale(1, 0.5, 0, 0.5)
+        #glow.setY(-0.01)
+        #glow.setTwoSided(1)
+        #glow.setScale(0.85)
+        fire = SuitAttacks.getSuitParticle("fire").copyTo(fireroot)
+        FireProj = fireroot
+    return FireProj
+
 class FiredProjectile(LobProjectile):
 
-    FlameMdl = "phase_14/models/props/flame.bam"
     ImpactSoundPath = "phase_14/audio/sfx/SA_hot_air_flame_hit.ogg"
     FlameEmitSfx = "phase_14/audio/sfx/SA_hot_air_flame_emit.ogg"
 
@@ -36,18 +54,9 @@ class FiredProjectile(LobProjectile):
         LobProjectile.announceGenerate(self)
         self.setLightOff(1)
         self.hide(CIGlobals.ShadowCameraBitmask)
+        self.hide(CIGlobals.ReflectionCameraBitmask)
 
-        fireroot = self.attachNewNode('fireroot')
-        fireroot.setScale(1.25)
-        fireroot.setBillboardAxis()
-        glow = loader.loadModel(GlowMdl)
-        glow.reparentTo(fireroot)
-        glow.setTransparency(1)
-        glow.setColorScale(1, 0.5, 0, 0.5)
-        glow.setY(-0.01)
-        glow.setTwoSided(1)
-        glow.setScale(0.85)
-        fire = SuitAttacks.getSuitParticle("fire").copyTo(fireroot)
+        fireroot = getFireProj().copyTo(self)
 
         if not self.emitSound:
             self.emitSound = base.loadSfxOnNode(self.FlameEmitSfx, self)
@@ -66,7 +75,7 @@ class FiredProjectile(LobProjectile):
         LobProjectile.disable(self)
 
     def impact(self, pos, lastPos):
-        CIGlobals.makeDustCloud(pos, scale = (0.25, 0.9, 1),
+        CIGlobals.makeDustCloud(pos, scale = 0.25,
                                         sound = self.impactSound,
                                         color = (0.2, 0.2, 0.2, 0.6))
 
@@ -81,6 +90,14 @@ class Fired(BaseAttack, Fired_Shared):
         self.glowTrack = None
         self.glow = None
 
+    @classmethod
+    def doPrecache(cls):
+        super(Fired, cls).doPrecache()
+        precacheModel(GlowMdl)
+        precacheSound(FiredProjectile.ImpactSoundPath)
+        precacheSound(FiredProjectile.FlameEmitSfx)
+        precacheScene(SuitAttacks.getSuitParticle("fire"))
+
     def load(self):
         self.glow = loader.loadModel(GlowMdl)
         self.glow.reparentTo(self.avatar)
@@ -88,15 +105,16 @@ class Fired(BaseAttack, Fired_Shared):
         self.glow.setMaterialOff(1)
         self.glow.setP(90)
         self.glow.setTransparency(1)
+        self.glow.setDepthWrite(False)
         self.glow.setDepthOffset(1)
         self.glow.setColorScale(1, 0.5, 0, 0)
         self.glow.setScale(3)
         self.glow.hide(CIGlobals.ShadowCameraBitmask)
 
-        self.glowTrack = Sequence(LerpColorScaleInterval(self.glow, self.EmitFlameIval / 2, (1, 0.5, 0, 0.5),
+        self.glowTrack = Sequence(Func(self.glow.show), LerpColorScaleInterval(self.glow, self.EmitFlameIval / 2, (1, 0.5, 0, 0.5),
                                                          (1, 0.5, 0, 0), blendType = 'easeInOut'),
                                   LerpColorScaleInterval(self.glow, self.EmitFlameIval / 2, (1, 0.5, 0, 0),
-                                                         (1, 0.5, 0, 0.5), blendType = 'easeInOut'))
+                                                         (1, 0.5, 0, 0.5), blendType = 'easeInOut'), Func(self.glow.hide))
 
     def cleanup(self):
         if self.glowTrack:

@@ -10,6 +10,7 @@ from src.coginvasion.gags import GagGlobals
 from src.coginvasion.gagsnew.GumballProjectileAI import GumballProjectileAI
 from src.coginvasion.phys import PhysicsUtils
 from src.coginvasion.globals import CIGlobals
+from src.coginvasion.battle.SoundEmitterSystemAI import SOUND_COMBAT
 
 import random
 
@@ -25,6 +26,8 @@ class GumballBlaster_AI(BaseHitscanAI):
 
     FirePower = 300.0
     
+    Cost = 100
+    
     MIN_BURST_SIZE = 3
     MAX_BURST_SIZE = 15
     
@@ -33,8 +36,8 @@ class GumballBlaster_AI(BaseHitscanAI):
 
     def __init__(self):
         BaseHitscanAI.__init__(self)
-        self.actionLengths.update({self.StateDraw: 0.7085,
-                                   self.StateFire: 0.5417})
+        self.actionLengths.update({self.StateDraw: 16 / 24.0,
+                                   self.StateFire: 13 / 24.0})
         self.ammo = 150
         self.maxAmmo = 150
         
@@ -134,6 +137,8 @@ class GumballBlaster_AI(BaseHitscanAI):
         proj.generateWithRequired(self.avatar.getBattleZone().zoneId)
         proj.addHitCallback(self.onProjectileHit)
         proj.addExclusion(self.avatar)
+        
+        self.avatar.emitSound(SOUND_COMBAT, self.fireOrigin, duration = 0.25)
             
     def checkCapable(self, dot, squaredDistance):
         return 10*10 <= squaredDistance <= 30*30

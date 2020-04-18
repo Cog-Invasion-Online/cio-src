@@ -12,17 +12,25 @@ class Bomb_AI(BaseAttackAI, BombShared):
 
     ThrowPower = 100.0
     FriendlyFire = True
+    
+    HasCooldown = True
+    CooldownTime = 10.0
 
     def __init__(self):
         BaseAttackAI.__init__(self)
-        self.actionLengths.update({self.StateThrow  :   1.0})
+        self.actionLengths.update({self.StateThrow  :   1.5})
 
         self.throwOrigin = Point3(0)
         self.traceOrigin = Point3(0)
         self.traceVector = Vec3(0)
 
-        self.maxAmmo = 2
-        self.ammo = 2
+        self.maxAmmo = 255
+        self.ammo = 255
+        
+    def determineNextAction(self, ca):
+        if ca == self.StateThrow:
+            self.avatar.npcFinishAttack()
+        return self.StateIdle
         
     def getTauntChance(self):
         return 0.5
@@ -32,7 +40,6 @@ class Bomb_AI(BaseAttackAI, BombShared):
 
     def onSetAction(self, action):
         if action == self.StateThrow:
-            self.takeAmmo(-1)
 
             throwVector = PhysicsUtils.getThrowVector(
                 self.traceOrigin,
@@ -48,15 +55,19 @@ class Bomb_AI(BaseAttackAI, BombShared):
             proj.node().setLinearVelocity(throwVector * self.ThrowPower)
             proj.d_clearSmoothing()
             proj.d_broadcastPosHpr()
+            
+            self.startCooldown()
 
     def checkCapable(self, dot, squaredDistance):
         return squaredDistance >= 25*25 and squaredDistance <= 50*50
 
     def npcUseAttack(self, target):
         if not self.canUse():
-            return
+            return False
 
         self.throwOrigin = (self.avatar.getPos(render) + (0, 0, self.avatar.getHeight() / 2.0)) + (self.avatar.getQuat().getForward() * 2)
         self.traceOrigin = self.throwOrigin
         self.traceVector = ((target.getPos(render) + (0, 0, target.getHeight() / 2.0)) - self.throwOrigin).normalized()
         self.setNextAction(self.StateThrow)
+        
+        return True

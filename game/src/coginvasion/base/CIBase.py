@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3, MemoryUsage, MemoryUsagePointers, RescaleNormalAttrib
+from panda3d.core import loadPrcFile, NodePath, PGTop, TextPropertiesManager, TextProperties, Vec3, MemoryUsage, MemoryUsagePointers, RescaleNormalAttrib, PStatCollector
 from panda3d.core import CollisionHandlerFloor, CollisionHandlerQueue, CollisionHandlerPusher, loadPrcFileData, TexturePool, ModelPool, RenderState, Vec4, Point3
 from panda3d.core import CollisionTraverser, CullBinManager, LightRampAttrib, Camera, OmniBoundingVolume, Texture, GraphicsOutput, PerspectiveLens, ModelNode, BitMask32, OrthographicLens
 from panda3d.bullet import BulletWorld, BulletDebugNode
@@ -32,12 +32,12 @@ from src.coginvasion.manager.UserInputStorage import UserInputStorage
 from src.coginvasion.margins.MarginManager import MarginManager
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.base.CogInvasionLoader import CogInvasionLoader
-from src.coginvasion.base.ShadowCaster import ShadowCaster
 from src.coginvasion.base.CITransitions import CITransitions
 from src.coginvasion.base.CIPostProcess import CIPostProcess
 from src.coginvasion.base import ScreenshotHandler
 from src.coginvasion.base import MusicCache
 from src.coginvasion.hood.SkyUtil import SkyUtil
+from src.coginvasion.phys.FPSCamera import FPSCamera
 from Lighting import OutdoorLightingConfig
 
 from HDR import HDR
@@ -48,6 +48,8 @@ from src.coginvasion.phys import PhysicsUtils
 import __builtin__
 import random
 import os
+
+LoadSfxCollector = PStatCollector("App:Show Code:Load SFX")
 
 class CIBase(ShowBase):
     notify = directNotify.newCategory("CIBase")
@@ -63,7 +65,7 @@ class CIBase(ShowBase):
             self.pipeline = RenderPipeline()
             self.pipeline.create(self)
         else:
-            ShowBase.__init__(self)
+            ShowBase.__init__(self)            
             self.loader.destroy()
             self.loader = CogInvasionLoader(self)
             __builtin__.loader = self.loader
@@ -117,6 +119,7 @@ class CIBase(ShowBase):
         # when doing multi-pass rendering.
         self.computeRoot = NodePath('computeRoot')
         self.computeCam = self.makeCamera(base.win)
+        self.computeCam.node().setCameraMask(CIGlobals.ComputeCameraBitmask)
         self.computeCam.node().setCullBounds(OmniBoundingVolume())
         self.computeCam.node().setFinal(True)
         self.computeCam.reparentTo(self.computeRoot)
@@ -160,13 +163,15 @@ class CIBase(ShowBase):
         self.bspLoader.setWantVisibility(True)
         self.bspLoader.setVisualizeLeafs(False)
         self.bspLoader.setWantLightmaps(True)
+        self.bspLoader.setPhysicsWorld(self.physicsWorld)
         #self.bspLoader.setShadowCamPos(Point3(-15, 5, 40))
         #self.bspLoader.setShadowResolution(60 * 2, 1024 * 1)
-        self.bspLoader.setPhysicsWorld(self.physicsWorld)
         self.bspLevel = None
-        self.materialData = {}
+        self.brushCollisionMaterialData = {}
         self.skyBox = None
         self.skyBoxUtil = None
+        
+        self.linkClientSideBSPEntities()
         
         #self.nmMgr = RNNavMeshManager.get_global_ptr()
         #self.nmMgr.set_root_node_path(self.render)
@@ -174,6 +179,8 @@ class CIBase(ShowBase):
         #self.nmMgr.start_default_update()
         #self.nmMgr.get_reference_node_path_debug().reparentTo(self.render)
         self.navMeshNp = None
+
+        self.precacheList = []
 
         # Setup 3d audio                                 run before igLoop so 3d positioning doesn't lag behind
         base.audio3d = Audio3DManager(base.sfxManagerList[0], camera, render)
@@ -285,6 +292,19 @@ class CIBase(ShowBase):
     def __update3DAudio(self, task):
         self.audio3d.update()
         return task.cont
+    def linkClientSideBSPEntities(self):
+        from src.coginvasion.szboss import FuncWater, Ropes, InfoPlayerRelocate, EnvLightGlow, PointSpotlight, EnvSun, PointDevshotCamera
+        self.bspLoader.linkEntityToClass("func_water", FuncWater.FuncWater)
+        self.bspLoader.linkEntityToClass("rope_begin", Ropes.RopeBegin)
+        self.bspLoader.linkEntityToClass("rope_keyframe", Ropes.RopeKeyframe)
+        self.bspLoader.linkEntityToClass("info_player_relocate", InfoPlayerRelocate.InfoPlayerRelocate)
+        self.bspLoader.linkEntityToClass("env_lightglow", EnvLightGlow.EnvLightGlow)
+        self.bspLoader.linkEntityToClass("point_spotlight", PointSpotlight.PointSpotlight)
+        self.bspLoader.linkEntityToClass("env_sun", EnvSun.EnvSun)
+        self.bspLoader.linkEntityToClass("point_devshot_camera", PointDevshotCamera.PointDevshotCamera)
+
+    def addPrecacheClass(self, cls):
+        self.precacheList.append(cls)
         
     def __updateShadersAndPostProcess(self, task):
         if self.shaderGenerator:
@@ -377,7 +397,7 @@ class CIBase(ShowBase):
             self.bspLevel.removeNode()
             self.bspLevel = None
         self.bspLoader.cleanup()
-        base.materialData = {}
+        base.brushCollisionMaterialData = {}
         
     #def cleanupNavMesh(self):
     #    if self.navMeshNp:
@@ -428,12 +448,18 @@ class CIBase(ShowBase):
         base.bspLoader.read(mapFile)
         base.bspLevel = base.bspLoader.getResult()
         base.bspLoader.doOptimizations()
+        #base.brushCollisionMaterialData = PhysicsUtils.makeBulletCollFromGeoms(base.bspLevel.find("**/hull"))
         for prop in base.bspLevel.findAllMatches("**/+BSPProp"):
             base.createAndEnablePhysicsNodes(prop)
         #base.setupNavMesh(base.bspLevel.find("**/model-0"))
         
-        try:    skyType = self.cr.playGame.hood.olc.skyType
-        except: skyType = 1#self.bspLoader.getEntityValueInt(0, "skytype")
+        try:
+            skyType = self.cr.playGame.hood.olc.skyType
+        except:
+            try:
+                skyType = int(self.bspLoader.getCEntity(0).getEntityValue("skytype"))
+            except:
+                skyType = 1
         
         if skyType != OutdoorLightingConfig.STNone:
             skyCubemap = loader.loadCubeMap(OutdoorLightingConfig.SkyData[skyType][2])
@@ -450,8 +476,16 @@ class CIBase(ShowBase):
 
     def loadSfxOnNode(self, sndFile, node):
         """ Loads up a spatialized sound and attaches it to the specified node. """
+        LoadSfxCollector.start()
         snd = self.audio3d.loadSfx(sndFile)
         self.audio3d.attachSoundToObject(snd, node)
+        LoadSfxCollector.stop()
+        return snd
+        
+    def loadSfx(self, sndFile):
+        LoadSfxCollector.start()
+        snd = ShowBase.loadSfx(self, sndFile)
+        LoadSfxCollector.stop()
         return snd
 
     def physicsReport(self):
@@ -528,6 +562,13 @@ class CIBase(ShowBase):
         shake = ShakeCamera(intensity, duration)
         shake.start(loop)
         return shake
+        
+    def emitShake(self, emitter, magnitude = 1.0, duration = 0.5):
+        dist = camera.getDistance(emitter)
+        maxDist = 100.0 * magnitude
+        maxIntense = 1.4 * magnitude
+        if dist <= maxDist:
+            self.doCamShake(maxIntense - (maxIntense * (dist / maxDist)), duration)
 
     def renderFrames(self):
         self.graphicsEngine.renderFrame()
@@ -565,7 +606,7 @@ class CIBase(ShowBase):
 
         if songName == self.currSongName:
             # Don't replay the same song.
-            return
+            return self.music
 
         self.stopMusic()
         
@@ -574,12 +615,14 @@ class CIBase(ShowBase):
         song = MusicCache.findSong(songName)
         if not song:
             self.notify.warning("Song `{0}` not found in cache.".format(songName))
-            return
+            return None
 
         self.music = song
         self.music.setLoop(looping)
         self.music.setVolume(volume)
         self.music.play()
+        
+        return self.music
         
     def fadeOutMusic(self, time = 1.0, music = None):
         if not music:
@@ -636,12 +679,12 @@ class CIBase(ShowBase):
     def setBloom(self, flag):
         self.bloomToggle = flag
 
-        #if not hasattr(self, 'filters'):
-        #    # Sanity check
-        #    return
+        if not hasattr(self, 'filters'):
+            # Sanity check
+            return
 
         #if flag:
-        #    self.filters.setBloom(desat = 0, intensity = 0.4, mintrigger = 0.85, maxtrigger = 1.0, size = "large")
+        #    self.filters.setBloom(desat = 0, intensity = 0.1, mintrigger = 1, maxtrigger = 2, size = "large")
         #else:
         #    self.filters.delBloom()
         
@@ -669,6 +712,9 @@ class CIBase(ShowBase):
         self.shaderGenerator.addShader(skb)
         self.shaderGenerator.addShader(dcm)
         
+        #print self.shaderGenerator.getPlanarReflections().getReflectionTexture()
+        #OnscreenImage(image = self.shaderGenerator.getPlanarReflections().getReflectionTexture(), scale = 0.3, pos = (0, 0, -0.7))
+        
         self.shaderGenerator.setShaderQuality(CIGlobals.getSettingsMgr().getSetting("shaderquality").getValue())
         
         if metadata.USE_REAL_SHADOWS and self.config.GetBool('pssm-debug-cascades', False):
@@ -678,7 +724,7 @@ class CIBase(ShowBase):
             np = aspect2d.attachNewNode(cm.generate())
             np.setScale(0.3)
             np.setPos(0, -0.7, -0.7)
-            np.setShader(Shader.load(Shader.SLGLSL, "phase_14/models/shaders/debug_csm.vert.glsl", "phase_14/models/shaders/debug_csm.frag.glsl"))
+            np.setShader(Shader.load(Shader.SLGLSL, "shaders/debug_csm.vert.glsl", "shaders/debug_csm.frag.glsl"))
             np.setShaderInput("cascadeSampler", self.shaderGenerator.getPssmArrayTexture())
             #cam = Camera('csmDbgCam')
             #tb = Trackball('tb')
@@ -695,7 +741,7 @@ class CIBase(ShowBase):
         self.filters.startup(self.win)
         self.filters.addCamera(self.cam)
         self.filters.setup()
-        
+
         self.hdr = HDR()
         self.setHDR(self.hdrToggle)
         self.setBloom(self.bloomToggle)
@@ -856,6 +902,15 @@ class CIBase(ShowBase):
         return camera2d
         
     def precacheStuff(self):
+        from src.coginvasion.base.Precache import Precacheable
+        for name, dclass in self.cr.dclassesByName.items():
+            if hasattr(dclass.getClassDef(), 'precache'):
+                print "Precaching dclass", dclass.getClassDef(), name
+                dclass.getClassDef().precache()
+                
+        for cls in self.precacheList:
+            cls.precache()
+
         from src.coginvasion.toon import ToonGlobals
         ToonGlobals.precacheToons()
 
@@ -864,20 +919,76 @@ class CIBase(ShowBase):
         from src.coginvasion.gags.LocationSeeker import LocationSeeker
         LocationSeeker.precache()
         
-        from src.coginvasion.gags.LocationGag import LocationGag
-        LocationGag.precache()
-        
-        from src.coginvasion.hood.DistributedBuilding import DistributedBuilding
-        DistributedBuilding.precache()
-        
         from src.coginvasion.cog import SuitBank
         SuitBank.precacheSuits()
+
+        from src.coginvasion.base.Precache import precacheActor, precacheModel, precacheScene, precacheMaterial, precacheTexture, precacheSound, precacheFont
+        precacheActor(CIGlobals.getSplat())
+        
+        from src.coginvasion.nametag import NametagGlobals
+        precacheScene(NametagGlobals.cardModel)
+        precacheScene(NametagGlobals.arrowModel)
+        precacheScene(NametagGlobals.chatBalloon3dModel)
+        precacheScene(NametagGlobals.chatBalloon2dModel)
+        precacheScene(NametagGlobals.thoughtBalloonModel)
+
+        precacheModel("phase_3.5/models/props/suit-particles.bam")
+        precacheModel("phase_14/models/props/creampie_gib.bam")
+        
+        # UI
+        precacheTexture("phase_14/maps/crosshair_4.png")
+        precacheTexture("phase_14/maps/damage_effect.png")
+
+        # Explosion
+        precacheModel("phase_3.5/models/props/explosion.bam")
+        precacheTexture("phase_14/maps/water.png")
+        precacheTexture("materials/particles/largesmoke.png")
+
+        # Decals
+        precacheMaterial("phase_14/materials/pie_splat.mat")
+        precacheMaterial("materials/scorch1.mat")
+        precacheMaterial("materials/bigshot1.mat")
+        
+        # Concrete
+        for i in range(1, 5 + 1):
+            precacheMaterial("materials/decals/concrete/shot{0}.mat".format(i))
+        # Wood
+        for i in range(1, 5 + 1):
+            precacheMaterial("materials/decals/wood/shot{0}.mat".format(i))
+        # Glass
+        for i in range(1, 5 + 1):
+            precacheMaterial("materials/decals/glass/shot{0}.mat".format(i))
+        # Metal
+        for i in range(1, 5 + 1):
+            precacheMaterial("materials/decals/glass/shot{0}.mat".format(i))
+        
+        # Fonts
+        precacheFont(CIGlobals.getSuitFont())
+        precacheFont(CIGlobals.getToonFont())
+        precacheFont(CIGlobals.getMickeyFont())
+        precacheFont(CIGlobals.getMinnieFont())
+        
+        precacheActor(['phase_14/models/props/tnt.bam', {'chan': 'phase_5/models/props/tnt-chan.bam'}])
+        # Cog propeller
+        precacheActor(['phase_4/models/props/propeller-mod.bam', {'chan': 'phase_4/models/props/propeller-chan.bam'}])
+        
+        from src.coginvasion.base.MuzzleParticle import MuzzleParticle
+        MuzzleParticle.precache()
+        
+        # Sounds
+        ricsFormat = "sound/weapons/ric{0}.wav"
+        rics = [1, 5]
+        for ric in rics:
+            precacheSound(ricsFormat.format(ric))
+            
+        from src.coginvasion.phys import Surfaces
+        Surfaces.precacheSurfaces()
         
     def setAmbientOcclusion(self, toggle):
         self.aoToggle = toggle
-        #if not hasattr(self, 'filters'):
-        #    # Sanity check
-        #    return
+        if not hasattr(self, 'filters'):
+            # Sanity check
+            return
         #if toggle:
         #    self.filters.setAmbientOcclusion()
         #else:
@@ -886,9 +997,9 @@ class CIBase(ShowBase):
     def setFXAA(self, toggle):
         self.fxaaToggle = toggle
         
-        #if not hasattr(self, 'filters'):
-        #    # Sanity check
-        #    return
+        if not hasattr(self, 'filters'):
+            # Sanity check
+            return
         
         #if toggle:
         #    self.filters.setFXAA()
@@ -898,8 +1009,8 @@ class CIBase(ShowBase):
     def setHDR(self, toggle):
         self.hdrToggle = toggle
 
-        #if not hasattr(self, 'hdr'):
-        #    return
+        if not hasattr(self, 'hdr'):
+            return
 
         if toggle:
             # Don't clamp lighting calculations with hdr.

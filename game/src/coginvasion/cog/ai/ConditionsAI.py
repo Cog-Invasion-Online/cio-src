@@ -17,6 +17,14 @@ COND_TASK_FAILED        = 1 << 14
 COND_SCHEDULE_DONE      = 1 << 15
 COND_CAN_ATTACK         = 1 << 16
 COND_FRIEND_IN_WAY      = 1 << 17
+COND_HEAR_SOMETHING     = 1 << 18
+COND_HEAR_DANGER        = 1 << 19 # I hear something bad
+COND_HEAR_HATE          = 1 << 20
+COND_CAN_RANGE_ATTACK1  = 1 << 21
+COND_CAN_RANGE_ATTACK2  = 1 << 22
+COND_FOLLOW_TARGET_FAR  = 1 << 23
+COND_IN_WALL            = 1 << 24
+COND_VP_JUMPING         = 1 << 25
 
 AllConditions = [
     COND_SEE_HATE,
@@ -36,5 +44,6 @@ AllConditions = [
     COND_TASK_FAILED,
     COND_SCHEDULE_DONE,
     COND_CAN_ATTACK,
-    COND_FRIEND_IN_WAY
+    COND_FRIEND_IN_WAY,
+    COND_HEAR_DANGER
 ]

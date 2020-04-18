@@ -46,11 +46,11 @@ class GameRulesAI:
         return True
 
     def canDamage(self, avatarA, avatarB, attackUsed):
-        if attackUsed.FriendlyFire:
+        if attackUsed and attackUsed.FriendlyFire and avatarB.takesDamage():
             return True
 
         from src.coginvasion.cog.ai.AIGlobal import RELATIONSHIP_FRIEND
-        return avatarA.getRelationshipTo(avatarB) != RELATIONSHIP_FRIEND
+        return avatarA.getRelationshipTo(avatarB) != RELATIONSHIP_FRIEND and avatarB.takesDamage()
 
     def onPlayerDied(self, plyr):
         pass

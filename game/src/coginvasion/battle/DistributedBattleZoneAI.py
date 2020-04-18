@@ -12,6 +12,8 @@ from panda3d.bullet import BulletWorld
 from libpandabsp import Py_AI_BSPLoader
 from panda3d.core import Vec3
 
+from p3recastnavigation import RNNavMeshSettings
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 from direct.distributed.ClockDelta import globalClockDelta
@@ -19,9 +21,11 @@ from direct.distributed.ClockDelta import globalClockDelta
 from src.coginvasion.distributed.AvatarWatcher import AvatarWatcher, DIED, ZONE_CHANGE
 from src.coginvasion.battle.RPToonData import RPToonData
 from src.coginvasion.battle.GameRulesAI import GameRulesAI
+from src.coginvasion.battle.TempEntsAI import TempEntsAI
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.quest.Objectives import DefeatCog, DefeatCogBuilding, RecoverItem
-from src.coginvasion.phys.PhysicsUtils import detachAndRemoveBulletNodes
+from src.coginvasion.phys.PhysicsUtils import makeBulletCollFromGeoms, detachAndRemoveBulletNodes
+from src.coginvasion.battle.SoundEmitterSystemAI import SoundEmitterSystemAI
 
 import BattleGlobals
 import itertools
@@ -48,6 +52,8 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         # [{GAG_ID : USES}, [DeadCogData...]]
         self.avatarData = {}
 
+        self.brushCollisionMaterialData = {}
+
         self.avId2suitsTargeting = {}
         
         # List of avatars that have acknowledged that they've completed the reward panel sequence.
@@ -55,14 +61,19 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         
         self.bspLoader = None
         self.navMeshNp = None
+        
+        self.mapWasTransitionedTo = False
 
         # List of info_hint_cover entites, which indicate cover locations for AIs.
         self.coverKDTree = None
         self.coverHints = []
         
         self.physicsWorld = None
+        
+        self.soundEmitterSystem = SoundEmitterSystemAI()
 
         self.gameRules = self.makeGameRules()
+        self.tempEnts = self.makeTempEnts()
         
         self.readyAvatars = []
 
@@ -76,6 +87,15 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         # loading the BSP level, add interest into the entity zone.
         self.entZone = self.air.allocateZone()
         
+    def playerDealDamage(self, damage, avId):
+        pass
+        
+    def playerTakeDamage(self, damage, avId):
+        pass
+        
+    def playerCollectMoney(self, amount, avId):
+        pass
+        
     def d_emitSound(self, soundPath, worldPos, volume = 1.0):
         if isinstance(soundPath, list) or isinstance(soundPath, tuple):
             if len(soundPath) == 0:
@@ -86,21 +106,64 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         
     def getEntZone(self):
         return self.entZone
+        
+    def spawnEntities(self):
+        #self.bspLoader.spawnEntities()
+        
+        coverPositions = []
+        for hint in self.bspLoader.findAllEntities("info_hint_cover"):
+            pos = hint.getCEntity().getOrigin()
+            coverPositions.append([pos[0], pos[1], pos[2]])
+            self.coverHints.append(hint)
+        if len(coverPositions) > 0:
+            self.coverKDTree = cKDTree(coverPositions)
 
     def loadedMap(self):
         """
         Sent by the client when they finish loading the map.
         """
+        #self.spawnEntities()
         pass
 
-    def setMap(self, map):
+    def setMap(self, map, transition = False):
         self.map = map
         if len(map) and self.bspLoader:
-            self.loadBSPLevel(self.MapFormatString.format(map))
+            self.loadBSPLevel(self.MapFormatString.format(map), transition)
 
-    def b_setMap(self, map):
+    def d_setMap(self, map):
         self.sendUpdate('setMap', [map])
-        self.setMap(map)
+
+    def b_setMap(self, map, transition = False):
+        self.d_setMap(map)
+        self.setMap(map, transition)
+
+    def transitionToMap(self, map, transitionName):
+        print "Transitioning to", map, "with transition", transitionName
+        # Find our trigger_transition brush
+        transition = None
+        transitions = self.bspLoader.findAllEntities("trigger_transition")
+        for trans in transitions:
+            if trans.getEntityValue("targetname") == transitionName:
+                transition = trans
+                break
+
+        if transition:
+            print "We have a transition volume"
+            transition.preserveContainedEntities()
+            
+        landmark = None
+        landmarks = self.bspLoader.findAllEntities("info_landmark")
+        for lm in landmarks:
+            if lm.getEntityValue("targetname") == transitionName:
+                landmark = lm
+                break
+                
+        if landmark:
+            print "We have a landmark", landmark.cEntity.getOrigin(), landmark.cEntity.getAngles()
+            self.bspLoader.setTransitionLandmark(transitionName,
+                landmark.cEntity.getOrigin(), landmark.cEntity.getAngles())
+            
+        self.b_setMap(map, True)
 
     def getMap(self):
         return self.map
@@ -117,6 +180,15 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
             self.readyAvatars.append(avId)
         if len(self.readyAvatars) == len(self.watchingAvatarIds):
             self.handleAvatarsReady()
+            
+    def makeTempEnts(self):
+        return TempEntsAI(self)
+        
+    def d_sendTempEnt(self, te, data):
+        self.sendUpdate('makeTempEnt', [te, data])
+        
+    def getTempEnts(self):
+        return self.tempEnts
 
     def makeGameRules(self):
         return GameRulesAI(self)
@@ -153,8 +225,17 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         # Link up networked entities
         from src.coginvasion.szboss import (DistributedTriggerAI, DistributedFuncDoorAI,
                                             DistributedButtonAI, DistributedFuncRotatingAI, LogicCounter,
-                                            HintsAI, InfoTimer, InfoBgmAI)
+                                            HintsAI, InfoTimer, InfoBgmAI, AmbientGenericAI, EnvParticleSystemAI,
+                                            LogicScriptAI, EnvFogAI, GoonieSpawnerAI, EnvElevatorCameraAI,
+                                            EnvPostProcessFlashAI, LogicAutoAI)
         from src.coginvasion.szboss.InfoPlayerStart import InfoPlayerStart
+        from src.coginvasion.szboss.InfoLandmarkAI import InfoLandmarkAI
+        from src.coginvasion.szboss.TriggerChangeLevelAI import TriggerChangeLevelAI
+        from src.coginvasion.szboss.TriggerTransitionAI import TriggerTransitionAI
+        from src.coginvasion.szboss.WorldAI import WorldAI
+        from src.coginvasion.szboss.PropDynamicAI import PropDynamicAI
+        from src.coginvasion.szboss.FuncElevatorAI import FuncElevatorAI
+        from src.coginvasion.szboss.PathTrackAI import PathTrackAI
         self.bspLoader.linkServerEntityToClass("trigger_once",          DistributedTriggerAI.DistributedTriggerOnceAI)
         self.bspLoader.linkServerEntityToClass("trigger_multiple",      DistributedTriggerAI.DistributedTriggerMultipleAI)
         self.bspLoader.linkServerEntityToClass("func_door",             DistributedFuncDoorAI.DistributedFuncDoorAI)
@@ -165,23 +246,39 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.bspLoader.linkServerEntityToClass("info_timer",            InfoTimer.InfoTimer)
         self.bspLoader.linkServerEntityToClass("info_player_start",     InfoPlayerStart)
         self.bspLoader.linkServerEntityToClass("info_bgm",              InfoBgmAI.InfoBgmAI)
+        self.bspLoader.linkServerEntityToClass("ambient_generic",       AmbientGenericAI.AmbientGenericAI)
+        self.bspLoader.linkServerEntityToClass("env_particlesystem",    EnvParticleSystemAI.EnvParticleSystemAI)
+        self.bspLoader.linkServerEntityToClass("logic_script",          LogicScriptAI.LogicScriptAI)
+        self.bspLoader.linkServerEntityToClass("env_fog",               EnvFogAI.EnvFogAI)
+        self.bspLoader.linkServerEntityToClass("goonie_spawner",        GoonieSpawnerAI.GoonieSpawnerAI)
+        self.bspLoader.linkServerEntityToClass("env_elevator_camera",   EnvElevatorCameraAI.EnvElevatorCameraAI)
+        self.bspLoader.linkServerEntityToClass("env_postprocess_flash",   EnvPostProcessFlashAI.EnvPostProcessFlashAI)
+        self.bspLoader.linkServerEntityToClass("info_landmark",         InfoLandmarkAI)
+        self.bspLoader.linkServerEntityToClass("trigger_changelevel",   TriggerChangeLevelAI)
+        self.bspLoader.linkServerEntityToClass("trigger_transition",    TriggerTransitionAI)
+        self.bspLoader.linkServerEntityToClass("worldspawn",            WorldAI)
+        self.bspLoader.linkServerEntityToClass("logic_auto",            LogicAutoAI.LogicAutoAI)
+        self.bspLoader.linkServerEntityToClass("prop_dynamic",          PropDynamicAI)
+        self.bspLoader.linkServerEntityToClass("func_elevator",         FuncElevatorAI)
+        self.bspLoader.linkServerEntityToClass("path_track",            PathTrackAI)
         
         self.physicsWorld = BulletWorld()
         self.physicsWorld.setGravity(Vec3(0, 0, -32.1740))
+        
         self.bspLoader.setPhysicsWorld(self.physicsWorld)
         
     def announceGenerate(self):
         DistributedObjectAI.announceGenerate(self)
+        
+        self.soundEmitterSystem.startup()
 
         taskMgr.add(self.__updateTask, self.uniqueName('battleZoneUpdate'))
 
     def __updateTask(self, task):
         dt = globalClock.getDt()
-        try:
-            #self.physicsWorld.doPhysics(dt, metadata.PHYS_SUBSTEPS, dt / (metadata.PHYS_SUBSTEPS + 1))
-            self.physicsWorld.doPhysics(dt, 0)
-        except:
-            pass
+
+        self.physicsWorld.doPhysics(dt, metadata.PHYS_SUBSTEPS, 0.016)
+            
         self.update()
         return task.cont
         
@@ -191,18 +288,18 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
     def getPhysicsWorld(self):
         return self.physicsWorld
 
-    def loadBSPLevel(self, lfile):
-        self.bspLoader.read(lfile)
-        self.setupNavMesh(self.bspLoader.getResult())
+    def loadBSPLevel(self, lfile, transition = False):
+        self.unloadBSPLevel(transition)
+        
+        self.mapWasTransitionedTo = transition
 
-        coverPositions = []
+        self.bspLoader.read(lfile, transition)
+        self.setupNavMesh(self.bspLoader.getResult().find("**/navmesh"))
+        #self.brushCollisionMaterialData.update(makeBulletCollFromGeoms(
+        #    self.bspLoader.getResult().find("**/hull"), world = self.physicsWorld))
+
         self.coverHints = []
-        for hint in self.bspLoader.findAllEntities("info_hint_cover"):
-            pos = hint.getCEntity().getOrigin()
-            coverPositions.append([pos[0], pos[1], pos[2]])
-            self.coverHints.append(hint)
-        if len(coverPositions) > 0:
-            self.coverKDTree = cKDTree(coverPositions)
+        self.spawnEntities()
 
     def findClosestCoverPoint(self, currPos, n = 1):
         if not self.coverKDTree:
@@ -210,13 +307,15 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
 
         return list(self.coverKDTree.query([currPos[0], currPos[1], currPos[2]], n)[1])
 
-    def unloadBSPLevel(self):
+    def unloadBSPLevel(self, transition = False):
+        self.soundEmitterSystem.clearSounds()
         self.cleanupNavMesh()
         self.coverKDTree = None
         self.coverHints = []
+        self.brushCollisionMaterialData = {}
         if self.bspLoader:
             detachAndRemoveBulletNodes(self.bspLoader.getResult(), world = self.physicsWorld)
-            self.bspLoader.cleanup()
+            self.bspLoader.cleanup(transition)
         
     def cleanupNavMesh(self):
         if self.navMeshNp:
@@ -256,6 +355,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         dobj.entnum = entnum
         dobj.bspLoader = self.bspLoader
         dobj.zoneId = self.entZone
+        dobj.mapEnt = True
         return dobj
 
     def getBattleType(self):
@@ -327,6 +427,11 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
 
         self.unloadBSPLevel()
         self.bspLoader = None
+        self.brushCollisionMaterialData = None
+        self.mapWasTransitionedTo = None
+        
+        self.soundEmitterSystem.shutdown()
+        self.soundEmitterSystem = None
             
         self.resetPhysics()
         self.physicsWorld = None
@@ -338,6 +443,8 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.avatarData = None
         self.gameRules.cleanup()
         self.gameRules = None
+        self.tempEnts.cleanup()
+        self.tempEnts = None
         self.map = None
         self.entZone = None
         DistributedObjectAI.delete(self)

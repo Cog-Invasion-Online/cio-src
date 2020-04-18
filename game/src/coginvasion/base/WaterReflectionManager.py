@@ -18,6 +18,7 @@ from panda3d.core import (BitMask32, Plane, NodePath, CullFaceAttrib, Texture,
                           VirtualFileSystem, DirectionalLight, GeomVertexArrayFormat, InternalName, FrameBufferProperties)
 
 from direct.gui.DirectGui import OnscreenImage
+from direct.filter.FilterManager import FilterManager
 
 import math
 import random
@@ -94,7 +95,7 @@ class WaterNode(NodePath):
     Touching = 2
     Submerged = 4
 
-    def __init__(self, size, pos, depth, spec = WaterSpec()):
+    def __init__(self, size, pos, depth, mask, spec = WaterSpec()):
         NodePath.__init__(self, 'waterNode')
         self.setPos(pos)
 
@@ -102,6 +103,7 @@ class WaterNode(NodePath):
         self.pos = pos
         self.depth = depth
         self.size = size
+        self.mask = mask
         self.height = pos[2]
         
         normal = (0, 0, 1)
@@ -180,7 +182,7 @@ class WaterNode(NodePath):
 
     def setup(self):
         self.reparentTo(render)
-        self.hide(CIGlobals.ReflectionCameraBitmask)
+        self.hide(CIGlobals.ReflectionCameraBitmask | CIGlobals.RefractionCameraBitmask)
         #self.setLightOff(1)
         self.setMaterialOff(1)
         self.setTransparency(1)
@@ -206,8 +208,8 @@ class WaterNode(NodePath):
         static = loader.loadTexture(self.spec.staticTex)
         
         if not self.spec.cheap:
-            self.topNP.setShader(Shader.load(Shader.SL_GLSL, "phase_14/models/shaders/water_v.glsl",
-                                             "phase_14/models/shaders/water_f.glsl"), 2)
+            self.topNP.setShader(Shader.load(Shader.SL_GLSL, "shaders/water_v.glsl",
+                                             "shaders/water_f.glsl"), 2)
             self.topNP.setShaderInput("dudv", static)
             self.topNP.setShaderInput("dudv_tile", self.spec.dudvTile)
             self.topNP.setShaderInput("dudv_strength", self.spec.dudvStrength)
@@ -221,8 +223,8 @@ class WaterNode(NodePath):
             self.topNP.setShaderInput("reflect_factor", self.spec.reflectFactor)
             self.topNP.setShaderInput("static_depth", self.depth)
 
-            self.botNP.setShader(Shader.load(Shader.SL_GLSL, "phase_14/models/shaders/water_bottom_v.glsl",
-                                             "phase_14/models/shaders/water_bottom_f.glsl"), 2)
+            self.botNP.setShader(Shader.load(Shader.SL_GLSL, "shaders/water_bottom_v.glsl",
+                                             "shaders/water_bottom_f.glsl"), 2)
             self.botNP.setShaderInput("dudv", static)
             self.botNP.setShaderInput("dudv_tile", self.spec.dudvTile)
             self.botNP.setShaderInput("dudv_strength", self.spec.dudvStrength)
@@ -230,13 +232,14 @@ class WaterNode(NodePath):
             self.botNP.setShaderInput("water_tint", self.spec.tint)
         else:
             # We are doing cheap water
-            self.topNP.setShader(Shader.load(Shader.SL_GLSL, "phase_14/models/shaders/water_cheap_v.glsl",
-                                             "phase_14/models/shaders/water_cheap_f.glsl"), 2)
+            self.topNP.setShader(Shader.load(Shader.SL_GLSL, "shaders/water_cheap_v.glsl",
+                                             "shaders/water_cheap_f.glsl"), 2)
             self.topNP.setShaderInput("tex_scale", self.spec.dudvTile)
             self.topNP.setShaderInput("cube_map", self.cubemap)
             self.topNP.setShaderInput("normal_map", static)
             self.topNP.setShaderInput("base_map", static)
             self.topNP.setShaderInput("reflectivity", self.spec.reflectivity)
+            self.topNP.setShaderInput("_exposureAdjustment", base.shaderGenerator.getExposureAdjustment())
             self.topNP.setShaderInput("water_tint", self.spec.tint)
 
         self.setTextureInputs(reflScene, refrScene, underwaterRefrScene)
@@ -295,7 +298,10 @@ class WaterScene:
         
         self.camera = base.makeCamera(buffer)
         self.camera.node().setLens(base.camLens)
-        self.camera.node().setCameraMask(CIGlobals.ReflectionCameraBitmask)
+        if reflection:
+            self.camera.node().setCameraMask(CIGlobals.ReflectionCameraBitmask)
+        else:
+            self.camera.node().setCameraMask(CIGlobals.RefractionCameraBitmask)
 
         self.texture = buffer.getTexture()
         self.texture.setWrapU(Texture.WMClamp)
@@ -636,6 +642,7 @@ class WaterReflectionManager:
             if foundLocalAvTouching & WaterNode.Submerged:
                 base.localAvatar.isSwimming = True
                 base.localAvatar.touchingWater = False
+                base.localAvatar.walkControls.controller.setTouchingWater(False)
                 base.localAvatar.walkControls.setCurrentSurface('swim')
                 base.localAvatar.walkControls.setControlScheme(base.localAvatar.walkControls.SSwim)
                 if waterLocalAvIsTouching:
@@ -646,11 +653,13 @@ class WaterReflectionManager:
                 self.playWadeSound()
                 base.localAvatar.isSwimming = False
                 base.localAvatar.touchingWater = True
+                base.localAvatar.walkControls.controller.setTouchingWater(True)
                 base.localAvatar.walkControls.setCurrentSurface('slosh')
                 base.localAvatar.walkControls.setControlScheme(base.localAvatar.walkControls.SDefault)
             else:
                 base.localAvatar.isSwimming = False
                 base.localAvatar.touchingWater = False
+                base.localAvatar.walkControls.controller.setTouchingWater(False)
                 base.localAvatar.walkControls.setCurrentSurface('default')
                 base.localAvatar.walkControls.setControlScheme(base.localAvatar.walkControls.SDefault)
                 self.playWadeSound()

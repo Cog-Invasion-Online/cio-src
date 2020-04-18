@@ -2,6 +2,8 @@ from DistributedEntity import DistributedEntity
 
 class InfoBgm(DistributedEntity):
     
+    NeedNode = False
+    
     def __init__(self, cr):
         DistributedEntity.__init__(self, cr)
         self.songName = ""
@@ -19,6 +21,9 @@ class InfoBgm(DistributedEntity):
         
     def playMusic(self):
         base.playMusic(self.songName, self.looping, self.volume)
+        
+    def fadeOut(self, time = 1.0):
+        base.fadeOutMusic(time)
         
     def stopMusic(self):
         base.stopMusic()

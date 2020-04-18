@@ -1,12 +1,16 @@
-from DistributedEntity import DistributedEntity
 from src.coginvasion.toon.DistributedToon import DistributedToon
 from src.coginvasion.nametag import NametagGlobals
+from src.coginvasion.szboss.Useable import Useable
 
-class DistributedSZBossToon(DistributedEntity, DistributedToon):
+class DistributedSZBossToon(DistributedToon, Useable):
 
     def __init__(self, cr):
-        DistributedEntity.__init__(self, cr)
         DistributedToon.__init__(self, cr)
+        Useable.__init__(self)
+        
+    def startUse(self):
+        Useable.startUse(self)
+        self.sendUpdate('use')
 
     def setupNameTag(self, tempName = None):
         DistributedToon.setupNameTag(self, tempName)
@@ -20,13 +24,13 @@ class DistributedSZBossToon(DistributedEntity, DistributedToon):
         self.setHpr(self.cEntity.getAngles())
 
     def generate(self):
-        DistributedEntity.generate(self)
         DistributedToon.generate(self)
 
     def announceGenerate(self):
-        DistributedEntity.announceGenerate(self)
         DistributedToon.announceGenerate(self)
-        self.activateSmoothing(True, False)
+        
+        self.bodyNP.setPythonTag('useableObject', self)
+        
         self.startSmooth()
         
         self.reparentTo(render)
@@ -35,9 +39,7 @@ class DistributedSZBossToon(DistributedEntity, DistributedToon):
 
     def disable(self):
         self.stopSmooth()
-        DistributedEntity.disable(self)
         DistributedToon.disable(self)
 
     def delete(self):
-        DistributedEntity.delete(self)
         DistributedToon.delete(self)

@@ -12,7 +12,6 @@ from src.coginvasion.attack.Attacks import ATTACK_HOLD_LEFT, ATTACK_HOLD_RIGHT
 from src.coginvasion.base.Precache import precacheActor
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.toon.ToonDNA import ToonDNA
-from src.coginvasion.gags.BCakeEntity import BCakeEntity
 
 import math, random
 
@@ -61,7 +60,7 @@ class FPSCamera(DirectObject):
 
         # Updates to the transform of camRoot
         self.vmRender = NodePath(BSPRender('vmRender', BSPLoader.getGlobalPtr()))
-        self.vmRender.setShaderAuto()
+        self.vmRender.setState(render.getState())
         self.vmRoot = self.vmRender.attachNewNode('vmRoot')
         self.vmRoot2 = self.vmRoot.attachNewNode(ModelRoot('vmRoot2'))
         self.viewModel = Actor("phase_14/models/char/v_toon_arms.bam",
@@ -105,6 +104,7 @@ class FPSCamera(DirectObject):
         self.viewModel.reparentTo(self.vmRoot2)
         self.viewModel.find("**/hands").setTwoSided(True)
         self.viewModel.hide()
+        self.viewModel.hide(CIGlobals.ReflectionCameraBitmask)
         
         self.defaultViewModel = self.viewModel
         self.idealFov = self.ViewModelFOV
@@ -120,6 +120,7 @@ class FPSCamera(DirectObject):
                                            mask = CIGlobals.ViewModelCameraBitmask, lens = self.viewportLens)
         # Pretend to be the main camera so the viewmodel gets ambient probes updated
         self.viewportCam.reparentTo(self.vmRoot)
+        # Postprocess the viewmodel
         base.filters.addCamera(self.viewportCam)
 
         self.vmGag = None
@@ -226,9 +227,9 @@ class FPSCamera(DirectObject):
         self.viewModel.showThrough(CIGlobals.ViewModelCamMask)
 
     def __vpDebugTask(self, task):
-        if self.vmRender.getState() != render.getState():
-            # pretend like the view model is part of the main scene
-            self.vmRender.setState(render.getState())
+        #if self.vmRender.getState() != render.getState():
+        #    # pretend like the view model is part of the main scene
+        #self.vmRender.setState(render.getState())
             
         self.viewportLens.setAspectRatio(base.getAspectRatio())
         self.viewportLens.setMinFov(self.idealFov / (4. / 3.))
@@ -247,14 +248,17 @@ class FPSCamera(DirectObject):
         print "FPSCamera handleSuitAttack:", attack
 
     def doDamageFade(self, r, g, b, severity = 1.0):
-        if self.dmgFadeIval:
-            self.dmgFadeIval.finish()
-            self.dmgFadeIval = None
-        severity = min(1.0, severity)
-        self.dmgFadeIval = Sequence(LerpColorScaleInterval(self.dmgFade, 0.25, (r, g, b, severity), (r, g, b, 0), blendType = 'easeOut'),
-                                    Wait(1.0),
-                                    LerpColorScaleInterval(self.dmgFade, 2.0, (r, g, b, 0), (r, g, b, severity), blendType = 'easeInOut'))
-        self.dmgFadeIval.start()
+        #if self.dmgFadeIval:
+        #    self.dmgFadeIval.finish()
+        #    self.dmgFadeIval = None
+        #severity = min(1.0, severity)
+        #self.dmgFadeIval = Sequence(LerpColorScaleInterval(self.dmgFade, 0.25, (r, g, b, severity), (r, g, b, 0), blendType = 'easeOut'),
+        #                            Wait(1.0),
+        #                            LerpColorScaleInterval(self.dmgFade, 2.0, (r, g, b, 0), (r, g, b, severity), blendType = 'easeInOut'))
+        #self.dmgFadeIval.start()
+        
+        self.resetViewPunch()
+        self.addViewPunch(Vec3(0, 1, 0))
 
     def setVMAnimTrack(self, track, loop = False):
         self.clearVMAnimTrack()
@@ -457,7 +461,7 @@ class FPSCamera(DirectObject):
             vmRaise = Point3(0)
             camBob = Point3(0)
             
-            maxSpeed = base.localAvatar.walkControls.BattleRunSpeed * 16.0
+            maxSpeed = base.localAvatar.walkControls.getHighestSpeed() * 16.0
             
             speed = base.localAvatar.walkControls.speeds.length() * 16.0
             speed = max(-maxSpeed, min(maxSpeed, speed))
@@ -494,13 +498,13 @@ class FPSCamera(DirectObject):
             lateralBob /= 16.0
 
             # Apply bob, but scaled down a bit
-            vmBob.set(lateralBob * 0.8, 0, verticalBob * 0.1)
-            # Z bob a bit more
-            vmBob[2] += verticalBob * 0.1
+            vmBob.set(lateralBob * 0.8, verticalBob * 0.1, verticalBob * 0.1)
             # Bob the angles
+            verticalBob *= 16
+            lateralBob *= 16
             vmAngles[2] += verticalBob * 0.5
-            vmAngles[1] -= verticalBob * 0.4
-            vmAngles[0] -= lateralBob * 0.3
+            vmAngles[1] += verticalBob * 0.4
+            vmAngles[0] += lateralBob * 0.3
 
             # ================================================================
             # Viewmodel lag/sway
@@ -586,9 +590,12 @@ class FPSCamera(DirectObject):
         self.vmRoot = None
         self.vmRoot2 = None
         self.viewportLens = None
+        
         if self.viewportCam:
+            base.filters.removeCamera(self.viewportCam)
             self.viewportCam.removeNode()
         self.viewportCam = None
+
         if self.camRoot:
             self.camRoot.removeNode()
         self.camRoot = None

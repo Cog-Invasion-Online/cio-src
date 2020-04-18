@@ -13,6 +13,9 @@ from panda3d.core import Point3
 
 from ToonDNA import ToonDNA
 
+EyeStateClosed = 0
+EyeStateOpened = 1
+
 # First argument is phase, next is type, body part, pant type, and finally model detail.
 # Pant type is either: shorts or skirt.
 # Type is either: dgs, dgm, or dgl.
@@ -81,7 +84,12 @@ ANIMATIONS = {
     "start-dig" : [5.5, "into_dig"],
     "loop-dig" : [5.5, "loop_dig"],
     "duck"      :       [3.5, "duck"],
-    "think"     :       [4, "think"]
+    "think"     :       [4, "think"],
+    "righthand" :   [3.5, "right-hand"],
+    "righthand-start"   :   [3.5, "right-hand-start"],
+    "rightpoint"    :   [3.5, 'right-point'],
+    'rightpoint-start'  :   [3.5, 'right-point-start']
+    
 }
 
 HeadScales = {

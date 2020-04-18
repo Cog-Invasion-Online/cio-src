@@ -8,7 +8,7 @@ Metadata = {
     "ID" : ATTACK_SACKED,
     "ModelPath" : "phase_5/models/props/sandbag-mod.bam",
     "ModelAngles" : Point3(0.0, 90.0, 180.0),
-    "ModelOrigin" : Point3(0.0, -2.8, -0.3),
+    "ModelOrigin" : Point3(0.0, -2.8, 0.3),
 
     "StateThrow" : StateThrow,
     "ThrowAfterTime" : ThrowAfterTime,

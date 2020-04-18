@@ -47,6 +47,7 @@ class Slap(BaseHitscan, BaseHitscanShared):
 
         if self.isFirstPerson():
             fpsCam = self.getFPSCam()
+            fpsCam.setViewModelFOV(85.0)
             vm = self.getViewModel()
             vm.show()
             fpsCam.setVMAnimTrack(Func(vm.loop, 'slap_idle'))
@@ -57,7 +58,8 @@ class Slap(BaseHitscan, BaseHitscanShared):
         if not BaseHitscan.unEquip(self):
             return False
             
-        base.audio3d.detachSound(self.fireSound)
+        if self.fireSound:
+            base.audio3d.detachSound(self.fireSound)
         
         return True
         
@@ -67,7 +69,7 @@ class Slap(BaseHitscan, BaseHitscanShared):
 
         if action == self.StateFire:
             fpsCam.addViewPunch(self.getViewPunch())
-            fpsCam.setVMAnimTrack(Parallel(Func(self.fireSound.play), ActorInterval(vm, 'slap_hit')))
+            fpsCam.setVMAnimTrack(Parallel(Func(self.fireSound.play), ActorInterval(vm, 'slap_hit', playRate = 1.5)))
 
         elif action == self.StateIdle:
             fpsCam.setVMAnimTrack(Func(vm.loop, 'slap_idle'))

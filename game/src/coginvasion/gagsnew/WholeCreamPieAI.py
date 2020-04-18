@@ -10,9 +10,42 @@ from WholeCreamPieProjectileAI import WholeCreamPieProjectileAI
 from src.coginvasion.attack.Attacks import ATTACK_GAG_WHOLECREAMPIE
 from src.coginvasion.attack.TakeDamageInfo import TakeDamageInfo
 from src.coginvasion.cog.ai.RelationshipsAI import RELATIONSHIP_FRIEND
+from src.coginvasion.cog.ai.BaseNPCAI import BaseNPCAI
 from src.coginvasion.gags import GagGlobals
 from src.coginvasion.globals import CIGlobals
 from src.coginvasion.phys import PhysicsUtils
+from src.coginvasion.battle.SoundEmitterSystemAI import SOUND_COMBAT
+
+import random
+
+#########################################################################
+
+from src.coginvasion.szboss.DistributedEntityAI import DistributedEntityAI
+
+class PieGibAI(DistributedEntityAI):
+    
+    def announceGenerate(self):
+        DistributedEntityAI.announceGenerate(self)
+        
+        self.b_setModel("phase_14/models/props/creampie_gib.bam")
+        self.setMass(5.0)
+        self.setSolid(self.SOLID_MESH)
+        self.initPhysics()
+        self.getPhysNode().setFriction(50.0)
+        #self.getPhysNode().setLinearDamping(3.0)
+        #self.getPhysNode().setAngularDamping(3.0)
+        self.startPosHprBroadcast()
+        self.setNextThink(3.0)
+        
+    def delete(self):
+        self.stopPosHprBroadcast()
+        DistributedEntityAI.delete(self)
+
+    def think(self):
+        self.requestDelete()
+        self.setNextThink(-1)
+        
+#########################################################################
 
 class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
 
@@ -20,6 +53,13 @@ class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
     ID = ATTACK_GAG_WHOLECREAMPIE
 
     ThrowPower = 300.0
+    
+    Cost = 100
+    
+    NPC_DRAW_TIME = 1.5
+    
+    HealFriends = True
+    HealAmount = 5
 
     def __init__(self):
         BaseGagAI.__init__(self)
@@ -36,6 +76,15 @@ class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
         self.__projs = []
 
         self.throwTime = 0
+        
+    def setAvatar(self, avatar):
+        BaseGagAI.setAvatar(self, avatar)
+        #from src.coginvasion.cog.ai.BaseNPCAI import BaseNPCAI
+        #if isinstance(avatar, BaseNPCAI):
+        #    # Match the draw time with the third person animation
+        #    self.actionLengths[self.StateDraw] = self.NPC_DRAW_TIME
+        #else:
+        #    self.actionLengths[self.StateDraw] = 0.5
 
     def getBaseDamage(self):
         return 30
@@ -55,28 +104,49 @@ class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
         if completedAction == self.StateDraw:
             return self.StateIdle
         elif completedAction == self.StateThrow:
+            self.avatar.npcFinishAttack()
             return self.StateDraw
 
         return self.StateIdle
+
+    def onProjectileHit(self, contact, collider, intoNP):
+        BaseGagAI.onProjectileHit(self, contact, collider, intoNP, False)
+
+        gib = base.air.createObjectByName("PieGibAI")
+        gib.generateWithRequired(self.avatar.getBattleZone().zoneId)
+        gib.setPos(collider.getPos(render))
+        gib.setHpr(collider.getHpr(render) + (0, -90, 0))
+        gib.d_clearSmoothing()
+        gib.d_broadcastPosHpr()
+
+        gibVel = CIGlobals.reflect(collider.getAbsVelocity() * 0.04, contact.getHitNormal())
+        gib.getPhysNode().setLinearVelocity(gibVel)
+        gib.getPhysNode().setAngularVelocity(Vec3(random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(-1, 1)) * 5)
+
+        collider.requestDelete()
 
     def setAction(self, action):
         BaseGagAI.setAction(self, action)
 
         if action == self.StateThrow:
-            self.takeAmmo(-1)
+            if not isinstance(self.avatar, BaseNPCAI):
+                self.takeAmmo(-1)
 
-            throwVector = PhysicsUtils.getThrowVector(self.traceOrigin,
+            throwVector = PhysicsUtils.getThrowVector(self.avatar.getViewOrigin(),
                                                       self.traceVector,
-                                                      self.throwOrigin,
+                                                      self.avatar.getViewOrigin(),
                                                       self.avatar,
                                                       self.avatar.getBattleZone().getPhysicsWorld())
-            endPos = CIGlobals.extrude(self.throwOrigin, self.ThrowPower, throwVector) - (0, 0, 90)
+            endPos = CIGlobals.extrude(self.avatar.getViewOrigin(), self.ThrowPower, throwVector) - (0, 0, 90)
             
             proj = WholeCreamPieProjectileAI(base.air)
-            proj.setProjectile(2.5, self.throwOrigin, endPos, 1.07, globalClockDelta.getFrameNetworkTime())
+            proj.setProjectile(2.5, self.avatar.getViewOrigin(),
+                endPos, 1.07, globalClockDelta.getFrameNetworkTime())
             proj.generateWithRequired(self.avatar.getBattleZone().zoneId)
             proj.addHitCallback(self.onProjectileHit)
             proj.addExclusion(self.avatar)
+            
+            self.avatar.emitSound(SOUND_COMBAT, self.avatar.getViewOrigin(), duration = 0.5)
 
             self.throwTime = globalClock.getFrameTime()
             
@@ -86,27 +156,20 @@ class WholeCreamPieAI(BaseGagAI, WholeCreamPieShared):
     def primaryFirePress(self, data):
         if not self.canUse():
             return
-
-        dg = PyDatagram(data)
-        dgi = PyDatagramIterator(dg)
-        self.throwOrigin = CIGlobals.getVec3(dgi)
-        self.traceOrigin = CIGlobals.getVec3(dgi)
-        self.traceVector = CIGlobals.getVec3(dgi)
+        
+        self.traceVector = self.avatar.getViewVector(1)
         self.b_setAction(self.StateThrow)
 
     def npcUseAttack(self, target):
-        #print "NPC Use attack:", self.avatar, self.action, self.getAmmo()
         if not self.canUse():
-            #print "Can't use"
-            return
+            return False
 
-        #print "using pie"
-
-        #self.headsUp(target)
-        self.throwOrigin = self.avatar.getPos(render) + (0, 0, self.avatar.getHeight() / 2.0)
-        self.traceOrigin = self.throwOrigin
-        self.traceVector = ((target.getPos(render) + (0, 0, target.getHeight() / 2.0)) - self.throwOrigin).normalized()
+        self.traceVector = (
+            target.getViewOrigin() - self.avatar.getViewOrigin()
+        ).normalized()
         self.setNextAction(self.StateThrow)
+        
+        return True
 
     def checkCapable(self, dot, squaredDistance):
-        return squaredDistance <= 10*10
+        return squaredDistance <= 35*35
