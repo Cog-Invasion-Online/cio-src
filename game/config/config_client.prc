@@ -81,7 +81,7 @@ simulated-latency-max 0.15
 # Performance...
 hardware-animated-vertices #t
 sync-video #f
-smooth-lag 0.2
+smooth-lag 0.1
 smooth-prediction-lag 0.0
 basic-shaders-only #f
 framebuffer-multisample 0
@@ -89,8 +89,10 @@ framebuffer-stencil 0
 support-stencil 0
 framebuffer-srgb 1
 framebuffer-alpha 1
-default-texture-color-space sRGB
-textures-srgb 1
+framebuffer-float 0
+depth-bits 8
+color-bits 8 8 8
+alpha-bits 8
 multisamples 0
 garbage-collect-states-rate 0.5
 
