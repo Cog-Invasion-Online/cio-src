@@ -52,11 +52,9 @@ game/cog-bldg-modles
 game/tex
 cog-invasion-online.geany
 game/coginvasion.bin
-*.yaml
 *.bat
 .project
 .pydevproject
-game/astron/databases
 *.pyo
 game/tools/*.c
 prod
