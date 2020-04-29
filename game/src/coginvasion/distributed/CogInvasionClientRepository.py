@@ -276,8 +276,6 @@ class CogInvasionClientRepository(AstronClientRepository):
         except:
             pass
 
-        ccoginvasion.CTMusicData.stop_am_update_task()
-
         self.gameFSM.request('closeShard', ['off'])
         
     def isChristmas(self):
