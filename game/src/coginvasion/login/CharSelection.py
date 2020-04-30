@@ -460,19 +460,19 @@ class CharSelection(DirectObject):
         self.charNameLabel = OnscreenText(text = "", font = CIGlobals.getMickeyFont(),
                                         pos = (-0.25, 0.5, 0), fg = (1, 0.9, 0.1, 1.0))
         self.charNameLabel.hide()
-        self.frame = DirectFrame()
+        self.frame = DirectFrame(parent=base.a2dRightCenter)
         self.frame['image'] = DGG.getDefaultDialogGeom()
         self.frame['image_color'] = CIGlobals.DialogColor
         self.frame['image_scale'] = (-0.9, -0.9, 0.8)
-        self.frame['image_pos'] = (0.82, 0, -0.125)
-        self.playOrCreateButton = DirectButton(text = "", pos = (0.8125, 0, -0.35), command = self.__action,
+        self.frame['image_pos'] = (-.5125, 0, -0.125)
+        self.playOrCreateButton = DirectButton(text = "", pos = (-0.5025, 0, -0.35), command = self.__action,
                                             geom = CIGlobals.getDefaultBtnGeom(), text_scale = 0.06,
-                                            relief = None, text_pos = (0, -0.01))
+                                            relief = None, parent = self.frame, text_pos = (0, -0.01))
         self.playOrCreateButton.hide()
-        self.deleteButton = DirectButton(text = "Delete", pos = (0.8125, 0, -0.45),
+        self.deleteButton = DirectButton(text = "Delete", pos = (-0.5025, 0, -0.45),
                                         command = self.__action, extraArgs = ['delete'],
                                         geom = CIGlobals.getDefaultBtnGeom(), text_scale = 0.06,
-                                        relief = None, text_pos = (0, -0.01))
+                                        relief = None, parent = self.frame, text_pos = (0, -0.01))
         self.deleteButton.hide()
         self.quitButton = DirectButton(text = "Quit", pos = (0.225, 0, 0.075), command = self.__action,
                                     extraArgs = ['quit'], text_scale = 0.06, geom = CIGlobals.getDefaultBtnGeom(),
@@ -489,7 +489,7 @@ class CharSelection(DirectObject):
             self.charButtons.append(btn)
             btn['state'] = DGG.NORMAL
 
-        self.charList = CIGlobals.makeDefaultScrolledList(pos = (0.75, 0, -0.225), listZorigin = -0.43,
+        self.charList = CIGlobals.makeDefaultScrolledList(pos = (-0.5825, 0, -0.225), listZorigin = -0.43,
                                                           listFrameSizeZ = 0.51, arrowButtonScale = 0.0, items = self.charButtons,
                                                           parent = self.frame)
 
