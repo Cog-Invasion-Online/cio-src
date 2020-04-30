@@ -474,9 +474,9 @@ class CharSelection(DirectObject):
                                         geom = CIGlobals.getDefaultBtnGeom(), text_scale = 0.06,
                                         relief = None, text_pos = (0, -0.01))
         self.deleteButton.hide()
-        self.quitButton = DirectButton(text = "Quit", pos = (-1.10, 0, -0.925), command = self.__action,
+        self.quitButton = DirectButton(text = "Quit", pos = (0.225, 0, 0.075), command = self.__action,
                                     extraArgs = ['quit'], text_scale = 0.06, geom = CIGlobals.getDefaultBtnGeom(),
-                                    relief = None, text_pos = (0, -0.01))
+                                    relief = None, parent = base.a2dBottomLeft, text_pos = (0, -0.01))
 
         for slot in range(6):
             if self.avChooser.hasToonInSlot(slot):
