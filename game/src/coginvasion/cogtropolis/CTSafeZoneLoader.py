@@ -128,7 +128,7 @@ class CTSafeZoneLoader(SafeZoneLoader):
         del self.rainRender
         SafeZoneLoader.unload(self)
 
-    def createSafeZone(self, foo):
+    def createSafeZone(self, foo, foo1):
         self.geom = loader.loadModel('phase_14/models/neighborhoods/cogtropolis.egg')
         self.geom.reparentTo(hidden)
         for i in range(2):

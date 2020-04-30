@@ -850,7 +850,7 @@ class LocalToon(DistributedPlayerToon, BaseLocalAvatar):
 
         # Unused developer methods.
         #self.accept('p', self.enterPictureMode)
-        #self.accept('c', self.teleportToCT)
+        self.accept('c', self.teleportToCT)
         #posBtn = DirectButton(text = "Get Pos", scale = 0.08, pos = (0.3, 0, 0), parent = base.a2dLeftCenter, command = self.printAvPos)
 
     def enterHiddenToonMode(self):

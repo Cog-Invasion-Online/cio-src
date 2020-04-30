@@ -8,7 +8,7 @@ Copyright (c) CIO Team. All rights reserved.
 
 """
 
-from panda3d.core import CollisionSphere, CollisionNode
+from panda3d.bullet import BulletGhostNode, BulletSphereShape
 
 from direct.distributed.DistributedNode import DistributedNode
 from direct.distributed import ClockDelta
@@ -133,7 +133,7 @@ class DistributedCityCart(DistributedNode):
         plan = random.choice(plans)
         self.suitInCar = Suit()
         self.suitInCar.level = 0
-        self.suitInCar.generate(plan, Variant.NORMAL)
+        self.suitInCar.generateSuit(plan, Variant.NORMAL)
         self.suitInCar.loop('sit')
         self.suitInCar.disableRay()
         self.suitInCar.setScale(0.7)
@@ -148,15 +148,15 @@ class DistributedCityCart(DistributedNode):
         base.audio3d.attachSoundToObject(self.soundDriveByHorn, self)
         self.soundDriveBy = base.audio3d.loadSfx('phase_14/audio/sfx/cogtropolis_citycar_driveby.ogg')
         base.audio3d.attachSoundToObject(self.soundDriveBy, self)
-        sphere = CollisionSphere(0, 0, 0, 2.5)
-        sphere.setTangible(0)
-        node = CollisionNode(self.uniqueName('cartSphere'))
-        node.setCollideMask(CIGlobals.WallBitmask)
-        node.addSolid(sphere)
-        self.collNodePath = self.attachNewNode(node)
+        sphere = BulletSphereShape(2.5)
+        ghostNode = BulletGhostNode(self.uniqueName('cartSphere'))
+        ghostNode.addShape(sphere)
+        ghostNode.setIntoCollideMask(CIGlobals.WallGroup)
+        self.collNodePath = self.attachNewNode(ghostNode)
         self.collNodePath.setZ(1.5)
         self.collNodePath.setSy(2.0)
         self.collNodePath.setSx(1.75)
+        base.physicsWorld.attachGhost(self.collNodePath.node())
 
     def disable(self):
         self.fsm.requestFinalState()
@@ -175,5 +175,7 @@ class DistributedCityCart(DistributedNode):
         if self.cart:
             self.cart.removeNode()
             self.cart = None
+        if self.collNodePath:
+            base.physicsWorld.removeGhost(self.collNodePath.node())
         del self.fsm
         DistributedNode.disable(self)
