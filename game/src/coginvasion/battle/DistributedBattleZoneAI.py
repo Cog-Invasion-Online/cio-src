@@ -294,6 +294,7 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
         self.mapWasTransitionedTo = transition
 
         self.bspLoader.read(lfile, transition)
+        self.bspLoader.doOptimizations()
         self.setupNavMesh(self.bspLoader.getResult().find("**/navmesh"))
         #self.brushCollisionMaterialData.update(makeBulletCollFromGeoms(
         #    self.bspLoader.getResult().find("**/hull"), world = self.physicsWorld))
