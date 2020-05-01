@@ -84,6 +84,23 @@ class CogInvasionAIRepository(CogInvasionInternalRepository):
             #self.bspLoader.setServerEntityDispatcher(self)
             self.bspLoader.read("phase_14/etc/sewer_entrance_room_indoors/sewer_entrance_room_indoors.bsp")
             PhysicsUtils.makeBulletCollFromGeoms(self.bspLoader.getResult(), enableNow = False)
+            
+    def createObjectByName(self, dcClassName, initArgs = []):
+        dclass = self.dclassesByName.get(dcClassName, None)
+        if not dclass:
+            return None
+        classDef = dclass.getClassDef()
+        if not self in initArgs:
+            initArgs.insert(0, self)
+        obj = classDef(*initArgs)
+        return obj
+
+    def generateObjectByName(self, dcClassName, zoneId, initArgs = []):
+        obj = self.createObjectByName(dcClassName, initArgs)
+        if not obj:
+            return None
+        obj.generateWithRequired(zoneId)
+        return obj
 
     def getBattleZone(self, zoneId):
         return self.battleZones.get(zoneId, None)
