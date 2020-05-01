@@ -31,7 +31,7 @@ roles:
       #tls:
       #  certificate: ../../phase_3/etc/gameserver.crt
       #  key_file: ../rsakey.key
-      manual_dc_hash: 0xb1a4ee9f
+      manual_dc_hash: 0xb59051b2
       client:
        relocate: true
        add_interest: enabled

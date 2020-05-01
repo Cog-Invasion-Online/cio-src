@@ -441,7 +441,7 @@ class FPSCamera(DirectObject):
 
             sens = self.__getMouseSensitivity()
             
-            angular = -(xDist * sens) / dt
+            angular = -(xDist * sens)
             base.localAvatar.walkControls.controller.setAngularMovement(angular)
             camRootAngles.setY(self.lastPitch - yDist * sens)
             

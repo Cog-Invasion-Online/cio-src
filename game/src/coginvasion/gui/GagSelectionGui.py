@@ -261,18 +261,17 @@ class GagTrack(DirectFrame):
             btn.unstash()
 
     def load(self):
-        gags = base.localAvatar.attackIds#GagGlobals.TrackGagNamesByTrackName[self.trackName]
+        gags = GagGlobals.TrackGagNamesByTrackName[self.trackName]
         for i in xrange(len(gags)):
-            gagId = gags[i]
-            gagName = base.cr.attackMgr.getAttackName(gagId)
+            gagName = gags[i]
+            gagId = base.cr.attackMgr.getAttackIDByName(gagName)
             btn = GagWidget(self, gagId)
             btn.reparentTo(self)
             btn.setX(GAG_BTN_START + (GAG_BTN_OFFSET * i))
-            #if not base.localAvatar.hasAttackId(gagId) or gagName not in GagGlobals.tempAllowedGags:
-            #    btn.setLocked(True)
-            #else:
-                #btn.setLocked(False)
-            btn.setLocked(False)
+            if not base.localAvatar.hasAttackId(gagId) or gagName not in GagGlobals.tempAllowedGags:
+                btn.setLocked(True)
+            else:
+                btn.setLocked(False)
             self.gagBtns.append(btn)
         self.stashContents()
 
@@ -428,18 +427,18 @@ class GagSelectionGui(DirectFrame, FSM):
         return tracks
 
     def load(self):
-        #tracks = self.__accumulateTracks()
-        #for i in xrange(len(tracks)):
-        #    track = GagTrack(self, tracks[i])
-        #    track.load()
-        #    track.reparentTo(self)
-        #    track.setX(FRAME_OFFSET * i)
-        #    self.tracks.append(track)
-        track = GagTrack(self, name = "Gags", color = (67 / 255.0, 243 / 255.0, 255 / 255.0))
-        track.load()
-        track.reparentTo(self)
-        track.setX(FRAME_OFFSET)
-        self.tracks.append(track)
+        tracks = self.__accumulateTracks()
+        for i in xrange(len(tracks)):
+            track = GagTrack(self, tracks[i])
+            track.load()
+            track.reparentTo(self)
+            track.setX(FRAME_OFFSET * i)
+            self.tracks.append(track)
+        #track = GagTrack(self, name = "Gags", color = (67 / 255.0, 243 / 255.0, 255 / 255.0))
+        #track.load()
+        #track.reparentTo(self)
+        #track.setX(FRAME_OFFSET)
+        #self.tracks.append(track)
 
         self.midpoint = (len(self.tracks) / 2.0) * -FRAME_OFFSET
         # Center the gui horizontally

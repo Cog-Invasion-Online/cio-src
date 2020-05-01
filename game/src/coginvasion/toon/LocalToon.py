@@ -7,7 +7,7 @@ Copyright (c) CIO Team. All rights reserved.
 @date November 30, 2014
 """
 
-from panda3d.core import Point3, ConfigVariableBool
+from panda3d.core import Point3, ConfigVariableBool, ConfigVariableDouble
 from src.coginvasion.globals import CIGlobals
 from direct.task import Task
 from DistributedPlayerToon import DistributedPlayerToon
@@ -48,6 +48,7 @@ class LocalToon(DistributedPlayerToon, BaseLocalAvatar):
     neverDisable = 1
 
     GTAControls = ConfigVariableBool('want-gta-controls', False)
+    ViewUpdateRate = ConfigVariableDouble('cl-view-update-rate', 0.05)
 
     def __init__(self, cr):
         try:
@@ -114,6 +115,32 @@ class LocalToon(DistributedPlayerToon, BaseLocalAvatar):
         
         # This is used by the animation traverser.
         self.__traverseGUI = None
+        
+    def startViewSend(self):
+        self.stopViewSend()
+        base.taskMgr.doMethodLater(self.ViewUpdateRate,
+            self.__sendViewTask, "LocalToon.sendView")
+            
+    def stopViewSend(self):
+        base.taskMgr.remove("LocalToon.sendView")
+        
+    def __sendViewTask(self, task):
+        # Notifies the server of our latest view position and angles.
+        pos = camera.getPos(render)
+        hpr = camera.getHpr(render)
+        self.d_setView(pos[0], pos[1], pos[2],
+                       hpr[0], hpr[1], hpr[2])
+        task.delayTime = self.ViewUpdateRate
+        return task.again
+        
+    def d_setView(self, x, y, z, h, p, r):
+        self.sendUpdate('setView', [x, y, z, h, p, r])
+        
+    def getView(self):
+        pos = camera.getPos(render)
+        hpr = camera.getHpr(render)
+        return [pos[0], pos[1], pos[2],
+                hpr[0], hpr[1], hpr[2]]
             
     def primaryFirePress(self):
         if not self.canUseGag():
@@ -754,6 +781,7 @@ class LocalToon(DistributedPlayerToon, BaseLocalAvatar):
     def disable(self):
         DistributedPlayerToon.disable(self)
 
+        self.stopViewSend()
         self.stopTrackAnimToSpeed()
         base.camLens.setMinFov(CIGlobals.OriginalCameraFov / (4./3.))
         if self.jumpHardLandIval:

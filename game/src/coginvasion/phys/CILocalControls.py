@@ -17,6 +17,15 @@ class CILocalControls(BaseLocalControls):
             
         return BaseLocalControls.getFootstepIval(self, speed)
         
+    def disableControls(self, chat = False):
+        if not self.controlsEnabled:
+            return
+            
+        BaseLocalControls.disableControls(self, chat)
+        
+        if base.localAvatar.battleControls:
+            base.localAvatar.stopViewSend()
+        
     def enableControls(self, wantMouse = 0):
         if self.controlsEnabled:
             return
@@ -24,6 +33,11 @@ class CILocalControls(BaseLocalControls):
         BaseLocalControls.enableControls(self, wantMouse)
 
         if base.localAvatar.battleControls:
+            # Start sending our view position and angles to server.
+            # We only need to do this in battle controls because the server
+            # only needs to know our view when using attacks, and we only
+            # use attacks in battle controls.
+            base.localAvatar.startViewSend()
             base.localAvatar.setWalkSpeedNormal()
             self.idealFwd = self.BattleNormalSpeed
             self.idealRev = self.BattleNormalSpeed

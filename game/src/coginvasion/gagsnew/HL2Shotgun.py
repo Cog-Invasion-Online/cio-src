@@ -157,7 +157,7 @@ class HL2Shotgun(BaseHitscan, HL2ShotgunShared):
             return False
             
         if self.isFirstPerson():
-            self.specialViewModel.releaseJoint(None, "modelRoot", "ValveBiped.Gun")
+            self.specialViewModel.releaseJoint("modelRoot", "ValveBiped.Gun")
             self.fpMuzzleAttach.removeNode()
             
         return True

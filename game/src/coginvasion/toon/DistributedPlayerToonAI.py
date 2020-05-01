@@ -11,6 +11,8 @@ share the same code.
 
 """
 
+from panda3d.core import Quat, Vec3
+
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.interval.IntervalGlobal import Sequence, Wait, Func
 
@@ -59,7 +61,31 @@ class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
         self.defaultShard = 0
         self.currentGag = -1
         self.trackExperience = dict(GagGlobals.DefaultTrackExperiences)
-        return
+        
+        self.viewOrigin = Vec3()
+        self.viewAngles = Vec3()
+        self.viewAngleVectors = []
+        
+    def setView(self, x, y, z, h, p, r):
+        self.viewOrigin = Vec3(x, y, z)
+        self.viewAngles = Vec3(h, p, r)
+        quat = Quat()
+        quat.setHpr(self.viewAngles)
+        self.viewAngleVectors = [
+            quat.getRight(), quat.getForward(), quat.getUp()
+        ]
+        
+    def getViewAngleVectors(self):
+        return self.viewAngleVectors
+        
+    def getViewVector(self, n):
+        return self.viewAngleVectors[n]
+        
+    def getViewAngles(self):
+        return self.viewAngles
+        
+    def getViewOrigin(self):
+        return self.viewOrigin
         
     def getHealth(self):
         return DistributedPlayerToonShared.getHealth(self)
@@ -601,6 +627,9 @@ class DistributedPlayerToonAI(DistributedToonAI, DistributedPlayerToonShared):
             self.lastHood = None
             self.defaultShard = None
             self.trackExperience = None
+            self.viewOrigin = None
+            self.viewAngles = None
+            self.viewAngleVectors = None
             del self.questManager
             del self.money
             del self.portal

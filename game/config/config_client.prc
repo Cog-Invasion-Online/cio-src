@@ -118,6 +118,8 @@ want-playground-gags #f
 gsg-want-hlsounds #f
 explosion-hlsounds #f
 
+cl-view-update-rate 0.05
+
 hdr-min-avglum 3.0
 hdr-percent-bright-pixels 2.0
 hdr-percent-target 60.0
