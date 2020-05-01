@@ -20,7 +20,7 @@ from panda3d.core import LVecBase4, LPoint2
 from panda3d.core import Filename, NodePath
 from panda3d.core import AuxBitplaneAttrib
 from panda3d.core import Texture, Shader, ATSNone
-from panda3d.bsp import AUXBITS_NORMAL, AUXBITS_ARME
+from libpandabsp import AUXBITS_NORMAL, AUXBITS_ARME
 import os
 
 SSAO_VERT = """#version 330

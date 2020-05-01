@@ -139,7 +139,7 @@ class DistributedEntityAI(DistributedSmoothNodeAI, BasePhysicsObjectAI, Entity):
         self.cEntity = self.bspLoader.getCEntity(self.entnum)
         Entity.load(self)
         
-        from panda3d.bsp import CBrushEntity
+        from libpandabsp import CBrushEntity
         if isinstance(self.cEntity, CBrushEntity):
             self.assign(self.cEntity.getModelNp())
             #self.setupBrushEntityPhysics()
