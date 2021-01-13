@@ -1,4 +1,5 @@
 from src.coginvasion.base.Precache import Precacheable
+from src.coginvasion.attack.Attacks import ATTACK_NONE
 
 class AttackManagerShared(Precacheable):
 

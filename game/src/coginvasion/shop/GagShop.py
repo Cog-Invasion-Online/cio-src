@@ -67,13 +67,15 @@ class GagShop(Shop):
 
     def confirmPurchase(self):
         ammoList = []
+        maxAmmoList = []
         if not hasattr(self.originalSupply, 'keys'):
             gagIds = []
         else:
             gagIds = self.originalSupply.keys()
             for gagId in gagIds:
                 ammoList.append(base.localAvatar.getBackpack().getSupply(gagId))
-        self.distShop.sendUpdate('confirmPurchase', [gagIds, ammoList, base.localAvatar.getMoney()])
+                maxAmmoList.append(base.localAvatar.getBackpack().getMaxSupply(gagId))
+        self.distShop.sendUpdate('confirmPurchase', [gagIds, ammoList, maxAmmoList, base.localAvatar.getMoney()])
         Shop.confirmPurchase(self)
 
     def cancelPurchase(self):

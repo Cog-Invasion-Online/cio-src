@@ -393,7 +393,7 @@ dclass DistributedHQNPCToon : DistributedNPCToon {
 
 dclass DistributedClerkNPCToon : DistributedNPCToon {
   setChat(string) broadcast ownsend airecv;
-  confirmPurchase(uint8 gagIds [], uint8 [], int32) clsend airecv;
+  confirmPurchase(uint8 gagIds [], uint8 [], uint8 [], int32) clsend airecv;
 };
 
 dclass DistributedSuit : DistributedAvatar {
