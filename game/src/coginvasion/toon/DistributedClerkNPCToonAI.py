@@ -26,7 +26,7 @@ class DistributedClerkNPCToonAI(DistributedNPCToonAI):
                 ammo = ammoList[i]
                 maxAmmo = maxAmmoList[i]
 
-                av.b_updateAttackAmmo(gagId, ammo, maxAmmo, ammo, maxAmmo, None, None)
+                av.b_updateAttackAmmo(gagId, ammo, maxAmmo, ammo, maxAmmo, ammo, maxAmmo)
 
     def hasValidReasonToEnter(self, avId):
         av = self.air.doId2do.get(avId)

@@ -116,7 +116,7 @@ class Shop(StateData):
                 infoPrefix = 'Purchased an %s'
             
             self.window.showInfo('%s' % ((infoPrefix % (gag))), duration = 3)
-            base.localAvatar.updateAttackAmmo(gagID, supply + 1, maxSupply, supply + 1, maxSupply, None, None )
+            base.localAvatar.updateAttackAmmo(gagID, supply + 1, maxSupply, supply + 1, maxSupply, supply, maxSupply)
 
     def __purchaseHealItem(self, item, values):
         health = base.localAvatar.getHealth()
