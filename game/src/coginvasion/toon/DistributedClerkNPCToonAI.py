@@ -16,7 +16,7 @@ from DistributedNPCToonAI import DistributedNPCToonAI
 class DistributedClerkNPCToonAI(DistributedNPCToonAI):
     notify = directNotify.newCategory('DistributedClerkNPCToonAI')
 
-    def confirmPurchase(self, gagIds, ammoList, money):
+    def confirmPurchase(self, gagIds, ammoList, maxAmmoList, money):
         avId = self.air.getAvatarIdFromSender()
         av = self.air.doId2do.get(avId)
         av.b_setMoney(money)
@@ -24,7 +24,9 @@ class DistributedClerkNPCToonAI(DistributedNPCToonAI):
             for i in range(len(gagIds)):
                 gagId = gagIds[i]
                 ammo = ammoList[i]
-                av.b_updateAttackAmmo(gagId, ammo)
+                maxAmmo = maxAmmoList[i]
+
+                av.b_updateAttackAmmo(gagId, ammo, maxAmmo, 1, 1, ammo, maxAmmo)
 
     def hasValidReasonToEnter(self, avId):
         av = self.air.doId2do.get(avId)
