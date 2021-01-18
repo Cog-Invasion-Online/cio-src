@@ -503,10 +503,13 @@ class DistributedBattleZoneAI(DistributedObjectAI, AvatarWatcher):
                     if incrMaxExp != maxExp:
                         # We've unlocked a gag.
                         maxExpIndex = GagGlobals.TrackExperienceAmounts.get(track).index(incrMaxExp)
-                        newGagName = GagGlobals.TrackGagNamesByTrackName.get(track)[maxExpIndex]
-                        gagId = self.air.attackMgr.getAttackIDByName(newGagName)
-                        avatar.backpack.addGag(gagId, 1)
-                        gagUnlocked = True
+                        if maxExpIndex not in GagGlobals.TrackGagNamesByTrackName.get(track): 
+                            gagUnlocked = False
+                        else:
+                            newGagName = GagGlobals.TrackGagNamesByTrackName.get(track)[maxExpIndex]
+                            gagId = self.air.attackMgr.getAttackIDByName(newGagName)
+                            avatar.backpack.addGag(gagId, 1)
+                            gagUnlocked = True
                 avatar.b_setTrackExperience(GagGlobals.trackExperienceToNetString(avatar.trackExperience))
                 
                 if gagUnlocked:

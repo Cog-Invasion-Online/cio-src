@@ -308,8 +308,9 @@ class RewardPanel(DirectFrame):
         if track.maxExp > 0 and (track.maxExp != GagGlobals.MaxedTrackExperiences.get(track.name) \
                     and (track.exp + track.increment) >= track.maxExp):
             gagIndex = GagGlobals.TrackExperienceAmounts.get(track.name).index(track.maxExp) + 1
-            newGag = GagGlobals.TrackGagNamesByTrackName.get(track.name)[gagIndex]
-            intervalList.append(self.getShowGagUnlockedInterval(track.name, newGag))
+            if gagIndex in GagGlobals.TrackGagNamesByTrackName.get(track.name):
+                newGag = GagGlobals.TrackGagNamesByTrackName.get(track.name)[gagIndex]
+                intervalList.append(self.getShowGagUnlockedInterval(track.name, newGag))
         
         return intervalList
     
